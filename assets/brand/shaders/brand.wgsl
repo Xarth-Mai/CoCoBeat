@@ -2,11 +2,13 @@
 
 struct BrandUniform {
     paint: vec4<f32>,
-    // mode (0 wordmark, 1 blob), palette (0 white to 3 mixed), opacity, dock recoil
+    // mode (0 wordmark, 1 blob), palette (0 white to 3 mixed), opacity, unused
     effect: vec4<f32>,
     // Independent openness followed by horizontal offsets in source-canvas pixels
     eyes: vec4<f32>,
     origins: vec4<f32>,
+    // Co1, Co2 and Beat carry momentum independently after the UI root stops
+    follow: vec4<f32>,
 }
 
 @group(1) @binding(0) var<uniform> brand: BrandUniform;
@@ -23,6 +25,14 @@ struct BrandUniform {
 
 fn srgb(c: vec3<f32>) -> vec3<f32> {
     return select(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), c > vec3(0.04045));
+}
+
+fn blue_at(y: f32) -> vec3<f32> {
+    return srgb(mix(vec3(0.01, 0.92, 0.97), vec3(0.015, 0.57, 1.0), y));
+}
+
+fn pink_at(y: f32) -> vec3<f32> {
+    return srgb(mix(vec3(1.0, 0.53, 0.73), vec3(0.98, 0.19, 0.56), y));
 }
 
 fn ellipse(p: vec2<f32>, center: vec2<f32>, radius: vec2<f32>) -> f32 {
@@ -48,14 +58,26 @@ fn spread(p: vec2<f32>, origin: vec2<f32>, progress: f32, reach: f32) -> f32 {
     return 1.0 - smoothstep(progress * reach - 0.10, progress * reach + 0.10, distance + ripple);
 }
 
+fn follow_uv(uv: vec2<f32>, amount: f32) -> vec2<f32> {
+    // Inverse translation and area-preserving shear, shared by every layer of a group
+    var p = uv - vec2(-0.010, -0.024) * amount;
+    p.x -= 0.012 * amount * (p.y - 0.5);
+    return p;
+}
+
+fn highlights(uv: vec2<f32>) -> f32 {
+    return ellipse(uv, vec2(0.050, 0.175), vec2(0.024, 0.061))
+        + ellipse(uv, vec2(0.161, 0.387), vec2(0.019, 0.044))
+        + ellipse(uv, vec2(0.322, 0.175), vec2(0.024, 0.061))
+        + ellipse(uv, vec2(0.426, 0.387), vec2(0.019, 0.044));
+}
+
 @fragment
 fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
-    var uv = in.uv;
-    // Area-preserving shear after arrival; the UI rectangle keeps its final size
-    uv.x -= 0.018 * brand.effect.w * (uv.y - 0.5);
-    let blue = srgb(mix(vec3(0.01, 0.92, 0.97), vec3(0.015, 0.57, 1.0), uv.y));
-    let pink = srgb(mix(vec3(1.0, 0.53, 0.73), vec3(0.98, 0.19, 0.56), uv.y));
+    let uv = in.uv;
     if brand.effect.x > 0.5 {
+        let blue = blue_at(uv.y);
+        let pink = pink_at(uv.y);
         let p = uv * 2.0 - 1.0;
         let d = length(p);
         let aa = max(fwidth(d), 0.008);
@@ -72,27 +94,26 @@ fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
         return vec4(color, alpha * brand.effect.z);
     }
 
-    let a = coverage(co1, co1_sampler, uv);
-    let b = coverage(co2, co2_sampler, uv);
-    let c = coverage(beat, beat_sampler, uv);
-    let blue_eye_uv = vec2(uv.x - brand.eyes.z / 840.0,
-        (uv.y - 0.59) / max(brand.eyes.x, 0.001) + 0.59);
-    let pink_eye_uv = vec2(uv.x - brand.eyes.w / 840.0,
-        (uv.y - 0.59) / max(brand.eyes.y, 0.001) + 0.59);
+    let uv1 = follow_uv(uv, brand.follow.x);
+    let uv2 = follow_uv(uv, brand.follow.y);
+    let uv3 = follow_uv(uv, brand.follow.z);
+    let a = coverage(co1, co1_sampler, uv1);
+    let b = coverage(co2, co2_sampler, uv2);
+    let c = coverage(beat, beat_sampler, uv3);
+    let blue_eye_uv = vec2(uv1.x - brand.eyes.z / 840.0,
+        (uv1.y - 0.59) / max(brand.eyes.x, 0.001) + 0.59);
+    let pink_eye_uv = vec2(uv2.x - brand.eyes.w / 840.0,
+        (uv2.y - 0.59) / max(brand.eyes.y, 0.001) + 0.59);
     let eyes = max(coverage(eyes_blue, eyes_blue_sampler, blue_eye_uv) * brand.eyes.x,
                    coverage(eyes_pink, eyes_pink_sampler, pink_eye_uv) * brand.eyes.y);
-    let p1 = spread(uv, brand.origins.xy, brand.paint.x, 1.2);
-    let p2 = spread(uv, brand.origins.zw, brand.paint.y, 1.2);
-    let p3 = spread(uv, vec2(0.57, 0.16), brand.paint.z, 2.4);
-    let highlights = ellipse(uv, vec2(0.050, 0.175), vec2(0.024, 0.061))
-        + ellipse(uv, vec2(0.161, 0.387), vec2(0.019, 0.044))
-        + ellipse(uv, vec2(0.322, 0.175), vec2(0.024, 0.061))
-        + ellipse(uv, vec2(0.426, 0.387), vec2(0.019, 0.044));
-    let co1_color = mix(vec3(0.96), mix(blue, vec3(1.0), highlights * 0.62), p1);
-    let co2_color = mix(vec3(0.96), mix(pink, vec3(1.0), highlights * 0.62), p2);
-    let lower = smoothstep(0.51, 0.98, uv.y) * 0.46;
+    let p1 = spread(uv1, brand.origins.xy, brand.paint.x, 1.2);
+    let p2 = spread(uv2, brand.origins.zw, brand.paint.y, 1.2);
+    let p3 = spread(uv3, vec2(0.57, 0.16), brand.paint.z, 2.4);
+    let co1_color = mix(vec3(0.96), mix(blue_at(uv1.y), vec3(1.0), highlights(uv1) * 0.62), p1);
+    let co2_color = mix(vec3(0.96), mix(pink_at(uv2.y), vec3(1.0), highlights(uv2) * 0.62), p2);
+    let lower = smoothstep(0.51, 0.98, uv3.y) * 0.46;
     let tint = mix(srgb(vec3(0.10, 0.89, 0.98)), srgb(vec3(1.0, 0.38, 0.71)),
-                   smoothstep(0.66, 0.94, uv.x));
+                   smoothstep(0.66, 0.94, uv3.x));
     let beat_color = mix(vec3(0.96), mix(vec3(0.96), tint, lower), p3);
     let coverage = a + b + c + eyes;
     let rgb = (co1_color * a + co2_color * b + beat_color * c + vec3(0.98) * eyes)

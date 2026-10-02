@@ -109,6 +109,7 @@ struct BrandUniform {
     effect: Vec4,
     eyes: Vec4,
     origins: Vec4,
+    follow: Vec4,
 }
 
 #[derive(Asset, TypePath, AsBindGroup, Clone, Debug)]
@@ -256,6 +257,7 @@ fn setup(
                         effect: Vec4::ZERO,
                         eyes: Vec4::ZERO,
                         origins: Vec4::ZERO,
+                        follow: Vec4::ZERO,
                     },
                     co1: textures[0].clone(),
                     co2: textures[1].clone(),
@@ -539,18 +541,23 @@ fn fitted(rect: Rect) -> Rect {
     Rect::from_center_size(rect.center(), CANVAS * scale)
 }
 
-fn dock_recoil_at(t: f64) -> f32 {
-    if !(6.70..END).contains(&t) {
-        return 0.0;
-    }
-    let t = t as f32;
-    progress(t, 6.70, 6.82) - 1.125 * progress(t, 6.82, 7.00) + 0.125 * progress(t, 7.00, 7.20)
+fn dock_follow_at(t: f64) -> Vec4 {
+    // Drag begins during travel; each group carries momentum past the root's stop
+    let follow = |delay| {
+        let t = (t - delay) as f32;
+        if !(6.15..7.12).contains(&t) {
+            return 0.0;
+        }
+        -0.35 * progress(t, 6.15, 6.33) + 1.35 * progress(t, 6.33, 6.66)
+            - 1.15 * progress(t, 6.66, 6.89)
+            + 0.15 * progress(t, 6.89, 7.12)
+    };
+    Vec4::new(follow(0.0), follow(0.04), follow(0.08), 0.0)
 }
 
 fn dock_rect_at(t: f64, intro: Rect, target: Rect) -> Rect {
     if t >= DOCK_ARRIVE {
-        let offset = target.size() * Vec2::new(-0.018, -0.045) * dock_recoil_at(t);
-        return Rect::from_corners(target.min + offset, target.max + offset);
+        return target;
     }
     let amount = reveal_at(t);
     Rect::from_center_size(
@@ -609,14 +616,10 @@ fn present(
                 rect.size(),
                 BrandUniform {
                     paint: paint_at(t),
-                    effect: Vec4::new(
-                        0.0,
-                        0.0,
-                        f32::from(visible),
-                        dock_recoil_at(status.elapsed_seconds),
-                    ),
+                    effect: Vec4::new(0.0, 0.0, f32::from(visible), 0.0),
                     eyes,
                     origins,
+                    follow: dock_follow_at(status.elapsed_seconds),
                 },
             ),
             Part::Blob => (
@@ -627,6 +630,7 @@ fn present(
                     effect: Vec4::new(1.0, blob.palette, blob.opacity * f32::from(visible), 0.0),
                     eyes: Vec4::ZERO,
                     origins: Vec4::ZERO,
+                    follow: Vec4::ZERO,
                 },
             ),
             Part::Splash(index) => {
@@ -659,6 +663,7 @@ fn present(
                         ),
                         eyes: Vec4::ZERO,
                         origins: Vec4::ZERO,
+                        follow: Vec4::ZERO,
                     },
                 )
             }
@@ -866,7 +871,7 @@ mod tests {
     }
 
     #[test]
-    fn docking_arrives_before_recoil_and_keeps_the_final_size() {
+    fn docking_stops_the_root_while_groups_follow_through_at_different_times() {
         let intro = Rect::from_center_size(Vec2::new(640.0, 350.0), CANVAS);
         for width in [240.0, 1.0, 0.0] {
             let target =
@@ -874,24 +879,40 @@ mod tests {
             assert_eq!(dock_rect_at(0.0, intro, target), intro);
             for t in [DOCK_ARRIVE, 6.65, 6.70, END, 60.0] {
                 assert_eq!(dock_rect_at(t, intro, target), target);
-                assert_eq!(dock_recoil_at(t), 0.0);
             }
             for frame in 0..=60 {
                 let t = DOCK_ARRIVE + f64::from(frame) / 100.0;
                 let pose = dock_rect_at(t, intro, target);
-                assert!(pose.size().distance(target.size()) < 0.001);
+                assert_eq!(pose, target);
                 assert_eq!(reveal_at(t), 1.0);
             }
-            let peak = dock_rect_at(6.82, intro, target).center();
-            let rebound = dock_rect_at(7.00, intro, target).center();
-            assert!(peak.cmple(target.center()).all());
-            assert!(rebound.cmpge(target.center()).all());
-            assert!(
-                rebound.distance(target.center()) <= peak.distance(target.center()) * 0.13 + 0.001
-            );
         }
-        assert_eq!(dock_recoil_at(6.82), 1.0);
-        assert_eq!(dock_recoil_at(7.00), -0.125);
+        for t in [0.0, DOCK_START, END, 60.0] {
+            assert_eq!(dock_follow_at(t), Vec4::ZERO);
+        }
+        assert!(dock_follow_at(6.33).xyz().cmplt(Vec3::ZERO).all());
+        let arrival = dock_follow_at(DOCK_ARRIVE).xyz();
+        assert!(arrival.cmpgt(Vec3::ZERO).all());
+        assert!(arrival.x > arrival.y && arrival.y > arrival.z);
+        assert!(
+            dock_follow_at(DOCK_ARRIVE + 0.01)
+                .xyz()
+                .cmpgt(arrival)
+                .all()
+        );
+        assert_eq!(dock_follow_at(7.16).xy(), Vec2::ZERO);
+        assert!(dock_follow_at(7.16).z < 0.0);
+        for (i, delay) in [0.0, 0.04, 0.08].into_iter().enumerate() {
+            assert!((dock_follow_at(6.66 + delay)[i] - 1.0).abs() < 0.0001);
+            assert!((dock_follow_at(6.89 + delay)[i] + 0.15).abs() < 0.0001);
+        }
+        for frame in 0..=630 {
+            let t = DOCK_START + f64::from(frame) / 600.0;
+            let follow = dock_follow_at(t);
+            assert!(follow.cmpge(Vec4::splat(-0.3501)).all());
+            assert!(follow.cmple(Vec4::ONE).all());
+            assert!(follow.distance(dock_follow_at(t + 0.0001)) < 0.002);
+        }
     }
 
     #[test]

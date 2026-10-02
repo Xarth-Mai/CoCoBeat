@@ -26,7 +26,7 @@ target/debug/cocobeat-brand-validation --output /tmp/cocobeat-brand-menu-sequenc
 
 `--size` 是输出物理像素，`--scale 2` 对应 2 倍 DPI，`2560x1600 --scale 2` 的逻辑视口为 `1280x800`
 
-默认输出 34 个关键帧及 `frames.csv`，覆盖两次 C 顶部落点、各自眼睛出现、Beat 染完后对视的过冲与回弹、回正并停留，以及缩小到停靠尺寸、保持大小、向左上轻微剪切与位移、反向回弹和精确归位；菜单采样覆盖从原稿视线回正、错峰眨眼、两轮换边领视的对视过冲与稳定、每轮视线回正、双眨和循环接缝
+默认输出 41 个关键帧及 `frames.csv`，覆盖两次 C 顶部落点、各自眼睛出现、Beat 染完后对视的过冲与回弹、回正并停留，以及停靠移动中的拖拽、主矩形到位时仍在运动的字块、Co1 / Co2 / Beat 错峰达到位移与剪切峰值、6.797 / 6.836 秒两处字组间隙最窄时刻、反向回弹和精确归位；菜单采样覆盖从原稿视线回正、错峰眨眼、两轮换边领视的对视过冲与稳定、每轮视线回正、双眨和循环接缝
 
 `--sequence` 输出从 0 至 7.20 秒的 217 张图片；`--menu-sequence` 输出从 0 至 31.20 秒的 937 张图片，包含启动动画及一个完整的 24 秒菜单循环，均用于 30 fps 预览
 
@@ -64,5 +64,15 @@ ffmpeg -y -hide_banner -loglevel error \
 ```
 
 观察眼神细节时，可在上述命令中加入 `-vf 'crop=280:90:20:8,scale=1120:360:flags=lanczos'`，输出改为 `output/brand/cocobeat-menu-detail.mp4`；这只放大真实停靠区域的像素，不改变运行时布局
+
+停靠段可单独裁切并半速播放，用于观察三个字组在主体停止后的错峰收束：
+
+```bash
+ffmpeg -y -hide_banner -loglevel error \
+  -framerate 15 -start_number 192 -i /tmp/cocobeat-brand-menu-sequence/frame_%04d.png \
+  -frames:v 49 -vf 'crop=400:160:10:10,scale=1200:480:flags=lanczos' \
+  -an -c:v libx264 -pix_fmt yuv420p -crf 18 \
+  -movflags +faststart output/brand/cocobeat-dock-detail.mp4
+```
 
 该程序验证真实 WGSL 管线与不同分辨率的渲染，不覆盖完整游戏输入门控、音频设备听感或发行平台集成
