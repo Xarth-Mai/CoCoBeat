@@ -1,0 +1,42 @@
+[workspace]
+resolver = "3"
+members = [
+    "apps/cocobeat-game",
+    "crates/cocobeat-schema",
+    "crates/cocobeat-core",
+    "crates/cocobeat-runtime",
+    "crates/cocobeat-replay",
+    "tools/cocobeat-lab",
+    "xtask",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MPL-2.0"
+repository = "https://github.com/Xarth-Mai/CoCoBeat"
+publish = false
+
+[workspace.dependencies]
+cocobeat-schema = { path = "crates/cocobeat-schema" }
+cocobeat-core = { path = "crates/cocobeat-core" }
+cocobeat-runtime = { path = "crates/cocobeat-runtime" }
+cocobeat-replay = { path = "crates/cocobeat-replay" }
+serde_json = "1.0.151"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = "warn"
+
+# Shipping builds prioritize runtime performance over compilation speed.
+# Keep the target's default CPU baseline so artifacts run on other machines.
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "debuginfo"
+debug = 0
+incremental = false

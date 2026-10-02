@@ -1,0 +1,157 @@
+name: Manual release build
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Platform and architecture (all targets are 64-bit)
+        type: choice
+        required: true
+        default: x86_64-pc-windows-msvc
+        options:
+          - x86_64-pc-windows-msvc
+          - aarch64-pc-windows-msvc
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  windows:
+    if: inputs.target == 'x86_64-pc-windows-msvc' || inputs.target == 'aarch64-pc-windows-msvc'
+    runs-on: ${{ inputs.target == 'aarch64-pc-windows-msvc' && 'windows-11-arm' || 'windows-latest' }}
+    timeout-minutes: 60
+    env:
+      BUILD_TARGET: ${{ inputs.target }}
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Install latest stable Rust and target
+        id: rust
+        run: |
+          if ($env:BUILD_TARGET -notin @('aarch64-pc-windows-msvc', 'x86_64-pc-windows-msvc')) {
+            throw "Unsupported target: $env:BUILD_TARGET"
+          }
+          rustup update stable --no-self-update
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          rustup target add $env:BUILD_TARGET --toolchain stable
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $version = (rustc --version).Split(' ')[1]
+          "version=$version" >> $env:GITHUB_OUTPUT
+      - uses: actions/cache@v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/${{ inputs.target }}/release
+            target/release
+          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          restore-keys: |
+            release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
+      - name: Build optimized game
+        run: cargo build --locked --release --package cocobeat-game --target $env:BUILD_TARGET
+      - name: Verify architecture and prepare artifact
+        run: |
+          $exe = "target/$env:BUILD_TARGET/release/cocobeat-game.exe"
+          $reader = [System.IO.BinaryReader]::new([System.IO.File]::OpenRead($exe))
+          try {
+            if ($reader.ReadUInt16() -ne 0x5A4D) { throw 'Missing DOS header' }
+            $reader.BaseStream.Position = 0x3C
+            $peOffset = $reader.ReadInt32()
+            $reader.BaseStream.Position = $peOffset
+            if ($reader.ReadUInt32() -ne 0x4550) { throw 'Missing PE header' }
+            $machine = $reader.ReadUInt16()
+            $expected = if ($env:BUILD_TARGET -eq 'aarch64-pc-windows-msvc') { 0xAA64 } else { 0x8664 }
+            if ($machine -ne $expected) { throw "Unexpected PE machine: $machine" }
+          } finally {
+            $reader.Dispose()
+          }
+          New-Item -ItemType Directory -Path dist -Force | Out-Null
+          Copy-Item $exe, LICENSE, README.md, Cargo.lock -Destination dist
+          @(
+            "commit=$env:GITHUB_SHA"
+            "target=$env:BUILD_TARGET"
+            "profile=release (opt-level=3, fat LTO, codegen-units=1, panic=abort)"
+            "rustc=$(rustc --version)"
+            "cargo=$(cargo --version)"
+            "sha256=$((Get-FileHash $exe -Algorithm SHA256).Hash)"
+          ) | Set-Content dist/BUILD-INFO.txt
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cocobeat-${{ inputs.target }}-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  linux:
+    if: inputs.target == 'x86_64-unknown-linux-gnu' || inputs.target == 'aarch64-unknown-linux-gnu'
+    # Keep a fixed distro baseline for glibc compatibility; use native ARM64.
+    runs-on: ${{ inputs.target == 'aarch64-unknown-linux-gnu' && 'ubuntu-24.04-arm' || 'ubuntu-24.04' }}
+    timeout-minutes: 60
+    env:
+      BUILD_TARGET: ${{ inputs.target }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Install latest stable Rust and target
+        id: rust
+        run: |
+          case "$BUILD_TARGET" in
+            x86_64-unknown-linux-gnu|aarch64-unknown-linux-gnu) ;;
+            *) echo "Unsupported target: $BUILD_TARGET" >&2; exit 1 ;;
+          esac
+          rustup update stable --no-self-update
+          rustup target add "$BUILD_TARGET" --toolchain stable
+          echo "version=$(rustc --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/${{ inputs.target }}/release
+            target/release
+          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          restore-keys: |
+            release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
+      - name: Build optimized game
+        run: cargo build --locked --release --package cocobeat-game --target "$BUILD_TARGET"
+      - name: Verify architecture and prepare artifact
+        run: |
+          binary="target/$BUILD_TARGET/release/cocobeat-game"
+          python3 - "$binary" "$BUILD_TARGET" <<'PY'
+          import pathlib
+          import struct
+          import sys
+          with pathlib.Path(sys.argv[1]).open('rb') as binary:
+              header = binary.read(20)
+          expected = {'x86_64-unknown-linux-gnu': 62, 'aarch64-unknown-linux-gnu': 183}[sys.argv[2]]
+          if header[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', header, 18)[0] != expected:
+              raise SystemExit('Unexpected ELF class, byte order, or machine')
+          PY
+          mkdir -p dist/package
+          cp "$binary" LICENSE README.md Cargo.lock dist/package/
+          {
+            echo "commit=$GITHUB_SHA"
+            echo "target=$BUILD_TARGET"
+            echo 'profile=release (opt-level=3, fat LTO, codegen-units=1, panic=abort)'
+            echo "rustc=$(rustc --version)"
+            echo "cargo=$(cargo --version)"
+            echo "sha256=$(sha256sum "$binary" | cut -d ' ' -f 1)"
+          } > dist/package/BUILD-INFO.txt
+          # Tar retains the executable bit; artifact ZIP alone does not.
+          tar -czf "dist/cocobeat-$BUILD_TARGET.tar.gz" -C dist/package .
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: cocobeat-${{ inputs.target }}-${{ github.sha }}
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 14

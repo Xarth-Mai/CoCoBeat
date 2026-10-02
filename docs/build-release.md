@@ -1,0 +1,67 @@
+# 构建、性能与 CI
+
+## 发行参数
+
+根 Cargo.toml 的 `[profile.release]` 作用于 Windows/Linux 发行构建：
+
+| 参数 | 当前值 | 用途 |
+|---|---|---|
+| opt-level | 3 | 以运行速度为目标优化 |
+| lto | fat | 跨 crate 的整体链接时优化 |
+| codegen-units | 1 | 减少代码生成分区，增加整体优化机会 |
+| panic | abort | 发生 panic 时退出，不进行栈展开 |
+| debug / strip | 0 / debuginfo | 发行产物不保留调试信息 |
+| incremental | false | 发行构建不使用增量编译 |
+
+这些参数增加 release 编译时间，但不拖慢日常 debug 开发。panic 不展开意味着不能依赖 panic 时的 Drop 保存 Replay 或清理事务；正常错误使用 Result，重要事实需在正常路径持久化。
+不设置 `target-cpu=native` 或构建机专属 AVX 参数，避免在其他玩家机器上出现非法指令。PGO 等进一步优化等到有代表性游戏负载后再引入，不能把编译参数当作已验证的帧率或低延迟保证。
+
+Linux 本机构建：
+
+```sh
+cargo build --locked --release -p cocobeat-game
+```
+
+Windows MSVC 本机构建：
+
+```sh
+rustup target add x86_64-pc-windows-msvc
+cargo build --locked --release -p cocobeat-game --target x86_64-pc-windows-msvc
+```
+
+Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Linux 在引入 Bevy/Kira/手柄后需按实际后端补齐系统开发依赖和发行运行依赖。
+
+## 轻量自动 CI
+
+`.github/workflows/ci.yml` 在 main 的代码 push 与涉及代码/构建配置的 PR 执行：
+
+1. 一个 Ubuntu job，安装最新 stable，恢复按工具链、manifest/lockfile 与源码区分的缓存。
+2. 全 workspace 的 rustfmt 与依赖图检查。
+3. schema/core/replay/xtask 的 Clippy 和测试。
+
+无图形/音频运行层编译、无平台矩阵、无自动 release 打包；新提交取消旧检查，单次限制 10 分钟。只改文档或资源不会触发当前自动 CI。完整检查仍用 `cargo xtask check`，新增非 Rust 源码或构建输入时同步更新触发路径。
+
+## 手动发行构建
+
+`.github/workflows/release-build.yml` 仅有 `workflow_dispatch`，不会在每次提交时编译发行包。
+
+打开 **Actions → Manual release build → Run workflow**，选择分支和 `target`：
+
+| 目标 | 原生 runner | 产物 |
+|---|---|---|
+| `x86_64-pc-windows-msvc`（默认） | windows-latest | x86-64 Windows EXE |
+| `aarch64-pc-windows-msvc` | windows-11-arm | ARM64 Windows EXE |
+| `x86_64-unknown-linux-gnu` | ubuntu-24.04 | x86-64 Linux tar.gz |
+| `aarch64-unknown-linux-gnu` | ubuntu-24.04-arm | ARM64 Linux tar.gz |
+
+四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过，不启动四机矩阵。Linux 固定 Ubuntu 24.04 作为构建基线，实际最低 glibc/运行库要求还需在正式依赖接入后验证。
+
+工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
+成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Linux 先打包 tar.gz 保留执行权限。失败时不上传产物，不自动发布 GitHub Release。
+
+目前产物是 Day 0 bootstrap 可执行文件。正式游戏资源、第三方 notices、安装包与运行库的打包会在 V1 加固阶段接入；手动编译通过不等于安装包或游戏兼容性已验收。
+
+## 跨平台交付门槛
+
+初版面向 Windows MSVC 和 Linux 的 x86-64 / ARM64。发行前对每个平台/架构分别执行完整 workspace 检查、release 构建和干净机器运行，并记录 OS、GPU、音频/手柄后端与实际帧时间数据。
+轻量 CI 与手动构建服务开发效率，不降低真实手柄和真实声音输出的验收要求。原生 ARM64 runner 构建通过后，仍需在真实 ARM64 游戏设备上验证图形、音频和输入。
