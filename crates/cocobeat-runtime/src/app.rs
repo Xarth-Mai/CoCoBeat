@@ -490,6 +490,7 @@ fn update_game(
     }
     let settings_now = input.origin.elapsed().as_secs_f64();
     settings.sync_pacing(&display);
+    settings.sync_display(&display);
     if settings.tick(settings_now, &mut display) {
         menu_scroll.reset();
     }

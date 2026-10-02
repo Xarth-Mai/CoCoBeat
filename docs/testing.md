@@ -193,3 +193,14 @@ Windows 检查在 Linux 上以独立官方 Rust 1.98.1 执行 `cargo check --off
 117 个源码与资源文件、可执行文件、28 张 PNG 和日志 SHA-256 均与 `target/menu-evidence/evidence.json` 匹配；GPU 日志含 692 条已知 ICU CJK 词边界诊断，无其他 WARN/ERROR/error。英式英语图初次批量目检被误判暗底，随后独立读取同一路径并核对原哈希确认画面正常，未重捕或替换文件，最终为 PASS
 
 Windows 目标检查仍在 Linux 上使用 `target/windows-cross-toolchain/` 内的隔离官方 Rust，执行 `cargo check --offline --locked -j1 -p cocobeat-runtime --target x86_64-pc-windows-gnu --config target/windows-cross-toolchain/cargo-config.toml`，通过 RUSTC 指定私有编译器、CARGO_TARGET_DIR 指定独立缓存，退出 0、零 warning/error，114 个输入文件起止哈希一致；命令、环境和日志见 `target/windows-cross-toolchain/menu-check.json`。没有 Windows 主机参与，Windows 链接与运行、真实 WM/DPI/跨屏、音频与物理输入、母语真人校对均为 NOT RUN
+
+
+## 显示草稿与实际窗口同步
+
+2026-10-02，基于 `e9345f9` 复现并修复“打开设置 → 外部窗口从 1280×800 缩至 900×700 → 仅改语言 → 应用”误进入显示预览并请求恢复旧尺寸的问题。未编辑的显示字段现在随实际回读更新，分辨率行同步显示自定义尺寸；明确选择分辨率、全屏或恢复默认的字段保留用户意图，预览及回滚等待回读期间不覆盖草稿。生产同步位于 DisplaySystems::Sync 之后，设置动作也使用最新回读
+
+回归先在旧实现退出 101，随后修复后同一行为检查通过；扩展断言覆盖无操作时的尺寸呈现、明确再次选择同值、窗口与全屏尺寸独立编辑、恢复默认及预览/回滚等待。旧失败快照、命令和日志，以及最终单测证据保存在 `target/settings-resize-evidence/`；这些检查模拟外部尺寸回读，不宣称实际拖动窗口已验收
+
+`CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game` 退出 0，92 项 workspace 测试、Clippy、格式、依赖边界及构建均为 PASS，117 个源码与资源文件以及产物身份见 `target/settings-resize-evidence/evidence.json`。同一源码另通过 Linux 上隔离 Rust 的 Windows GNU runtime 编译检查，命令与 114 个输入文件哈希见 `windows-check.json`；Windows 链接与运行未执行。本轮没有渲染样式或资源修改，未重跑 GPU 截图
+
+本轮只读宿主条件核查保存为 `target/platform-readiness/evidence.json`：Linux x86_64 有可用 GPU、DP-1 显示器与 ALSA 播放/采集硬件，但当前用户没有图形桌面会话，X11 查询授权失败；可连接的 PipeWire/Pulse 当前只提供 Dummy Output，udev 未枚举到手柄且当前用户不能读取输入节点。未启动窗口、播放或录音、读取按键、修改配置或音量；实际 WM/DPI/跨屏、物理音频与 loopback、手柄和真人双人验收继续为 NOT RUN，需先具备用户图形会话、物理音频路径、测量连接和测试设备

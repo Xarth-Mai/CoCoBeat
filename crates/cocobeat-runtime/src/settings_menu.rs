@@ -20,12 +20,21 @@ struct Preview {
     deadline: f64,
 }
 
+// Choosing the current value still protects that field from later native readback
+#[derive(Default)]
+struct DisplayEdits {
+    fullscreen: bool,
+    window_size: bool,
+    fullscreen_size: bool,
+}
+
 #[derive(Resource, Default)]
 pub(crate) struct SettingsMenu {
     pub values: Settings,
     pub notice: Message,
     path: Option<PathBuf>,
     draft: Option<Settings>,
+    display_edits: DisplayEdits,
     selection: usize,
     resolution_selection: Option<usize>,
     language_selection: Option<usize>,
@@ -73,11 +82,30 @@ impl SettingsMenu {
         let mut draft = self.values.clone();
         draft.display = display.actual();
         self.draft = Some(draft);
+        self.display_edits = DisplayEdits::default();
         self.selection = 0;
         self.resolution_selection = None;
         self.language_selection = None;
         self.preview = None;
         self.page = None;
+    }
+
+    pub fn sync_display(&mut self, display: &DisplayState) {
+        if self.preview.is_some() || display.pending {
+            return;
+        }
+        if let Some(draft) = &mut self.draft {
+            let actual = display.actual();
+            if !self.display_edits.fullscreen {
+                draft.display.fullscreen = actual.fullscreen;
+            }
+            if !self.display_edits.window_size {
+                draft.display.window_size = actual.window_size;
+            }
+            if !self.display_edits.fullscreen_size {
+                draft.display.fullscreen_size = actual.fullscreen_size;
+            }
+        }
     }
 
     pub fn sync_pacing(&mut self, display: &DisplayState) {
@@ -98,6 +126,7 @@ impl SettingsMenu {
         if let Some(preview) = self.preview.take() {
             display.request(preview.original.display);
             self.draft = Some(preview.original);
+            self.display_edits = DisplayEdits::default();
             self.selection = 2;
         }
         self.notice = Message::new(notice);
@@ -145,6 +174,7 @@ impl SettingsMenu {
 
     /// Returns true only when the settings menu closes, never to resume a song
     pub fn handle(&mut self, action: SettingsAction, now: f64, display: &mut DisplayState) -> bool {
+        self.sync_display(display);
         self.tick(now, display);
         let Some(mut draft) = self.draft.clone() else {
             return false;
@@ -194,8 +224,10 @@ impl SettingsMenu {
                 SettingsAction::Confirm if selected < options.len() => {
                     if draft.display.fullscreen {
                         draft.display.fullscreen_size = options[selected];
+                        self.display_edits.fullscreen_size = true;
                     } else {
                         draft.display.window_size = options[selected];
+                        self.display_edits.window_size = true;
                     }
                     self.draft = Some(draft);
                     self.resolution_selection = None;
@@ -326,9 +358,17 @@ impl SettingsMenu {
                             return false;
                         }
                         *current = cycle(*current, &options, action == SettingsAction::Previous);
+                        if draft.display.fullscreen {
+                            self.display_edits.fullscreen_size = true;
+                        } else {
+                            self.display_edits.window_size = true;
+                        }
                     }
                 }
-                1 => draft.display.fullscreen = !draft.display.fullscreen,
+                1 => {
+                    draft.display.fullscreen = !draft.display.fullscreen;
+                    self.display_edits.fullscreen = true;
+                }
                 2 if action == SettingsAction::Confirm && !display.pending => {
                     if draft.display == display.actual() {
                         return self.save_actual(draft, display);
@@ -351,6 +391,11 @@ impl SettingsMenu {
                 }
                 4 if action == SettingsAction::Confirm => {
                     draft = Settings::default();
+                    self.display_edits = DisplayEdits {
+                        fullscreen: true,
+                        window_size: true,
+                        fullscreen_size: true,
+                    };
                     display.normalize_pacing(&mut draft.pacing);
                     self.notice = Message::new("settings_notice.defaults");
                 }
@@ -694,6 +739,127 @@ mod tests {
     }
 
     #[test]
+    fn observed_window_changes_do_not_turn_language_apply_into_a_display_preview() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-settings-observed-window-{}",
+            std::process::id()
+        ));
+        let path = root.join("settings.json");
+        settings::save(
+            &path,
+            &Settings {
+                locale: Locale::EnUs,
+                ..Settings::default()
+            },
+        )
+        .unwrap();
+        let mut menu = SettingsMenu::from_path(path.clone());
+        let mut display = DisplayState::new(menu.values.display);
+        display.set_headless_surface([1920, 1080]);
+        menu.begin(&display);
+        // Model a confirmed external resize after the settings draft was opened
+        display.request(DisplaySettings {
+            window_size: [900, 700],
+            ..display.actual()
+        });
+        menu.sync_display(&display);
+        let presentation = menu.presentation(0.0, &display, Locale::EnUs).unwrap();
+        assert!(presentation.rows[0].text.contains("900"));
+        assert!(presentation.rows[0].text.contains("700"));
+        assert!(
+            presentation.rows[0]
+                .text
+                .contains(Locale::EnUs.text("settings.custom"))
+        );
+        menu.selection = 7;
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.selection = 2;
+        assert!(menu.handle(SettingsAction::Confirm, 1.0, &mut display));
+        assert!(menu.preview.is_none());
+        assert_eq!(display.actual().window_size, [900, 700]);
+        let saved = settings::load(&path).unwrap();
+        assert_eq!(saved.display.window_size, [900, 700]);
+        assert_eq!(saved.locale, Locale::EnGb);
+
+        // Confirming the current preset is still an explicit choice
+        display.request(DisplaySettings::default());
+        menu.begin(&display);
+        menu.handle(SettingsAction::Confirm, 2.0, &mut display);
+        menu.handle(SettingsAction::Confirm, 2.0, &mut display);
+        display.request(DisplaySettings {
+            window_size: [900, 700],
+            fullscreen_size: [1024, 640],
+            ..display.actual()
+        });
+        menu.sync_display(&display);
+        let draft = menu.draft.as_ref().unwrap().display;
+        assert_eq!(draft.window_size, [1280, 800]);
+        assert_eq!(draft.fullscreen_size, [1024, 640]);
+
+        // Fullscreen edits leave the unedited window size following actual readback
+        menu.begin(&display);
+        menu.selection = 1;
+        menu.handle(SettingsAction::Confirm, 3.0, &mut display);
+        menu.selection = 0;
+        menu.handle(SettingsAction::Next, 3.0, &mut display);
+        display.request(DisplaySettings {
+            window_size: [1000, 700],
+            ..display.actual()
+        });
+        menu.sync_display(&display);
+        let draft = menu.draft.as_ref().unwrap().display;
+        assert!(draft.fullscreen);
+        assert_eq!(draft.fullscreen_size, [1280, 720]);
+        assert_eq!(draft.window_size, [1000, 700]);
+
+        menu.selection = 4;
+        menu.handle(SettingsAction::Confirm, 4.0, &mut display);
+        display.request(DisplaySettings {
+            fullscreen: true,
+            window_size: [800, 600],
+            fullscreen_size: [640, 480],
+        });
+        menu.sync_display(&display);
+        assert_eq!(
+            menu.draft.as_ref().unwrap().display,
+            DisplaySettings::default()
+        );
+
+        display.request(saved.display);
+        menu.begin(&display);
+        menu.selection = 1;
+        menu.handle(SettingsAction::Confirm, 5.0, &mut display);
+        menu.selection = 2;
+        assert!(!menu.handle(SettingsAction::Confirm, 5.0, &mut display));
+        let preview_draft = menu.draft.clone();
+        let mut unsettled = DisplayState::new(DisplaySettings {
+            window_size: [800, 600],
+            fullscreen_size: [640, 480],
+            ..display.actual()
+        });
+        menu.sync_display(&unsettled);
+        assert_eq!(menu.draft, preview_draft);
+        unsettled.set_headless_surface([1920, 1080]);
+        menu.sync_display(&unsettled);
+        assert_eq!(menu.draft, preview_draft);
+
+        // Keep the old observed mode until the rollback request is acknowledged
+        let mut restoring = DisplayState::new(unsettled.actual());
+        assert!(menu.tick(20.0, &mut restoring));
+        assert!(restoring.pending);
+        assert!(restoring.actual().fullscreen);
+        menu.sync_display(&restoring);
+        assert_eq!(menu.draft.as_ref().unwrap().display, saved.display);
+        restoring.set_headless_surface([1000, 700]);
+        menu.sync_display(&restoring);
+        assert_eq!(menu.draft.as_ref().unwrap().display, restoring.actual());
+        assert!(!menu.draft.as_ref().unwrap().display.fullscreen);
+        assert_eq!(menu.values, saved);
+        assert_eq!(settings::load(&path).unwrap(), saved);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
     fn preview_timeout_cancel_save_and_failure_preserve_settings() {
         let root =
             std::env::temp_dir().join(format!("cocobeat-settings-menu-{}", std::process::id()));
@@ -1012,8 +1178,9 @@ mod tests {
 
         for fail_save in [false, true] {
             menu.begin(&display);
+            menu.selection = 1;
+            menu.handle(SettingsAction::Confirm, 1.0, &mut display);
             let draft = menu.draft.as_mut().unwrap();
-            draft.display.fullscreen = true;
             draft.quality.set_preset(QualityPreset::High);
             draft.pacing.frame_limit = FrameLimit::Limited(60000);
             draft.pacing.vsync = false;

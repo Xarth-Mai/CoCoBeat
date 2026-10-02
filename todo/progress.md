@@ -38,7 +38,7 @@
 | 26 | 设置草稿、应用/取消、持久化与显示预览 · 02a | root | IN PROGRESS | 08/09 的菜单与输入门控 | 软件实现已完成，67 项 workspace 测试、Clippy、构建和 GPU 设置截图通过；覆盖原子保存、失败保留、15 秒预览回退、分辨率列表及键盘/手柄释放屏障；真实设备完整操作仍待验收 |
 | 27 | 首批 13 个语言变体的界面 · 02a | 国际化 agents，root 集成 | IN PROGRESS | 26 的设置流程 | 软件实现已完成，13 × 91 条文案、系统识别、地区变体、原子保存和即时切换已接入；75 项 workspace 测试、Clippy、构建及 29 张 GPU 图检查通过，Noto Sans 与旗帜已在 b02dc42 提交；CJK 词边界诊断保留并记录上游修复路径；Windows/Linux 实际输入导航与母语使用者验收仍为 NOT RUN |
 | 28 | 画质预设、独立效果与帧率/VSync · 02a | quality_settings / quality_render / quality_pacing，root 集成 | IN PROGRESS | 26 的设置流程 | 已实现低中高/自定义、五项效果、最高刷新率档位、独立 VSync 与生产 CPU 门控；81 项 workspace 测试、Clippy 与构建通过，覆盖联合事务、跨屏归一化和有效历史窗内的 Session/Replay 消费批次一致性；46 张 GPU 离屏图已逐张检查通过，实际呈现帧率/VSync 与平台设备验收仍为 NOT RUN |
-| 29 | 窗口、无边框全屏与渲染尺寸 · 02a | display_settings + root | IN PROGRESS | 26 的设置与显示预览流程 | 已接请求/回读、原生 UI、游戏与设置菜单共用结构化滚动、Windows 工作区与 X11 保守交集、环境变化时一次容纳；91 项测试、Clippy、Linux 构建及 Linux 上的 Windows 目标编译检查通过；极小 Ready 菜单越界已修复，28 张菜单与设置 GPU 图逐张检查通过，真实 WM/DPI/跨屏和 Windows 运行仍为 NOT RUN |
+| 29 | 窗口、无边框全屏与渲染尺寸 · 02a | display_settings + root | IN PROGRESS | 26 的设置与显示预览流程 | 已接请求/回读、原生 UI、游戏与设置菜单共用结构化滚动、Windows 工作区与 X11 保守交集、环境变化时一次容纳；92 项测试、Clippy、Linux 构建及 Linux 上的 Windows 目标编译检查通过；已修复未编辑显示草稿与外部窗口变化的同步，极小 Ready 菜单越界已修复，28 张菜单与设置 GPU 图逐张检查通过，真实 WM/DPI/跨屏和 Windows 运行仍为 NOT RUN |
 
 当前软件范围 02–10 已汇合并验证，确定性规则与 Replay 已提交为 `378f95b`；完整阶段 01/02 的退出仍等待 11/12；root 按里程碑提交主线程实现，保留品牌线程后续改动，代码修订需补充对应验证
 
