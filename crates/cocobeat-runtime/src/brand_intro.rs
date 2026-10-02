@@ -21,7 +21,14 @@ use bevy::{
 const PIPELINE_LABEL: &str = "cocobeat_brand_intro";
 const CANVAS: Vec2 = Vec2::new(840.0, 180.0);
 const IMPACT_TIMES: [f64; 3] = [0.90, 2.10, 3.35];
-const END: f64 = 4.45;
+// Contact points on the two C crowns and B, in the shared mask canvas
+const IMPACT_POINTS: [Vec2; 3] = [
+    Vec2::new(90.0, 10.0),
+    Vec2::new(318.0, 11.0),
+    Vec2::new(475.0, 16.0),
+];
+const DOCK_START: f64 = 5.0;
+const END: f64 = DOCK_START + 0.45;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum BrandIntroPhase {
@@ -95,6 +102,8 @@ struct BrandAssets {
 struct BrandUniform {
     paint: Vec4,
     effect: Vec4,
+    eyes: Vec4,
+    origins: Vec4,
 }
 
 #[derive(Asset, TypePath, AsBindGroup, Clone, Debug)]
@@ -240,6 +249,8 @@ fn setup(
                     values: BrandUniform {
                         paint: Vec4::ZERO,
                         effect: Vec4::ZERO,
+                        eyes: Vec4::ZERO,
+                        origins: Vec4::ZERO,
                     },
                     co1: textures[0].clone(),
                     co2: textures[1].clone(),
@@ -354,14 +365,14 @@ fn advance(
         impacts.write(impact);
     }
     status.elapsed_seconds = next;
-    status.reveal_progress = smooth((next - 4.0) as f32 / 0.45);
+    status.reveal_progress = smooth((next - DOCK_START) as f32 / 0.45);
     status.phase = phase_at(next);
 }
 
 fn phase_at(t: f64) -> BrandIntroPhase {
     if t >= END {
         BrandIntroPhase::Complete
-    } else if t >= 4.0 {
+    } else if t >= DOCK_START {
         BrandIntroPhase::Docking
     } else {
         BrandIntroPhase::Playing
@@ -389,7 +400,18 @@ fn paint_at(t: f32) -> Vec4 {
         progress(t, 0.90, 1.42),
         progress(t, 2.10, 2.70),
         progress(t, 3.35, 3.80),
-        progress(t, 2.35, 2.65),
+        0.0,
+    )
+}
+
+fn eyes_at(t: f32) -> Vec4 {
+    let inward = progress(t, 2.40, 2.66);
+    let settle = 1.0 - progress(t, 3.02, 3.55);
+    Vec4::new(
+        progress(t, 0.90, 1.12),
+        progress(t, 2.10, 2.32),
+        (-4.0 + 8.0 * inward) * settle,
+        (4.0 - 6.0 * inward) * settle,
     )
 }
 
@@ -402,13 +424,11 @@ struct BlobPose {
 }
 
 fn blob_at(t: f32) -> BlobPose {
-    let co1 = Vec2::new(154.0, 40.0);
-    let co2 = Vec2::new(370.0, 40.0);
-    let beat = Vec2::new(475.0, 16.0);
-    let (center, stretch) = if t < 0.90 {
+    let [co1, co2, beat] = IMPACT_POINTS;
+    let (contact, stretch) = if t < 0.90 {
         let u = ((t - 0.40) / 0.50).clamp(0.0, 1.0);
         (
-            Vec2::new(co1.x, -210.0 + 250.0 * u * u),
+            Vec2::new(co1.x, -210.0 + (co1.y + 210.0) * u * u),
             Vec2::new(0.76, 1.35),
         )
     } else if t < 2.10 {
@@ -422,7 +442,7 @@ fn blob_at(t: f32) -> BlobPose {
         let u = ((t - 2.10) / 1.25).clamp(0.0, 1.0);
         let bounce = (std::f32::consts::PI * u).sin();
         (
-            co2.lerp(beat, smooth(u)) - Vec2::Y * bounce * 225.0,
+            co2.lerp(beat, smooth(u)) - Vec2::Y * bounce * 200.0,
             Vec2::new(1.0 - bounce * 0.13, 1.0 + bounce * 0.25),
         )
     };
@@ -438,13 +458,15 @@ fn blob_at(t: f32) -> BlobPose {
         })
         .fold(0.0, f32::max);
     let merge = 1.0 - progress(t, 3.35, 3.55);
+    let size = Vec2::splat(48.0)
+        * stretch
+        * Vec2::new(1.0 + squash * 0.5, 1.0 - squash * 0.48)
+        * merge.max(0.01);
     BlobPose {
-        center,
-        size: Vec2::splat(48.0)
-            * stretch
-            * Vec2::new(1.0 + squash * 0.5, 1.0 - squash * 0.48)
-            * merge.max(0.01),
-        palette: progress(t, 0.65, 0.90) + progress(t, 1.55, 1.90) + progress(t, 2.80, 3.15),
+        // The SDF silhouette radius is 0.88 of the quad half-size
+        center: contact - Vec2::Y * size.y * 0.44,
+        size,
+        palette: progress(t, 0.50, 0.75) + progress(t, 1.15, 1.55) + progress(t, 2.35, 2.75),
         opacity: if t < 0.40 { 0.0 } else { merge },
     }
 }
@@ -490,6 +512,12 @@ fn present(
         color.0 = Color::srgba(0.0, 0.0, 0.0, 1.0 - amount);
     }
     let blob = blob_at(t);
+    let origins = Vec4::new(
+        IMPACT_POINTS[0].x / CANVAS.x,
+        IMPACT_POINTS[0].y / CANVAS.y,
+        IMPACT_POINTS[1].x / CANVAS.x,
+        IMPACT_POINTS[1].y / CANVAS.y,
+    );
     for (part, mut node, handle) in &mut parts {
         let (center, size, values) = match *part {
             Part::Wordmark => (
@@ -498,6 +526,8 @@ fn present(
                 BrandUniform {
                     paint: paint_at(t),
                     effect: Vec4::new(0.0, 0.0, f32::from(visible), 0.0),
+                    eyes: eyes_at(t),
+                    origins,
                 },
             ),
             Part::Blob => (
@@ -506,17 +536,15 @@ fn present(
                 BrandUniform {
                     paint: Vec4::ZERO,
                     effect: Vec4::new(1.0, blob.palette, blob.opacity * f32::from(visible), 0.0),
+                    eyes: Vec4::ZERO,
+                    origins: Vec4::ZERO,
                 },
             ),
             Part::Splash(index) => {
                 let impact = index / 4;
                 let age = t - IMPACT_TIMES[impact] as f32;
                 let u = (age / 0.38).clamp(0.0, 1.0);
-                let origin = [
-                    Vec2::new(154.0, 40.0),
-                    Vec2::new(370.0, 40.0),
-                    Vec2::new(475.0, 16.0),
-                ][impact];
+                let origin = IMPACT_POINTS[impact];
                 let direction = [
                     Vec2::new(-1.0, -1.4),
                     Vec2::new(-0.35, -2.0),
@@ -540,6 +568,8 @@ fn present(
                             opacity * f32::from(visible),
                             0.0,
                         ),
+                        eyes: Vec4::ZERO,
+                        origins: Vec4::ZERO,
                     },
                 )
             }
@@ -648,30 +678,71 @@ mod tests {
     #[test]
     fn final_paint_and_phases_are_exact() {
         assert_eq!(paint_at(0.0), Vec4::ZERO);
-        assert_eq!(paint_at(3.8), Vec4::ONE);
-        for t in [4.0, 4.45, 60.0] {
+        assert_eq!(paint_at(3.8), Vec4::new(1.0, 1.0, 1.0, 0.0));
+        for t in [4.0, 5.0, 5.45, 60.0] {
             assert_eq!(paint_at(t), paint_at(3.8));
         }
         assert_eq!(phase_at(3.8), BrandIntroPhase::Playing);
-        assert_eq!(phase_at(4.0), BrandIntroPhase::Docking);
-        assert_eq!(phase_at(4.45), BrandIntroPhase::Complete);
+        assert_eq!(phase_at(4.0), BrandIntroPhase::Playing);
+        assert_eq!(phase_at(4.99), BrandIntroPhase::Playing);
+        assert_eq!(phase_at(5.0), BrandIntroPhase::Docking);
+        assert_eq!(phase_at(5.45), BrandIntroPhase::Complete);
         assert_eq!(smooth(1.0), 1.0);
         assert_eq!(blob_at(3.8).opacity, 0.0);
+        assert_eq!(eyes_at(3.8), Vec4::new(1.0, 1.0, 0.0, 0.0));
+        for t in [4.0, 5.0, 5.45, 60.0] {
+            assert_eq!(eyes_at(t), eyes_at(3.8));
+        }
     }
 
     #[test]
     fn blob_lands_on_each_letter_and_docking_preserves_aspect() {
         for (t, expected) in [
-            (0.90, Vec2::new(154.0, 40.0)),
-            (2.10, Vec2::new(370.0, 40.0)),
+            (0.90, Vec2::new(90.0, 10.0)),
+            (2.10, Vec2::new(318.0, 11.0)),
             (3.35, Vec2::new(475.0, 16.0)),
         ] {
-            assert!(blob_at(t).center.distance(expected) < 0.001);
+            let blob = blob_at(t);
+            let bottom = blob.center + Vec2::Y * blob.size.y * 0.44;
+            assert!(bottom.distance(expected) < 0.001);
         }
         let target = fitted(Rect::from_corners(
             Vec2::new(36.0, 24.0),
             Vec2::new(400.0, 80.0),
         ));
         assert!((target.width() / target.height() - CANVAS.x / CANVAS.y).abs() < 0.001);
+    }
+
+    #[test]
+    fn eyes_wake_after_their_own_impact_then_exchange_a_glance() {
+        assert_eq!(eyes_at(0.90).xy(), Vec2::ZERO);
+        assert_eq!(eyes_at(1.12).xy(), Vec2::new(1.0, 0.0));
+        assert_eq!(eyes_at(2.10).xy(), Vec2::new(1.0, 0.0));
+        assert_eq!(eyes_at(2.32).xy(), Vec2::ONE);
+        assert_eq!(eyes_at(2.32).zw(), Vec2::new(-4.0, 4.0));
+        assert_eq!(eyes_at(2.66).zw(), Vec2::new(4.0, -2.0));
+        assert_eq!(eyes_at(3.02), eyes_at(2.66));
+        assert_eq!(eyes_at(3.55).zw(), Vec2::ZERO);
+    }
+
+    #[test]
+    fn blob_colors_are_readable_before_each_landing() {
+        assert!(blob_at(0.60).palette > 0.0);
+        assert_eq!(blob_at(0.75).palette, 1.0);
+        assert!(blob_at(1.30).palette > 1.0);
+        assert_eq!(blob_at(1.55).palette, 2.0);
+        assert!(blob_at(2.50).palette > 2.0);
+        assert_eq!(blob_at(2.75).palette, 3.0);
+    }
+
+    #[test]
+    fn both_bounces_stay_inside_the_720p_viewport() {
+        let scale = 1280.0 * 0.66 / 840.0;
+        let logo_top = 720.0 * 0.49 - 180.0 * scale * 0.5;
+        for frame in 30..=100 {
+            let pose = blob_at(frame as f32 / 30.0);
+            let visible_top = logo_top + (pose.center.y - pose.size.y * 0.44) * scale;
+            assert!(visible_top > 0.0, "Clipped bounce at frame {frame}");
+        }
     }
 }

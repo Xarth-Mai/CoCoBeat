@@ -4,6 +4,9 @@ struct BrandUniform {
     paint: vec4<f32>,
     // mode (0 wordmark, 1 blob), palette (0 white to 3 mixed), opacity, unused
     effect: vec4<f32>,
+    // Independent openness followed by horizontal offsets in source-canvas pixels
+    eyes: vec4<f32>,
+    origins: vec4<f32>,
 }
 
 @group(1) @binding(0) var<uniform> brand: BrandUniform;
@@ -70,12 +73,14 @@ fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
     let a = coverage(co1, co1_sampler, uv);
     let b = coverage(co2, co2_sampler, uv);
     let c = coverage(beat, beat_sampler, uv);
-    let eye_scale = max(brand.paint.w, 0.001);
-    let eye_uv = vec2(uv.x, (uv.y - 0.59) / eye_scale + 0.59);
-    let eyes = max(coverage(eyes_blue, eyes_blue_sampler, eye_uv),
-                   coverage(eyes_pink, eyes_pink_sampler, eye_uv)) * brand.paint.w;
-    let p1 = spread(uv, vec2(0.18, 0.30), brand.paint.x, 1.2);
-    let p2 = spread(uv, vec2(0.44, 0.30), brand.paint.y, 1.2);
+    let blue_eye_uv = vec2(uv.x - brand.eyes.z / 840.0,
+        (uv.y - 0.59) / max(brand.eyes.x, 0.001) + 0.59);
+    let pink_eye_uv = vec2(uv.x - brand.eyes.w / 840.0,
+        (uv.y - 0.59) / max(brand.eyes.y, 0.001) + 0.59);
+    let eyes = max(coverage(eyes_blue, eyes_blue_sampler, blue_eye_uv) * brand.eyes.x,
+                   coverage(eyes_pink, eyes_pink_sampler, pink_eye_uv) * brand.eyes.y);
+    let p1 = spread(uv, brand.origins.xy, brand.paint.x, 1.2);
+    let p2 = spread(uv, brand.origins.zw, brand.paint.y, 1.2);
     let p3 = spread(uv, vec2(0.57, 0.16), brand.paint.z, 2.4);
     let highlights = ellipse(uv, vec2(0.050, 0.175), vec2(0.024, 0.061))
         + ellipse(uv, vec2(0.161, 0.387), vec2(0.019, 0.044))

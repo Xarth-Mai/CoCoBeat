@@ -40,7 +40,8 @@ fn main() -> AppExit {
     let mut capture = Capture {
         directory: PathBuf::from("target/brand-validation"),
         times: vec![
-            0.0, 0.65, 0.90, 1.50, 2.10, 2.35, 2.80, 3.35, 3.80, 4.0, 4.225, 4.45,
+            0.0, 0.60, 0.90, 1.12, 1.50, 2.10, 2.32, 2.66, 3.02, 3.35, 3.55, 3.80, 4.50, 5.0,
+            5.225, 5.45,
         ],
         size: UVec2::new(1280, 800),
         scale: 1.0,
@@ -72,8 +73,8 @@ fn main() -> AppExit {
                     .expect("invalid scale")
             }
             "--sequence" => {
-                capture.times = (0..=134)
-                    .map(|frame| (f64::from(frame) / 30.0).min(4.45))
+                capture.times = (0..=164)
+                    .map(|frame| (f64::from(frame) / 30.0).min(5.45))
                     .collect()
             }
             _ => panic!(
@@ -184,16 +185,16 @@ fn select_frame(
     control.suspended = true;
     let time = capture.times[capture.index];
     status.elapsed_seconds = time;
-    status.phase = if time >= 4.45 {
+    status.phase = if time >= 5.45 {
         BrandIntroPhase::Complete
-    } else if time >= 4.0 {
+    } else if time >= 5.0 {
         BrandIntroPhase::Docking
     } else {
         BrandIntroPhase::Playing
     };
-    let progress = ((time - 4.0) / 0.45).clamp(0.0, 1.0) as f32;
+    let progress = ((time - 5.0) / 0.45).clamp(0.0, 1.0) as f32;
     status.reveal_progress = progress * progress * (3.0 - 2.0 * progress);
-    assert_eq!(status.is_complete(), time >= 4.45);
+    assert_eq!(status.is_complete(), time >= 5.45);
     capture.settled_frames += 1;
 }
 
