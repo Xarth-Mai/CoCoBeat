@@ -8,7 +8,6 @@
   "menu.main": "메인 메뉴",
   "menu.settings": "설정",
   "menu.quit": "종료",
-  "menu.selection": "메뉴 {selected}/{total} > {item}",
   "menu.controls": "위/아래 방향키 / 십자키: 선택    Enter / South(아래쪽): 확인    Esc / East(오른쪽): 뒤로",
   "input.ready": "키보드가 준비되었습니다. 각 플레이어의 컨트롤러는 메뉴에서 등록하세요",
   "input.binding": "{player}: {key} / 컨트롤러 {button}",

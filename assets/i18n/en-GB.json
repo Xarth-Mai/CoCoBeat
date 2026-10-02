@@ -8,7 +8,6 @@
   "menu.main": "Main menu",
   "menu.settings": "Settings",
   "menu.quit": "Quit",
-  "menu.selection": "MENU {selected}/{total} > {item}",
   "menu.controls": "Up/Down / D-pad: select    Enter / South (bottom): confirm    Esc / East (right): back",
   "input.ready": "Keyboard ready; use the menu to join each controller",
   "input.binding": "{player}: {key} / controller {button}",

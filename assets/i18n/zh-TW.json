@@ -8,7 +8,6 @@
   "menu.main": "主選單",
   "menu.settings": "設定",
   "menu.quit": "離開",
-  "menu.selection": "選單 {selected}/{total} > {item}",
   "menu.controls": "上/下方向鍵 / 十字鍵：選擇    Enter / South（下方）：確認    Esc / East（右側）：返回",
   "input.ready": "鍵盤已就緒；請在選單中為各位玩家加入手把",
   "input.binding": "{player}：{key} / 手把 {button}",

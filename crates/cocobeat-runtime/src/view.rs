@@ -10,9 +10,8 @@ use crate::{
     brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems},
     display::GameCamera,
     i18n::{Locale, Message},
-    input::SettingsAction,
+    input::{MenuPresentation, MenuScroll},
     settings::{AntiAliasing, QualitySettings, RainAmount},
-    settings_menu::SettingsPresentation,
     ui_assets::UiAssets,
 };
 
@@ -25,7 +24,7 @@ pub(crate) struct VisualState {
     pub status: String,
     pub running: bool,
     pub locale: Locale,
-    pub settings: Option<SettingsPresentation>,
+    pub menu: Option<MenuPresentation>,
     pub quality: QualitySettings,
 }
 
@@ -64,10 +63,10 @@ enum HudNode {
 }
 
 #[derive(Component)]
-struct SettingsRows;
+struct MenuRows;
 
 #[derive(Component)]
-pub(crate) struct SettingsRowNode(pub usize);
+pub(crate) struct MenuRowNode(pub usize);
 
 #[derive(Component)]
 struct PlayerLabel;
@@ -75,35 +74,9 @@ struct PlayerLabel;
 #[derive(Component)]
 struct LanguageFlag(usize);
 
-#[derive(Resource, Default)]
-pub(crate) struct SettingsScroll {
-    can_up: bool,
-    can_down: bool,
-    request: i8,
-    recenter: bool,
-}
-
-impl SettingsScroll {
-    pub fn handle(&mut self, action: SettingsAction) -> bool {
-        self.request = match action {
-            SettingsAction::Up if self.can_up => -1,
-            SettingsAction::Down if self.can_down => 1,
-            _ => return false,
-        };
-        true
-    }
-
-    pub fn reset(&mut self) {
-        *self = Self {
-            recenter: true,
-            ..default()
-        };
-    }
-}
-
 pub fn install(app: &mut App) {
     app.init_resource::<VisualState>()
-        .init_resource::<SettingsScroll>()
+        .init_resource::<MenuScroll>()
         .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
         .add_systems(Startup, (setup, setup_hud))
         .add_systems(
@@ -114,12 +87,12 @@ pub fn install(app: &mut App) {
             PostUpdate,
             (
                 (apply_quality, animate).chain(),
-                (ensure_settings_rows, update_hud, layout_hud).chain(),
+                (ensure_menu_rows, update_hud, layout_hud).chain(),
             )
                 .before(TransformSystems::Propagate)
                 .before(UiSystems::Prepare),
         )
-        .add_systems(PostUpdate, scroll_settings.after(UiSystems::Layout));
+        .add_systems(PostUpdate, scroll_menu.after(UiSystems::Layout));
 }
 
 fn part(
@@ -500,7 +473,7 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
                     flex_shrink: 0.0,
                     ..default()
                 },
-                SettingsRows,
+                MenuRows,
                 HudNode::Rows,
             ));
         });
@@ -526,21 +499,21 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
         ));
 }
 
-fn ensure_settings_rows(
+fn ensure_menu_rows(
     mut commands: Commands,
     state: Res<VisualState>,
     assets: Res<UiAssets>,
-    parent: Query<Entity, With<SettingsRows>>,
-    existing: Query<&SettingsRowNode>,
+    parent: Query<Entity, With<MenuRows>>,
+    existing: Query<&MenuRowNode>,
 ) {
-    let Some(settings) = &state.settings else {
+    let Some(menu) = &state.menu else {
         return;
     };
     let Ok(parent) = parent.single() else {
         return;
     };
     let count = existing.iter().count();
-    for index in count..settings.rows.len() {
+    for index in count..menu.rows.len() {
         commands.entity(parent).with_children(|parent| {
             parent
                 .spawn((
@@ -551,7 +524,7 @@ fn ensure_settings_rows(
                         min_width: px(0),
                         ..default()
                     },
-                    SettingsRowNode(index),
+                    MenuRowNode(index),
                     HudNode::Row(index),
                 ))
                 .with_children(|row| {
@@ -615,15 +588,15 @@ fn layout_hud(
         node.right = px(margin);
         node.bottom = px(margin);
         node.padding = UiRect::all(px((viewport.x * 0.04).clamp(6.0, 16.0)));
-        node.min_height = px(if state.settings.is_some() { 0.0 } else { 104.0 });
-        node.max_height = if state.settings.is_some() {
+        node.min_height = px(if state.menu.is_some() { 0.0 } else { 104.0 });
+        node.max_height = if state.menu.is_some() {
             let (origin, width) = dock_geometry(viewport);
             let top = origin.y + width * 180.0 / 840.0 + if compact { 8.0 } else { 28.0 };
             px((viewport.y - margin - top).max(1.0))
         } else {
             Val::Auto
         };
-        node.overflow = if state.settings.is_some() {
+        node.overflow = if state.menu.is_some() {
             Overflow::scroll_y()
         } else {
             Overflow::DEFAULT
@@ -634,7 +607,7 @@ fn layout_hud(
     }
     for (kind, mut node) in &mut auxiliary {
         if matches!(kind, UiText::Subtitle | UiText::Clock) {
-            let display = if state.settings.is_some() && compact {
+            let display = if state.menu.is_some() && compact {
                 Display::None
             } else {
                 Display::Flex
@@ -657,14 +630,14 @@ fn dock_geometry(viewport: Vec2) -> (Vec2, f32) {
 
 type SettingsLayout = (usize, usize, Vec2, f32, f32);
 
-fn scroll_settings(
+fn scroll_menu(
     state: Res<VisualState>,
-    mut control: ResMut<SettingsScroll>,
+    mut control: ResMut<MenuScroll>,
     mut previous: Local<Option<SettingsLayout>>,
     mut panels: Query<(&ComputedNode, &UiGlobalTransform, &mut ScrollPosition), With<StatusPanel>>,
-    rows: Query<(&SettingsRowNode, &ComputedNode, &UiGlobalTransform)>,
+    rows: Query<(&MenuRowNode, &ComputedNode, &UiGlobalTransform)>,
 ) {
-    let Some(settings) = &state.settings else {
+    let Some(menu) = &state.menu else {
         control.reset();
         *previous = None;
         for (_, _, mut scroll) in &mut panels {
@@ -672,7 +645,7 @@ fn scroll_settings(
         }
         return;
     };
-    let Some(index) = settings.rows.iter().position(|row| row.selected) else {
+    let Some(index) = menu.rows.iter().position(|row| row.selected) else {
         control.reset();
         return;
     };
@@ -687,7 +660,7 @@ fn scroll_settings(
         return;
     }
     let key = (
-        settings.rows.len(),
+        menu.rows.len(),
         index,
         panel.size,
         panel.inverse_scale_factor,
@@ -837,7 +810,7 @@ fn update_hud(
     // The brand backdrop reveals the scene and HUD; only startup errors render above it
     let failed = intro.is_some_and(|intro| intro.phase == BrandIntroPhase::Failed);
     for mut visible in &mut labels {
-        *visible = if state.settings.is_some() {
+        *visible = if state.menu.is_some() {
             Visibility::Hidden
         } else {
             Visibility::Inherited
@@ -848,16 +821,16 @@ fn update_hud(
     }
     let locale = state.locale;
     let rows = state
-        .settings
+        .menu
         .as_ref()
-        .map(|settings| settings.rows.as_slice())
+        .map(|menu| menu.rows.as_slice())
         .unwrap_or_default();
     for (kind, mut text, mut font) in &mut texts {
         let value = match *kind {
             UiText::Status => state
-                .settings
+                .menu
                 .as_ref()
-                .map(|settings| settings.title.clone())
+                .map(|menu| menu.title.clone())
                 .unwrap_or_else(|| state.status.clone()),
             UiText::Subtitle => locale.text("hud.subtitle").into(),
             UiText::Clock => Message::with(
@@ -959,7 +932,7 @@ fn update_hud(
                 node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
                 continue;
             }
-            HudNode::Rows => state.settings.is_some(),
+            HudNode::Rows => state.menu.is_some(),
             HudNode::Row(index) => rows.get(index).is_some(),
             HudNode::Flag(index) => rows.get(index).is_some_and(|row| row.language.is_some()),
         };
@@ -1089,14 +1062,14 @@ mod tests {
             .init_resource::<Assets<Font>>()
             .init_resource::<Assets<Image>>()
             .add_systems(Startup, setup_hud)
-            .add_systems(PostUpdate, (ensure_settings_rows, update_hud).chain());
+            .add_systems(PostUpdate, (ensure_menu_rows, update_hud).chain());
         crate::ui_assets::install(&mut app).unwrap();
         app
     }
 
     #[test]
     fn measured_rows_scroll_into_small_and_scaled_viewports() {
-        use crate::settings_menu::SettingsRow;
+        use crate::input::{MenuRow, SettingsAction};
         use bevy::{
             app::{HierarchyPropagatePlugin, PropagateSet},
             camera::{ComputedCameraValues, RenderTargetInfo},
@@ -1117,11 +1090,11 @@ mod tests {
             .init_resource::<UiScale>()
             .init_resource::<UiSurface>()
             .init_resource::<FontCx>()
-            .init_resource::<SettingsScroll>()
+            .init_resource::<MenuScroll>()
             .insert_resource(VisualState {
-                settings: Some(SettingsPresentation {
+                menu: Some(MenuPresentation {
                     title: "Settings".into(),
-                    rows: (0..5).map(|_| SettingsRow::default()).collect(),
+                    rows: (0..5).map(|_| MenuRow::default()).collect(),
                 }),
                 ..default()
             })
@@ -1131,7 +1104,7 @@ mod tests {
                     layout_hud,
                     propagate_ui_target_cameras,
                     ui_layout_system,
-                    scroll_settings,
+                    scroll_menu,
                 )
                     .chain(),
             )
@@ -1185,7 +1158,7 @@ mod tests {
                                 flex_shrink: 0.0,
                                 ..default()
                             },
-                            SettingsRowNode(index),
+                            MenuRowNode(index),
                             ChildOf(panel),
                         ))
                         .id()
@@ -1207,7 +1180,7 @@ mod tests {
                 for (i, row) in app
                     .world_mut()
                     .resource_mut::<VisualState>()
-                    .settings
+                    .menu
                     .as_mut()
                     .unwrap()
                     .rows
@@ -1241,21 +1214,17 @@ mod tests {
                 } else {
                     assert!(
                         !app.world_mut()
-                            .resource_mut::<SettingsScroll>()
+                            .resource_mut::<MenuScroll>()
                             .handle(SettingsAction::Confirm)
                     );
                     assert!(
                         !app.world_mut()
-                            .resource_mut::<SettingsScroll>()
+                            .resource_mut::<MenuScroll>()
                             .handle(SettingsAction::Back)
                     );
                     for action in [SettingsAction::Down, SettingsAction::Up] {
                         let mut pages = 0;
-                        while app
-                            .world_mut()
-                            .resource_mut::<SettingsScroll>()
-                            .handle(action)
-                        {
+                        while app.world_mut().resource_mut::<MenuScroll>().handle(action) {
                             pages += 1;
                             assert!(pages < 20);
                             app.update();
@@ -1283,7 +1252,36 @@ mod tests {
             }
             let (top, _, row_top, _) = bounds(app.world(), rows[1]);
             assert!(row_top >= top - 1.0);
-            app.world_mut().resource_mut::<VisualState>().settings = None;
+            // New pages can reuse the same row index, count and dimensions
+            for title in ["Ready", "Settings", "Binding"] {
+                app.world_mut()
+                    .resource_mut::<VisualState>()
+                    .menu
+                    .as_mut()
+                    .unwrap()
+                    .title = title.into();
+                app.world_mut().resource_mut::<MenuScroll>().reset();
+                assert!(
+                    !app.world_mut()
+                        .resource_mut::<MenuScroll>()
+                        .handle(SettingsAction::Down)
+                );
+                for _ in 0..3 {
+                    app.update();
+                }
+                let (top, _, row_top, _) = bounds(app.world(), rows[1]);
+                assert!(row_top >= top - 1.0);
+                assert!(
+                    app.world_mut()
+                        .resource_mut::<MenuScroll>()
+                        .handle(SettingsAction::Down)
+                );
+                app.update();
+                app.update();
+                let (top, _, row_top, _) = bounds(app.world(), rows[1]);
+                assert!(row_top < top - 1.0);
+            }
+            app.world_mut().resource_mut::<VisualState>().menu = None;
             app.update();
             assert_eq!(
                 app.world().get::<ScrollPosition>(panel).unwrap().0,
@@ -1291,7 +1289,7 @@ mod tests {
             );
             assert!(
                 !app.world_mut()
-                    .resource_mut::<SettingsScroll>()
+                    .resource_mut::<MenuScroll>()
                     .handle(SettingsAction::Down)
             );
         }
@@ -1327,17 +1325,17 @@ mod tests {
 
     #[test]
     fn locale_switches_update_hud_fonts_and_native_language_rows() {
-        use crate::settings_menu::SettingsRow;
+        use crate::input::MenuRow;
         let mut app = hud_app();
         for locale in Locale::ALL {
             {
                 let mut state = app.world_mut().resource_mut::<VisualState>();
                 state.locale = locale;
-                state.settings = Some(SettingsPresentation {
+                state.menu = Some(MenuPresentation {
                     title: locale.text("settings.language_title").into(),
                     rows: Locale::ALL
                         .into_iter()
-                        .map(|language| SettingsRow {
+                        .map(|language| MenuRow {
                             text: "{language}".into(),
                             language: Some(language),
                             selected: language == locale,
@@ -1385,9 +1383,9 @@ mod tests {
         {
             let mut state = app.world_mut().resource_mut::<VisualState>();
             state.locale = Locale::EnUs;
-            state.settings = Some(SettingsPresentation {
+            state.menu = Some(MenuPresentation {
                 title: "Settings".into(),
-                rows: vec![SettingsRow {
+                rows: vec![MenuRow {
                     text: Locale::EnUs.text("settings.language").into(),
                     language: Some(Locale::Ko),
                     selected: true,
@@ -1411,7 +1409,7 @@ mod tests {
                 == FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::Ko))));
         {
             let mut state = app.world_mut().resource_mut::<VisualState>();
-            state.settings = None;
+            state.menu = None;
         }
         app.update();
         let mut nodes = app.world_mut().query::<(&HudNode, &Node)>();

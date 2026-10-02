@@ -8,7 +8,6 @@
   "menu.main": "Menu principal",
   "menu.settings": "Paramètres",
   "menu.quit": "Quitter",
-  "menu.selection": "MENU {selected}/{total} > {item}",
   "menu.controls": "Haut/Bas / croix directionnelle : sélectionner    Enter / South (bas) : confirmer    Esc / East (droite) : retour",
   "input.ready": "Clavier prêt ; attribuez chaque manette depuis le menu",
   "input.binding": "{player} : {key} / manette {button}",

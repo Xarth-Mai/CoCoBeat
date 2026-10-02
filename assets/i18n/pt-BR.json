@@ -8,7 +8,6 @@
   "menu.main": "Menu principal",
   "menu.settings": "Configurações",
   "menu.quit": "Sair",
-  "menu.selection": "MENU {selected}/{total} > {item}",
   "menu.controls": "Cima/Baixo / direcional: selecionar    Enter / South (inferior): confirmar    Esc / East (direita): voltar",
   "input.ready": "Teclado pronto; atribua cada controle pelo menu",
   "input.binding": "{player}: {key} / controle {button}",

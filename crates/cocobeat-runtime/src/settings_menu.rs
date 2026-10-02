@@ -1,7 +1,7 @@
 use crate::{
     display::DisplayState,
     i18n::{Locale, Message},
-    input::SettingsAction,
+    input::{MenuPresentation, MenuRow, SettingsAction},
     settings::{self, AntiAliasing, FrameLimit, QualityPreset, RainAmount, Settings},
 };
 use bevy::prelude::Resource;
@@ -13,19 +13,6 @@ const PREVIEW_SECONDS: f64 = 15.0;
 enum Page {
     Quality,
     Pacing,
-}
-
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub(crate) struct SettingsPresentation {
-    pub title: String,
-    pub rows: Vec<SettingsRow>,
-}
-
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub(crate) struct SettingsRow {
-    pub text: String,
-    pub language: Option<Locale>,
-    pub selected: bool,
 }
 
 struct Preview {
@@ -403,7 +390,7 @@ impl SettingsMenu {
         now: f64,
         display: &DisplayState,
         locale: Locale,
-    ) -> Option<SettingsPresentation> {
+    ) -> Option<MenuPresentation> {
         let draft = self.draft.as_ref()?;
         let notices = [self.notice.render(locale), display.notice.render(locale)]
             .into_iter()
@@ -417,23 +404,23 @@ impl SettingsMenu {
                 .collect::<Vec<_>>()
                 .join("\n")
         };
-        let presentation = |title, mut rows: Vec<SettingsRow>, footer: String, selected: usize| {
-            rows.extend(footer.lines().map(|text| SettingsRow {
+        let presentation = |title, mut rows: Vec<MenuRow>, footer: String, selected: usize| {
+            rows.extend(footer.lines().map(|text| MenuRow {
                 text: text.into(),
-                ..SettingsRow::default()
+                ..MenuRow::default()
             }));
             let selected = selected.min(rows.len().saturating_sub(1));
             for (index, row) in rows.iter_mut().enumerate() {
                 row.selected = index == selected;
             }
-            Some(SettingsPresentation { title, rows })
+            Some(MenuPresentation { title, rows })
         };
         if let Some(selected) = self.language_selection {
             return presentation(
                 locale.text("settings.language_title").into(),
                 Locale::ALL
                     .into_iter()
-                    .map(|language| SettingsRow {
+                    .map(|language| MenuRow {
                         text: "{language}".into(),
                         language: Some(language),
                         selected: false,
@@ -624,7 +611,7 @@ impl SettingsMenu {
             locale.text("settings.pacing").into(),
         ];
         let mut rows = text_rows(rows);
-        rows.push(SettingsRow {
+        rows.push(MenuRow {
             text: locale.text("settings.language").into(),
             language: Some(draft.locale),
             selected: false,
@@ -650,11 +637,11 @@ fn cycle<T: Copy + PartialEq>(current: T, options: &[T], previous: bool) -> T {
     options[next]
 }
 
-fn text_rows(rows: impl IntoIterator<Item = String>) -> Vec<SettingsRow> {
+fn text_rows(rows: impl IntoIterator<Item = String>) -> Vec<MenuRow> {
     rows.into_iter()
-        .map(|text| SettingsRow {
+        .map(|text| MenuRow {
             text,
-            ..SettingsRow::default()
+            ..MenuRow::default()
         })
         .collect()
 }
@@ -693,7 +680,7 @@ mod tests {
     use super::*;
     use crate::settings::DisplaySettings;
 
-    fn selected_row(menu: &SettingsMenu, display: &DisplayState) -> SettingsRow {
+    fn selected_row(menu: &SettingsMenu, display: &DisplayState) -> MenuRow {
         let presentation = menu.presentation(0.0, display, menu.values.locale).unwrap();
         assert_eq!(
             presentation.rows.iter().filter(|row| row.selected).count(),
@@ -1094,7 +1081,7 @@ mod tests {
                 let index = (start + offset) % presentation.rows.len();
                 assert_eq!(
                     selected_row(&menu, &display),
-                    SettingsRow {
+                    MenuRow {
                         selected: true,
                         ..presentation.rows[index].clone()
                     }

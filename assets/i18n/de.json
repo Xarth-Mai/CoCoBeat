@@ -8,7 +8,6 @@
   "menu.main": "Hauptmenü",
   "menu.settings": "Einstellungen",
   "menu.quit": "Beenden",
-  "menu.selection": "MENÜ {selected}/{total} > {item}",
   "menu.controls": "Oben/Unten / Steuerkreuz: auswählen    Enter / South (unten): bestätigen    Esc / East (rechts): zurück",
   "input.ready": "Tastatur bereit; weise die Controller über das Menü zu",
   "input.binding": "{player}: {key} / Controller {button}",

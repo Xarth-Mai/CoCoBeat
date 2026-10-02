@@ -8,7 +8,6 @@
   "menu.main": "Головне меню",
   "menu.settings": "Налаштування",
   "menu.quit": "Вийти",
-  "menu.selection": "МЕНЮ {selected}/{total} > {item}",
   "menu.controls": "Угору/вниз / D-pad: вибір    Enter / South (унизу): підтвердити    Esc / East (праворуч): назад",
   "input.ready": "Клавіатура готова; долучіть кожен контролер через меню",
   "input.binding": "{player}: {key} / контролер {button}",

@@ -8,7 +8,6 @@
   "menu.main": "メインメニュー",
   "menu.settings": "設定",
   "menu.quit": "終了",
-  "menu.selection": "メニュー {selected}/{total} > {item}",
   "menu.controls": "上下キー / 十字キー：選択    Enter / South（下）：決定    Esc / East（右）：戻る",
   "input.ready": "キーボードの準備ができました。コントローラーはメニューから各プレイヤーに登録してください",
   "input.binding": "{player}：{key} / コントローラー {button}",

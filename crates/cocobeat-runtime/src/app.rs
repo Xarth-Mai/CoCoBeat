@@ -7,12 +7,12 @@ use crate::{
     dev_song,
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
-    input::{self, Control, InputState, SettingsAction},
+    input::{self, Control, InputState, MenuPresentation, MenuScroll, SettingsAction},
     session::{CONTENT_ID, RULES_ID, Session},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
     ui_assets,
-    view::{self, SettingsScroll, VisualState},
+    view::{self, VisualState},
 };
 use bevy::{
     app::{AppExit, ScheduleRunnerPlugin},
@@ -51,7 +51,7 @@ enum Smoke {
     Settings,
     Locale(Locale),
     Languages(Locale),
-    Menu(Locale),
+    Menu(Locale, Phase),
     Quality(QualitySettings),
     Graphics(Locale),
     Pacing(Locale),
@@ -211,7 +211,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready at physical pixels and DPI; ROW starts at 0\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/paused/finished/fault at physical pixels and DPI; ROW starts at 0\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -232,7 +232,7 @@ pub fn run() -> ExitCode {
                     match flag.as_str() {
                         "--locale-smoke" => Smoke::Locale(locale),
                         "--language-smoke" => Smoke::Languages(locale),
-                        _ => Smoke::Menu(locale),
+                        _ => Smoke::Menu(locale, Phase::Ready),
                     },
                 )
             } else {
@@ -287,13 +287,13 @@ pub fn run() -> ExitCode {
                     "graphics" => Smoke::Graphics(locale),
                     "pacing" => Smoke::Pacing(locale),
                     "languages" => Smoke::Languages(locale),
-                    "ready" => Smoke::Menu(locale),
+                    "ready" => Smoke::Menu(locale, Phase::Ready),
+                    "paused" => Smoke::Menu(locale, Phase::Paused),
+                    "finished" => Smoke::Menu(locale, Phase::Finished),
+                    "fault" => Smoke::Menu(locale, Phase::Fault),
                     _ => return Err(format!("Unsupported settings page: {page}")),
                 };
                 let viewport = SmokeViewport::parse(width, height, scale, selection)?;
-                if matches!(mode, Smoke::Menu(_)) && viewport.selection != Some(0) {
-                    return Err("Ready preview has no settings rows; use row 0".into());
-                }
                 visual_smoke_at(PathBuf::from(path), mode, viewport)
             })()
         }
@@ -468,11 +468,11 @@ fn update_game(
     mut input: ResMut<InputState>,
     mut audio: NonSendMut<AudioOutput>,
     mut visual: ResMut<VisualState>,
-    (time, mut settings, mut display, mut settings_scroll): (
+    (time, mut settings, mut display, mut menu_scroll): (
         Res<Time>,
         ResMut<SettingsMenu>,
         ResMut<DisplayState>,
-        ResMut<SettingsScroll>,
+        ResMut<MenuScroll>,
     ),
     (mut exit, mut close_requests): (MessageWriter<AppExit>, MessageReader<WindowCloseRequested>),
     (mut brand, mut impacts): (ResMut<BrandIntroStatus>, MessageReader<BrandImpact>),
@@ -491,7 +491,7 @@ fn update_game(
     let settings_now = input.origin.elapsed().as_secs_f64();
     settings.sync_pacing(&display);
     if settings.tick(settings_now, &mut display) {
-        settings_scroll.reset();
+        menu_scroll.reset();
     }
     visual.quality = settings.values.quality;
     visual.locale = settings.values.locale;
@@ -532,6 +532,7 @@ fn update_game(
             input.set_controls_enabled(true);
             input.set_menu_open(true);
             game.phase = Phase::Ready;
+            menu_scroll.reset();
             visual.status = visual.locale.text("game.ready").into();
         }
         // Completion only unlocks the next fresh press, never a queued startup control
@@ -561,6 +562,7 @@ fn update_game(
                 })?
         {
             input.set_menu_open(false);
+            menu_scroll.reset();
         }
         if matches!(game.phase, Phase::Starting | Phase::Pausing)
             && audio.state() != Some(PlaybackState::Stopped)
@@ -575,18 +577,18 @@ fn update_game(
         for event in std::mem::take(&mut input.queued) {
             if let Control::Settings(action) = event.control {
                 if action == SettingsAction::Open {
-                    settings_scroll.reset();
+                    menu_scroll.reset();
                     if input.menu_open && !matches!(game.phase, Phase::Running | Phase::Starting) {
                         settings.begin(&display);
                         input.set_settings_open(true);
                     } else {
                         input.set_settings_open(false);
                     }
-                } else if !settings_scroll.handle(action) {
+                } else if !menu_scroll.handle(action) {
                     if settings.handle(action, settings_now, &mut display) {
                         input.set_settings_open(false);
                     }
-                    settings_scroll.reset();
+                    menu_scroll.reset();
                 }
                 // A second device cannot confirm a new preview in this capture batch
                 break;
@@ -611,20 +613,24 @@ fn update_game(
                     audio.resume();
                     game.phase = Phase::Starting;
                     game.transition_started = std::time::Instant::now();
+                    menu_scroll.reset();
                 }
                 Control::Start
                     if matches!(game.phase, Phase::Ready | Phase::Finished | Phase::Fault) =>
                 {
                     game.start(&mut audio)?;
+                    menu_scroll.reset();
                 }
                 Control::Restart => {
                     game.start(&mut audio)?;
                     input.set_menu_open(true);
+                    menu_scroll.reset();
                 }
                 Control::MainMenu => {
                     game.main_menu()?;
                     audio.stop();
                     input.open_main_menu();
+                    menu_scroll.reset();
                     visual.hit_pulses = [0.0; 2];
                     visual.sync_pulse = 0.0;
                     // Return to Ready without consuming a second confirmation from this batch
@@ -641,6 +647,7 @@ fn update_game(
                     game.phase = Phase::Pausing;
                     game.transition_started = std::time::Instant::now();
                     input.set_menu_open(true);
+                    menu_scroll.reset();
                 }
                 Control::SaveReplay => game.save().inspect_err(|_| {
                     fault_message = "game.replay_failed";
@@ -660,6 +667,7 @@ fn update_game(
                 feedback(game.session.finish()?, &mut audio, &mut visual)?;
                 game.phase = Phase::Finished;
                 input.set_menu_open(true);
+                menu_scroll.reset();
                 game.save()?;
             } else if game.phase == Phase::Running {
                 feedback(game.session.advance()?, &mut audio, &mut visual)?;
@@ -671,6 +679,7 @@ fn update_game(
         let _ = game.session.clock.invalidate_calibration(observed);
         game.fault(&mut audio, error, fault_message);
         input.set_menu_open(true);
+        menu_scroll.reset();
     }
     visual.song_seconds = game.session.current.as_seconds_f64();
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
@@ -678,14 +687,15 @@ fn update_game(
     visual.quality = settings.values.quality;
     let locale = settings.values.locale;
     visual.locale = locale;
-    visual.settings = settings.presentation(settings_now, &display, locale);
-    if settings.is_open() {
-        return;
+    visual.menu = settings
+        .presentation(settings_now, &display, locale)
+        .or_else(|| game_menu(&game, &mut input, &settings));
+    if visual.menu.is_none() {
+        visual.status = game_status(&game, &input, &settings);
     }
-    visual.status = game_status(&game, &input, &settings);
 }
 
-fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> String {
+fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
     let locale = settings.values.locale;
     let song_seconds = game.session.current.as_seconds_f64();
     let next = dev_song::ANCHOR_FRAMES
@@ -702,8 +712,8 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
             .render(locale)
         })
         .unwrap_or_else(|| locale.text("hud.final_release").into());
-    format!(
-        "{} | {next}\n{}\n{}\n{}\n{}\n{}\n{}",
+    let title = format!(
+        "{} | {next}",
         locale.text(match game.phase {
             Phase::Ready => "phase.ready",
             Phase::Starting => "phase.starting",
@@ -713,20 +723,51 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
             Phase::Finished => "phase.finished",
             Phase::Fault => "phase.fault",
         }),
-        input.menu_text(locale),
-        input.bindings_text(locale),
-        input.status.render(locale),
+    );
+    let details = [
         game.notice.render(locale),
         settings.notice.render(locale),
         Message::with(
             "hud.timing",
             [(
                 "milliseconds",
-                format!("{:.1}", game.session.uncertainty_frames as f64 / 48.0)
-            )]
+                format!("{:.1}", game.session.uncertainty_frames as f64 / 48.0),
+            )],
         )
-        .render(locale)
-    )
+        .render(locale),
+    ]
+    .into_iter()
+    .filter(|line| !line.is_empty())
+    .collect();
+    (title, details)
+}
+
+fn game_menu(
+    game: &Game,
+    input: &mut InputState,
+    settings: &SettingsMenu,
+) -> Option<MenuPresentation> {
+    if !input.menu_open {
+        return None;
+    }
+    let (title, information) = game_text(game, settings);
+    input.menu_presentation(settings.values.locale, title, information)
+}
+
+fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> String {
+    let locale = settings.values.locale;
+    let (title, details) = game_text(game, settings);
+    [
+        title,
+        locale.text("input.game_controls").into(),
+        input.bindings_text(locale),
+        input.status.render(locale),
+    ]
+    .into_iter()
+    .chain(details)
+    .filter(|line| !line.is_empty())
+    .collect::<Vec<_>>()
+    .join("\n")
 }
 
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
@@ -737,7 +778,7 @@ fn smoke_layout_metrics(
     viewport: SmokeViewport,
     camera: &Camera,
     (panel, panel_transform): (&ComputedNode, &UiGlobalTransform),
-    selected: Option<(usize, &ComputedNode, &UiGlobalTransform)>,
+    (selected, row, row_transform): (usize, &ComputedNode, &UiGlobalTransform),
 ) -> Result<serde_json::Value, String> {
     let expected = Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32) / viewport.scale;
     let logical = camera
@@ -754,18 +795,6 @@ fn smoke_layout_metrics(
     let panel_max = panel_transform.translation + panel.size * 0.5
         - panel.padding.max_inset
         - panel.border.max_inset;
-    let mut metrics = serde_json::json!({
-        "physical_size": viewport.size,
-        "scale_factor": viewport.scale,
-        "logical_size": [logical.x, logical.y],
-        "panel_physical": [panel_min.x, panel_min.y, panel_max.x, panel_max.y],
-        "panel_inside_viewport": panel_min.cmpge(Vec2::ZERO).all()
-            && panel_max.cmple(Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32)).all(),
-        "selected_row": null,
-    });
-    let Some((selected, row, row_transform)) = selected else {
-        return Ok(metrics);
-    };
     let row_min = row_transform.translation - row.size * 0.5;
     let row_max = row_transform.translation + row.size * 0.5;
     let oversized = row.size.y > panel_max.y - panel_min.y;
@@ -786,13 +815,20 @@ fn smoke_layout_metrics(
         || (!oversized && (row_min.y < panel_min.y - 1.0 || row_max.y > panel_max.y + 1.0))
     {
         return Err(format!(
-            "Selected settings row {selected} is not accessible: panel={panel_min:?}..{panel_max:?}, row={row_min:?}..{row_max:?}"
+            "Selected menu row {selected} is not accessible: panel={panel_min:?}..{panel_max:?}, row={row_min:?}..{row_max:?}"
         ));
     }
-    metrics["selected_row"] = serde_json::json!(selected);
-    metrics["row_physical"] = serde_json::json!([row_min.x, row_min.y, row_max.x, row_max.y]);
-    metrics["oversized_row"] = serde_json::json!(oversized);
-    Ok(metrics)
+    Ok(serde_json::json!({
+        "physical_size": viewport.size,
+        "scale_factor": viewport.scale,
+        "logical_size": [logical.x, logical.y],
+        "panel_physical": [panel_min.x, panel_min.y, panel_max.x, panel_max.y],
+        "panel_inside_viewport": panel_min.cmpge(Vec2::ZERO).all()
+            && panel_max.cmple(Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32)).all(),
+        "selected_row": selected,
+        "row_physical": [row_min.x, row_min.y, row_max.x, row_max.y],
+        "oversized_row": oversized,
+    }))
 }
 
 fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
@@ -820,7 +856,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 mode,
                 Smoke::Locale(_)
                     | Smoke::Languages(_)
-                    | Smoke::Menu(_)
+                    | Smoke::Menu(_, _)
                     | Smoke::Graphics(_)
                     | Smoke::Pacing(_)
             ) {
@@ -906,30 +942,64 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
               display: Res<DisplayState>,
               mut visual: ResMut<VisualState>| {
                 visual.locale = settings.values.locale;
-                visual.settings = settings.presentation(0.0, &display, visual.locale);
+                visual.menu = settings.presentation(0.0, &display, visual.locale);
             })
             .after(DisplaySystems::Sync),
         );
     }
-    if let Smoke::Menu(locale) = mode {
-        let mut settings = SettingsMenu::default();
-        settings.values.locale = locale;
-        app.insert_resource(settings).add_systems(
-            Update,
-            |game: Res<Game>,
-             input: Res<InputState>,
-             settings: Res<SettingsMenu>,
-             mut visual: ResMut<VisualState>| {
-                visual.locale = settings.values.locale;
-                visual.status = game_status(&game, &input, &settings);
-            },
-        );
-    }
     if startup {
         brand_intro::install(&mut app);
+        let mut game = Game::new()?;
+        if let Smoke::Menu(_, phase) = mode {
+            game.phase = phase;
+            game.notice = Message::new(match phase {
+                Phase::Paused => "game.listening",
+                Phase::Finished => "game.nothing_to_save",
+                Phase::Fault => "game.audio_failed",
+                _ => "game.welcome",
+            });
+            game.session.current = cocobeat_schema::SongTime::from_frames(match phase {
+                Phase::Paused | Phase::Fault => 1_536_000,
+                Phase::Finished => 3_072_000,
+                _ => 0,
+            });
+        }
         app.init_resource::<InputState>()
-            .insert_resource(Game::new()?)
+            .insert_resource(game)
             .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance));
+    }
+    if let Smoke::Menu(locale, _) = mode {
+        let mut settings = SettingsMenu::default();
+        settings.values.locale = locale;
+        let mut input = InputState::default();
+        let mut scroll = MenuScroll::default();
+        let presentation =
+            game_menu(app.world().resource::<Game>(), &mut input, &settings).unwrap();
+        if let Some(selection) = viewport.selection {
+            if selection >= presentation.rows.len() {
+                return Err(format!(
+                    "Smoke row index {selection} is outside 0..{}",
+                    presentation.rows.len()
+                ));
+            }
+            for _ in 0..selection {
+                input.navigate_menu(SettingsAction::Down, &mut scroll);
+            }
+        }
+        app.insert_resource(settings)
+            .insert_resource(input)
+            .insert_resource(scroll)
+            .add_systems(
+                Update,
+                |game: Res<Game>,
+                 mut input: ResMut<InputState>,
+                 settings: Res<SettingsMenu>,
+                 mut visual: ResMut<VisualState>| {
+                    visual.locale = settings.values.locale;
+                    visual.song_seconds = game.session.current.as_seconds_f64();
+                    visual.menu = game_menu(&game, &mut input, &settings);
+                },
+            );
     }
     let mut image = Image::new_target_texture(
         viewport.size[0],
@@ -989,12 +1059,13 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         Update,
         (move |mut commands: Commands,
                mut frame: Local<u32>,
+               mut completed_frames: Local<u32>,
                mut requested: Local<bool>,
                intro: Option<Res<BrandIntroStatus>>,
                visual: Res<VisualState>,
                cameras: Query<&Camera, With<PresentationCamera>>,
                panels: Query<(&ComputedNode, &UiGlobalTransform), With<view::StatusPanel>>,
-               rows: Query<(&view::SettingsRowNode, &ComputedNode, &UiGlobalTransform)>,
+               rows: Query<(&view::MenuRowNode, &ComputedNode, &UiGlobalTransform)>,
                mut exit: MessageWriter<AppExit>| {
             *frame += 1;
             if *frame > 1_200
@@ -1007,40 +1078,55 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 return;
             }
             let ready = if startup {
-                intro
-                    .as_ref()
-                    .is_some_and(|status| status.is_complete() && status.idle_seconds >= 6.1)
+                let complete = intro.as_ref().is_some_and(|status| status.is_complete());
+                if complete {
+                    *completed_frames += 1;
+                } else {
+                    *completed_frames = 0;
+                }
+                if matches!(mode, Smoke::Menu(_, phase) if phase != Phase::Ready) {
+                    *completed_frames >= 3
+                } else {
+                    complete
+                        && intro
+                            .as_ref()
+                            .is_some_and(|status| status.idle_seconds >= 6.1)
+                }
             } else {
                 *frame == 30
             };
             if !*requested && ready {
-                if visual.settings.is_some() || matches!(mode, Smoke::Menu(_)) {
+                if !matches!(mode, Smoke::Scene | Smoke::Startup | Smoke::Quality(_))
+                    && visual.menu.is_none()
+                {
+                    eprintln!("Expected menu presentation is missing");
+                    exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
+                    return;
+                }
+                if let Some(menu) = &visual.menu {
                     let metrics = (|| {
-                        let selected = if let Some(settings) = &visual.settings {
-                            let selected = settings
-                                .rows
-                                .iter()
-                                .position(|row| row.selected)
-                                .ok_or("Missing selected settings row")?;
-                            let (_, row, transform) = rows
-                                .iter()
-                                .find(|(row, _, _)| row.0 == selected)
-                                .ok_or("Selected settings row was not laid out")?;
-                            Some((selected, row, transform))
-                        } else {
-                            None
-                        };
-                        smoke_layout_metrics(
+                        let selected = menu
+                            .rows
+                            .iter()
+                            .position(|row| row.selected)
+                            .ok_or("Missing selected menu row")?;
+                        let (_, row, transform) = rows
+                            .iter()
+                            .find(|(row, _, _)| row.0 == selected)
+                            .ok_or("Selected menu row was not laid out")?;
+                        let mut metrics = smoke_layout_metrics(
                             viewport,
                             cameras.single().map_err(|error| error.to_string())?,
                             panels.single().map_err(|error| error.to_string())?,
-                            selected,
-                        )
+                            (selected, row, transform),
+                        )?;
+                        metrics["menu_row_count"] = serde_json::json!(menu.rows.len());
+                        Ok::<_, String>(metrics)
                     })();
                     match metrics {
                         Ok(metrics) => eprintln!("VIEWPORT_GEOMETRY {metrics}"),
                         Err(error) => {
-                            eprintln!("Settings layout failed: {error}");
+                            eprintln!("Menu layout failed: {error}");
                             exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
                             return;
                         }
@@ -1138,6 +1224,45 @@ mod tests {
             ("1280", "800", "1", "-1"),
         ] {
             assert!(SmokeViewport::parse(width, height, scale, row).is_err());
+        }
+    }
+
+    #[test]
+    fn game_menu_preserves_phase_notices_and_focuses_information_without_game_controls() {
+        let mut settings = SettingsMenu::default();
+        settings.values.locale = Locale::EnUs;
+        settings.notice = Message::new("settings_notice.save_failed");
+        let mut game = Game::new().unwrap();
+        game.notice = Message::new("game.audio_failed");
+        let mut titles = std::collections::HashSet::new();
+        for phase in [Phase::Ready, Phase::Paused, Phase::Finished, Phase::Fault] {
+            game.phase = phase;
+            let mut input = InputState::default();
+            let mut scroll = MenuScroll::default();
+            let menu = game_menu(&game, &mut input, &settings).unwrap();
+            assert!(titles.insert(menu.title));
+            for notice in [
+                game.notice.render(Locale::EnUs),
+                settings.notice.render(Locale::EnUs),
+            ] {
+                assert!(menu.rows.iter().any(|row| row.text == notice));
+            }
+            let last = menu.rows.len() - 1;
+            for _ in 0..last {
+                input.navigate_menu(SettingsAction::Down, &mut scroll);
+            }
+            let menu = game_menu(&game, &mut input, &settings).unwrap();
+            assert!(menu.rows[last].selected);
+            assert!(menu.rows[last].text.contains("ms"));
+            assert!(input.queued.is_empty());
+            input.set_settings_open(true);
+            assert!(game_menu(&game, &mut input, &settings).is_none());
+            input.set_settings_open(false);
+            input.set_menu_open(false);
+            assert!(game_menu(&game, &mut input, &settings).is_none());
+            let status = game_status(&game, &input, &settings);
+            assert!(status.contains(Locale::EnUs.text("input.game_controls")));
+            assert!(status.contains(&game.notice.render(Locale::EnUs)));
         }
     }
 

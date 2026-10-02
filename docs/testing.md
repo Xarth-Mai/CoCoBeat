@@ -178,3 +178,18 @@ Windows 检查在 Linux 上以独立官方 Rust 1.98.1 执行 `cargo check --off
 两张 Ready 截图为视觉 FAIL：180×120 香港繁体的顶部菜单项越界，320×240 德语当前选项与 Logo/辅助 HUD 重叠，属于已有整块状态文本的小窗口缺口；本次未将这些页面算作通过，下一步复用结构化行使当前菜单项和必要提示可达。截图与日志 SHA 均匹配证据清单；日志含 450 条已知 ICU CJK 词边界诊断，无其他 WARN/ERROR/error
 
 真实 Windows/Linux WM、跨屏、原生 DPI、键盘/手柄操作与母语真人校对仍为 NOT RUN；离屏缩放与合成平台观测不代替这些证据
+
+
+## 小窗口游戏菜单
+
+2026-10-02，基于 `80a740e` 修复上节两处 Ready 菜单视觉 FAIL：游戏菜单与设置共用结构化行和原生滚动，12 个操作保留既有次序，控制说明、双人绑定、输入状态、错误和计时信息成为可聚焦的只读行；只读行确认不触发操作，超高行先上下分页。绑定期间继续显示必要提示和错误；菜单页切换、失焦、断连及歌曲状态变化重置滚动，捕获时间戳、同批次设置门控和按住键释放屏障保持原有行为。删除 13 份 catalog 中不再使用的 `menu.selection`，每份现有 114 键，依赖未变
+
+`CARGO_BUILD_JOBS=1 cargo xtask check` 与 `cargo build --offline --locked -j1 -p cocobeat-game` 均退出 0，完整 workspace 的 91 项测试、Clippy、格式、依赖边界与构建为 PASS，日志为 `target/menu-final-{check,build}.log`；新增行为检查覆盖信息行确认、超高行导航、同批次菜单激活、绑定提示保留和四种游戏阶段的呈现，真实 Bevy/Taffy 布局检查补验相同行号、行数及几何下的页面切换重聚焦
+
+`--viewport-smoke main|graphics|pacing|languages|ready|paused|finished|fault CODE WIDTH HEIGHT SCALE ROW PNG` 现在对游戏菜单和设置页均检查选中行实测几何，ROW 为从 0 开始的有效行号，超高行要求当前片段可见。Ready 等待生产品牌完成及菜单循环 6.1 秒；Paused、Finished、Fault 使用相应阶段和位置，等待品牌完成后稳定 3 帧。预览复用生产菜单呈现及导航函数，仍不播放音频、不读写用户配置、不启动生产帧率门控或消费物理输入驱动玩法
+
+本轮在 Linux 的 AMD RX 6650 XT / RADV Vulkan 上从 `/tmp` 完成 28 次离屏渲染，全部退出 0，主线程与三个 agents 已逐张目检 PASS：13 个语言变体的 640×360 Ready 菜单、11 张小窗口/游戏阶段/DPI/普通尺寸菜单，以及 4 张设置/语言/画质/帧率回归图。包括原有失败的 180×120 香港繁体与 320×240 德语、180×120 超高德语控制说明、暂停/结束/故障信息和 1280×800 scale 2。选中行或超高行首段可见，Logo 与菜单分开，非选中行的滚动裁剪符合预期；超高行双向分页由布局及输入行为测试覆盖
+
+117 个源码与资源文件、可执行文件、28 张 PNG 和日志 SHA-256 均与 `target/menu-evidence/evidence.json` 匹配；GPU 日志含 692 条已知 ICU CJK 词边界诊断，无其他 WARN/ERROR/error。英式英语图初次批量目检被误判暗底，随后独立读取同一路径并核对原哈希确认画面正常，未重捕或替换文件，最终为 PASS
+
+Windows 目标检查仍在 Linux 上使用 `target/windows-cross-toolchain/` 内的隔离官方 Rust，执行 `cargo check --offline --locked -j1 -p cocobeat-runtime --target x86_64-pc-windows-gnu --config target/windows-cross-toolchain/cargo-config.toml`，通过 RUSTC 指定私有编译器、CARGO_TARGET_DIR 指定独立缓存，退出 0、零 warning/error，114 个输入文件起止哈希一致；命令、环境和日志见 `target/windows-cross-toolchain/menu-check.json`。没有 Windows 主机参与，Windows 链接与运行、真实 WM/DPI/跨屏、音频与物理输入、母语真人校对均为 NOT RUN
