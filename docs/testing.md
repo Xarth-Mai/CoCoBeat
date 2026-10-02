@@ -18,7 +18,7 @@ cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.p
 
 ## 当前证据
 
-品牌模块首次交付为 `4654512`，主线程已接入启动、输入门控、音频生命周期、HUD 与平台打包；最新一次隔离接线验证以 `5e4839a` 为品牌基线，以下保留各阶段证据；品牌线程仍在调整动画内容，未提交的品牌改动未纳入这次快照
+品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；最新隔离验证覆盖品牌追加提交 `56faef2`，包括 7.20 秒完成的停靠回弹与 Ready 眼睛循环；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
 
 2026-10-02 本地切片基线的 `cargo xtask check` 退出码为 0，完整 workspace 的 40 项测试、依赖边界、格式与 Clippy 均通过，日志位于 `target/first-slice-check.log`；本轮测试包含 Kira 初始 Playing 状态不能当作回调确认、游标倒退拒绝、停滞到期与探针统计修订
 
@@ -71,6 +71,10 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 从 `/tmp` 执行快照构建的游戏 `--startup-smoke` 退出 0，实际运行品牌时间线和生产菜单控制系统，在 Complete 后的 Ready 循环 6.1 秒截取 `target/milestone-menu-startup.png`，已检查蓝眼侧看、同一 Logo 停靠、场景与 HUD；GPU 为 AMD RX 6650 XT / RADV Vulkan，日志为 `target/milestone-menu-startup.log`，源码与产物身份记录在 `target/milestone-menu-evidence.json`
 
 本轮复用原有 Kira 音频生命周期和输入解锁路径，未引入新的音频管理器或固定解锁时长；生产接线的软件检查与 GPU 呈现通过，真实窗口音画同步、听感、物理输入和品牌线程后续微调仍需分别验收
+
+品牌随后提交 `56faef2`：6.60 秒到位并显露界面，7.20 秒完成位移/剪切回弹后进入 Complete；主线程沿用 `is_complete()`，6.60–7.20 秒仍屏蔽菜单与歌曲操作，三次落点音效时刻和 Ready 开关均不变
+
+对 `56faef2` 的独立快照 `/tmp/cocobeat-menu-followthrough` 补跑完整 check，59 项测试、Clippy、格式及依赖边界再次通过，游戏构建退出 0；从 `/tmp` 运行 `--startup-smoke` 退出 0，已检查最新 Ready 循环截图 `target/menu-followthrough-startup.png`；日志分别为 `target/menu-followthrough-check.log`、`target/menu-followthrough-build.log` 和 `target/menu-followthrough-startup.log`，提交与产物哈希见 `target/menu-followthrough-evidence.json`，本次仍无真实音频或物理输入参与
 
 ## 尚待验收
 
