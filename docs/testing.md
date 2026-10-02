@@ -84,6 +84,18 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 
 本次通过的是生产模块、Ready 菜单门控与终态 GPU 呈现；6.15–7.20 秒动态轨迹另见 [品牌第六版连续预览](../assets/brand/VALIDATION.md#渲染证据)，终态截图不能单独证明动作过程；真实音频同步、物理输入玩法和平台图标显示仍为 NOT RUN，本次未重建 release 包
 
+## 设置与基础显示里程碑
+
+2026-10-02，在工作区执行 `CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game`，67 项测试、Clippy、格式、依赖边界和构建均通过；日志为 `target/settings-final-{check,build}.log`，实际源码 SHA-256、执行命令和产物身份记录在 `target/settings-milestone-evidence.json`
+
+新增检查覆盖配置损坏和版本拒绝、原子替换与失败保留、分辨率列表的草稿与取消、15 秒预览到期/主动回退、确认保存和保存失败，以及键盘/手柄设置路由与确认键释放屏障；显示状态测试要求模式报告与几何尺寸一致，待确认的模式不能提前保存，普通窗口拒绝缩放则保存实际尺寸；独立设置路径 harness 验证绝对 XDG/HOME 路径及无目录时明确报错，Windows 原生路径执行尚未验收
+
+`--settings-smoke` 显式模拟 1280×800 表面和 640×480 全屏渲染尺寸，GPU 绘制实际 3D 目标图像、letterbox 与独立 UI 相机；`--startup-smoke` 和 `--visual-smoke` 同时回归品牌 Ready 循环与场景反馈。三项从 `/tmp` 使用 AMD RX 6650 XT / RADV Vulkan 执行并退出 0，截图 `target/settings-milestone-{settings,startup,visual}.png` 已检查，低分辨率场景外的 Logo、文字和 HUD 保持原生清晰度，设置面板不遮挡玩家标签
+
+这些命令不读写用户设置，不启用音频播放或输入驱动的玩法，也不模拟原生窗口管理器；桌面精确可用区域、真实无边框切换、手动缩放/最大化、DPI、跨屏与 Windows/Linux 物理键盘/手柄设置操作仍为 NOT RUN。Winit 当前接线只有显示器减边框的尺寸上界，不能当作可用桌面工作区的完成证据
+
+共用 target 缓存曾使 `xtask` 指向旧品牌快照，该次运行已停止并排除，诊断日志保留为 `target/settings-stale-snapshot-check.log`；随后只清理 `xtask` 包并确认从当前工作区重新编译、执行。后续共享 target 的快照检查必须确认 xtask 实际源码目录，不能根据退出码推断检查了当前源码
+
 ## 原生 Linux release 证据
 
 2026-10-02，提交 `7c37972` 的归档快照在 CachyOS x86_64 完成 release 构建和 workflow 打包，均退出 0；源码身份、构建命令、二进制与 tar.gz 的 SHA-256 见 [构建记录](build-release.md#本机-linux-release-验证)，证据目录为 `target/linux-release-evidence/7c3797261960/`

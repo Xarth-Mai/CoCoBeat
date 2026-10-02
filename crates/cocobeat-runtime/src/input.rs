@@ -20,9 +20,21 @@ pub enum Control {
     TogglePause,
     Restart,
     MainMenu,
+    Settings(SettingsAction),
     SaveReplay,
     Quit,
     FocusLost,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SettingsAction {
+    Open,
+    Up,
+    Down,
+    Previous,
+    Next,
+    Confirm,
+    Back,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -38,7 +50,7 @@ enum Binding {
     PadButton(PlayerId),
 }
 
-const MENU: [&str; 11] = [
+const MENU: [&str; 12] = [
     "Start / Resume",
     "Restart song",
     "Save replay",
@@ -49,6 +61,7 @@ const MENU: [&str; 11] = [
     "P1: rebind controller Hit",
     "P2: rebind controller Hit",
     "Main menu",
+    "Settings",
     "Quit",
 ];
 
@@ -58,6 +71,7 @@ pub struct InputState {
     pub queued: Vec<CapturedControl>,
     pub menu_open: bool,
     pub status: String,
+    settings_open: bool,
     keys: [KeyCode; 2],
     pads: [Option<Entity>; 2],
     pad_buttons: [GamepadButton; 2],
@@ -77,6 +91,7 @@ impl Default for InputState {
             queued: Vec::new(),
             menu_open: true,
             status: "Keyboard ready; use menu to join each controller".into(),
+            settings_open: false,
             keys: [KeyCode::KeyF, KeyCode::KeyJ],
             pads: [None, None],
             pad_buttons: [GamepadButton::South; 2],
@@ -119,8 +134,16 @@ impl InputState {
 
     pub fn open_main_menu(&mut self) {
         self.menu_open = true;
+        self.settings_open = false;
         self.selection = 0;
         self.queued.clear();
+        self.reset_edges();
+    }
+
+    pub fn set_settings_open(&mut self, open: bool) {
+        self.settings_open = open;
+        self.queued
+            .retain(|event| event.control == Control::FocusLost);
         self.reset_edges();
     }
 
@@ -259,6 +282,12 @@ impl InputState {
                 self.emit(Control::MainMenu, now);
                 None
             }
+            10 => {
+                // Route the rest of this capture batch through the settings gate
+                self.set_settings_open(true);
+                self.emit(Control::Settings(SettingsAction::Open), now);
+                None
+            }
             _ => {
                 self.emit(Control::Quit, now);
                 None
@@ -285,6 +314,21 @@ impl InputState {
             return;
         }
         if !self.held_keys.insert(key) || repeat || !self.focused || !self.controls_enabled {
+            return;
+        }
+        if self.settings_open {
+            let action = match key {
+                KeyCode::ArrowUp => Some(SettingsAction::Up),
+                KeyCode::ArrowDown => Some(SettingsAction::Down),
+                KeyCode::ArrowLeft => Some(SettingsAction::Previous),
+                KeyCode::ArrowRight => Some(SettingsAction::Next),
+                KeyCode::Enter => Some(SettingsAction::Confirm),
+                KeyCode::Escape => Some(SettingsAction::Back),
+                _ => None,
+            };
+            if let Some(action) = action {
+                self.emit(Control::Settings(action), now);
+            }
             return;
         }
         if let Some(binding) = self.binding {
@@ -329,6 +373,21 @@ impl InputState {
             return;
         }
         if !self.held_pad_buttons.insert((pad, button)) || !self.focused || !self.controls_enabled {
+            return;
+        }
+        if self.settings_open {
+            let action = match button {
+                GamepadButton::DPadUp => Some(SettingsAction::Up),
+                GamepadButton::DPadDown => Some(SettingsAction::Down),
+                GamepadButton::DPadLeft => Some(SettingsAction::Previous),
+                GamepadButton::DPadRight => Some(SettingsAction::Next),
+                GamepadButton::South => Some(SettingsAction::Confirm),
+                GamepadButton::East | GamepadButton::Start => Some(SettingsAction::Back),
+                _ => None,
+            };
+            if let Some(action) = action {
+                self.emit(Control::Settings(action), now);
+            }
             return;
         }
         if let Some(binding) = self.binding {
@@ -462,6 +521,52 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn settings_route_shortcuts_and_require_release_after_return() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        for use_pad in [false, true] {
+            let mut input = InputState::default();
+            input.join_pad(PlayerId::P1, pad);
+            input.selection = 10;
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, true, 1);
+                input.pad_button(pad, GamepadButton::Start, true, 2);
+                input.pad_button(pad, GamepadButton::Select, true, 3);
+            } else {
+                input.key(KeyCode::Enter, true, false, 1);
+                input.key(KeyCode::Escape, true, false, 2);
+                input.key(KeyCode::F5, true, false, 3);
+                input.key(KeyCode::F6, true, false, 4);
+                input.key(KeyCode::KeyF, true, false, 5);
+            }
+            assert!(input.settings_open);
+            assert_eq!(
+                input.queued.iter().map(|e| e.control).collect::<Vec<_>>(),
+                [
+                    Control::Settings(SettingsAction::Open),
+                    Control::Settings(SettingsAction::Back)
+                ]
+            );
+            input.set_settings_open(false);
+            input.selection = 0;
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, true, 6);
+            } else {
+                input.key(KeyCode::Enter, true, false, 6);
+            }
+            assert!(input.queued.is_empty());
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, false, 7);
+                input.pad_button(pad, GamepadButton::South, true, 8);
+            } else {
+                input.key(KeyCode::Enter, false, false, 7);
+                input.key(KeyCode::Enter, true, false, 8);
+            }
+            assert_eq!(input.queued[0].control, Control::Start);
+        }
+    }
 
     #[test]
     fn main_menu_keeps_bindings_and_requires_a_fresh_confirmation() {

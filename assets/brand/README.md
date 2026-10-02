@@ -24,7 +24,7 @@ mask 导出需要 Python 3 标准库和 `rsvg-convert`，图标导出需要 Imag
 
 品牌线程只拥有 `brand_intro.rs`、`brand_audio.rs` 与本目录；共享文件由主线程统一落地
 
-在 runtime 的 `lib.rs` 注册 `mod brand_intro; mod brand_audio;`，仅在正常游戏启动路径安装 `brand_intro::install(&mut app)`；保留现有唯一相机和 Kira manager，Replay、音频探针与旧 `--visual-smoke` 路径不自动播放片头
+在 runtime 的 `lib.rs` 注册 `mod brand_intro; mod brand_audio;`，仅在正常游戏启动路径安装 `brand_intro::install(&mut app)`；保留唯一活动的 `IsDefaultUiCamera` 与现有 Kira manager，3D 可独立渲染，Replay、音频探针与旧 `--visual-smoke` 路径不自动播放片头
 
 品牌模块使用当前已启用的 Bevy UI、render、asset、PNG 功能，不要求修改 runtime 依赖；所有 mask 与 WGSL 以固定 `embedded://cocobeat_brand/` 路径内嵌，可执行文件不依赖仓库工作目录；`brand_intro.rs` 与嵌入的 `brand.wgsl` 必须在同次构建中更新
 

@@ -13,6 +13,8 @@ cocobeat-replay.workspace = true
 bevy.workspace = true
 kira.workspace = true
 winit.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 
 [lints]
 workspace = true

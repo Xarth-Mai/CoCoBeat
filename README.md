@@ -10,7 +10,7 @@
 
 已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
 
-完整软件检查已通过 59 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
+完整软件检查已通过 67 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
@@ -51,6 +51,9 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 | 重新开始 | F5 或菜单 | 菜单 |
 | 保存 Replay | F6 或菜单 | Select 或菜单 |
 | 返回主菜单 | 菜单 Main menu | 菜单 Main menu |
+| 显示设置 | 主菜单 / 暂停菜单 Settings | 主菜单 / 暂停菜单 Settings |
+
+显示设置提供分辨率选择、无边框全屏、应用、取消和恢复默认；尺寸变更先预览 15 秒，窗口实际状态确认后才可保存，取消或超时恢复；普通窗口与全屏渲染尺寸分别保存。配置位于 Windows 的 `%APPDATA%/CoCoBeat/settings.json` 或 Linux 的 `$XDG_CONFIG_HOME/cocobeat/settings.json`（未设置时使用 `$HOME/.config/cocobeat/settings.json`），读取或保存失败会显示提示；实际 WM、DPI 和跨屏行为尚待平台验收
 
 手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
 
@@ -60,11 +63,12 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 cargo run --locked -p cocobeat-game -- --replay path/to/session.json
 cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
 cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.png
+cargo run --locked -p cocobeat-game -- --settings-smoke target/cocobeat-settings.png
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 ```
 
-`--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
+`--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；`--settings-smoke` 使用模拟的 1280×800 显示表面和 640×480 场景验证 letterbox 与原生分辨率设置文字，不读写用户配置，也不证明真实窗口模式转换；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
 
 准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 

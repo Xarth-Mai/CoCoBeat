@@ -1693,6 +1693,8 @@ dependencies = [
  "cocobeat-replay",
  "cocobeat-schema",
  "kira",
+ "serde",
+ "serde_json",
  "winit",
 ]
 

@@ -5,8 +5,11 @@ use crate::{
     },
     clock::MonotonicTime,
     dev_song,
-    input::{self, Control, InputState},
+    display::{self, DisplayState, DisplaySystems, PresentationCamera},
+    input::{self, Control, InputState, SettingsAction},
     session::{CONTENT_ID, RULES_ID, Session},
+    settings::{DisplaySettings, Settings},
+    settings_menu::SettingsMenu,
     view::{self, VisualState},
 };
 use bevy::{
@@ -37,6 +40,13 @@ enum Phase {
     Paused,
     Finished,
     Fault,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum Smoke {
+    Scene,
+    Startup,
+    Settings,
 }
 
 #[derive(Resource)]
@@ -147,13 +157,18 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
         [flag, path] if flag == "--replay" => validate_replay(path),
-        [flag, path] if flag == "--visual-smoke" => visual_smoke(PathBuf::from(path), false),
-        [flag, path] if flag == "--startup-smoke" => visual_smoke(PathBuf::from(path), true),
+        [flag, path] if flag == "--visual-smoke" => visual_smoke(PathBuf::from(path), Smoke::Scene),
+        [flag, path] if flag == "--startup-smoke" => {
+            visual_smoke(PathBuf::from(path), Smoke::Startup)
+        }
+        [flag, path] if flag == "--settings-smoke" => {
+            visual_smoke(PathBuf::from(path), Smoke::Settings)
+        }
         _ => Err("Unknown arguments; run cocobeat-game --help".into()),
     };
     match result {
@@ -166,6 +181,7 @@ pub fn run() -> ExitCode {
 }
 
 fn base_app() -> App {
+    let settings = SettingsMenu::load();
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         close_when_requested: false,
@@ -178,6 +194,8 @@ fn base_app() -> App {
         ..default()
     }));
     view::install(&mut app);
+    display::install(&mut app, settings.values.display);
+    app.insert_resource(settings);
     app
 }
 
@@ -193,7 +211,12 @@ fn run_game() -> Result<(), String> {
     app.insert_non_send(audio)
         .insert_resource(Game::new()?)
         .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance))
-        .add_systems(Update, update_game.after(BrandIntroSystems::Advance))
+        .add_systems(
+            Update,
+            update_game
+                .after(BrandIntroSystems::Advance)
+                .after(DisplaySystems::Sync),
+        )
         .add_systems(Update, reconcile_audio.after(update_game));
     match app.run() {
         AppExit::Success => Ok(()),
@@ -309,7 +332,7 @@ fn update_game(
     mut input: ResMut<InputState>,
     mut audio: NonSendMut<AudioOutput>,
     mut visual: ResMut<VisualState>,
-    time: Res<Time>,
+    (time, mut settings, mut display): (Res<Time>, ResMut<SettingsMenu>, ResMut<DisplayState>),
     (mut exit, mut close_requests): (MessageWriter<AppExit>, MessageReader<WindowCloseRequested>),
     (mut brand, mut impacts): (ResMut<BrandIntroStatus>, MessageReader<BrandImpact>),
 ) {
@@ -324,6 +347,8 @@ fn update_game(
         input.queued.clear();
         return;
     }
+    let settings_now = input.origin.elapsed().as_secs_f64();
+    settings.tick(settings_now, &mut display);
     if !input.controls_enabled() {
         let error = if brand.phase == BrandIntroPhase::Failed {
             impacts.clear();
@@ -391,6 +416,23 @@ fn update_game(
         }
 
         for event in std::mem::take(&mut input.queued) {
+            if let Control::Settings(action) = event.control {
+                if action == SettingsAction::Open {
+                    if input.menu_open && !matches!(game.phase, Phase::Running | Phase::Starting) {
+                        settings.begin(&display);
+                        input.set_settings_open(true);
+                    } else {
+                        input.set_settings_open(false);
+                    }
+                } else if settings.handle(action, settings_now, &mut display) {
+                    input.set_settings_open(false);
+                }
+                // A second device cannot confirm a new preview in this capture batch
+                break;
+            }
+            if settings.is_open() && event.control != Control::FocusLost {
+                continue;
+            }
             match event.control {
                 Control::Hit(player) if game.phase == Phase::Running => {
                     let consumed_ns =
@@ -470,6 +512,11 @@ fn update_game(
     visual.song_seconds = game.session.current.as_seconds_f64();
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
+    visual.settings_open = settings.is_open();
+    if settings.is_open() {
+        visual.status = settings.text(settings_now, &display);
+        return;
+    }
     let next = dev_song::ANCHOR_FRAMES
         .iter()
         .find(|&&frame| frame > game.session.current.frames())
@@ -481,17 +528,19 @@ fn update_game(
         })
         .unwrap_or_else(|| "final release".into());
     visual.status = format!(
-        "{:?} | {next}\n{}\n{}\n{}\n{}\nSoftware cursor estimate +/- {:.1}ms; hardware latency NOT MEASURED",
+        "{:?} | {next}\n{}\n{}\n{}\n{}\n{}\nSoftware cursor estimate +/- {:.1}ms; hardware latency NOT MEASURED",
         game.phase,
         input.menu_text(),
         input.bindings_text(),
         input.status,
         game.notice,
+        settings.notice,
         game.session.uncertainty_frames as f64 / 48.0
     );
 }
 
-fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
+fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
+    let startup = mode != Smoke::Scene;
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins
@@ -513,6 +562,33 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
         std::time::Duration::from_secs_f64(1.0 / 60.0),
     ));
     view::install(&mut app);
+    display::install(&mut app, default());
+    app.world_mut()
+        .resource_mut::<DisplayState>()
+        .set_headless_surface([1280, 800]);
+    if mode == Smoke::Settings {
+        let selected = DisplaySettings {
+            fullscreen: true,
+            fullscreen_size: [640, 480],
+            ..default()
+        };
+        app.world_mut()
+            .resource_mut::<DisplayState>()
+            .request(selected);
+        let mut menu = SettingsMenu::default();
+        menu.values = Settings { display: selected };
+        menu.begin(app.world().resource::<DisplayState>());
+        app.insert_resource(menu).add_systems(
+            Update,
+            (|settings: Res<SettingsMenu>,
+              display: Res<DisplayState>,
+              mut visual: ResMut<VisualState>| {
+                visual.settings_open = true;
+                visual.status = settings.text(0.0, &display);
+            })
+            .after(DisplaySystems::Sync),
+        );
+    }
     if startup {
         brand_intro::install(&mut app);
         app.init_resource::<InputState>()
@@ -525,13 +601,15 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
     let camera_target = target.clone();
     app.add_systems(
         PostStartup,
-        move |mut commands: Commands, cameras: Query<Entity, With<Camera>>| {
+        (move |mut commands: Commands, cameras: Query<Entity, With<PresentationCamera>>| {
             for camera in &cameras {
                 commands
                     .entity(camera)
                     .insert(RenderTarget::Image(camera_target.clone().into()));
             }
-        },
+        })
+        .after(DisplaySystems::Setup)
+        .before(bevy::camera::CameraUpdateSystems),
     );
     *app.world_mut().resource_mut::<VisualState>() = if startup {
         VisualState {
@@ -550,6 +628,7 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
                 "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
                     .into(),
             running: false,
+            settings_open: false,
         }
     };
     app.add_systems(

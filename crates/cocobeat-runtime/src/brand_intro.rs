@@ -570,7 +570,7 @@ fn present(
     status: Res<BrandIntroStatus>,
     control: Res<BrandIntroControl>,
     layout: Res<BrandIntroLayout>,
-    cameras: Query<&Camera>,
+    cameras: Query<&Camera, With<IsDefaultUiCamera>>,
     mut backdrop: Query<&mut BackgroundColor, With<Backdrop>>,
     mut parts: Query<(&Part, &mut Node, &MaterialNode<BrandMaterial>)>,
     mut materials: ResMut<Assets<BrandMaterial>>,
@@ -683,6 +683,52 @@ fn present(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn presentation_uses_ui_viewport_instead_of_low_resolution_scene_camera() {
+        use bevy::camera::{ComputedCameraValues, RenderTargetInfo};
+
+        let mut app = App::new();
+        app.init_resource::<BrandIntroStatus>()
+            .init_resource::<BrandIntroControl>()
+            .init_resource::<BrandIntroLayout>()
+            .init_resource::<Assets<BrandMaterial>>()
+            .add_systems(Update, present);
+        let camera = |physical_size, scale_factor| Camera {
+            computed: ComputedCameraValues {
+                target_info: Some(RenderTargetInfo {
+                    physical_size,
+                    scale_factor,
+                }),
+                ..default()
+            },
+            ..default()
+        };
+        app.world_mut().spawn(camera(UVec2::new(640, 360), 1.0));
+        app.world_mut()
+            .spawn((camera(UVec2::new(2400, 1600), 2.0), IsDefaultUiCamera));
+        let wordmark = app
+            .world_mut()
+            .spawn((
+                Part::Wordmark,
+                Node::default(),
+                MaterialNode::<BrandMaterial>(Handle::default()),
+            ))
+            .id();
+
+        app.update();
+        let node = app.world().get::<Node>(wordmark).unwrap();
+        let (Val::Px(left), Val::Px(top), Val::Px(width), Val::Px(height)) =
+            (node.left, node.top, node.width, node.height)
+        else {
+            panic!("wordmark must use logical UI pixels");
+        };
+        // The UI viewport is 1200x800 logical pixels, independent of the 3D target
+        assert!(
+            Vec4::new(left, top, width, height).distance(Vec4::new(204.0, 307.143, 792.0, 169.714))
+                < 0.001
+        );
+    }
 
     #[test]
     fn presentation_clock_respects_loading_focus_and_menu_gate() {

@@ -4,7 +4,10 @@ use bevy::{
     core_pipeline::tonemapping::Tonemapping, prelude::*, transform::TransformSystems, ui::UiSystems,
 };
 
-use crate::brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems};
+use crate::{
+    brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems},
+    display::GameCamera,
+};
 
 #[derive(Resource, Default)]
 pub struct VisualState {
@@ -14,6 +17,7 @@ pub struct VisualState {
     pub resonance: f32,
     pub status: String,
     pub running: bool,
+    pub settings_open: bool,
 }
 
 #[derive(Component)]
@@ -36,6 +40,9 @@ struct Subtitle;
 
 #[derive(Component)]
 struct ClockText;
+
+#[derive(Component)]
+struct PlayerLabel;
 
 #[derive(Component)]
 struct ProgressFill;
@@ -76,7 +83,8 @@ fn setup(
 ) {
     commands.spawn((
         Camera3d::default(),
-        IsDefaultUiCamera,
+        GameCamera,
+        bevy::camera::ShadowLodOrigin,
         Tonemapping::Reinhard,
         Transform::from_xyz(0.0, 6.0, 12.5).looking_at(Vec3::new(0.0, 0.6, -6.0), Vec3::Y),
         AmbientLight {
@@ -327,6 +335,7 @@ fn setup(
     {
         commands.spawn((
             Text::new(label),
+            PlayerLabel,
             TextFont::from_font_size(13.0),
             TextColor(colors[player]),
             TextLayout::justify(Justify::Center),
@@ -465,12 +474,20 @@ fn update_hud(
     mut clock: Query<&mut Text, (With<ClockText>, Without<StatusText>)>,
     mut progress: Query<&mut Node, With<ProgressFill>>,
     mut panel: Query<&mut GlobalZIndex, With<StatusPanel>>,
+    mut labels: Query<&mut Visibility, With<PlayerLabel>>,
 ) {
     if !state.is_changed() && !intro.as_ref().is_some_and(|intro| intro.is_changed()) {
         return;
     }
     // The brand backdrop reveals the scene and HUD; only startup errors render above it
     let failed = intro.is_some_and(|intro| intro.phase == BrandIntroPhase::Failed);
+    for mut visible in &mut labels {
+        *visible = if state.settings_open {
+            Visibility::Hidden
+        } else {
+            Visibility::Inherited
+        };
+    }
     for mut layer in &mut panel {
         layer.0 = if failed { 1001 } else { 0 };
     }

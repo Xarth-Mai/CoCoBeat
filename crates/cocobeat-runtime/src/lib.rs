@@ -6,9 +6,12 @@ mod brand_audio;
 mod brand_intro;
 pub mod clock;
 pub mod dev_song;
+mod display;
 mod input;
 pub mod probe;
 mod session;
+mod settings;
+mod settings_menu;
 mod view;
 
 pub use app::run;
