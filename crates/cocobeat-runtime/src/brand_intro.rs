@@ -28,7 +28,8 @@ const IMPACT_POINTS: [Vec2; 3] = [
     Vec2::new(475.0, 16.0),
 ];
 const DOCK_START: f64 = 6.15;
-pub(crate) const END: f64 = 6.60;
+const DOCK_ARRIVE: f64 = 6.60;
+pub(crate) const END: f64 = 7.20;
 pub(crate) const IDLE_PERIOD: f64 = 24.0;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -407,7 +408,7 @@ fn progress(t: f32, start: f32, end: f32) -> f32 {
 
 pub(crate) fn reveal_at(t: f64) -> f32 {
     CubicSegment::new_bezier_easing((0.45, 0.0), (0.20, 1.0))
-        .ease(((t - DOCK_START) / (END - DOCK_START)) as f32)
+        .ease(((t - DOCK_START) / (DOCK_ARRIVE - DOCK_START)) as f32)
 }
 
 fn paint_at(t: f32) -> Vec4 {
@@ -434,11 +435,12 @@ fn eyes_at(t: f32) -> Vec4 {
 
 fn idle_eyes_at(seconds: f64) -> Vec4 {
     let t = seconds.rem_euclid(IDLE_PERIOD) as f32;
+    let forward = progress(t, 0.80, 1.40) * (1.0 - progress(t, 23.40, 24.00));
     let blink =
         |start| progress(t, start, start + 0.07) * (1.0 - progress(t, start + 0.10, start + 0.24));
     let glance = |start, release| {
-        (progress(t, start, start + 0.28) - 0.10 * progress(t, start + 0.28, start + 0.42))
-            * (1.0 - progress(t, release, release + 0.53))
+        (progress(t, start, start + 0.35) - 0.15 * progress(t, start + 0.35, start + 0.53))
+            * (1.0 - progress(t, release, release + 0.60))
     };
     let blue_blink = [2.80, 10.60, 19.60]
         .into_iter()
@@ -451,8 +453,8 @@ fn idle_eyes_at(seconds: f64) -> Vec4 {
     Vec4::new(
         1.0 - blue_blink,
         1.0 - pink_blink,
-        4.0 * (glance(6.0, 7.40) + glance(15.18, 16.75)),
-        -2.0 * (glance(6.16, 7.48) + glance(15.0, 16.65)),
+        -6.0 * forward + 10.0 * (glance(4.80, 6.50) + glance(13.92, 15.50)),
+        8.0 * forward - 10.0 * (glance(4.92, 6.62) + glance(13.80, 15.38)),
     )
 }
 
@@ -537,15 +539,24 @@ fn fitted(rect: Rect) -> Rect {
     Rect::from_center_size(rect.center(), CANVAS * scale)
 }
 
-fn dock_size_at(t: f64, intro: Vec2, target: Vec2) -> Vec2 {
-    let u = ((t - DOCK_START) / (END - DOCK_START)) as f32;
-    let small = target * 0.95;
-    if u < 0.72 {
-        let amount = CubicSegment::new_bezier_easing((0.45, 0.0), (0.20, 1.0)).ease(u / 0.72);
-        intro.lerp(small, amount)
-    } else {
-        small.lerp(target, smooth((u - 0.72) / 0.28))
+fn dock_recoil_at(t: f64) -> f32 {
+    if !(6.70..END).contains(&t) {
+        return 0.0;
     }
+    let t = t as f32;
+    progress(t, 6.70, 6.82) - 1.125 * progress(t, 6.82, 7.00) + 0.125 * progress(t, 7.00, 7.20)
+}
+
+fn dock_rect_at(t: f64, intro: Rect, target: Rect) -> Rect {
+    if t >= DOCK_ARRIVE {
+        let offset = target.size() * Vec2::new(-0.018, -0.045) * dock_recoil_at(t);
+        return Rect::from_corners(target.min + offset, target.max + offset);
+    }
+    let amount = reveal_at(t);
+    Rect::from_center_size(
+        intro.center().lerp(target.center(), amount),
+        intro.size().lerp(target.size(), amount),
+    )
 }
 
 fn present(
@@ -569,10 +580,7 @@ fn present(
     );
     let target = fitted(layout.dock_rect);
     let amount = status.reveal_progress;
-    let rect = Rect::from_center_size(
-        intro.center().lerp(target.center(), amount),
-        dock_size_at(status.elapsed_seconds, intro.size(), target.size()),
-    );
+    let rect = dock_rect_at(status.elapsed_seconds, intro, target);
     let scale = rect.width() / CANVAS.x;
     let t = status.elapsed_seconds as f32;
     let eyes = if status.is_complete() && control.idle_enabled {
@@ -601,7 +609,12 @@ fn present(
                 rect.size(),
                 BrandUniform {
                     paint: paint_at(t),
-                    effect: Vec4::new(0.0, 0.0, f32::from(visible), 0.0),
+                    effect: Vec4::new(
+                        0.0,
+                        0.0,
+                        f32::from(visible),
+                        dock_recoil_at(status.elapsed_seconds),
+                    ),
                     eyes,
                     origins,
                 },
@@ -806,7 +819,8 @@ mod tests {
         assert_eq!(phase_at(4.0), BrandIntroPhase::Playing);
         assert_eq!(phase_at(6.14), BrandIntroPhase::Playing);
         assert_eq!(phase_at(6.15), BrandIntroPhase::Docking);
-        assert_eq!(phase_at(6.60), BrandIntroPhase::Complete);
+        assert_eq!(phase_at(6.60), BrandIntroPhase::Docking);
+        assert_eq!(phase_at(7.20), BrandIntroPhase::Complete);
         assert_eq!(smooth(1.0), 1.0);
         assert_eq!(blob_at(3.8).opacity, 0.0);
         assert_eq!(eyes_at(4.95), Vec4::new(1.0, 1.0, 0.0, 0.0));
@@ -852,45 +866,59 @@ mod tests {
     }
 
     #[test]
-    fn shrink_overshoots_five_percent_then_returns_without_negative_sizes() {
-        let intro = CANVAS;
-        let peak = DOCK_START + (END - DOCK_START) * 0.72;
+    fn docking_arrives_before_recoil_and_keeps_the_final_size() {
+        let intro = Rect::from_center_size(Vec2::new(640.0, 350.0), CANVAS);
         for width in [240.0, 1.0, 0.0] {
-            let target = CANVAS * (width / CANVAS.x);
-            assert_eq!(dock_size_at(0.0, intro, target), intro);
-            assert!(dock_size_at(peak, intro, target).distance(target * 0.95) < 0.001);
-            assert_eq!(dock_size_at(END, intro, target), target);
-            assert_eq!(dock_size_at(60.0, intro, target), target);
-            for frame in 0..=100 {
-                let t = DOCK_START + (END - DOCK_START) * f64::from(frame) / 100.0;
-                let size = dock_size_at(t, intro, target);
-                assert!(size.is_finite() && size.cmpge(target * 0.95 - Vec2::splat(0.001)).all());
+            let target =
+                Rect::from_center_size(Vec2::new(156.0, 50.0), CANVAS * (width / CANVAS.x));
+            assert_eq!(dock_rect_at(0.0, intro, target), intro);
+            for t in [DOCK_ARRIVE, 6.65, 6.70, END, 60.0] {
+                assert_eq!(dock_rect_at(t, intro, target), target);
+                assert_eq!(dock_recoil_at(t), 0.0);
             }
+            for frame in 0..=60 {
+                let t = DOCK_ARRIVE + f64::from(frame) / 100.0;
+                let pose = dock_rect_at(t, intro, target);
+                assert!(pose.size().distance(target.size()) < 0.001);
+                assert_eq!(reveal_at(t), 1.0);
+            }
+            let peak = dock_rect_at(6.82, intro, target).center();
+            let rebound = dock_rect_at(7.00, intro, target).center();
+            assert!(peak.cmple(target.center()).all());
+            assert!(rebound.cmpge(target.center()).all());
             assert!(
-                dock_size_at(peak + 0.06, intro, target)
-                    .cmpge(target * 0.95)
-                    .all()
+                rebound.distance(target.center()) <= peak.distance(target.center()) * 0.13 + 0.001
             );
         }
+        assert_eq!(dock_recoil_at(6.82), 1.0);
+        assert_eq!(dock_recoil_at(7.00), -0.125);
     }
 
     #[test]
     fn menu_eyes_alternate_blinks_and_glances_with_a_neutral_loop_seam() {
         let neutral = Vec4::new(1.0, 1.0, 0.0, 0.0);
-        for t in [0.0, 2.0, 23.99, 24.0, 48.0] {
+        for t in [0.0, 0.80, 24.0, 48.0] {
             assert_eq!(idle_eyes_at(t), neutral);
+        }
+        let forward = Vec2::new(-6.0, 8.0);
+        for t in [1.40, 4.80, 7.23, 13.80, 16.11, 23.40] {
+            assert_eq!(idle_eyes_at(t).zw(), forward);
         }
         assert!(idle_eyes_at(2.88).x < 0.01);
         assert_eq!(idle_eyes_at(2.88).y, 1.0);
         assert!(idle_eyes_at(10.58).y < 0.01);
         assert!(idle_eyes_at(10.92).y < 0.01);
-        assert!(idle_eyes_at(6.1).z > 0.0 && idle_eyes_at(6.1).w == 0.0);
-        assert!(idle_eyes_at(15.1).w < 0.0 && idle_eyes_at(15.1).z == 0.0);
+        assert!(idle_eyes_at(4.9).z > forward.x && idle_eyes_at(4.9).w == forward.y);
+        assert!(idle_eyes_at(13.9).w < forward.y && idle_eyes_at(13.9).z == forward.x);
+        assert!((idle_eyes_at(5.15).z - forward.x - 10.0).abs() < 0.001);
+        assert!((forward.y - idle_eyes_at(5.27).w - 10.0).abs() < 0.001);
+        assert!(idle_eyes_at(5.50).z < idle_eyes_at(5.15).z);
+        assert!(idle_eyes_at(5.50).w > idle_eyes_at(5.27).w);
         for frame in 0..=1440 {
             let t = f64::from(frame) / 60.0;
             let eyes = idle_eyes_at(t);
-            assert!(eyes.cmpge(Vec4::new(0.0, 0.0, 0.0, -2.0)).all());
-            assert!(eyes.cmple(Vec4::new(1.0, 1.0, 4.0, 0.0)).all());
+            assert!(eyes.cmpge(Vec4::new(0.0, 0.0, -6.0, -2.0)).all());
+            assert!(eyes.cmple(Vec4::new(1.0, 1.0, 4.0, 8.0)).all());
             assert!(eyes.distance(idle_eyes_at(t + IDLE_PERIOD)) < 0.0001);
         }
     }
@@ -916,8 +944,9 @@ mod tests {
             assert!(steps.iter().all(|step| *step > 0.0));
             assert!(steps.windows(2).all(|pair| pair[0] > pair[1]));
         }
-        let samples: [f32; 5] =
-            std::array::from_fn(|i| reveal_at(DOCK_START + (END - DOCK_START) * i as f64 / 4.0));
+        let samples: [f32; 5] = std::array::from_fn(|i| {
+            reveal_at(DOCK_START + (DOCK_ARRIVE - DOCK_START) * i as f64 / 4.0)
+        });
         assert_eq!(reveal_at(0.0), 0.0);
         assert_eq!(samples[0], 0.0);
         assert_eq!(samples[4], 1.0);

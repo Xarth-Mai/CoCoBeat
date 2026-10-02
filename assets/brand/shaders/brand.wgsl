@@ -2,7 +2,7 @@
 
 struct BrandUniform {
     paint: vec4<f32>,
-    // mode (0 wordmark, 1 blob), palette (0 white to 3 mixed), opacity, unused
+    // mode (0 wordmark, 1 blob), palette (0 white to 3 mixed), opacity, dock recoil
     effect: vec4<f32>,
     // Independent openness followed by horizontal offsets in source-canvas pixels
     eyes: vec4<f32>,
@@ -50,7 +50,9 @@ fn spread(p: vec2<f32>, origin: vec2<f32>, progress: f32, reach: f32) -> f32 {
 
 @fragment
 fn fragment(in: UiVertexOutput) -> @location(0) vec4<f32> {
-    let uv = in.uv;
+    var uv = in.uv;
+    // Area-preserving shear after arrival; the UI rectangle keeps its final size
+    uv.x -= 0.018 * brand.effect.w * (uv.y - 0.5);
     let blue = srgb(mix(vec3(0.01, 0.92, 0.97), vec3(0.015, 0.57, 1.0), uv.y));
     let pink = srgb(mix(vec3(1.0, 0.53, 0.73), vec3(0.98, 0.19, 0.56), uv.y));
     if brand.effect.x > 0.5 {
