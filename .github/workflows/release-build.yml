@@ -73,8 +73,11 @@ jobs:
           } finally {
             $reader.Dispose()
           }
-          New-Item -ItemType Directory -Path dist -Force | Out-Null
-          Copy-Item $exe, LICENSE, README.md, Cargo.lock -Destination dist
+          New-Item -ItemType Directory -Path dist/package/assets/brand/icons -Force | Out-Null
+          Copy-Item $exe, LICENSE, README.md, Cargo.lock -Destination dist/package
+          Copy-Item licenses -Destination dist/package -Recurse
+          Copy-Item assets/brand/README.md, assets/brand/PROVENANCE.csv -Destination dist/package/assets/brand
+          Copy-Item assets/brand/icons/symbol-256.png -Destination dist/package/assets/brand/icons
           @(
             "commit=$env:GITHUB_SHA"
             "target=$env:BUILD_TARGET"
@@ -82,11 +85,11 @@ jobs:
             "rustc=$(rustc --version)"
             "cargo=$(cargo --version)"
             "sha256=$((Get-FileHash $exe -Algorithm SHA256).Hash)"
-          ) | Set-Content dist/BUILD-INFO.txt
+          ) | Set-Content dist/package/BUILD-INFO.txt
       - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}
-          path: dist/
+          path: dist/package/
           if-no-files-found: error
           retention-days: 14
 
@@ -114,6 +117,10 @@ jobs:
           echo "version=$(rustc --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v6
         with: *release-cache
+      - name: Install Linux system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y g++ pkg-config libasound2-dev libudev-dev libx11-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
       - name: Build optimized game
         run: cargo build --locked --release --package cocobeat-game --target "$BUILD_TARGET"
       - name: Verify architecture and prepare artifact
@@ -129,8 +136,17 @@ jobs:
           if header[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', header, 18)[0] != expected:
               raise SystemExit('Unexpected ELF class, byte order, or machine')
           PY
-          mkdir -p dist/package
-          cp "$binary" LICENSE README.md Cargo.lock dist/package/
+          mkdir -p dist/package/{bin,share/applications,assets/brand/icons}
+          install -m755 "$binary" dist/package/bin/cocobeat-game
+          cp LICENSE README.md Cargo.lock dist/package/
+          cp -R licenses dist/package/
+          cp packaging/linux/README.md dist/package/INSTALL-LINUX.md
+          cp packaging/linux/cocobeat.desktop dist/package/share/applications/
+          cp assets/brand/README.md assets/brand/PROVENANCE.csv dist/package/assets/brand/
+          cp assets/brand/icons/symbol-256.png dist/package/assets/brand/icons/
+          for size in 16 32 48 64 128 256 512 1024; do
+            install -Dm644 "assets/brand/icons/symbol-$size.png" "dist/package/share/icons/hicolor/${size}x${size}/apps/cocobeat.png"
+          done
           {
             echo "commit=$GITHUB_SHA"
             echo "target=$BUILD_TARGET"

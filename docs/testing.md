@@ -1,31 +1,71 @@
 # 验证策略
 
-## 当前自动检查
+## 检查入口
 
 ```sh
 cargo xtask doctor
 cargo xtask check
-cargo run --locked -p cocobeat-lab -- time-smoke
-cargo run --locked -p cocobeat-game
+cargo run --locked -p cocobeat-lab -- timing-sim
+cargo run --locked -p cocobeat-lab -- generate-dev
+cargo run --locked -p cocobeat-game -- --replay path/to/session.json
+cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
 ```
 
-`doctor` 检查 Rust/Cargo/rustfmt/Clippy 与依赖边界；`check` 检查边界、格式、Clippy 和整个 workspace 的测试。命令失败会返回非零状态，未知子命令也不会假装成功。
+`doctor` 检查 Rust/Cargo/rustfmt/Clippy 与依赖边界；`check` 执行依赖边界、格式、Clippy 和整个 workspace 的测试，失败返回非零状态
 
-SongTime 测试覆盖整数单位、负预滚、半帧舍入、非有限数、范围边界、算术溢出和十小时音频块累计。时间预期值使用独立字面常量，避免生成器和验证器共享错误。
-边界测试覆盖反向依赖、重命名的平台 dev 依赖和未知本地 helper。
+`timing-sim` 输出纯软件实验；`generate-dev` 输出原创 PCM16 WAV 和校验清单；`--replay` 拒绝身份或格式不匹配，并使用同一个 core 重建规则结果；`--visual-smoke` 只保存预设 3D 场景 PNG，音频、输入和玩法均不参与，不能作为可玩性验收
 
-自动 CI 使用单个 Linux job 和提交的 lockfile：全仓库格式、依赖边界，以及 schema/core/replay/xtask 的 Clippy 与测试。使用缓存、路径过滤和旧任务取消；不自动编译 runtime/game、跑平台矩阵或制作 release。
-本地 `cargo xtask check` 仍执行完整 workspace 检查。Windows/Linux release 使用手动 Action，各自可选 x86-64 / ARM64，默认 Windows x86-64 MSVC。完整平台与真实设备验收仍是发行门槛，轻量 CI 不能替代，见 [构建与 CI](build-release.md)。
-只改文档时工作流会被跳过；如果配置 GitHub 必需状态检查，不应让被路径过滤跳过的检查阻塞文档 PR。
+## 当前证据
 
-## 下一阶段必须新增的证据
+品牌模块交付为 `4654512`，后续细化已推进到 `d0d3cfd`；主线程已接入启动、输入门控、音频生命周期、HUD 与平台打包，以下分别保留本地切片基线和品牌集成证据；品牌线程在该提交后仍调整时间线，当前界面截图证明工作区版本的呈现，不代替该时间线的用户确认
 
-- 核心：一对一匹配、重复输入、阈值相等、进度水位、epoch、Anchor/Free 去重与有界 Resonance。
-- Replay：同一事实在不同批次、60/144 Hz 消费和允许的交付重排下得到相同最终结果。
-- 硬件：真实输入与音频输出延迟、ClockBridge 偏移/漂移；软件单元测试不能代替。
-- 体验：玩家对同伴、沉默和共同反馈的具体行为与访谈，不能用算法分数代替。
-- 平台与手柄：Windows/Linux 各自完整构建、运行与音频验证；双手柄、混合输入、菜单、重绑定、断连/重连与独立延迟测量，见 [验收矩阵](platform-input.md)。
+2026-10-02 本地切片基线的 `cargo xtask check` 退出码为 0，完整 workspace 的 40 项测试、依赖边界、格式与 Clippy 均通过，日志位于 `target/first-slice-check.log`；本轮测试包含 Kira 初始 Playing 状态不能当作回调确认、游标倒退拒绝、停滞到期与探针统计修订
 
-之后再增加编码回读、资源事务/哈希、MIR 标注、QUIC 模拟和两台真实机器测试。未实现这些能力前，不提供始终成功的 validate-testdata 或 package-golden 命令。
+| 范围 | 结果 | 证据边界 |
+|---|---|---|
+| schema 4 项 + core 9 项 | PASS | 整数时间、溢出、独立预期、判定边界、水位/epoch、去重、720 种交付排列与有界 Resonance |
+| ClockBridge 7 项 | PASS | 单调映射、历史、外推边界、暂停/重启/设备丢失状态；无硬件参与 |
+| Replay 5 项 | PASS | 格式/大小限制、损坏拒绝、保存失败保留原文件，60/144 Hz 与 500 ms 卡顿批次重放一致 |
+| runtime 其余 9 项 + lab 3 项 + xtask 3 项 | PASS | Kira 原生 MockBackend 的首次回调确认、输入边沿、Session 捕获与重放、停滞/倒退、纯音效与探针统计、呈现状态、内容字节/标注、CLI 参数及模块边界；无听感验收 |
+| 软件计时矩阵 | PASS | `target/debug/cocobeat-lab timing-sim target/timing-sim`：30/64/300/600 秒 × 4 情景，共 198,816 个采样，0 个超出声明的不确定性；含采样误差与卡顿时最大误差为 33 帧，错误地使用消费时刻会达到 5,761 帧 |
+| 原创内容与来源 | PASS | `target/debug/cocobeat-lab generate-dev target/dev-assets` 生成 3,072,000 帧 PCM16 双声道 WAV，SHA-256 与资源台账一致，5 项台账哈希全部匹配 |
+| 可执行文件与 Replay CLI | PASS | `cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab`；合成历史经 `--replay` 得到 18 facts / 22 events，内容错配、规则错配和截断均非零退出，记录见 `target/replay-smoke/results.txt` |
+| 呈现截图 | PASS | `target/debug/cocobeat-game --visual-smoke target/visual-smoke.png` 在 AMD RX 6650 XT / RADV Vulkan 离屏渲染并退出 0，已检查双角色、局部/共同环、街道和 HUD；未参与音频、窗口交互、品牌动画或可玩性验收 |
+| 真实音频、输入、平台与真人体验 | NOT RUN | 需要下表列出的设备和参与者证据 |
 
-每项功能完成时说明：责任、真值来源、失败行为、成功测试、可重放证据，以及是否引入第二条正式实现路径。
+图形检查使用 Bevy 原生离屏目标、显式 UI 相机、同步管线编译和固定时间步，避免 Xvfb/Vulkan 呈现限制；当前离屏日志有未指定 ShadowLodOrigin 的警告，截图不能作为灯光阴影或性能验收
+
+CI 只检查单 Linux 上的 schema/core/replay/xtask，以及全仓库格式和依赖图；本地 `cargo xtask check` 覆盖完整 workspace，Windows/Linux 四目标发行构建使用手动 Action，见 [构建与 CI](build-release.md)
+
+## 品牌集成证据
+
+2026-10-02，`CARGO_BUILD_JOBS=1 cargo xtask check` 退出码为 0，52 项测试、格式、Clippy 与依赖边界全部通过，日志为 `target/brand-integration-check.log`；新增范围含品牌时间线与 PCM、完整输入门控、失败提示层级和 Windows 资源编译依赖边界
+
+`cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab` 通过，日志为 `target/brand-integration-build.log`；随后 `target/debug/cocobeat-game --startup-smoke target/startup-integrated.png` 在 AMD RX 6650 XT / RADV Vulkan 离屏运行到 Complete 并退出 0，已检查同一 Logo 停靠、Ready 场景和 HUD 的组合画面
+
+启动截图只运行品牌和场景呈现，不创建音频管理器或消费物理输入；它不证明正常窗口的音画同步、完整设备生命周期或实际按钮操作，相关边界由软件单测和下列设备验收分别覆盖
+
+Windows 图标资源通过 `llvm-rc` 和 `llvm-cvtres` 编译为 x86-64/ARM64 资源对象，包含 6 个尺寸和 1 个图标组；Linux `.desktop` 通过 `desktop-file-validate`，两平台打包配置和 shell 语法已检查，Linux 以占位二进制验证 tar 布局与执行权限；最终 Windows EXE、真实游戏发行包、桌面图标显示与远端四目标构建仍为 NOT RUN
+
+516 条第三方依赖与 Cargo metadata/lock 一致，23 条资源来源哈希匹配；这项检查证明台账与文件一致，不推断原始品牌参考图的再分发许可
+
+## 里程碑提交检查
+
+2026-10-02，确定性规则与 Replay 里程碑 `378f95b` 的独立快照通过 21 项测试、Clippy、格式与依赖边界，日志为 `target/milestone-core-check.log`
+
+本地双人运行时与品牌接线候选基于品牌提交 `d0d3cfd`，已通过独立快照的完整 `cargo xtask check`，55 项测试、Clippy、格式与依赖边界全部通过，日志为 `target/milestone-runtime-check.log`；快照与同时进行的品牌动画修改分开验证
+
+提交候选的 `cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab` 退出 0，日志为 `target/milestone-runtime-build.log`；从 `/tmp` 运行生成的游戏 `--startup-smoke` 同样退出 0，截图 `target/milestone-runtime-startup.png` 已检查同一 Logo 停靠、Ready 场景与 HUD，日志为 `target/milestone-runtime-startup.log`；该检查也确认嵌入资源无需仓库工作目录，仍未播放音频或消费物理输入
+
+本次还用 Kira MockBackend 复现并修复了异步暂停竞态：同一回调前恢复再暂停会错误停留在 Playing，记录见 `target/audio-transition-repro.log`；修复后合并同帧最终意图，并等待相反命令确认，回归覆盖双向转换、未确认状态、停止优先与新句柄重置，窄测日志为 `target/audio-transition-check.log`；它们不代表真实设备音画同步已验收
+
+## 尚待验收
+
+- 硬件：Kira 定时点击、loopback 输出偏移、输入延迟、漂移和设备切换；软件游标的实验误差配置不代替测量
+- 平台：Windows/Linux 各 x86-64/ARM64 完整构建及干净机器运行，GPU/音频后端和真实键盘/手柄分别验证
+- 输入：双手柄、混合输入、菜单、重绑定、USB/蓝牙、失焦及断连/重连，见 [验收矩阵](platform-input.md)
+- 体验：听感、伙伴感知、沉默、模仿、连点、共享确认延迟和 Anchor 预告，保存具体行为、对照与访谈
+
+之后再增加 canonical 编码回读、SongPackage 事务/哈希、MIR 标注、QUIC 模拟和两台真实机器测试，当前开发 PCM 与 JSON Replay 不代表这些能力已实现
+
+每项功能记录责任、真值来源、失败行为、实际检查与可重放证据；测试计数与模拟分数只证明相应软件范围

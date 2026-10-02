@@ -1,3 +1,3 @@
-fn main() {
-    cocobeat_runtime::run();
+fn main() -> std::process::ExitCode {
+    cocobeat_runtime::run()
 }

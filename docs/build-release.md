@@ -29,7 +29,9 @@ rustup target add x86_64-pc-windows-msvc
 cargo build --locked --release -p cocobeat-game --target x86_64-pc-windows-msvc
 ```
 
-Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Linux 在引入 Bevy/Kira/手柄后需按实际后端补齐系统开发依赖和发行运行依赖。
+Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Linux 当前已接入 Bevy 的 X11/Wayland、Kira/CPAL 与手柄后端，构建环境需提供 pkg-config、ALSA 和 libudev 开发文件及所选窗口后端依赖；运行环境还需要可用图形驱动、显示会话和音频设备
+
+开发音乐和简单场景由程序生成，正常启动无需下载素材；音频输出初始化失败会明确退出；仅验证图形时使用显式 `--visual-smoke PNG`，它不启用音频或游戏输入
 
 ## 轻量自动 CI
 
@@ -54,12 +56,12 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 | `x86_64-unknown-linux-gnu` | ubuntu-24.04 | x86-64 Linux tar.gz |
 | `aarch64-unknown-linux-gnu` | ubuntu-24.04-arm | ARM64 Linux tar.gz |
 
-四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过，不启动四机矩阵。Linux 固定 Ubuntu 24.04 作为构建基线，实际最低 glibc/运行库要求还需在正式依赖接入后验证。
+四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过，不启动四机矩阵。Linux 固定 Ubuntu 24.04 作为构建基线，实际最低 glibc/运行库要求还需验证。
 
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
 成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Linux 先打包 tar.gz 保留执行权限。失败时不上传产物，不自动发布 GitHub Release。
 
-目前产物是 Day 0 bootstrap 可执行文件。正式游戏资源、第三方 notices、安装包与运行库的打包会在 V1 加固阶段接入；手动编译通过不等于安装包或游戏兼容性已验收。
+目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，手动构建流程和四目标首次结果须按 [工作进度](../todo/progress.md) 验证，不能用本机编译推断其他平台或真实设备兼容性
 
 ## 跨平台交付门槛
 

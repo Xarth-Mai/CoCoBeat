@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CoCoBeat
+Comment=Cooperative rhythm game for two players
+Exec=cocobeat-game
+Icon=cocobeat
+Terminal=false
+Categories=Game;
+StartupWMClass=cocobeat

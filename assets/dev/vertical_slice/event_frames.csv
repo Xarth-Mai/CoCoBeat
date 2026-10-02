@@ -1,0 +1,17 @@
+event,seconds,song_frame
+orientation_start,0,0
+first_beat,0.5,24000
+first_bar_end,2,96000
+free_imitation_start,8,384000
+sparse_anchors_start,24,1152000
+anchor_1,26,1248000
+anchor_2,30,1440000
+anchor_3,34,1632000
+anchor_4,38,1824000
+silence_start,40,1920000
+shared_release_start,48,2304000
+anchor_5,50,2400000
+anchor_6,54,2592000
+anchor_7,58,2784000
+ending_start,60,2880000
+exclusive_end,64,3072000

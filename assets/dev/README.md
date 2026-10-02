@@ -1,5 +1,7 @@
 # 开发资源
 
-这里存放有明确来源的本地垂直切片资源。Day 0 没有占位歌曲、模型或纹理。
+这里存放有明确来源的本地垂直切片资源
 
-02 阶段才创建 `vertical_slice/`：原创 64 秒音乐、少量手写 Anchor，以及生成参数和许可记录。不要提交来源不明的商业音乐；每个资源必须更新 `licenses/ASSET_PROVENANCE.csv`。
+[`vertical_slice/`](vertical_slice/README.md) 保存原创 64 秒音乐的生成说明、少量手写 Anchor 与独立事件帧标注；PCM 由共享生成器产生，二进制输出位于忽略的 `target/dev-assets/`
+
+每个资源的来源、许可和校验记录见 `licenses/ASSET_PROVENANCE.csv`

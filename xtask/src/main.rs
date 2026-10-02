@@ -136,7 +136,15 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
             // crates cannot be used to tunnel through a workspace boundary.
             let external =
                 !dependency["source"].is_null() && !dependency_name.starts_with("cocobeat-");
-            if !allowed.contains(&dependency_name) && !(allow_external && external) {
+            let windows_icon_build = name == "cocobeat-game"
+                && dependency_name == "embed-resource"
+                && dependency["kind"] == "build"
+                && dependency["target"] == "cfg(windows)"
+                && external;
+            if !allowed.contains(&dependency_name)
+                && !(allow_external && external)
+                && !windows_icon_build
+            {
                 return Err(format!("Forbidden dependency: {name} -> {dependency_name}"));
             }
         }
@@ -206,5 +214,24 @@ mod tests {
             .is_ok()
         );
         assert!(verify_graph(&graph("cocobeat-surprise", json!([]))).is_err());
+    }
+
+    #[test]
+    fn icon_compiler_is_only_a_windows_game_build_dependency() {
+        for (package, kind, target, accepted) in [
+            ("cocobeat-game", "build", "cfg(windows)", true),
+            ("cocobeat-game", "normal", "cfg(windows)", false),
+            ("cocobeat-game", "build", "cfg(unix)", false),
+            ("cocobeat-core", "build", "cfg(windows)", false),
+        ] {
+            let result = verify_graph(&graph(
+                package,
+                json!([{
+                    "name": "embed-resource", "kind": kind, "target": target,
+                    "source": "registry+https://example.invalid"
+                }]),
+            ));
+            assert_eq!(result.is_ok(), accepted);
+        }
     }
 }

@@ -9,5 +9,8 @@ publish.workspace = true
 [dependencies]
 cocobeat-runtime.workspace = true
 
+[target.'cfg(windows)'.build-dependencies]
+embed-resource.workspace = true
+
 [lints]
 workspace = true

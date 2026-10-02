@@ -1,20 +1,23 @@
 # CoCoBeat
 
+<img src="assets/brand/icons/symbol-256.png" width="128" height="128" alt="CoCoBeat 静态图标">
+
 > Co. Co. Players, One Beat.
 
-雨夜霓虹里的双人节奏游戏：机器提供稀疏、可信的音乐 Anchor，两位玩家用真实的输入填满其间的自由空间。先证明两个人会倾听、模仿和共同落点，再扩展音乐导入、自动分析与联网。
+雨夜霓虹里的双人节奏游戏：机器提供稀疏、可信的音乐 Anchor，两位玩家用真实的输入填满其间的自由空间；先证明两个人会倾听、模仿和共同落点，再扩展音乐导入、自动分析与联网
 
-## 当前状态：Day 0
+## 当前状态：本地双人原型，待真实设备验收
 
-已建立 Rust workspace、48 kHz 整数时间契约、依赖边界检查、轻量自动 CI 和 Windows/Linux 双架构手动构建。
-`cocobeat-game` 目前只打印启动信息，**还不是可玩游戏**；core、replay 的 crate 边界已建立，判定、录制与播放尚未实现。没有提前引入 Bevy、Kira、Quinn 或 OxiMedia。
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
+
+完整软件检查已通过 55 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
-crates/cocobeat-schema   项目自己的数据契约，当前实现时间类型
-crates/cocobeat-core     纯游戏规则的边界
-crates/cocobeat-runtime  未来 Bevy / Kira / 输入 / 表现的接入层
-crates/cocobeat-replay   同一套规则的录制与重放边界
+crates/cocobeat-schema   整数时间、输入身份与规则事件
+crates/cocobeat-core     Anchor 判定、一对一配对与有界 Resonance
+crates/cocobeat-runtime  Bevy / Kira、ClockBridge、输入、会话与表现
+crates/cocobeat-replay   有界 JSON 持久化与同一 core 重放
 tools/cocobeat-lab       研究实验，不进入正式游戏 UX
 xtask                   开发检查命令
 assets/dev              开发资源约定
@@ -26,48 +29,69 @@ licenses                依赖与资源来源台账
 
 ## 开始开发
 
-安装 [rustup](https://rustup.rs/)，在仓库根目录运行：
+安装 [rustup](https://rustup.rs/) 和本机图形/音频/手柄开发依赖后，在仓库根目录运行；平台要求见 [构建说明](docs/build-release.md)
 
 ```sh
 rustup update stable
 rustup component add rustfmt clippy
 cargo xtask doctor
 cargo xtask check
-cargo run --locked -p cocobeat-lab -- time-smoke
 cargo run --locked -p cocobeat-game
 ```
 
 Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。研究报告中的版本号只作为历史参考
 
-`time-smoke` 只证明 64 秒等于 3,072,000 个标准音频帧，不测量声音输出延迟。
-当前无合成音频、`--dev-song` 或硬件计时命令；这些能力按路线图实现后才公开。
+正常启动完整播放原生 Logo 动画，再用 0.45 秒将同一 Logo 移至左上角并显露界面，随后保持 Ready；音乐在用户另行选择 Start 后播放，片头期间的按键和手柄操作不会穿透到游戏，窗口关闭仍有效；音频输出初始化失败会明确退出
+
+| 操作 | 键盘 | 手柄 |
+|---|---|---|
+| 菜单选择 / 确认 | 上下方向键 / Enter | 方向键 / South（下侧键） |
+| P1 / P2 Hit | F / J，可在菜单重绑定 | 在菜单明确加入 P1/P2，默认 South，可重绑定 |
+| 暂停 / 恢复 | Esc | Start |
+| 重新开始 | F5 或菜单 | 菜单 |
+| 保存 Replay | F6 或菜单 | Select 或菜单 |
+
+手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
+
+结束歌曲、重新开始、正常关闭窗口或手动保存时，输入历史写入当前工作目录的 `replays/`，同名 CSV 保留输入观察/消费时间与映射不确定性；异常终止不保证保存未落盘历史
+
+```sh
+cargo run --locked -p cocobeat-game -- --replay path/to/session.json
+cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
+cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.png
+cargo run --locked -p cocobeat-lab -- timing-sim
+cargo run --locked -p cocobeat-lab -- generate-dev
+```
+
+`--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌呈现时间线并截取停靠后的界面，同样不播放音频；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
+
+准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 
 ## 平台、输入与发行构建
 
-初版要求同时支持 **Windows / Linux**，构建目标为 **x86-64 / ARM64**，以及键盘和手柄：双手柄、键盘＋手柄、双人键盘都需要验收。手柄覆盖玩家加入/分配、Hit、菜单、重绑定和热插拔；当前输入运行层尚未实现，这些是初版必交付功能。
+初版交付范围为 **Windows / Linux × x86-64 / ARM64**，以及双手柄、键盘＋手柄、双人键盘；输入流程已有软件实现，各平台真实设备兼容性仍需分别验收
 
 ```sh
 cargo build --locked --release -p cocobeat-game
 ```
 
-发行配置使用 `opt-level=3`、fat LTO、单 codegen unit 和 `panic=abort`，关闭调试信息与增量编译；保持通用 CPU 基线。优化收益仍需在真实游戏负载上测量。
+发行配置使用 `opt-level=3`、fat LTO、单 codegen unit 和 `panic=abort`，关闭调试信息与增量编译，保持通用 CPU 基线；优化收益仍需在真实游戏负载上测量
 
-GitHub 自动 CI 只在单个 Linux job 中检查格式、依赖边界和纯逻辑测试，不编译图形/音频运行层或制作发行包。手动打开 **Actions → Manual release build → Run workflow**，选择分支及目标：Windows MSVC 或 Linux GNU，各自可选 x86-64 / ARM64；默认 `x86_64-pc-windows-msvc`，不提供 32 位选项。
-成功后在该次运行的 Artifacts 下载带提交号的产物。详细约束见 [构建与 CI](docs/build-release.md) 和 [平台与输入](docs/platform-input.md)。
+GitHub 自动 CI 检查单 Linux 下的格式、依赖边界和纯逻辑；Windows/Linux 各 x86-64 / ARM64 发行构建从 **Actions → Manual release build → Run workflow** 手动选择，成功后下载对应 Artifacts，流程与验收范围见 [构建与 CI](docs/build-release.md) 和 [平台与输入](docs/platform-input.md)
+
+Windows EXE 内嵌多尺寸静态图标，Linux 包使用 `bin/` 与标准 `share/applications`、`share/icons/hicolor` 布局；Linux 用户级安装见 [说明](packaging/linux/README.md)，实际桌面显示与四目标发行验收仍需分别执行
 
 ## 不变的边界
 
-- schema 定义事实；core 定义规则，两者不认识引擎、音频后端或网络传输。
-- Replay 和网络输入最终经过同一个 DuoEngine。
-- AnchorCompiler 消费 MusicAnalysis，输出 AnchorMap，不认识 Bevy。
-- Judge / Duo 输出语义事件；FeedbackDirector 只能表达事实，不能修改判定。
-- 自由输入不按隐藏谱面评分；沉默不是 Miss，也不是 Sync。
-- 每项职责只有一条正式实现路径，不加运行时隐式 fallback。
+- schema 定义事实；core 定义规则，两者不认识引擎、音频后端或网络传输
+- Replay 和未来网络输入经过同一个 DuoEngine
+- 未来 AnchorCompiler 消费 MusicAnalysis，输出自有内容，不认识 Bevy
+- 判定输出语义事件，表现只能表达事实，不能修改判定
+- 自由输入不按隐藏谱面评分；沉默不是 Miss，也不是 Sync
+- 每项职责只有一条正式实现路径，不加运行时隐式 fallback
 
-第一条体验链是：SongTime → 输入捕获 → 手写 64 秒音乐与 Anchor → P1/P2 Hit → Free Sync → Anchor Sync → FeedbackDirector → Replay。
-
-详细说明见 [文档索引](docs/README.md)、[架构](docs/architecture.md) 和 [路线图](todo/README.md)。
+软件时钟不确定性与共享确认参数仍是待测假设，见 [时间契约](docs/timing.md) 与 [规则](docs/gameplay.md)；后续工作见 [文档索引](docs/README.md)、[架构](docs/architecture.md) 和 [工作进度](todo/progress.md)
 
 ## 许可证
 
-项目代码明确使用 **MPL-2.0**，见 [LICENSE](LICENSE)。资源、音乐、测试数据和第三方依赖分别记录来源与许可，不能由代码许可证推定其授权；见 [许可证台账](licenses/THIRD_PARTY.md)。
+项目代码使用 **MPL-2.0**，见 [LICENSE](LICENSE)；资源、音乐、测试数据和第三方依赖分别记录来源与许可，见 [许可证台账](licenses/THIRD_PARTY.md)
