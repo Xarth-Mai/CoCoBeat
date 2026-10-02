@@ -1,0 +1,1102 @@
+{
+  "date": "2026-10-02",
+  "source_base": "7c3797261960ce6d636ee062049b01f50d9b99c6",
+  "scope": "Independent Linux synthetic experiments; no production admission, playback or physical input",
+  "not_run": [
+    "Windows",
+    "human listening",
+    "real music corpus",
+    "production media integration",
+    "general Vorbis block sizes",
+    "resampler frequency response and alias rejection"
+  ],
+  "rusty_limits": {
+    "status": "PASS_STRUCTURAL",
+    "cases": [
+      {
+        "name": "silence",
+        "frames": 48000,
+        "signal": "silence",
+        "q": 5,
+        "status": "PASS_STRUCTURAL",
+        "ogg": {
+          "eos_granules": [
+            48000
+          ],
+          "bytes": 7009,
+          "sha256": "434cd18e6187ac9ce1c7254b01b09b0dffbe00417aa48e9a8e804ac880c3aefd"
+        },
+        "decoded": {
+          "symphonia": {
+            "frames": 48000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2,
+              "frames": 48000
+            },
+            "channels": [
+              {
+                "peak": 0.0,
+                "rms": 0.0,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 0,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.0,
+                "rms": 0.0,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 0,
+                "over_unity_fraction": 0.0
+              }
+            ]
+          },
+          "ffmpeg": {
+            "frames": 48000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2
+            },
+            "channels": [
+              {
+                "peak": 0.0,
+                "rms": 0.0,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 0,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.0,
+                "rms": 0.0,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 0,
+                "over_unity_fraction": 0.0
+              }
+            ]
+          }
+        },
+        "decoder_agreement": {
+          "same_byte_count": true,
+          "samples_compared": 96000,
+          "nonfinite_pairs": 0,
+          "peak_difference": 0.0,
+          "rms_difference": 0.0
+        }
+      },
+      {
+        "name": "near-full",
+        "frames": 48000,
+        "signal": "near-full",
+        "q": 5,
+        "status": "PASS_STRUCTURAL",
+        "ogg": {
+          "eos_granules": [
+            48000
+          ],
+          "bytes": 9308,
+          "sha256": "fd3a36426ba0540201729313b679580dd41b384989e71a2364587184406c8404"
+        },
+        "decoded": {
+          "symphonia": {
+            "frames": 48000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2,
+              "frames": 48000
+            },
+            "channels": [
+              {
+                "peak": 1.3710678815841675,
+                "rms": 0.702910650658048,
+                "nonfinite": 0,
+                "over_unity": 4248,
+                "nonzero": 48000,
+                "over_unity_fraction": 0.0885
+              },
+              {
+                "peak": 1.9372496604919434,
+                "rms": 0.6933710358427579,
+                "nonfinite": 0,
+                "over_unity": 7299,
+                "nonzero": 48000,
+                "over_unity_fraction": 0.1520625
+              }
+            ]
+          },
+          "ffmpeg": {
+            "frames": 48000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2
+            },
+            "channels": [
+              {
+                "peak": 1.3710678815841675,
+                "rms": 0.7029106592047023,
+                "nonfinite": 0,
+                "over_unity": 4248,
+                "nonzero": 48000,
+                "over_unity_fraction": 0.0885
+              },
+              {
+                "peak": 1.9372495412826538,
+                "rms": 0.6933710393750367,
+                "nonfinite": 0,
+                "over_unity": 7299,
+                "nonzero": 48000,
+                "over_unity_fraction": 0.1520625
+              }
+            ]
+          }
+        },
+        "decoder_agreement": {
+          "same_byte_count": true,
+          "samples_compared": 96000,
+          "nonfinite_pairs": 0,
+          "peak_difference": 3.5762786865234375e-07,
+          "rms_difference": 7.086182456611096e-08
+        }
+      },
+      {
+        "name": "edge-silence",
+        "frames": 144000,
+        "signal": "edge-silence",
+        "q": 5,
+        "status": "PASS_STRUCTURAL",
+        "ogg": {
+          "eos_granules": [
+            144000
+          ],
+          "bytes": 18282,
+          "sha256": "edc53e64d3cd88cacd59a31d5c995fc4fef4f99006d17df597a8d1c4f76d9cb0"
+        },
+        "decoded": {
+          "symphonia": {
+            "frames": 144000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2,
+              "frames": 144000
+            },
+            "channels": [
+              {
+                "peak": 0.1497001200914383,
+                "rms": 0.08302082312451317,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 137216,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.1749519407749176,
+                "rms": 0.0839589783826714,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 137216,
+                "over_unity_fraction": 0.0
+              }
+            ],
+            "silence_regions": {
+              "leading_silence": [
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.028820358216762543,
+                  "energy": 0.08422438609462296,
+                  "over_unity": 0,
+                  "nonzero": 1728,
+                  "rms": 0.004188883753823499
+                },
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.11197994649410248,
+                  "energy": 0.7660648258525775,
+                  "over_unity": 0,
+                  "nonzero": 1728,
+                  "rms": 0.012633164240177002
+                }
+              ],
+              "trailing_silence": [
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.02710864320397377,
+                  "energy": 0.08909308053177518,
+                  "over_unity": 0,
+                  "nonzero": 1088,
+                  "rms": 0.004308254686543013
+                },
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.04160885512828827,
+                  "energy": 0.24920243178838075,
+                  "over_unity": 0,
+                  "nonzero": 1088,
+                  "rms": 0.0072053572631234596
+                }
+              ],
+              "leading_far_silence": [
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                },
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                }
+              ],
+              "trailing_far_silence": [
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                },
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                }
+              ]
+            }
+          },
+          "ffmpeg": {
+            "frames": 144000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2
+            },
+            "channels": [
+              {
+                "peak": 0.1497001349925995,
+                "rms": 0.08302082375590067,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 137216,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.1749519407749176,
+                "rms": 0.08395897868638864,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 137216,
+                "over_unity_fraction": 0.0
+              }
+            ],
+            "silence_regions": {
+              "leading_silence": [
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.02882036194205284,
+                  "energy": 0.08422439020815674,
+                  "over_unity": 0,
+                  "nonzero": 1728,
+                  "rms": 0.004188883856116406
+                },
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.11197995394468307,
+                  "energy": 0.7660648381937369,
+                  "over_unity": 0,
+                  "nonzero": 1728,
+                  "rms": 0.012633164341935945
+                }
+              ],
+              "trailing_silence": [
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.027108654379844666,
+                  "energy": 0.08909310634424157,
+                  "over_unity": 0,
+                  "nonzero": 1088,
+                  "rms": 0.004308255310646874
+                },
+                {
+                  "samples": 4800,
+                  "nonfinite": 0,
+                  "peak": 0.04160885512828827,
+                  "energy": 0.24920243554346033,
+                  "over_unity": 0,
+                  "nonzero": 1088,
+                  "rms": 0.007205357317410028
+                }
+              ],
+              "leading_far_silence": [
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                },
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                }
+              ],
+              "trailing_far_silence": [
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                },
+                {
+                  "samples": 2752,
+                  "nonfinite": 0,
+                  "peak": 0.0,
+                  "energy": 0.0,
+                  "over_unity": 0,
+                  "nonzero": 0,
+                  "rms": 0.0
+                }
+              ]
+            }
+          }
+        },
+        "decoder_agreement": {
+          "same_byte_count": true,
+          "samples_compared": 288000,
+          "nonfinite_pairs": 0,
+          "peak_difference": 5.21540641784668e-08,
+          "rms_difference": 8.239651601025028e-09
+        }
+      },
+      {
+        "name": "long",
+        "frames": 28800000,
+        "signal": "tail",
+        "q": 5,
+        "status": "PASS_STRUCTURAL",
+        "ogg": {
+          "eos_granules": [
+            28800000
+          ],
+          "bytes": 2251647,
+          "sha256": "84710d87a2a9bcec5e9777701a8f98b70519130c858ba62cdbbb59e48203e3d6"
+        },
+        "decoded": {
+          "symphonia": {
+            "frames": 28800000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2,
+              "frames": 28800000
+            },
+            "channels": [
+              {
+                "peak": 0.15776677429676056,
+                "rms": 0.08545254182988127,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 28800000,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.03647420555353165,
+                "rms": 2.4039703782278537e-05,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 3074048,
+                "over_unity_fraction": 0.0
+              }
+            ]
+          },
+          "ffmpeg": {
+            "frames": 28800000,
+            "format": {
+              "sample_rate": 48000,
+              "channels": 2
+            },
+            "channels": [
+              {
+                "peak": 0.15776675939559937,
+                "rms": 0.0854525424559876,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 28800000,
+                "over_unity_fraction": 0.0
+              },
+              {
+                "peak": 0.03647420555353165,
+                "rms": 2.4039703493844905e-05,
+                "nonfinite": 0,
+                "over_unity": 0,
+                "nonzero": 3074048,
+                "over_unity_fraction": 0.0
+              }
+            ]
+          }
+        },
+        "decoder_agreement": {
+          "same_byte_count": true,
+          "samples_compared": 57600000,
+          "nonfinite_pairs": 0,
+          "peak_difference": 4.470348358154297e-08,
+          "rms_difference": 6.331447290630041e-09
+        },
+        "resources": {
+          "exit_code": 0,
+          "wall_seconds": 1.4942000689989072,
+          "user_seconds": 9.880351,
+          "system_seconds": 0.152475,
+          "max_rss_kib": 234252,
+          "wall_timeout_seconds": 600,
+          "kill_grace_seconds": 5,
+          "address_space_limit_bytes": 2147483648
+        }
+      }
+    ],
+    "over_limit_status": "PASS_REJECTED",
+    "regression_status": "PASS",
+    "regression_files": 28
+  },
+  "near_full": {
+    "input_sha256": "a607b99dbcc7b03e3b5f496466e8f15ed078e1fc864b96be7143996f3600027b",
+    "frames": 48000,
+    "channels": 2,
+    "sample_rate": 48000,
+    "input_peak": 0.99,
+    "frequencies": [
+      440,
+      1000
+    ],
+    "candidate_quality_status": "FAIL_QUALITY_CURRENT_CASE",
+    "production_admission": "NOT ADMITTED for rusty_vorbis 0.1.1",
+    "method": "Absolute aligned samples, SNR=10log10(input energy/error energy), interior excludes first/last 2048 frames; quality scales not equivalent",
+    "measurements": {
+      "rusty_q5": {
+        "symphonia": {
+          "frames": 48000,
+          "peak": [
+            1.3710678815841675,
+            1.9372496604919434
+          ],
+          "over_unity_count": [
+            4248,
+            7299
+          ],
+          "snr_db": [
+            18.640609902657758,
+            -1.2887697222226326
+          ],
+          "rmse": [
+            0.08186338614680735,
+            0.8120049633354242
+          ],
+          "interior_snr_db": [
+            18.892739546227798,
+            -1.5162444843690304
+          ]
+        },
+        "ffmpeg": {
+          "frames": 48000,
+          "peak": [
+            1.3710678815841675,
+            1.9372495412826538
+          ],
+          "over_unity_count": [
+            4248,
+            7299
+          ],
+          "snr_db": [
+            18.640609940787318,
+            -1.2887697681660222
+          ],
+          "rmse": [
+            0.08186338578744118,
+            0.812004967630466
+          ],
+          "interior_snr_db": [
+            18.892739632425194,
+            -1.51624453210603
+          ]
+        }
+      },
+      "libvorbis_q5_oracle": {
+        "symphonia": {
+          "frames": 48000,
+          "peak": [
+            1.0131911039352417,
+            1.0136314630508423
+          ],
+          "over_unity_count": [
+            1030,
+            581
+          ],
+          "snr_db": [
+            38.9099728254095,
+            40.01768845103085
+          ],
+          "rmse": [
+            0.00793636363427984,
+            0.0069861157207973534
+          ],
+          "interior_snr_db": [
+            39.10621715102489,
+            40.64395652894553
+          ]
+        },
+        "ffmpeg": {
+          "frames": 48000,
+          "peak": [
+            1.0131909847259521,
+            1.0136313438415527
+          ],
+          "over_unity_count": [
+            1030,
+            581
+          ],
+          "snr_db": [
+            38.90996344521598,
+            40.017686390084755
+          ],
+          "rmse": [
+            0.007936372205038848,
+            0.006986117378429467
+          ],
+          "interior_snr_db": [
+            39.10620745640827,
+            40.64395422451217
+          ]
+        }
+      },
+      "rusty_q10": {
+        "symphonia": {
+          "frames": 48000,
+          "peak": [
+            1.0709364414215088,
+            1.4647774696350098
+          ],
+          "over_unity_count": [
+            1708,
+            7597
+          ],
+          "snr_db": [
+            29.482667232903815,
+            -0.9929833332884492
+          ],
+          "rmse": [
+            0.02349561612803548,
+            0.7848187395841417
+          ],
+          "interior_snr_db": [
+            29.32808807559832,
+            -1.2504601469610566
+          ]
+        },
+        "ffmpeg": {
+          "frames": 48000,
+          "peak": [
+            1.0709365606307983,
+            1.4647774696350098
+          ],
+          "over_unity_count": [
+            1708,
+            7597
+          ],
+          "snr_db": [
+            29.482666924919513,
+            -0.9929833737393381
+          ],
+          "rmse": [
+            0.023495616961143138,
+            0.7848187432391058
+          ],
+          "interior_snr_db": [
+            29.328087771034923,
+            -1.2504601885904163
+          ]
+        }
+      },
+      "oxideav_quality_0.5": {
+        "symphonia": {
+          "frames": 48000,
+          "peak": [
+            0.997291088104248,
+            0.9927789568901062
+          ],
+          "snr_db": [
+            48.35653606390564,
+            47.981081207612505
+          ],
+          "rmse": [
+            0.002674812822854959,
+            0.0027929691414530487
+          ],
+          "over_unity_count": [
+            0,
+            0
+          ]
+        },
+        "ffmpeg": {
+          "frames": 48000,
+          "peak": [
+            0.9972912073135376,
+            0.992779016494751
+          ],
+          "snr_db": [
+            48.35653729071436,
+            47.981078839534376
+          ],
+          "rmse": [
+            0.0026748124450602134,
+            0.0027929699029144903
+          ],
+          "over_unity_count": [
+            0,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "seek": {
+    "native_status": "FAIL",
+    "explicit_1024_preroll_status": "PASS_LIMITED",
+    "scope": "Two known 48k stereo Vorbis sources with observed start=-1024, delay=1024 and maximum block=2048; each existing 64s tail and 1s enveloped pulse; no re-encode or playback",
+    "window_frames": 4096,
+    "eof_semantics": "target=N is an empty positive boundary sentinel; negative target and target>N are explicit negative cases",
+    "cases": [
+      {
+        "result": "target/canonical-seek-probe/oxideav-64s-preroll0/result.json",
+        "sha256": "00ac53fabc09adfa9ab28ee3c9cb1c30ec3048735006d74458bf8cfa901f3f50",
+        "status": "FAIL",
+        "preroll_frames": 0,
+        "total_frames": 3072000,
+        "positive_pass": 9,
+        "positive_fail": 16,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [
+          3071999,
+          1,
+          1023,
+          3070977,
+          3071743,
+          3071744,
+          3071745,
+          255,
+          256,
+          257,
+          3071871,
+          3071872,
+          3071873,
+          3072000,
+          1,
+          3071999
+        ],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 1.1920928955078125e-07,
+        "input_sha256": {
+          "target/oxideav-probe/cases/n3072000-q0.5/encoded.ogg": "a2b12bc7e2a6d4be8d2464f5c1c7964bef3361241b98a97e5a99d848056ca0f9",
+          "target/oxideav-probe/cases/n3072000-q0.5/symphonia.f32le": "e08059e69478aec13c9ced362b42db10f93359395945c0f94e92894dec86b125",
+          "target/oxideav-probe/cases/n3072000-q0.5/ffmpeg.f32le": "81fdd1362b3d619ef354e91b4aaa1fbe36de256f4157557e5ac4ec83afcc4b39"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/oxideav-64s-preroll1024/result.json",
+        "sha256": "293407d55bef4e6022c0859de3999200befc9c67ca450603a6a7480068d049a6",
+        "status": "PASS",
+        "preroll_frames": 1024,
+        "total_frames": 3072000,
+        "positive_pass": 25,
+        "positive_fail": 0,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 1.1920928955078125e-07,
+        "input_sha256": {
+          "target/oxideav-probe/cases/n3072000-q0.5/encoded.ogg": "a2b12bc7e2a6d4be8d2464f5c1c7964bef3361241b98a97e5a99d848056ca0f9",
+          "target/oxideav-probe/cases/n3072000-q0.5/symphonia.f32le": "e08059e69478aec13c9ced362b42db10f93359395945c0f94e92894dec86b125",
+          "target/oxideav-probe/cases/n3072000-q0.5/ffmpeg.f32le": "81fdd1362b3d619ef354e91b4aaa1fbe36de256f4157557e5ac4ec83afcc4b39"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/oxideav-burst-preroll0/result.json",
+        "sha256": "760887e3e9626ed04c06d359ca0a68cb949220b3ca07ae24e717b7defd24d2ff",
+        "status": "FAIL",
+        "preroll_frames": 0,
+        "total_frames": 48000,
+        "positive_pass": 9,
+        "positive_fail": 16,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [
+          47999,
+          1,
+          1023,
+          46977,
+          47743,
+          47744,
+          47745,
+          255,
+          256,
+          257,
+          47871,
+          47872,
+          47873,
+          48000,
+          1,
+          47999
+        ],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 5.960464477539063e-08,
+        "input_sha256": {
+          "target/oxideav-probe/cases/n48000-q0.5-burst/encoded.ogg": "c9b72a35395829a34934d8f905ba5df26d9425d1a9b16e711c8433bf96480838",
+          "target/oxideav-probe/cases/n48000-q0.5-burst/symphonia.f32le": "6362ba24b81d3af0f8608a9d224028c01b80dfa2ceda66d64e562ecd4991367b",
+          "target/oxideav-probe/cases/n48000-q0.5-burst/ffmpeg.f32le": "64ba8f87111faaa28127c9755359c859c2c4b231fab8a1a1eeb8622a8f31ab47"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/oxideav-burst-preroll1024/result.json",
+        "sha256": "953ef472d6313eecf3283c9afe52ba7ab3442a23d7a0c1f40c1cf1ac6c3954f5",
+        "status": "PASS",
+        "preroll_frames": 1024,
+        "total_frames": 48000,
+        "positive_pass": 25,
+        "positive_fail": 0,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 5.960464477539063e-08,
+        "input_sha256": {
+          "target/oxideav-probe/cases/n48000-q0.5-burst/encoded.ogg": "c9b72a35395829a34934d8f905ba5df26d9425d1a9b16e711c8433bf96480838",
+          "target/oxideav-probe/cases/n48000-q0.5-burst/symphonia.f32le": "6362ba24b81d3af0f8608a9d224028c01b80dfa2ceda66d64e562ecd4991367b",
+          "target/oxideav-probe/cases/n48000-q0.5-burst/ffmpeg.f32le": "64ba8f87111faaa28127c9755359c859c2c4b231fab8a1a1eeb8622a8f31ab47"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/rusty-64s-preroll0/result.json",
+        "sha256": "c65957b0ba8436e28b2f9ed11803b5e80b91fa776ce29b9e058070a0d8b306f5",
+        "status": "FAIL",
+        "preroll_frames": 0,
+        "total_frames": 3072000,
+        "positive_pass": 9,
+        "positive_fail": 16,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [
+          3071999,
+          1,
+          1023,
+          3070977,
+          3071743,
+          3071744,
+          3071745,
+          255,
+          256,
+          257,
+          3071871,
+          3071872,
+          3071873,
+          3072000,
+          1,
+          3071999
+        ],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 4.470348358154297e-08,
+        "input_sha256": {
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/encoded.ogg": "5b5b9f380508c54f25094cccc29178438acbd328172f10ea643f102212c9cb69",
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/symphonia.f32le": "a15a07bf3291a94a2a1974a2d2bcded6c4dbe0455b2e56017d1e90c75a4e2316",
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/ffmpeg.f32le": "3eb6329462051059313a476147f609d077535b587078398a2899cb9125945ce3"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/rusty-64s-preroll1024/result.json",
+        "sha256": "e671216d9edfa3414ea5e28239c3cfc388c383688d2256a799b532f1962775d0",
+        "status": "PASS",
+        "preroll_frames": 1024,
+        "total_frames": 3072000,
+        "positive_pass": 25,
+        "positive_fail": 0,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 4.470348358154297e-08,
+        "input_sha256": {
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/encoded.ogg": "5b5b9f380508c54f25094cccc29178438acbd328172f10ea643f102212c9cb69",
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/symphonia.f32le": "a15a07bf3291a94a2a1974a2d2bcded6c4dbe0455b2e56017d1e90c75a4e2316",
+          "target/rusty-vorbis-probe/adapted-cases/3072000-q5/ffmpeg.f32le": "3eb6329462051059313a476147f609d077535b587078398a2899cb9125945ce3"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/rusty-pulse-preroll0/result.json",
+        "sha256": "09cfd8345eb59cb6d694ce3fc693d70ca7e8cf157ea72a7a448ebc0d1bb58517",
+        "status": "FAIL",
+        "preroll_frames": 0,
+        "total_frames": 48000,
+        "positive_pass": 9,
+        "positive_fail": 16,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [
+          47999,
+          1,
+          1023,
+          46977,
+          47743,
+          47744,
+          47745,
+          255,
+          256,
+          257,
+          47871,
+          47872,
+          47873,
+          48000,
+          1,
+          47999
+        ],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 5.960464477539063e-08,
+        "input_sha256": {
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/encoded.ogg": "0baee75e13a151451a8f435dddedc6ee194629246d34c15d2f1cac484338a231",
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/symphonia.f32le": "c87128de931569c356ecb73625134226fff6ee8711772773c70db3c4f56f0fb8",
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/ffmpeg.f32le": "6750d92d12e21e3ab503b0b3f6cd8305e01395f07500af9cb30c2f553326afbd"
+        }
+      },
+      {
+        "result": "target/canonical-seek-probe/rusty-pulse-preroll1024/result.json",
+        "sha256": "b92e6c5ba087e53dba788de52580ce4e9715cdc7d95a5bc33120cde1504a9aa6",
+        "status": "PASS",
+        "preroll_frames": 1024,
+        "total_frames": 48000,
+        "positive_pass": 25,
+        "positive_fail": 0,
+        "negative_cases": [
+          "PASS_REJECTED",
+          "PASS_REJECTED"
+        ],
+        "failed_targets": [],
+        "max_symphonia_error": 0.0,
+        "max_ffmpeg_error": 5.960464477539063e-08,
+        "input_sha256": {
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/encoded.ogg": "0baee75e13a151451a8f435dddedc6ee194629246d34c15d2f1cac484338a231",
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/symphonia.f32le": "c87128de931569c356ecb73625134226fff6ee8711772773c70db3c4f56f0fb8",
+          "target/rusty-vorbis-probe/adapted-cases/48000-q5-pulse/ffmpeg.f32le": "6750d92d12e21e3ab503b0b3f6cd8305e01395f07500af9cb30c2f553326afbd"
+        }
+      }
+    ],
+    "native_defects": [
+      "Valid tail targets N-1023 through N-1 are rejected because Ogg seek bound uses start_ts+num_frames with start_ts=-1024 and num_frames=N",
+      "For requested frames 1..1023, required-1024 exceeds primer PTS=-1024 with valid duration=0, so demuxer skips primer and decoder.reset discards the packet covering frame 0..1023"
+    ],
+    "adaptation": "Request max(0,target-1024), then decode/reset normally and trim valid PCM to original target; target/request/actual remain separate",
+    "limits": [
+      "Linux only",
+      "Not universal Vorbis seek admission",
+      "Full-decode baselines are existing independently saved Symphonia and FFmpeg PCM, bound to this experiment by SHA-256",
+      "No production integration, realtime device playback or listening"
+    ],
+    "api_source_sha256": {
+      "symphonia-core-0.6.1/src/formats/mod.rs": "eef1db0eccbc8e75e733ac86093072c3635053a177ce98b8d143de4b9f952a93",
+      "symphonia-core-0.6.1/src/codecs/audio.rs": "6ed8c1fa3fa0f0153a9f1ffee319f46283d35095cf301a86e67745da4eb3eafa",
+      "symphonia-core-0.6.1/src/packet.rs": "5dbe02799f8fc58f5ed8736081ef59cda1522966c9bdf12bca895704632970d5",
+      "symphonia-format-ogg-0.6.1/src/demuxer.rs": "65381f790c175510bb3764e1fc45c3b0a0b8e2317cdb6cb9a4110e31ca6dd3d0",
+      "symphonia-format-ogg-0.6.1/src/logical.rs": "e0dc7115d935af0efecbb6b432f12afc2a12e375daa15f6eaff72d0c3dac86f5",
+      "symphonia-format-ogg-0.6.1/src/mappings/vorbis.rs": "ce9fed7d2195de230b4f7f8fda0ada0afb7bb842ca462ac1a7e6f9d575c68dd5",
+      "symphonia-codec-vorbis-0.6.1/src/lib.rs": "dc3da3d2add9258eeb15c4de51b94cdcad4638306cefce5f8a7b5c3917fea63c"
+    }
+  },
+  "resample": {
+    "name": "oximedia-audio",
+    "version": "0.2.1",
+    "archive_sha256": "840c0117bc15e9ffab8baed84bd82b5328528ff7ea517ea110fe71927dbeb533",
+    "scope": "6 API/count/flush cases only, not signal-quality admission",
+    "results": [
+      {
+        "source_rate": 44100,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 0,
+        "estimated_frames": 0,
+        "integer_expected_frames": 0,
+        "before_flush_frames": 0,
+        "flush_frames": 0,
+        "actual_frames": 0,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0
+      },
+      {
+        "source_rate": 44100,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 1,
+        "estimated_frames": 2,
+        "integer_expected_frames": 2,
+        "before_flush_frames": 0,
+        "flush_frames": 2,
+        "actual_frames": 2,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0.47250006
+      },
+      {
+        "source_rate": 44100,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 44100,
+        "estimated_frames": 48001,
+        "integer_expected_frames": 48000,
+        "before_flush_frames": 47896,
+        "flush_frames": 104,
+        "actual_frames": 48000,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0.47250006
+      },
+      {
+        "source_rate": 96000,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 0,
+        "estimated_frames": 0,
+        "integer_expected_frames": 0,
+        "before_flush_frames": 0,
+        "flush_frames": 0,
+        "actual_frames": 0,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0
+      },
+      {
+        "source_rate": 96000,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 1,
+        "estimated_frames": 1,
+        "integer_expected_frames": 1,
+        "before_flush_frames": 0,
+        "flush_frames": 1,
+        "actual_frames": 1,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0.23624994
+      },
+      {
+        "source_rate": 96000,
+        "target_rate": 48000,
+        "channels": 2,
+        "quality": "High",
+        "max_chunk_frames": 1024,
+        "input_frames": 96000,
+        "estimated_frames": 48000,
+        "integer_expected_frames": 48000,
+        "before_flush_frames": 47952,
+        "flush_frames": 48,
+        "actual_frames": 48000,
+        "repeated_flush_frames": 0,
+        "after_flush_rejected": true,
+        "nonfinite": 0,
+        "peak": 0.23624994
+      }
+    ]
+  },
+  "evidence_sha256": {
+    "target/rusty-vorbis-limits/summary.json": "389bf6d75d3d38be73adef99b2e2c0fe119c210c3fa1e15174ba9221787eccc1",
+    "target/rusty-vorbis-limits/compare-recheck/verification.json": "6853eb1a48a8294f30e1cac47d23cb179cd79f1d047a20008fcc665c5aeef6a2",
+    "target/rusty-vorbis-limits/admission-summary.json": "e349aa9128e3cd9a6cf809270361098a881539e01c24af432790c65f35c8d0b6",
+    "target/rusty-vorbis-limits/libvorbis-near-full-oracle/comparison.json": "4df11a55e9d73ae4476d0970f709b8115ef8bbc3d3d3e90a7bc5813079f9b095",
+    "target/rusty-vorbis-limits/near-full-q10/comparison.json": "c666366b69e705313aa8bcbd192e90546c6f0112b4a47602d9a334c9e385b0f7",
+    "target/canonical-seek-probe/summary.json": "ff75a3a003c37860127400e5a94cff8a06d8b89e916f5070c296d37fcc26fe85",
+    "target/resample-preflight/results.jsonl": "48ecdc5cd802240e45614ac14194be1580e783376bcdbfcd9b724a44baa2aed0",
+    "target/resample-preflight/sources/provenance.json": "8d93ecf8ba8c93bbc7af453785f6878c66a634fef5700ac801bf380e4e815fff",
+    "target/oxideav-near-full/result-n48000-q0.5-near-full.json": "afbeed83ac590b34c77883ab0becee82f15dd41c709f58f0074e766ad492296a"
+  },
+  "tool_source_sha256": {
+    "tools/canonical-audio-probe/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+    "tools/canonical-audio-probe/seek.rs": "4df3d3e82a91c7debf9c6368fe62ff47db818d91c9fa43ef46b91d6b48807774",
+    "tools/canonical-audio-probe/seek.py": "c1f6e3c6c3088783b815647c8b79b869924183355440de5ffbd1f99ea5495217",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.toml": "b9ed8906fba17aa4ef2c2d7d74e08502436fc5527213e45caa6a00fb2eeabdd0",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.lock": "fcafced8e9af315432862883aed114808367a4a08fe79154ac4ae620a90a3301",
+    "tools/canonical-audio-probe/oxiaudio/analyze.py": "040887b4546585040fe6ad5d37578d7e6e612f694dd3b915ccce3b23ac6e4b04",
+    "tools/canonical-audio-probe/oxideav/Cargo.toml": "085546c2ff0a0e930433b9432fd22101ffc4ab327fae90495d01fa9e4c017232",
+    "tools/canonical-audio-probe/oxideav/Cargo.lock": "3b06972c2b34bae71a95b9c65bf784f1a5bf1b35bfe3a31676cbac034a3abd16",
+    "tools/canonical-audio-probe/oxideav/probe.py": "4efdcca22fd7061cc8c0a7ecbc16e8e1567d682fd46c0938dc33c53b47be5836",
+    "tools/canonical-audio-probe/oxideav/summarize.py": "6cb3f01fbc4029b8e119733d6fd15054e23f0654a888dbfe052139f50342da6c",
+    "tools/canonical-audio-probe/oxideav/test_metrics.py": "f4a9ac94cacebb3caa99d9eb7438f786c6ba2cf104a701c1d11b35f241042b5c",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.toml": "b6081c2f8ecf883f2e86bd0fbd95633b2bac8cb35742b777874419df525d11cb",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.lock": "82877e0932e9121f01e1c99a3906072244c6b03011a8958c92820f003f328303",
+    "tools/canonical-audio-probe/rusty-vorbis/run.py": "abef374016de9f50823e77062581d3e417a62bcc4a025e6e785d77af14e933b5",
+    "tools/canonical-audio-probe/rusty-vorbis/run_adapted.py": "f8988caa9859a193074b9de02a166351e3aaa946bc7a1a2fead6c6269889f379",
+    "tools/canonical-audio-probe/rusty-vorbis/limits.py": "cf0fe607aaf1b7e2cb254c1af985996ec9ed935c139d652414ec0e4470b0e328",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.toml": "72c0f20dbd29e6b6724228f73c7c0dbf47560a16946de691fc51196d6675b483",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.lock": "a0f9fe8bfb03b52975d51d58c93e30559caedab617ef8790eb4e628aaaf94e95",
+    "tools/canonical-audio-probe/oximedia-resample/src/main.rs": "2560474169c1fe1c95bb53bc3e1b9af32f0d268a2dba8908d7df064ca553e55a",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/encode.rs": "a6f3140e5225b309407a527d956063950484cc782a82eda9818019cadcb20e7e",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/adapter.rs": "c4e0cc2c394961929d64a3b99add9b8e9a479d084e7fccfc914f20451878c840",
+    "tools/canonical-audio-probe/oxideav/src/main.rs": "3fb679d4748754a3e75190afd66a1eef8069073ff17a8edd10583b3e193984e4",
+    "tools/canonical-audio-probe/oxiaudio/src/main.rs": "e4e63967c069510ff90c4cac8e3842765a2de58a9b6ab610ecf0c86bc31d4263"
+  }
+}

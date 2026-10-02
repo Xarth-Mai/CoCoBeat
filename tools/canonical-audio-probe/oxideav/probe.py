@@ -132,7 +132,7 @@ def main():
     parser.add_argument('bin_dir',type=Path)
     parser.add_argument('--single',type=int)
     parser.add_argument('--quality',type=float,default=.5)
-    parser.add_argument('--signal',choices=['tail','burst'],default='tail')
+    parser.add_argument('--signal',choices=['tail','burst','near-full'],default='tail')
     parser.add_argument('--encode-seconds',type=int,default=90)
     args = parser.parse_args()
     root = args.root.resolve()

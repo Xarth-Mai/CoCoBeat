@@ -1,0 +1,11 @@
+[package]
+name = "cocobeat-resample-preflight"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+oximedia-audio = { version = "0", default-features = false }
+oximedia-core = "0"
+
+[workspace]

@@ -12,4 +12,8 @@ symphonia = { version = "0", default-features = false, features = ["ogg", "vorbi
 name = "readback"
 path = "../readback.rs"
 
+[[bin]]
+name = "seek"
+path = "../seek.rs"
+
 [workspace]

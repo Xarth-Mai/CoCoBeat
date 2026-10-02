@@ -11,11 +11,21 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root = PathBuf::from(&args[1]);
     let frames: usize = args[2].parse()?;
     let q: f64 = args[3].parse()?;
-    let pulse = args.get(4).is_some_and(|a| a == "pulse");
+    let signal = args.get(4).map_or("tail", String::as_str);
+    if !matches!(
+        signal,
+        "tail" | "pulse" | "silence" | "near-full" | "edge-silence"
+    ) {
+        return Err("signal must be tail, pulse, silence, near-full, or edge-silence".into());
+    }
+    let pulse = signal == "pulse";
     if frames == 0 {
         return Err("empty input is explicitly rejected by this experimental adapter".into());
     }
-    assert!(frames <= 48_000 * 64 && (-1.0..=10.0).contains(&q));
+    if frames > 48_000 * 600 {
+        return Err("input exceeds the 28800000-frame experimental limit".into());
+    }
+    assert!((-1.0..=10.0).contains(&q));
     std::fs::create_dir_all(&root)?;
     let quality = quality01_from_vorbis_q(q);
     let mut encoder = VorbisEncoder::new(VorbisEncoderConfig {
@@ -27,6 +37,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for start in (0..frames).step_by(1_000) {
         let pcm: Vec<f32> = (start..(start + 1_000).min(frames))
             .flat_map(|i| {
+                if signal == "silence"
+                    || (signal == "edge-silence" && (i < 4800 || i >= frames.saturating_sub(4800)))
+                {
+                    return [0.0, 0.0];
+                }
+                if matches!(signal, "near-full" | "edge-silence") {
+                    let amplitude = if signal == "near-full" { 0.99 } else { 0.125 };
+                    return [440.0, 1000.0].map(|frequency| {
+                        amplitude
+                            * (std::f64::consts::TAU * frequency * i as f64 / 48_000.0).sin() as f32
+                    });
+                }
                 let left =
                     0.125 * (std::f64::consts::TAU * 440.0 * i as f64 / 48_000.0).sin() as f32;
                 let right = if pulse {

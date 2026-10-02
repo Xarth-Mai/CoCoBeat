@@ -5,7 +5,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let args: Vec<_> = std::env::args().collect();
     if !(4..=5).contains(&args.len()) {
         return Err(
-            "usage: cocobeat-oxideav-probe OUTPUT_DIR FRAMES QUALITY_0_TO_1 [tail|burst]".into(),
+            "usage: cocobeat-oxideav-probe OUTPUT_DIR FRAMES QUALITY_0_TO_1 [tail|burst|near-full]"
+                .into(),
         );
     }
     let root = PathBuf::from(&args[1]);
@@ -47,6 +48,14 @@ fn main() -> Result<(), Box<dyn Error>> {
         pcm[1].fill(0.0);
         pcm[1][..256].copy_from_slice(&burst);
         pcm[1][n - 256..].copy_from_slice(&burst);
+    } else if signal == "near-full" {
+        // Match the Rusty probe's f32 rounding so both encode identical PCM
+        for (channel, frequency) in pcm.iter_mut().zip([440.0, 1000.0]) {
+            for (i, sample) in channel.iter_mut().enumerate() {
+                *sample =
+                    0.99 * (std::f64::consts::TAU * frequency * i as f64 / 48_000.0).sin() as f32;
+            }
+        }
     } else if signal != "tail" {
         return Err("unknown signal".into());
     }
