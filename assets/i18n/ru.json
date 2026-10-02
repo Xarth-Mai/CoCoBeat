@@ -111,5 +111,7 @@
   "settings.unlimited": "Без ограничений",
   "settings.vsync": "VSync: {value}",
   "settings.back": "Назад",
-  "settings.page_controls": "Вверх/вниз или D-pad: выбрать · Влево/вправо или Enter/South: изменить · Esc/East: назад"
+  "settings.page_controls": "Вверх/вниз или D-pad: выбрать · Влево/вправо или Enter/South: изменить · Esc/East: назад",
+  "display.work_area_windows": "Используется рабочая область монитора Windows",
+  "display.work_area_x11": "Используется пересечение рабочей области рабочего стола X11 с областью этого монитора"
 }

@@ -111,5 +111,7 @@
   "settings.unlimited": "無制限",
   "settings.vsync": "垂直同期（VSync）：{value}",
   "settings.back": "戻る",
-  "settings.page_controls": "上下キーまたは十字キー：選択 · 左右キーまたは Enter/South：変更 · Esc/East：戻る"
+  "settings.page_controls": "上下キーまたは十字キー：選択 · 左右キーまたは Enter/South：変更 · Esc/East：戻る",
+  "display.work_area_windows": "Windows が報告するモニターの作業領域を使用しています",
+  "display.work_area_x11": "X11 のデスクトップ作業領域と現在のモニターが重なる範囲を使用しています"
 }

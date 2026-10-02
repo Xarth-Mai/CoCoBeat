@@ -10,7 +10,7 @@
 
 已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
 
-完整软件检查已通过 81 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置的软件检查及本轮 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
+完整软件检查已通过 88 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；本轮另有 25 张小窗口/DPI 设置截图通过，2 张极小 Ready 菜单截图暴露越界或遮挡，待继续修复；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
@@ -61,7 +61,7 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 
 语言设置支持 `zh-CN`、`en-US`、`en-GB`、`ja`、`ko`、`zh-TW`、`zh-HK`、`es-419`、`pt-BR`、`fr`、`de`、`ru`、`uk` 共 13 个变体，英文分别提供美国与英国版本，繁体中文分别提供台湾与香港版本；首次启动跟随系统语言，未支持时使用 `en-US`，应用后立即更新界面并跨启动保存，与显示设置共用草稿、取消和预览回退流程
 
-菜单、HUD、设置与玩家可见提示共使用 113 个翻译键，文字统一采用 Noto Sans，中文、日文与韩文使用对应地区字形；语言选项显示本名与地区旗帜，SVG 来自开源 flag-icons，运行时使用同源 PNG，来源见 [字体](assets/fonts/README.md) 与 [旗帜](assets/flags/README.md)。国际化里程碑的 29 张离屏截图已检查字形与换行，母语真人校对仍为 NOT RUN；当前稳定引擎的 ICU CJK 词边界诊断及后续处理见 [验证记录](docs/testing.md#国际化与字体里程碑)
+菜单、HUD、设置与玩家可见提示共使用 115 个翻译键，文字统一采用 Noto Sans，中文、日文与韩文使用对应地区字形；语言选项显示本名与地区旗帜，SVG 来自开源 flag-icons，运行时使用同源 PNG，来源见 [字体](assets/fonts/README.md) 与 [旗帜](assets/flags/README.md)。国际化里程碑的 29 张离屏截图已检查字形与换行，母语真人校对仍为 NOT RUN；当前稳定引擎的 ICU CJK 词边界诊断及后续处理见 [验证记录](docs/testing.md#国际化与字体里程碑)
 
 手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
 
@@ -78,6 +78,7 @@ cargo run --locked -p cocobeat-game -- --language-smoke uk target/cocobeat-langu
 cargo run --locked -p cocobeat-game -- --quality-smoke low target/cocobeat-quality.png
 cargo run --locked -p cocobeat-game -- --settings-page-smoke graphics zh-CN target/cocobeat-graphics.png
 cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target/cocobeat-pacing.png
+cargo run --locked -p cocobeat-game -- --viewport-smoke languages en-GB 1280 800 2 2 target/cocobeat-dpi.png
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 ```
@@ -87,6 +88,8 @@ cargo run --locked -p cocobeat-lab -- generate-dev
 `--locale-smoke CODE PNG`、`--menu-smoke CODE PNG` 和 `--language-smoke CODE PNG` 分别保存指定语言的设置、Ready 主菜单和语言选择页，`CODE` 使用上述完整语言代码；三者运行品牌呈现到 Ready，并使用固定时间步加速离屏预览，不播放音频、不读写用户配置，不代替原生窗口或物理输入验收
 
 `--quality-smoke low|medium|high|off PNG` 保存指定画质的固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 通过生产菜单控制进入画质或帧率子页，运行品牌到 Ready 后截图。两种预览均不播放音频、不读写用户配置，也不运行生产帧率门控，不能用截图耗时推断实际帧率
+
+设置页按实测行高滚动，所有 13 个语言选项与说明/错误都可聚焦，超长行用上下键分段阅读；Windows 读取显示器工作区，X11 使用桌面工作区与当前显示器的保守交集，Wayland 未提供的信息保持未知。`--viewport-smoke main|graphics|pacing|languages|ready CODE WIDTH HEIGHT SCALE ROW PNG` 可检查指定物理尺寸及缩放，ROW 从 0 开始；实际桌面验收与极小 Ready 菜单问题见 [本轮验证](docs/testing.md#小窗口设置与桌面工作区)
 
 准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 

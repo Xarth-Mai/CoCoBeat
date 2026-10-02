@@ -10,7 +10,9 @@ use crate::{
     brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems},
     display::GameCamera,
     i18n::{Locale, Message},
+    input::SettingsAction,
     settings::{AntiAliasing, QualitySettings, RainAmount},
+    settings_menu::SettingsPresentation,
     ui_assets::UiAssets,
 };
 
@@ -22,11 +24,8 @@ pub(crate) struct VisualState {
     pub resonance: f32,
     pub status: String,
     pub running: bool,
-    pub settings_open: bool,
     pub locale: Locale,
-    pub settings_footer: String,
-    pub settings_language: Option<(Locale, bool)>,
-    pub language_choices: Option<usize>,
+    pub settings: Option<SettingsPresentation>,
     pub quality: QualitySettings,
 }
 
@@ -45,15 +44,13 @@ enum UiText {
     Subtitle,
     Clock,
     Player(usize),
-    LanguagePrefix,
-    LanguageName,
-    LanguageSuffix,
-    LanguageChoice(usize),
-    Footer,
+    RowPrefix(usize),
+    RowName(usize),
+    RowSuffix(usize),
 }
 
 #[derive(Component)]
-struct StatusPanel;
+pub(crate) struct StatusPanel;
 
 #[derive(Component)]
 struct Subtitle;
@@ -61,19 +58,52 @@ struct Subtitle;
 #[derive(Component)]
 enum HudNode {
     Progress,
-    Language,
-    LanguageChoice(usize),
-    Footer,
+    Rows,
+    Row(usize),
+    Flag(usize),
 }
+
+#[derive(Component)]
+struct SettingsRows;
+
+#[derive(Component)]
+pub(crate) struct SettingsRowNode(pub usize);
 
 #[derive(Component)]
 struct PlayerLabel;
 
 #[derive(Component)]
-struct LanguageFlag;
+struct LanguageFlag(usize);
+
+#[derive(Resource, Default)]
+pub(crate) struct SettingsScroll {
+    can_up: bool,
+    can_down: bool,
+    request: i8,
+    recenter: bool,
+}
+
+impl SettingsScroll {
+    pub fn handle(&mut self, action: SettingsAction) -> bool {
+        self.request = match action {
+            SettingsAction::Up if self.can_up => -1,
+            SettingsAction::Down if self.can_down => 1,
+            _ => return false,
+        };
+        true
+    }
+
+    pub fn reset(&mut self) {
+        *self = Self {
+            recenter: true,
+            ..default()
+        };
+    }
+}
 
 pub fn install(app: &mut App) {
     app.init_resource::<VisualState>()
+        .init_resource::<SettingsScroll>()
         .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
         .add_systems(Startup, (setup, setup_hud))
         .add_systems(
@@ -82,10 +112,14 @@ pub fn install(app: &mut App) {
         )
         .add_systems(
             PostUpdate,
-            ((apply_quality, animate).chain(), update_hud)
+            (
+                (apply_quality, animate).chain(),
+                (ensure_settings_rows, update_hud, layout_hud).chain(),
+            )
                 .before(TransformSystems::Propagate)
                 .before(UiSystems::Prepare),
-        );
+        )
+        .add_systems(PostUpdate, scroll_settings.after(UiSystems::Layout));
 }
 
 fn part(
@@ -448,72 +482,26 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
         ))
         .with_children(|panel| {
             let color = TextColor(Color::srgb(0.87, 0.91, 0.96));
-            panel.spawn((Text::default(), font(14.0), color, UiText::Status));
-            panel
-                .spawn((
-                    Node {
-                        display: Display::None,
-                        align_items: AlignItems::Center,
-                        flex_wrap: FlexWrap::Wrap,
-                        column_gap: px(6),
-                        ..default()
-                    },
-                    HudNode::Language,
-                ))
-                .with_children(|row| {
-                    row.spawn((
-                        ImageNode::new(assets.flag(state.locale)),
-                        Node {
-                            width: px(24),
-                            height: px(18),
-                            flex_shrink: 0.0,
-                            ..default()
-                        },
-                        LanguageFlag,
-                    ));
-                    for kind in [
-                        UiText::LanguagePrefix,
-                        UiText::LanguageName,
-                        UiText::LanguageSuffix,
-                    ] {
-                        row.spawn((Text::default(), font(14.0), color, kind));
-                    }
-                });
-            for (index, locale) in Locale::ALL.into_iter().enumerate() {
-                panel
-                    .spawn((
-                        Node {
-                            display: Display::None,
-                            align_items: AlignItems::Center,
-                            column_gap: px(6),
-                            ..default()
-                        },
-                        HudNode::LanguageChoice(index),
-                    ))
-                    .with_children(|row| {
-                        row.spawn((
-                            ImageNode::new(assets.flag(locale)),
-                            Node {
-                                width: px(24),
-                                height: px(18),
-                                flex_shrink: 0.0,
-                                ..default()
-                            },
-                        ));
-                        row.spawn((
-                            Text::default(),
-                            TextFont::from_font_size(14.0).with_font(assets.font(locale)),
-                            color,
-                            UiText::LanguageChoice(index),
-                        ));
-                    });
-            }
             panel.spawn((
                 Text::default(),
                 font(14.0),
                 color,
-                UiText::Footer,
-                HudNode::Footer,
+                UiText::Status,
+                Node {
+                    flex_shrink: 0.0,
+                    min_width: px(0),
+                    ..default()
+                },
+            ));
+            panel.spawn((
+                Node {
+                    flex_direction: FlexDirection::Column,
+                    row_gap: px(4),
+                    flex_shrink: 0.0,
+                    ..default()
+                },
+                SettingsRows,
+                HudNode::Rows,
             ));
         });
     commands
@@ -538,6 +526,221 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
         ));
 }
 
+fn ensure_settings_rows(
+    mut commands: Commands,
+    state: Res<VisualState>,
+    assets: Res<UiAssets>,
+    parent: Query<Entity, With<SettingsRows>>,
+    existing: Query<&SettingsRowNode>,
+) {
+    let Some(settings) = &state.settings else {
+        return;
+    };
+    let Ok(parent) = parent.single() else {
+        return;
+    };
+    let count = existing.iter().count();
+    for index in count..settings.rows.len() {
+        commands.entity(parent).with_children(|parent| {
+            parent
+                .spawn((
+                    Node {
+                        align_items: AlignItems::Start,
+                        column_gap: px(6),
+                        flex_shrink: 0.0,
+                        min_width: px(0),
+                        ..default()
+                    },
+                    SettingsRowNode(index),
+                    HudNode::Row(index),
+                ))
+                .with_children(|row| {
+                    row.spawn((
+                        ImageNode::new(assets.flag(state.locale)),
+                        Node {
+                            width: px(24),
+                            height: px(18),
+                            flex_shrink: 0.0,
+                            ..default()
+                        },
+                        LanguageFlag(index),
+                        HudNode::Flag(index),
+                    ));
+                    let font = TextFont::from_font_size(14.0).with_font(assets.font(state.locale));
+                    let color = TextColor(Color::srgb(0.87, 0.91, 0.96));
+                    row.spawn((
+                        Text::default(),
+                        font.clone(),
+                        color,
+                        UiText::RowPrefix(index),
+                        Node {
+                            min_width: px(0),
+                            flex_grow: 1.0,
+                            flex_basis: px(0),
+                            ..default()
+                        },
+                    ))
+                    .with_children(|text| {
+                        text.spawn((
+                            TextSpan::default(),
+                            font.clone(),
+                            color,
+                            UiText::RowName(index),
+                        ));
+                        text.spawn((TextSpan::default(), font, color, UiText::RowSuffix(index)));
+                    });
+                });
+        });
+    }
+}
+
+fn layout_hud(
+    state: Res<VisualState>,
+    cameras: Query<&Camera, With<IsDefaultUiCamera>>,
+    mut panels: Query<&mut Node, With<StatusPanel>>,
+    mut auxiliary: Query<(&UiText, &mut Node), Without<StatusPanel>>,
+) {
+    let Some(viewport) = cameras
+        .single()
+        .ok()
+        .and_then(Camera::logical_viewport_size)
+    else {
+        return;
+    };
+    let margin = (viewport.min_element() * 0.035).clamp(4.0, 28.0);
+    let compact = viewport.x < 900.0 || viewport.y < 600.0;
+    for mut panel in &mut panels {
+        let mut node = panel.clone();
+        node.left = px(margin);
+        node.right = px(margin);
+        node.bottom = px(margin);
+        node.padding = UiRect::all(px((viewport.x * 0.04).clamp(6.0, 16.0)));
+        node.min_height = px(if state.settings.is_some() { 0.0 } else { 104.0 });
+        node.max_height = if state.settings.is_some() {
+            let (origin, width) = dock_geometry(viewport);
+            let top = origin.y + width * 180.0 / 840.0 + if compact { 8.0 } else { 28.0 };
+            px((viewport.y - margin - top).max(1.0))
+        } else {
+            Val::Auto
+        };
+        node.overflow = if state.settings.is_some() {
+            Overflow::scroll_y()
+        } else {
+            Overflow::DEFAULT
+        };
+        if *panel != node {
+            *panel = node;
+        }
+    }
+    for (kind, mut node) in &mut auxiliary {
+        if matches!(kind, UiText::Subtitle | UiText::Clock) {
+            let display = if state.settings.is_some() && compact {
+                Display::None
+            } else {
+                Display::Flex
+            };
+            if node.display != display {
+                node.display = display;
+            }
+        }
+    }
+}
+
+fn dock_geometry(viewport: Vec2) -> (Vec2, f32) {
+    let origin = if viewport.x < 480.0 || viewport.y < 320.0 {
+        Vec2::new(12.0, 8.0)
+    } else {
+        Vec2::new(36.0, 24.0)
+    };
+    (origin, (viewport.x * 0.32).min(240.0))
+}
+
+type SettingsLayout = (usize, usize, Vec2, f32, f32);
+
+fn scroll_settings(
+    state: Res<VisualState>,
+    mut control: ResMut<SettingsScroll>,
+    mut previous: Local<Option<SettingsLayout>>,
+    mut panels: Query<(&ComputedNode, &UiGlobalTransform, &mut ScrollPosition), With<StatusPanel>>,
+    rows: Query<(&SettingsRowNode, &ComputedNode, &UiGlobalTransform)>,
+) {
+    let Some(settings) = &state.settings else {
+        control.reset();
+        *previous = None;
+        for (_, _, mut scroll) in &mut panels {
+            scroll.0 = Vec2::ZERO;
+        }
+        return;
+    };
+    let Some(index) = settings.rows.iter().position(|row| row.selected) else {
+        control.reset();
+        return;
+    };
+    let Ok((panel, panel_transform, mut scroll)) = panels.single_mut() else {
+        return;
+    };
+    let Some((_, row, transform)) = rows.iter().find(|(row, _, _)| row.0 == index) else {
+        return;
+    };
+    if panel.size.y <= 0.0 || row.size.y <= 0.0 {
+        control.reset();
+        return;
+    }
+    let key = (
+        settings.rows.len(),
+        index,
+        panel.size,
+        panel.inverse_scale_factor,
+        row.size.y,
+    );
+    let changed = control.recenter || previous.as_ref() != Some(&key);
+    *previous = Some(key);
+    if changed {
+        control.reset();
+    }
+    let top = panel_transform.translation.y - panel.size.y * 0.5
+        + panel.padding.min_inset.y
+        + panel.border.min_inset.y;
+    let bottom = panel_transform.translation.y + panel.size.y * 0.5
+        - panel.padding.max_inset.y
+        - panel.border.max_inset.y;
+    let row_top = transform.translation.y - row.size.y * 0.5;
+    let row_bottom = transform.translation.y + row.size.y * 0.5;
+    let height = (bottom - top).max(1.0);
+    let oversized = row.size.y > height;
+    let delta = if oversized {
+        if changed || row_top > top || row_bottom < bottom {
+            row_top - top
+        } else if control.request < 0 {
+            (row_top - top).max(-height * 0.8)
+        } else if control.request > 0 {
+            (row_bottom - bottom).min(height * 0.8)
+        } else {
+            0.0
+        }
+    } else if row_top < top {
+        row_top - top
+    } else if row_bottom > bottom {
+        row_bottom - bottom
+    } else {
+        0.0
+    };
+    let limit = (panel.content_size.y - panel.size.y).max(0.0) * panel.inverse_scale_factor;
+    let target = panel.scroll_position.y + delta;
+    let target = if delta > 0.0 {
+        target.ceil()
+    } else {
+        target.floor()
+    };
+    let target = target.max(0.0) * panel.inverse_scale_factor;
+    scroll.y = target.clamp(0.0, limit);
+    let moved = scroll.y / panel.inverse_scale_factor - panel.scroll_position.y;
+    control.can_up = oversized && row_top - moved < top - 1.0;
+    control.can_down = oversized && row_bottom - moved > bottom + 1.0;
+    control.request = 0;
+    control.recenter = false;
+}
+
 fn update_brand_layout(
     layout: Option<ResMut<BrandIntroLayout>>,
     cameras: Query<&Camera, With<IsDefaultUiCamera>>,
@@ -553,11 +756,8 @@ fn update_brand_layout(
     else {
         return;
     };
-    let width = (viewport.x * 0.32).min(240.0);
-    let dock_rect = Rect::from_corners(
-        Vec2::new(36.0, 24.0),
-        Vec2::new(36.0 + width, 24.0 + width * 180.0 / 840.0),
-    );
+    let (origin, width) = dock_geometry(viewport);
+    let dock_rect = Rect::from_corners(origin, origin + Vec2::new(width, width * 180.0 / 840.0));
     if layout.dock_rect != dock_rect {
         layout.dock_rect = dock_rect;
     }
@@ -621,8 +821,9 @@ fn update_hud(
         Res<UiAssets>,
         Option<Res<BrandIntroStatus>>,
     ),
-    mut texts: Query<(&UiText, &mut Text, &mut TextFont)>,
-    mut flags: Query<&mut ImageNode, With<LanguageFlag>>,
+    mut texts: Query<(&UiText, &mut Text, &mut TextFont), Without<TextSpan>>,
+    mut spans: Query<(&UiText, &mut TextSpan, &mut TextFont), Without<Text>>,
+    mut flags: Query<(&LanguageFlag, &mut ImageNode)>,
     mut nodes: Query<(&HudNode, &mut Node)>,
     mut panel: Query<&mut GlobalZIndex, With<StatusPanel>>,
     mut labels: Query<&mut Visibility, With<PlayerLabel>>,
@@ -636,7 +837,7 @@ fn update_hud(
     // The brand backdrop reveals the scene and HUD; only startup errors render above it
     let failed = intro.is_some_and(|intro| intro.phase == BrandIntroPhase::Failed);
     for mut visible in &mut labels {
-        *visible = if state.settings_open {
+        *visible = if state.settings.is_some() {
             Visibility::Hidden
         } else {
             Visibility::Inherited
@@ -646,14 +847,18 @@ fn update_hud(
         layer.0 = if failed { 1001 } else { 0 };
     }
     let locale = state.locale;
-    let (language, selected) = state.settings_language.unwrap_or((locale, false));
-    let (prefix, suffix) = locale
-        .text("settings.language")
-        .split_once("{language}")
-        .expect("language template must contain its native-name placeholder");
+    let rows = state
+        .settings
+        .as_ref()
+        .map(|settings| settings.rows.as_slice())
+        .unwrap_or_default();
     for (kind, mut text, mut font) in &mut texts {
         let value = match *kind {
-            UiText::Status => state.status.clone(),
+            UiText::Status => state
+                .settings
+                .as_ref()
+                .map(|settings| settings.title.clone())
+                .unwrap_or_else(|| state.status.clone()),
             UiText::Subtitle => locale.text("hud.subtitle").into(),
             UiText::Clock => Message::with(
                 "hud.clock",
@@ -687,39 +892,65 @@ fn update_hud(
                     "hud.player_two"
                 })
                 .into(),
-            UiText::LanguagePrefix => {
-                format!("{}{prefix}", if selected { "> " } else { "  " })
-            }
-            UiText::LanguageName => language.native_name().into(),
-            UiText::LanguageSuffix => suffix.into(),
-            UiText::LanguageChoice(index) => format!(
-                "{} {}",
-                if state.language_choices == Some(index) {
-                    ">"
-                } else {
-                    " "
-                },
-                Locale::ALL[index].native_name()
-            ),
-            UiText::Footer => state.settings_footer.clone(),
+            UiText::RowPrefix(index) => rows
+                .get(index)
+                .map(|row| {
+                    let prefix = if row.language.is_some() {
+                        row.text
+                            .split_once("{language}")
+                            .expect("native language placeholder")
+                            .0
+                    } else {
+                        &row.text
+                    };
+                    format!("{} {prefix}", if row.selected { ">" } else { " " })
+                })
+                .unwrap_or_default(),
+            UiText::RowName(_) | UiText::RowSuffix(_) => unreachable!(),
         };
         if text.0 != value {
             text.0 = value;
         }
-        let text_locale = match *kind {
-            UiText::LanguageName => language,
-            UiText::LanguageChoice(index) => Locale::ALL[index],
-            _ => locale,
+        let source = FontSource::Handle(assets.font(locale));
+        if font.font != source {
+            font.font = source;
+        }
+    }
+    for (kind, mut text, mut font) in &mut spans {
+        let (value, text_locale) = match *kind {
+            UiText::RowName(index) => {
+                let language = rows.get(index).and_then(|row| row.language);
+                (
+                    language
+                        .map(|language| language.native_name().to_owned())
+                        .unwrap_or_default(),
+                    language.unwrap_or(locale),
+                )
+            }
+            UiText::RowSuffix(index) => (
+                rows.get(index)
+                    .filter(|row| row.language.is_some())
+                    .and_then(|row| row.text.split_once("{language}"))
+                    .map(|(_, suffix)| suffix.to_owned())
+                    .unwrap_or_default(),
+                locale,
+            ),
+            _ => unreachable!(),
         };
+        if text.0 != value {
+            text.0 = value;
+        }
         let source = FontSource::Handle(assets.font(text_locale));
         if font.font != source {
             font.font = source;
         }
     }
-    for mut image in &mut flags {
-        let flag = assets.flag(language);
-        if image.image != flag {
-            image.image = flag;
+    for (flag, mut image) in &mut flags {
+        if let Some(language) = rows.get(flag.0).and_then(|row| row.language) {
+            let flag = assets.flag(language);
+            if image.image != flag {
+                image.image = flag;
+            }
         }
     }
     for (kind, mut node) in &mut nodes {
@@ -728,18 +959,9 @@ fn update_hud(
                 node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
                 continue;
             }
-            HudNode::Language => {
-                state.settings_open
-                    && state.settings_language.is_some()
-                    && state.language_choices.is_none()
-            }
-            HudNode::LanguageChoice(index) => {
-                state.settings_open
-                    && state
-                        .language_choices
-                        .is_some_and(|selected| selected / 5 == index / 5)
-            }
-            HudNode::Footer => state.settings_open && !state.settings_footer.is_empty(),
+            HudNode::Rows => state.settings.is_some(),
+            HudNode::Row(index) => rows.get(index).is_some(),
+            HudNode::Flag(index) => rows.get(index).is_some_and(|row| row.language.is_some()),
         };
         let display = if visible {
             Display::Flex
@@ -867,9 +1089,212 @@ mod tests {
             .init_resource::<Assets<Font>>()
             .init_resource::<Assets<Image>>()
             .add_systems(Startup, setup_hud)
-            .add_systems(PostUpdate, update_hud);
+            .add_systems(PostUpdate, (ensure_settings_rows, update_hud).chain());
         crate::ui_assets::install(&mut app).unwrap();
         app
+    }
+
+    #[test]
+    fn measured_rows_scroll_into_small_and_scaled_viewports() {
+        use crate::settings_menu::SettingsRow;
+        use bevy::{
+            app::{HierarchyPropagatePlugin, PropagateSet},
+            camera::{ComputedCameraValues, RenderTargetInfo},
+            text::FontCx,
+            ui::{ui_layout_system, ui_surface::UiSurface, update::propagate_ui_target_cameras},
+        };
+        for (size, scale) in [
+            (UVec2::new(180, 120), 1.0),
+            (UVec2::new(400, 300), 1.0),
+            (UVec2::new(1280, 800), 2.0),
+        ] {
+            let mut app = App::new();
+            app.add_plugins((
+                TaskPoolPlugin::default(),
+                HierarchyPropagatePlugin::<ComputedUiTargetCamera>::new(PostUpdate),
+                HierarchyPropagatePlugin::<ComputedUiRenderTargetInfo>::new(PostUpdate),
+            ))
+            .init_resource::<UiScale>()
+            .init_resource::<UiSurface>()
+            .init_resource::<FontCx>()
+            .init_resource::<SettingsScroll>()
+            .insert_resource(VisualState {
+                settings: Some(SettingsPresentation {
+                    title: "Settings".into(),
+                    rows: (0..5).map(|_| SettingsRow::default()).collect(),
+                }),
+                ..default()
+            })
+            .add_systems(
+                PostUpdate,
+                (
+                    layout_hud,
+                    propagate_ui_target_cameras,
+                    ui_layout_system,
+                    scroll_settings,
+                )
+                    .chain(),
+            )
+            .configure_sets(
+                PostUpdate,
+                (
+                    PropagateSet::<ComputedUiTargetCamera>::default(),
+                    PropagateSet::<ComputedUiRenderTargetInfo>::default(),
+                )
+                    .after(propagate_ui_target_cameras)
+                    .before(ui_layout_system),
+            );
+            let camera = app
+                .world_mut()
+                .spawn((
+                    Camera2d,
+                    IsDefaultUiCamera,
+                    Camera {
+                        computed: ComputedCameraValues {
+                            target_info: Some(RenderTargetInfo {
+                                physical_size: size,
+                                scale_factor: scale,
+                            }),
+                            ..default()
+                        },
+                        ..default()
+                    },
+                ))
+                .id();
+            let panel = app
+                .world_mut()
+                .spawn((
+                    StatusPanel,
+                    Node {
+                        position_type: PositionType::Absolute,
+                        flex_direction: FlexDirection::Column,
+                        row_gap: px(4),
+                        ..default()
+                    },
+                ))
+                .id();
+            // Exercise the real layout system with differently sized rows; font wrapping is checked by GPU captures
+            let rows: Vec<_> = [20, 240, 40, 120, 30]
+                .into_iter()
+                .enumerate()
+                .map(|(index, height)| {
+                    app.world_mut()
+                        .spawn((
+                            Node {
+                                height: px(height),
+                                flex_shrink: 0.0,
+                                ..default()
+                            },
+                            SettingsRowNode(index),
+                            ChildOf(panel),
+                        ))
+                        .id()
+                })
+                .collect();
+            let bounds = |world: &World, row: Entity| {
+                let panel_node = world.get::<ComputedNode>(panel).unwrap();
+                let panel_position = world.get::<UiGlobalTransform>(panel).unwrap().translation.y;
+                let row_node = world.get::<ComputedNode>(row).unwrap();
+                let row_position = world.get::<UiGlobalTransform>(row).unwrap().translation.y;
+                (
+                    panel_position - panel_node.size.y * 0.5 + panel_node.padding.min_inset.y,
+                    panel_position + panel_node.size.y * 0.5 - panel_node.padding.max_inset.y,
+                    row_position - row_node.size.y * 0.5,
+                    row_position + row_node.size.y * 0.5,
+                )
+            };
+            for index in [0, 4, 2, 1] {
+                for (i, row) in app
+                    .world_mut()
+                    .resource_mut::<VisualState>()
+                    .settings
+                    .as_mut()
+                    .unwrap()
+                    .rows
+                    .iter_mut()
+                    .enumerate()
+                {
+                    row.selected = i == index;
+                }
+                for _ in 0..3 {
+                    app.update();
+                }
+                let panel_size = app.world().get::<ComputedNode>(panel).unwrap().size;
+                let panel_center = app
+                    .world()
+                    .get::<UiGlobalTransform>(panel)
+                    .unwrap()
+                    .translation;
+                assert!((panel_center - panel_size * 0.5).cmpge(Vec2::ZERO).all());
+                assert!(
+                    (panel_center + panel_size * 0.5)
+                        .cmple(size.as_vec2())
+                        .all()
+                );
+                let (top, bottom, row_top, row_bottom) = bounds(app.world(), rows[index]);
+                assert!(
+                    row_top >= top - 1.0,
+                    "size={size}, scale={scale}, index={index}"
+                );
+                if row_bottom - row_top <= bottom - top {
+                    assert!(row_bottom <= bottom + 1.0);
+                } else {
+                    assert!(
+                        !app.world_mut()
+                            .resource_mut::<SettingsScroll>()
+                            .handle(SettingsAction::Confirm)
+                    );
+                    assert!(
+                        !app.world_mut()
+                            .resource_mut::<SettingsScroll>()
+                            .handle(SettingsAction::Back)
+                    );
+                    for action in [SettingsAction::Down, SettingsAction::Up] {
+                        let mut pages = 0;
+                        while app
+                            .world_mut()
+                            .resource_mut::<SettingsScroll>()
+                            .handle(action)
+                        {
+                            pages += 1;
+                            assert!(pages < 20);
+                            app.update();
+                            app.update();
+                        }
+                        let (top, bottom, row_top, row_bottom) = bounds(app.world(), rows[index]);
+                        if matches!(action, SettingsAction::Down) {
+                            assert!(row_bottom <= bottom + 1.0);
+                        } else {
+                            assert!(row_top >= top - 1.0);
+                        }
+                    }
+                }
+            }
+            app.world_mut()
+                .get_mut::<Camera>(camera)
+                .unwrap()
+                .computed
+                .target_info = Some(RenderTargetInfo {
+                physical_size: UVec2::new(320, 240),
+                scale_factor: 2.0,
+            });
+            for _ in 0..3 {
+                app.update();
+            }
+            let (top, _, row_top, _) = bounds(app.world(), rows[1]);
+            assert!(row_top >= top - 1.0);
+            app.world_mut().resource_mut::<VisualState>().settings = None;
+            app.update();
+            assert_eq!(
+                app.world().get::<ScrollPosition>(panel).unwrap().0,
+                Vec2::ZERO
+            );
+            assert!(
+                !app.world_mut()
+                    .resource_mut::<SettingsScroll>()
+                    .handle(SettingsAction::Down)
+            );
+        }
     }
 
     #[test]
@@ -901,117 +1326,93 @@ mod tests {
     }
 
     #[test]
-    fn locale_switches_update_hud_fonts_and_native_language_pages() {
+    fn locale_switches_update_hud_fonts_and_native_language_rows() {
+        use crate::settings_menu::SettingsRow;
         let mut app = hud_app();
         for locale in Locale::ALL {
-            app.world_mut().resource_mut::<VisualState>().locale = locale;
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.locale = locale;
+                state.settings = Some(SettingsPresentation {
+                    title: locale.text("settings.language_title").into(),
+                    rows: Locale::ALL
+                        .into_iter()
+                        .map(|language| SettingsRow {
+                            text: "{language}".into(),
+                            language: Some(language),
+                            selected: language == locale,
+                        })
+                        .collect(),
+                });
+            }
             app.update();
-            let mut texts = app.world_mut().query::<(&UiText, &Text, &TextFont)>();
             let assets = app.world().resource::<UiAssets>();
-            for (kind, text, font) in texts.iter(app.world()) {
-                let expected = match *kind {
-                    UiText::LanguageChoice(index) => Locale::ALL[index],
-                    _ => locale,
+            let ui_font = FontSource::Handle(assets.font(locale));
+            for entity in app.world().iter_entities() {
+                let Some(kind) = entity.get::<UiText>() else {
+                    continue;
                 };
-                assert_eq!(font.font, FontSource::Handle(assets.font(expected)));
+                let font = entity.get::<TextFont>().unwrap();
                 match *kind {
-                    UiText::Subtitle => assert_eq!(text.0, locale.text("hud.subtitle")),
-                    UiText::Player(0) => assert_eq!(text.0, locale.text("hud.player_one")),
-                    UiText::Player(1) => assert_eq!(text.0, locale.text("hud.player_two")),
-                    UiText::Clock => assert!(text.0.contains(locale.text("hud.resting"))),
-                    _ => {}
+                    UiText::RowName(index) => {
+                        let language = Locale::ALL[index];
+                        assert_eq!(font.font, FontSource::Handle(assets.font(language)));
+                        assert_eq!(entity.get::<TextSpan>().unwrap().0, language.native_name());
+                    }
+                    UiText::RowSuffix(_) => {
+                        assert_eq!(font.font, ui_font);
+                        assert!(entity.get::<TextSpan>().unwrap().0.is_empty());
+                    }
+                    UiText::RowPrefix(index) => {
+                        assert_eq!(font.font, ui_font);
+                        assert_eq!(
+                            entity.get::<Text>().unwrap().0.starts_with(">"),
+                            Locale::ALL[index] == locale
+                        );
+                    }
+                    _ => assert_eq!(font.font, ui_font),
                 }
             }
+            let mut flags = app.world_mut().query::<(&LanguageFlag, &ImageNode)>();
+            assert_eq!(flags.iter(app.world()).count(), Locale::ALL.len());
+            for (flag, image) in flags.iter(app.world()) {
+                assert_eq!(
+                    image.image,
+                    app.world().resource::<UiAssets>().flag(Locale::ALL[flag.0])
+                );
+            }
         }
-
         {
             let mut state = app.world_mut().resource_mut::<VisualState>();
             state.locale = Locale::EnUs;
-            state.settings_open = true;
-            state.settings_language = Some((Locale::Ko, true));
-            state.settings_footer = "Controls".into();
+            state.settings = Some(SettingsPresentation {
+                title: "Settings".into(),
+                rows: vec![SettingsRow {
+                    text: Locale::EnUs.text("settings.language").into(),
+                    language: Some(Locale::Ko),
+                    selected: true,
+                }],
+            });
         }
         app.update();
-        let mut texts = app.world_mut().query::<(&UiText, &Text, &TextFont)>();
-        for (kind, text, font) in texts.iter(app.world()) {
-            match *kind {
-                UiText::LanguagePrefix => {
-                    assert_eq!(text.0, "> Language: ");
-                    assert_eq!(
-                        font.font,
-                        FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::EnUs))
-                    );
-                }
-                UiText::LanguageName => {
-                    assert_eq!(text.0, Locale::Ko.native_name());
-                    assert_eq!(
-                        font.font,
-                        FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::Ko))
-                    );
-                }
-                UiText::LanguageSuffix => assert!(text.0.is_empty()),
-                _ => {}
-            }
-        }
-        let flag = app
-            .world_mut()
-            .query_filtered::<&ImageNode, With<LanguageFlag>>()
-            .single(app.world())
-            .unwrap();
-        assert_eq!(
-            flag.image,
-            app.world().resource::<UiAssets>().flag(Locale::Ko)
-        );
+        let mut texts = app.world_mut().query::<(&UiText, &Text)>();
         assert!(
-            app.world_mut()
-                .query_filtered::<&Visibility, With<PlayerLabel>>()
-                .iter(app.world())
-                .all(|visibility| *visibility == Visibility::Hidden)
+            texts.iter(app.world()).any(
+                |(kind, text)| matches!(kind, UiText::RowPrefix(0)) && text.0 == "> Language: "
+            )
         );
-
-        for selected in [4, 5, 12, 0] {
-            {
-                let mut state = app.world_mut().resource_mut::<VisualState>();
-                state.settings_language = None;
-                state.language_choices = Some(selected);
-            }
-            app.update();
-            let mut rows = app.world_mut().query::<(&HudNode, &Node, &Children)>();
-            let mut visible = Vec::new();
-            for (kind, node, children) in rows.iter(app.world()) {
-                if let HudNode::LanguageChoice(index) = *kind {
-                    let locale = Locale::ALL[index];
-                    if node.display != Display::None {
-                        visible.push(index);
-                    }
-                    let image = children
-                        .iter()
-                        .find_map(|child| app.world().get::<ImageNode>(child))
-                        .unwrap();
-                    assert_eq!(image.image, app.world().resource::<UiAssets>().flag(locale));
-                    let name = children
-                        .iter()
-                        .find(|&child| app.world().get::<Text>(child).is_some())
-                        .unwrap();
-                    let text = app.world().get::<Text>(name).unwrap();
-                    assert!(text.0.ends_with(locale.native_name()));
-                    assert_eq!(text.0.starts_with("> "), index == selected);
-                    assert_eq!(
-                        app.world().get::<TextFont>(name).unwrap().font,
-                        FontSource::Handle(app.world().resource::<UiAssets>().font(locale))
-                    );
-                } else if matches!(kind, HudNode::Language) {
-                    assert_eq!(node.display, Display::None);
-                }
-            }
-            visible.sort_unstable();
-            let start = selected / 5 * 5;
-            assert_eq!(
-                visible,
-                (start..(start + 5).min(Locale::ALL.len())).collect::<Vec<_>>()
-            );
+        let mut spans = app.world_mut().query::<(&UiText, &TextSpan, &TextFont)>();
+        assert!(spans.iter(app.world()).any(|(kind, text, font)| matches!(
+            kind,
+            UiText::RowName(0)
+        ) && text.0
+            == Locale::Ko.native_name()
+            && font.font
+                == FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::Ko))));
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            state.settings = None;
         }
-        app.world_mut().resource_mut::<VisualState>().settings_open = false;
         app.update();
         let mut nodes = app.world_mut().query::<(&HudNode, &Node)>();
         assert!(nodes.iter(app.world()).all(|(kind, node)| {

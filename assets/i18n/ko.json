@@ -111,5 +111,7 @@
   "settings.unlimited": "제한 없음",
   "settings.vsync": "수직 동기화(VSync): {value}",
   "settings.back": "뒤로",
-  "settings.page_controls": "위/아래 방향키 또는 십자키: 선택 · 왼쪽/오른쪽 방향키 또는 Enter/South: 변경 · Esc/East: 뒤로"
+  "settings.page_controls": "위/아래 방향키 또는 십자키: 선택 · 왼쪽/오른쪽 방향키 또는 Enter/South: 변경 · Esc/East: 뒤로",
+  "display.work_area_windows": "Windows에서 보고한 모니터 작업 영역을 사용합니다",
+  "display.work_area_x11": "X11 바탕 화면 작업 영역과 현재 모니터가 겹치는 범위를 사용합니다"
 }

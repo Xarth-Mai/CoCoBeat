@@ -111,5 +111,7 @@
   "settings.unlimited": "Sem limite",
   "settings.vsync": "VSync: {value}",
   "settings.back": "Voltar",
-  "settings.page_controls": "Cima/Baixo ou direcional: selecionar · Esquerda/Direita ou Enter/South: alterar · Esc/East: voltar"
+  "settings.page_controls": "Cima/Baixo ou direcional: selecionar · Esquerda/Direita ou Enter/South: alterar · Esc/East: voltar",
+  "display.work_area_windows": "Usando a área de trabalho do monitor no Windows",
+  "display.work_area_x11": "Usando a interseção da área de trabalho do desktop X11 com este monitor"
 }

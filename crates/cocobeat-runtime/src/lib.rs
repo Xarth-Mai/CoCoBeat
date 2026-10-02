@@ -7,6 +7,7 @@ mod brand_intro;
 pub mod clock;
 pub mod dev_song;
 mod display;
+mod display_area;
 mod i18n;
 mod input;
 pub mod probe;

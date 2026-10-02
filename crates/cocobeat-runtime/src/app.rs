@@ -12,11 +12,11 @@ use crate::{
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
     ui_assets,
-    view::{self, VisualState},
+    view::{self, SettingsScroll, VisualState},
 };
 use bevy::{
     app::{AppExit, ScheduleRunnerPlugin},
-    camera::RenderTarget,
+    camera::{ImageRenderTarget, RenderTarget},
     prelude::*,
     render::{
         render_resource::{TextureFormat, TextureUsages},
@@ -55,6 +55,52 @@ enum Smoke {
     Quality(QualitySettings),
     Graphics(Locale),
     Pacing(Locale),
+}
+
+#[derive(Clone, Copy, Debug)]
+struct SmokeViewport {
+    size: [u32; 2],
+    scale: f32,
+    selection: Option<usize>,
+}
+
+impl Default for SmokeViewport {
+    fn default() -> Self {
+        Self {
+            size: [1280, 800],
+            scale: 1.0,
+            selection: None,
+        }
+    }
+}
+
+impl SmokeViewport {
+    fn parse(width: &str, height: &str, scale: &str, selection: &str) -> Result<Self, String> {
+        let size = [width, height].map(|axis| axis.parse::<u32>());
+        let [Ok(width), Ok(height)] = size else {
+            return Err("Smoke dimensions must be integer physical pixels".into());
+        };
+        if !(1..=8192).contains(&width)
+            || !(1..=8192).contains(&height)
+            || u64::from(width) * u64::from(height) > 16_777_216
+        {
+            return Err("Smoke dimensions must be 1..8192 pixels and at most 16 megapixels".into());
+        }
+        let scale = scale
+            .parse::<f32>()
+            .map_err(|_| "Invalid smoke scale factor")?;
+        if !scale.is_finite() || !(0.25..=8.0).contains(&scale) {
+            return Err("Smoke scale factor must be finite and within 0.25..8".into());
+        }
+        let selection = selection
+            .parse::<usize>()
+            .map_err(|_| "Invalid smoke row index")?;
+        Ok(Self {
+            size: [width, height],
+            scale,
+            selection: Some(selection),
+        })
+    }
 }
 
 #[derive(Resource)]
@@ -165,7 +211,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready at physical pixels and DPI; ROW starts at 0\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -229,6 +275,27 @@ pub fn run() -> ExitCode {
                     "Unsupported settings page or locale: {page} / {code}"
                 )),
             }
+        }
+        [flag, page, code, width, height, scale, selection, path] if flag == "--viewport-smoke" => {
+            (|| {
+                let locale = Locale::ALL
+                    .into_iter()
+                    .find(|locale| locale.code() == code)
+                    .ok_or_else(|| format!("Unsupported locale: {code}"))?;
+                let mode = match page.as_str() {
+                    "main" => Smoke::Locale(locale),
+                    "graphics" => Smoke::Graphics(locale),
+                    "pacing" => Smoke::Pacing(locale),
+                    "languages" => Smoke::Languages(locale),
+                    "ready" => Smoke::Menu(locale),
+                    _ => return Err(format!("Unsupported settings page: {page}")),
+                };
+                let viewport = SmokeViewport::parse(width, height, scale, selection)?;
+                if matches!(mode, Smoke::Menu(_)) && viewport.selection != Some(0) {
+                    return Err("Ready preview has no settings rows; use row 0".into());
+                }
+                visual_smoke_at(PathBuf::from(path), mode, viewport)
+            })()
         }
         _ => Err("Unknown arguments; run cocobeat-game --help".into()),
     };
@@ -401,7 +468,12 @@ fn update_game(
     mut input: ResMut<InputState>,
     mut audio: NonSendMut<AudioOutput>,
     mut visual: ResMut<VisualState>,
-    (time, mut settings, mut display): (Res<Time>, ResMut<SettingsMenu>, ResMut<DisplayState>),
+    (time, mut settings, mut display, mut settings_scroll): (
+        Res<Time>,
+        ResMut<SettingsMenu>,
+        ResMut<DisplayState>,
+        ResMut<SettingsScroll>,
+    ),
     (mut exit, mut close_requests): (MessageWriter<AppExit>, MessageReader<WindowCloseRequested>),
     (mut brand, mut impacts): (ResMut<BrandIntroStatus>, MessageReader<BrandImpact>),
 ) {
@@ -418,7 +490,9 @@ fn update_game(
     }
     let settings_now = input.origin.elapsed().as_secs_f64();
     settings.sync_pacing(&display);
-    settings.tick(settings_now, &mut display);
+    if settings.tick(settings_now, &mut display) {
+        settings_scroll.reset();
+    }
     visual.quality = settings.values.quality;
     visual.locale = settings.values.locale;
     if !input.controls_enabled() {
@@ -501,14 +575,18 @@ fn update_game(
         for event in std::mem::take(&mut input.queued) {
             if let Control::Settings(action) = event.control {
                 if action == SettingsAction::Open {
+                    settings_scroll.reset();
                     if input.menu_open && !matches!(game.phase, Phase::Running | Phase::Starting) {
                         settings.begin(&display);
                         input.set_settings_open(true);
                     } else {
                         input.set_settings_open(false);
                     }
-                } else if settings.handle(action, settings_now, &mut display) {
-                    input.set_settings_open(false);
+                } else if !settings_scroll.handle(action) {
+                    if settings.handle(action, settings_now, &mut display) {
+                        input.set_settings_open(false);
+                    }
+                    settings_scroll.reset();
                 }
                 // A second device cannot confirm a new preview in this capture batch
                 break;
@@ -597,15 +675,11 @@ fn update_game(
     visual.song_seconds = game.session.current.as_seconds_f64();
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
-    visual.settings_open = settings.is_open();
     visual.quality = settings.values.quality;
     let locale = settings.values.locale;
     visual.locale = locale;
-    visual.language_choices = settings.language_choices();
-    visual.settings_language = settings.language_row();
-    visual.settings_footer = settings.footer(&display, locale);
+    visual.settings = settings.presentation(settings_now, &display, locale);
     if settings.is_open() {
-        visual.status = settings.text(settings_now, &display, locale);
         return;
     }
     visual.status = game_status(&game, &input, &settings);
@@ -656,6 +730,72 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
 }
 
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
+    visual_smoke_at(path, mode, SmokeViewport::default())
+}
+
+fn smoke_layout_metrics(
+    viewport: SmokeViewport,
+    camera: &Camera,
+    (panel, panel_transform): (&ComputedNode, &UiGlobalTransform),
+    selected: Option<(usize, &ComputedNode, &UiGlobalTransform)>,
+) -> Result<serde_json::Value, String> {
+    let expected = Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32) / viewport.scale;
+    let logical = camera
+        .logical_viewport_size()
+        .ok_or("Missing logical viewport")?;
+    if !logical.is_finite() || logical.distance(expected) > 0.01 {
+        return Err(format!(
+            "Wrong logical viewport: {logical:?}; expected {expected:?}"
+        ));
+    }
+    let panel_min = panel_transform.translation - panel.size * 0.5
+        + panel.padding.min_inset
+        + panel.border.min_inset;
+    let panel_max = panel_transform.translation + panel.size * 0.5
+        - panel.padding.max_inset
+        - panel.border.max_inset;
+    let mut metrics = serde_json::json!({
+        "physical_size": viewport.size,
+        "scale_factor": viewport.scale,
+        "logical_size": [logical.x, logical.y],
+        "panel_physical": [panel_min.x, panel_min.y, panel_max.x, panel_max.y],
+        "panel_inside_viewport": panel_min.cmpge(Vec2::ZERO).all()
+            && panel_max.cmple(Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32)).all(),
+        "selected_row": null,
+    });
+    let Some((selected, row, row_transform)) = selected else {
+        return Ok(metrics);
+    };
+    let row_min = row_transform.translation - row.size * 0.5;
+    let row_max = row_transform.translation + row.size * 0.5;
+    let oversized = row.size.y > panel_max.y - panel_min.y;
+    if !panel_min.is_finite()
+        || !panel_max.is_finite()
+        || !row_min.is_finite()
+        || !row_max.is_finite()
+        || panel_max.cmple(panel_min).any()
+        || panel_min.cmplt(Vec2::splat(-1.0)).any()
+        || panel_max
+            .cmpgt(Vec2::new(viewport.size[0] as f32, viewport.size[1] as f32) + Vec2::ONE)
+            .any()
+        || row.size.cmple(Vec2::ZERO).any()
+        || row_min.x < panel_min.x - 1.0
+        || row_max.x > panel_max.x + 1.0
+        || row_max.y <= panel_min.y
+        || row_min.y >= panel_max.y
+        || (!oversized && (row_min.y < panel_min.y - 1.0 || row_max.y > panel_max.y + 1.0))
+    {
+        return Err(format!(
+            "Selected settings row {selected} is not accessible: panel={panel_min:?}..{panel_max:?}, row={row_min:?}..{row_max:?}"
+        ));
+    }
+    metrics["selected_row"] = serde_json::json!(selected);
+    metrics["row_physical"] = serde_json::json!([row_min.x, row_min.y, row_max.x, row_max.y]);
+    metrics["oversized_row"] = serde_json::json!(oversized);
+    Ok(metrics)
+}
+
+fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
     let startup = !matches!(mode, Smoke::Scene | Smoke::Quality(_));
     let mut app = App::new();
     app.add_plugins(
@@ -695,7 +835,7 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
     display::install(&mut app, default());
     app.world_mut()
         .resource_mut::<DisplayState>()
-        .set_headless_surface([1280, 800]);
+        .set_headless_surface(viewport.size);
     if matches!(
         mode,
         Smoke::Settings
@@ -742,17 +882,31 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
             }
             menu.handle(SettingsAction::Confirm, 0.0, &mut display);
         }
+        if let Some(selection) = viewport.selection {
+            let mut display = app.world_mut().resource_mut::<DisplayState>();
+            let presentation = menu
+                .presentation(0.0, &display, menu.values.locale)
+                .unwrap();
+            let count = presentation.rows.len();
+            if selection >= count {
+                return Err(format!("Smoke row index {selection} is outside 0..{count}"));
+            }
+            let current = presentation
+                .rows
+                .iter()
+                .position(|row| row.selected)
+                .unwrap();
+            for _ in 0..(selection + count - current) % count {
+                menu.handle(SettingsAction::Down, 0.0, &mut display);
+            }
+        }
         app.insert_resource(menu).add_systems(
             Update,
             (|settings: Res<SettingsMenu>,
               display: Res<DisplayState>,
               mut visual: ResMut<VisualState>| {
-                visual.settings_open = true;
                 visual.locale = settings.values.locale;
-                visual.language_choices = settings.language_choices();
-                visual.settings_language = settings.language_row();
-                visual.settings_footer = settings.footer(&display, visual.locale);
-                visual.status = settings.text(0.0, &display, visual.locale);
+                visual.settings = settings.presentation(0.0, &display, visual.locale);
             })
             .after(DisplaySystems::Sync),
         );
@@ -777,7 +931,12 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
             .insert_resource(Game::new()?)
             .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance));
     }
-    let mut image = Image::new_target_texture(1280, 800, TextureFormat::Rgba8UnormSrgb, None);
+    let mut image = Image::new_target_texture(
+        viewport.size[0],
+        viewport.size[1],
+        TextureFormat::Rgba8UnormSrgb,
+        None,
+    );
     image.texture_descriptor.usage |= TextureUsages::COPY_SRC;
     let target = app.world_mut().resource_mut::<Assets<Image>>().add(image);
     let camera_target = target.clone();
@@ -787,7 +946,10 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
             for camera in &cameras {
                 commands
                     .entity(camera)
-                    .insert(RenderTarget::Image(camera_target.clone().into()));
+                    .insert(RenderTarget::Image(ImageRenderTarget {
+                        handle: camera_target.clone(),
+                        scale_factor: viewport.scale,
+                    }));
             }
         })
         .after(DisplaySystems::Setup)
@@ -810,7 +972,6 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
                 "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
                     .into(),
             running: false,
-            settings_open: false,
             ..default()
         }
     };
@@ -830,6 +991,10 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
                mut frame: Local<u32>,
                mut requested: Local<bool>,
                intro: Option<Res<BrandIntroStatus>>,
+               visual: Res<VisualState>,
+               cameras: Query<&Camera, With<PresentationCamera>>,
+               panels: Query<(&ComputedNode, &UiGlobalTransform), With<view::StatusPanel>>,
+               rows: Query<(&view::SettingsRowNode, &ComputedNode, &UiGlobalTransform)>,
                mut exit: MessageWriter<AppExit>| {
             *frame += 1;
             if *frame > 1_200
@@ -849,32 +1014,71 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
                 *frame == 30
             };
             if !*requested && ready {
+                if visual.settings.is_some() || matches!(mode, Smoke::Menu(_)) {
+                    let metrics = (|| {
+                        let selected = if let Some(settings) = &visual.settings {
+                            let selected = settings
+                                .rows
+                                .iter()
+                                .position(|row| row.selected)
+                                .ok_or("Missing selected settings row")?;
+                            let (_, row, transform) = rows
+                                .iter()
+                                .find(|(row, _, _)| row.0 == selected)
+                                .ok_or("Selected settings row was not laid out")?;
+                            Some((selected, row, transform))
+                        } else {
+                            None
+                        };
+                        smoke_layout_metrics(
+                            viewport,
+                            cameras.single().map_err(|error| error.to_string())?,
+                            panels.single().map_err(|error| error.to_string())?,
+                            selected,
+                        )
+                    })();
+                    match metrics {
+                        Ok(metrics) => eprintln!("VIEWPORT_GEOMETRY {metrics}"),
+                        Err(error) => {
+                            eprintln!("Settings layout failed: {error}");
+                            exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
+                            return;
+                        }
+                    }
+                }
                 *requested = true;
                 let output = path.clone();
-                commands.spawn(Screenshot::image(target.clone())).observe(
-                    move |capture: On<ScreenshotCaptured>, mut exit: MessageWriter<AppExit>| {
-                        let result = capture
-                            .image
-                            .clone()
-                            .try_into_dynamic()
-                            .map_err(|error| error.to_string())
-                            .and_then(|image| {
-                                image
-                                    .to_rgb8()
-                                    .save(&output)
-                                    .map_err(|error| error.to_string())
-                            });
-                        match result {
-                            Ok(()) => {
-                                exit.write(AppExit::Success);
+                commands
+                    .spawn(Screenshot(RenderTarget::Image(ImageRenderTarget {
+                        handle: target.clone(),
+                        scale_factor: viewport.scale,
+                    })))
+                    .observe(
+                        move |capture: On<ScreenshotCaptured>, mut exit: MessageWriter<AppExit>| {
+                            let result = capture
+                                .image
+                                .clone()
+                                .try_into_dynamic()
+                                .map_err(|error| error.to_string())
+                                .and_then(|image| {
+                                    image
+                                        .to_rgb8()
+                                        .save(&output)
+                                        .map_err(|error| error.to_string())
+                                });
+                            match result {
+                                Ok(()) => {
+                                    exit.write(AppExit::Success);
+                                }
+                                Err(error) => {
+                                    eprintln!("Screenshot failed: {error}");
+                                    exit.write(AppExit::Error(
+                                        std::num::NonZeroU8::new(1).unwrap(),
+                                    ));
+                                }
                             }
-                            Err(error) => {
-                                eprintln!("Screenshot failed: {error}");
-                                exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
-                            }
-                        }
-                    },
-                );
+                        },
+                    );
             }
         })
         .after(BrandIntroSystems::Advance),
@@ -901,6 +1105,41 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn viewport_smoke_parsing_bounds_physical_sizes_scales_and_row_indices() {
+        for (width, height, scale) in [
+            (1280, 800, 2.0),
+            (640, 360, 1.0),
+            (320, 240, 1.0),
+            (180, 120, 1.0),
+        ] {
+            let viewport = SmokeViewport::parse(
+                &width.to_string(),
+                &height.to_string(),
+                &scale.to_string(),
+                "12",
+            )
+            .unwrap();
+            assert_eq!(viewport.size, [width, height]);
+            assert_eq!(viewport.scale, scale);
+            assert_eq!(viewport.selection, Some(12));
+        }
+        for (width, height, scale, row) in [
+            ("0", "800", "1", "0"),
+            ("8193", "800", "1", "0"),
+            ("8192", "8192", "1", "0"),
+            ("1280", "-1", "1", "0"),
+            ("1280", "800", "NaN", "0"),
+            ("1280", "800", "inf", "0"),
+            ("1280", "800", "0", "0"),
+            ("1280", "800", "-1", "0"),
+            ("1280", "800", "9", "0"),
+            ("1280", "800", "1", "-1"),
+        ] {
+            assert!(SmokeViewport::parse(width, height, scale, row).is_err());
+        }
+    }
 
     #[test]
     fn captured_history_survives_playback_observation_and_consumption_cadences() {

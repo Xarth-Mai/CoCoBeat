@@ -159,3 +159,22 @@ WGPU_BACKEND=vulkan ./bin/cocobeat-game --startup-smoke /home/lzzz/MyProjects/Co
 之后再增加 canonical 编码回读、SongPackage 事务/哈希、MIR 标注、QUIC 模拟和两台真实机器测试，当前开发 PCM 与 JSON Replay 不代表这些能力已实现
 
 每项功能记录责任、真值来源、失败行为、实际检查与可重放证据；测试计数与模拟分数只证明相应软件范围
+
+
+## 小窗口设置与桌面工作区
+
+2026-10-02，基于 `0d3fc8b` 完成结构化设置行与原生滚动，父页、画质、帧率、分辨率、全部 13 个语言选项及说明/错误都可聚焦；当前行自动进入可见区域，超高行先用上下键逐段阅读，确认与返回保留原语义；进入显示预览聚焦等待/确认状态，超时回退重置滚动
+
+`CARGO_BUILD_JOBS=1 cargo xtask check` 与 `cargo build --offline --locked -j1 -p cocobeat-game` 通过，完整 workspace 共 88 项测试，格式、Clippy、依赖边界与构建均为 PASS；日志为 `target/display-final-{check,build}.log`，117 个源码与资源文件、可执行文件、执行命令和渲染目标实际几何记录在 `target/display-evidence/evidence.json`。布局窄测运行真实 Bevy/Taffy 和 ScrollPosition，覆盖不同测量行高、180×120/400×300 视口、缩放因子 2、跨页焦点与关闭清理；真实 Noto 换行另由 GPU 截图检查
+
+Windows 通过 winsafe 安全读取显示器 `rcWork`，X11 验证 EWMH 属性并使用桌面工作区与当前显示器的保守交集；Wayland 工作区未知时继续明确显示未知，显示器尺寸仅作上界。显示器、工作区或 DPI 变化后，普通窗口尝试一次尺寸/位置容纳，保留实际回读；全屏与受控窗口推迟调整，WM 拒绝后不持续重试。13 份 catalog 各扩展为 115 键，许可台账共 520 个第三方包
+
+Windows 检查在 Linux 上以独立官方 Rust 1.98.1 执行 `cargo check --offline --locked -j1 -p cocobeat-runtime --target x86_64-pc-windows-gnu`，使用 `target/windows-cross-toolchain/` 的私有编译器和标准库、独立 `target/windows-cross-check/` 缓存；最终退出 0、零 warning，114 个输入文件起止哈希一致，见 `target/windows-cross-toolchain/runtime-final-check.json`。最初混用 Arch 编译器和官方标准库产生 E0514，原日志保留；系统工具链未修改。该证据仅覆盖 Windows 条件代码编译，Windows 链接、运行、图标和真实工作区行为均为 NOT RUN
+
+`--viewport-smoke main|graphics|pacing|languages|ready CODE WIDTH HEIGHT SCALE ROW PNG` 使用实际 ImageRenderTarget 缩放与生产菜单行，ROW 为从 0 开始的焦点行号，ready 只接受 0；命令不播放音频、不读写用户设置，不启动生产帧率门控。`VIEWPORT_GEOMETRY` 记录物理/逻辑视口及面板/当前行实测边界，设置行不可达会使检查失败，超高行记录当前可见部分；Ready 模式只记录边界以暴露既有问题。截图使用与相机相同的 handle 和 scale，初轮 scale 不匹配产生的两张黑图保存在 `diagnostic-scale-target/` 并排除通过结果
+
+本轮使用 AMD RX 6650 XT / RADV Mesa 26.2.3 Vulkan 完成 27 次离屏渲染，均退出 0：25 张设置截图逐张视觉检查 PASS，覆盖 13 个语言变体、连续语言列表、180×120/320×240/400×300/640×360 及 1280×800 scale 1/2；可容纳的当前行完整可见，180×120 德语超高说明行验证首段可见，双向分页由真实布局窄测覆盖。未选中行可位于滚动区域外；字体、英美/英国及台湾/香港地区旗帜均符合所选项
+
+两张 Ready 截图为视觉 FAIL：180×120 香港繁体的顶部菜单项越界，320×240 德语当前选项与 Logo/辅助 HUD 重叠，属于已有整块状态文本的小窗口缺口；本次未将这些页面算作通过，下一步复用结构化行使当前菜单项和必要提示可达。截图与日志 SHA 均匹配证据清单；日志含 450 条已知 ICU CJK 词边界诊断，无其他 WARN/ERROR/error
+
+真实 Windows/Linux WM、跨屏、原生 DPI、键盘/手柄操作与母语真人校对仍为 NOT RUN；离屏缩放与合成平台观测不代替这些证据

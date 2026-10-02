@@ -494,12 +494,15 @@ windows_x86_64_msvc,0.53.1,MIT OR Apache-2.0,https://github.com/microsoft/window
 winit,0.30.13,Apache-2.0,https://github.com/rust-windowing/winit
 winnow,1.0.4,MIT,https://github.com/winnow-rs/winnow
 winreg,0.55.0,MIT,https://github.com/gentoo90/winreg-rs
+winsafe,0.0.29,MIT,https://github.com/rodrigocfd/winsafe
 wit-bindgen,0.57.1,Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT,https://github.com/bytecodealliance/wit-bindgen
 wl-clipboard-rs,0.9.4,MIT OR Apache-2.0,https://github.com/YaLTeR/wl-clipboard-rs
 writeable,0.6.4,Unicode-3.0,https://github.com/unicode-org/icu4x
 x11-dl,2.21.0,MIT,https://github.com/AltF02/x11-rs.git
 x11rb,0.13.2,MIT OR Apache-2.0,https://github.com/psychon/x11rb
+x11rb,0.14.0,MIT OR Apache-2.0,https://github.com/psychon/x11rb
 x11rb-protocol,0.13.2,MIT OR Apache-2.0,https://github.com/psychon/x11rb
+x11rb-protocol,0.14.0,MIT OR Apache-2.0,https://github.com/psychon/x11rb
 xcursor,0.3.11,MIT,https://github.com/esposm03/xcursor-rs
 xkbcommon-dl,0.4.2,MIT,https://github.com/rust-windowing/xkbcommon-dl
 xkeysym,0.2.1,MIT OR Apache-2.0 OR Zlib,https://github.com/notgull/xkeysym

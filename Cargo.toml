@@ -29,6 +29,8 @@ kira = { version = "0", default-features = false, features = ["cpal"] }
 embed-resource = "3"
 winit = { version = "0", default-features = false }
 sys-locale = "0"
+winsafe = { version = "0", default-features = false, features = ["user"] }
+x11rb = { version = "0", default-features = false }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

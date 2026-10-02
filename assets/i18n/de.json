@@ -111,5 +111,7 @@
   "settings.unlimited": "Unbegrenzt",
   "settings.vsync": "VSync: {value}",
   "settings.back": "Zurück",
-  "settings.page_controls": "Oben/Unten oder Steuerkreuz: auswählen · Links/Rechts oder Enter/South: ändern · Esc/East: zurück"
+  "settings.page_controls": "Oben/Unten oder Steuerkreuz: auswählen · Links/Rechts oder Enter/South: ändern · Esc/East: zurück",
+  "display.work_area_windows": "Windows-Monitorarbeitsbereich wird verwendet",
+  "display.work_area_x11": "Schnittmenge des X11-Desktop-Arbeitsbereichs mit diesem Monitor wird verwendet"
 }

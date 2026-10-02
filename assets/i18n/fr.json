@@ -111,5 +111,7 @@
   "settings.unlimited": "Sans limite",
   "settings.vsync": "VSync : {value}",
   "settings.back": "Retour",
-  "settings.page_controls": "Haut/Bas ou croix directionnelle : sélectionner · Gauche/Droite ou Enter/South : modifier · Esc/East : retour"
+  "settings.page_controls": "Haut/Bas ou croix directionnelle : sélectionner · Gauche/Droite ou Enter/South : modifier · Esc/East : retour",
+  "display.work_area_windows": "Utilisation de la zone de travail du moniteur Windows",
+  "display.work_area_x11": "Utilisation de l’intersection de la zone de travail du bureau X11 avec ce moniteur"
 }

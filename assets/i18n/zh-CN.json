@@ -111,5 +111,7 @@
   "settings.unlimited": "无限制",
   "settings.vsync": "垂直同步（VSync）：{value}",
   "settings.back": "返回",
-  "settings.page_controls": "上/下方向键或十字键：选择 · 左/右方向键或 Enter/South：更改 · Esc/East：返回"
+  "settings.page_controls": "上/下方向键或十字键：选择 · 左/右方向键或 Enter/South：更改 · Esc/East：返回",
+  "display.work_area_windows": "使用 Windows 报告的显示器工作区",
+  "display.work_area_x11": "使用 X11 桌面工作区与当前显示器的交集范围"
 }

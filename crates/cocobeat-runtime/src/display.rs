@@ -11,6 +11,7 @@ use bevy::{
 };
 
 use crate::{
+    display_area::{AreaInfo, AreaReader, AreaSource, PhysicalRect},
     i18n::Message,
     settings::{DisplaySettings, FrameLimit, PacingSettings},
     settings_menu::SettingsMenu,
@@ -46,6 +47,13 @@ struct Pending {
     mode_change: bool,
 }
 
+#[derive(Clone, Copy, PartialEq)]
+struct WindowEnvironment {
+    monitor: PhysicalRect,
+    work_area: Option<PhysicalRect>,
+    scale_factor: f64,
+}
+
 #[derive(Resource)]
 pub(crate) struct DisplayState {
     pub physical_size: [u32; 2],
@@ -61,6 +69,9 @@ pub(crate) struct DisplayState {
     headless_surface: Option<[u32; 2]>,
     refresh_limit: Option<u32>,
     has_requested: bool,
+    environment: Option<WindowEnvironment>,
+    fit_environment: bool,
+    position_request: Option<[i32; 2]>,
 }
 
 impl DisplayState {
@@ -79,6 +90,9 @@ impl DisplayState {
             headless_surface: None,
             refresh_limit: None,
             has_requested: false,
+            environment: None,
+            fit_environment: false,
+            position_request: None,
         }
     }
 
@@ -166,6 +180,37 @@ impl DisplayState {
     }
 
     fn observe(&mut self, observed: Observation, now: Duration) {
+        let environment = observed.area.map(|area| WindowEnvironment {
+            monitor: area.monitor,
+            work_area: area.work_area,
+            scale_factor: observed.scale_factor,
+        });
+        if environment != self.environment {
+            self.environment = environment;
+            self.fit_environment = environment.is_some();
+        }
+        let area_notice = match observed.area {
+            Some(AreaInfo {
+                work_area: Some(_),
+                source: AreaSource::Windows,
+                ..
+            }) => "display.work_area_windows",
+            Some(AreaInfo {
+                work_area: Some(_),
+                source: AreaSource::X11,
+                ..
+            }) => "display.work_area_x11",
+            _ => "display.work_area_unavailable",
+        };
+        if matches!(
+            self.notice.key,
+            "" | "display.work_area_windows"
+                | "display.work_area_x11"
+                | "display.work_area_unavailable"
+                | "display.managed"
+        ) {
+            self.notice = Message::new(area_notice);
+        }
         self.physical_size = observed.size;
         self.native_size = observed.native;
         self.window_limit = observed.window_limit;
@@ -204,7 +249,7 @@ impl DisplayState {
                     self.actual.window_size = observed.size;
                 }
                 self.notice = if matched {
-                    Message::new("display.work_area_unavailable")
+                    Message::new(area_notice)
                 } else {
                     Message::new("display.size_unconfirmed")
                 };
@@ -226,6 +271,39 @@ impl DisplayState {
         if self.window_managed {
             self.notice = Message::new("display.managed");
         }
+        self.fit_changed_environment(&observed);
+    }
+
+    fn fit_changed_environment(&mut self, observed: &Observation) {
+        if !self.fit_environment
+            || observed.fullscreen
+            || self.window_managed
+            || self.in_flight.is_some()
+            || self.request.is_some_and(|request| request.fullscreen)
+        {
+            return;
+        }
+        let Some(area) = observed.area else {
+            return;
+        };
+        let target = self.constrain(self.request.unwrap_or(self.actual));
+        if self.request.is_none() && target.window_size != observed.size {
+            self.request = Some(target);
+            self.pending = true;
+        }
+        if let Some(position) = observed.outer_position {
+            let outer_size = [
+                target.window_size[0].saturating_add(observed.decoration[0]),
+                target.window_size[1].saturating_add(observed.decoration[1]),
+            ];
+            let contained =
+                contain_position(position, outer_size, area.work_area.unwrap_or(area.monitor));
+            if contained != position {
+                self.position_request = Some(contained);
+            }
+        }
+        // One attempt per monitor/work-area/DPI change, even if the WM declines it
+        self.fit_environment = false;
     }
 
     fn window_size_request(
@@ -252,6 +330,20 @@ struct Observation {
     fullscreen: bool,
     managed: bool,
     refresh_limit: u32,
+    area: Option<AreaInfo>,
+    scale_factor: f64,
+    outer_position: Option<[i32; 2]>,
+    decoration: [u32; 2],
+}
+
+fn contain_position(position: [i32; 2], size: [u32; 2], area: PhysicalRect) -> [i32; 2] {
+    let origins = [area.x, area.y];
+    let extents = [area.width, area.height];
+    std::array::from_fn(|axis| {
+        let minimum = i64::from(origins[axis]);
+        let maximum = minimum + i64::from(extents[axis].saturating_sub(size[axis]));
+        i64::from(position[axis]).clamp(minimum, maximum) as i32
+    })
 }
 
 fn refresh_limit(modes: impl IntoIterator<Item = u32>, current: Option<u32>) -> u32 {
@@ -349,6 +441,7 @@ fn sync(
     time: Res<Time<Real>>,
     mut windows: Query<(Entity, &mut Window), With<PrimaryWindow>>,
     device: Option<Res<RenderDevice>>,
+    mut areas: Local<AreaReader>,
     _main_thread: NonSendMarker,
 ) {
     if let Some(device) = device {
@@ -358,6 +451,7 @@ fn sync(
         state.apply_headless();
         return;
     };
+    let now = time.elapsed();
     let observed = WINIT_WINDOWS.with_borrow(|windows| {
         let native = windows.get_window(entity)?;
         let inner = native.inner_size();
@@ -366,7 +460,10 @@ fn sync(
             return None;
         }
         let size = [inner.width, inner.height];
-        let monitor = native.current_monitor();
+        let monitor = native.current_monitor().filter(|monitor| {
+            let size = monitor.size();
+            size.width > 0 && size.height > 0
+        });
         let native_size = monitor.as_ref().map(|monitor| {
             let size = monitor.size();
             [size.width, size.height]
@@ -376,18 +473,23 @@ fn sync(
             outer.width.saturating_sub(inner.width),
             outer.height.saturating_sub(inner.height),
         ];
+        let area = monitor
+            .as_ref()
+            .map(|monitor| areas.observe(native, monitor, now));
         Some(Observation {
             size,
             native: native_size,
-            // Winit has no work-area API; this is only a monitor/decorations upper bound
-            window_limit: native_size.map(|size| {
+            // Unknown work areas retain only the monitor/decorations upper bound
+            window_limit: area.map(|area| {
+                let available = area.work_area.unwrap_or(area.monitor);
                 [
-                    size[0].saturating_sub(border[0]).max(1),
-                    size[1].saturating_sub(border[1]).max(1),
+                    available.width.saturating_sub(border[0]).max(1),
+                    available.height.saturating_sub(border[1]).max(1),
                 ]
             }),
             fullscreen: native.fullscreen().is_some(),
-            managed: native.is_maximized() || !native.is_resizable(),
+            managed: native.is_maximized()
+                || area.is_some_and(|area| area.resize_allowed == Some(false)),
             refresh_limit: monitor.as_ref().map_or(60_000, |monitor| {
                 refresh_limit(
                     monitor
@@ -396,12 +498,18 @@ fn sync(
                     monitor.refresh_rate_millihertz(),
                 )
             }),
+            area,
+            scale_factor: native.scale_factor(),
+            outer_position: native
+                .outer_position()
+                .ok()
+                .map(|position| [position.x, position.y]),
+            decoration: border,
         })
     });
     let Some(observed) = observed else {
         return;
     };
-    let now = time.elapsed();
     let reported_fullscreen = observed.fullscreen;
     state.observe(observed, now);
     if let Some(request) = state.request.take() {
@@ -437,6 +545,9 @@ fn sync(
     }
     if let Some([width, height]) = state.window_size_request(now, reported_fullscreen) {
         window.resolution.set_physical_resolution(width, height);
+    }
+    if let Some([x, y]) = state.position_request.take() {
+        window.position.set(IVec2::new(x, y));
     }
 }
 
@@ -570,7 +681,191 @@ mod tests {
             fullscreen,
             managed: false,
             refresh_limit: 60_000,
+            area: None,
+            scale_factor: 1.0,
+            outer_position: None,
+            decoration: [0; 2],
         }
+    }
+
+    #[test]
+    fn changed_work_areas_request_one_containment_and_preserve_actual_readback() {
+        let monitor = PhysicalRect {
+            x: -1920,
+            y: -120,
+            width: 1920,
+            height: 1080,
+        };
+        let area = AreaInfo {
+            monitor,
+            work_area: Some(PhysicalRect {
+                x: -1880,
+                y: -80,
+                width: 1600,
+                height: 900,
+            }),
+            source: AreaSource::X11,
+            resize_allowed: None,
+        };
+        let observed = Observation {
+            area: Some(area),
+            window_limit: Some([1580, 860]),
+            outer_position: Some([-1900, -100]),
+            decoration: [20, 40],
+            ..observation([1900, 1000], false)
+        };
+        let mut state = DisplayState::new(DisplaySettings::default());
+        state.request = None;
+        state.observe(observed, Duration::ZERO);
+        let target = state.request.take().unwrap();
+        assert_eq!(target.window_size, [1580, 831]);
+        assert_eq!(state.position_request.take(), Some([-1880, -80]));
+        assert!(state.pending);
+        assert_eq!(state.actual().window_size, [1900, 1000]);
+        // Simulate the same production request/readback path, including a WM refusal
+        state.in_flight = Some(Pending {
+            target,
+            started: Duration::ZERO,
+            size_sent: false,
+            mode_change: false,
+        });
+        assert_eq!(
+            state.window_size_request(Duration::ZERO, false),
+            Some([1580, 831])
+        );
+        for now in [Duration::from_secs(1), Duration::from_secs(3)] {
+            state.observe(
+                Observation {
+                    area: Some(area),
+                    window_limit: Some([1580, 860]),
+                    ..observation([1900, 1000], false)
+                },
+                now,
+            );
+            assert!(state.request.is_none());
+            assert!(state.position_request.is_none());
+        }
+        assert!(!state.pending);
+        assert_eq!(state.notice.key, "display.size_unconfirmed");
+        assert_eq!(state.actual().window_size, [1900, 1000]);
+        // A manual resize in the same environment must never start a retry loop
+        state.observe(
+            Observation {
+                area: Some(area),
+                window_limit: Some([1580, 860]),
+                ..observation([2000, 1100], false)
+            },
+            Duration::from_secs(4),
+        );
+        assert!(state.request.is_none());
+        assert_eq!(state.actual().window_size, [2000, 1100]);
+        // A DPI transition is a new environment and earns exactly one new attempt
+        state.observe(
+            Observation {
+                area: Some(area),
+                window_limit: Some([1560, 820]),
+                scale_factor: 2.0,
+                ..observation([2000, 1100], false)
+            },
+            Duration::from_secs(5),
+        );
+        assert_eq!(state.request.take().unwrap().window_size, [1490, 820]);
+        assert_eq!(
+            contain_position([0, 0], [1000, 700], area.work_area.unwrap()),
+            [-1280, 0]
+        );
+        let next_monitor = PhysicalRect {
+            x: 0,
+            y: 0,
+            width: 1280,
+            height: 800,
+        };
+        state.observe(
+            Observation {
+                area: Some(AreaInfo {
+                    monitor: next_monitor,
+                    work_area: Some(PhysicalRect {
+                        height: 760,
+                        ..next_monitor
+                    }),
+                    ..area
+                }),
+                window_limit: Some([1260, 720]),
+                outer_position: Some([-400, 0]),
+                decoration: [20, 40],
+                scale_factor: 2.0,
+                ..observation([1490, 820], false)
+            },
+            Duration::from_secs(6),
+        );
+        assert_eq!(state.request.take().unwrap().window_size, [1260, 693]);
+        assert_eq!(state.position_request.take(), Some([0, 0]));
+    }
+
+    #[test]
+    fn unknown_or_managed_outputs_keep_geometry_authoritative() {
+        let monitor = PhysicalRect {
+            x: 100,
+            y: -300,
+            width: 1000,
+            height: 800,
+        };
+        let area = AreaInfo {
+            monitor,
+            work_area: None,
+            source: AreaSource::Unknown,
+            resize_allowed: None,
+        };
+        let mut state = DisplayState::new(DisplaySettings::default());
+        state.request = None;
+        state.observe(
+            Observation {
+                area: Some(area),
+                window_limit: Some([980, 760]),
+                managed: true,
+                ..observation([1280, 800], false)
+            },
+            Duration::ZERO,
+        );
+        assert!(state.request.is_none());
+        assert!(state.window_managed);
+        assert_eq!(state.notice.key, "display.managed");
+        state.observe(
+            Observation {
+                area: Some(area),
+                window_limit: Some([980, 760]),
+                // A Wayland-style missing global position must not invent a move
+                outer_position: None,
+                ..observation([1280, 800], false)
+            },
+            Duration::from_secs(1),
+        );
+        assert_eq!(state.request.take().unwrap().window_size, [980, 612]);
+        assert!(state.position_request.is_none());
+        assert!(!state.window_managed);
+        assert_eq!(state.notice.key, "display.work_area_unavailable");
+        let fullscreen = DisplaySettings {
+            fullscreen: true,
+            ..state.actual()
+        };
+        state.in_flight = Some(Pending {
+            target: fullscreen,
+            started: Duration::ZERO,
+            size_sent: false,
+            mode_change: true,
+        });
+        state.observe(
+            Observation {
+                native: None,
+                window_limit: None,
+                ..observation([1280, 800], true)
+            },
+            Duration::from_secs(4),
+        );
+        assert!(state.pending);
+        assert!(!state.actual().fullscreen);
+        assert_eq!(state.notice.key, "display.mode_pending");
+        assert!(state.position_request.is_none());
     }
 
     #[test]

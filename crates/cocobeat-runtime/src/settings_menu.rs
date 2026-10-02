@@ -8,12 +8,24 @@ use bevy::prelude::Resource;
 use std::{io, path::PathBuf};
 
 const PREVIEW_SECONDS: f64 = 15.0;
-const ROWS: usize = 8;
 
 #[derive(Clone, Copy)]
 enum Page {
     Quality,
     Pacing,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub(crate) struct SettingsPresentation {
+    pub title: String,
+    pub rows: Vec<SettingsRow>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub(crate) struct SettingsRow {
+    pub text: String,
+    pub language: Option<Locale>,
+    pub selected: bool,
 }
 
 struct Preview {
@@ -95,35 +107,21 @@ impl SettingsMenu {
         self.draft.is_some()
     }
 
-    pub fn language_choices(&self) -> Option<usize> {
-        self.language_selection
-    }
-
-    pub fn language_row(&self) -> Option<(Locale, bool)> {
-        if self.resolution_selection.is_some()
-            || self.language_selection.is_some()
-            || self.preview.is_some()
-            || self.page.is_some()
-        {
-            return None;
-        }
-        self.draft
-            .as_ref()
-            .map(|draft| (draft.locale, self.selection == 7))
-    }
-
     fn rollback(&mut self, display: &mut DisplayState, notice: &'static str) {
         if let Some(preview) = self.preview.take() {
             display.request(preview.original.display);
             self.draft = Some(preview.original);
+            self.selection = 2;
         }
         self.notice = Message::new(notice);
     }
 
-    pub fn tick(&mut self, now: f64, display: &mut DisplayState) {
+    pub fn tick(&mut self, now: f64, display: &mut DisplayState) -> bool {
         if self.preview.as_ref().is_some_and(|p| now >= p.deadline) {
             self.rollback(display, "settings_notice.preview_expired");
+            return true;
         }
+        false
     }
 
     fn save_actual(&mut self, mut settings: Settings, display: &DisplayState) -> bool {
@@ -145,6 +143,14 @@ impl SettingsMenu {
             Err(error) => {
                 eprintln!("Settings were not saved: {error}");
                 self.notice = Message::new("settings_notice.save_failed");
+                let message = self.notice.render(self.values.locale);
+                self.selection = self
+                    .presentation(0.0, display, self.values.locale)
+                    .unwrap()
+                    .rows
+                    .iter()
+                    .position(|row| row.text == message)
+                    .unwrap();
                 false
             }
         }
@@ -156,22 +162,32 @@ impl SettingsMenu {
         let Some(mut draft) = self.draft.clone() else {
             return false;
         };
+        let rows = self
+            .presentation(now, display, self.values.locale)
+            .unwrap()
+            .rows
+            .len();
+        let selected = self
+            .language_selection
+            .as_mut()
+            .or(self.resolution_selection.as_mut())
+            .unwrap_or(&mut self.selection);
+        *selected = (*selected).min(rows.saturating_sub(1));
         if let Some(selected) = self.language_selection {
             match action {
                 SettingsAction::Up | SettingsAction::Previous => {
-                    self.language_selection =
-                        Some((selected + Locale::ALL.len() - 1) % Locale::ALL.len());
+                    self.language_selection = Some((selected + rows - 1) % rows);
                 }
                 SettingsAction::Down | SettingsAction::Next => {
-                    self.language_selection = Some((selected + 1) % Locale::ALL.len());
+                    self.language_selection = Some((selected + 1) % rows);
                 }
-                SettingsAction::Confirm => {
+                SettingsAction::Confirm if selected < Locale::ALL.len() => {
                     draft.locale = Locale::ALL[selected];
                     self.draft = Some(draft);
                     self.language_selection = None;
                 }
                 SettingsAction::Back => self.language_selection = None,
-                SettingsAction::Open => {}
+                SettingsAction::Open | SettingsAction::Confirm => {}
             }
             return false;
         }
@@ -181,16 +197,14 @@ impl SettingsMenu {
                 self.resolution_selection = None;
                 return false;
             }
-            let selected = selected.min(options.len() - 1);
             match action {
                 SettingsAction::Up | SettingsAction::Previous => {
-                    self.resolution_selection =
-                        Some((selected + options.len() - 1) % options.len());
+                    self.resolution_selection = Some((selected + rows - 1) % rows);
                 }
                 SettingsAction::Down | SettingsAction::Next => {
-                    self.resolution_selection = Some((selected + 1) % options.len());
+                    self.resolution_selection = Some((selected + 1) % rows);
                 }
-                SettingsAction::Confirm => {
+                SettingsAction::Confirm if selected < options.len() => {
                     if draft.display.fullscreen {
                         draft.display.fullscreen_size = options[selected];
                     } else {
@@ -200,7 +214,7 @@ impl SettingsMenu {
                     self.resolution_selection = None;
                 }
                 SettingsAction::Back => self.resolution_selection = None,
-                SettingsAction::Open => {}
+                SettingsAction::Open | SettingsAction::Confirm => {}
             }
             return false;
         }
@@ -210,18 +224,20 @@ impl SettingsMenu {
                     return self.save_actual(draft, display);
                 }
                 SettingsAction::Back => self.rollback(display, "settings_notice.display_cancelled"),
+                SettingsAction::Up => self.selection = (self.selection + rows - 1) % rows,
+                SettingsAction::Down => self.selection = (self.selection + 1) % rows,
                 _ => {}
             }
             return false;
         }
         if let Some(page) = self.page {
-            let rows = match page {
+            let action_rows = match page {
                 Page::Quality => 7,
                 Page::Pacing => 3,
             };
             match action {
                 SettingsAction::Back | SettingsAction::Confirm
-                    if action == SettingsAction::Back || self.selection == rows - 1 =>
+                    if action == SettingsAction::Back || self.selection == action_rows - 1 =>
                 {
                     self.page = None;
                     self.selection = match page {
@@ -304,8 +320,8 @@ impl SettingsMenu {
                 self.notice = Message::new("settings_notice.cancelled");
                 return true;
             }
-            SettingsAction::Up => self.selection = (self.selection + ROWS - 1) % ROWS,
-            SettingsAction::Down => self.selection = (self.selection + 1) % ROWS,
+            SettingsAction::Up => self.selection = (self.selection + rows - 1) % rows,
+            SettingsAction::Down => self.selection = (self.selection + 1) % rows,
             SettingsAction::Previous | SettingsAction::Next | SettingsAction::Confirm => match self
                 .selection
             {
@@ -338,6 +354,7 @@ impl SettingsMenu {
                         deadline: now + PREVIEW_SECONDS,
                     });
                     display.request(draft.display);
+                    self.selection = 1;
                     self.notice = Message::new("settings_notice.preview");
                 }
                 3 if action == SettingsAction::Confirm => {
@@ -381,55 +398,92 @@ impl SettingsMenu {
         false
     }
 
-    pub fn text(&self, now: f64, display: &DisplayState, locale: Locale) -> String {
-        let Some(draft) = self.draft.as_ref() else {
-            return self.notice.render(locale);
+    pub fn presentation(
+        &self,
+        now: f64,
+        display: &DisplayState,
+        locale: Locale,
+    ) -> Option<SettingsPresentation> {
+        let draft = self.draft.as_ref()?;
+        let notices = [self.notice.render(locale), display.notice.render(locale)]
+            .into_iter()
+            .filter(|notice| !notice.is_empty())
+            .collect::<Vec<_>>()
+            .join("\n");
+        let footer = |controls, detail: String| {
+            [locale.text(controls).into(), detail, notices.clone()]
+                .into_iter()
+                .filter(|line| !line.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n")
         };
-        if self.language_selection.is_some() {
-            return locale.text("settings.language_title").into();
+        let presentation = |title, mut rows: Vec<SettingsRow>, footer: String, selected: usize| {
+            rows.extend(footer.lines().map(|text| SettingsRow {
+                text: text.into(),
+                ..SettingsRow::default()
+            }));
+            let selected = selected.min(rows.len().saturating_sub(1));
+            for (index, row) in rows.iter_mut().enumerate() {
+                row.selected = index == selected;
+            }
+            Some(SettingsPresentation { title, rows })
+        };
+        if let Some(selected) = self.language_selection {
+            return presentation(
+                locale.text("settings.language_title").into(),
+                Locale::ALL
+                    .into_iter()
+                    .map(|language| SettingsRow {
+                        text: "{language}".into(),
+                        language: Some(language),
+                        selected: false,
+                    })
+                    .collect(),
+                footer(
+                    "settings.choice_controls",
+                    locale.text("settings.draft_hint").into(),
+                ),
+                selected,
+            );
         }
         if let Some(selected) = self.resolution_selection {
-            let rows = display
-                .resolution_options(draft.display.fullscreen)
-                .iter()
-                .enumerate()
-                .map(|(i, size)| {
-                    format!(
-                        "{} {} x {}",
-                        if i == selected { ">" } else { " " },
-                        size[0],
-                        size[1]
-                    )
-                })
-                .collect::<Vec<_>>()
-                .join("\n");
-            return format!(
-                "{}\n{rows}\n{}\n{}",
-                locale.text("settings.resolution_title"),
-                locale.text("settings.choice_controls"),
-                locale.text("settings.draft_hint")
+            return presentation(
+                locale.text("settings.resolution_title").into(),
+                text_rows(
+                    display
+                        .resolution_options(draft.display.fullscreen)
+                        .iter()
+                        .map(|size| format!("{} x {}", size[0], size[1])),
+                ),
+                footer(
+                    "settings.choice_controls",
+                    locale.text("settings.draft_hint").into(),
+                ),
+                selected,
             );
         }
         if let Some(preview) = &self.preview {
-            return format!(
-                "{}\n{}\n{}\n{}\n{}\n{}",
+            return presentation(
                 Message::with(
                     "settings.keep_title",
                     [(
                         "seconds",
-                        ((preview.deadline - now).max(0.0).ceil() as u32).to_string()
-                    )]
+                        ((preview.deadline - now).max(0.0).ceil() as u32).to_string(),
+                    )],
                 )
                 .render(locale),
-                observed(display, locale),
-                locale.text(if display.pending {
-                    "settings.waiting"
-                } else {
-                    "settings.confirm_actual"
-                }),
-                locale.text("settings.keep_controls"),
-                self.notice.render(locale),
-                display.notice.render(locale),
+                text_rows([
+                    observed(display, locale),
+                    locale
+                        .text(if display.pending {
+                            "settings.waiting"
+                        } else {
+                            "settings.confirm_actual"
+                        })
+                        .into(),
+                ]),
+                footer("settings.keep_controls", String::new()),
+                self.selection,
             );
         }
         if let Some(page) = self.page {
@@ -510,10 +564,14 @@ impl SettingsMenu {
                     )
                 }
             };
-            return format!(
-                "{}\n{}",
-                locale.text(title),
-                rows_text(&rows, self.selection)
+            return presentation(
+                locale.text(title).into(),
+                text_rows(rows),
+                footer(
+                    "settings.page_controls",
+                    locale.text("settings.draft_hint").into(),
+                ),
+                self.selection,
             );
         }
         let size = if draft.display.fullscreen {
@@ -565,31 +623,17 @@ impl SettingsMenu {
             locale.text("settings.quality").into(),
             locale.text("settings.pacing").into(),
         ];
-        let rows = rows_text(&rows, self.selection);
-        format!("{}\n{rows}", locale.text("settings.title"))
-    }
-
-    pub fn footer(&self, display: &DisplayState, locale: Locale) -> String {
-        if self.draft.is_none() || self.resolution_selection.is_some() || self.preview.is_some() {
-            return String::new();
-        }
-        if self.language_selection.is_some() || self.page.is_some() {
-            return format!(
-                "{}\n{}",
-                locale.text(if self.page.is_some() {
-                    "settings.page_controls"
-                } else {
-                    "settings.choice_controls"
-                }),
-                locale.text("settings.draft_hint")
-            );
-        }
-        format!(
-            "{}\n{}\n{}\n{}",
-            locale.text("settings.controls"),
-            observed(display, locale),
-            self.notice.render(locale),
-            display.notice.render(locale)
+        let mut rows = text_rows(rows);
+        rows.push(SettingsRow {
+            text: locale.text("settings.language").into(),
+            language: Some(draft.locale),
+            selected: false,
+        });
+        presentation(
+            locale.text("settings.title").into(),
+            rows,
+            footer("settings.controls", observed(display, locale)),
+            self.selection,
         )
     }
 }
@@ -606,12 +650,13 @@ fn cycle<T: Copy + PartialEq>(current: T, options: &[T], previous: bool) -> T {
     options[next]
 }
 
-fn rows_text(rows: &[String], selection: usize) -> String {
-    rows.iter()
-        .enumerate()
-        .map(|(index, row)| format!("{} {row}", if index == selection { ">" } else { " " }))
-        .collect::<Vec<_>>()
-        .join("\n")
+fn text_rows(rows: impl IntoIterator<Item = String>) -> Vec<SettingsRow> {
+    rows.into_iter()
+        .map(|text| SettingsRow {
+            text,
+            ..SettingsRow::default()
+        })
+        .collect()
 }
 
 fn observed(display: &DisplayState, locale: Locale) -> String {
@@ -648,6 +693,19 @@ mod tests {
     use super::*;
     use crate::settings::DisplaySettings;
 
+    fn selected_row(menu: &SettingsMenu, display: &DisplayState) -> SettingsRow {
+        let presentation = menu.presentation(0.0, display, menu.values.locale).unwrap();
+        assert_eq!(
+            presentation.rows.iter().filter(|row| row.selected).count(),
+            1
+        );
+        presentation
+            .rows
+            .into_iter()
+            .find(|row| row.selected)
+            .unwrap()
+    }
+
     #[test]
     fn preview_timeout_cancel_save_and_failure_preserve_settings() {
         let root =
@@ -659,9 +717,11 @@ mod tests {
         let original = display.actual();
         menu.begin(&display);
         menu.handle(SettingsAction::Confirm, 0.0, &mut display);
-        assert!(
-            menu.text(0.0, &display, Locale::EnUs)
-                .starts_with("RESOLUTION\n")
+        assert_eq!(
+            menu.presentation(0.0, &display, Locale::EnUs)
+                .unwrap()
+                .title,
+            "RESOLUTION"
         );
         menu.handle(SettingsAction::Next, 0.0, &mut display);
         menu.handle(SettingsAction::Back, 0.0, &mut display);
@@ -675,7 +735,9 @@ mod tests {
         assert!(!menu.handle(SettingsAction::Confirm, 1.0, &mut display));
         assert_ne!(display.actual(), original);
         assert!(!path.exists());
-        menu.tick(16.0, &mut display);
+        assert!(!menu.tick(15.0, &mut display));
+        assert!(menu.tick(16.0, &mut display));
+        assert!(!menu.tick(16.0, &mut display));
         assert_eq!(display.actual(), original);
         assert!(!path.exists());
         menu.selection = 1;
@@ -737,21 +799,37 @@ mod tests {
         let mut display = DisplayState::new(menu.values.display);
         display.set_headless_surface([1920, 1080]);
         menu.begin(&display);
-        menu.handle(SettingsAction::Up, 0.0, &mut display);
-        assert_eq!(menu.language_row(), Some((Locale::EnUs, true)));
+        for _ in 0..7 {
+            menu.handle(SettingsAction::Down, 0.0, &mut display);
+        }
+        assert_eq!(selected_row(&menu, &display).language, Some(Locale::EnUs));
         menu.handle(SettingsAction::Confirm, 0.0, &mut display);
-        assert_eq!(menu.language_choices(), Some(1));
-        assert!(menu.language_row().is_none());
-        assert_eq!(menu.text(0.0, &display, Locale::EnUs), "LANGUAGE");
+        let presentation = menu.presentation(0.0, &display, Locale::EnUs).unwrap();
+        assert_eq!(presentation.title, "LANGUAGE");
+        assert_eq!(
+            presentation
+                .rows
+                .iter()
+                .filter(|row| row.language.is_some())
+                .count(),
+            13
+        );
         assert!(
-            menu.footer(&display, Locale::EnUs)
+            presentation
+                .rows
+                .iter()
+                .any(|row| row.text.contains("draft until Apply"))
+        );
+        assert_eq!(selected_row(&menu, &display).language, Some(Locale::EnUs));
+        menu.handle(SettingsAction::Previous, 0.0, &mut display);
+        menu.handle(SettingsAction::Previous, 0.0, &mut display);
+        assert!(
+            selected_row(&menu, &display)
+                .text
                 .contains("draft until Apply")
         );
-        menu.handle(SettingsAction::Previous, 0.0, &mut display);
-        menu.handle(SettingsAction::Previous, 0.0, &mut display);
-        assert_eq!(menu.language_choices(), Some(12));
         menu.handle(SettingsAction::Next, 0.0, &mut display);
-        assert_eq!(menu.language_choices(), Some(0));
+        assert_eq!(selected_row(&menu, &display).language, Some(Locale::ZhCn));
         menu.handle(SettingsAction::Back, 0.0, &mut display);
         assert_eq!(menu.draft.as_ref().unwrap().locale, Locale::EnUs);
         menu.handle(SettingsAction::Confirm, 0.0, &mut display);
@@ -778,8 +856,14 @@ mod tests {
             assert_eq!(menu.draft.as_ref().unwrap().locale, Locale::Ja);
             assert!(display.actual().fullscreen);
             assert_eq!(std::fs::read(&path).unwrap(), persisted);
-            assert!(menu.language_row().is_none());
-            assert!(menu.footer(&display, Locale::EnUs).is_empty());
+            let presentation = menu.presentation(3.0, &display, Locale::EnUs).unwrap();
+            assert!(presentation.rows.iter().all(|row| row.language.is_none()));
+            assert!(
+                presentation
+                    .rows
+                    .iter()
+                    .any(|row| row.text == Locale::EnUs.text("settings.keep_controls"))
+            );
             if timeout {
                 menu.tick(18.0, &mut display);
             } else {
@@ -852,7 +936,12 @@ mod tests {
         menu.begin(&display);
         menu.selection = 6;
         menu.handle(SettingsAction::Confirm, 0.0, &mut display);
-        assert!(menu.language_row().is_none());
+        assert_eq!(
+            menu.presentation(0.0, &display, Locale::EnUs)
+                .unwrap()
+                .title,
+            "FRAME RATE AND VSYNC"
+        );
         menu.handle(SettingsAction::Next, 0.0, &mut display);
         menu.handle(SettingsAction::Down, 0.0, &mut display);
         menu.handle(SettingsAction::Confirm, 0.0, &mut display);
@@ -967,5 +1056,97 @@ mod tests {
         assert!(menu.handle(SettingsAction::Back, 19.0, &mut display));
         assert_eq!(std::fs::read(&path).unwrap(), bytes);
         std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn every_settings_page_exposes_focusable_rows_and_read_only_information() {
+        let mut menu = SettingsMenu::default();
+        menu.values.locale = Locale::EnUs;
+        let mut display = DisplayState::new(menu.values.display);
+        display.set_headless_surface([1920, 1080]);
+        assert!(menu.presentation(0.0, &display, Locale::EnUs).is_none());
+        for (entry, title, actions) in [
+            (None, "SETTINGS", 8),
+            (
+                Some(0),
+                "RESOLUTION",
+                display.resolution_options(false).len(),
+            ),
+            (Some(5), "GRAPHICS", 7),
+            (Some(6), "FRAME RATE AND VSYNC", 3),
+            (Some(7), "LANGUAGE", 13),
+        ] {
+            menu.begin(&display);
+            if let Some(entry) = entry {
+                menu.selection = entry;
+                menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+            }
+            let presentation = menu.presentation(0.0, &display, Locale::EnUs).unwrap();
+            assert_eq!(presentation.title, title);
+            assert!(presentation.rows.len() > actions);
+            let draft = menu.draft.clone();
+            let start = presentation
+                .rows
+                .iter()
+                .position(|row| row.selected)
+                .unwrap();
+            for offset in 0..presentation.rows.len() {
+                let index = (start + offset) % presentation.rows.len();
+                assert_eq!(
+                    selected_row(&menu, &display),
+                    SettingsRow {
+                        selected: true,
+                        ..presentation.rows[index].clone()
+                    }
+                );
+                if index >= actions {
+                    assert!(!menu.handle(SettingsAction::Confirm, 0.0, &mut display));
+                    assert_eq!(menu.draft, draft);
+                }
+                menu.handle(SettingsAction::Down, 0.0, &mut display);
+            }
+            assert_eq!(menu.draft, draft);
+        }
+        menu.begin(&display);
+        menu.selection = 1;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        menu.selection = 2;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        assert_eq!(
+            selected_row(&menu, &display).text,
+            Locale::EnUs.text("settings.confirm_actual")
+        );
+        display.pending = true;
+        assert!(!menu.handle(SettingsAction::Confirm, 1.0, &mut display));
+        assert_eq!(
+            selected_row(&menu, &display).text,
+            Locale::EnUs.text("settings.waiting")
+        );
+        display.pending = false;
+        menu.handle(SettingsAction::Down, 1.0, &mut display);
+        assert_eq!(
+            selected_row(&menu, &display).text,
+            Locale::EnUs.text("settings.keep_controls")
+        );
+        assert!(!menu.handle(SettingsAction::Confirm, 1.0, &mut display));
+        assert_eq!(menu.notice.key, "settings_notice.save_failed");
+        let presentation = menu.presentation(1.0, &display, Locale::EnUs).unwrap();
+        let error = presentation
+            .rows
+            .iter()
+            .position(|row| row.text == Locale::EnUs.text("settings_notice.save_failed"))
+            .unwrap();
+        while menu.selection != error {
+            menu.handle(SettingsAction::Down, 1.0, &mut display);
+        }
+        assert_eq!(
+            selected_row(&menu, &display).text,
+            Locale::EnUs.text("settings_notice.save_failed")
+        );
+        assert!(!menu.handle(SettingsAction::Back, 2.0, &mut display));
+        assert!(!display.actual().fullscreen);
+        assert_eq!(menu.selection, 2);
+        assert!(menu.handle(SettingsAction::Back, 2.0, &mut display));
+        assert!(menu.presentation(2.0, &display, Locale::EnUs).is_none());
     }
 }

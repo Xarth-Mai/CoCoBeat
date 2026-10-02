@@ -111,5 +111,7 @@
   "settings.unlimited": "Unlimited",
   "settings.vsync": "VSync: {value}",
   "settings.back": "Back",
-  "settings.page_controls": "Up/Down or D-pad: select · Left/Right or Enter/South: change · Esc/East: back"
+  "settings.page_controls": "Up/Down or D-pad: select · Left/Right or Enter/South: change · Esc/East: back",
+  "display.work_area_windows": "Using the Windows monitor work area",
+  "display.work_area_x11": "Using the X11 desktop work area intersected with this monitor"
 }
