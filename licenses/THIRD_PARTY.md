@@ -13,6 +13,8 @@
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
+独立 canonical 音频研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-02 对 `tools/canonical-audio-probe/` 的三个工具包分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 71 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，该研究台账不扩充产品 Cargo.lock 或发行组件清单
+
 依赖采用最新稳定版本，manifest 使用主版本范围；更新 `Cargo.lock` 后同步 CSV 和直接依赖表，精确版本用于记录实际解析结果
 
 工作流使用 `actions/checkout@v7`、`actions/cache@v6`、`actions/upload-artifact@v7`（均 MIT），跟随各主版本的稳定更新，不属于 Cargo 解析图或游戏运行时依赖

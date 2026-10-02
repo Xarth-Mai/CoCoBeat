@@ -1,0 +1,481 @@
+{
+  "date": "2026-10-02",
+  "platform": "Linux x86_64",
+  "tools": {
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Arch Linux rust 1:1.98.1-2)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Arch Linux rust 1:1.98.1-2)",
+    "ffmpeg": "ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+    "ffprobe": "ffprobe version n9.0.2 Copyright (c) 2007-2026 the FFmpeg developers"
+  },
+  "original_repo_head": "d12ef5c7652024cb8f58d488b037fedf09d5c0a3",
+  "scope": "Historical single-run synthetic file experiments, no playback or production admission",
+  "not_run": [
+    "Windows",
+    "seek",
+    "resampling",
+    "real music corpus",
+    "human listening",
+    "production media integration"
+  ],
+  "candidates": {
+    "oxiaudio": {
+      "status": "FAIL",
+      "archives": [
+        {
+          "name": "oxiaudio-core",
+          "version": "0.2.1",
+          "archive": "https://static.crates.io/crates/oxiaudio-core/oxiaudio-core-0.2.1.crate",
+          "sha256": "c462ef47c2a41231fc711e99794c3f161365e9a98d64122ee6ba332911e25af5",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "oxiaudio-encode",
+          "version": "0.2.1",
+          "archive": "https://static.crates.io/crates/oxiaudio-encode/oxiaudio-encode-0.2.1.crate",
+          "sha256": "f1cea95745971e7619bce47cd54adf204775fdda096a99467f9661f453a7bfe9",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "symphonia",
+          "version": "0.6.1",
+          "archive": "https://static.crates.io/crates/symphonia/symphonia-0.6.1.crate",
+          "sha256": "a7edef6a96b696d4e0cab5ee9ebb7ca155ed95f30a6b45bbb8b97d2727f02424",
+          "matches_cargo_lock": true
+        }
+      ],
+      "input": "48 kHz stereo F32; left f32 440 Hz sine peak 0.125; right final min(128,N) alternating +/-0.75; q0/q5/q10",
+      "cases": [
+        {"source_frames":48000,"ogg_bytes":14511,"pages":49,"last_granule":47104,"last_flags":4,"ffprobe_exit":0,"ffmpeg_exit":0,"decoded_frames":46080,"stderr":"","q0_q5_q10_bytes_identical":true},
+        {"source_frames":48128,"ogg_bytes":14817,"pages":50,"last_granule":48128,"last_flags":4,"ffprobe_exit":0,"ffmpeg_exit":0,"decoded_frames":47104,"stderr":"","q0_q5_q10_bytes_identical":true},
+        {"source_frames":1024,"ogg_bytes":1146,"pages":4,"last_granule":1024,"last_flags":4,"ffprobe_exit":0,"ffmpeg_exit":0,"decoded_frames":0,"stderr":"","q0_q5_q10_bytes_identical":true},
+        {"source_frames":0,"ogg_bytes":869,"pages":4,"last_granule":1024,"last_flags":4,"ffprobe_exit":0,"ffmpeg_exit":0,"decoded_frames":0,"stderr":"","q0_q5_q10_bytes_identical":true}
+      ],
+      "ffmpeg_amplitudes": [
+        {
+          "source": {
+            "frames": 48000,
+            "right_nonzero_frames": 128,
+            "right_peak": 0.75,
+            "right_rms": 0.03872983346207417,
+            "left_peak": 0.125
+          },
+          "decoded": {
+            "frames": 46080,
+            "right_nonzero_frames": 1024,
+            "right_peak": 36476.01953125,
+            "right_rms": 834.1398856598166,
+            "left_peak": 21608716.0
+          }
+        },
+        {
+          "source": {
+            "frames": 48128,
+            "right_nonzero_frames": 128,
+            "right_peak": 0.75,
+            "right_rms": 0.03867829673470475,
+            "left_peak": 0.125
+          },
+          "decoded": {
+            "frames": 47104,
+            "right_nonzero_frames": 2048,
+            "right_peak": 610612.0625,
+            "right_rms": 29032.200919110717,
+            "left_peak": 21608716.0
+          }
+        }
+      ],
+      "symphonia": {
+        "frames": [
+          46080,
+          47104,
+          0,
+          0
+        ],
+        "peak": [
+          21608716,
+          21608716,
+          0,
+          0
+        ],
+        "nonfinite": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "input_frames": [
+          48000,
+          48128,
+          1024,
+          0
+        ]
+      },
+      "original_evidence_sha256": {
+        "Cargo.lock": "fcafced8e9af315432862883aed114808367a4a08fe79154ac4ae620a90a3301",
+        "src/main.rs": "41e42a5019b89f48ffbaf23dd9cc2279b5a5b52ec7e2f994b2fc1021b80b586c",
+        "src/bin/readback.rs": "c0790baa422a1f10475d3cccc7f22e50c2b5087a649df41fb67be2015a57752e",
+        "analyze.py": "c1246b662dd6d5af0a4bf83f1b81b4e971de4908a2511bf4bf24158d8e979fc9",
+        "results.json": "f457c30b735bbff8a788a5007a8ce12dbbac2cd39413f83ebed199c5164e9fd1",
+        "transient-results.json": "1b61e65beee522114df6d26b85e3bd7bd18a132d38337d6a25e7f75b9bd7ed90",
+        "symphonia-readback.log": "30d644c9d28a2506d2f1b62c0800436b8c772119836a3bbf74ff009ee4db6f9a",
+        "environment.json": "158ac385534b962e1b889cfc3d94b7e1ede111f59be20c9f48324d7f7fdd5e2a"
+      }
+    },
+    "oxideav": {
+      "status": "PASS_STRUCTURAL",
+      "archives": [
+        {
+          "name": "oxideav-core",
+          "version": "0.1.37",
+          "archive": "https://static.crates.io/crates/oxideav-core/oxideav-core-0.1.37.crate",
+          "sha256": "d8de32b40e24dd0f22ec37a0cb723ad499c05b43aa391971b7621c9a1c96fb15",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "oxideav-ogg",
+          "version": "0.1.8",
+          "archive": "https://static.crates.io/crates/oxideav-ogg/oxideav-ogg-0.1.8.crate",
+          "sha256": "8a582af48d51a2a8d2d87958ca22a3a21f9029dcc828c1b4a5865fa00f952d3a",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "oxideav-vorbis",
+          "version": "0.0.12",
+          "archive": "https://static.crates.io/crates/oxideav-vorbis/oxideav-vorbis-0.0.12.crate",
+          "sha256": "08878d1ec255f403363cad0a42273cbea90c01b817d49e45ad8ec13416b9e913",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "symphonia",
+          "version": "0.6.1",
+          "archive": "https://static.crates.io/crates/symphonia/symphonia-0.6.1.crate",
+          "sha256": "a7edef6a96b696d4e0cab5ee9ebb7ca155ed95f30a6b45bbb8b97d2727f02424",
+          "matches_cargo_lock": true
+        }
+      ],
+      "quality_scale": "Native [0,1]; no equality with another encoder quality scale",
+      "input": "48 kHz stereo F32; f64 sine converted to f32; tail alternating signal; burst adds normalized peak 0.5 sin^2-enveloped 1 kHz head/tail 256-frame bursts",
+      "cases": [
+        {"input_frames":0,"quality":0.5,"signal":"tail","status":"PASS_EMPTY_REJECTED"},
+        {"input_frames":1,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":1,"bytes":1983,"decoded_frames":[1,1],"peaks":[[0.0,0.7884378433227539],[0.0,0.7884379029273987]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[0.0,5.960464477539063e-08]},
+        {"input_frames":1024,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":1024,"bytes":1930,"decoded_frames":[1024,1024],"peaks":[[0.12680472433567047,0.7564865350723267],[0.12680472433567047,0.7564864754676819]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[8.033614631080745e-09,2.5619714641322673e-08]},
+        {"input_frames":1025,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":1025,"bytes":2117,"decoded_frames":[1025,1025],"peaks":[[0.1272033452987671,0.756440281867981],[0.1272033452987671,0.7564402222633362]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[8.041343742198178e-09,2.373919286355849e-08]},
+        {"input_frames":48000,"quality":0.0,"signal":"tail","status":"PASS_STRUCTURAL","eos":48000,"bytes":3431,"decoded_frames":[48000,48000],"peaks":[[0.14448820054531097,0.8202954530715942],[0.14448820054531097,0.8202954530715942]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[9.729999140863066e-09,3.772771587957911e-09]},
+        {"input_frames":48000,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":48000,"bytes":5780,"decoded_frames":[48000,48000],"peaks":[[0.12648771703243256,0.7572963833808899],[0.12648770213127136,0.7572963833808899]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[1.0299060235665511e-08,3.234975786855373e-09]},
+        {"input_frames":48000,"quality":1.0,"signal":"tail","status":"PASS_STRUCTURAL","eos":48000,"bytes":9078,"decoded_frames":[48000,48000],"peaks":[[0.12521684169769287,0.7508872151374817],[0.12521685659885406,0.7508871555328369]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[1.0799443934356408e-08,2.8614734076285742e-09]},
+        {"input_frames":48128,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":48128,"bytes":5903,"decoded_frames":[48128,48128],"peaks":[[0.12637902796268463,0.7569820880889893],[0.12637902796268463,0.7569820880889893]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[1.0484200179369367e-08,2.7516827883875727e-09]},
+        {"input_frames":3072000,"quality":0.5,"signal":"tail","status":"PASS_STRUCTURAL","eos":3072000,"bytes":189899,"decoded_frames":[3072000,3072000],"peaks":[[0.12586826086044312,0.7564777731895447],[0.12586826086044312,0.7564776539802551]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[1.065201261742006e-08,3.334501476452151e-10],"encoder_resource":{"elapsed_seconds":206.29757089800114,"max_rss_kib":392520,"user_seconds":203.105471,"system_seconds":2.6556319999999998}},
+        {"input_frames":48000,"quality":0.5,"signal":"burst","status":"PASS_STRUCTURAL","eos":48000,"bytes":6493,"decoded_frames":[48000,48000],"peaks":[[0.12704375386238098,0.5000745058059692],[0.12704375386238098,0.5000745058059692]],"nonfinite":[[0,0],[0,0]],"decoder_rmse":[1.0695919202789433e-08,2.1407243113745223e-09]}
+      ],
+      "quality": {
+        "settings": [
+          {
+            "quality": 0.0,
+            "bytes": 3431,
+            "sha256": "973dbd779d123e0e55b5f2c5e508082ddd97d89f2afc74d709dbabe308f0253d"
+          },
+          {
+            "quality": 0.5,
+            "bytes": 5780,
+            "sha256": "1dd4b3f2e8b1ab0a1e4fbf9a94dffb4ee85f865542ac97f726f97ff5692f5aa5"
+          },
+          {
+            "quality": 1.0,
+            "bytes": 9078,
+            "sha256": "a8379699fc6b1b8d261ad2a8fa78aa7727ee5a76fd9645845ebcef9c89259a26"
+          }
+        ],
+        "distinct_stream_bytes": true,
+        "meaning": "oxideav-vorbis quality in [0,1], no libvorbis quality equivalence claimed"
+      },
+      "burst": {
+        "input": {
+          "head": {
+            "energy": 12.026908879799796,
+            "peak": 0.5,
+            "peak_frame": 132
+          },
+          "middle": {
+            "energy": 0.0,
+            "peak": 0.0
+          },
+          "tail": {
+            "energy": 12.026908879799796,
+            "peak": 0.5,
+            "peak_frame": 47876
+          }
+        },
+        "ffmpeg": {
+          "head": {
+            "energy": 12.033948889282849,
+            "peak": 0.5000745058059692,
+            "peak_frame": 132,
+            "energy_ratio_to_input": 1.0005853548533055,
+            "energy_centroid_shift_frames": -0.05503321322191823
+          },
+          "middle": {
+            "energy": 1.950841597063268e-05,
+            "peak": 0.00044524349505081773
+          },
+          "tail": {
+            "energy": 12.031296044637594,
+            "peak": 0.4994577169418335,
+            "peak_frame": 47876,
+            "energy_ratio_to_input": 1.0003647790867665,
+            "energy_centroid_shift_frames": -0.09445370670437114
+          }
+        },
+        "symphonia": {
+          "head": {
+            "energy": 12.033949035736065,
+            "peak": 0.5000745058059692,
+            "peak_frame": 132,
+            "energy_ratio_to_input": 1.0005853670304339,
+            "energy_centroid_shift_frames": -0.055033435928223184
+          },
+          "middle": {
+            "energy": 1.9508596938565358e-05,
+            "peak": 0.00044522606185637414
+          },
+          "tail": {
+            "energy": 12.031295633449885,
+            "peak": 0.4994577169418335,
+            "peak_frame": 47876,
+            "energy_ratio_to_input": 1.0003647448977897,
+            "energy_centroid_shift_frames": -0.09445424545265269
+          }
+        }
+      },
+      "source_audit": {
+        "packages": 17,
+        "files_compared": 823,
+        "all_archives_match_lock": true,
+        "source_mismatches": {},
+        "native_links": {},
+        "scope": "Locked encoder dependency closure source and manifest audit; not an assertion that the Linux executable never links libc"
+      },
+      "resource_scope": "Linux wait4 on timeout process tree; max RSS includes short-lived harness inheritance, not codec-only heap",
+      "original_evidence_sha256": {
+        "Cargo.lock": "3b06972c2b34bae71a95b9c65bf784f1a5bf1b35bfe3a31676cbac034a3abd16",
+        "src/main.rs": "c47d52389a9bad517c7bae77bb081f76931aba1ed6e0000d39658dd7b84acfe5",
+        "src/bin/readback.rs": "983f80132399cd20161d9eb242ff68be25831569481c485b581bd6d5292c16c4",
+        "probe.py": "5653e28cd7d2a6db3f3224535686c5dfd4ffa842f376b70bba8e67273d4de000",
+        "results.json": "05cf8c0a6633d3ad184622feb313f3c2937015b0c8257d3ece38eae280254607",
+        "summary.json": "fe5a2316793f7999c0718ded3649cfd6ea08c4127385c96a0095a3fb414cbd7e",
+        "quality-comparison.json": "dae37b42330d52f366212d956e98b490f6868dc88b3fe69b0c3ceaad7fc4b80d",
+        "burst-transients.json": "38c556427e04714086a5ee31bc5e46bfece5b89048e0df1e6b4046bb0fb8fb7c",
+        "result-n3072000-q0.5-tail.json": "85d5f1938779867d8e579f476196da959c883355d2dd7051715a88e0b1a6a444",
+        "sources/official-index.json": "4260c48d9f6bb1efbe36052ded08c0cd7f9fc94435b04885be4cb7bc111d8c93",
+        "sources/dependency-audit.json": "4352cadca026cf3cb924e9422d3aabe746ff28c557c8b50bddb2f373ab264f79"
+      },
+      "all_nonempty_formats": "48000 Hz, 2 channels, confirmed by both decoders"
+    },
+    "rusty-vorbis": {
+      "archives": [
+        {
+          "name": "ogg",
+          "version": "0.8.0",
+          "archive": "https://static.crates.io/crates/ogg/ogg-0.8.0.crate",
+          "sha256": "6951b4e8bf21c8193da321bcce9c9dd2e13c858fe078bf9054a288b419ae5d6e",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "rusty_vorbis",
+          "version": "0.1.1",
+          "archive": "https://static.crates.io/crates/rusty_vorbis/rusty_vorbis-0.1.1.crate",
+          "sha256": "6eddf79e697ce9279ef0e012432cd2889a7b6305a45efb5bb16e8a1d6338646f",
+          "matches_cargo_lock": true
+        },
+        {
+          "name": "symphonia",
+          "version": "0.6.1",
+          "archive": "https://static.crates.io/crates/symphonia/symphonia-0.6.1.crate",
+          "sha256": "a7edef6a96b696d4e0cab5ee9ebb7ca155ed95f30a6b45bbb8b97d2727f02424",
+          "matches_cargo_lock": true
+        }
+      ],
+      "quality_scale": "Native quality01_from_vorbis_q mapping; adapter tested at q5 only",
+      "provenance": {
+        "repository": "https://github.com/Remade-With-Rust/remade_ffmpeg_rs",
+        "native_scan_scope": "Published Rust sources and manifests, encoder zero dependencies, ogg -> byteorder only; default SIMD uses Rust std::arch unsafe AVX2 intrinsics",
+        "cargo_vcs_info": {
+          "git": {
+            "sha1": "54df3fe0abfc6bda8589010d27102ecf81b1d106",
+            "dirty": true
+          },
+          "path_in_vcs": "crates/rusty_vorbis"
+        },
+        "source_identity_note": "Published package archive checksum is authoritative; cargo_vcs_info records dirty=true, so Git commit alone is not claimed byte-identical"
+      },
+      "baseline": {
+        "status": "FAIL",
+        "scope": "Official high-level encoder; packet pts unmodified; no PCM priming adaptation",
+        "cases": [
+          {"frames":0,"q":5,"status":"FAIL","eos_granule":0,"ogg_bytes":4321,"decoder_agreement":null,"decoded_frames":[null,null],"peaks":[null,null],"nonfinite":[null,null]},
+          {"frames":1,"q":5,"status":"FAIL","eos_granule":1024,"ogg_bytes":4377,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":0},"decoded_frames":[0,0],"peaks":[[0,0],[0,0]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":1024,"q":5,"status":"FAIL","eos_granule":1024,"ogg_bytes":4510,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":0},"decoded_frames":[0,0],"peaks":[[0,0],[0,0]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":1025,"q":5,"status":"FAIL","eos_granule":1024,"ogg_bytes":4528,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":0},"decoded_frames":[0,0],"peaks":[[0,0],[0,0]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":48000,"q":5,"status":"FAIL","eos_granule":47104,"ogg_bytes":8074,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[46080,46080],"peaks":[[0.15220968425273895,0.0017378329066559672],[0.15220968425273895,0.0017378329066559672]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":48128,"q":5,"status":"FAIL","eos_granule":48128,"ogg_bytes":8251,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[47104,47104],"peaks":[[0.1514013558626175,0.051858093589544296],[0.1514013558626175,0.051858089864254]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":48000,"q":0,"status":"FAIL","eos_granule":47104,"ogg_bytes":7593,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":2.2351741790771484e-08},"decoded_frames":[46080,46080],"peaks":[[0.08849940448999405,0.0],[0.08849940448999405,0.0]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":48000,"q":10,"status":"FAIL","eos_granule":47104,"ogg_bytes":8686,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[46080,46080],"peaks":[[0.13425269722938538,0.01851050741970539],[0.13425269722938538,0.01851050741970539]],"nonfinite":[[0,0],[0,0]]}
+        ],
+        "quality": [
+          {
+            "q": 0,
+            "quality": 0.09090909,
+            "ogg_bytes": 7593,
+            "sha256": "83dcd5bb44c86f0bd5a190b577a0751fb81ce66e81ae9739f8d9c6f0b610eae2",
+            "eos_granule": 47104,
+            "audio_packets": 46
+          },
+          {
+            "q": 5,
+            "quality": 0.54545456,
+            "ogg_bytes": 8074,
+            "sha256": "bf3b2795bb661a3e9b182465b0e5988db07cd4da4afa091667c6e03b7a9b4fbf",
+            "eos_granule": 47104,
+            "audio_packets": 46
+          },
+          {
+            "q": 10,
+            "quality": 0.98,
+            "ogg_bytes": 8686,
+            "sha256": "ac88915ac64c659fdb19d8f7c689f5b1bef8a134838c15225e6fcde6cb98fb55",
+            "eos_granule": 47104,
+            "audio_packets": 46
+          }
+        ],
+        "all_nonempty_formats": "48000 Hz, 2 channels, confirmed by both decoders"
+      },
+      "adapter": {
+        "status": "PASS_LIMITED",
+        "scope": "CoCoBeat priming/mux adaptation experiment, not native API behavior",
+        "gate": "Exact frames, 48k stereo, finite samples, peak <=1; sustained left RMS +/-3dB for N>=1024",
+        "padding_frames_each_side": 1024,
+        "zero_length": {
+          "status": "PASS",
+          "behavior": "Explicitly rejected"
+        },
+        "cases": [
+          {"frames":1,"q":5,"status":"PASS","eos_granule":1,"ogg_bytes":4805,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":0.0},"decoded_frames":[1,1],"peaks":[[3.5703607863979414e-05,0.4193953275680542],[3.5703607863979414e-05,0.4193953275680542]],"nonfinite":[[0,0],[0,0]]},
+          {"frames":1024,"q":5,"status":"PASS","eos_granule":1024,"ogg_bytes":4678,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[1024,1024],"peaks":[[0.13657788932323456,0.04295356944203377],[0.13657788932323456,0.04295356944203377]],"nonfinite":[[0,0],[0,0]],"left_rms_ratio_db":[-0.5666634943224258,-0.5666636879295013]},
+          {"frames":1025,"q":5,"status":"PASS","eos_granule":1025,"ogg_bytes":4779,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":2.9802322387695312e-08},"decoded_frames":[1025,1025],"peaks":[[0.14978738129138947,0.0593770295381546],[0.14978736639022827,0.0593770332634449]],"nonfinite":[[0,0],[0,0]],"left_rms_ratio_db":[0.0029253904520753146,0.002925075911086759]},
+          {"frames":48000,"q":5,"status":"PASS","eos_granule":48000,"ogg_bytes":8413,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[48000,48000],"peaks":[[0.15220968425273895,0.026478512212634087],[0.15220968425273895,0.026478508487343788]],"nonfinite":[[0,0],[0,0]],"left_rms_ratio_db":[-0.22951232469919394,-0.2295124048751782]},
+          {"frames":48128,"q":5,"status":"PASS","eos_granule":48128,"ogg_bytes":8373,"decoder_agreement":{"same_sample_count":true,"maximum_sample_difference":4.470348358154297e-08},"decoded_frames":[48128,48128],"peaks":[[0.1514013558626175,0.051858093589544296],[0.1514013558626175,0.051858089864254]],"nonfinite":[[0,0],[0,0]],"left_rms_ratio_db":[-0.2318133860277844,-0.23181345620599292]}
+        ],
+        "pulse": {
+          "status": "PASS",
+          "gate": "Exploratory timing gate: 512-frame boundary windows; energy +/-3dB, best correlation lag +/-2 frames, correlation >=0.95, energy centroid shift +/-8 frames",
+          "metrics": {
+            "symphonia": {
+              "head": {
+                "energy_ratio_db": -1.522470578338164,
+                "peak": 0.3709509074687958,
+                "best_lag_frames": 1,
+                "correlation": 0.9616474943744259,
+                "centroid_shift_frames": -5.046507596695321,
+                "status": "PASS"
+              },
+              "tail": {
+                "energy_ratio_db": -0.8654528255136396,
+                "peak": 0.439187616109848,
+                "best_lag_frames": 0,
+                "correlation": 0.9761943713229656,
+                "centroid_shift_frames": -0.7199843591432113,
+                "status": "PASS"
+              }
+            },
+            "ffmpeg": {
+              "head": {
+                "energy_ratio_db": -1.5224704879794413,
+                "peak": 0.3709508776664734,
+                "best_lag_frames": 1,
+                "correlation": 0.961647492824193,
+                "centroid_shift_frames": -5.046507637170862,
+                "status": "PASS"
+              },
+              "tail": {
+                "energy_ratio_db": -0.8654528767173417,
+                "peak": 0.43918758630752563,
+                "best_lag_frames": 0,
+                "correlation": 0.9761943715522512,
+                "centroid_shift_frames": -0.7199847850197898,
+                "status": "PASS"
+              }
+            }
+          }
+        },
+        "long_64_seconds": {
+          "frames": 3072000,
+          "q": 5,
+          "status": "PASS",
+          "eos_granule": 3072000,
+          "ogg_bytes": 244327,
+          "decoder_agreement": {
+            "same_sample_count": true,
+            "maximum_sample_difference": 4.470348358154297e-08
+          },
+          "decoded_frames": [
+            3072000,
+            3072000
+          ],
+          "peaks": [
+            [
+              0.15776675939559937,
+              0.03647420555353165
+            ],
+            [
+              0.15776677429676056,
+              0.03647420555353165
+            ]
+          ],
+          "nonfinite": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              0
+            ]
+          ],
+          "left_rms_ratio_db": [
+            -0.2927198066315321,
+            -0.29271987034014946
+          ]
+        },
+        "encoder_resource": {
+          "wall_seconds": 0.16476453399991442,
+          "user_cpu_seconds": 0.9530829999999999,
+          "system_cpu_seconds": 0.019955,
+          "max_rss_kib": 31784,
+          "scope": "Fresh long-stage Python process, first child is encoder; includes input generation/writes, padding, encode, Ogg mux/writes, excludes decoder oracles and compilation",
+          "measurement": "Python stdlib resource.RUSAGE_CHILDREN on Linux; GNU time unavailable"
+        },
+        "streaming_memory": "Whole PCM and encoded packets remain buffered; no bounded streaming-memory claim",
+        "all_nonempty_formats": "48000 Hz, 2 channels, confirmed by both decoders"
+      },
+      "original_evidence_sha256": {
+        "Cargo.lock": "82877e0932e9121f01e1c99a3906072244c6b03011a8958c92820f003f328303",
+        "src/bin/encode.rs": "2b08da4c9d4fa111f985be68708765160c89d5e02b3434278d4d3effb33fb893",
+        "src/bin/adapter.rs": "447184ac0974b2dc001a4dd1d89fa6d1afe61c94746e513ea90f7a412e1e8207",
+        "src/bin/readback.rs": "06afad0babb8d753144ad2ca96f44bfb2f677f299299da4b6a7a8b322befa4c1",
+        "run.py": "2406a46eb88329cc0998a60e194ae10696f71801e2e1c9cbdd2def5225176c81",
+        "run_adapted.py": "ebe5c1bdcf4593cabba05ef7553e444f5c9323b5ffdaaf6896e5834f375a52ef",
+        "results.json": "a0ff2a6e97f3893404b049f42c24e4d87a2c62a381b5dd33dd796ff13cf2ac34",
+        "adapted-results.json": "4199d821be56bc5a476042d0a42ad1da5fe95c782732972f6da3c451ce3ff5aa",
+        "quality.json": "8cd0e1cf3fef4d4fe50604960151f84b2ddd0f8c74aedbeb57336d65bee02909",
+        "provenance.json": "a84edf174bdc69fa12f235097c162179121c690ec3f7024176dae81e62dd56cd",
+        "adapted-cases/3072000-q5/encode-resource.json": "57146e892a7ff97722d306ce1447dcb0e293bf762db1e2fa2f235ad91bb4daf4",
+        "evidence/baseline-preservation.json": "973a2f1e3afdf125a41c1b0307e21f55351eb26792b590ad464378f1f741b12f",
+        "evidence/adapter-source-truth.json": "4205bca1b85845ae7955f0de0908878fa55fb24650b366b1768bcfc63100f9bb"
+      }
+    }
+  },
+  "resource_comparison": "One run per 64s case, different content transforms and measurement methods; other encoders/builds may run concurrently; not a controlled throughput ranking",
+  "decoder_order": [
+    "ffmpeg",
+    "symphonia"
+  ]
+}
