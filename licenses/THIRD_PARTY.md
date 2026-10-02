@@ -18,6 +18,6 @@ Day 0 唯一直接第三方 Rust 依赖是 **xtask 使用的 serde_json**，用�
 | [unicode-ident](https://crates.io/crates/unicode-ident/1.0.26) | 1.0.26 | (MIT OR Apache-2.0) AND Unicode-3.0 |
 | [zmij](https://crates.io/crates/zmij/1.0.23) | 1.0.23 | MIT |
 
-新增依赖采用当时最新稳定版本，更新 Cargo.lock 后同步本表。接入 Bevy、Kira、Symphonia、OxiMedia、Quinn 时重新核对真实许可证与依赖图；研究报告中的库选择不构成已接入或已审查的证明。
+依赖采用最新稳定版本，manifest 使用主版本范围，更新 Cargo.lock 后同步本表；表中的精确版本用于记录实际解析结果。接入 Bevy、Kira、Symphonia、OxiMedia、Quinn 时重新核对真实许可证与依赖图；研究报告中的库选择不构成已接入或已审查的证明
 
-工作流使用 `actions/checkout v7.0.1`、`actions/cache v6.1.0`、`actions/upload-artifact v7.0.1`（均 MIT），不属于 Cargo 解析图或游戏运行时依赖。素材与音乐单独记录在 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，当前无资源条目。
+工作流使用 `actions/checkout@v7`、`actions/cache@v6`、`actions/upload-artifact@v7`（均 MIT），跟随各主版本的稳定更新，不属于 Cargo 解析图或游戏运行时依赖。素材与音乐单独记录在 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，当前无资源条目

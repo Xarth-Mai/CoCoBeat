@@ -32,7 +32,7 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - name: Install latest stable Rust and target
         id: rust
         run: |
@@ -45,8 +45,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $version = (rustc --version).Split(' ')[1]
           "version=$version" >> $env:GITHUB_OUTPUT
-      - uses: actions/cache@v6.1.0
-        with:
+      - uses: actions/cache@v6
+        with: &release-cache
           path: |
             ~/.cargo/registry
             ~/.cargo/git
@@ -83,7 +83,7 @@ jobs:
             "cargo=$(cargo --version)"
             "sha256=$((Get-FileHash $exe -Algorithm SHA256).Hash)"
           ) | Set-Content dist/BUILD-INFO.txt
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}
           path: dist/
@@ -101,7 +101,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - name: Install latest stable Rust and target
         id: rust
         run: |
@@ -112,16 +112,8 @@ jobs:
           rustup update stable --no-self-update
           rustup target add "$BUILD_TARGET" --toolchain stable
           echo "version=$(rustc --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6.1.0
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target/${{ inputs.target }}/release
-            target/release
-          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
-          restore-keys: |
-            release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
+      - uses: actions/cache@v6
+        with: *release-cache
       - name: Build optimized game
         run: cargo build --locked --release --package cocobeat-game --target "$BUILD_TARGET"
       - name: Verify architecture and prepare artifact
@@ -149,7 +141,7 @@ jobs:
           } > dist/package/BUILD-INFO.txt
           # Tar retains the executable bit; artifact ZIP alone does not.
           tar -czf "dist/cocobeat-$BUILD_TARGET.tar.gz" -C dist/package .
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}
           path: dist/*.tar.gz

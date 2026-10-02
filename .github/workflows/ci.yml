@@ -3,7 +3,7 @@ name: Lightweight CI
 on:
   push:
     branches: [main]
-    paths:
+    paths: &source-paths
       - '**/*.rs'
       - '**/Cargo.toml'
       - Cargo.lock
@@ -11,13 +11,7 @@ on:
       - '.cargo/**'
       - '.github/workflows/**'
   pull_request:
-    paths:
-      - '**/*.rs'
-      - '**/Cargo.toml'
-      - Cargo.lock
-      - rust-toolchain.toml
-      - '.cargo/**'
-      - '.github/workflows/**'
+    paths: *source-paths
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -31,14 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7
       - name: Install latest stable Rust
         id: rust
         run: |
           rustup update stable --no-self-update
           rustup component add rustfmt clippy --toolchain stable
           echo "version=$(rustc --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@v6.1.0
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry

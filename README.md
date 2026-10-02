@@ -37,7 +37,7 @@ cargo run --locked -p cocobeat-lab -- time-smoke
 cargo run --locked -p cocobeat-game
 ```
 
-Rust 跟随最新 stable，Edition 2024。新增依赖采用当时最新稳定版本，`Cargo.lock` 提交到仓库；常规构建使用 `--locked`。升级时运行 `cargo update` 并重跑检查，跨主版本升级还需要更新 manifest 和适配 API。不要复制研究报告中的历史版本号。
+Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。研究报告中的版本号只作为历史参考
 
 `time-smoke` 只证明 64 秒等于 3,072,000 个标准音频帧，不测量声音输出延迟。
 当前无合成音频、`--dev-song` 或硬件计时命令；这些能力按路线图实现后才公开。

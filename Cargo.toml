@@ -22,7 +22,7 @@ cocobeat-schema = { path = "crates/cocobeat-schema" }
 cocobeat-core = { path = "crates/cocobeat-core" }
 cocobeat-runtime = { path = "crates/cocobeat-runtime" }
 cocobeat-replay = { path = "crates/cocobeat-replay" }
-serde_json = "1.0.151"
+serde_json = "1"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
