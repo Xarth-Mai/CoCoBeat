@@ -10,11 +10,15 @@ cargo run --locked -p cocobeat-lab -- generate-dev
 cargo run --locked -p cocobeat-game -- --replay path/to/session.json
 cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
 cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.png
+cargo run --locked -p cocobeat-game -- --settings-smoke target/cocobeat-settings.png
+cargo run --locked -p cocobeat-game -- --locale-smoke zh-HK target/cocobeat-locale.png
+cargo run --locked -p cocobeat-game -- --menu-smoke en-GB target/cocobeat-menu.png
+cargo run --locked -p cocobeat-game -- --language-smoke uk target/cocobeat-languages.png
 ```
 
 `doctor` 检查 Rust/Cargo/rustfmt/Clippy 与依赖边界；`check` 执行依赖边界、格式、Clippy 和整个 workspace 的测试，失败返回非零状态
 
-`timing-sim` 输出纯软件实验；`generate-dev` 输出原创 PCM16 WAV 和校验清单；`--replay` 拒绝身份或格式不匹配，并使用同一个 core 重建规则结果；`--visual-smoke` 保存预设 3D 场景 PNG，`--startup-smoke` 运行生产品牌与 Ready 呈现；两种 smoke 均不创建音频输出或消费输入驱动玩法，但默认 Gilrs 手柄后端仍会初始化并轮询，不能作为物理输入或可玩性验收
+`timing-sim` 输出纯软件实验；`generate-dev` 输出原创 PCM16 WAV 和校验清单；`--replay` 拒绝身份或格式不匹配，并使用同一个 core 重建规则结果；`--visual-smoke` 保存预设 3D 场景 PNG，`--startup-smoke` 运行生产品牌与 Ready 呈现，设置及语言预览的范围见下文；这些 smoke 均不创建音频输出、读写用户配置或消费输入驱动玩法，但默认 Gilrs 手柄后端仍会初始化并轮询，不能作为物理输入或可玩性验收
 
 ## 当前证据
 
@@ -34,7 +38,7 @@ cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.p
 | 呈现截图 | PASS | `target/debug/cocobeat-game --visual-smoke target/visual-smoke.png` 在 AMD RX 6650 XT / RADV Vulkan 离屏渲染并退出 0，已检查双角色、局部/共同环、街道和 HUD；未参与音频、窗口交互、品牌动画或可玩性验收 |
 | 真实音频、输入、平台与真人体验 | NOT RUN | 需要下表列出的设备和参与者证据 |
 
-图形检查使用 Bevy 原生离屏目标、显式 UI 相机、同步管线编译和固定时间步，避免 Xvfb/Vulkan 呈现限制；当前离屏日志有未指定 ShadowLodOrigin 的警告，截图不能作为灯光阴影或性能验收
+图形检查使用 Bevy 原生离屏目标、显式 UI 相机、同步管线编译和固定时间步，避免 Xvfb/Vulkan 呈现限制；本地切片基线的离屏日志有未指定 ShadowLodOrigin 的警告，截图不能作为灯光阴影或性能验收
 
 CI 只检查单 Linux 上的 schema/core/replay/xtask，以及全仓库格式和依赖图；本地 `cargo xtask check` 覆盖完整 workspace，Windows/Linux 四目标发行构建使用手动 Action，见 [构建与 CI](build-release.md)
 
@@ -95,6 +99,20 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 这些命令不读写用户设置，不启用音频播放或输入驱动的玩法，也不模拟原生窗口管理器；桌面精确可用区域、真实无边框切换、手动缩放/最大化、DPI、跨屏与 Windows/Linux 物理键盘/手柄设置操作仍为 NOT RUN。Winit 当前接线只有显示器减边框的尺寸上界，不能当作可用桌面工作区的完成证据
 
 共用 target 缓存曾使 `xtask` 指向旧品牌快照，该次运行已停止并排除，诊断日志保留为 `target/settings-stale-snapshot-check.log`；随后只清理 `xtask` 包并确认从当前工作区重新编译、执行。后续共享 target 的快照检查必须确认 xtask 实际源码目录，不能根据退出码推断检查了当前源码
+
+## 国际化与字体里程碑
+
+2026-10-02，在工作区执行 `CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game`，完整 workspace 的 75 项测试、Clippy、格式、依赖边界和构建均为 PASS；日志为 `target/i18n-final-{check,build}.log`，源码、可执行文件及截图的 SHA-256 与执行命令记录在 `target/i18n-evidence/evidence.json`
+
+首批 13 个语言变体为 `zh-CN`、`en-US`、`en-GB`、`ja`、`ko`、`zh-TW`、`zh-HK`、`es-419`、`pt-BR`、`fr`、`de`、`ru`、`uk`，每份 catalog 有 91 个翻译键，键集和占位符一致；测试覆盖系统语言与地区匹配、英文 US/GB 和繁体 TW/HK 的独立保存、旧 v1 配置保留显示设置、语言与显示草稿共同提交/取消/超时回退，以及保存失败保留旧配置。持久通知保存翻译键和参数，切换语言后重绘；玩家可见错误使用本地化操作提示，诊断细节保留在日志
+
+所有 UI 显式使用 Noto Sans，中文简体/台湾/香港、日文和韩文分别选择对应字体；语言本名使用各自字体，13 组地区旗帜由已记录来源的 SVG 导出 PNG，语言列表分为 5/5/3 行三页。软件检查覆盖字体解析、地区字体与旗帜映射、切换语言后的 HUD、原生名称和分页可见性；来源和许可见 [字体](../assets/fonts/README.md) 与 [旗帜](../assets/flags/README.md)
+
+从 `/tmp` 使用 AMD RX 6650 XT / RADV Vulkan 执行 29 次 GPU 离屏检查，均退出 0，`target/i18n-evidence/` 保存 13 张 `locale-CODE.png` 设置页、13 张 `menu-CODE.png` Ready 菜单及 `language-zh-CN.png`、`language-zh-HK.png`、`language-uk.png` 三页语言列表，尺寸均为 1280×800；主线程与国际化 agents 已逐张检查字形、换行、地区旗帜与页面可读性，实际 Ready 菜单与生产路径共用 `game_status`
+
+`--locale-smoke CODE PNG` 和 `--language-smoke CODE PNG` 显式模拟 1280×800 表面与 640×480 全屏场景，`--menu-smoke CODE PNG` 使用同尺寸表面的 Ready 场景；三者运行品牌时间线和 Ready 循环，使用固定时间步加速离屏预览，不创建音频输出、不读写用户配置，不消费输入驱动玩法。原生 WM、DPI、跨屏、Windows/ARM64、物理键盘/手柄操作、真实音画同步和母语真人校对仍为 NOT RUN
+
+当前 `Cargo.lock` 使用 Bevy 0.19.1 / Parley 0.9.0，离屏日志保留 `ICU4X data error: No segmentation model for complex script: Chinese/Japanese` 诊断；已检查截图的 CJK 字形与换行通过，词边界分词数据缺口仍存在。上游 [Bevy #25674](https://github.com/bevyengine/bevy/pull/25674) 已合入可选 `complex_script_segmentation`，用于提供复杂文字词边界数据，2026-10-02 的[最新稳定版仍为 0.19.1](https://docs.rs/crate/bevy/latest)，尚未包含该特性；等待稳定版发布后启用并重跑分词与界面检查，本轮保留诊断日志、不引入预发布依赖
 
 ## 原生 Linux release 证据
 

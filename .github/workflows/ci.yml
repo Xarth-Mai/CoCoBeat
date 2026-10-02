@@ -9,6 +9,9 @@ on:
       - Cargo.lock
       - rust-toolchain.toml
       - '.cargo/**'
+      - 'assets/i18n/**'
+      - 'assets/fonts/**'
+      - 'assets/flags/**'
       - '.github/workflows/**'
   pull_request:
     paths: *source-paths

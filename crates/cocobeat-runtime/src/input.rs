@@ -13,6 +13,8 @@ use bevy::{
 };
 use cocobeat_schema::PlayerId;
 
+use crate::i18n::{Locale, Message};
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Control {
     Hit(PlayerId),
@@ -50,19 +52,19 @@ enum Binding {
     PadButton(PlayerId),
 }
 
-const MENU: [&str; 12] = [
-    "Start / Resume",
-    "Restart song",
-    "Save replay",
-    "P1: rebind keyboard Hit",
-    "P2: rebind keyboard Hit",
-    "P1: join controller",
-    "P2: join controller",
-    "P1: rebind controller Hit",
-    "P2: rebind controller Hit",
-    "Main menu",
-    "Settings",
-    "Quit",
+const MENU: [(&str, Option<PlayerId>); 12] = [
+    ("menu.start", None),
+    ("menu.restart", None),
+    ("menu.save_replay", None),
+    ("menu.bind_keyboard", Some(PlayerId::P1)),
+    ("menu.bind_keyboard", Some(PlayerId::P2)),
+    ("menu.join_controller", Some(PlayerId::P1)),
+    ("menu.join_controller", Some(PlayerId::P2)),
+    ("menu.bind_controller", Some(PlayerId::P1)),
+    ("menu.bind_controller", Some(PlayerId::P2)),
+    ("menu.main", None),
+    ("menu.settings", None),
+    ("menu.quit", None),
 ];
 
 #[derive(Resource)]
@@ -70,7 +72,7 @@ pub struct InputState {
     pub origin: Instant,
     pub queued: Vec<CapturedControl>,
     pub menu_open: bool,
-    pub status: String,
+    pub status: Message,
     settings_open: bool,
     keys: [KeyCode; 2],
     pads: [Option<Entity>; 2],
@@ -90,7 +92,7 @@ impl Default for InputState {
             origin: Instant::now(),
             queued: Vec::new(),
             menu_open: true,
-            status: "Keyboard ready; use menu to join each controller".into(),
+            status: Message::new("input.ready"),
             settings_open: false,
             keys: [KeyCode::KeyF, KeyCode::KeyJ],
             pads: [None, None],
@@ -155,40 +157,52 @@ impl InputState {
         self.suppress_hits = true;
     }
 
-    pub fn bindings_text(&self) -> String {
+    pub fn bindings_text(&self, locale: Locale) -> String {
         [PlayerId::P1, PlayerId::P2]
             .map(|player| {
                 let index = player.index();
-                let pad = if self.pads[index].is_some() {
-                    format!(" / pad {:?}", self.pad_buttons[index])
+                let mut args = vec![
+                    ("player", format!("{player:?}")),
+                    ("key", format!("{:?}", self.keys[index])),
+                ];
+                let key = if self.pads[index].is_some() {
+                    args.push(("button", format!("{:?}", self.pad_buttons[index])));
+                    "input.binding"
                 } else {
-                    " / pad unassigned".into()
+                    "input.binding_unassigned"
                 };
-                format!("{player:?}: {:?}{pad}", self.keys[index])
+                Message::with(key, args).render(locale)
             })
             .join("    ")
     }
 
-    pub fn menu_text(&self) -> String {
+    pub fn menu_text(&self, locale: Locale) -> String {
         if !self.menu_open {
-            return "Esc / pad Start: pause    F5: restart    F6 / pad Select: save replay".into();
+            return locale.text("input.game_controls").into();
         }
         if let Some(binding) = self.binding {
-            return match binding {
-                Binding::Keyboard(player) => format!("{player:?}: press new Hit key; Esc cancels"),
-                Binding::JoinPad(player) => {
-                    format!("{player:?}: press South (bottom) on controller to join; Esc cancels")
-                }
-                Binding::PadButton(player) => {
-                    format!("{player:?}: press new Hit button on assigned pad; East / Esc cancels")
-                }
+            let (key, player) = match binding {
+                Binding::Keyboard(player) => ("input.bind_keyboard", player),
+                Binding::JoinPad(player) => ("input.join_controller", player),
+                Binding::PadButton(player) => ("input.bind_controller", player),
             };
+            return Message::with(key, [("player", format!("{player:?}"))]).render(locale);
         }
+        let (key, player) = MENU[self.selection];
+        let item = Message::with(key, player.map(|player| ("player", format!("{player:?}"))))
+            .render(locale);
         format!(
-            "MENU {}/{} > {}\nUp/Down / D-pad: select    Enter / South (bottom): confirm    Esc / East (right): back",
-            self.selection + 1,
-            MENU.len(),
-            MENU[self.selection],
+            "{}\n{}",
+            Message::with(
+                "menu.selection",
+                [
+                    ("selected", (self.selection + 1).to_string()),
+                    ("total", MENU.len().to_string()),
+                    ("item", item),
+                ],
+            )
+            .render(locale),
+            locale.text("menu.controls"),
         )
     }
 
@@ -223,10 +237,10 @@ impl InputState {
                 | KeyCode::F5
                 | KeyCode::F6
         ) {
-            return Err("Key reserved for menu controls");
+            return Err("input.key_reserved");
         }
         if self.keys[1 - player.index()] == key {
-            return Err("Key already assigned to the other player");
+            return Err("input.key_assigned");
         }
         self.keys[player.index()] = key;
         Ok(())
@@ -239,9 +253,12 @@ impl InputState {
             }
         }
         self.pads[player.index()] = Some(pad);
-        self.status = format!(
-            "Controller joined {player:?}; Hit = {:?}",
-            self.pad_buttons[player.index()]
+        self.status = Message::with(
+            "input.controller_joined",
+            [
+                ("player", format!("{player:?}")),
+                ("button", format!("{:?}", self.pad_buttons[player.index()])),
+            ],
         );
         self.binding = None;
     }
@@ -250,8 +267,10 @@ impl InputState {
         for player in [PlayerId::P1, PlayerId::P2] {
             if self.pads[player.index()] == Some(pad) {
                 self.pads[player.index()] = None;
-                self.status =
-                    format!("{player:?} controller disconnected; rejoin explicitly in menu");
+                self.status = Message::with(
+                    "input.controller_disconnected",
+                    [("player", format!("{player:?}"))],
+                );
                 self.binding = None;
             }
         }
@@ -302,7 +321,7 @@ impl InputState {
         if let Some(Binding::PadButton(player)) = binding
             && self.pads[player.index()].is_none()
         {
-            self.status = format!("Join {player:?}'s controller first");
+            self.status = Message::with("input.join_first", [("player", format!("{player:?}"))]);
             return;
         }
         self.binding = binding;
@@ -337,10 +356,16 @@ impl InputState {
             } else if let Binding::Keyboard(player) = binding {
                 match self.bind_key(player, key) {
                     Ok(()) => {
-                        self.status = format!("{player:?} Hit = {key:?}");
+                        self.status = Message::with(
+                            "input.keyboard_bound",
+                            [
+                                ("player", format!("{player:?}")),
+                                ("key", format!("{key:?}")),
+                            ],
+                        );
                         self.binding = None;
                     }
-                    Err(message) => self.status = message.into(),
+                    Err(key) => self.status = Message::new(key),
                 }
             }
             return;
@@ -400,7 +425,10 @@ impl InputState {
                     }
                     Binding::PadButton(player) => {
                         if self.pads[player.index()] != Some(pad) {
-                            self.status = format!("Use {player:?}'s assigned controller");
+                            self.status = Message::with(
+                                "input.use_assigned",
+                                [("player", format!("{player:?}"))],
+                            );
                         } else if matches!(
                             button,
                             GamepadButton::Start
@@ -408,10 +436,16 @@ impl InputState {
                                 | GamepadButton::DPadUp
                                 | GamepadButton::DPadDown
                         ) {
-                            self.status = "Button reserved for menu controls".into();
+                            self.status = Message::new("input.button_reserved");
                         } else {
                             self.pad_buttons[player.index()] = button;
-                            self.status = format!("{player:?} controller Hit = {button:?}");
+                            self.status = Message::with(
+                                "input.controller_bound",
+                                [
+                                    ("player", format!("{player:?}")),
+                                    ("button", format!("{button:?}")),
+                                ],
+                            );
                             self.binding = None;
                         }
                     }
@@ -455,9 +489,9 @@ impl InputState {
             self.focused = focused;
             self.reset_edges();
             if focused {
-                self.status = "Focus restored; release held buttons, then resume".into();
+                self.status = Message::new("input.focus_restored");
             } else {
-                self.status = "Window unfocused; song paused".into();
+                self.status = Message::new("input.focus_lost");
                 self.emit(Control::FocusLost, now);
             }
         }
@@ -521,6 +555,29 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn existing_notice_and_bindings_follow_the_selected_locale() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        let mut input = InputState::default();
+        input.join_pad(PlayerId::P2, pad);
+        let notice = input.status.clone();
+        assert_eq!(notice.key, "input.controller_joined");
+        assert_eq!(
+            input.status.render(Locale::EnUs),
+            "Controller joined P2; Hit = South"
+        );
+        let translated = input.status.render(Locale::ZhCn);
+        assert_ne!(translated, input.status.render(Locale::EnUs));
+        assert!(translated.contains("P2") && translated.contains("South"));
+        assert_ne!(
+            input.bindings_text(Locale::ZhCn),
+            input.bindings_text(Locale::EnUs)
+        );
+        assert!(input.bindings_text(Locale::ZhCn).contains("KeyJ"));
+        assert_eq!(input.status, notice);
+    }
 
     #[test]
     fn settings_route_shortcuts_and_require_release_after_return() {
@@ -588,7 +645,7 @@ mod tests {
                     input.key(KeyCode::ArrowDown, false, false, 3);
                 }
             }
-            assert!(input.menu_text().contains("> Main menu"));
+            assert!(input.menu_text(Locale::EnUs).contains("> Main menu"));
             if use_pad {
                 input.pad_button(pad, GamepadButton::South, true, 4);
             } else {
@@ -597,15 +654,15 @@ mod tests {
             assert_eq!(input.queued.len(), 1);
             assert_eq!(input.queued[0].control, Control::MainMenu);
             input.key(KeyCode::F5, true, false, 5);
-            let bindings = input.bindings_text();
+            let bindings = input.bindings_text(Locale::EnUs);
             let held_keys = input.held_keys.clone();
             let held_pad_buttons = input.held_pad_buttons.clone();
 
             input.open_main_menu();
             assert!(input.menu_open);
-            assert!(input.menu_text().contains("> Start / Resume"));
+            assert!(input.menu_text(Locale::EnUs).contains("> Start / Resume"));
             assert!(input.queued.is_empty());
-            assert_eq!(input.bindings_text(), bindings);
+            assert_eq!(input.bindings_text(Locale::EnUs), bindings);
             assert_eq!(input.pads, [None, Some(pad)]);
             assert_eq!(input.held_keys, held_keys);
             assert_eq!(input.held_pad_buttons, held_pad_buttons);

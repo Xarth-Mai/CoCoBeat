@@ -1,16 +1,19 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    core_pipeline::tonemapping::Tonemapping, prelude::*, transform::TransformSystems, ui::UiSystems,
+    core_pipeline::tonemapping::Tonemapping, prelude::*, text::FontSource,
+    transform::TransformSystems, ui::UiSystems,
 };
 
 use crate::{
     brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems},
     display::GameCamera,
+    i18n::{Locale, Message},
+    ui_assets::UiAssets,
 };
 
 #[derive(Resource, Default)]
-pub struct VisualState {
+pub(crate) struct VisualState {
     pub song_seconds: f64,
     pub hit_pulses: [f32; 2],
     pub sync_pulse: f32,
@@ -18,6 +21,10 @@ pub struct VisualState {
     pub status: String,
     pub running: bool,
     pub settings_open: bool,
+    pub locale: Locale,
+    pub settings_footer: String,
+    pub settings_language: Option<(Locale, bool)>,
+    pub language_choices: Option<usize>,
 }
 
 #[derive(Component)]
@@ -30,7 +37,17 @@ enum Motion {
 }
 
 #[derive(Component)]
-struct StatusText;
+enum UiText {
+    Status,
+    Subtitle,
+    Clock,
+    Player(usize),
+    LanguagePrefix,
+    LanguageName,
+    LanguageSuffix,
+    LanguageChoice(usize),
+    Footer,
+}
 
 #[derive(Component)]
 struct StatusPanel;
@@ -39,18 +56,23 @@ struct StatusPanel;
 struct Subtitle;
 
 #[derive(Component)]
-struct ClockText;
+enum HudNode {
+    Progress,
+    Language,
+    LanguageChoice(usize),
+    Footer,
+}
 
 #[derive(Component)]
 struct PlayerLabel;
 
 #[derive(Component)]
-struct ProgressFill;
+struct LanguageFlag;
 
 pub fn install(app: &mut App) {
     app.init_resource::<VisualState>()
         .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (setup, setup_hud))
         .add_systems(
             Update,
             update_brand_layout.before(BrandIntroSystems::Advance),
@@ -303,10 +325,16 @@ fn setup(
             Motion::Rain(phase),
         ));
     }
+}
 
+fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAssets>) {
+    let font =
+        |font_size: f32| TextFont::from_font_size(font_size).with_font(assets.font(state.locale));
+    let colors = [Color::srgb(0.12, 0.92, 0.9), Color::srgb(0.96, 0.28, 0.67)];
     commands.spawn((
-        Text::new("AFTER HOURS   /   A DUET IN THE RAIN"),
-        TextFont::from_font_size(12.0),
+        Text::default(),
+        UiText::Subtitle,
+        font(12.0),
         TextColor(Color::srgb(0.56, 0.66, 0.78)),
         Node {
             position_type: PositionType::Absolute,
@@ -318,7 +346,8 @@ fn setup(
     ));
     commands.spawn((
         Text::default(),
-        TextFont::from_font_size(16.0),
+        UiText::Clock,
+        font(16.0),
         TextColor(Color::srgb(0.83, 0.87, 0.93)),
         TextLayout::justify(Justify::Right),
         Node {
@@ -327,17 +356,14 @@ fn setup(
             right: px(36),
             ..default()
         },
-        ClockText,
     ));
-    for (player, label) in ["P1  /  TWO EARS", "P2  /  ONE CROWN"]
-        .into_iter()
-        .enumerate()
-    {
+    for (player, color) in colors.into_iter().enumerate() {
         commands.spawn((
-            Text::new(label),
+            Text::default(),
+            UiText::Player(player),
             PlayerLabel,
-            TextFont::from_font_size(13.0),
-            TextColor(colors[player]),
+            font(13.0),
+            TextColor(color),
             TextLayout::justify(Justify::Center),
             Node {
                 position_type: PositionType::Absolute,
@@ -357,18 +383,84 @@ fn setup(
                 bottom: px(28),
                 padding: UiRect::all(px(16)),
                 min_height: px(104),
+                flex_direction: FlexDirection::Column,
+                row_gap: px(4),
                 ..default()
             },
             BackgroundColor(Color::srgba(0.015, 0.022, 0.045, 0.94)),
             GlobalZIndex(0),
             StatusPanel,
         ))
-        .with_child((
-            Text::default(),
-            TextFont::from_font_size(14.0),
-            TextColor(Color::srgb(0.87, 0.91, 0.96)),
-            StatusText,
-        ));
+        .with_children(|panel| {
+            let color = TextColor(Color::srgb(0.87, 0.91, 0.96));
+            panel.spawn((Text::default(), font(14.0), color, UiText::Status));
+            panel
+                .spawn((
+                    Node {
+                        display: Display::None,
+                        align_items: AlignItems::Center,
+                        flex_wrap: FlexWrap::Wrap,
+                        column_gap: px(6),
+                        ..default()
+                    },
+                    HudNode::Language,
+                ))
+                .with_children(|row| {
+                    row.spawn((
+                        ImageNode::new(assets.flag(state.locale)),
+                        Node {
+                            width: px(24),
+                            height: px(18),
+                            flex_shrink: 0.0,
+                            ..default()
+                        },
+                        LanguageFlag,
+                    ));
+                    for kind in [
+                        UiText::LanguagePrefix,
+                        UiText::LanguageName,
+                        UiText::LanguageSuffix,
+                    ] {
+                        row.spawn((Text::default(), font(14.0), color, kind));
+                    }
+                });
+            for (index, locale) in Locale::ALL.into_iter().enumerate() {
+                panel
+                    .spawn((
+                        Node {
+                            display: Display::None,
+                            align_items: AlignItems::Center,
+                            column_gap: px(6),
+                            ..default()
+                        },
+                        HudNode::LanguageChoice(index),
+                    ))
+                    .with_children(|row| {
+                        row.spawn((
+                            ImageNode::new(assets.flag(locale)),
+                            Node {
+                                width: px(24),
+                                height: px(18),
+                                flex_shrink: 0.0,
+                                ..default()
+                            },
+                        ));
+                        row.spawn((
+                            Text::default(),
+                            TextFont::from_font_size(14.0).with_font(assets.font(locale)),
+                            color,
+                            UiText::LanguageChoice(index),
+                        ));
+                    });
+            }
+            panel.spawn((
+                Text::default(),
+                font(14.0),
+                color,
+                UiText::Footer,
+                HudNode::Footer,
+            ));
+        });
     commands
         .spawn((
             Node {
@@ -387,7 +479,7 @@ fn setup(
                 ..default()
             },
             BackgroundColor(Color::srgb(0.45, 0.92, 0.87)),
-            ProgressFill,
+            HudNode::Progress,
         ));
 }
 
@@ -468,15 +560,21 @@ fn animate(
 }
 
 fn update_hud(
-    state: Res<VisualState>,
-    intro: Option<Res<BrandIntroStatus>>,
-    mut status: Query<&mut Text, (With<StatusText>, Without<ClockText>)>,
-    mut clock: Query<&mut Text, (With<ClockText>, Without<StatusText>)>,
-    mut progress: Query<&mut Node, With<ProgressFill>>,
+    (state, assets, intro): (
+        Res<VisualState>,
+        Res<UiAssets>,
+        Option<Res<BrandIntroStatus>>,
+    ),
+    mut texts: Query<(&UiText, &mut Text, &mut TextFont)>,
+    mut flags: Query<&mut ImageNode, With<LanguageFlag>>,
+    mut nodes: Query<(&HudNode, &mut Node)>,
     mut panel: Query<&mut GlobalZIndex, With<StatusPanel>>,
     mut labels: Query<&mut Visibility, With<PlayerLabel>>,
 ) {
-    if !state.is_changed() && !intro.as_ref().is_some_and(|intro| intro.is_changed()) {
+    if !state.is_changed()
+        && !assets.is_changed()
+        && !intro.as_ref().is_some_and(|intro| intro.is_changed())
+    {
         return;
     }
     // The brand backdrop reveals the scene and HUD; only startup errors render above it
@@ -491,24 +589,110 @@ fn update_hud(
     for mut layer in &mut panel {
         layer.0 = if failed { 1001 } else { 0 };
     }
-    for mut text in &mut status {
-        if text.0 != state.status {
-            text.0.clone_from(&state.status);
-        }
-    }
-    for mut text in &mut clock {
-        let value = format!(
-            "{:05.1} / 64.0 SEC\nRESONANCE {:3.0}%  /  {}",
-            state.song_seconds.clamp(0.0, 64.0),
-            state.resonance.clamp(0.0, 1.0) * 100.0,
-            if state.running { "PLAYING" } else { "RESTING" },
-        );
+    let locale = state.locale;
+    let (language, selected) = state.settings_language.unwrap_or((locale, false));
+    let (prefix, suffix) = locale
+        .text("settings.language")
+        .split_once("{language}")
+        .expect("language template must contain its native-name placeholder");
+    for (kind, mut text, mut font) in &mut texts {
+        let value = match *kind {
+            UiText::Status => state.status.clone(),
+            UiText::Subtitle => locale.text("hud.subtitle").into(),
+            UiText::Clock => Message::with(
+                "hud.clock",
+                [
+                    (
+                        "elapsed",
+                        format!("{:05.1}", state.song_seconds.clamp(0.0, 64.0)),
+                    ),
+                    ("duration", "64.0".into()),
+                    (
+                        "resonance",
+                        format!("{:3.0}", state.resonance.clamp(0.0, 1.0) * 100.0),
+                    ),
+                    (
+                        "state",
+                        locale
+                            .text(if state.running {
+                                "hud.playing"
+                            } else {
+                                "hud.resting"
+                            })
+                            .into(),
+                    ),
+                ],
+            )
+            .render(locale),
+            UiText::Player(player) => locale
+                .text(if player == 0 {
+                    "hud.player_one"
+                } else {
+                    "hud.player_two"
+                })
+                .into(),
+            UiText::LanguagePrefix => {
+                format!("{}{prefix}", if selected { "> " } else { "  " })
+            }
+            UiText::LanguageName => language.native_name().into(),
+            UiText::LanguageSuffix => suffix.into(),
+            UiText::LanguageChoice(index) => format!(
+                "{} {}",
+                if state.language_choices == Some(index) {
+                    ">"
+                } else {
+                    " "
+                },
+                Locale::ALL[index].native_name()
+            ),
+            UiText::Footer => state.settings_footer.clone(),
+        };
         if text.0 != value {
             text.0 = value;
         }
+        let text_locale = match *kind {
+            UiText::LanguageName => language,
+            UiText::LanguageChoice(index) => Locale::ALL[index],
+            _ => locale,
+        };
+        let source = FontSource::Handle(assets.font(text_locale));
+        if font.font != source {
+            font.font = source;
+        }
     }
-    for mut node in &mut progress {
-        node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
+    for mut image in &mut flags {
+        let flag = assets.flag(language);
+        if image.image != flag {
+            image.image = flag;
+        }
+    }
+    for (kind, mut node) in &mut nodes {
+        let visible = match *kind {
+            HudNode::Progress => {
+                node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
+                continue;
+            }
+            HudNode::Language => {
+                state.settings_open
+                    && state.settings_language.is_some()
+                    && state.language_choices.is_none()
+            }
+            HudNode::LanguageChoice(index) => {
+                state.settings_open
+                    && state
+                        .language_choices
+                        .is_some_and(|selected| selected / 5 == index / 5)
+            }
+            HudNode::Footer => state.settings_open && !state.settings_footer.is_empty(),
+        };
+        let display = if visible {
+            Display::Flex
+        } else {
+            Display::None
+        };
+        if node.display != display {
+            node.display = display;
+        }
     }
 }
 
@@ -516,19 +700,30 @@ fn update_hud(
 mod tests {
     use super::*;
 
+    fn hud_app() -> App {
+        let mut app = App::new();
+        app.init_resource::<VisualState>()
+            .init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .add_systems(Startup, setup_hud)
+            .add_systems(PostUpdate, update_hud);
+        crate::ui_assets::install(&mut app).unwrap();
+        app
+    }
+
     #[test]
     fn failed_intro_keeps_the_existing_status_above_its_backdrop() {
-        let mut app = App::new();
+        let mut app = hud_app();
         app.insert_resource(VisualState {
             status: "Startup failed: audio unavailable\nClose window to exit".into(),
             ..default()
-        })
-        .add_systems(PostUpdate, update_hud);
+        });
+        app.update();
         let panel = app
             .world_mut()
-            .spawn((StatusPanel, GlobalZIndex(0), StatusText, Text::default()))
-            .id();
-        app.update();
+            .query_filtered::<Entity, With<StatusPanel>>()
+            .single(app.world())
+            .unwrap();
         assert_eq!(app.world().get::<GlobalZIndex>(panel).unwrap().0, 0);
         app.insert_resource(BrandIntroStatus {
             phase: BrandIntroPhase::Failed,
@@ -536,9 +731,136 @@ mod tests {
         });
         app.update();
         assert_eq!(app.world().get::<GlobalZIndex>(panel).unwrap().0, 1001);
+        let mut texts = app.world_mut().query::<(&UiText, &Text)>();
+        let (_, status) = texts
+            .iter(app.world())
+            .find(|(kind, _)| matches!(kind, UiText::Status))
+            .unwrap();
+        assert_eq!(status.0, app.world().resource::<VisualState>().status);
+    }
+
+    #[test]
+    fn locale_switches_update_hud_fonts_and_native_language_pages() {
+        let mut app = hud_app();
+        for locale in Locale::ALL {
+            app.world_mut().resource_mut::<VisualState>().locale = locale;
+            app.update();
+            let mut texts = app.world_mut().query::<(&UiText, &Text, &TextFont)>();
+            let assets = app.world().resource::<UiAssets>();
+            for (kind, text, font) in texts.iter(app.world()) {
+                let expected = match *kind {
+                    UiText::LanguageChoice(index) => Locale::ALL[index],
+                    _ => locale,
+                };
+                assert_eq!(font.font, FontSource::Handle(assets.font(expected)));
+                match *kind {
+                    UiText::Subtitle => assert_eq!(text.0, locale.text("hud.subtitle")),
+                    UiText::Player(0) => assert_eq!(text.0, locale.text("hud.player_one")),
+                    UiText::Player(1) => assert_eq!(text.0, locale.text("hud.player_two")),
+                    UiText::Clock => assert!(text.0.contains(locale.text("hud.resting"))),
+                    _ => {}
+                }
+            }
+        }
+
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            state.locale = Locale::EnUs;
+            state.settings_open = true;
+            state.settings_language = Some((Locale::Ko, true));
+            state.settings_footer = "Controls".into();
+        }
+        app.update();
+        let mut texts = app.world_mut().query::<(&UiText, &Text, &TextFont)>();
+        for (kind, text, font) in texts.iter(app.world()) {
+            match *kind {
+                UiText::LanguagePrefix => {
+                    assert_eq!(text.0, "> Language: ");
+                    assert_eq!(
+                        font.font,
+                        FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::EnUs))
+                    );
+                }
+                UiText::LanguageName => {
+                    assert_eq!(text.0, Locale::Ko.native_name());
+                    assert_eq!(
+                        font.font,
+                        FontSource::Handle(app.world().resource::<UiAssets>().font(Locale::Ko))
+                    );
+                }
+                UiText::LanguageSuffix => assert!(text.0.is_empty()),
+                _ => {}
+            }
+        }
+        let flag = app
+            .world_mut()
+            .query_filtered::<&ImageNode, With<LanguageFlag>>()
+            .single(app.world())
+            .unwrap();
         assert_eq!(
-            app.world().get::<Text>(panel).unwrap().0,
-            app.world().resource::<VisualState>().status
+            flag.image,
+            app.world().resource::<UiAssets>().flag(Locale::Ko)
+        );
+        assert!(
+            app.world_mut()
+                .query_filtered::<&Visibility, With<PlayerLabel>>()
+                .iter(app.world())
+                .all(|visibility| *visibility == Visibility::Hidden)
+        );
+
+        for selected in [4, 5, 12, 0] {
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.settings_language = None;
+                state.language_choices = Some(selected);
+            }
+            app.update();
+            let mut rows = app.world_mut().query::<(&HudNode, &Node, &Children)>();
+            let mut visible = Vec::new();
+            for (kind, node, children) in rows.iter(app.world()) {
+                if let HudNode::LanguageChoice(index) = *kind {
+                    let locale = Locale::ALL[index];
+                    if node.display != Display::None {
+                        visible.push(index);
+                    }
+                    let image = children
+                        .iter()
+                        .find_map(|child| app.world().get::<ImageNode>(child))
+                        .unwrap();
+                    assert_eq!(image.image, app.world().resource::<UiAssets>().flag(locale));
+                    let name = children
+                        .iter()
+                        .find(|&child| app.world().get::<Text>(child).is_some())
+                        .unwrap();
+                    let text = app.world().get::<Text>(name).unwrap();
+                    assert!(text.0.ends_with(locale.native_name()));
+                    assert_eq!(text.0.starts_with("> "), index == selected);
+                    assert_eq!(
+                        app.world().get::<TextFont>(name).unwrap().font,
+                        FontSource::Handle(app.world().resource::<UiAssets>().font(locale))
+                    );
+                } else if matches!(kind, HudNode::Language) {
+                    assert_eq!(node.display, Display::None);
+                }
+            }
+            visible.sort_unstable();
+            let start = selected / 5 * 5;
+            assert_eq!(
+                visible,
+                (start..(start + 5).min(Locale::ALL.len())).collect::<Vec<_>>()
+            );
+        }
+        app.world_mut().resource_mut::<VisualState>().settings_open = false;
+        app.update();
+        let mut nodes = app.world_mut().query::<(&HudNode, &Node)>();
+        assert!(nodes.iter(app.world()).all(|(kind, node)| {
+            matches!(kind, HudNode::Progress) || node.display == Display::None
+        }));
+        assert!(
+            app.world_mut()
+                .query_filtered::<&Visibility, With<PlayerLabel>>()
+                .iter(app.world())
+                .all(|visibility| *visibility == Visibility::Inherited)
         );
     }
 

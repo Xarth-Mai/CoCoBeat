@@ -1695,6 +1695,7 @@ dependencies = [
  "kira",
  "serde",
  "serde_json",
+ "sys-locale",
  "winit",
 ]
 

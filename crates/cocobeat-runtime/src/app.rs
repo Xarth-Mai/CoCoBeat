@@ -6,10 +6,12 @@ use crate::{
     clock::MonotonicTime,
     dev_song,
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
+    i18n::{Locale, Message},
     input::{self, Control, InputState, SettingsAction},
     session::{CONTENT_ID, RULES_ID, Session},
     settings::{DisplaySettings, Settings},
     settings_menu::SettingsMenu,
+    ui_assets,
     view::{self, VisualState},
 };
 use bevy::{
@@ -47,13 +49,16 @@ enum Smoke {
     Scene,
     Startup,
     Settings,
+    Locale(Locale),
+    Languages(Locale),
+    Menu(Locale),
 }
 
 #[derive(Resource)]
 struct Game {
     session: Session,
     phase: Phase,
-    notice: String,
+    notice: Message,
     saved_facts: usize,
     transition_started: std::time::Instant,
 }
@@ -63,7 +68,7 @@ impl Game {
         Ok(Self {
             session: Session::new(SessionEpoch(0))?,
             phase: Phase::Ready,
-            notice: "Play together; silence is welcome".into(),
+            notice: Message::new("game.welcome"),
             saved_facts: 0,
             transition_started: std::time::Instant::now(),
         })
@@ -71,11 +76,11 @@ impl Game {
 
     fn save(&mut self) -> Result<(), String> {
         if self.session.replay.facts().is_empty() {
-            self.notice = "No input history to save yet".into();
+            self.notice = Message::new("game.nothing_to_save");
         } else if self.saved_facts != self.session.replay.facts().len() {
             let path = self.session.save(Path::new("replays"))?;
             self.saved_facts = self.session.replay.facts().len();
-            self.notice = format!("Saved {}", path.display());
+            self.notice = Message::with("game.saved", [("path", path.display().to_string())]);
         }
         Ok(())
     }
@@ -94,7 +99,7 @@ impl Game {
         self.saved_facts = 0;
         self.phase = Phase::Starting;
         self.transition_started = std::time::Instant::now();
-        self.notice = "Waiting for audio playback".into();
+        self.notice = Message::new("game.waiting_audio");
         Ok(())
     }
 
@@ -104,20 +109,20 @@ impl Game {
         self.session = Session::new(self.session.epoch())?;
         self.saved_facts = 0;
         self.phase = Phase::Ready;
-        self.notice = "Ready — confirm Start to play together".into();
+        self.notice = Message::new("game.ready");
         Ok(())
     }
 
-    fn fault(&mut self, audio: &mut AudioOutput, error: String) {
+    fn fault(&mut self, audio: &mut AudioOutput, error: String, message: &'static str) {
         audio.stop();
         self.phase = Phase::Fault;
         let saved = self.save();
-        self.notice = format!("Stopped: {error}. Restart explicitly to try again");
+        eprintln!("Session stopped: {error}");
+        self.notice = Message::new(message);
         if let Err(save_error) = saved {
-            self.notice
-                .push_str(&format!("; Replay save failed: {save_error}"));
+            eprintln!("Replay save failed: {save_error}");
+            self.notice = Message::new("game.replay_failed");
         }
-        eprintln!("{}", self.notice);
     }
 
     fn observe_playback(
@@ -143,7 +148,7 @@ impl Game {
             self.session.update_position(observed)?;
             if self.phase == Phase::Starting {
                 self.phase = Phase::Running;
-                self.notice = "Hear your partner; shared feedback follows confirmed history".into();
+                self.notice = Message::new("game.listening");
                 return Ok(true);
             }
         }
@@ -157,7 +162,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -168,6 +173,22 @@ pub fn run() -> ExitCode {
         }
         [flag, path] if flag == "--settings-smoke" => {
             visual_smoke(PathBuf::from(path), Smoke::Settings)
+        }
+        [flag, code, path]
+            if flag == "--locale-smoke" || flag == "--language-smoke" || flag == "--menu-smoke" =>
+        {
+            if let Some(locale) = Locale::ALL.into_iter().find(|locale| locale.code() == code) {
+                visual_smoke(
+                    PathBuf::from(path),
+                    match flag.as_str() {
+                        "--locale-smoke" => Smoke::Locale(locale),
+                        "--language-smoke" => Smoke::Languages(locale),
+                        _ => Smoke::Menu(locale),
+                    },
+                )
+            } else {
+                Err(format!("Unsupported locale: {code}"))
+            }
         }
         _ => Err("Unknown arguments; run cocobeat-game --help".into()),
     };
@@ -180,7 +201,7 @@ pub fn run() -> ExitCode {
     }
 }
 
-fn base_app() -> App {
+fn base_app() -> Result<App, String> {
     let settings = SettingsMenu::load();
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -193,15 +214,17 @@ fn base_app() -> App {
         }),
         ..default()
     }));
+    ui_assets::install(&mut app)?;
     view::install(&mut app);
+    app.world_mut().resource_mut::<VisualState>().locale = settings.values.locale;
     display::install(&mut app, settings.values.display);
     app.insert_resource(settings);
-    app
+    Ok(app)
 }
 
 fn run_game() -> Result<(), String> {
     let audio = AudioOutput::new()?;
-    let mut app = base_app();
+    let mut app = base_app()?;
     input::install(&mut app);
     brand_intro::install(&mut app);
     app.world_mut()
@@ -349,6 +372,7 @@ fn update_game(
     }
     let settings_now = input.origin.elapsed().as_secs_f64();
     settings.tick(settings_now, &mut display);
+    visual.locale = settings.values.locale;
     if !input.controls_enabled() {
         let error = if brand.phase == BrandIntroPhase::Failed {
             impacts.clear();
@@ -370,19 +394,23 @@ fn update_game(
             if game.phase != Phase::Fault {
                 audio.stop();
                 game.phase = Phase::Fault;
-                game.notice = format!(
+                game.notice = Message::new("game.startup_failed");
+                eprintln!(
                     "Startup failed: {}",
                     brand.error.as_deref().unwrap_or("unknown error")
                 );
-                eprintln!("{}", game.notice);
             }
             brand.reveal_progress = 0.0;
-            visual.status = format!("{}\nClose window to exit", game.notice);
+            visual.status = format!(
+                "{}\n{}",
+                game.notice.render(visual.locale),
+                visual.locale.text("game.close_window")
+            );
         } else if brand.is_complete() {
             input.set_controls_enabled(true);
             input.set_menu_open(true);
             game.phase = Phase::Ready;
-            visual.status = "Ready — confirm Start to play together".into();
+            visual.status = visual.locale.text("game.ready").into();
         }
         // Completion only unlocks the next fresh press, never a queued startup control
         return;
@@ -393,16 +421,22 @@ fn update_game(
     }
     visual.sync_pulse = (visual.sync_pulse - delta * 1.8).max(0.0);
 
+    let mut fault_message = "game.stopped";
     let result = (|| -> Result<(), String> {
         if let Some(error) = audio.take_error() {
             let _ = game.session.clock.device_lost(observed);
+            fault_message = "game.audio_failed";
             return Err(error);
         }
         if matches!(
             game.phase,
             Phase::Starting | Phase::Running | Phase::Pausing
         ) && let (Some(position), Some(state)) = (audio.position(), audio.state())
-            && game.observe_playback(position, state, observed)?
+            && game
+                .observe_playback(position, state, observed)
+                .inspect_err(|_| {
+                    fault_message = "game.clock_failed";
+                })?
         {
             input.set_menu_open(false);
         }
@@ -410,6 +444,7 @@ fn update_game(
             && audio.state() != Some(PlaybackState::Stopped)
             && game.transition_started.elapsed() > std::time::Duration::from_secs(2)
         {
+            fault_message = "game.audio_failed";
             return Err(
                 "Audio callback did not acknowledge the state transition within 2 seconds".into(),
             );
@@ -481,7 +516,9 @@ fn update_game(
                     game.transition_started = std::time::Instant::now();
                     input.set_menu_open(true);
                 }
-                Control::SaveReplay => game.save()?,
+                Control::SaveReplay => game.save().inspect_err(|_| {
+                    fault_message = "game.replay_failed";
+                })?,
                 Control::Quit => {
                     close_game(&mut game, &mut audio, &mut exit);
                     return Ok(());
@@ -506,37 +543,67 @@ fn update_game(
     })();
     if let Err(error) = result {
         let _ = game.session.clock.invalidate_calibration(observed);
-        game.fault(&mut audio, error);
+        game.fault(&mut audio, error, fault_message);
         input.set_menu_open(true);
     }
     visual.song_seconds = game.session.current.as_seconds_f64();
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
     visual.settings_open = settings.is_open();
+    let locale = settings.values.locale;
+    visual.locale = locale;
+    visual.language_choices = settings.language_choices();
+    visual.settings_language = settings.language_row();
+    visual.settings_footer = settings.footer(&display, locale);
     if settings.is_open() {
-        visual.status = settings.text(settings_now, &display);
+        visual.status = settings.text(settings_now, &display, locale);
         return;
     }
+    visual.status = game_status(&game, &input, &settings);
+}
+
+fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> String {
+    let locale = settings.values.locale;
+    let song_seconds = game.session.current.as_seconds_f64();
     let next = dev_song::ANCHOR_FRAMES
         .iter()
         .find(|&&frame| frame > game.session.current.frames())
         .map(|&frame| {
-            format!(
-                "next Anchor in {:.1}s",
-                frame as f64 / 48_000.0 - visual.song_seconds
+            Message::with(
+                "hud.next_anchor",
+                [(
+                    "seconds",
+                    format!("{:.1}", frame as f64 / 48_000.0 - song_seconds),
+                )],
             )
+            .render(locale)
         })
-        .unwrap_or_else(|| "final release".into());
-    visual.status = format!(
-        "{:?} | {next}\n{}\n{}\n{}\n{}\n{}\nSoftware cursor estimate +/- {:.1}ms; hardware latency NOT MEASURED",
-        game.phase,
-        input.menu_text(),
-        input.bindings_text(),
-        input.status,
-        game.notice,
-        settings.notice,
-        game.session.uncertainty_frames as f64 / 48.0
-    );
+        .unwrap_or_else(|| locale.text("hud.final_release").into());
+    format!(
+        "{} | {next}\n{}\n{}\n{}\n{}\n{}\n{}",
+        locale.text(match game.phase {
+            Phase::Ready => "phase.ready",
+            Phase::Starting => "phase.starting",
+            Phase::Running => "phase.running",
+            Phase::Pausing => "phase.pausing",
+            Phase::Paused => "phase.paused",
+            Phase::Finished => "phase.finished",
+            Phase::Fault => "phase.fault",
+        }),
+        input.menu_text(locale),
+        input.bindings_text(locale),
+        input.status.render(locale),
+        game.notice.render(locale),
+        settings.notice.render(locale),
+        Message::with(
+            "hud.timing",
+            [(
+                "milliseconds",
+                format!("{:.1}", game.session.uncertainty_frames as f64 / 48.0)
+            )]
+        )
+        .render(locale)
+    )
 }
 
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
@@ -559,14 +626,27 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
         std::time::Duration::from_secs_f64(1.0 / 60.0),
     ))
     .insert_resource(bevy::time::TimeUpdateStrategy::ManualDuration(
-        std::time::Duration::from_secs_f64(1.0 / 60.0),
+        std::time::Duration::from_secs_f64(
+            if matches!(
+                mode,
+                Smoke::Locale(_) | Smoke::Languages(_) | Smoke::Menu(_)
+            ) {
+                0.1
+            } else {
+                1.0 / 60.0
+            },
+        ),
     ));
+    ui_assets::install(&mut app)?;
     view::install(&mut app);
     display::install(&mut app, default());
     app.world_mut()
         .resource_mut::<DisplayState>()
         .set_headless_surface([1280, 800]);
-    if mode == Smoke::Settings {
+    if matches!(
+        mode,
+        Smoke::Settings | Smoke::Locale(_) | Smoke::Languages(_)
+    ) {
         let selected = DisplaySettings {
             fullscreen: true,
             fullscreen_size: [640, 480],
@@ -576,17 +656,49 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
             .resource_mut::<DisplayState>()
             .request(selected);
         let mut menu = SettingsMenu::default();
-        menu.values = Settings { display: selected };
+        menu.values = Settings {
+            display: selected,
+            locale: match mode {
+                Smoke::Locale(locale) | Smoke::Languages(locale) => locale,
+                _ => Locale::EnUs,
+            },
+        };
         menu.begin(app.world().resource::<DisplayState>());
+        if matches!(mode, Smoke::Languages(_)) {
+            let mut display = app.world_mut().resource_mut::<DisplayState>();
+            // Enter the real language row using the same controls as the settings menu
+            for _ in 0..5 {
+                menu.handle(SettingsAction::Down, 0.0, &mut display);
+            }
+            menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        }
         app.insert_resource(menu).add_systems(
             Update,
             (|settings: Res<SettingsMenu>,
               display: Res<DisplayState>,
               mut visual: ResMut<VisualState>| {
                 visual.settings_open = true;
-                visual.status = settings.text(0.0, &display);
+                visual.locale = settings.values.locale;
+                visual.language_choices = settings.language_choices();
+                visual.settings_language = settings.language_row();
+                visual.settings_footer = settings.footer(&display, visual.locale);
+                visual.status = settings.text(0.0, &display, visual.locale);
             })
             .after(DisplaySystems::Sync),
+        );
+    }
+    if let Smoke::Menu(locale) = mode {
+        let mut settings = SettingsMenu::default();
+        settings.values.locale = locale;
+        app.insert_resource(settings).add_systems(
+            Update,
+            |game: Res<Game>,
+             input: Res<InputState>,
+             settings: Res<SettingsMenu>,
+             mut visual: ResMut<VisualState>| {
+                visual.locale = settings.values.locale;
+                visual.status = game_status(&game, &input, &settings);
+            },
         );
     }
     if startup {
@@ -629,6 +741,7 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
                     .into(),
             running: false,
             settings_open: false,
+            ..default()
         }
     };
     app.add_systems(

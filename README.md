@@ -10,7 +10,7 @@
 
 已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
 
-完整软件检查已通过 67 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
+完整软件检查已通过 75 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
@@ -55,6 +55,10 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 
 显示设置提供分辨率选择、无边框全屏、应用、取消和恢复默认；尺寸变更先预览 15 秒，窗口实际状态确认后才可保存，取消或超时恢复；普通窗口与全屏渲染尺寸分别保存。配置位于 Windows 的 `%APPDATA%/CoCoBeat/settings.json` 或 Linux 的 `$XDG_CONFIG_HOME/cocobeat/settings.json`（未设置时使用 `$HOME/.config/cocobeat/settings.json`），读取或保存失败会显示提示；实际 WM、DPI 和跨屏行为尚待平台验收
 
+语言设置支持 `zh-CN`、`en-US`、`en-GB`、`ja`、`ko`、`zh-TW`、`zh-HK`、`es-419`、`pt-BR`、`fr`、`de`、`ru`、`uk` 共 13 个变体，英文分别提供美国与英国版本，繁体中文分别提供台湾与香港版本；首次启动跟随系统语言，未支持时使用 `en-US`，应用后立即更新界面并跨启动保存，与显示设置共用草稿、取消和预览回退流程
+
+菜单、HUD、设置与玩家可见提示共使用 91 个翻译键，文字统一采用 Noto Sans，中文、日文与韩文使用对应地区字形；语言选项显示本名与地区旗帜，SVG 来自开源 flag-icons，运行时使用同源 PNG，来源见 [字体](assets/fonts/README.md) 与 [旗帜](assets/flags/README.md)。29 张离屏截图已检查字形与换行，母语真人校对仍为 NOT RUN；当前稳定引擎的 ICU CJK 词边界诊断及后续处理见 [验证记录](docs/testing.md#国际化与字体里程碑)
+
 手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
 
 结束歌曲、重新开始、返回主菜单、正常关闭窗口或手动保存时，输入历史写入当前工作目录的 `replays/`，同名 CSV 保留输入观察/消费时间与映射不确定性；返回主菜单会停止歌曲并重置会话，保留输入绑定，需释放确认键再重新按下才能开始歌曲；异常终止不保证保存未落盘历史
@@ -64,11 +68,16 @@ cargo run --locked -p cocobeat-game -- --replay path/to/session.json
 cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
 cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.png
 cargo run --locked -p cocobeat-game -- --settings-smoke target/cocobeat-settings.png
+cargo run --locked -p cocobeat-game -- --locale-smoke zh-HK target/cocobeat-locale.png
+cargo run --locked -p cocobeat-game -- --menu-smoke en-GB target/cocobeat-menu.png
+cargo run --locked -p cocobeat-game -- --language-smoke uk target/cocobeat-languages.png
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 ```
 
 `--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；`--settings-smoke` 使用模拟的 1280×800 显示表面和 640×480 场景验证 letterbox 与原生分辨率设置文字，不读写用户配置，也不证明真实窗口模式转换；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
+
+`--locale-smoke CODE PNG`、`--menu-smoke CODE PNG` 和 `--language-smoke CODE PNG` 分别保存指定语言的设置、Ready 主菜单和语言选择页，`CODE` 使用上述完整语言代码；三者运行品牌呈现到 Ready，并使用固定时间步加速离屏预览，不播放音频、不读写用户配置，不代替原生窗口或物理输入验收
 
 准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 

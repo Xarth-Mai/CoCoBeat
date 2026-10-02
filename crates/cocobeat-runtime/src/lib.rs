@@ -7,11 +7,13 @@ mod brand_intro;
 pub mod clock;
 pub mod dev_song;
 mod display;
+mod i18n;
 mod input;
 pub mod probe;
 mod session;
 mod settings;
 mod settings_menu;
+mod ui_assets;
 mod view;
 
 pub use app::run;

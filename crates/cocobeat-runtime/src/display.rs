@@ -10,7 +10,7 @@ use bevy::{
     winit::WINIT_WINDOWS,
 };
 
-use crate::settings::DisplaySettings;
+use crate::{i18n::Message, settings::DisplaySettings};
 
 const PRESETS: [[u32; 2]; 6] = [
     [1280, 720],
@@ -47,7 +47,7 @@ pub(crate) struct DisplayState {
     pub native_size: Option<[u32; 2]>,
     pub window_managed: bool,
     pub pending: bool,
-    pub notice: String,
+    pub notice: Message,
     actual: DisplaySettings,
     request: Option<DisplaySettings>,
     in_flight: Option<Pending>,
@@ -64,7 +64,7 @@ impl DisplayState {
             native_size: None,
             window_managed: false,
             pending: true,
-            notice: String::new(),
+            notice: Message::default(),
             actual: initial,
             request: Some(initial),
             in_flight: None,
@@ -82,7 +82,7 @@ impl DisplayState {
     pub(crate) fn request(&mut self, settings: DisplaySettings) {
         self.request = Some(settings);
         self.pending = true;
-        self.notice.clear();
+        self.notice = Message::default();
         self.apply_headless();
     }
 
@@ -118,8 +118,7 @@ impl DisplayState {
                 self.actual = self.constrain(request);
                 self.in_flight = None;
                 self.pending = false;
-                self.notice =
-                    "Simulated offscreen display; native display acceptance NOT RUN".into();
+                self.notice = Message::default();
             }
         }
     }
@@ -174,9 +173,9 @@ impl DisplayState {
                     self.actual.window_size = observed.size;
                 }
                 self.notice = if matched {
-                    "Desktop work area unavailable; the actual window size is shown".into()
+                    Message::new("display.work_area_unavailable")
                 } else {
-                    "Requested size not observed; confirm to save the actual window size".into()
+                    Message::new("display.size_unconfirmed")
                 };
                 // Accepting an observed resize must leave no deferred adapter action
                 self.in_flight = None;
@@ -184,8 +183,7 @@ impl DisplayState {
             } else {
                 self.pending = true;
                 if elapsed {
-                    self.notice =
-                        "Waiting for display mode and size; confirm remains disabled".into();
+                    self.notice = Message::new("display.mode_pending");
                 }
             }
         } else if !observed.fullscreen || observed.native == Some(observed.size) {
@@ -195,7 +193,7 @@ impl DisplayState {
             }
         }
         if self.window_managed {
-            self.notice = "Window manager controls this window size".into();
+            self.notice = Message::new("display.managed");
         }
     }
 

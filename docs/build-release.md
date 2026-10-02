@@ -41,7 +41,7 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 2. 全 workspace 的 rustfmt 与依赖图检查。
 3. schema/core/replay/xtask 的 Clippy 和测试。
 
-无图形/音频运行层编译、无平台矩阵、无自动 release 打包；新提交取消旧检查，单次限制 10 分钟。只改文档或资源不会触发当前自动 CI。完整检查仍用 `cargo xtask check`，新增非 Rust 源码或构建输入时同步更新触发路径。
+无图形/音频运行层编译、无平台矩阵、无自动 release 打包；新提交取消旧检查，单次限制 10 分钟。只改文档或未列入触发路径的资源不会触发当前自动 CI；嵌入运行时的 `assets/i18n/`、`assets/fonts/` 和 `assets/flags/` 变更会触发轻量检查，国际化运行时行为仍由完整检查与 GPU 验证覆盖。完整检查仍用 `cargo xtask check`，新增非 Rust 源码或构建输入时同步更新触发路径。
 
 ## 手动发行构建
 
@@ -61,7 +61,7 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
 成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Linux 先打包 tar.gz 保留执行权限。失败时不上传产物，不自动发布 GitHub Release。
 
-Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及完整的 `assets/fonts/`、`assets/flags/`；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及原始 OFL/MIT 许可一起分发，文件哈希对应资源总台账，资源打包不代表运行时多语言接入或四平台发行验证已完成
+Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及完整的 `assets/fonts/`、`assets/flags/`；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及原始 OFL/MIT 许可一起分发，文件哈希对应资源总台账，运行时多语言的软件验证见 [验证策略](testing.md#国际化与字体里程碑)，四平台发行验证仍需分别执行
 
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，手动构建流程和四目标首次结果须按 [工作进度](../todo/progress.md) 验证，不能用本机编译推断其他平台或真实设备兼容性
 

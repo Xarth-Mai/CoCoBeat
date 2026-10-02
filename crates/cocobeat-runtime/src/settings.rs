@@ -1,3 +1,4 @@
+use crate::i18n::Locale;
 use serde::{Deserialize, Serialize};
 use std::{
     env,
@@ -29,9 +30,19 @@ impl Default for DisplaySettings {
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Settings {
     pub display: DisplaySettings,
+    pub locale: Locale,
+}
+
+impl Default for Settings {
+    fn default() -> Self {
+        Self {
+            display: DisplaySettings::default(),
+            locale: Locale::system_default(),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -39,6 +50,8 @@ pub(crate) struct Settings {
 struct Document {
     version: u32,
     display: DisplaySettings,
+    #[serde(default = "Locale::system_default")]
+    locale: Locale,
 }
 
 fn invalid(message: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> io::Error {
@@ -72,6 +85,7 @@ pub fn load(path: &Path) -> io::Result<Settings> {
     validate(document.display)?;
     Ok(Settings {
         display: document.display,
+        locale: document.locale,
     })
 }
 
@@ -83,6 +97,7 @@ pub fn save(path: &Path, settings: &Settings) -> io::Result<()> {
     let bytes = serde_json::to_vec_pretty(&Document {
         version: VERSION,
         display: settings.display,
+        locale: settings.locale,
     })
     .map_err(invalid)?;
     let name = path
@@ -155,8 +170,12 @@ mod tests {
         settings.display.fullscreen = true;
         settings.display.window_size = [1600, 900];
         settings.display.fullscreen_size = [1920, 1080];
+        settings.locale = Locale::Ja;
         save(&path, &settings).unwrap();
         assert_eq!(load(&path).unwrap(), settings);
+        let document: serde_json::Value =
+            serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
+        assert_eq!(document["locale"], "ja");
 
         let previous = fs::read(&path).unwrap();
         settings.display.window_size = [0, 900];
@@ -183,7 +202,8 @@ mod tests {
         ));
         let valid = serde_json::json!({
             "version": VERSION,
-            "display": {"fullscreen": false, "window_size": [1280, 800], "fullscreen_size": [1280, 800]}
+            "display": {"fullscreen": false, "window_size": [1280, 800], "fullscreen_size": [1280, 800]},
+            "locale": "en-US"
         });
         let mut invalid_documents = vec![b"{".to_vec(), vec![b' '; MAX_FILE_BYTES as usize + 1]];
         for (pointer, value) in [
@@ -192,6 +212,8 @@ mod tests {
             ("/display/fullscreen_size", serde_json::json!([1280, 16385])),
             ("/display/window_size", serde_json::json!([1280])),
             ("/display/fullscreen", serde_json::json!("false")),
+            ("/locale", serde_json::json!("unsupported")),
+            ("/locale", serde_json::json!(null)),
         ] {
             let mut document = valid.clone();
             *document.pointer_mut(pointer).unwrap() = value;
@@ -206,6 +228,32 @@ mod tests {
             fs::write(&path, bytes).unwrap();
             assert_eq!(load(&path).unwrap_err().kind(), io::ErrorKind::InvalidData);
         }
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn old_v1_keeps_display_and_uses_system_language() {
+        let path = env::temp_dir().join(format!(
+            "cocobeat-settings-legacy-{}-{}.json",
+            std::process::id(),
+            TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::write(
+            &path,
+            br#"{"version":1,"display":{"fullscreen":true,"window_size":[1600,900],"fullscreen_size":[1920,1080]}}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            load(&path).unwrap(),
+            Settings {
+                display: DisplaySettings {
+                    fullscreen: true,
+                    window_size: [1600, 900],
+                    fullscreen_size: [1920, 1080],
+                },
+                locale: Locale::system_default(),
+            }
+        );
         fs::remove_file(path).unwrap();
     }
 }
