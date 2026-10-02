@@ -213,4 +213,12 @@ Windows 目标检查仍在 Linux 上使用 `target/windows-cross-toolchain/` 内
 
 `CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game` 退出 0，92 项 workspace 测试、Clippy、格式、依赖边界及构建均为 PASS，117 个源码与资源文件以及产物身份见 `target/settings-resize-evidence/evidence.json`。同一源码另通过 Linux 上隔离 Rust 的 Windows GNU runtime 编译检查，命令与 114 个输入文件哈希见 `windows-check.json`；Windows 链接与运行未执行。本轮没有渲染样式或资源修改，未重跑 GPU 截图
 
-本轮只读宿主条件核查保存为 `target/platform-readiness/evidence.json`：Linux x86_64 有可用 GPU、DP-1 显示器与 ALSA 播放/采集硬件，但当前用户没有图形桌面会话，X11 查询授权失败；可连接的 PipeWire/Pulse 当前只提供 Dummy Output，udev 未枚举到手柄且当前用户不能读取输入节点。未启动窗口、播放或录音、读取按键、修改配置或音量；实际 WM/DPI/跨屏、物理音频与 loopback、手柄和真人双人验收继续为 NOT RUN，需先具备用户图形会话、物理音频路径、测量连接和测试设备
+早先只读宿主条件核查保存为 `target/platform-readiness/evidence.json`：Linux x86_64 有可用 GPU、DP-1 显示器与 ALSA 播放/采集硬件，但当前用户没有图形桌面会话，X11 查询授权失败；可连接的 PipeWire/Pulse 当时只提供 Dummy Output，udev 未枚举到手柄且当前用户不能读取输入节点。该次核查未启动窗口、播放或录音、读取按键、修改配置或音量；实际 WM/DPI/跨屏、物理音频与 loopback、手柄和真人双人验收继续为 NOT RUN，需先具备用户图形会话、物理音频路径、测量连接和测试设备
+
+## 真实音频后端游标观测
+
+2026-10-02 14:03 UTC 复核时，PipeWire 已枚举 HDMI、USB 与数字音频输出，默认 USB 输出为静音、30% 音量；当前用户仍无图形桌面会话，udev 未枚举到手柄，见 `target/platform-readiness/followup-20261002.json`，早先仅有 Dummy Output 的观测不再代表当前状态
+
+源码 `d1290a21d149b8f520b7f16e44b7a0497f4348c9` 以 `cargo build --offline --locked -j1 -p cocobeat-lab` 构建后，执行 `target/debug/cocobeat-lab audio-probe 30 target/audio-probe-evidence/20261002-d1290a2-30s/probe`，退出 0；CPAL 报告 ALSA `default`、48 kHz 双声道，30 秒探针完成 28,425 次观察、2,811 个游标更新间隔，未报告后端错误，软件游标更新间隔 p50/p95/p99 分别为 10.552203/11.607198/11.622668 ms
+
+命令、193 个源码文件哈希、二进制身份、前后输出状态和 CSV 哈希保存在该目录的 `evidence.json`；二进制 SHA-256 为 `014d0a123c96b3c957eaf63b8b3084abe11caad47b6b67bc88a83e6d8f6da6fc`。执行前后系统默认输出仍为静音、30% 音量，未修改设备或音量；本轮不录音，ALSA 默认设备描述不构成物理声路证明，游标统计不代表扬声器输出延迟，loopback、听感、校准与物理输入仍为 NOT RUN

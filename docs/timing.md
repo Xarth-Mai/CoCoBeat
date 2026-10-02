@@ -49,4 +49,4 @@ cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30
 
 输出 `expected-clicks.csv` 保存源音频预期落点，`cursor.csv` 保存单调读取区间、真实 Kira 软件游标、更新间隔和相对软件漂移，`metadata.txt` 保存设备/构建信息、完成或失败状态及游标更新间隔分位数；这些记录始终标明 `physical_output_latency=NOT MEASURED` 和 `loopback_recording=NOT CAPTURED`
 
-采集工具已实现，软件编译与检查已通过，真实音频探针尚未运行；真实 loopback/外部输出测量、Windows/Linux 键盘/手柄延迟、听感与校准均为 NOT RUN，必须依据这些证据调整判定窗口与时钟参数
+采集工具已通过软件编译与检查；2026-10-02，源码 `d1290a2` 的 `audio-probe 30` 在真实 Kira/CPAL 后端退出 0，ALSA `default` 为 48 kHz 双声道，记录 28,425 次软件游标观测和 2,811 个更新间隔，见 [验收记录](testing.md#真实音频后端游标观测)；默认 PipeWire 输出在运行前后均为静音、音量 30%，未作修改，CPAL 默认设备不等同于已确认的物理 USB 声路；真实 loopback/外部输出测量、Windows/Linux 键盘/手柄延迟、听感与校准仍为 NOT RUN，判定窗口与时钟参数仍需依据这些测量调整
