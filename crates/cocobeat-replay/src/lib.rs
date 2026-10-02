@@ -1,5 +1,497 @@
-//! Capture and reproduce timestamped facts through the pure gameplay reducers.
+//! Bounded, versioned input histories played through the same core as live input
 //!
-//! Day 0 establishes this boundary only. Recorder, persistent format and playback
-//! are implemented alongside the first real input stream, never as a second rule
-//! engine. Audio is not embedded in replay files; telemetry stays local by default.
+//! Files contain integer song frames and local provenance, never user audio
+
+use cocobeat_core::DuoEngine;
+use cocobeat_schema::{Anchor, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime};
+use serde::{Deserialize, Serialize};
+use std::{
+    fs::{self, OpenOptions},
+    io::{self, Read, Write},
+    path::Path,
+    sync::atomic::{AtomicU64, Ordering},
+};
+
+const FORMAT: &str = "CoCoBeat Replay";
+const VERSION: u32 = 1;
+pub const MAX_FILE_BYTES: u64 = 8 * 1024 * 1024;
+pub const MAX_FACTS: usize = 65_536;
+const MAX_IDENTITY_BYTES: usize = 256;
+static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ReplayIdentity {
+    pub content_id: String,
+    pub rules_id: String,
+    pub build_id: String,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Replay {
+    identity: ReplayIdentity,
+    epoch: SessionEpoch,
+    facts: Vec<DuoInput>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Document {
+    format: String,
+    version: u32,
+    content_id: String,
+    rules_id: String,
+    build_id: String,
+    epoch: u64,
+    facts: Vec<Fact>,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+enum Fact {
+    Hit {
+        epoch: u64,
+        player: u8,
+        seq: u64,
+        song_time_frames: i64,
+    },
+    Watermark {
+        epoch: u64,
+        player: u8,
+        through_frames: i64,
+    },
+}
+
+fn invalid(message: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, message)
+}
+
+fn player(number: u8) -> io::Result<PlayerId> {
+    match number {
+        1 => Ok(PlayerId::P1),
+        2 => Ok(PlayerId::P2),
+        _ => Err(invalid("Replay player must be 1 or 2")),
+    }
+}
+
+fn player_number(player: PlayerId) -> u8 {
+    match player {
+        PlayerId::P1 => 1,
+        PlayerId::P2 => 2,
+    }
+}
+
+impl Replay {
+    pub fn new(identity: ReplayIdentity, epoch: SessionEpoch) -> io::Result<Self> {
+        for value in [&identity.content_id, &identity.rules_id, &identity.build_id] {
+            if value.is_empty() || value.len() > MAX_IDENTITY_BYTES {
+                return Err(invalid(
+                    "Replay identities must contain 1 to 256 UTF-8 bytes",
+                ));
+            }
+        }
+        Ok(Self {
+            identity,
+            epoch,
+            facts: Vec::new(),
+        })
+    }
+
+    pub fn identity(&self) -> &ReplayIdentity {
+        &self.identity
+    }
+
+    pub fn epoch(&self) -> SessionEpoch {
+        self.epoch
+    }
+
+    pub fn facts(&self) -> &[DuoInput] {
+        &self.facts
+    }
+
+    /// Preserves the supplied fact verbatim; core validates its gameplay meaning
+    /// Callers must surface failure; a full recorder never silently drops input
+    pub fn record(&mut self, fact: DuoInput) -> io::Result<()> {
+        if self.facts.len() == MAX_FACTS {
+            return Err(invalid("Replay fact limit exceeded"));
+        }
+        self.facts.push(fact);
+        Ok(())
+    }
+
+    pub fn encode(&self) -> io::Result<Vec<u8>> {
+        let document = Document {
+            format: FORMAT.into(),
+            version: VERSION,
+            content_id: self.identity.content_id.clone(),
+            rules_id: self.identity.rules_id.clone(),
+            build_id: self.identity.build_id.clone(),
+            epoch: self.epoch.0,
+            facts: self
+                .facts
+                .iter()
+                .map(|fact| match *fact {
+                    DuoInput::Hit(hit) => Fact::Hit {
+                        epoch: hit.epoch.0,
+                        player: player_number(hit.player),
+                        seq: hit.seq,
+                        song_time_frames: hit.song_time.frames(),
+                    },
+                    DuoInput::Watermark {
+                        epoch,
+                        player,
+                        through,
+                    } => Fact::Watermark {
+                        epoch: epoch.0,
+                        player: player_number(player),
+                        through_frames: through.frames(),
+                    },
+                })
+                .collect(),
+        };
+        let bytes = serde_json::to_vec(&document).map_err(invalid)?;
+        if bytes.len() as u64 > MAX_FILE_BYTES {
+            return Err(invalid("Replay byte limit exceeded"));
+        }
+        Ok(bytes)
+    }
+
+    pub fn decode(reader: impl Read) -> io::Result<Self> {
+        let mut bytes = Vec::new();
+        reader.take(MAX_FILE_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_FILE_BYTES {
+            return Err(invalid("Replay byte limit exceeded"));
+        }
+        let document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
+        if document.format != FORMAT || document.version != VERSION {
+            return Err(invalid("Invalid Replay header or unsupported version"));
+        }
+        if document.facts.len() > MAX_FACTS {
+            return Err(invalid("Replay fact limit exceeded"));
+        }
+        let mut replay = Self::new(
+            ReplayIdentity {
+                content_id: document.content_id,
+                rules_id: document.rules_id,
+                build_id: document.build_id,
+            },
+            SessionEpoch(document.epoch),
+        )?;
+        for fact in document.facts {
+            replay.record(match fact {
+                Fact::Hit {
+                    epoch,
+                    player: number,
+                    seq,
+                    song_time_frames,
+                } => DuoInput::Hit(Hit {
+                    epoch: SessionEpoch(epoch),
+                    player: player(number)?,
+                    seq,
+                    song_time: SongTime::from_frames(song_time_frames),
+                }),
+                Fact::Watermark {
+                    epoch,
+                    player: number,
+                    through_frames,
+                } => DuoInput::Watermark {
+                    epoch: SessionEpoch(epoch),
+                    player: player(number)?,
+                    through: SongTime::from_frames(through_frames),
+                },
+            })?;
+        }
+        Ok(replay)
+    }
+
+    pub fn load(path: impl AsRef<Path>) -> io::Result<Self> {
+        Self::decode(fs::File::open(path)?)
+    }
+
+    /// Writes a same-directory temporary file, syncs its data, then renames it
+    /// An existing destination is never deleted first; replacement follows the
+    /// platform's rename semantics, and rename errors leave the old file intact
+    /// This does not promise directory-entry durability after power loss
+    pub fn save(&self, path: impl AsRef<Path>) -> io::Result<()> {
+        let bytes = self.encode()?;
+        let path = path.as_ref();
+        let name = path
+            .file_name()
+            .ok_or_else(|| invalid("Replay path requires a file name"))?;
+        let mut temporary_name = name.to_os_string();
+        temporary_name.push(format!(
+            ".{}.{}.tmp",
+            std::process::id(),
+            TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed)
+        ));
+        let temporary = path.with_file_name(temporary_name);
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary)?;
+        let result = (|| {
+            file.write_all(&bytes)?;
+            file.sync_all()?;
+            drop(file);
+            fs::rename(&temporary, path)
+        })();
+        if result.is_err() {
+            let _ = fs::remove_file(temporary);
+        }
+        result
+    }
+
+    /// The caller resolves content and rules identities before constructing the
+    /// engine inputs; build identity is provenance rather than a compatibility gate
+    pub fn replay(
+        &self,
+        expected_content_id: &str,
+        expected_rules_id: &str,
+        anchors: Vec<Anchor>,
+        rules: DuoRules,
+    ) -> io::Result<DuoEngine> {
+        if self.identity.content_id != expected_content_id
+            || self.identity.rules_id != expected_rules_id
+        {
+            return Err(invalid("Replay content or rules identity mismatch"));
+        }
+        let mut engine = DuoEngine::new(self.epoch, anchors, rules).map_err(invalid)?;
+        for fact in &self.facts {
+            engine.ingest(*fact).map_err(invalid)?;
+        }
+        Ok(engine)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn empty() -> Replay {
+        Replay::new(
+            ReplayIdentity {
+                content_id: "fixture-64s-v1".into(),
+                rules_id: "duo-v1".into(),
+                build_id: "test-build".into(),
+            },
+            SessionEpoch(7),
+        )
+        .unwrap()
+    }
+
+    fn hit(player: PlayerId, seq: u64, frames: i64) -> DuoInput {
+        DuoInput::Hit(Hit {
+            epoch: SessionEpoch(7),
+            player,
+            seq,
+            song_time: SongTime::from_frames(frames),
+        })
+    }
+
+    fn watermark(player: PlayerId, frames: i64) -> DuoInput {
+        DuoInput::Watermark {
+            epoch: SessionEpoch(7),
+            player,
+            through: SongTime::from_frames(frames),
+        }
+    }
+
+    #[test]
+    fn roundtrip_preserves_integer_frames_identities_and_duplicate_deliveries() {
+        let mut replay = empty();
+        for fact in [
+            hit(PlayerId::P1, u64::MAX, i64::MIN),
+            hit(PlayerId::P1, u64::MAX, i64::MIN),
+            hit(PlayerId::P2, 9, i64::MAX),
+            watermark(PlayerId::P1, -48_000),
+            watermark(PlayerId::P2, i64::MAX),
+        ] {
+            replay.record(fact).unwrap();
+        }
+        let bytes = replay.encode().unwrap();
+        assert_eq!(Replay::decode(bytes.as_slice()).unwrap(), replay);
+        let text = String::from_utf8(bytes).unwrap();
+        assert!(text.contains("-9223372036854775808"));
+        assert!(text.contains("9223372036854775807"));
+        assert!(text.contains("18446744073709551615"));
+    }
+
+    #[test]
+    fn rejects_truncation_bad_headers_unknown_fields_and_invalid_numbers() {
+        let mut replay = empty();
+        replay.record(hit(PlayerId::P1, 1, -48)).unwrap();
+        let bytes = replay.encode().unwrap();
+        for end in 0..bytes.len() {
+            assert!(
+                Replay::decode(&bytes[..end]).is_err(),
+                "accepted prefix {end}"
+            );
+        }
+        let original: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+        for (key, value) in [
+            ("format", serde_json::json!("other")),
+            ("version", serde_json::json!(2)),
+            ("unexpected", serde_json::json!(true)),
+            ("content_id", serde_json::json!("")),
+            ("build_id", serde_json::json!("x".repeat(257))),
+        ] {
+            let mut changed = original.clone();
+            changed[key] = value;
+            assert!(Replay::decode(serde_json::to_vec(&changed).unwrap().as_slice()).is_err());
+        }
+        for (key, value) in [
+            ("player", serde_json::json!(3)),
+            ("song_time_frames", serde_json::json!(1.5)),
+            ("seq", serde_json::json!(-1)),
+            ("unexpected", serde_json::json!(true)),
+        ] {
+            let mut changed = original.clone();
+            changed["facts"][0][key] = value;
+            assert!(Replay::decode(serde_json::to_vec(&changed).unwrap().as_slice()).is_err());
+        }
+    }
+
+    #[test]
+    fn bounded_reader_and_recorder_report_limits() {
+        let mut source = io::Cursor::new(vec![b' '; MAX_FILE_BYTES as usize + 100]);
+        assert!(
+            Replay::decode(&mut source)
+                .unwrap_err()
+                .to_string()
+                .contains("byte limit")
+        );
+        assert_eq!(source.position(), MAX_FILE_BYTES + 1);
+        let mut replay = empty();
+        let fact = hit(PlayerId::P1, 0, 0);
+        for _ in 0..MAX_FACTS {
+            replay.record(fact).unwrap();
+        }
+        assert!(replay.record(fact).is_err());
+        assert_eq!(replay.facts().len(), MAX_FACTS);
+        let mut document: Document = serde_json::from_slice(&replay.encode().unwrap()).unwrap();
+        document.facts.push(Fact::Hit {
+            epoch: 7,
+            player: 1,
+            seq: 0,
+            song_time_frames: 0,
+        });
+        assert!(
+            Replay::decode(serde_json::to_vec(&document).unwrap().as_slice())
+                .unwrap_err()
+                .to_string()
+                .contains("fact limit")
+        );
+    }
+
+    #[test]
+    fn saves_complete_files_and_preserves_existing_destination_on_failure() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-replay-test-{}-{}",
+            std::process::id(),
+            TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir(&root).unwrap();
+        let path = root.join("session.replay");
+        let mut replay = empty();
+        replay.record(hit(PlayerId::P1, 0, -48)).unwrap();
+        replay.save(&path).unwrap();
+        assert_eq!(Replay::load(&path).unwrap(), replay);
+
+        let previous = fs::read(&path).unwrap();
+        let directory = root.join("occupied");
+        fs::create_dir(&directory).unwrap();
+        fs::write(directory.join("keep"), b"previous data").unwrap();
+        assert!(replay.save(&directory).is_err());
+        assert_eq!(fs::read(&path).unwrap(), previous);
+        assert_eq!(fs::read(directory.join("keep")).unwrap(), b"previous data");
+        assert_eq!(fs::read_dir(&root).unwrap().count(), 2);
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    fn history(frame_intervals: &[i64], reverse_batch: bool) -> Replay {
+        let mut replay = empty();
+        let hits = [
+            hit(PlayerId::P1, 1, 48_000),
+            hit(PlayerId::P2, 1, 48_048),
+            hit(PlayerId::P1, 2, 96_000),
+            hit(PlayerId::P2, 2, 96_480),
+            hit(PlayerId::P1, 3, 144_000),
+            hit(PlayerId::P2, 3, 143_520),
+        ];
+        let mut previous = -1;
+        let mut through = 0;
+        let mut frame = 0;
+        while through <= 240_000 {
+            let mut batch: Vec<_> = hits
+                .iter()
+                .copied()
+                .filter(|fact| match fact {
+                    DuoInput::Hit(hit) => {
+                        hit.song_time.frames() > previous && hit.song_time.frames() <= through
+                    }
+                    _ => unreachable!(),
+                })
+                .collect();
+            if reverse_batch {
+                batch.reverse();
+            }
+            for fact in batch {
+                replay.record(fact).unwrap();
+            }
+            replay.record(watermark(PlayerId::P1, through)).unwrap();
+            replay.record(watermark(PlayerId::P2, through)).unwrap();
+            previous = through;
+            if through == 240_000 {
+                break;
+            }
+            through = (through + frame_intervals[frame % frame_intervals.len()]).min(240_000);
+            frame += 1;
+        }
+        replay
+    }
+
+    #[test]
+    fn live_and_serialized_playback_agree_across_frame_batches_and_reordering() {
+        let anchors = vec![Anchor {
+            id: 1,
+            song_time: SongTime::from_frames(96_000),
+        }];
+        let rules = DuoRules::default();
+        let mut expected = DuoEngine::new(SessionEpoch(7), anchors.clone(), rules).unwrap();
+        for fact in history(&[240_000], false).facts() {
+            expected.ingest(*fact).unwrap();
+        }
+        assert!(!expected.events().is_empty());
+        // Exact 60 Hz, exact 144 Hz, and 500 ms render stalls
+        for (intervals, reverse_batch) in [
+            (&[800][..], false),
+            (&[333, 333, 334][..], true),
+            (&[24_000][..], true),
+        ] {
+            let recorded = history(intervals, reverse_batch);
+            let loaded = Replay::decode(recorded.encode().unwrap().as_slice()).unwrap();
+            let actual = loaded
+                .replay("fixture-64s-v1", "duo-v1", anchors.clone(), rules)
+                .unwrap();
+            assert_eq!(
+                actual.events(),
+                expected.events(),
+                "intervals={intervals:?}"
+            );
+            assert_eq!(
+                actual.resonance(),
+                expected.resonance(),
+                "intervals={intervals:?}"
+            );
+        }
+        assert!(
+            empty()
+                .replay("wrong-content", "duo-v1", anchors.clone(), rules)
+                .is_err()
+        );
+        assert!(
+            empty()
+                .replay("fixture-64s-v1", "wrong-rules", anchors, rules)
+                .is_err()
+        );
+    }
+}

@@ -100,7 +100,10 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
         let (allowed, allow_external): (&[&str], bool) = match name {
             "cocobeat-schema" => (&[], false),
             "cocobeat-core" => (&["cocobeat-schema"], false),
-            "cocobeat-replay" => (&["cocobeat-schema", "cocobeat-core"], false),
+            "cocobeat-replay" => (
+                &["cocobeat-schema", "cocobeat-core", "serde", "serde_json"],
+                false,
+            ),
             "cocobeat-runtime" => (
                 &["cocobeat-schema", "cocobeat-core", "cocobeat-replay"],
                 true,

@@ -12,7 +12,7 @@ lab ────────────────→ 按实验需要使用上
 xtask ──────────────→ 开发检查工具
 ```
 
-当前只有 schema 拥有时间实现。core、replay 是第一周所需的独立责任边界，不提前填充空 judge、matcher、recorder 模块或伪算法。runtime 的入口明确报告 bootstrap 状态。
+schema 定义整数时间、玩家/epoch/序号、Hit、水位和语义事件；core 的 DuoEngine 统一执行 Anchor 判定、一对一 Free Sync、Anchor Sync 与 Resonance；replay 保存带身份和版本的有界 JSON，再交给同一个 core 重放；runtime 入口仍报告 bootstrap 状态
 
 ## 未来模块何时出生
 
@@ -40,7 +40,7 @@ media / stage / net 依赖 schema，不能依赖 runtime。算法以项目自有
 ## 自动约束
 
 `cargo xtask boundaries` 检查 Cargo metadata 中所有直接依赖声明，包括 build/dev、目标平台条件与重命名依赖。
-Day 0 的 schema / core / replay 不允许外部依赖，且只能沿上图依赖；game 只允许 runtime。runtime 和 lab 可接入第三方实现依赖；未声明的本地 helper 不得绕过边界。
+schema / core 不允许外部依赖，replay 仅允许 serde / serde_json 处理私有持久化格式，且只能沿上图依赖；game 只允许 runtime，runtime 和 lab 可接入第三方实现依赖，未声明的本地 helper 不得绕过边界
 需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
 
 边界检查约束模块图，不能证明所有函数都尊重语义；例如反馈不修改判定，还需要 API 设计、测试和代码审查。

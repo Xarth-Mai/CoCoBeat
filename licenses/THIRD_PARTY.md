@@ -2,7 +2,7 @@
 
 项目源代码使用 [MPL-2.0](../LICENSE)。下表根据当前 `Cargo.lock` 与 `cargo metadata --locked --format-version 1` 整理（2026-10-02），记录解析图中的第三方包，包含可能未激活的可选依赖；不等同于最终发行二进制清单。
 
-Day 0 唯一直接第三方 Rust 依赖是 **xtask 使用的 serde_json**，用于检查 Cargo metadata。游戏、schema、core、replay 当前未引入外部 Rust 包。此清单中的许可证是上游 manifest 声明；实际分发时按所使用组件保留对应许可文本与 notices。
+replay 使用 serde / serde_json 读写私有 JSON 持久化格式，xtask 使用 serde_json 检查 Cargo metadata；schema / core 无第三方 Rust 依赖，此清单中的许可证是上游 manifest 声明，实际分发时按所使用组件保留对应许可文本与 notices
 
 | 包 | 锁定版本 | 上游声明许可证 |
 |---|---|---|
