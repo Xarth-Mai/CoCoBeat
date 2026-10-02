@@ -27,8 +27,9 @@ const IMPACT_POINTS: [Vec2; 3] = [
     Vec2::new(318.0, 11.0),
     Vec2::new(475.0, 16.0),
 ];
-const DOCK_START: f64 = 5.0;
-const END: f64 = DOCK_START + 0.45;
+const DOCK_START: f64 = 6.15;
+pub(crate) const END: f64 = 6.60;
+pub(crate) const IDLE_PERIOD: f64 = 24.0;
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub enum BrandIntroPhase {
@@ -44,6 +45,7 @@ pub enum BrandIntroPhase {
 pub struct BrandIntroStatus {
     pub phase: BrandIntroPhase,
     pub elapsed_seconds: f64,
+    pub idle_seconds: f64,
     pub reveal_progress: f32,
     pub error: Option<String>,
 }
@@ -71,6 +73,8 @@ impl Default for BrandIntroLayout {
 #[derive(Resource, Debug, Default)]
 pub struct BrandIntroControl {
     pub suspended: bool,
+    /// Main-menu owner enables this only while the menu is visible
+    pub idle_enabled: bool,
 }
 
 #[derive(Message, Clone, Copy, Debug, Eq, PartialEq)]
@@ -327,10 +331,18 @@ fn advance(
     mut impacts: MessageWriter<BrandImpact>,
     mut was_suspended: Local<bool>,
 ) {
-    if matches!(
-        status.phase,
-        BrandIntroPhase::Failed | BrandIntroPhase::Complete
-    ) {
+    let resumed = *was_suspended && !control.suspended;
+    *was_suspended = control.suspended;
+    if status.is_complete() {
+        if !control.idle_enabled {
+            status.idle_seconds = 0.0;
+        } else if !control.suspended && !resumed {
+            status.idle_seconds =
+                (status.idle_seconds + time.delta_secs_f64()).rem_euclid(IDLE_PERIOD);
+        }
+        return;
+    }
+    if status.phase == BrandIntroPhase::Failed {
         return;
     }
     let load_error = assets
@@ -347,8 +359,6 @@ fn advance(
         status.error = Some(error);
         return;
     }
-    let resumed = *was_suspended && !control.suspended;
-    *was_suspended = control.suspended;
     if control.suspended || resumed {
         return;
     }
@@ -369,7 +379,7 @@ fn advance(
     status.phase = phase_at(next);
 }
 
-fn phase_at(t: f64) -> BrandIntroPhase {
+pub(crate) fn phase_at(t: f64) -> BrandIntroPhase {
     if t >= END {
         BrandIntroPhase::Complete
     } else if t >= DOCK_START {
@@ -412,13 +422,37 @@ fn paint_at(t: f32) -> Vec4 {
 }
 
 fn eyes_at(t: f32) -> Vec4 {
-    let inward = progress(t, 2.40, 2.66);
-    let settle = 1.0 - progress(t, 3.02, 3.55);
+    let inward = progress(t, 3.80, 4.00) - 0.10 * progress(t, 4.00, 4.12);
+    let settle = 1.0 - progress(t, 4.42, 4.95);
     Vec4::new(
         progress(t, 0.90, 1.12),
         progress(t, 2.10, 2.32),
         (-4.0 + 8.0 * inward) * settle,
         (4.0 - 6.0 * inward) * settle,
+    )
+}
+
+fn idle_eyes_at(seconds: f64) -> Vec4 {
+    let t = seconds.rem_euclid(IDLE_PERIOD) as f32;
+    let blink =
+        |start| progress(t, start, start + 0.07) * (1.0 - progress(t, start + 0.10, start + 0.24));
+    let glance = |start, release| {
+        (progress(t, start, start + 0.28) - 0.10 * progress(t, start + 0.28, start + 0.42))
+            * (1.0 - progress(t, release, release + 0.53))
+    };
+    let blue_blink = [2.80, 10.60, 19.60]
+        .into_iter()
+        .map(blink)
+        .fold(0.0, f32::max);
+    let pink_blink = [2.89, 10.50, 10.84, 19.68]
+        .into_iter()
+        .map(blink)
+        .fold(0.0, f32::max);
+    Vec4::new(
+        1.0 - blue_blink,
+        1.0 - pink_blink,
+        4.0 * (glance(6.0, 7.40) + glance(15.18, 16.75)),
+        -2.0 * (glance(6.16, 7.48) + glance(15.0, 16.65)),
     )
 }
 
@@ -503,8 +537,20 @@ fn fitted(rect: Rect) -> Rect {
     Rect::from_center_size(rect.center(), CANVAS * scale)
 }
 
+fn dock_size_at(t: f64, intro: Vec2, target: Vec2) -> Vec2 {
+    let u = ((t - DOCK_START) / (END - DOCK_START)) as f32;
+    let small = target * 0.95;
+    if u < 0.72 {
+        let amount = CubicSegment::new_bezier_easing((0.45, 0.0), (0.20, 1.0)).ease(u / 0.72);
+        intro.lerp(small, amount)
+    } else {
+        small.lerp(target, smooth((u - 0.72) / 0.28))
+    }
+}
+
 fn present(
     status: Res<BrandIntroStatus>,
+    control: Res<BrandIntroControl>,
     layout: Res<BrandIntroLayout>,
     cameras: Query<&Camera>,
     mut backdrop: Query<&mut BackgroundColor, With<Backdrop>>,
@@ -523,12 +569,17 @@ fn present(
     );
     let target = fitted(layout.dock_rect);
     let amount = status.reveal_progress;
-    let rect = Rect::from_corners(
-        intro.min.lerp(target.min, amount),
-        intro.max.lerp(target.max, amount),
+    let rect = Rect::from_center_size(
+        intro.center().lerp(target.center(), amount),
+        dock_size_at(status.elapsed_seconds, intro.size(), target.size()),
     );
     let scale = rect.width() / CANVAS.x;
     let t = status.elapsed_seconds as f32;
+    let eyes = if status.is_complete() && control.idle_enabled {
+        idle_eyes_at(status.idle_seconds)
+    } else {
+        eyes_at(t)
+    };
     let visible = !matches!(
         status.phase,
         BrandIntroPhase::Loading | BrandIntroPhase::Failed
@@ -551,7 +602,7 @@ fn present(
                 BrandUniform {
                     paint: paint_at(t),
                     effect: Vec4::new(0.0, 0.0, f32::from(visible), 0.0),
-                    eyes: eyes_at(t),
+                    eyes,
                     origins,
                 },
             ),
@@ -616,7 +667,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn loading_and_focus_pause_do_not_consume_the_timeline() {
+    fn presentation_clock_respects_loading_focus_and_menu_gate() {
         let mut app = App::new();
         app.add_plugins((bevy::app::TaskPoolPlugin::default(), AssetPlugin::default()))
             .init_resource::<Time<Real>>()
@@ -683,6 +734,50 @@ mod tests {
             BrandIntroPhase::Failed
         );
         assert!(!app.world().resource::<BrandIntroStatus>().is_complete());
+
+        *app.world_mut().resource_mut::<BrandIntroStatus>() = BrandIntroStatus {
+            phase: BrandIntroPhase::Complete,
+            elapsed_seconds: END,
+            reveal_progress: 1.0,
+            ..default()
+        };
+        app.update();
+        assert_eq!(app.world().resource::<BrandIntroStatus>().idle_seconds, 0.0);
+        app.world_mut()
+            .resource_mut::<BrandIntroControl>()
+            .idle_enabled = true;
+        app.world_mut()
+            .resource_mut::<Time<Real>>()
+            .advance_by(std::time::Duration::from_millis(100));
+        app.update();
+        assert_eq!(app.world().resource::<BrandIntroStatus>().idle_seconds, 0.1);
+        app.world_mut()
+            .resource_mut::<BrandIntroControl>()
+            .suspended = true;
+        app.world_mut()
+            .resource_mut::<Time<Real>>()
+            .advance_by(std::time::Duration::from_secs(10));
+        app.update();
+        app.world_mut()
+            .resource_mut::<BrandIntroControl>()
+            .suspended = false;
+        app.update();
+        assert_eq!(app.world().resource::<BrandIntroStatus>().idle_seconds, 0.1);
+        app.world_mut()
+            .resource_mut::<Time<Real>>()
+            .advance_by(std::time::Duration::from_millis(100));
+        app.update();
+        assert_eq!(app.world().resource::<BrandIntroStatus>().idle_seconds, 0.2);
+        app.world_mut()
+            .resource_mut::<BrandIntroControl>()
+            .idle_enabled = false;
+        app.update();
+        let status = app.world().resource::<BrandIntroStatus>();
+        assert_eq!(status.idle_seconds, 0.0);
+        assert_eq!(status.elapsed_seconds, END);
+        assert_eq!(status.reveal_progress, 1.0);
+        assert!(status.is_complete());
+        assert_eq!(app.world().resource::<Messages<BrandImpact>>().len(), 0);
     }
 
     #[test]
@@ -704,19 +799,19 @@ mod tests {
     fn final_paint_and_phases_are_exact() {
         assert_eq!(paint_at(0.0), Vec4::ZERO);
         assert_eq!(paint_at(3.8), Vec4::new(1.0, 1.0, 1.0, 0.0));
-        for t in [4.0, 5.0, 5.45, 60.0] {
+        for t in [4.0, 5.0, 6.15, 6.60, 60.0] {
             assert_eq!(paint_at(t), paint_at(3.8));
         }
         assert_eq!(phase_at(3.8), BrandIntroPhase::Playing);
         assert_eq!(phase_at(4.0), BrandIntroPhase::Playing);
-        assert_eq!(phase_at(4.99), BrandIntroPhase::Playing);
-        assert_eq!(phase_at(5.0), BrandIntroPhase::Docking);
-        assert_eq!(phase_at(5.45), BrandIntroPhase::Complete);
+        assert_eq!(phase_at(6.14), BrandIntroPhase::Playing);
+        assert_eq!(phase_at(6.15), BrandIntroPhase::Docking);
+        assert_eq!(phase_at(6.60), BrandIntroPhase::Complete);
         assert_eq!(smooth(1.0), 1.0);
         assert_eq!(blob_at(3.8).opacity, 0.0);
-        assert_eq!(eyes_at(3.8), Vec4::new(1.0, 1.0, 0.0, 0.0));
-        for t in [4.0, 5.0, 5.45, 60.0] {
-            assert_eq!(eyes_at(t), eyes_at(3.8));
+        assert_eq!(eyes_at(4.95), Vec4::new(1.0, 1.0, 0.0, 0.0));
+        for t in [5.0, 6.15, 6.60, 60.0] {
+            assert_eq!(eyes_at(t), eyes_at(4.95));
         }
     }
 
@@ -739,15 +834,65 @@ mod tests {
     }
 
     #[test]
-    fn eyes_wake_after_their_own_impact_then_exchange_a_glance() {
+    fn eyes_wake_individually_then_glance_and_recoil_after_beat_is_painted() {
         assert_eq!(eyes_at(0.90).xy(), Vec2::ZERO);
         assert_eq!(eyes_at(1.12).xy(), Vec2::new(1.0, 0.0));
         assert_eq!(eyes_at(2.10).xy(), Vec2::new(1.0, 0.0));
         assert_eq!(eyes_at(2.32).xy(), Vec2::ONE);
         assert_eq!(eyes_at(2.32).zw(), Vec2::new(-4.0, 4.0));
-        assert_eq!(eyes_at(2.66).zw(), Vec2::new(4.0, -2.0));
-        assert_eq!(eyes_at(3.02), eyes_at(2.66));
-        assert_eq!(eyes_at(3.55).zw(), Vec2::ZERO);
+        for t in [2.66, 3.35, 3.55, 3.80] {
+            assert_eq!(eyes_at(t).zw(), Vec2::new(-4.0, 4.0));
+        }
+        assert_eq!(paint_at(3.80).z, 1.0);
+        assert_eq!(eyes_at(4.00).zw(), Vec2::new(4.0, -2.0));
+        assert!(eyes_at(4.12).z < eyes_at(4.00).z);
+        assert!(eyes_at(4.12).w > eyes_at(4.00).w);
+        assert_eq!(eyes_at(4.42), eyes_at(4.12));
+        assert_eq!(eyes_at(4.95).zw(), Vec2::ZERO);
+    }
+
+    #[test]
+    fn shrink_overshoots_five_percent_then_returns_without_negative_sizes() {
+        let intro = CANVAS;
+        let peak = DOCK_START + (END - DOCK_START) * 0.72;
+        for width in [240.0, 1.0, 0.0] {
+            let target = CANVAS * (width / CANVAS.x);
+            assert_eq!(dock_size_at(0.0, intro, target), intro);
+            assert!(dock_size_at(peak, intro, target).distance(target * 0.95) < 0.001);
+            assert_eq!(dock_size_at(END, intro, target), target);
+            assert_eq!(dock_size_at(60.0, intro, target), target);
+            for frame in 0..=100 {
+                let t = DOCK_START + (END - DOCK_START) * f64::from(frame) / 100.0;
+                let size = dock_size_at(t, intro, target);
+                assert!(size.is_finite() && size.cmpge(target * 0.95 - Vec2::splat(0.001)).all());
+            }
+            assert!(
+                dock_size_at(peak + 0.06, intro, target)
+                    .cmpge(target * 0.95)
+                    .all()
+            );
+        }
+    }
+
+    #[test]
+    fn menu_eyes_alternate_blinks_and_glances_with_a_neutral_loop_seam() {
+        let neutral = Vec4::new(1.0, 1.0, 0.0, 0.0);
+        for t in [0.0, 2.0, 23.99, 24.0, 48.0] {
+            assert_eq!(idle_eyes_at(t), neutral);
+        }
+        assert!(idle_eyes_at(2.88).x < 0.01);
+        assert_eq!(idle_eyes_at(2.88).y, 1.0);
+        assert!(idle_eyes_at(10.58).y < 0.01);
+        assert!(idle_eyes_at(10.92).y < 0.01);
+        assert!(idle_eyes_at(6.1).z > 0.0 && idle_eyes_at(6.1).w == 0.0);
+        assert!(idle_eyes_at(15.1).w < 0.0 && idle_eyes_at(15.1).z == 0.0);
+        for frame in 0..=1440 {
+            let t = f64::from(frame) / 60.0;
+            let eyes = idle_eyes_at(t);
+            assert!(eyes.cmpge(Vec4::new(0.0, 0.0, 0.0, -2.0)).all());
+            assert!(eyes.cmple(Vec4::new(1.0, 1.0, 4.0, 0.0)).all());
+            assert!(eyes.distance(idle_eyes_at(t + IDLE_PERIOD)) < 0.0001);
+        }
     }
 
     #[test]

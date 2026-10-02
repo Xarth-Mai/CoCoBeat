@@ -20,7 +20,8 @@ use bevy::{
     winit::WinitPlugin,
 };
 use brand_intro::{
-    BrandImpact, BrandIntroControl, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems,
+    BrandImpact, BrandIntroControl, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems, END,
+    IDLE_PERIOD,
 };
 
 #[derive(Resource)]
@@ -39,10 +40,29 @@ struct Capture {
 fn main() -> AppExit {
     let mut capture = Capture {
         directory: PathBuf::from("target/brand-validation"),
-        times: vec![
-            0.0, 0.60, 0.90, 1.12, 1.50, 2.10, 2.32, 2.66, 3.02, 3.35, 3.55, 3.80, 4.50, 5.0,
-            5.225, 5.45,
-        ],
+        times: [
+            0.0, 0.60, 0.90, 1.12, 1.50, 2.10, 2.32, 3.35, 3.80, 4.00, 4.12, 4.42, 4.95, 6.15,
+            6.474, END,
+        ]
+        .into_iter()
+        .chain(
+            [
+                2.88,
+                2.97,
+                6.0 + 0.28,
+                6.58,
+                8.02,
+                10.58,
+                10.92,
+                15.28,
+                15.60,
+                17.29,
+                19.77,
+                IDLE_PERIOD,
+            ]
+            .map(|time| END + time),
+        )
+        .collect(),
         size: UVec2::new(1280, 800),
         scale: 1.0,
         index: 0,
@@ -72,13 +92,19 @@ fn main() -> AppExit {
                     .parse()
                     .expect("invalid scale")
             }
-            "--sequence" => {
-                capture.times = (0..=164)
-                    .map(|frame| (f64::from(frame) / 30.0).min(5.45))
+            "--sequence" | "--menu-sequence" => {
+                let end = END
+                    + if arg == "--menu-sequence" {
+                        IDLE_PERIOD
+                    } else {
+                        0.0
+                    };
+                capture.times = (0..=(end * 30.0).round() as u32)
+                    .map(|frame| (f64::from(frame) / 30.0).min(end))
                     .collect()
             }
             _ => panic!(
-                "unknown argument {arg}; use --output DIR --size WIDTHxHEIGHT --scale FACTOR --sequence"
+                "unknown argument {arg}; use --output DIR --size WIDTHxHEIGHT --scale FACTOR --sequence or --menu-sequence"
             ),
         }
     }
@@ -184,16 +210,12 @@ fn select_frame(
     }
     control.suspended = true;
     let time = capture.times[capture.index];
-    status.elapsed_seconds = time;
-    status.phase = if time >= 5.45 {
-        BrandIntroPhase::Complete
-    } else if time >= 5.0 {
-        BrandIntroPhase::Docking
-    } else {
-        BrandIntroPhase::Playing
-    };
+    control.idle_enabled = time >= END;
+    status.elapsed_seconds = time.min(END);
+    status.idle_seconds = (time - END).max(0.0).rem_euclid(IDLE_PERIOD);
+    status.phase = brand_intro::phase_at(time);
     status.reveal_progress = brand_intro::reveal_at(time);
-    assert_eq!(status.is_complete(), time >= 5.45);
+    assert_eq!(status.is_complete(), time >= END);
     capture.settled_frames += 1;
 }
 
