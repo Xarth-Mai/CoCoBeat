@@ -18,7 +18,7 @@ cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.p
 
 ## 当前证据
 
-品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；最新隔离验证覆盖品牌追加提交 `56faef2`，包括 7.20 秒完成的停靠回弹与 Ready 眼睛循环；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
+品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；品牌追加提交 `56faef2` 已隔离验证，最新原生 Linux release 验证覆盖 `7c37972`；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
 
 2026-10-02 本地切片基线的 `cargo xtask check` 退出码为 0，完整 workspace 的 40 项测试、依赖边界、格式与 Clippy 均通过，日志位于 `target/first-slice-check.log`；本轮测试包含 Kira 初始 Playing 状态不能当作回调确认、游标倒退拒绝、停滞到期与探针统计修订
 
@@ -46,7 +46,7 @@ CI 只检查单 Linux 上的 schema/core/replay/xtask，以及全仓库格式和
 
 启动截图只运行品牌和场景呈现，不创建音频管理器或消费物理输入；它不证明正常窗口的音画同步、完整设备生命周期或实际按钮操作，相关边界由软件单测和下列设备验收分别覆盖
 
-Windows 图标资源通过 `llvm-rc` 和 `llvm-cvtres` 编译为 x86-64/ARM64 资源对象，包含 6 个尺寸和 1 个图标组；Linux `.desktop` 通过 `desktop-file-validate`，两平台打包配置和 shell 语法已检查，Linux 以占位二进制验证 tar 布局与执行权限；最终 Windows EXE、真实游戏发行包、桌面图标显示与远端四目标构建仍为 NOT RUN
+Windows 图标资源通过 `llvm-rc` 和 `llvm-cvtres` 编译为 x86-64/ARM64 资源对象，包含 6 个尺寸和 1 个图标组；Linux `.desktop` 通过 `desktop-file-validate`，两平台打包配置和 shell 语法已检查，当时以占位二进制验证 tar 布局与执行权限，真实 Linux 包的后续检查见下文；最终 Windows EXE、桌面图标显示与远端四目标构建仍为 NOT RUN
 
 516 条第三方依赖与 Cargo metadata/lock 一致，23 条资源来源哈希匹配；这项检查证明台账与文件一致，不推断原始品牌参考图的再分发许可
 
@@ -75,6 +75,20 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 品牌随后提交 `56faef2`：6.60 秒到位并显露界面，7.20 秒完成位移/剪切回弹后进入 Complete；主线程沿用 `is_complete()`，6.60–7.20 秒仍屏蔽菜单与歌曲操作，三次落点音效时刻和 Ready 开关均不变
 
 对 `56faef2` 的独立快照 `/tmp/cocobeat-menu-followthrough` 补跑完整 check，59 项测试、Clippy、格式及依赖边界再次通过，游戏构建退出 0；从 `/tmp` 运行 `--startup-smoke` 退出 0，已检查最新 Ready 循环截图 `target/menu-followthrough-startup.png`；日志分别为 `target/menu-followthrough-check.log`、`target/menu-followthrough-build.log` 和 `target/menu-followthrough-startup.log`，提交与产物哈希见 `target/menu-followthrough-evidence.json`，本次仍无真实音频或物理输入参与
+
+## 原生 Linux release 证据
+
+2026-10-02，提交 `7c37972` 的归档快照在 CachyOS x86_64 完成 release 构建和 workflow 打包，均退出 0；源码身份、构建命令、二进制与 tar.gz 的 SHA-256 见 [构建记录](build-release.md#本机-linux-release-验证)，证据目录为 `target/linux-release-evidence/7c3797261960/`
+
+从独立解包目录 `/tmp/cocobeat-linux-release-unpacked-7c3797261960` 执行 `--help` 退出 0；对证据目录内既有合成 Replay 执行 `--replay FILE`，合法样例退出 0 并得到 18 facts / 22 rule events / epoch 64，内容身份错配、规则身份错配和截断样例均退出 1，命令与输出见 `cli-validation.json`
+
+在同一解包目录执行以下命令，AMD RX 6650 XT / RADV Vulkan 实际离屏渲染并退出 0，1280×800 PNG 已视觉检查正常；日志为 `startup.log`，截图为 `startup.png`，图片哈希、命令及 cwd 记录在 `acceptance.json`
+
+```sh
+WGPU_BACKEND=vulkan ./bin/cocobeat-game --startup-smoke /home/lzzz/MyProjects/CoCoBeat/target/linux-release-evidence/7c3797261960/startup.png
+```
+
+本轮 release、真实打包、CLI 和 GPU 离屏启动均为 PASS；产物要求 `GLIBC_2.44`，不证明 Ubuntu 24.04 兼容，Windows/ARM64 构建、干净机器运行、本发行包的音频与物理输入、真人体验仍为 NOT RUN，四目标发行门槛未完成
 
 ## 尚待验收
 

@@ -63,6 +63,27 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，手动构建流程和四目标首次结果须按 [工作进度](../todo/progress.md) 验证，不能用本机编译推断其他平台或真实设备兼容性
 
+## 本机 Linux release 验证
+
+2026-10-02，从提交 `7c3797261960ce6d636ee062049b01f50d9b99c6` 的 `git archive` 快照 `/tmp/cocobeat-linux-release` 执行以下命令，退出 0；环境为 CachyOS x86_64、Rust/Cargo 1.98.1，构建身份为 `0.1.0-7c3797261960-linux-release-probe`
+
+```sh
+CARGO_TARGET_DIR=/home/lzzz/MyProjects/CoCoBeat/target \
+COCOBEAT_BUILD_ID=0.1.0-7c3797261960-linux-release-probe \
+cargo build --offline --locked --release -j1 -p cocobeat-game
+```
+
+复用该提交 Linux workflow 的打包步骤生成真实 tar.gz，ELF x86-64、可执行权限、8 种 hicolor 图标、desktop 文件及 BUILD-INFO 均通过检查；独立解包后的 CLI 与实际 GPU 离屏启动检查见 [验证策略](testing.md#原生-linux-release-证据)
+
+证据目录为 `target/linux-release-evidence/7c3797261960/`，保存构建/打包日志、源码与工具链身份、`acceptance.json`、Replay 结果、GPU 截图以及 `readelf`/`ldd` 输出
+
+| 产物（相对证据目录） | SHA-256 |
+|---|---|
+| `dist/package/bin/cocobeat-game` | `6f494ba6b8b4d929461069603ca994a7ca89e07ddcaffb3a22de144d911b587e` |
+| `dist/cocobeat-x86_64-unknown-linux-gnu.tar.gz` | `5b49a9c0645def2ddd4dc45124a67456bd4b383082d334dca9be5b849a7fa88f` |
+
+本机 `ldd` 全部解析成功，但产物最高要求的 glibc 符号为 `GLIBC_2.44`；这是 CachyOS 本机构建证据，不能证明 Ubuntu 24.04 基线兼容，远端 Ubuntu 构建仍为 NOT RUN，不能将此包作为该基线的发行产物
+
 ## 跨平台交付门槛
 
 初版面向 Windows MSVC 和 Linux 的 x86-64 / ARM64。发行前对每个平台/架构分别执行完整 workspace 检查、release 构建和干净机器运行，并记录 OS、GPU、音频/手柄后端与实际帧时间数据。
