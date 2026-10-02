@@ -56,7 +56,7 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 | `x86_64-unknown-linux-gnu` | ubuntu-24.04 | x86-64 Linux tar.gz |
 | `aarch64-unknown-linux-gnu` | ubuntu-24.04-arm | ARM64 Linux tar.gz |
 
-四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过，不启动四机矩阵。Linux 固定 Ubuntu 24.04 作为构建基线，实际最低 glibc/运行库要求还需验证。
+四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过，不启动四机矩阵。Linux 固定 Ubuntu 24.04 作为构建基线，x86-64 本地容器产物的 glibc/运行库检查见下文，ARM64 及远端构建仍待验证
 
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
 成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Linux 先打包 tar.gz 保留执行权限。失败时不上传产物，不自动发布 GitHub Release。
@@ -84,7 +84,18 @@ cargo build --offline --locked --release -j1 -p cocobeat-game
 | `dist/package/bin/cocobeat-game` | `6f494ba6b8b4d929461069603ca994a7ca89e07ddcaffb3a22de144d911b587e` |
 | `dist/cocobeat-x86_64-unknown-linux-gnu.tar.gz` | `5b49a9c0645def2ddd4dc45124a67456bd4b383082d334dca9be5b849a7fa88f` |
 
-本机 `ldd` 全部解析成功，但产物最高要求的 glibc 符号为 `GLIBC_2.44`；这是 CachyOS 本机构建证据，不能证明 Ubuntu 24.04 基线兼容，远端 Ubuntu 构建仍为 NOT RUN，不能将此包作为该基线的发行产物
+本机 `ldd` 全部解析成功，但产物最高要求的 glibc 符号为 `GLIBC_2.44`；这是 CachyOS 本机构建证据，不能证明 Ubuntu 24.04 基线兼容，不能将此包作为该基线的发行产物
+
+## Ubuntu 24.04 容器发行基线
+
+2026-10-02，提交 `5949c13ce75e08d880648d72205259097e5e6ff0` 在官方 Ubuntu 24.04 x86-64 本地容器完成完整检查、fat LTO release 构建和既有 workflow 布局打包，均为 PASS；最高 glibc 符号要求为 `GLIBC_2.39`，`ldd` 全部解析成功，62 文件发行包独立解包后的 CLI 验证通过，命令、镜像 digest 和验收边界见 [验证记录](testing.md#ubuntu-2404-容器发行基线)
+
+证据目录为 `target/ubuntu-build-evidence/e9345f9/`，目录名沿用准备阶段，实际构建源码为上述 `5949c13`
+
+| 产物（相对证据目录） | SHA-256 |
+|---|---|
+| `artifacts/unpacked/bin/cocobeat-game` | `1e68c654f8368ed4bde7f9f9c68292641246795787622bd8fae9fdc0acb1b8fa` |
+| `artifacts/cocobeat-x86_64-unknown-linux-gnu.tar.gz` | `be74360a7d0b09a9536ae2f87230da196d6d3b93f5d8005d4648d971b598adf9` |
 
 ## 跨平台交付门槛
 

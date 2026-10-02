@@ -25,7 +25,7 @@ cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target
 
 ## 当前证据
 
-品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；最新生产软件补验覆盖 `2329c19` 中的品牌 `67962a3`，原生 Linux release 验证覆盖 `7c37972`；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
+品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；最新生产软件补验覆盖 `2329c19` 中的品牌 `67962a3`，CachyOS release 验证覆盖 `7c37972`，Ubuntu 24.04 容器发行基线覆盖 `5949c13`；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
 
 2026-10-02 本地切片基线的 `cargo xtask check` 退出码为 0，完整 workspace 的 40 项测试、依赖边界、格式与 Clippy 均通过，日志位于 `target/first-slice-check.log`；本轮测试包含 Kira 初始 Playing 状态不能当作回调确认、游标倒退拒绝、停滞到期与探针统计修订
 
@@ -149,10 +149,20 @@ WGPU_BACKEND=vulkan ./bin/cocobeat-game --startup-smoke /home/lzzz/MyProjects/Co
 
 本轮 release、真实打包、CLI 和 GPU 离屏启动均为 PASS；产物要求 `GLIBC_2.44`，不证明 Ubuntu 24.04 兼容，Windows/ARM64 构建、干净机器运行、本发行包的音频与物理输入、真人体验仍为 NOT RUN，四目标发行门槛未完成
 
+## Ubuntu 24.04 容器发行基线
+
+2026-10-02，实际源码 `5949c13ce75e08d880648d72205259097e5e6ff0` 在官方 `docker.io/library/ubuntu:24.04` 的 Linux amd64 镜像中验证，manifest digest 为 `sha256:f610ab94648195aa356059f5b41d6085c9d4d903c072430cdd1af7bdb646106b`，工具链为 Rust/Cargo 1.98.1；记录位于 `target/ubuntu-build-evidence/e9345f9/evidence.json` 及该目录的 `artifacts/package-acceptance.json`，目录名沿用准备阶段
+
+`CARGO_BUILD_JOBS=1 CARGO_NET_OFFLINE=true cargo xtask check` 退出 0，92 项测试、workspace 格式与 Clippy、依赖边界均为 PASS；`cargo build --offline --locked --release -j1 -p cocobeat-game` 退出 0，使用正式 fat LTO 发行参数；既有 Linux workflow 布局生成的 62 文件 tar.gz 通过架构、权限、文件哈希及独立解包检查，产物身份见 [构建记录](build-release.md#ubuntu-2404-容器发行基线)
+
+容器内 `readelf --version-info /target/release/cocobeat-game` 确认最高要求 `GLIBC_2.39`，`ldd /target/release/cocobeat-game` 全部解析；从 `/artifacts` 执行 `/artifacts/unpacked/bin/cocobeat-game --help` 和 `/artifacts/unpacked/bin/cocobeat-game --replay /artifacts/synthetic-64s-valid.replay.json` 均退出 0，合成 Replay 输出 `Replay OK: 18 facts, 22 rule events, epoch 64`
+
+本轮 PASS 仅覆盖本地 Ubuntu 24.04 x86-64 的构建、打包及 CLI 基线；Ubuntu 图形/窗口、音频、物理输入、真人体验、干净桌面安装、Windows/ARM64 和 GitHub workflow 执行均为 NOT RUN，合成 Replay 不构成硬件验收
+
 ## 尚待验收
 
 - 硬件：Kira 定时点击、loopback 输出偏移、输入延迟、漂移和设备切换；软件游标的实验误差配置不代替测量
-- 平台：Windows/Linux 各 x86-64/ARM64 完整构建及干净机器运行，GPU/音频后端和真实键盘/手柄分别验证
+- 平台：Windows x86-64/ARM64、Linux ARM64 完整构建，各目标远端发行构建及干净机器运行；Linux x86-64 已有上述本地容器基线，GPU/音频后端和真实键盘/手柄仍需分别验证
 - 输入：双手柄、混合输入、菜单、重绑定、USB/蓝牙、失焦及断连/重连，见 [验收矩阵](platform-input.md)
 - 体验：听感、伙伴感知、沉默、模仿、连点、共享确认延迟和 Anchor 预告，保存具体行为、对照与访谈
 
