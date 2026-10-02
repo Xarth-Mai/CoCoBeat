@@ -19,6 +19,7 @@ pub enum Control {
     Start,
     TogglePause,
     Restart,
+    MainMenu,
     SaveReplay,
     Quit,
     FocusLost,
@@ -37,7 +38,7 @@ enum Binding {
     PadButton(PlayerId),
 }
 
-const MENU: [&str; 10] = [
+const MENU: [&str; 11] = [
     "Start / Resume",
     "Restart song",
     "Save replay",
@@ -47,6 +48,7 @@ const MENU: [&str; 10] = [
     "P2: join controller",
     "P1: rebind controller Hit",
     "P2: rebind controller Hit",
+    "Main menu",
     "Quit",
 ];
 
@@ -115,6 +117,13 @@ impl InputState {
         }
     }
 
+    pub fn open_main_menu(&mut self) {
+        self.menu_open = true;
+        self.selection = 0;
+        self.queued.clear();
+        self.reset_edges();
+    }
+
     /// 保留已按住按钮作为释放屏障，避免切换模式后将它误认成新按下
     pub fn reset_edges(&mut self) {
         self.queued
@@ -167,7 +176,11 @@ impl InputState {
     fn emit(&mut self, control: Control, monotonic_ns: u64) {
         if matches!(
             control,
-            Control::Start | Control::TogglePause | Control::Restart | Control::FocusLost
+            Control::Start
+                | Control::TogglePause
+                | Control::Restart
+                | Control::MainMenu
+                | Control::FocusLost
         ) {
             self.suppress_hits = true;
         }
@@ -242,6 +255,10 @@ impl InputState {
             6 => Some(Binding::JoinPad(PlayerId::P2)),
             7 => Some(Binding::PadButton(PlayerId::P1)),
             8 => Some(Binding::PadButton(PlayerId::P2)),
+            9 => {
+                self.emit(Control::MainMenu, now);
+                None
+            }
             _ => {
                 self.emit(Control::Quit, now);
                 None
@@ -445,6 +462,66 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn main_menu_keeps_bindings_and_requires_a_fresh_confirmation() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        for use_pad in [false, true] {
+            let mut input = InputState::default();
+            input.bind_key(PlayerId::P1, KeyCode::KeyD).unwrap();
+            input.join_pad(PlayerId::P2, pad);
+            input.pad_buttons[1] = GamepadButton::West;
+            input.key(KeyCode::KeyD, true, false, 1);
+            input.pad_button(pad, GamepadButton::West, true, 1);
+            for _ in 0..9 {
+                if use_pad {
+                    input.pad_button(pad, GamepadButton::DPadDown, true, 2);
+                    input.pad_button(pad, GamepadButton::DPadDown, false, 3);
+                } else {
+                    input.key(KeyCode::ArrowDown, true, false, 2);
+                    input.key(KeyCode::ArrowDown, false, false, 3);
+                }
+            }
+            assert!(input.menu_text().contains("> Main menu"));
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, true, 4);
+            } else {
+                input.key(KeyCode::Enter, true, false, 4);
+            }
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::MainMenu);
+            input.key(KeyCode::F5, true, false, 5);
+            let bindings = input.bindings_text();
+            let held_keys = input.held_keys.clone();
+            let held_pad_buttons = input.held_pad_buttons.clone();
+
+            input.open_main_menu();
+            assert!(input.menu_open);
+            assert!(input.menu_text().contains("> Start / Resume"));
+            assert!(input.queued.is_empty());
+            assert_eq!(input.bindings_text(), bindings);
+            assert_eq!(input.pads, [None, Some(pad)]);
+            assert_eq!(input.held_keys, held_keys);
+            assert_eq!(input.held_pad_buttons, held_pad_buttons);
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, true, 6);
+            } else {
+                input.key(KeyCode::Enter, true, true, 6);
+                input.key(KeyCode::Enter, true, false, 6);
+            }
+            assert!(input.queued.is_empty());
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, false, 7);
+                input.pad_button(pad, GamepadButton::South, true, 8);
+            } else {
+                input.key(KeyCode::Enter, false, false, 7);
+                input.key(KeyCode::Enter, true, false, 8);
+            }
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::Start);
+        }
+    }
 
     #[test]
     fn controls_gate_blocks_menu_gameplay_and_held_confirmations() {

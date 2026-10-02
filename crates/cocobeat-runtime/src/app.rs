@@ -88,6 +88,16 @@ impl Game {
         Ok(())
     }
 
+    fn main_menu(&mut self) -> Result<(), String> {
+        self.save()?;
+        // Keep the epoch until the next explicit Start advances it
+        self.session = Session::new(self.session.epoch())?;
+        self.saved_facts = 0;
+        self.phase = Phase::Ready;
+        self.notice = "Ready — confirm Start to play together".into();
+        Ok(())
+    }
+
     fn fault(&mut self, audio: &mut AudioOutput, error: String) {
         audio.stop();
         self.phase = Phase::Fault;
@@ -137,7 +147,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and docked Ready layout without audio\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -223,17 +233,22 @@ fn install_window_icon(app: &mut App) -> Result<(), String> {
 }
 
 fn suspend_intro(
+    game: Res<Game>,
     input: Res<InputState>,
     mut control: ResMut<BrandIntroControl>,
-    mut audio: NonSendMut<AudioOutput>,
+    audio: Option<NonSendMut<AudioOutput>>,
 ) {
+    control.idle_enabled = game.phase == Phase::Ready && input.menu_open;
     let suspended = !input.is_focused();
     if control.suspended != suspended {
         control.suspended = suspended;
-        if suspended {
-            audio.pause_brand();
-        } else {
-            audio.resume_brand();
+        // The explicit visual preview shares this control path without an audio backend
+        if let Some(mut audio) = audio {
+            if suspended {
+                audio.pause_brand();
+            } else {
+                audio.resume_brand();
+            }
         }
     }
 }
@@ -403,6 +418,15 @@ fn update_game(
                     game.start(&mut audio)?;
                     input.set_menu_open(true);
                 }
+                Control::MainMenu => {
+                    game.main_menu()?;
+                    audio.stop();
+                    input.open_main_menu();
+                    visual.hit_pulses = [0.0; 2];
+                    visual.sync_pulse = 0.0;
+                    // Return to Ready without consuming a second confirmation from this batch
+                    break;
+                }
                 Control::TogglePause | Control::FocusLost
                     if matches!(game.phase, Phase::Running | Phase::Starting) =>
                 {
@@ -491,6 +515,9 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
     view::install(&mut app);
     if startup {
         brand_intro::install(&mut app);
+        app.init_resource::<InputState>()
+            .insert_resource(Game::new()?)
+            .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance));
     }
     let mut image = Image::new_target_texture(1280, 800, TextureFormat::Rgba8UnormSrgb, None);
     image.texture_descriptor.usage |= TextureUsages::COPY_SRC;
@@ -509,7 +536,7 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
     *app.world_mut().resource_mut::<VisualState>() = if startup {
         VisualState {
             status:
-                "Ready | native startup layout preview\nAudio and physical input acceptance NOT RUN"
+                "Ready | native startup and menu eye loop\nAudio and physical input acceptance NOT RUN"
                     .into(),
             ..default()
         }
@@ -529,14 +556,10 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
         Update,
         (move |mut commands: Commands,
                mut frame: Local<u32>,
-               mut settled: Local<u8>,
                mut requested: Local<bool>,
                intro: Option<Res<BrandIntroStatus>>,
                mut exit: MessageWriter<AppExit>| {
             *frame += 1;
-            if startup && intro.as_ref().is_some_and(|status| status.is_complete()) {
-                *settled = settled.saturating_add(1);
-            }
             if *frame > 1_200
                 || intro
                     .as_ref()
@@ -546,7 +569,14 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
                 exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
                 return;
             }
-            if !*requested && (if startup { *settled >= 3 } else { *frame == 30 }) {
+            let ready = if startup {
+                intro
+                    .as_ref()
+                    .is_some_and(|status| status.is_complete() && status.idle_seconds >= 6.1)
+            } else {
+                *frame == 30
+            };
+            if !*requested && ready {
                 *requested = true;
                 let output = path.clone();
                 commands.spawn(Screenshot::image(target.clone())).observe(
@@ -586,11 +616,88 @@ fn visual_smoke(path: PathBuf, startup: bool) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::{
+        input::{
+            gamepad::{GamepadButtonStateChangedEvent, GamepadConnectionEvent},
+            keyboard::KeyboardInput,
+        },
+        window::WindowFocused,
+    };
+    use cocobeat_schema::SongTime;
     use kira::{
         AudioManager, AudioManagerSettings, Frame,
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn menu_brand_control_follows_game_and_captured_focus() {
+        let mut app = App::new();
+        app.add_message::<WindowFocused>()
+            .add_message::<KeyboardInput>()
+            .add_message::<GamepadConnectionEvent>()
+            .add_message::<GamepadButtonStateChangedEvent>()
+            .insert_resource(Game::new().unwrap())
+            .init_resource::<BrandIntroControl>()
+            .add_systems(Update, suspend_intro);
+        input::install(&mut app);
+        // The presentation control must not unlock startup input or start a song
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .set_controls_enabled(false);
+        app.update();
+        assert!(app.world().resource::<BrandIntroControl>().idle_enabled);
+        assert!(!app.world().resource::<InputState>().controls_enabled());
+        assert_eq!(app.world().resource::<Game>().phase, Phase::Ready);
+
+        let window = app.world_mut().spawn_empty().id();
+        for focused in [false, true] {
+            app.world_mut()
+                .write_message(WindowFocused { window, focused });
+            app.update();
+            let control = app.world().resource::<BrandIntroControl>();
+            assert_eq!(control.suspended, !focused);
+            assert!(control.idle_enabled);
+        }
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .set_menu_open(false);
+        app.update();
+        assert!(!app.world().resource::<BrandIntroControl>().idle_enabled);
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .set_menu_open(true);
+        for phase in [
+            Phase::Starting,
+            Phase::Running,
+            Phase::Pausing,
+            Phase::Paused,
+            Phase::Finished,
+            Phase::Fault,
+        ] {
+            app.world_mut().resource_mut::<Game>().phase = phase;
+            app.update();
+            assert!(!app.world().resource::<BrandIntroControl>().idle_enabled);
+        }
+
+        {
+            let mut game = app.world_mut().resource_mut::<Game>();
+            game.session = Session::new(SessionEpoch(9)).unwrap();
+            game.session.current = SongTime::from_frames(96_000);
+            game.main_menu().unwrap();
+            assert_eq!(game.phase, Phase::Ready);
+            assert_eq!(game.session.epoch(), SessionEpoch(9));
+            assert_eq!(game.session.current, SongTime::ZERO);
+            assert!(game.session.clock.last_observation().is_none());
+            assert_eq!(game.saved_facts, 0);
+        }
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .open_main_menu();
+        app.update();
+        assert!(app.world().resource::<BrandIntroControl>().idle_enabled);
+        assert!(!app.world().resource::<BrandIntroControl>().suspended);
+    }
 
     #[test]
     fn initial_playing_state_waits_for_actual_callback_progress() {

@@ -10,7 +10,7 @@
 
 已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
 
-完整软件检查已通过 55 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
+完整软件检查已通过 59 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与带 HUD 的 GPU 离屏截图均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
@@ -41,7 +41,7 @@ cargo run --locked -p cocobeat-game
 
 Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。研究报告中的版本号只作为历史参考
 
-正常启动完整播放原生 Logo 动画，再用 0.45 秒将同一 Logo 移至左上角并显露界面，随后保持 Ready；音乐在用户另行选择 Start 后播放，片头期间的按键和手柄操作不会穿透到游戏，窗口关闭仍有效；音频输出初始化失败会明确退出
+正常启动完整播放原生 Logo 动画，再将同一 Logo 移至左上角并显露界面，随后保持 Ready，主菜单播放眼睛循环；开始歌曲、暂停和结算时使用静态定稿，失焦冻结菜单动画，恢复后继续；音乐在用户另行选择 Start 后播放，片头期间的按键和手柄操作不会穿透到游戏，窗口关闭仍有效；音频输出初始化失败会明确退出
 
 | 操作 | 键盘 | 手柄 |
 |---|---|---|
@@ -50,10 +50,11 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 | 暂停 / 恢复 | Esc | Start |
 | 重新开始 | F5 或菜单 | 菜单 |
 | 保存 Replay | F6 或菜单 | Select 或菜单 |
+| 返回主菜单 | 菜单 Main menu | 菜单 Main menu |
 
 手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
 
-结束歌曲、重新开始、正常关闭窗口或手动保存时，输入历史写入当前工作目录的 `replays/`，同名 CSV 保留输入观察/消费时间与映射不确定性；异常终止不保证保存未落盘历史
+结束歌曲、重新开始、返回主菜单、正常关闭窗口或手动保存时，输入历史写入当前工作目录的 `replays/`，同名 CSV 保留输入观察/消费时间与映射不确定性；返回主菜单会停止歌曲并重置会话，保留输入绑定，需释放确认键再重新按下才能开始歌曲；异常终止不保证保存未落盘历史
 
 ```sh
 cargo run --locked -p cocobeat-game -- --replay path/to/session.json
@@ -63,7 +64,7 @@ cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 ```
 
-`--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌呈现时间线并截取停靠后的界面，同样不播放音频；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
+`--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
 
 准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 
