@@ -61,6 +61,8 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
 成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Linux 先打包 tar.gz 保留执行权限。失败时不上传产物，不自动发布 GitHub Release。
 
+Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及完整的 `assets/fonts/`、`assets/flags/`；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及原始 OFL/MIT 许可一起分发，文件哈希对应资源总台账，资源打包不代表运行时多语言接入或四平台发行验证已完成
+
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，手动构建流程和四目标首次结果须按 [工作进度](../todo/progress.md) 验证，不能用本机编译推断其他平台或真实设备兼容性
 
 ## 本机 Linux release 验证

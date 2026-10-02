@@ -78,6 +78,7 @@ jobs:
           Copy-Item licenses -Destination dist/package -Recurse
           Copy-Item assets/brand/README.md, assets/brand/PROVENANCE.csv -Destination dist/package/assets/brand
           Copy-Item assets/brand/icons/symbol-256.png -Destination dist/package/assets/brand/icons
+          Copy-Item assets/fonts, assets/flags -Destination dist/package/assets -Recurse
           @(
             "commit=$env:GITHUB_SHA"
             "target=$env:BUILD_TARGET"
@@ -144,6 +145,7 @@ jobs:
           cp packaging/linux/cocobeat.desktop dist/package/share/applications/
           cp assets/brand/README.md assets/brand/PROVENANCE.csv dist/package/assets/brand/
           cp assets/brand/icons/symbol-256.png dist/package/assets/brand/icons/
+          cp -R assets/fonts assets/flags dist/package/assets/
           for size in 16 32 48 64 128 256 512 1024; do
             install -Dm644 "assets/brand/icons/symbol-$size.png" "dist/package/share/icons/hicolor/${size}x${size}/apps/cocobeat.png"
           done

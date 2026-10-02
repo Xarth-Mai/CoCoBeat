@@ -1,0 +1,219 @@
+{
+  "project": "flag-icons",
+  "repository": "https://github.com/lipis/flag-icons",
+  "release": "v7.5.0",
+  "release_url": "https://github.com/lipis/flag-icons/releases/tag/v7.5.0",
+  "latest_release_checked_on": "2026-10-02",
+  "commit": "7aa5b2bdddd570ece62c812c0cb588ccdc099e2e",
+  "license": "MIT",
+  "license_file": {
+    "file": "LICENSE",
+    "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/LICENSE",
+    "bytes": 1087,
+    "sha256": "8f1195d55a2fd315a07d812328470ca9ba2abb78c8d317ff19619d5125e00cea"
+  },
+  "modifications": "SVG originals unchanged; PNG files rasterized at 96 by 72 pixels from the corresponding SVG",
+  "rasterizer": "rsvg-convert 2.62.4",
+  "rasterization_command": "rsvg-convert --width 96 --height 72 --output assets/flags/CODE.png assets/flags/CODE.svg",
+  "usage": "Language-selector icons only; the locale tag and language self-name remain authoritative",
+  "files": [
+    {
+      "locale": "zh-CN",
+      "flag": "cn",
+      "svg": {
+        "file": "cn.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/cn.svg",
+        "bytes": 813,
+        "sha256": "981da9bdf82d48e31691f20578cefcb26cf7d0bd95e4ebd5c0df00bdfe988c1a"
+      },
+      "png": {
+        "file": "cn.png",
+        "bytes": 1191,
+        "sha256": "2d35012a40b9ce5a234c42e9b512aa9189c35a2d42c23905a48c6d05ae26a400"
+      }
+    },
+    {
+      "locale": "en-US",
+      "flag": "us",
+      "svg": {
+        "file": "us.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/us.svg",
+        "bytes": 648,
+        "sha256": "e7be4240cf57987926673708f09233be1ab6bdf35acc7b86bd32a263f197a2a7"
+      },
+      "png": {
+        "file": "us.png",
+        "bytes": 3210,
+        "sha256": "69cc1af9a042a3a028de02f28f5863a91416ab7d35ffbd241a1761bcc7692c6c"
+      }
+    },
+    {
+      "locale": "en-GB",
+      "flag": "gb",
+      "svg": {
+        "file": "gb.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/gb.svg",
+        "bytes": 504,
+        "sha256": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066"
+      },
+      "png": {
+        "file": "gb.png",
+        "bytes": 3499,
+        "sha256": "cbfe43561d7f0eb157fc4298992f0723c79ce521b62c236fa1b3fda227e2dc46"
+      }
+    },
+    {
+      "locale": "ja",
+      "flag": "jp",
+      "svg": {
+        "file": "jp.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/jp.svg",
+        "bytes": 470,
+        "sha256": "bfea80baf9989383dc4bf7ca594ed95be0df0ff125bfc88d0bfa878eb0198022"
+      },
+      "png": {
+        "file": "jp.png",
+        "bytes": 1150,
+        "sha256": "dc170ada3b8b1644d31c693b07d1d7016d85a3cecafcd87bb6899d36cb5b4eb6"
+      }
+    },
+    {
+      "locale": "ko",
+      "flag": "kr",
+      "svg": {
+        "file": "kr.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/kr.svg",
+        "bytes": 1061,
+        "sha256": "7a6cd5b51d0e2841ed8b79b1147ad8a66cf3c09f6344d4a63b5e4413ffa5d15b"
+      },
+      "png": {
+        "file": "kr.png",
+        "bytes": 3376,
+        "sha256": "d5fa8bdae10cbe3b2e9186bce8b43e2c92b0a6db73b4e83329df318c7a0714ef"
+      }
+    },
+    {
+      "locale": "zh-TW",
+      "flag": "tw",
+      "svg": {
+        "file": "tw.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/tw.svg",
+        "bytes": 2499,
+        "sha256": "931757f06b9ee751fd1a0cc8dd7cf862e21fdcaf894d10ed7bcc68dabcca59ad"
+      },
+      "png": {
+        "file": "tw.png",
+        "bytes": 1327,
+        "sha256": "cebc9dce0f9df68ece5eace0278f1ccee5fec1f8cf74bb2edf3952533a1c4a14"
+      }
+    },
+    {
+      "locale": "zh-HK",
+      "flag": "hk",
+      "svg": {
+        "file": "hk.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/hk.svg",
+        "bytes": 727,
+        "sha256": "d9d142b2b97ec3b8190bff3802072c1b4f15573a679eead89a0ce59986dcad0c"
+      },
+      "png": {
+        "file": "hk.png",
+        "bytes": 2377,
+        "sha256": "a510cca9511203e2fa185c6232da4e5fcb351f819931b53b63e9548af6736566"
+      }
+    },
+    {
+      "locale": "es-419",
+      "flag": "mx",
+      "svg": {
+        "file": "mx.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/mx.svg",
+        "bytes": 84753,
+        "sha256": "9dbc8ad8b35e52ce7cb686d5cd93bd95e4c0dd8505c184186a740148ffd34901"
+      },
+      "png": {
+        "file": "mx.png",
+        "bytes": 1580,
+        "sha256": "84657c6be243983aca339baaca485a6f26aee3f857f2c86c6beae79fe1115cf1"
+      }
+    },
+    {
+      "locale": "pt-BR",
+      "flag": "br",
+      "svg": {
+        "file": "br.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/br.svg",
+        "bytes": 7140,
+        "sha256": "b0a912826c3ffd7287435ebed66e18fe058e992309c00dc10b430dd41a29ba91"
+      },
+      "png": {
+        "file": "br.png",
+        "bytes": 3629,
+        "sha256": "957956a9c568826967ba92e9a5f050bcadbf3d876f96143881d08f14d895426a"
+      }
+    },
+    {
+      "locale": "fr",
+      "flag": "fr",
+      "svg": {
+        "file": "fr.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/fr.svg",
+        "bytes": 231,
+        "sha256": "8cdacc8d79bcf210cdca2777a2c0de1f9e5862526877bd3026c9d59ecdcd4578"
+      },
+      "png": {
+        "file": "fr.png",
+        "bytes": 257,
+        "sha256": "dc85d0201a7ee39ec464966e25edffd0f3e9b030b869599b61724926313cb8d7"
+      }
+    },
+    {
+      "locale": "de",
+      "flag": "de",
+      "svg": {
+        "file": "de.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/de.svg",
+        "bytes": 221,
+        "sha256": "efd480af5a154a7651f29da23ee0d09dbc892410fb4041898ddf8face336c575"
+      },
+      "png": {
+        "file": "de.png",
+        "bytes": 251,
+        "sha256": "aa4e7afa762a381b623d8a725f458eb0db05177b0239111c38ccd5ee7766cd21"
+      }
+    },
+    {
+      "locale": "ru",
+      "flag": "ru",
+      "svg": {
+        "file": "ru.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/ru.svg",
+        "bytes": 225,
+        "sha256": "7100aaae51ff3b6a2bf0ca932b3bc518bdc760814725e7cca31d821a26c3dd7c"
+      },
+      "png": {
+        "file": "ru.png",
+        "bytes": 258,
+        "sha256": "2d368f770dcbe8602adfd31758df2c231fef9da7eb92def95c763d5c8d182be9"
+      }
+    },
+    {
+      "locale": "uk",
+      "flag": "ua",
+      "svg": {
+        "file": "ua.svg",
+        "url": "https://raw.githubusercontent.com/lipis/flag-icons/7aa5b2bdddd570ece62c812c0cb588ccdc099e2e/flags/4x3/ua.svg",
+        "bytes": 232,
+        "sha256": "2d869c23ebfefb2ae0a633297c11dee06fcb666ce7b3ca75eba09b7a1a3a03ac"
+      },
+      "png": {
+        "file": "ua.png",
+        "bytes": 250,
+        "sha256": "2cf7c93e5152d82a34ee5cf17413f2923210199dcfeb12c041b6ff3c2a40f944"
+      }
+    }
+  ],
+  "locale_notes": {
+    "es-419": "The Mexico flag represents the Latin American Spanish selector entry; its locale remains es-419 and its name remains Español (Latinoamérica)"
+  }
+}

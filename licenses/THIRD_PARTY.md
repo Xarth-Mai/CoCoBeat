@@ -22,3 +22,7 @@ CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`�
 原创开发音乐、Anchor、独立事件帧标注、反馈音、探针脉冲与品牌落点合成音的来源见 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，这些生成资源使用 CC0-1.0，生成器源代码使用 MPL-2.0。`source_hash` 使用 SHA-256，反馈音、探针脉冲与品牌落点生成器条目记录源码哈希，其他条目记录资源文件哈希；听感人工验收与真实设备音频验收均为 NOT RUN
 
 品牌的 18 条来源记录从 [assets/brand/PROVENANCE.csv](../assets/brand/PROVENANCE.csv) 原样并入资源总台账。用户提供的字标与 Symbol 参考图未附原作者信息及原始再分发授权，相关条目保留 `UNSPECIFIED_REFERENCE` 与 `unverified`；项目代码许可证与这些品牌参考图的权利信息分别记录，本轮未核验其对外再分发许可
+
+界面字体采用六份未经修改的官方 Noto Sans 字体：基础 Noto Sans 2.015 与 Noto Sans CJK 2.004 的 SC、TC、HK、JP、KR 地区字体，共覆盖首批 13 个 locale 的字体选择；逐文件来源、固定提交、SHA-256、内嵌版权和语言映射见 [字体来源清单](../assets/fonts/SOURCES.json)，六条字体记录已并入资源总台账，发行包保留原始 [Noto Sans OFL](../assets/fonts/NotoSans-OFL.txt) 与 [Noto Sans CJK OFL](../assets/fonts/NotoSansCJK-OFL.txt) 及版权声明，均使用 SIL Open Font License 1.1
+
+语言选择器的 13 组旗帜来自 [flag-icons v7.5.0](https://github.com/lipis/flag-icons/releases/tag/v7.5.0)，原始 4:3 SVG 与派生 96×72 PNG 的 26 条记录已并入资源总台账；固定提交、原件和派生文件 SHA-256、导出方式见 [旗帜来源清单](../assets/flags/SOURCES.json)，发行包保留上游 [MIT 许可和版权声明](../assets/flags/LICENSE)，这些资源不新增游戏运行时依赖

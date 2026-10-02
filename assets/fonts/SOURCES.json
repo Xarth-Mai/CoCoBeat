@@ -1,0 +1,158 @@
+{
+  "family": "Noto Sans",
+  "locales": [
+    "zh-CN",
+    "en-US",
+    "en-GB",
+    "ja",
+    "ko",
+    "zh-TW",
+    "zh-HK",
+    "es-419",
+    "pt-BR",
+    "fr",
+    "de",
+    "ru",
+    "uk"
+  ],
+  "license": "OFL-1.1",
+  "modifications": "None; upstream font and license bytes distributed unchanged",
+  "sources": [
+    {
+      "repository": "https://github.com/notofonts/noto-cjk",
+      "release": "Sans2.004",
+      "release_url": "https://github.com/notofonts/noto-cjk/releases/tag/Sans2.004",
+      "commit": "523d033d6cb47f4a80c58a35753646f5c3608a78"
+    },
+    {
+      "repository": "https://github.com/google/fonts",
+      "path": "ofl/notosans",
+      "commit": "8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5",
+      "upstream_release_url": "https://github.com/notofonts/latin-greek-cyrillic/releases/tag/NotoSans-v2.015",
+      "upstream_release_commit": "c4a321e123e4d4ff315f57f4e0adf294fe3a95be"
+    }
+  ],
+  "files": [
+    {
+      "file": "NotoSansSC-Regular.otf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/SC/NotoSansSC-Regular.otf",
+      "bytes": 8331336,
+      "sha256": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+      "git_blob_sha1": "fc0fda9394367c16c1af7555a2ae4d5e2e6a6f02",
+      "locales": [
+        "zh-CN"
+      ],
+      "family": "Noto Sans SC",
+      "font_version": "Version 2.004;hotconv 1.0.118;makeotfexe 2.5.65603",
+      "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
+      "license_file": "NotoSansCJK-OFL.txt",
+      "unicode_mappings": 30890,
+      "trademark": "Noto is a trademark of Google Inc."
+    },
+    {
+      "file": "NotoSansTC-Regular.otf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/TC/NotoSansTC-Regular.otf",
+      "bytes": 5683368,
+      "sha256": "5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537",
+      "git_blob_sha1": "63c3422382411b4d132644794fd432c53faa2882",
+      "locales": [
+        "zh-TW"
+      ],
+      "family": "Noto Sans TC",
+      "font_version": "Version 2.004;hotconv 1.0.118;makeotfexe 2.5.65603",
+      "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
+      "license_file": "NotoSansCJK-OFL.txt",
+      "unicode_mappings": 20745,
+      "trademark": "Noto is a trademark of Google Inc."
+    },
+    {
+      "file": "NotoSansHK-Regular.otf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/HK/NotoSansHK-Regular.otf",
+      "bytes": 5688384,
+      "sha256": "8a43afea92bb58dfd9027bd7ac6f5b0b2662e2ffb3e7c1edc02c62b2b21924f1",
+      "git_blob_sha1": "622c6533f8086d126e5508ae8cd5c45c16470edd",
+      "locales": [
+        "zh-HK"
+      ],
+      "family": "Noto Sans HK",
+      "font_version": "Version 2.004;hotconv 1.0.118;makeotfexe 2.5.65603",
+      "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
+      "license_file": "NotoSansCJK-OFL.txt",
+      "unicode_mappings": 20755,
+      "trademark": "Noto is a trademark of Google Inc."
+    },
+    {
+      "file": "NotoSansJP-Regular.otf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/JP/NotoSansJP-Regular.otf",
+      "bytes": 4533028,
+      "sha256": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073",
+      "git_blob_sha1": "4af556abb9cc42e585aab777b01857246a110746",
+      "locales": [
+        "ja"
+      ],
+      "family": "Noto Sans JP",
+      "font_version": "Version 2.004;hotconv 1.0.118;makeotfexe 2.5.65603",
+      "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
+      "license_file": "NotoSansCJK-OFL.txt",
+      "unicode_mappings": 16732,
+      "trademark": "Noto is a trademark of Google Inc."
+    },
+    {
+      "file": "NotoSansKR-Regular.otf",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/Sans/SubsetOTF/KR/NotoSansKR-Regular.otf",
+      "bytes": 4644748,
+      "sha256": "69975a0ac8472717870aefeab0a4d52739308d90856b9955313b2ad5e0148d68",
+      "git_blob_sha1": "b8c11425a25c74dac1b51b28341ff1ef379f2ffa",
+      "locales": [
+        "ko"
+      ],
+      "family": "Noto Sans KR",
+      "font_version": "Version 2.004;hotconv 1.0.118;makeotfexe 2.5.65603",
+      "copyright": "© 2014-2021 Adobe (http://www.adobe.com/).",
+      "license_file": "NotoSansCJK-OFL.txt",
+      "unicode_mappings": 23174,
+      "trademark": "Noto is a trademark of Google Inc."
+    },
+    {
+      "file": "NotoSansCJK-OFL.txt",
+      "url": "https://raw.githubusercontent.com/notofonts/noto-cjk/523d033d6cb47f4a80c58a35753646f5c3608a78/LICENSE",
+      "bytes": 4301,
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+      "git_blob_sha1": "d952d62c065f3f35fb83a173496e90b21525aef3"
+    },
+    {
+      "file": "NotoSans[wdth,wght].ttf",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/NotoSans%5Bwdth%2Cwght%5D.ttf",
+      "bytes": 2049096,
+      "sha256": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "git_blob_sha1": "75575046c015ff623a848096a15779867ba71453",
+      "locales": [
+        "en-US",
+        "en-GB",
+        "es-419",
+        "pt-BR",
+        "fr",
+        "de",
+        "ru",
+        "uk"
+      ],
+      "family": "Noto Sans",
+      "font_version": "Version 2.015",
+      "copyright": "Copyright 2022 The Noto Project Authors (https://github.com/notofonts/latin-greek-cyrillic)",
+      "license_file": "NotoSans-OFL.txt",
+      "unicode_mappings": 3094,
+      "default_axes": {
+        "wght": 400.0,
+        "wdth": 100.0
+      },
+      "trademark": "Noto is a trademark of Google LLC."
+    },
+    {
+      "file": "NotoSans-OFL.txt",
+      "url": "https://raw.githubusercontent.com/google/fonts/8b0a1d0f5983c89bc2b93f1b5fb55f9e252744b5/ofl/notosans/OFL.txt",
+      "bytes": 4396,
+      "sha256": "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a",
+      "git_blob_sha1": "6843f31878c9945e1e71e1baa275546b4eefead8"
+    }
+  ]
+}
