@@ -192,8 +192,7 @@ fn select_frame(
     } else {
         BrandIntroPhase::Playing
     };
-    let progress = ((time - 5.0) / 0.45).clamp(0.0, 1.0) as f32;
-    status.reveal_progress = progress * progress * (3.0 - 2.0 * progress);
+    status.reveal_progress = brand_intro::reveal_at(time);
     assert_eq!(status.is_complete(), time >= 5.45);
     capture.settled_frames += 1;
 }

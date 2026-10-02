@@ -365,7 +365,7 @@ fn advance(
         impacts.write(impact);
     }
     status.elapsed_seconds = next;
-    status.reveal_progress = smooth((next - DOCK_START) as f32 / 0.45);
+    status.reveal_progress = reveal_at(next);
     status.phase = phase_at(next);
 }
 
@@ -395,11 +395,18 @@ fn progress(t: f32, start: f32, end: f32) -> f32 {
     smooth((t - start) / (end - start))
 }
 
+pub(crate) fn reveal_at(t: f64) -> f32 {
+    CubicSegment::new_bezier_easing((0.45, 0.0), (0.20, 1.0))
+        .ease(((t - DOCK_START) / (END - DOCK_START)) as f32)
+}
+
 fn paint_at(t: f32) -> Vec4 {
+    // Impact drives a fast spread that slows as the pigment settles
+    let curve = CubicSegment::new_bezier_easing((0.22, 0.75), (0.30, 1.0));
     Vec4::new(
-        progress(t, 0.90, 1.42),
-        progress(t, 2.10, 2.70),
-        progress(t, 3.35, 3.80),
+        curve.ease((t - 0.90) / (1.42 - 0.90)),
+        curve.ease((t - 2.10) / (2.70 - 2.10)),
+        curve.ease((t - 3.35) / (3.80 - 3.35)),
         0.0,
     )
 }
@@ -428,21 +435,39 @@ fn blob_at(t: f32) -> BlobPose {
     let (contact, stretch) = if t < 0.90 {
         let u = ((t - 0.40) / 0.50).clamp(0.0, 1.0);
         (
-            Vec2::new(co1.x, -210.0 + (co1.y + 210.0) * u * u),
+            CubicSegment::new_bezier([
+                co1 + Vec2::new(0.0, -220.0),
+                co1 + Vec2::new(0.0, -208.0),
+                co1 + Vec2::new(0.0, -156.0),
+                co1,
+            ])
+            .position(u),
             Vec2::new(0.76, 1.35),
         )
     } else if t < 2.10 {
         let u = ((t - 0.90) / 1.20).clamp(0.0, 1.0);
         let bounce = (std::f32::consts::PI * u).sin();
         (
-            co1.lerp(co2, smooth(u)) - Vec2::Y * bounce * 210.0,
+            CubicSegment::new_bezier([
+                co1,
+                co1 + Vec2::new(34.0, -272.0),
+                co2 + Vec2::new(-52.0, -264.0),
+                co2,
+            ])
+            .position(u),
             Vec2::new(1.0 - bounce * 0.16, 1.0 + bounce * 0.25),
         )
     } else {
         let u = ((t - 2.10) / 1.25).clamp(0.0, 1.0);
         let bounce = (std::f32::consts::PI * u).sin();
         (
-            co2.lerp(beat, smooth(u)) - Vec2::Y * bounce * 200.0,
+            CubicSegment::new_bezier([
+                co2,
+                co2 + Vec2::new(25.0, -252.0),
+                beat + Vec2::new(-42.0, -248.0),
+                beat,
+            ])
+            .position(u),
             Vec2::new(1.0 - bounce * 0.13, 1.0 + bounce * 0.25),
         )
     };
@@ -736,13 +761,39 @@ mod tests {
     }
 
     #[test]
-    fn both_bounces_stay_inside_the_720p_viewport() {
+    fn pigment_slows_down_and_docking_eases_in_and_out() {
+        for (index, start, end) in [(0, 0.90, 1.42), (1, 2.10, 2.70), (2, 3.35, 3.80)] {
+            let samples: [f32; 5] =
+                std::array::from_fn(|i| paint_at(start + (end - start) * i as f32 / 4.0)[index]);
+            assert_eq!(samples[0], 0.0);
+            assert_eq!(samples[4], 1.0);
+            let steps: Vec<_> = samples.windows(2).map(|pair| pair[1] - pair[0]).collect();
+            assert!(steps.iter().all(|step| *step > 0.0));
+            assert!(steps.windows(2).all(|pair| pair[0] > pair[1]));
+        }
+        let samples: [f32; 5] =
+            std::array::from_fn(|i| reveal_at(DOCK_START + (END - DOCK_START) * i as f64 / 4.0));
+        assert_eq!(reveal_at(0.0), 0.0);
+        assert_eq!(samples[0], 0.0);
+        assert_eq!(samples[4], 1.0);
+        assert_eq!(reveal_at(60.0), 1.0);
+        let steps: Vec<_> = samples.windows(2).map(|pair| pair[1] - pair[0]).collect();
+        assert!(steps.iter().all(|step| *step > 0.0));
+        assert!(steps[1] > steps[0]);
+        assert!(steps[2] > steps[3]);
+    }
+
+    #[test]
+    fn bounces_remain_visible_and_move_towards_the_next_letter() {
         let scale = 1280.0 * 0.66 / 840.0;
         let logo_top = 720.0 * 0.49 - 180.0 * scale * 0.5;
-        for frame in 30..=100 {
-            let pose = blob_at(frame as f32 / 30.0);
+        let mut last_x = IMPACT_POINTS[0].x;
+        for frame in 90..=335 {
+            let pose = blob_at(frame as f32 / 100.0);
             let visible_top = logo_top + (pose.center.y - pose.size.y * 0.44) * scale;
             assert!(visible_top > 0.0, "Clipped bounce at frame {frame}");
+            assert!(pose.center.x >= last_x, "Reversed bounce at frame {frame}");
+            last_x = pose.center.x;
         }
     }
 }
