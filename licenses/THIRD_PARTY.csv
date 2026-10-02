@@ -69,6 +69,7 @@ bevy_mesh,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_mikktspace,1.0.0,Zlib AND (MIT OR Apache-2.0),https://github.com/bevyengine/bevy_mikktspace
 bevy_pbr,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_platform,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
+bevy_post_process,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_ptr,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_reflect,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_reflect_derive,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy

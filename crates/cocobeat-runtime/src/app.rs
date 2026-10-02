@@ -9,7 +9,7 @@ use crate::{
     i18n::{Locale, Message},
     input::{self, Control, InputState, SettingsAction},
     session::{CONTENT_ID, RULES_ID, Session},
-    settings::{DisplaySettings, Settings},
+    settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
     ui_assets,
     view::{self, VisualState},
@@ -52,6 +52,9 @@ enum Smoke {
     Locale(Locale),
     Languages(Locale),
     Menu(Locale),
+    Quality(QualitySettings),
+    Graphics(Locale),
+    Pacing(Locale),
 }
 
 #[derive(Resource)]
@@ -162,7 +165,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -188,6 +191,43 @@ pub fn run() -> ExitCode {
                 )
             } else {
                 Err(format!("Unsupported locale: {code}"))
+            }
+        }
+        [flag, preset, path] if flag == "--quality-smoke" => {
+            let mut quality = QualitySettings::default();
+            match preset.as_str() {
+                "low" => quality.set_preset(QualityPreset::Low),
+                "medium" => quality.set_preset(QualityPreset::Medium),
+                "high" => quality.set_preset(QualityPreset::High),
+                "off" => {
+                    quality.set_preset(QualityPreset::Low);
+                    quality.preset = QualityPreset::Custom;
+                    quality.rain = crate::settings::RainAmount::Off;
+                    quality.fog = false;
+                }
+                _ => {
+                    return {
+                        eprintln!("Unsupported graphics preset: {preset}");
+                        ExitCode::FAILURE
+                    };
+                }
+            }
+            visual_smoke(PathBuf::from(path), Smoke::Quality(quality))
+        }
+        [flag, page, code, path] if flag == "--settings-page-smoke" => {
+            match (
+                page.as_str(),
+                Locale::ALL.into_iter().find(|locale| locale.code() == code),
+            ) {
+                ("graphics", Some(locale)) => {
+                    visual_smoke(PathBuf::from(path), Smoke::Graphics(locale))
+                }
+                ("pacing", Some(locale)) => {
+                    visual_smoke(PathBuf::from(path), Smoke::Pacing(locale))
+                }
+                _ => Err(format!(
+                    "Unsupported settings page or locale: {page} / {code}"
+                )),
             }
         }
         _ => Err("Unknown arguments; run cocobeat-game --help".into()),
@@ -216,7 +256,11 @@ fn base_app() -> Result<App, String> {
     }));
     ui_assets::install(&mut app)?;
     view::install(&mut app);
-    app.world_mut().resource_mut::<VisualState>().locale = settings.values.locale;
+    {
+        let mut visual = app.world_mut().resource_mut::<VisualState>();
+        visual.locale = settings.values.locale;
+        visual.quality = settings.values.quality;
+    }
     display::install(&mut app, settings.values.display);
     app.insert_resource(settings);
     Ok(app)
@@ -225,6 +269,8 @@ fn base_app() -> Result<App, String> {
 fn run_game() -> Result<(), String> {
     let audio = AudioOutput::new()?;
     let mut app = base_app()?;
+    let pacing = app.world().resource::<SettingsMenu>().values.pacing;
+    display::install_frame_pacing(&mut app, pacing);
     input::install(&mut app);
     brand_intro::install(&mut app);
     app.world_mut()
@@ -371,7 +417,9 @@ fn update_game(
         return;
     }
     let settings_now = input.origin.elapsed().as_secs_f64();
+    settings.sync_pacing(&display);
     settings.tick(settings_now, &mut display);
+    visual.quality = settings.values.quality;
     visual.locale = settings.values.locale;
     if !input.controls_enabled() {
         let error = if brand.phase == BrandIntroPhase::Failed {
@@ -550,6 +598,7 @@ fn update_game(
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
     visual.settings_open = settings.is_open();
+    visual.quality = settings.values.quality;
     let locale = settings.values.locale;
     visual.locale = locale;
     visual.language_choices = settings.language_choices();
@@ -607,7 +656,7 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
 }
 
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
-    let startup = mode != Smoke::Scene;
+    let startup = !matches!(mode, Smoke::Scene | Smoke::Quality(_));
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins
@@ -629,7 +678,11 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
         std::time::Duration::from_secs_f64(
             if matches!(
                 mode,
-                Smoke::Locale(_) | Smoke::Languages(_) | Smoke::Menu(_)
+                Smoke::Locale(_)
+                    | Smoke::Languages(_)
+                    | Smoke::Menu(_)
+                    | Smoke::Graphics(_)
+                    | Smoke::Pacing(_)
             ) {
                 0.1
             } else {
@@ -645,7 +698,11 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
         .set_headless_surface([1280, 800]);
     if matches!(
         mode,
-        Smoke::Settings | Smoke::Locale(_) | Smoke::Languages(_)
+        Smoke::Settings
+            | Smoke::Locale(_)
+            | Smoke::Languages(_)
+            | Smoke::Graphics(_)
+            | Smoke::Pacing(_)
     ) {
         let selected = DisplaySettings {
             fullscreen: true,
@@ -659,15 +716,28 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
         menu.values = Settings {
             display: selected,
             locale: match mode {
-                Smoke::Locale(locale) | Smoke::Languages(locale) => locale,
+                Smoke::Locale(locale)
+                | Smoke::Languages(locale)
+                | Smoke::Graphics(locale)
+                | Smoke::Pacing(locale) => locale,
                 _ => Locale::EnUs,
             },
+            ..default()
         };
+        menu.sync_pacing(app.world().resource::<DisplayState>());
         menu.begin(app.world().resource::<DisplayState>());
-        if matches!(mode, Smoke::Languages(_)) {
+        if matches!(
+            mode,
+            Smoke::Languages(_) | Smoke::Graphics(_) | Smoke::Pacing(_)
+        ) {
             let mut display = app.world_mut().resource_mut::<DisplayState>();
-            // Enter the real language row using the same controls as the settings menu
-            for _ in 0..5 {
+            // Enter each real settings page through the production menu controls
+            let row = match mode {
+                Smoke::Graphics(_) => 5,
+                Smoke::Pacing(_) => 6,
+                _ => 7,
+            };
+            for _ in 0..row {
                 menu.handle(SettingsAction::Down, 0.0, &mut display);
             }
             menu.handle(SettingsAction::Confirm, 0.0, &mut display);
@@ -744,6 +814,16 @@ fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
             ..default()
         }
     };
+    if let Smoke::Quality(quality) = mode {
+        app.world_mut().resource_mut::<VisualState>().quality = quality;
+        app.world_mut()
+            .resource_mut::<DisplayState>()
+            .request(DisplaySettings {
+                fullscreen: true,
+                fullscreen_size: [640, 480],
+                ..default()
+            });
+    }
     app.add_systems(
         Update,
         (move |mut commands: Commands,
@@ -821,6 +901,146 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn captured_history_survives_playback_observation_and_consumption_cadences() {
+        use cocobeat_core::DuoEngine;
+        use cocobeat_schema::{DuoInput, Hit, PlayerId};
+
+        let captures = [
+            (PlayerId::P1, 111_000_000, 1_205_328),
+            (PlayerId::P2, 130_000_000, 1_206_240),
+            (PlayerId::P1, 1_001_000_000, 1_248_048),
+            (PlayerId::P2, 1_018_000_000, 1_248_864),
+            (PlayerId::P1, 5_002_000_000, 1_440_096),
+            (PlayerId::P2, 5_011_000_000, 1_440_528),
+        ];
+        let expected_hits: Vec<_> = captures
+            .iter()
+            .enumerate()
+            .map(|(index, &(player, _, frame))| Hit {
+                epoch: SessionEpoch(0),
+                player,
+                seq: (index / 2) as u64,
+                song_time: SongTime::from_frames(frame),
+            })
+            .collect();
+        let mut expected =
+            DuoEngine::new(SessionEpoch(0), dev_song::anchors(), DuoRules::default()).unwrap();
+        for &hit in &expected_hits {
+            expected.ingest(DuoInput::Hit(hit)).unwrap();
+        }
+        for player in [PlayerId::P1, PlayerId::P2] {
+            expected
+                .ingest(DuoInput::Watermark {
+                    epoch: SessionEpoch(0),
+                    player,
+                    through: SongTime::from_frames(3_092_881),
+                })
+                .unwrap();
+        }
+        assert_eq!(
+            expected
+                .events()
+                .iter()
+                .filter(|event| matches!(event, DuoEvent::FreeSync(_)))
+                .count(),
+            1
+        );
+        assert_eq!(
+            expected
+                .events()
+                .iter()
+                .filter(|event| matches!(event, DuoEvent::AnchorSync(_)))
+                .count(),
+            2
+        );
+
+        // Millisecond-aligned observations avoid fractional-frame cursor quantization
+        // These cycles average 60/144/48 Hz; the last case consumes every 500 ms
+        let mut cadence_144 = [7_u64; 18];
+        cadence_144[17] = 6;
+        let mut consumption_times = Vec::new();
+        for cadence in [
+            &[16_u64, 17, 17][..],
+            &cadence_144,
+            &[20, 21, 21, 21, 21, 21],
+            &[500],
+        ] {
+            let mut game = Game::new().unwrap();
+            game.phase = Phase::Starting;
+            assert!(
+                game.observe_playback(25.0, PlaybackState::Playing, MonotonicTime::from_nanos(0))
+                    .unwrap()
+            );
+            let (mut elapsed_ms, mut tick, mut next) = (0_u64, 0, 0);
+            while elapsed_ms < 6_000 {
+                elapsed_ms = (elapsed_ms + cadence[tick % cadence.len()]).min(6_000);
+                tick += 1;
+                let consumed_ns = elapsed_ms * 1_000_000;
+                assert!(
+                    !game
+                        .observe_playback(
+                            25.0 + elapsed_ms as f64 / 1_000.0,
+                            PlaybackState::Playing,
+                            MonotonicTime::from_nanos(consumed_ns),
+                        )
+                        .unwrap()
+                );
+                // Even in the 500 ms case, each capture is within its anchor's
+                // 250 ms validity; a fresh observation cannot certify an expired gap
+                while next < captures.len() && captures[next].1 <= consumed_ns {
+                    let (player, observed_ns, _) = captures[next];
+                    game.session.hit(player, observed_ns, consumed_ns).unwrap();
+                    next += 1;
+                }
+                game.session.advance().unwrap();
+            }
+            assert_eq!(next, captures.len());
+            assert_eq!(game.session.current, SongTime::from_frames(1_488_000));
+            let recorded_hits: Vec<_> = game
+                .session
+                .replay
+                .facts()
+                .iter()
+                .filter_map(|fact| match *fact {
+                    DuoInput::Hit(hit) => Some(hit),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(recorded_hits, expected_hits, "cadence={cadence:?}");
+            consumption_times.push(
+                game.session
+                    .diagnostics
+                    .iter()
+                    .map(|input| input.consumed_ns)
+                    .collect::<Vec<_>>(),
+            );
+            game.session.finish().unwrap();
+            let replay = Replay::decode(game.session.replay.encode().unwrap().as_slice()).unwrap();
+            let restored = replay
+                .replay(
+                    CONTENT_ID,
+                    RULES_ID,
+                    dev_song::anchors(),
+                    DuoRules::default(),
+                )
+                .unwrap();
+            for engine in [&game.session.engine, &restored] {
+                assert_eq!(engine.events(), expected.events(), "cadence={cadence:?}");
+                assert_eq!(
+                    engine.resonance(),
+                    expected.resonance(),
+                    "cadence={cadence:?}"
+                );
+            }
+        }
+        for first in 0..consumption_times.len() {
+            for second in first + 1..consumption_times.len() {
+                assert_ne!(consumption_times[first], consumption_times[second]);
+            }
+        }
+    }
 
     #[test]
     fn menu_brand_control_follows_game_and_captured_focus() {

@@ -500,7 +500,10 @@ impl InputState {
 
 pub fn install(app: &mut App) {
     app.init_resource::<InputState>()
-        .add_systems(First, capture_keyboard)
+        .add_systems(
+            First,
+            capture_keyboard.after(crate::display::DisplaySystems::Pace),
+        )
         .add_systems(PreUpdate, capture_gamepad.after(InputSystems));
 }
 

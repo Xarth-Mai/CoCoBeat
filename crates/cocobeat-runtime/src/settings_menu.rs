@@ -2,13 +2,19 @@ use crate::{
     display::DisplayState,
     i18n::{Locale, Message},
     input::SettingsAction,
-    settings::{self, Settings},
+    settings::{self, AntiAliasing, FrameLimit, QualityPreset, RainAmount, Settings},
 };
 use bevy::prelude::Resource;
 use std::{io, path::PathBuf};
 
 const PREVIEW_SECONDS: f64 = 15.0;
-const ROWS: usize = 6;
+const ROWS: usize = 8;
+
+#[derive(Clone, Copy)]
+enum Page {
+    Quality,
+    Pacing,
+}
 
 struct Preview {
     original: Settings,
@@ -24,6 +30,7 @@ pub(crate) struct SettingsMenu {
     selection: usize,
     resolution_selection: Option<usize>,
     language_selection: Option<usize>,
+    page: Option<Page>,
     preview: Option<Preview>,
 }
 
@@ -71,6 +78,17 @@ impl SettingsMenu {
         self.resolution_selection = None;
         self.language_selection = None;
         self.preview = None;
+        self.page = None;
+    }
+
+    pub fn sync_pacing(&mut self, display: &DisplayState) {
+        display.normalize_pacing(&mut self.values.pacing);
+        if let Some(draft) = &mut self.draft {
+            display.normalize_pacing(&mut draft.pacing);
+        }
+        if let Some(preview) = &mut self.preview {
+            display.normalize_pacing(&mut preview.original.pacing);
+        }
     }
 
     pub fn is_open(&self) -> bool {
@@ -85,12 +103,13 @@ impl SettingsMenu {
         if self.resolution_selection.is_some()
             || self.language_selection.is_some()
             || self.preview.is_some()
+            || self.page.is_some()
         {
             return None;
         }
         self.draft
             .as_ref()
-            .map(|draft| (draft.locale, self.selection == 5))
+            .map(|draft| (draft.locale, self.selection == 7))
     }
 
     fn rollback(&mut self, display: &mut DisplayState, notice: &'static str) {
@@ -109,6 +128,7 @@ impl SettingsMenu {
 
     fn save_actual(&mut self, mut settings: Settings, display: &DisplayState) -> bool {
         settings.display = display.actual();
+        display.normalize_pacing(&mut settings.pacing);
         let saved = self
             .path
             .as_deref()
@@ -194,6 +214,90 @@ impl SettingsMenu {
             }
             return false;
         }
+        if let Some(page) = self.page {
+            let rows = match page {
+                Page::Quality => 7,
+                Page::Pacing => 3,
+            };
+            match action {
+                SettingsAction::Back | SettingsAction::Confirm
+                    if action == SettingsAction::Back || self.selection == rows - 1 =>
+                {
+                    self.page = None;
+                    self.selection = match page {
+                        Page::Quality => 5,
+                        Page::Pacing => 6,
+                    };
+                }
+                SettingsAction::Up => self.selection = (self.selection + rows - 1) % rows,
+                SettingsAction::Down => self.selection = (self.selection + 1) % rows,
+                SettingsAction::Previous | SettingsAction::Next | SettingsAction::Confirm => {
+                    let previous = action == SettingsAction::Previous;
+                    match page {
+                        Page::Quality => {
+                            match self.selection {
+                                0 => {
+                                    let preset = cycle(
+                                        draft.quality.preset,
+                                        &[
+                                            QualityPreset::Low,
+                                            QualityPreset::Medium,
+                                            QualityPreset::High,
+                                        ],
+                                        previous,
+                                    );
+                                    draft.quality.set_preset(preset);
+                                }
+                                1 => {
+                                    draft.quality.antialiasing = cycle(
+                                        draft.quality.antialiasing,
+                                        &[
+                                            AntiAliasing::Off,
+                                            AntiAliasing::Msaa2,
+                                            AntiAliasing::Msaa4,
+                                        ],
+                                        previous,
+                                    )
+                                }
+                                2 => {
+                                    draft.quality.rain = cycle(
+                                        draft.quality.rain,
+                                        &[
+                                            RainAmount::Off,
+                                            RainAmount::Quarter,
+                                            RainAmount::Half,
+                                            RainAmount::Full,
+                                        ],
+                                        previous,
+                                    )
+                                }
+                                3 => draft.quality.fog = !draft.quality.fog,
+                                4 => draft.quality.shadows = !draft.quality.shadows,
+                                5 => draft.quality.bloom = !draft.quality.bloom,
+                                _ => {}
+                            }
+                            if (1..=5).contains(&self.selection) {
+                                draft.quality.preset = QualityPreset::Custom;
+                            }
+                        }
+                        Page::Pacing => match self.selection {
+                            0 => {
+                                draft.pacing.frame_limit = cycle(
+                                    draft.pacing.frame_limit,
+                                    &display.frame_rates(),
+                                    previous,
+                                )
+                            }
+                            1 => draft.pacing.vsync = !draft.pacing.vsync,
+                            _ => {}
+                        },
+                    }
+                }
+                SettingsAction::Open | SettingsAction::Back => {}
+            }
+            self.draft = Some(draft);
+            return false;
+        }
         match action {
             SettingsAction::Back => {
                 self.draft = None;
@@ -202,74 +306,75 @@ impl SettingsMenu {
             }
             SettingsAction::Up => self.selection = (self.selection + ROWS - 1) % ROWS,
             SettingsAction::Down => self.selection = (self.selection + 1) % ROWS,
-            SettingsAction::Previous | SettingsAction::Next | SettingsAction::Confirm => {
-                match self.selection {
-                    0 if draft.display.fullscreen || !display.window_managed => {
-                        let options = display.resolution_options(draft.display.fullscreen);
-                        let current = if draft.display.fullscreen {
-                            &mut draft.display.fullscreen_size
-                        } else {
-                            &mut draft.display.window_size
-                        };
-                        if !options.is_empty() {
-                            let index = options.iter().position(|size| size == current);
-                            if action == SettingsAction::Confirm {
-                                self.resolution_selection = Some(index.unwrap_or(0));
-                                return false;
-                            }
-                            let next = if action == SettingsAction::Previous {
-                                index.map_or(options.len() - 1, |i| {
-                                    (i + options.len() - 1) % options.len()
-                                })
-                            } else {
-                                index.map_or(0, |i| (i + 1) % options.len())
-                            };
-                            *current = options[next];
-                        }
-                    }
-                    1 => draft.display.fullscreen = !draft.display.fullscreen,
-                    2 if action == SettingsAction::Confirm && !display.pending => {
-                        if draft.display == display.actual() {
-                            return self.save_actual(draft, display);
-                        }
-                        self.preview = Some(Preview {
-                            original: Settings {
-                                display: display.actual(),
-                                locale: self.values.locale,
-                            },
-                            deadline: now + PREVIEW_SECONDS,
-                        });
-                        display.request(draft.display);
-                        self.notice = Message::new("settings_notice.preview");
-                    }
-                    3 if action == SettingsAction::Confirm => {
-                        self.draft = None;
-                        self.notice = Message::new("settings_notice.cancelled");
-                        return true;
-                    }
-                    4 if action == SettingsAction::Confirm => {
-                        draft = Settings::default();
-                        self.notice = Message::new("settings_notice.defaults");
-                    }
-                    5 => {
-                        let selected = Locale::ALL
-                            .iter()
-                            .position(|locale| *locale == draft.locale)
-                            .unwrap();
+            SettingsAction::Previous | SettingsAction::Next | SettingsAction::Confirm => match self
+                .selection
+            {
+                0 if draft.display.fullscreen || !display.window_managed => {
+                    let options = display.resolution_options(draft.display.fullscreen);
+                    let current = if draft.display.fullscreen {
+                        &mut draft.display.fullscreen_size
+                    } else {
+                        &mut draft.display.window_size
+                    };
+                    if !options.is_empty() {
+                        let index = options.iter().position(|size| size == current);
                         if action == SettingsAction::Confirm {
-                            self.language_selection = Some(selected);
-                        } else {
-                            let next = if action == SettingsAction::Previous {
-                                (selected + Locale::ALL.len() - 1) % Locale::ALL.len()
-                            } else {
-                                (selected + 1) % Locale::ALL.len()
-                            };
-                            draft.locale = Locale::ALL[next];
+                            self.resolution_selection = Some(index.unwrap_or(0));
+                            return false;
                         }
+                        *current = cycle(*current, &options, action == SettingsAction::Previous);
                     }
-                    _ => {}
                 }
-            }
+                1 => draft.display.fullscreen = !draft.display.fullscreen,
+                2 if action == SettingsAction::Confirm && !display.pending => {
+                    if draft.display == display.actual() {
+                        return self.save_actual(draft, display);
+                    }
+                    self.preview = Some(Preview {
+                        original: Settings {
+                            display: display.actual(),
+                            ..self.values.clone()
+                        },
+                        deadline: now + PREVIEW_SECONDS,
+                    });
+                    display.request(draft.display);
+                    self.notice = Message::new("settings_notice.preview");
+                }
+                3 if action == SettingsAction::Confirm => {
+                    self.draft = None;
+                    self.notice = Message::new("settings_notice.cancelled");
+                    return true;
+                }
+                4 if action == SettingsAction::Confirm => {
+                    draft = Settings::default();
+                    display.normalize_pacing(&mut draft.pacing);
+                    self.notice = Message::new("settings_notice.defaults");
+                }
+                5 | 6 if action == SettingsAction::Confirm => {
+                    self.page = Some(if self.selection == 5 {
+                        Page::Quality
+                    } else {
+                        Page::Pacing
+                    });
+                    self.selection = 0;
+                }
+                7 => {
+                    let selected = Locale::ALL
+                        .iter()
+                        .position(|locale| *locale == draft.locale)
+                        .unwrap();
+                    if action == SettingsAction::Confirm {
+                        self.language_selection = Some(selected);
+                    } else {
+                        draft.locale = cycle(
+                            draft.locale,
+                            &Locale::ALL,
+                            action == SettingsAction::Previous,
+                        );
+                    }
+                }
+                _ => {}
+            },
             SettingsAction::Open => {}
         }
         self.draft = Some(draft);
@@ -327,6 +432,90 @@ impl SettingsMenu {
                 display.notice.render(locale),
             );
         }
+        if let Some(page) = self.page {
+            let on_off = |enabled| {
+                locale.text(if enabled {
+                    "settings.on"
+                } else {
+                    "settings.off"
+                })
+            };
+            let value_row =
+                |key, value: &str| Message::with(key, [("value", value.into())]).render(locale);
+            let (title, rows) = match page {
+                Page::Quality => (
+                    "settings.quality_title",
+                    vec![
+                        value_row(
+                            "settings.preset",
+                            locale.text(match draft.quality.preset {
+                                QualityPreset::Low => "settings.preset_low",
+                                QualityPreset::Medium => "settings.preset_medium",
+                                QualityPreset::High => "settings.preset_high",
+                                QualityPreset::Custom => "settings.preset_custom",
+                            }),
+                        ),
+                        value_row(
+                            "settings.antialiasing",
+                            match draft.quality.antialiasing {
+                                AntiAliasing::Off => locale.text("settings.off"),
+                                AntiAliasing::Msaa2 => "MSAA 2×",
+                                AntiAliasing::Msaa4 => "MSAA 4×",
+                            },
+                        ),
+                        value_row(
+                            "settings.rain",
+                            match draft.quality.rain {
+                                RainAmount::Off => locale.text("settings.off"),
+                                RainAmount::Quarter => "25%",
+                                RainAmount::Half => "50%",
+                                RainAmount::Full => "100%",
+                            },
+                        ),
+                        value_row("settings.fog", on_off(draft.quality.fog)),
+                        value_row("settings.shadows", on_off(draft.quality.shadows)),
+                        value_row("settings.bloom", on_off(draft.quality.bloom)),
+                        locale.text("settings.back").into(),
+                    ],
+                ),
+                Page::Pacing => {
+                    let limit = if draft.pacing.frame_limit == FrameLimit::Display {
+                        display
+                            .frame_rates()
+                            .into_iter()
+                            .rev()
+                            .find(|rate| matches!(rate, FrameLimit::Limited(_)))
+                            .unwrap()
+                    } else {
+                        draft.pacing.frame_limit
+                    };
+                    let value = match limit {
+                        FrameLimit::Limited(rate) => {
+                            let value = format!("{:.3}", f64::from(rate) / 1000.0);
+                            value_row(
+                                "settings.frame_rate",
+                                value.trim_end_matches('0').trim_end_matches('.'),
+                            )
+                        }
+                        FrameLimit::Unlimited => locale.text("settings.unlimited").into(),
+                        FrameLimit::Display => unreachable!(),
+                    };
+                    (
+                        "settings.pacing_title",
+                        vec![
+                            value_row("settings.frame_limit", &value),
+                            value_row("settings.vsync", on_off(draft.pacing.vsync)),
+                            locale.text("settings.back").into(),
+                        ],
+                    )
+                }
+            };
+            return format!(
+                "{}\n{}",
+                locale.text(title),
+                rows_text(&rows, self.selection)
+            );
+        }
         let size = if draft.display.fullscreen {
             draft.display.fullscreen_size
         } else {
@@ -373,13 +562,10 @@ impl SettingsMenu {
             locale.text("settings.apply").into(),
             locale.text("settings.cancel").into(),
             locale.text("settings.restore_defaults").into(),
+            locale.text("settings.quality").into(),
+            locale.text("settings.pacing").into(),
         ];
-        let rows = rows
-            .iter()
-            .enumerate()
-            .map(|(i, row)| format!("{} {row}", if i == self.selection { ">" } else { " " }))
-            .collect::<Vec<_>>()
-            .join("\n");
+        let rows = rows_text(&rows, self.selection);
         format!("{}\n{rows}", locale.text("settings.title"))
     }
 
@@ -387,10 +573,14 @@ impl SettingsMenu {
         if self.draft.is_none() || self.resolution_selection.is_some() || self.preview.is_some() {
             return String::new();
         }
-        if self.language_selection.is_some() {
+        if self.language_selection.is_some() || self.page.is_some() {
             return format!(
                 "{}\n{}",
-                locale.text("settings.choice_controls"),
+                locale.text(if self.page.is_some() {
+                    "settings.page_controls"
+                } else {
+                    "settings.choice_controls"
+                }),
                 locale.text("settings.draft_hint")
             );
         }
@@ -402,6 +592,26 @@ impl SettingsMenu {
             display.notice.render(locale)
         )
     }
+}
+
+fn cycle<T: Copy + PartialEq>(current: T, options: &[T], previous: bool) -> T {
+    let index = options.iter().position(|option| *option == current);
+    let next = if previous {
+        index.map_or(options.len() - 1, |index| {
+            (index + options.len() - 1) % options.len()
+        })
+    } else {
+        index.map_or(0, |index| (index + 1) % options.len())
+    };
+    options[next]
+}
+
+fn rows_text(rows: &[String], selection: usize) -> String {
+    rows.iter()
+        .enumerate()
+        .map(|(index, row)| format!("{} {row}", if index == selection { ">" } else { " " }))
+        .collect::<Vec<_>>()
+        .join("\n")
 }
 
 fn observed(display: &DisplayState, locale: Locale) -> String {
@@ -558,7 +768,7 @@ mod tests {
 
         for timeout in [false, true] {
             menu.begin(&display);
-            menu.selection = 5;
+            menu.selection = 7;
             menu.handle(SettingsAction::Next, 2.0, &mut display);
             menu.selection = 1;
             menu.handle(SettingsAction::Confirm, 2.0, &mut display);
@@ -580,7 +790,7 @@ mod tests {
             assert_eq!(std::fs::read(&path).unwrap(), persisted);
         }
 
-        menu.selection = 5;
+        menu.selection = 7;
         menu.handle(SettingsAction::Next, 20.0, &mut display);
         menu.selection = 1;
         menu.handle(SettingsAction::Confirm, 20.0, &mut display);
@@ -594,7 +804,7 @@ mod tests {
 
         for mixed in [false, true] {
             menu.begin(&display);
-            menu.selection = 5;
+            menu.selection = 7;
             menu.handle(SettingsAction::Next, 23.0, &mut display);
             if mixed {
                 menu.selection = 1;
@@ -621,9 +831,141 @@ mod tests {
         menu.begin(&display);
         menu.selection = 4;
         menu.handle(SettingsAction::Confirm, 41.0, &mut display);
-        assert_eq!(menu.draft, Some(Settings::default()));
+        let mut defaults = Settings::default();
+        display.normalize_pacing(&mut defaults.pacing);
+        assert_eq!(menu.draft, Some(defaults));
         assert_eq!(menu.values.locale, Locale::Ja);
         assert_eq!(std::fs::read(&path).unwrap(), persisted);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn quality_pacing_and_display_share_the_saved_transaction() {
+        let root =
+            std::env::temp_dir().join(format!("cocobeat-settings-quality-{}", std::process::id()));
+        let path = root.join("settings.json");
+        let mut menu = SettingsMenu::from_path(path.clone());
+        let mut display = DisplayState::new(menu.values.display);
+        display.set_headless_surface([1920, 1080]);
+        menu.sync_pacing(&display);
+        let original = menu.values.clone();
+        menu.begin(&display);
+        menu.selection = 6;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        assert!(menu.language_row().is_none());
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.handle(SettingsAction::Down, 0.0, &mut display);
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        assert_eq!(
+            menu.draft.as_ref().unwrap().pacing.frame_limit,
+            FrameLimit::Unlimited
+        );
+        assert!(menu.draft.as_ref().unwrap().pacing.vsync);
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        assert_eq!(menu.selection, 6);
+        menu.draft.as_mut().unwrap().locale = Locale::Ja;
+        menu.selection = 5;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        for (action, preset, aa, rain, effects) in [
+            (
+                SettingsAction::Next,
+                QualityPreset::High,
+                AntiAliasing::Msaa4,
+                RainAmount::Full,
+                true,
+            ),
+            (
+                SettingsAction::Next,
+                QualityPreset::Low,
+                AntiAliasing::Off,
+                RainAmount::Quarter,
+                false,
+            ),
+            (
+                SettingsAction::Next,
+                QualityPreset::Medium,
+                AntiAliasing::Msaa2,
+                RainAmount::Half,
+                true,
+            ),
+            (
+                SettingsAction::Previous,
+                QualityPreset::Low,
+                AntiAliasing::Off,
+                RainAmount::Quarter,
+                false,
+            ),
+        ] {
+            menu.handle(action, 0.0, &mut display);
+            let draft = menu.draft.as_ref().unwrap();
+            assert_eq!(
+                draft.quality,
+                settings::QualitySettings {
+                    preset,
+                    antialiasing: aa,
+                    rain,
+                    fog: true,
+                    shadows: effects,
+                    bloom: effects,
+                }
+            );
+            assert_eq!(draft.pacing.frame_limit, FrameLimit::Unlimited);
+            assert!(draft.pacing.vsync);
+            assert_eq!(draft.locale, Locale::Ja);
+            assert_eq!(draft.display, original.display);
+        }
+        menu.handle(SettingsAction::Down, 0.0, &mut display);
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.handle(SettingsAction::Previous, 0.0, &mut display);
+        assert_eq!(
+            menu.draft.as_ref().unwrap().quality.preset,
+            QualityPreset::Custom
+        );
+        assert_eq!(
+            menu.draft.as_ref().unwrap().quality.antialiasing,
+            AntiAliasing::Off
+        );
+        assert_eq!(menu.values, original);
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        assert_eq!(menu.selection, 5);
+        menu.selection = 2;
+        assert!(menu.handle(SettingsAction::Confirm, 0.0, &mut display));
+        assert_eq!(settings::load(&path).unwrap(), menu.values);
+        let saved = menu.values.clone();
+        let bytes = std::fs::read(&path).unwrap();
+
+        for fail_save in [false, true] {
+            menu.begin(&display);
+            let draft = menu.draft.as_mut().unwrap();
+            draft.display.fullscreen = true;
+            draft.quality.set_preset(QualityPreset::High);
+            draft.pacing.frame_limit = FrameLimit::Limited(60000);
+            draft.pacing.vsync = false;
+            menu.selection = 2;
+            assert!(!menu.handle(SettingsAction::Confirm, 1.0, &mut display));
+            if fail_save {
+                menu.path = Some(root.clone());
+                assert!(!menu.handle(SettingsAction::Confirm, 2.0, &mut display));
+                assert_eq!(menu.notice.key, "settings_notice.save_failed");
+            }
+            assert_eq!(menu.values, saved);
+            menu.tick(16.0, &mut display);
+            assert_eq!(menu.draft.as_ref().unwrap(), &saved);
+            assert_eq!(display.actual(), saved.display);
+            assert_eq!(std::fs::read(&path).unwrap(), bytes);
+        }
+        menu.handle(SettingsAction::Back, 17.0, &mut display);
+        menu.begin(&display);
+        menu.selection = 4;
+        menu.handle(SettingsAction::Confirm, 18.0, &mut display);
+        assert_eq!(
+            menu.draft.as_ref().unwrap().quality,
+            settings::QualitySettings::default()
+        );
+        assert!(!menu.draft.as_ref().unwrap().pacing.vsync);
+        assert_eq!(menu.values, saved);
+        assert!(menu.handle(SettingsAction::Back, 19.0, &mut display));
+        assert_eq!(std::fs::read(&path).unwrap(), bytes);
         std::fs::remove_dir_all(root).unwrap();
     }
 }

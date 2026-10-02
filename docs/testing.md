@@ -14,6 +14,9 @@ cargo run --locked -p cocobeat-game -- --settings-smoke target/cocobeat-settings
 cargo run --locked -p cocobeat-game -- --locale-smoke zh-HK target/cocobeat-locale.png
 cargo run --locked -p cocobeat-game -- --menu-smoke en-GB target/cocobeat-menu.png
 cargo run --locked -p cocobeat-game -- --language-smoke uk target/cocobeat-languages.png
+cargo run --locked -p cocobeat-game -- --quality-smoke low target/cocobeat-quality.png
+cargo run --locked -p cocobeat-game -- --settings-page-smoke graphics zh-CN target/cocobeat-graphics.png
+cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target/cocobeat-pacing.png
 ```
 
 `doctor` 检查 Rust/Cargo/rustfmt/Clippy 与依赖边界；`check` 执行依赖边界、格式、Clippy 和整个 workspace 的测试，失败返回非零状态
@@ -113,6 +116,24 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 `--locale-smoke CODE PNG` 和 `--language-smoke CODE PNG` 显式模拟 1280×800 表面与 640×480 全屏场景，`--menu-smoke CODE PNG` 使用同尺寸表面的 Ready 场景；三者运行品牌时间线和 Ready 循环，使用固定时间步加速离屏预览，不创建音频输出、不读写用户配置，不消费输入驱动玩法。原生 WM、DPI、跨屏、Windows/ARM64、物理键盘/手柄操作、真实音画同步和母语真人校对仍为 NOT RUN
 
 当前 `Cargo.lock` 使用 Bevy 0.19.1 / Parley 0.9.0，离屏日志保留 `ICU4X data error: No segmentation model for complex script: Chinese/Japanese` 诊断；已检查截图的 CJK 字形与换行通过，词边界分词数据缺口仍存在。上游 [Bevy #25674](https://github.com/bevyengine/bevy/pull/25674) 已合入可选 `complex_script_segmentation`，用于提供复杂文字词边界数据，2026-10-02 的[最新稳定版仍为 0.19.1](https://docs.rs/crate/bevy/latest)，尚未包含该特性；等待稳定版发布后启用并重跑分词与界面检查，本轮保留诊断日志、不引入预发布依赖
+
+## 画质与帧率设置里程碑
+
+2026-10-02，在工作区执行 `CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game`，完整 workspace 的 81 项测试、Clippy、格式、依赖边界和构建均为 PASS；日志为 `target/quality-final-{check,build}.log`，115 个源码文件与可执行文件的 SHA-256、执行命令及退出码记录在 `target/quality-evidence/evidence.json`
+
+低、中、高预设与 Custom 状态、MSAA 关闭/2×/4×、雨量关闭/25%/50%/100%、雾、阴影及 Bloom 均已接入，默认中档；软件检查覆盖预设矩阵、独立项改动后的 Custom 标记、场景组件生效与关闭装饰效果后保留核心反馈，画质设置应用于 3D 场景，UI 相机保持独立。13 份 catalog 从国际化里程碑的 91 个键扩展到 113 个键，键集与参数合约检查通过；新增依赖仅为 Bevy 原生 `bevy_post_process` feature 带入的 0.19.1 包，当前台账记录 517 个第三方包
+
+画质、帧率、语言与显示共用设置草稿，保存成功后才提交，显示预览期间保持原画质、语言与帧率；测试覆盖子页操作、应用、取消、恢复默认、15 秒预览超时和保存失败，子页返回保留草稿，关闭设置不恢复歌曲。旧 v1 配置自动补入默认画质与帧率，合法独立项与预设标签不一致时保留值并标记 Custom；低于 1000 mHz 的有限帧率值被拒绝，失败保存保留旧文件
+
+帧率值以 mHz 保存，默认在首次显示观察后选用当前显示器报告的最高刷新率；选项为每 60 一档、追加最高档并去重、无限制，未知刷新率时使用 60，VSync 独立控制且默认关闭。模拟观察覆盖 48 / 59.94 / 60 / 120 / 144 / 280 Hz、跨屏后有限值超上限时收敛及无限制保留，活动值、草稿和预览回退值同步规范化；这些检查不涉及真实跨屏事件或原生呈现结果
+
+生产 CPU 帧率门控的墙钟测试在 120 FPS 上限下记录 10 个更新起点，全部相邻间隔达到至少 8,333,334 ns，并检查无限制状态和独立 VSync 命令；PASS 只证明软件门控与 Bevy Window 属性接线，不证明实际 GPU 呈现帧率或显示器同步效果。新增 `Game → Session → Replay` 测试在 60 / 144 / 48 Hz 消费节奏和 500 ms 消费批次下使用同一组捕获历史，映射后的 Hit、规则事件与重放结果一致；500 ms 用例中的捕获时刻仍须落在有效历史窗口内，不涵盖任意时长卡顿或物理输入延迟
+
+`--quality-smoke low|medium|high|off PNG` 渲染固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 经生产设置操作进入画质或帧率子页，显式模拟 1280×800 表面与 640×480 场景，使用固定时间步运行品牌到 Ready。两种预览均不创建音频输出、不读写用户配置，不运行生产帧率门控，不能用截图耗时推断实际帧率
+
+本轮 46 次 GPU 离屏检查全部退出 0，包含低/中/高/off 共 4 张画质场景、13 个语言变体各自的设置父页/画质页/帧率页共 39 张，以及简中/香港繁中/乌克兰语共 3 张语言列表；主线程与国际化 agents 已逐张检查，结果为 PASS。截图均为 1280×800，640×480 场景保留 letterbox，UI 使用原生分辨率；设置父页 8 行、画质页 7 行、帧率页 3 行均完整可读且无裁切，关闭装饰效果后核心反馈仍可辨识。115 个源码文件、可执行文件、46 张 PNG 和日志的哈希全部匹配 `target/quality-evidence/evidence.json`；日志含 904 条已知 ICU CJK 词边界诊断，未发现其他 WARN/ERROR/error，这些证据不代替真实设备验收
+
+ICU CJK 词边界诊断沿用上文记录的稳定版限制，继续保留日志；真实窗口、WM、DPI、跨屏、呈现 FPS、VSync、Windows/ARM64、物理输入延迟与操作均为 NOT RUN，母语真人校对和音画同步仍需分别验收
 
 ## 原生 Linux release 证据
 

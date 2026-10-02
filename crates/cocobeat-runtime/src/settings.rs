@@ -30,10 +30,101 @@ impl Default for DisplaySettings {
     }
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum QualityPreset {
+    Low,
+    Medium,
+    High,
+    Custom,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum AntiAliasing {
+    Off,
+    Msaa2,
+    Msaa4,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum RainAmount {
+    Off,
+    Quarter,
+    Half,
+    Full,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct QualitySettings {
+    pub preset: QualityPreset,
+    pub antialiasing: AntiAliasing,
+    pub rain: RainAmount,
+    pub fog: bool,
+    pub shadows: bool,
+    pub bloom: bool,
+}
+
+impl Default for QualitySettings {
+    fn default() -> Self {
+        Self {
+            preset: QualityPreset::Medium,
+            antialiasing: AntiAliasing::Msaa2,
+            rain: RainAmount::Half,
+            fog: true,
+            shadows: true,
+            bloom: true,
+        }
+    }
+}
+
+impl QualitySettings {
+    pub fn set_preset(&mut self, preset: QualityPreset) {
+        let (antialiasing, rain, effects) = match preset {
+            QualityPreset::Low => (AntiAliasing::Off, RainAmount::Quarter, false),
+            QualityPreset::Medium => (AntiAliasing::Msaa2, RainAmount::Half, true),
+            QualityPreset::High => (AntiAliasing::Msaa4, RainAmount::Full, true),
+            QualityPreset::Custom => {
+                self.preset = preset;
+                return;
+            }
+        };
+        *self = Self {
+            preset,
+            antialiasing,
+            rain,
+            fog: true,
+            shadows: effects,
+            bloom: effects,
+        };
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum FrameLimit {
+    /// Resolved to the monitor limit after the first display observation
+    #[default]
+    Display,
+    Limited(u32),
+    Unlimited,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct PacingSettings {
+    pub frame_limit: FrameLimit,
+    pub vsync: bool,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Settings {
     pub display: DisplaySettings,
     pub locale: Locale,
+    pub quality: QualitySettings,
+    pub pacing: PacingSettings,
 }
 
 impl Default for Settings {
@@ -41,6 +132,8 @@ impl Default for Settings {
         Self {
             display: DisplaySettings::default(),
             locale: Locale::system_default(),
+            quality: QualitySettings::default(),
+            pacing: PacingSettings::default(),
         }
     }
 }
@@ -52,13 +145,17 @@ struct Document {
     display: DisplaySettings,
     #[serde(default = "Locale::system_default")]
     locale: Locale,
+    #[serde(default)]
+    quality: QualitySettings,
+    #[serde(default)]
+    pacing: PacingSettings,
 }
 
 fn invalid(message: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, message)
 }
 
-fn validate(display: DisplaySettings) -> io::Result<()> {
+fn validate(display: DisplaySettings, pacing: PacingSettings) -> io::Result<()> {
     if display
         .window_size
         .into_iter()
@@ -66,6 +163,11 @@ fn validate(display: DisplaySettings) -> io::Result<()> {
         .any(|size| !(1..=16384).contains(&size))
     {
         return Err(invalid("Display dimensions must be between 1 and 16384"));
+    }
+    if matches!(pacing.frame_limit, FrameLimit::Limited(rate) if rate < 1000) {
+        return Err(invalid(
+            "Frame limit must be at least 1000 millihertz (1 FPS)",
+        ));
     }
     Ok(())
 }
@@ -78,14 +180,23 @@ pub fn load(path: &Path) -> io::Result<Settings> {
     if bytes.len() as u64 > MAX_FILE_BYTES {
         return Err(invalid("Settings file exceeds 4096 bytes"));
     }
-    let document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
+    let mut document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
     if document.version != VERSION {
         return Err(invalid("Unsupported settings version"));
     }
-    validate(document.display)?;
+    validate(document.display, document.pacing)?;
+    if document.quality.preset != QualityPreset::Custom {
+        let mut preset = document.quality;
+        preset.set_preset(preset.preset);
+        if document.quality != preset {
+            document.quality.preset = QualityPreset::Custom;
+        }
+    }
     Ok(Settings {
         display: document.display,
         locale: document.locale,
+        quality: document.quality,
+        pacing: document.pacing,
     })
 }
 
@@ -93,11 +204,13 @@ pub fn load(path: &Path) -> io::Result<Settings> {
 /// The old file is never deleted first; directory-entry power-loss durability
 /// remains subject to the filesystem, as with Replay saves
 pub fn save(path: &Path, settings: &Settings) -> io::Result<()> {
-    validate(settings.display)?;
+    validate(settings.display, settings.pacing)?;
     let bytes = serde_json::to_vec_pretty(&Document {
         version: VERSION,
         display: settings.display,
         locale: settings.locale,
+        quality: settings.quality,
+        pacing: settings.pacing,
     })
     .map_err(invalid)?;
     let name = path
@@ -171,14 +284,33 @@ mod tests {
         settings.display.window_size = [1600, 900];
         settings.display.fullscreen_size = [1920, 1080];
         settings.locale = Locale::Ja;
+        settings.quality.set_preset(QualityPreset::Low);
+        settings.pacing = PacingSettings {
+            frame_limit: FrameLimit::Limited(59940),
+            vsync: true,
+        };
         save(&path, &settings).unwrap();
         assert_eq!(load(&path).unwrap(), settings);
-        let document: serde_json::Value =
+        let mut document: serde_json::Value =
             serde_json::from_slice(&fs::read(&path).unwrap()).unwrap();
         assert_eq!(document["locale"], "ja");
+        document["quality"]["antialiasing"] = serde_json::json!("msaa4");
+        document["quality"]["shadows"] = serde_json::json!(true);
+        document["quality"]["bloom"] = serde_json::json!(true);
+        fs::write(&path, serde_json::to_vec(&document).unwrap()).unwrap();
+        settings.quality.antialiasing = AntiAliasing::Msaa4;
+        settings.quality.shadows = true;
+        settings.quality.bloom = true;
+        settings.quality.preset = QualityPreset::Custom;
+        assert_eq!(load(&path).unwrap(), settings);
 
         let previous = fs::read(&path).unwrap();
         settings.display.window_size = [0, 900];
+        assert!(save(&path, &settings).is_err());
+        assert_eq!(fs::read(&path).unwrap(), previous);
+
+        settings.display.window_size = [1600, 900];
+        settings.pacing.frame_limit = FrameLimit::Limited(999);
         assert!(save(&path, &settings).is_err());
         assert_eq!(fs::read(&path).unwrap(), previous);
 
@@ -203,7 +335,9 @@ mod tests {
         let valid = serde_json::json!({
             "version": VERSION,
             "display": {"fullscreen": false, "window_size": [1280, 800], "fullscreen_size": [1280, 800]},
-            "locale": "en-US"
+            "locale": "en-US",
+            "quality": QualitySettings::default(),
+            "pacing": PacingSettings { frame_limit: FrameLimit::Limited(60000), vsync: false }
         });
         let mut invalid_documents = vec![b"{".to_vec(), vec![b' '; MAX_FILE_BYTES as usize + 1]];
         for (pointer, value) in [
@@ -214,12 +348,20 @@ mod tests {
             ("/display/fullscreen", serde_json::json!("false")),
             ("/locale", serde_json::json!("unsupported")),
             ("/locale", serde_json::json!(null)),
+            ("/quality/preset", serde_json::json!("ultra")),
+            ("/quality/antialiasing", serde_json::json!("msaa8")),
+            ("/quality/rain", serde_json::json!("double")),
+            ("/quality/fog", serde_json::json!("true")),
+            ("/pacing/frame_limit", serde_json::json!({"limited": 0})),
+            ("/pacing/frame_limit", serde_json::json!({"limited": 999})),
+            ("/pacing/frame_limit", serde_json::json!("fast")),
+            ("/pacing/vsync", serde_json::json!(null)),
         ] {
             let mut document = valid.clone();
             *document.pointer_mut(pointer).unwrap() = value;
             invalid_documents.push(serde_json::to_vec(&document).unwrap());
         }
-        for pointer in ["", "/display"] {
+        for pointer in ["", "/display", "/quality", "/pacing"] {
             let mut document = valid.clone();
             document.pointer_mut(pointer).unwrap()["unknown"] = serde_json::json!(true);
             invalid_documents.push(serde_json::to_vec(&document).unwrap());
@@ -252,6 +394,8 @@ mod tests {
                     fullscreen_size: [1920, 1080],
                 },
                 locale: Locale::system_default(),
+                quality: QualitySettings::default(),
+                pacing: PacingSettings::default(),
             }
         );
         fs::remove_file(path).unwrap();

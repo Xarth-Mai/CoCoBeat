@@ -1,7 +1,8 @@
 use std::f32::consts::PI;
 
 use bevy::{
-    core_pipeline::tonemapping::Tonemapping, prelude::*, text::FontSource,
+    camera::Hdr, core_pipeline::tonemapping::Tonemapping, light::NotShadowCaster,
+    post_process::bloom::Bloom, prelude::*, render::view::Msaa, text::FontSource,
     transform::TransformSystems, ui::UiSystems,
 };
 
@@ -9,6 +10,7 @@ use crate::{
     brand_intro::{BrandIntroLayout, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems},
     display::GameCamera,
     i18n::{Locale, Message},
+    settings::{AntiAliasing, QualitySettings, RainAmount},
     ui_assets::UiAssets,
 };
 
@@ -25,6 +27,7 @@ pub(crate) struct VisualState {
     pub settings_footer: String,
     pub settings_language: Option<(Locale, bool)>,
     pub language_choices: Option<usize>,
+    pub quality: QualitySettings,
 }
 
 #[derive(Component)]
@@ -33,7 +36,7 @@ enum Motion {
     Ripple(usize),
     SharedRing,
     Street(f32),
-    Rain(f32),
+    Rain(usize),
 }
 
 #[derive(Component)]
@@ -79,7 +82,7 @@ pub fn install(app: &mut App) {
         )
         .add_systems(
             PostUpdate,
-            (animate, update_hud)
+            ((apply_quality, animate).chain(), update_hud)
                 .before(TransformSystems::Propagate)
                 .before(UiSystems::Prepare),
         );
@@ -106,20 +109,13 @@ fn setup(
     commands.spawn((
         Camera3d::default(),
         GameCamera,
+        Hdr,
         bevy::camera::ShadowLodOrigin,
         Tonemapping::Reinhard,
         Transform::from_xyz(0.0, 6.0, 12.5).looking_at(Vec3::new(0.0, 0.6, -6.0), Vec3::Y),
         AmbientLight {
             color: Color::srgb(0.54, 0.62, 0.85),
             brightness: 180.0,
-            ..default()
-        },
-        DistanceFog {
-            color: Color::srgb(0.012, 0.017, 0.042),
-            falloff: FogFalloff::Linear {
-                start: 12.0,
-                end: 48.0,
-            },
             ..default()
         },
     ));
@@ -319,12 +315,71 @@ fn setup(
             part(
                 &cube,
                 &rain,
-                Vec3::new((phase * 3.7).sin() * 6.0, 0.0, -((drop * 7) % 31) as f32),
+                Vec3::new((phase * 3.7).sin() * 6.0, 0.0, -(((drop * 7) % 31) as f32)),
                 Vec3::new(0.012, 0.24, 0.012),
             ),
-            Motion::Rain(phase),
+            Motion::Rain(drop),
+            NotShadowCaster,
         ));
     }
+}
+
+fn apply_quality(
+    mut commands: Commands,
+    state: Res<VisualState>,
+    mut applied: Local<Option<QualitySettings>>,
+    cameras: Query<Entity, With<GameCamera>>,
+    mut lights: Query<&mut PointLight>,
+    mut objects: Query<(&Motion, &mut Visibility)>,
+) {
+    let quality = state.quality;
+    if *applied == Some(quality) || cameras.is_empty() {
+        return;
+    }
+    for camera in &cameras {
+        let mut camera = commands.entity(camera);
+        camera.insert(match quality.antialiasing {
+            AntiAliasing::Off => Msaa::Off,
+            AntiAliasing::Msaa2 => Msaa::Sample2,
+            AntiAliasing::Msaa4 => Msaa::Sample4,
+        });
+        if quality.fog {
+            camera.insert(DistanceFog {
+                color: Color::srgb(0.012, 0.017, 0.042),
+                falloff: FogFalloff::Linear {
+                    start: 12.0,
+                    end: 48.0,
+                },
+                ..default()
+            });
+        } else {
+            camera.remove::<DistanceFog>();
+        }
+        if quality.bloom {
+            camera.insert(Bloom::default());
+        } else {
+            camera.remove::<Bloom>();
+        }
+    }
+    for mut light in &mut lights {
+        light.shadow_maps_enabled = quality.shadows;
+    }
+    let drops = match quality.rain {
+        RainAmount::Off => 0,
+        RainAmount::Quarter => 12,
+        RainAmount::Half => 24,
+        RainAmount::Full => 48,
+    };
+    for (motion, mut visibility) in &mut objects {
+        if let Motion::Rain(index) = *motion {
+            *visibility = if index < drops {
+                Visibility::Inherited
+            } else {
+                Visibility::Hidden
+            };
+        }
+    }
+    *applied = Some(quality);
 }
 
 fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAssets>) {
@@ -551,7 +606,8 @@ fn animate(
             Motion::Street(offset) => {
                 transform.translation.z = 6.0 - (offset - song * 3.0).rem_euclid(36.0);
             }
-            Motion::Rain(phase) => {
+            Motion::Rain(index) => {
+                let phase = index as f32 * 0.73;
                 transform.translation.y = 8.0 - (time.elapsed_secs() * 6.0 + phase).rem_euclid(8.0);
                 transform.rotation = Quat::from_rotation_z(-0.15);
             }
@@ -699,6 +755,111 @@ fn update_hud(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn quality_changes_apply_to_the_scene_and_preserve_core_feedback() {
+        use crate::{display::PresentationCamera, settings::QualityPreset};
+
+        let mut app = App::new();
+        // Match VisibilityPlugin's Mesh3d requirement without installing the render app
+        app.register_required_components::<Mesh3d, Visibility>()
+            .insert_resource(VisualState {
+                song_seconds: 12.5,
+                hit_pulses: [0.8, 0.5],
+                sync_pulse: 0.7,
+                ..default()
+            })
+            .init_resource::<Time>()
+            .init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .add_systems(Startup, setup)
+            .add_systems(PostUpdate, (apply_quality, animate).chain());
+        let presentation = app
+            .world_mut()
+            .spawn((Camera2d, PresentationCamera, Msaa::Off))
+            .id();
+        app.update();
+        let camera = app
+            .world_mut()
+            .query_filtered::<Entity, With<GameCamera>>()
+            .single(app.world())
+            .unwrap();
+        let mut motions = app
+            .world_mut()
+            .query::<(Entity, &Motion, &Transform, &Visibility)>();
+        let core: Vec<_> = motions
+            .iter(app.world())
+            .filter(|(_, motion, _, _)| !matches!(motion, Motion::Rain(_)))
+            .map(|(entity, _, transform, visibility)| (entity, *transform, *visibility))
+            .collect();
+        assert_eq!(core.len(), 29);
+        assert!(core.iter().all(|(_, _, v)| *v != Visibility::Hidden));
+        let meshes = app.world().resource::<Assets<Mesh>>().len();
+        let materials = app.world().resource::<Assets<StandardMaterial>>().len();
+        let all_off = QualitySettings {
+            preset: QualityPreset::Custom,
+            antialiasing: AntiAliasing::Off,
+            rain: RainAmount::Off,
+            fog: false,
+            shadows: false,
+            bloom: false,
+        };
+
+        for (preset, msaa, drops, effects) in [
+            (QualityPreset::Low, Msaa::Off, 12, false),
+            (QualityPreset::Medium, Msaa::Sample2, 24, true),
+            (QualityPreset::High, Msaa::Sample4, 48, true),
+            (QualityPreset::Custom, Msaa::Off, 0, false),
+            (QualityPreset::Medium, Msaa::Sample2, 24, true),
+        ] {
+            let mut quality = all_off;
+            quality.set_preset(preset);
+            app.world_mut().resource_mut::<VisualState>().quality = quality;
+            app.update();
+            assert_eq!(*app.world().get::<Msaa>(camera).unwrap(), msaa);
+            assert!(app.world().get::<Hdr>(camera).is_some());
+            assert_eq!(app.world().get::<Bloom>(camera).is_some(), effects);
+            assert_eq!(
+                app.world().get::<DistanceFog>(camera).is_some(),
+                preset != QualityPreset::Custom
+            );
+            let mut lights = app.world_mut().query::<&PointLight>();
+            assert_eq!(lights.iter(app.world()).count(), 2);
+            assert!(
+                lights
+                    .iter(app.world())
+                    .all(|light| light.shadow_maps_enabled == effects)
+            );
+            let mut rain = app
+                .world_mut()
+                .query::<(&Motion, &Visibility, Option<&NotShadowCaster>)>();
+            let rain: Vec<_> = rain
+                .iter(app.world())
+                .filter_map(|(motion, visibility, shadow)| match *motion {
+                    Motion::Rain(index) => Some((index, visibility, shadow)),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(rain.len(), 48);
+            assert!(rain.into_iter().all(|(index, visibility, shadow)| {
+                (*visibility != Visibility::Hidden) == (index < drops) && shadow.is_some()
+            }));
+            for &(entity, transform, visibility) in &core {
+                assert_eq!(*app.world().get::<Transform>(entity).unwrap(), transform);
+                assert_eq!(*app.world().get::<Visibility>(entity).unwrap(), visibility);
+            }
+            assert_eq!(app.world().resource::<VisualState>().song_seconds, 12.5);
+            assert_eq!(app.world().resource::<Assets<Mesh>>().len(), meshes);
+            assert_eq!(
+                app.world().resource::<Assets<StandardMaterial>>().len(),
+                materials
+            );
+            assert_eq!(*app.world().get::<Msaa>(presentation).unwrap(), Msaa::Off);
+            assert!(app.world().get::<Hdr>(presentation).is_none());
+            assert!(app.world().get::<Bloom>(presentation).is_none());
+            assert!(app.world().get::<DistanceFog>(presentation).is_none());
+        }
+    }
 
     fn hud_app() -> App {
         let mut app = App::new();

@@ -10,7 +10,7 @@
 
 已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前只使用开发歌曲，音乐导入、自动 MIR、编辑器与联网尚未实现
 
-完整软件检查已通过 75 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已验证；真实音频延迟、听感、Windows/Linux 手柄和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
+完整软件检查已通过 81 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置的软件检查及本轮 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
 ```text
 apps/cocobeat-game       组合入口
@@ -51,13 +51,17 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 | 重新开始 | F5 或菜单 | 菜单 |
 | 保存 Replay | F6 或菜单 | Select 或菜单 |
 | 返回主菜单 | 菜单 Main menu | 菜单 Main menu |
-| 显示设置 | 主菜单 / 暂停菜单 Settings | 主菜单 / 暂停菜单 Settings |
+| 设置 | 主菜单 / 暂停菜单 Settings | 主菜单 / 暂停菜单 Settings |
 
 显示设置提供分辨率选择、无边框全屏、应用、取消和恢复默认；尺寸变更先预览 15 秒，窗口实际状态确认后才可保存，取消或超时恢复；普通窗口与全屏渲染尺寸分别保存。配置位于 Windows 的 `%APPDATA%/CoCoBeat/settings.json` 或 Linux 的 `$XDG_CONFIG_HOME/cocobeat/settings.json`（未设置时使用 `$HOME/.config/cocobeat/settings.json`），读取或保存失败会显示提示；实际 WM、DPI 和跨屏行为尚待平台验收
 
+画质设置提供低、中、高预设，默认中档；可独立调整 MSAA、雨量、雾、阴影与 Bloom，单独调整后标记为 Custom。帧率上限按当前显示器报告的最高刷新率生成每 60 一档并追加最高档，同时提供无限制；默认最高档，未知刷新率时使用 60，VSync 独立设置且默认关闭，实际呈现帧率与 VSync 效果尚待设备测量
+
+画质、帧率、语言与显示设置共用草稿，仅保存成功后提交；显示预览取消或超时恢复整份设置，子页返回保留草稿，关闭设置不会续播歌曲。旧 v1 配置补入默认画质与帧率设置；手改配置中预设标签与独立项不一致时保留各项并标记 Custom
+
 语言设置支持 `zh-CN`、`en-US`、`en-GB`、`ja`、`ko`、`zh-TW`、`zh-HK`、`es-419`、`pt-BR`、`fr`、`de`、`ru`、`uk` 共 13 个变体，英文分别提供美国与英国版本，繁体中文分别提供台湾与香港版本；首次启动跟随系统语言，未支持时使用 `en-US`，应用后立即更新界面并跨启动保存，与显示设置共用草稿、取消和预览回退流程
 
-菜单、HUD、设置与玩家可见提示共使用 91 个翻译键，文字统一采用 Noto Sans，中文、日文与韩文使用对应地区字形；语言选项显示本名与地区旗帜，SVG 来自开源 flag-icons，运行时使用同源 PNG，来源见 [字体](assets/fonts/README.md) 与 [旗帜](assets/flags/README.md)。29 张离屏截图已检查字形与换行，母语真人校对仍为 NOT RUN；当前稳定引擎的 ICU CJK 词边界诊断及后续处理见 [验证记录](docs/testing.md#国际化与字体里程碑)
+菜单、HUD、设置与玩家可见提示共使用 113 个翻译键，文字统一采用 Noto Sans，中文、日文与韩文使用对应地区字形；语言选项显示本名与地区旗帜，SVG 来自开源 flag-icons，运行时使用同源 PNG，来源见 [字体](assets/fonts/README.md) 与 [旗帜](assets/flags/README.md)。国际化里程碑的 29 张离屏截图已检查字形与换行，母语真人校对仍为 NOT RUN；当前稳定引擎的 ICU CJK 词边界诊断及后续处理见 [验证记录](docs/testing.md#国际化与字体里程碑)
 
 手柄断连后需从菜单重新加入，绑定当前只保留在本次运行中；窗口失焦会暂停，恢复后释放已按住按钮再继续
 
@@ -71,6 +75,9 @@ cargo run --locked -p cocobeat-game -- --settings-smoke target/cocobeat-settings
 cargo run --locked -p cocobeat-game -- --locale-smoke zh-HK target/cocobeat-locale.png
 cargo run --locked -p cocobeat-game -- --menu-smoke en-GB target/cocobeat-menu.png
 cargo run --locked -p cocobeat-game -- --language-smoke uk target/cocobeat-languages.png
+cargo run --locked -p cocobeat-game -- --quality-smoke low target/cocobeat-quality.png
+cargo run --locked -p cocobeat-game -- --settings-page-smoke graphics zh-CN target/cocobeat-graphics.png
+cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target/cocobeat-pacing.png
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 ```
@@ -78,6 +85,8 @@ cargo run --locked -p cocobeat-lab -- generate-dev
 `--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；`--settings-smoke` 使用模拟的 1280×800 显示表面和 640×480 场景验证 letterbox 与原生分辨率设置文字，不读写用户配置，也不证明真实窗口模式转换；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
 
 `--locale-smoke CODE PNG`、`--menu-smoke CODE PNG` 和 `--language-smoke CODE PNG` 分别保存指定语言的设置、Ready 主菜单和语言选择页，`CODE` 使用上述完整语言代码；三者运行品牌呈现到 Ready，并使用固定时间步加速离屏预览，不播放音频、不读写用户配置，不代替原生窗口或物理输入验收
+
+`--quality-smoke low|medium|high|off PNG` 保存指定画质的固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 通过生产菜单控制进入画质或帧率子页，运行品牌到 Ready 后截图。两种预览均不播放音频、不读写用户配置，也不运行生产帧率门控，不能用截图耗时推断实际帧率
 
 准备真实音频采集时，可显式运行 `cargo run --locked -p cocobeat-lab -- audio-probe 30 target/audio-probe-30` 播放点击音并记录软件游标；它不捕获 loopback，也不测量物理输出延迟，支持的时长与结果说明见 [计时说明](docs/timing.md)
 

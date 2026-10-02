@@ -1,4 +1,4 @@
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use bevy::{
     camera::{CameraUpdateSystems, RenderTarget},
@@ -6,11 +6,15 @@ use bevy::{
     image::ImageSampler,
     prelude::*,
     render::{render_resource::TextureFormat, renderer::RenderDevice},
-    window::{MonitorSelection, PrimaryWindow, WindowMode},
-    winit::WINIT_WINDOWS,
+    window::{MonitorSelection, PresentMode, PrimaryWindow, WindowMode},
+    winit::{WINIT_WINDOWS, WinitSettings},
 };
 
-use crate::{i18n::Message, settings::DisplaySettings};
+use crate::{
+    i18n::Message,
+    settings::{DisplaySettings, FrameLimit, PacingSettings},
+    settings_menu::SettingsMenu,
+};
 
 const PRESETS: [[u32; 2]; 6] = [
     [1280, 720],
@@ -32,6 +36,7 @@ pub(crate) struct PresentationCamera;
 pub(crate) enum DisplaySystems {
     Setup,
     Sync,
+    Pace,
 }
 
 struct Pending {
@@ -54,6 +59,7 @@ pub(crate) struct DisplayState {
     window_limit: Option<[u32; 2]>,
     texture_limit: u32,
     headless_surface: Option<[u32; 2]>,
+    refresh_limit: Option<u32>,
     has_requested: bool,
 }
 
@@ -71,6 +77,7 @@ impl DisplayState {
             window_limit: None,
             texture_limit: 16384,
             headless_surface: None,
+            refresh_limit: None,
             has_requested: false,
         }
     }
@@ -103,9 +110,32 @@ impl DisplayState {
         options
     }
 
+    pub(crate) fn frame_rates(&self) -> Vec<FrameLimit> {
+        let maximum = self.refresh_limit.unwrap_or(60_000);
+        let mut rates: Vec<_> = (1..=maximum / 60_000)
+            .map(|step| FrameLimit::Limited(step * 60_000))
+            .collect();
+        if rates.last() != Some(&FrameLimit::Limited(maximum)) {
+            rates.push(FrameLimit::Limited(maximum));
+        }
+        rates.push(FrameLimit::Unlimited);
+        rates
+    }
+
+    pub(crate) fn normalize_pacing(&self, pacing: &mut PacingSettings) {
+        if let Some(maximum) = self.refresh_limit {
+            pacing.frame_limit = match pacing.frame_limit {
+                FrameLimit::Display => FrameLimit::Limited(maximum),
+                FrameLimit::Limited(rate) => FrameLimit::Limited(rate.min(maximum)),
+                FrameLimit::Unlimited => FrameLimit::Unlimited,
+            };
+        }
+    }
+
     // Explicitly simulated output for the existing offscreen smoke, never native acceptance
     pub(crate) fn set_headless_surface(&mut self, size: [u32; 2]) {
         self.headless_surface = Some(size.map(|axis| axis.max(1)));
+        self.refresh_limit = Some(60_000);
         self.apply_headless();
     }
 
@@ -139,6 +169,7 @@ impl DisplayState {
         self.physical_size = observed.size;
         self.native_size = observed.native;
         self.window_limit = observed.window_limit;
+        self.refresh_limit = Some(observed.refresh_limit);
         self.window_managed = !observed.fullscreen && observed.managed;
         self.actual.fullscreen_size = self.constrain(self.actual).fullscreen_size;
         if let Some(pending) = &mut self.in_flight {
@@ -220,6 +251,80 @@ struct Observation {
     window_limit: Option<[u32; 2]>,
     fullscreen: bool,
     managed: bool,
+    refresh_limit: u32,
+}
+
+fn refresh_limit(modes: impl IntoIterator<Item = u32>, current: Option<u32>) -> u32 {
+    modes
+        .into_iter()
+        .filter(|&rate| rate >= 1_000)
+        .max()
+        .or(current.filter(|&rate| rate >= 1_000))
+        .unwrap_or(60_000)
+}
+
+#[derive(Resource)]
+struct FramePacing {
+    limit: FrameLimit,
+    last_start: Option<Instant>,
+}
+
+impl FramePacing {
+    fn remaining(&self, now: Instant) -> Duration {
+        let rate = match self.limit {
+            FrameLimit::Display => 60_000,
+            FrameLimit::Limited(rate) => rate,
+            FrameLimit::Unlimited => return Duration::ZERO,
+        };
+        let period =
+            Duration::from_nanos(1_000_000_000_000_u64.div_ceil(u64::from(rate.max(1_000))));
+        self.last_start.map_or(Duration::ZERO, |last| {
+            period.saturating_sub(now.saturating_duration_since(last))
+        })
+    }
+}
+
+// Production only: explicit offscreen smoke time is independent of wall-clock pacing
+pub(crate) fn install_frame_pacing(app: &mut App, initial: PacingSettings) {
+    app.insert_resource(FramePacing {
+        limit: initial.frame_limit,
+        last_start: None,
+    })
+    .insert_resource(WinitSettings::continuous())
+    .add_systems(
+        First,
+        gate_frame
+            .in_set(DisplaySystems::Pace)
+            .before(bevy::time::TimeSystems),
+    )
+    .add_systems(PostUpdate, apply_pacing);
+}
+
+fn gate_frame(mut pacing: ResMut<FramePacing>) {
+    let remaining = pacing.remaining(Instant::now());
+    if !remaining.is_zero() {
+        std::thread::sleep(remaining);
+    }
+    // Start anew after a slow frame; never catch up with a burst of shorter updates
+    pacing.last_start = Some(Instant::now());
+}
+
+fn apply_pacing(
+    settings: Res<SettingsMenu>,
+    mut pacing: ResMut<FramePacing>,
+    mut windows: Query<&mut Window, With<PrimaryWindow>>,
+) {
+    pacing.limit = settings.values.pacing.frame_limit;
+    let present_mode = if settings.values.pacing.vsync {
+        PresentMode::AutoVsync
+    } else {
+        PresentMode::AutoNoVsync
+    };
+    for mut window in &mut windows {
+        if window.present_mode != present_mode {
+            window.present_mode = present_mode;
+        }
+    }
 }
 
 pub(crate) fn install(app: &mut App, initial: DisplaySettings) {
@@ -262,7 +367,7 @@ fn sync(
         }
         let size = [inner.width, inner.height];
         let monitor = native.current_monitor();
-        let native_size = monitor.map(|monitor| {
+        let native_size = monitor.as_ref().map(|monitor| {
             let size = monitor.size();
             [size.width, size.height]
         });
@@ -283,6 +388,14 @@ fn sync(
             }),
             fullscreen: native.fullscreen().is_some(),
             managed: native.is_maximized() || !native.is_resizable(),
+            refresh_limit: monitor.as_ref().map_or(60_000, |monitor| {
+                refresh_limit(
+                    monitor
+                        .video_modes()
+                        .map(|mode| mode.refresh_rate_millihertz()),
+                    monitor.refresh_rate_millihertz(),
+                )
+            }),
         })
     });
     let Some(observed) = observed else {
@@ -456,7 +569,177 @@ mod tests {
             window_limit: Some([2560, 1560]),
             fullscreen,
             managed: false,
+            refresh_limit: 60_000,
         }
+    }
+
+    #[test]
+    fn monitor_frame_rates_resolve_defaults_and_clamp_only_over_limit_choices() {
+        let cases: [(u32, &[u32]); 6] = [
+            (60_000, &[60_000]),
+            (144_000, &[60_000, 120_000, 144_000]),
+            (280_000, &[60_000, 120_000, 180_000, 240_000, 280_000]),
+            (48_000, &[48_000]),
+            (59_940, &[59_940]),
+            (120_000, &[60_000, 120_000]),
+        ];
+        let mut state = DisplayState::new(DisplaySettings::default());
+        let mut pacing = PacingSettings::default();
+        state.normalize_pacing(&mut pacing);
+        assert_eq!(pacing.frame_limit, FrameLimit::Display);
+        assert_eq!(
+            state.frame_rates(),
+            [FrameLimit::Limited(60_000), FrameLimit::Unlimited]
+        );
+        for (maximum, expected) in cases {
+            state.observe(
+                Observation {
+                    refresh_limit: maximum,
+                    ..observation([1280, 800], false)
+                },
+                Duration::ZERO,
+            );
+            let mut rates: Vec<_> = expected.iter().copied().map(FrameLimit::Limited).collect();
+            rates.push(FrameLimit::Unlimited);
+            assert_eq!(state.frame_rates(), rates);
+            for (choice, result) in [
+                (FrameLimit::Display, FrameLimit::Limited(maximum)),
+                (FrameLimit::Limited(300_000), FrameLimit::Limited(maximum)),
+                (FrameLimit::Limited(30_000), FrameLimit::Limited(30_000)),
+                (FrameLimit::Unlimited, FrameLimit::Unlimited),
+            ] {
+                pacing.frame_limit = choice;
+                state.normalize_pacing(&mut pacing);
+                assert_eq!(pacing.frame_limit, result);
+            }
+        }
+        assert_eq!(
+            refresh_limit([60_000, 144_000, 120_000], Some(60_000)),
+            144_000
+        );
+        assert_eq!(refresh_limit([], Some(59_940)), 59_940);
+        assert_eq!(refresh_limit([0, 999], Some(0)), 60_000);
+        assert_eq!(refresh_limit([], None), 60_000);
+        state.refresh_limit = None;
+        state.set_headless_surface([1280, 800]);
+        pacing.frame_limit = FrameLimit::Display;
+        state.normalize_pacing(&mut pacing);
+        assert_eq!(pacing.frame_limit, FrameLimit::Limited(60_000));
+    }
+
+    #[test]
+    fn frame_gate_waits_for_each_deadline_without_catchup_and_vsync_is_independent() {
+        let start = Instant::now();
+        let mut pacing = FramePacing {
+            limit: FrameLimit::Limited(60_000),
+            last_start: None,
+        };
+        assert_eq!(pacing.remaining(start), Duration::ZERO);
+        pacing.last_start = Some(start);
+        let period = Duration::from_nanos(16_666_667);
+        assert_eq!(pacing.remaining(start), period);
+        assert_eq!(
+            pacing.remaining(start + Duration::from_millis(1)),
+            period - Duration::from_millis(1)
+        );
+        assert_eq!(pacing.remaining(start + period), Duration::ZERO);
+        assert_eq!(
+            pacing.remaining(start + Duration::from_secs(1)),
+            Duration::ZERO
+        );
+        pacing.last_start = Some(start + Duration::from_secs(1));
+        assert_eq!(pacing.remaining(start + Duration::from_secs(1)), period);
+        pacing.limit = FrameLimit::Limited(59_940);
+        assert_eq!(
+            pacing.remaining(start + Duration::from_secs(1)),
+            Duration::from_nanos(16_683_351)
+        );
+        pacing.limit = FrameLimit::Unlimited;
+        assert_eq!(pacing.remaining(start), Duration::ZERO);
+        pacing.limit = FrameLimit::Display;
+        assert_eq!(pacing.remaining(start + Duration::from_secs(1)), period);
+        pacing.limit = FrameLimit::Limited(1);
+        assert_eq!(
+            pacing.remaining(start + Duration::from_secs(1)),
+            Duration::from_secs(1)
+        );
+
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .insert_resource(pacing)
+            .init_resource::<SettingsMenu>()
+            .add_systems(PostUpdate, apply_pacing);
+        let window = app
+            .world_mut()
+            .spawn((Window::default(), PrimaryWindow))
+            .id();
+        app.update();
+        assert_eq!(
+            app.world().resource::<FramePacing>().limit,
+            FrameLimit::Display
+        );
+        assert_eq!(
+            app.world().get::<Window>(window).unwrap().present_mode,
+            PresentMode::AutoNoVsync
+        );
+        app.world_mut().resource_mut::<SettingsMenu>().values.pacing = PacingSettings {
+            frame_limit: FrameLimit::Unlimited,
+            vsync: true,
+        };
+        app.update();
+        assert_eq!(
+            app.world().resource::<FramePacing>().limit,
+            FrameLimit::Unlimited
+        );
+        assert_eq!(
+            app.world().get::<Window>(window).unwrap().present_mode,
+            PresentMode::AutoVsync
+        );
+    }
+
+    #[test]
+    fn production_frame_gate_limits_real_updates_before_the_input_probe() {
+        #[derive(Resource, Default)]
+        struct FrameStarts(Vec<Instant>);
+
+        let initial = PacingSettings {
+            frame_limit: FrameLimit::Limited(120_000),
+            vsync: false,
+        };
+        let mut settings = SettingsMenu::default();
+        settings.values.pacing = initial;
+        let mut app = App::new();
+        app.add_plugins(MinimalPlugins)
+            .insert_resource(settings)
+            .init_resource::<FrameStarts>();
+        install_frame_pacing(&mut app, initial);
+        app.add_systems(
+            First,
+            (|pacing: Res<FramePacing>, mut starts: ResMut<FrameStarts>| {
+                // Read the gate's actual instant so probe scheduling jitter cannot shorten a gap
+                starts.0.push(pacing.last_start.unwrap());
+            })
+            .after(DisplaySystems::Pace),
+        );
+        for _ in 0..10 {
+            app.update();
+        }
+        let starts = &app.world().resource::<FrameStarts>().0;
+        assert_eq!(starts.len(), 10);
+        let period = Duration::from_nanos(8_333_334);
+        assert!(starts.windows(2).all(|pair| pair[1] - pair[0] >= period));
+        app.world_mut()
+            .resource_mut::<SettingsMenu>()
+            .values
+            .pacing
+            .frame_limit = FrameLimit::Unlimited;
+        app.update();
+        assert_eq!(
+            app.world()
+                .resource::<FramePacing>()
+                .remaining(Instant::now()),
+            Duration::ZERO
+        );
     }
 
     #[test]
