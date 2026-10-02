@@ -26,14 +26,14 @@ mask 导出需要 Python 3 标准库和 `rsvg-convert`，图标导出需要 Imag
 
 在 runtime 的 `lib.rs` 注册 `mod brand_intro; mod brand_audio;`，仅在正常游戏启动路径安装 `brand_intro::install(&mut app)`；保留现有唯一相机和 Kira manager，Replay、音频探针与旧 `--visual-smoke` 路径不自动播放片头
 
-品牌模块使用当前已启用的 Bevy UI、render、asset、PNG 功能，不要求修改 runtime 依赖；所有 mask 与 WGSL 以固定 `embedded://cocobeat_brand/` 路径内嵌，可执行文件不依赖仓库工作目录
+品牌模块使用当前已启用的 Bevy UI、render、asset、PNG 功能，不要求修改 runtime 依赖；所有 mask 与 WGSL 以固定 `embedded://cocobeat_brand/` 路径内嵌，可执行文件不依赖仓库工作目录；`brand_intro.rs` 与嵌入的 `brand.wgsl` 必须在同次构建中更新
 
 | 接口 | 主线程职责 |
 |---|---|
 | `BrandIntroLayout { dock_rect: Rect }` | 写入相机视口内左上角起算的逻辑 UI 像素矩形，模块等比适配并居中；默认值仅供独立预览 |
-| `BrandIntroControl` | 失焦设置 `suspended`；仅主菜单显示时开启 `idle_enabled`，默认关闭；音效暂停/恢复也由音频所有者处理 |
-| `BrandIntroStatus` | 读取 `phase`、`elapsed_seconds`、`idle_seconds`、`reveal_progress`、`error` 与 `is_complete()` |
-| `BrandIntroSystems::Advance` | 在其之前更新布局和焦点状态，在其之后读取状态、消费落点消息、更新输入门控和 HUD |
+| `BrandIntroControl` | 失焦设置 `suspended`；`suspend_intro` 按 `game.phase == Phase::Ready && input.menu_open` 设置 `idle_enabled`，默认关闭；音效暂停/恢复也由音频所有者处理 |
+| `BrandIntroStatus` | 读取 `phase`、`elapsed_seconds`、`idle_seconds`、`reveal_progress`、`error` 与 `is_complete()`；`idle_seconds` 由品牌模块维护，主线程只读 |
+| `BrandIntroSystems::Advance` | 保持 `suspend_intro.before(BrandIntroSystems::Advance)`，在 Advance 前更新布局、焦点和菜单开关，在其之后读取状态、消费落点消息、更新输入门控和 HUD |
 | `BrandImpact::{Co1, Co2, Beat}` | 三次落点消息，使用 `MessageReader<BrandImpact>` 消费 |
 | `brand_audio::sound(impact)` | 启动前各生成一次并缓存，用现有 Kira manager 播放 |
 
@@ -108,7 +108,7 @@ Complete 后保持现有 Ready，用户另行确认才启动歌曲；不提供�
 | 19.92–23.40 | 正常视线，静止 |
 | 23.40–24.00 | 回到原定稿视线 `(0, 0)`，与周期首帧衔接 |
 
-失焦时冻结循环，恢复首帧跳过跨越失焦期的 delta；退出主菜单时将 `idle_enabled` 设为 false，视线恢复定稿并清零循环时间，下次进入菜单从静止段开始；主线程具体接线见 [HANDOFF.md](HANDOFF.md)
+失焦时冻结循环，恢复首帧跳过跨越失焦期的 delta；退出主菜单时将 `idle_enabled` 设为 false，视线恢复定稿并清零循环时间，下次进入菜单从静止段开始
 
 ### 音频
 

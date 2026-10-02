@@ -14,11 +14,11 @@ cargo run --locked -p cocobeat-game -- --startup-smoke target/cocobeat-startup.p
 
 `doctor` 检查 Rust/Cargo/rustfmt/Clippy 与依赖边界；`check` 执行依赖边界、格式、Clippy 和整个 workspace 的测试，失败返回非零状态
 
-`timing-sim` 输出纯软件实验；`generate-dev` 输出原创 PCM16 WAV 和校验清单；`--replay` 拒绝身份或格式不匹配，并使用同一个 core 重建规则结果；`--visual-smoke` 只保存预设 3D 场景 PNG，音频、输入和玩法均不参与，不能作为可玩性验收
+`timing-sim` 输出纯软件实验；`generate-dev` 输出原创 PCM16 WAV 和校验清单；`--replay` 拒绝身份或格式不匹配，并使用同一个 core 重建规则结果；`--visual-smoke` 保存预设 3D 场景 PNG，`--startup-smoke` 运行生产品牌与 Ready 呈现；两种 smoke 均不创建音频输出或消费输入驱动玩法，但默认 Gilrs 手柄后端仍会初始化并轮询，不能作为物理输入或可玩性验收
 
 ## 当前证据
 
-品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；品牌追加提交 `56faef2` 已隔离验证，最新原生 Linux release 验证覆盖 `7c37972`；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
+品牌模块首次交付为 `4654512`，主线程接线提交为 `356d675`；最新生产软件补验覆盖 `2329c19` 中的品牌 `67962a3`，原生 Linux release 验证覆盖 `7c37972`；以下保留各阶段证据，后续未提交改动不自动继承已有验证结论
 
 2026-10-02 本地切片基线的 `cargo xtask check` 退出码为 0，完整 workspace 的 40 项测试、依赖边界、格式与 Clippy 均通过，日志位于 `target/first-slice-check.log`；本轮测试包含 Kira 初始 Playing 状态不能当作回调确认、游标倒退拒绝、停滞到期与探针统计修订
 
@@ -44,7 +44,7 @@ CI 只检查单 Linux 上的 schema/core/replay/xtask，以及全仓库格式和
 
 `cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab` 通过，日志为 `target/brand-integration-build.log`；随后 `target/debug/cocobeat-game --startup-smoke target/startup-integrated.png` 在 AMD RX 6650 XT / RADV Vulkan 离屏运行到 Complete 并退出 0，已检查同一 Logo 停靠、Ready 场景和 HUD 的组合画面
 
-启动截图只运行品牌和场景呈现，不创建音频管理器或消费物理输入；它不证明正常窗口的音画同步、完整设备生命周期或实际按钮操作，相关边界由软件单测和下列设备验收分别覆盖
+启动截图只运行品牌和场景呈现，不创建音频管理器或消费输入驱动玩法；它不证明正常窗口的音画同步、完整设备生命周期或实际按钮操作，相关边界由软件单测和下列设备验收分别覆盖
 
 Windows 图标资源通过 `llvm-rc` 和 `llvm-cvtres` 编译为 x86-64/ARM64 资源对象，包含 6 个尺寸和 1 个图标组；Linux `.desktop` 通过 `desktop-file-validate`，两平台打包配置和 shell 语法已检查，当时以占位二进制验证 tar 布局与执行权限，真实 Linux 包的后续检查见下文；最终 Windows EXE、桌面图标显示与远端四目标构建仍为 NOT RUN
 
@@ -56,7 +56,7 @@ Windows 图标资源通过 `llvm-rc` 和 `llvm-cvtres` 编译为 x86-64/ARM64 �
 
 本地双人运行时与品牌接线候选基于品牌提交 `d0d3cfd`，已通过独立快照的完整 `cargo xtask check`，55 项测试、Clippy、格式与依赖边界全部通过，日志为 `target/milestone-runtime-check.log`；快照与同时进行的品牌动画修改分开验证
 
-提交候选的 `cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab` 退出 0，日志为 `target/milestone-runtime-build.log`；从 `/tmp` 运行生成的游戏 `--startup-smoke` 同样退出 0，截图 `target/milestone-runtime-startup.png` 已检查同一 Logo 停靠、Ready 场景与 HUD，日志为 `target/milestone-runtime-startup.log`；该检查也确认嵌入资源无需仓库工作目录，仍未播放音频或消费物理输入
+提交候选的 `cargo build --locked -j 1 -p cocobeat-game -p cocobeat-lab` 退出 0，日志为 `target/milestone-runtime-build.log`；从 `/tmp` 运行生成的游戏 `--startup-smoke` 同样退出 0，截图 `target/milestone-runtime-startup.png` 已检查同一 Logo 停靠、Ready 场景与 HUD，日志为 `target/milestone-runtime-startup.log`；该检查也确认嵌入资源无需仓库工作目录，仍未播放音频或验收物理输入玩法
 
 本次还用 Kira MockBackend 复现并修复了异步暂停竞态：同一回调前恢复再暂停会错误停留在 Playing，记录见 `target/audio-transition-repro.log`；修复后合并同帧最终意图，并等待相反命令确认，回归覆盖双向转换、未确认状态、停止优先与新句柄重置，窄测日志为 `target/audio-transition-check.log`；它们不代表真实设备音画同步已验收
 
@@ -74,7 +74,15 @@ Main menu 保存 Replay 后停止歌曲，重建同 epoch 空会话，下一次�
 
 品牌随后提交 `56faef2`：6.60 秒到位并显露界面，7.20 秒完成位移/剪切回弹后进入 Complete；主线程沿用 `is_complete()`，6.60–7.20 秒仍屏蔽菜单与歌曲操作，三次落点音效时刻和 Ready 开关均不变
 
-对 `56faef2` 的独立快照 `/tmp/cocobeat-menu-followthrough` 补跑完整 check，59 项测试、Clippy、格式及依赖边界再次通过，游戏构建退出 0；从 `/tmp` 运行 `--startup-smoke` 退出 0，已检查最新 Ready 循环截图 `target/menu-followthrough-startup.png`；日志分别为 `target/menu-followthrough-check.log`、`target/menu-followthrough-build.log` 和 `target/menu-followthrough-startup.log`，提交与产物哈希见 `target/menu-followthrough-evidence.json`，本次仍无真实音频或物理输入参与
+对 `56faef2` 的独立快照 `/tmp/cocobeat-menu-followthrough` 补跑完整 check，59 项测试、Clippy、格式及依赖边界再次通过，游戏构建退出 0；从 `/tmp` 运行 `--startup-smoke` 退出 0，已检查最新 Ready 循环截图 `target/menu-followthrough-startup.png`；日志分别为 `target/menu-followthrough-check.log`、`target/menu-followthrough-build.log` 和 `target/menu-followthrough-startup.log`，提交与产物哈希见 `target/menu-followthrough-evidence.json`，本次仍未验收真实音频或物理输入玩法
+
+## 品牌 67962a3 生产补验
+
+2026-10-02，从固定提交 `2329c191bb28f0de78c9cfd1f65ea1cbfaca7020` 创建归档快照 `/tmp/cocobeat-brand-67962a3`，134 个源码文件内容保持不变，`brand_intro.rs` 与 `brand.wgsl` 逐字节匹配品牌提交 `67962a3`；在该快照执行 `CARGO_BUILD_JOBS=1 cargo xtask check` 和 `cargo build --offline --locked -j1 -p cocobeat-game` 均退出 0，59 项测试、Clippy、格式与依赖边界通过
+
+从 `/tmp` 以 `WGPU_BACKEND=vulkan` 运行生成的游戏 `--startup-smoke`，AMD RX 6650 XT / RADV Vulkan 离屏渲染退出 0，`target/brand-67962a3-startup.png` 已由主线程视觉检查正常；构建、检查和启动日志分别为 `target/brand-67962a3-{build,check,startup}.log`，完整命令、环境、源码与产物哈希见 `target/brand-67962a3-evidence.json`，首次受限环境无法枚举 GPU 的日志另存为 `target/brand-67962a3-startup-sandbox.log`
+
+本次通过的是生产模块、Ready 菜单门控与终态 GPU 呈现；6.15–7.20 秒动态轨迹另见 [品牌第六版连续预览](../assets/brand/VALIDATION.md#渲染证据)，终态截图不能单独证明动作过程；真实音频同步、物理输入玩法和平台图标显示仍为 NOT RUN，本次未重建 release 包
 
 ## 原生 Linux release 证据
 
