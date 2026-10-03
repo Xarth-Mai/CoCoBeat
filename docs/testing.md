@@ -573,3 +573,11 @@ ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两�
 原包、无变化导出和全撤销导出生成完全相同报告，重复诊断字节相同；真实改谱在 lab / runtime 都拒绝旧身份、接受新身份。负 Hit、EOF Hit、重复输入、版本和目标路径错误均返回对应原因，已有目标、原包和录制字节保持；源包内部输出和源 Replay 同路径负例使用新目录中的等字节副本，既有封存目录始终只读
 
 所有命令、预期对象、实际 JSONL 和输入快照记录于 `target/replay-diagnostic-runtime-20261003/qa-report.json`，原始完整检查与测试补强后的检查分别保存在根目录及 `final/`；没有产品失败或矩阵补跑，也未执行新 GPU、设备延迟、真实控制器、Windows / ARM、真人体验或图形时间线验收
+
+## 原创曲目的标注准备
+
+2026-10-03，进一步只读核对 MIR 失败：真实 snare 首击的 `E-B` 小于剩余假峰，单一阈值无法同时保留该真峰并排除这些假峰，停止当前门控修补链；诊断位于 `target/mir-next-background-20261003/diagnosis.md`，SHA-256 `ed6761214d78e74541fec012ed599ef2ae1c0604f8c6f04f1d131e737a3e8dd2`，未运行新候选或修改旧结果
+
+[审阅清单](../testdata/synthetic/dev-song-review/README.md)仅从既有原创 64 秒 WAV 及已核对配方生成 438 个声部起点 / 200 条合并来源候选，另含 7 个结构边界和原 7 个创作 Anchor。人工 onset 帧 / 不确定区间 / 审阅者及可玩性字段全部 pending / null；静音内部没有候选，独占 EOF 单列，反相 hat 的立体声与下混边界有明确说明
+
+生成器使用 Python 标准库，实际 WAV、Rust 配方和两个 CSV 的身份均校验；逐字节复现、防覆盖后字节保持、来源漂移拒绝及全部计数 / 人工字段检查通过，独立复审为 `Lean already. Ship.`。验证记录在 `target/dev-song-review-20261003/validation.json`；`review.json` SHA-256 为 `423cb400130a28bb91e46de29eea9124a9656a5d8ddc3c066a24dbe4a64e8404`，来源与许可已登记，没有新音频、外部语料、MIR 运行或人工听感验收
