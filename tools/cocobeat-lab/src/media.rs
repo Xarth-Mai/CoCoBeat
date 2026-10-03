@@ -4,7 +4,13 @@ use std::{
     path::Path,
 };
 
-pub fn decode(input: &Path, output: &Path, resample: bool) -> Result<(), String> {
+pub enum Operation {
+    Decode,
+    Resample,
+    Readback(u64),
+}
+
+pub fn decode(input: &Path, output: &Path, operation: Operation) -> Result<(), String> {
     let file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -22,18 +28,25 @@ pub fn decode(input: &Path, output: &Path, resample: bool) -> Result<(), String>
             }
             Ok(())
         };
-        let summary = if resample {
-            let decoded = cocobeat_media::resample_source(input, &mut consume)?;
-            format!(
-                "Resampled: {} Hz / {} source frames -> 48000 Hz, stereo F32LE, {} frames",
-                decoded.source_sample_rate, decoded.source_frames, decoded.output_frames
-            )
-        } else {
-            let decoded = cocobeat_media::decode_source(input, |_, frames| consume(frames))?;
-            format!(
-                "Source decoded: {} Hz, stereo F32LE, {} frames",
-                decoded.sample_rate, decoded.source_frames
-            )
+        let summary = match operation {
+            Operation::Resample => {
+                let decoded = cocobeat_media::resample_source(input, &mut consume)?;
+                format!(
+                    "Resampled: {} Hz / {} source frames -> 48000 Hz, stereo F32LE, {} frames",
+                    decoded.source_sample_rate, decoded.source_frames, decoded.output_frames
+                )
+            }
+            Operation::Decode => {
+                let decoded = cocobeat_media::decode_source(input, |_, frames| consume(frames))?;
+                format!(
+                    "Source decoded: {} Hz, stereo F32LE, {} frames",
+                    decoded.sample_rate, decoded.source_frames
+                )
+            }
+            Operation::Readback(expected) => {
+                let frames = cocobeat_media::decode_canonical(input, expected, &mut consume)?;
+                format!("Canonical readback: Ogg Vorbis, 48000 Hz, stereo F32LE, {frames} frames")
+            }
         };
         writer
             .flush()
@@ -43,7 +56,7 @@ pub fn decode(input: &Path, output: &Path, resample: bool) -> Result<(), String>
     match result {
         Ok(summary) => {
             println!("{summary}");
-            println!("PCM only; canonical encoding and SongPackage validation are pending.");
+            println!("PCM only; encoder admission and SongPackage Ready are separate gates.");
             Ok(())
         }
         Err(error) => {

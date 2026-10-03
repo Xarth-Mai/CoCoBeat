@@ -6,7 +6,7 @@
 game ───────────────→ runtime
 runtime ────────────→ schema / core / replay
 replay ─────────────→ schema / core
-media ──────────────→ schema / Symphonia（源解码）/ OxiMedia（重采样）
+media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -19,13 +19,15 @@ runtime 的 app 组合 Bevy、Kira 和 Session；input 记录软件观察时刻�
 
 media 当前负责有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 顺序解码与固定 48 kHz 重采样，由 lab 的 `decode-audio` / `resample-audio` 实际消费；公开接口只包含项目自有的采样率、实际帧数和立体声 PCM 块，单声道复制为双声道，拒绝非有限值及超限输入。源解码保留采样率、静默和幅度；重采样采用 OxiMedia High，48 kHz 样本直接透传，其他采样率核对实际输出帧数为整数 `ceil(源帧数 × 48000 / 源采样率)`
 
-源文件限 512 MiB、192 kHz 和十分钟，实际解码帧数独立累计；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，标准编码、最终回读和 SongPackage Ready 尚未接入
+media 的 `decode_canonical` 复用同一顺序解码核心和 Ogg 页校验，由 lab 的 `readback-canonical` 实际消费；最终文件必须是 Ogg Vorbis、48 kHz、恰好双声道，EOS 声明和独立累计的实际帧数均须等于调用方提供的编码器输入帧数。输出从解码帧 0 连续交付，不做声道复制、重采样或裁幅，拒绝非有限样本；读回成功本身不证明源音频经过编码后的瞬态对齐或音质
+
+源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，生产编码器准入和 SongPackage Ready 尚未完成
 
 ## 未来模块何时出生
 
 | 模块 | 独立责任 | 引入时机 |
 |---|---|---|
-| media（已创建） | 源解码与重采样；后续标准编码回读、MusicAnalysis、AnchorCompiler、导入事务 | 05 源解码与重采样已有 lab 消费；其余按 05–07 的实际契约加入 |
+| media（已创建） | 源解码、重采样与严格最终读回；后续标准编码、MusicAnalysis、AnchorCompiler、导入事务 | 05 三个软件入口已有 lab 消费；其余按 05–07 的实际契约加入 |
 | stage | MusicAnalysis / 编译后的音乐结构 → StagePlan，确定性轨道和几何校验 | 08 自动舞台；手写场景先在 runtime |
 | editor | 波形、Anchor、Replay 的可视化与人工修改 | 09 已有可编辑内容契约 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |

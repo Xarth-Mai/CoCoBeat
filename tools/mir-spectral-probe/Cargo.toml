@@ -1,0 +1,12 @@
+[package]
+name = "cocobeat-mir-spectral-probe"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+oximedia-mir = { version = "0", default-features = false, features = ["beat"] }
+oxifft = { version = "0", default-features = false, features = ["std", "streaming"] }
+serde_json = "1"
+
+[workspace]

@@ -1,5 +1,6 @@
-//! Bounded source decoding at the original sample rate, before canonical encoding
+//! Bounded source decoding and strict readback of the final canonical file
 
+use cocobeat_schema::CANONICAL_SAMPLE_RATE;
 use std::{
     fs::File,
     io::{Read, Seek, SeekFrom},
@@ -32,9 +33,35 @@ pub struct DecodedSource {
 /// until this function succeeds, so consumers must discard partial imports on error
 pub fn decode_source(
     path: impl AsRef<Path>,
+    consume: impl FnMut(u32, &[[f32; 2]]) -> Result<(), String>,
+) -> Result<DecodedSource, String> {
+    decode(path.as_ref(), None, consume)
+}
+
+/// Fully reads the final Ogg Vorbis file on its original 48 kHz stereo timeline
+/// Expected frames come from the input to the encoder, not from this file's header
+/// Blocks remain provisional until success; no remixing, resampling or clipping occurs
+pub fn decode_canonical(
+    path: impl AsRef<Path>,
+    expected_frames: u64,
+    mut consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+) -> Result<u64, String> {
+    if !(1..=u64::from(CANONICAL_SAMPLE_RATE) * MAX_SOURCE_SECONDS).contains(&expected_frames) {
+        return Err(
+            "Expected canonical frames must cover more than zero and at most ten minutes".into(),
+        );
+    }
+    decode(path.as_ref(), Some(expected_frames), |_, frames| {
+        consume(frames)
+    })
+    .map(|decoded| decoded.source_frames)
+}
+
+fn decode(
+    path: &Path,
+    expected_canonical_frames: Option<u64>,
     mut consume: impl FnMut(u32, &[[f32; 2]]) -> Result<(), String>,
 ) -> Result<DecodedSource, String> {
-    let path = path.as_ref();
     if !path.is_file() {
         return Err("Audio source must be a regular file".into());
     }
@@ -91,6 +118,16 @@ pub fn decode_source(
         .ok_or("Audio source has no channels")?
         .clone();
     let channels = channel_layout.count();
+    if expected_canonical_frames.is_some()
+        && (format.format_info().format != FORMAT_ID_OGG
+            || params.codec != CODEC_ID_VORBIS
+            || sample_rate != CANONICAL_SAMPLE_RATE
+            || channels != 2)
+    {
+        return Err(
+            "Canonical audio must be Ogg Vorbis at 48000 Hz with exactly two channels".into(),
+        );
+    }
     if !(1..=MAX_SOURCE_SAMPLE_RATE).contains(&sample_rate) {
         return Err("Audio source sample rate must be within 1..=192000 Hz".into());
     }
@@ -114,6 +151,11 @@ pub fn decode_source(
         return Err("Audio source codec block exceeds the import resource limit".into());
     }
     let declared_frames = ogg_frames.or(track.num_frames);
+    if expected_canonical_frames.is_some_and(|expected| declared_frames != Some(expected)) {
+        return Err(
+            "Canonical audio frame count does not match the expected encoder input length".into(),
+        );
+    }
     if let Some(frames) = declared_frames {
         checked_frame_count(0, frames, sample_rate)?;
     }
@@ -163,6 +205,9 @@ pub fn decode_source(
             return Err("Audio source contains missing or overlapping frames".into());
         }
         source_frames = checked_frame_count(source_frames, audio.frames() as u64, sample_rate)?;
+        if expected_canonical_frames.is_some_and(|expected| source_frames > expected) {
+            return Err("Canonical audio decoded beyond the expected frame count".into());
+        }
         interleaved.resize(audio.samples_interleaved(), 0.0);
         audio.copy_to_slice_interleaved(&mut interleaved);
         if interleaved.iter().any(|sample| !sample.is_finite()) {
@@ -473,5 +518,117 @@ mod tests {
             let error = decode_source(&source.0, |_, _| Ok(())).unwrap_err();
             assert!(error.contains("Ogg"), "{error}");
         }
+    }
+
+    #[test]
+    fn canonical_readback_preserves_stereo_and_stops_on_consumer_error() {
+        let source = TestSource::new(include_bytes!(
+            "../../../testdata/synthetic/media-import/stereo-canonical.ogg"
+        ));
+        let mut frames = Vec::new();
+        assert_eq!(
+            decode_canonical(&source.0, 4_800, |block| {
+                frames.extend_from_slice(block);
+                Ok(())
+            }),
+            Ok(4_800)
+        );
+        assert_eq!(frames.len(), 4_800);
+        assert!(frames.iter().flatten().all(|sample| sample.is_finite()));
+        // Independent 440/880 Hz channels must not be silently duplicated or swapped
+        for channel in 0..2 {
+            let frequency = if channel == 0 { 440.0 } else { 880.0 };
+            let amplitude = if channel == 0 { 0.1 } else { 0.2 };
+            let error = frames[480..4_320]
+                .iter()
+                .enumerate()
+                .map(|(offset, frame)| {
+                    let phase = std::f32::consts::TAU * frequency * (offset + 480) as f32
+                        / CANONICAL_SAMPLE_RATE as f32;
+                    (frame[channel] - amplitude * phase.sin()).powi(2)
+                })
+                .sum::<f32>()
+                / 3_840.0;
+            assert!(error.sqrt() < 0.01, "channel {channel}: {error}");
+        }
+        let mut callbacks = 0;
+        assert_eq!(
+            decode_canonical(&source.0, 4_800, |_| {
+                callbacks += 1;
+                Err("cancelled".into())
+            }),
+            Err("cancelled".into())
+        );
+        assert_eq!(callbacks, 1);
+    }
+
+    #[test]
+    fn canonical_readback_rejects_wrong_contracts_and_corrupted_files() {
+        fn repair_crc(page: &mut [u8]) {
+            page[22..26].fill(0);
+            let mut crc = Crc32::new(0);
+            crc.process_buf_bytes(page);
+            page[22..26].copy_from_slice(&crc.crc().to_le_bytes());
+        }
+
+        let ogg = include_bytes!("../../../testdata/synthetic/media-import/stereo-canonical.ogg");
+        let source = TestSource::new(ogg);
+        for expected in [0, 4_799, 4_801, 28_800_001, u64::MAX] {
+            assert!(
+                decode_canonical(&source.0, expected, |_| panic!(
+                    "invalid length delivered PCM"
+                ))
+                .is_err()
+            );
+        }
+        let mut wrong_rate = ogg.to_vec();
+        let first_page_end = 27
+            + usize::from(ogg[26])
+            + ogg[27..27 + usize::from(ogg[26])]
+                .iter()
+                .map(|&length| usize::from(length))
+                .sum::<usize>();
+        let identification = ogg
+            .windows(7)
+            .position(|bytes| bytes == b"\x01vorbis")
+            .unwrap();
+        wrong_rate[identification + 12..identification + 16]
+            .copy_from_slice(&44_100u32.to_le_bytes());
+        repair_crc(&mut wrong_rate[..first_page_end]);
+        let mut corrupt = ogg.to_vec();
+        *corrupt.last_mut().unwrap() ^= 1;
+        for (bytes, expected) in [
+            (wave(48_000, 2, &[0.1, 0.2]), 1),
+            (
+                include_bytes!("../../../testdata/synthetic/media-import/mono.ogg").to_vec(),
+                100_800,
+            ),
+            (wrong_rate, 4_800),
+            (corrupt, 4_800),
+            (ogg[..ogg.len() - 1].to_vec(), 4_800),
+        ] {
+            let source = TestSource::new(&bytes);
+            assert!(
+                decode_canonical(&source.0, expected, |_| panic!(
+                    "invalid file delivered PCM"
+                ))
+                .is_err()
+            );
+        }
+        // A matching EOS declaration alone cannot establish a continuous frame-zero timeline
+        let mut false_length = ogg.to_vec();
+        let last_page = ogg.windows(4).rposition(|bytes| bytes == b"OggS").unwrap();
+        assert_eq!(false_length[last_page + 5] & 4, 4);
+        false_length[last_page + 6..last_page + 14].copy_from_slice(&96_000u64.to_le_bytes());
+        repair_crc(&mut false_length[last_page..]);
+        let source = TestSource::new(&false_length);
+        let mut delivered = 0;
+        let error = decode_canonical(&source.0, 96_000, |block| {
+            delivered += block.len();
+            Ok(())
+        })
+        .unwrap_err();
+        assert_eq!(delivered, 0);
+        assert!(error.contains("missing or overlapping frames"), "{error}");
     }
 }

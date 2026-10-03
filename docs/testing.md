@@ -320,3 +320,19 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 每个 locale 的两条新增文案和一条冲突提示均通过 Noto 字形与 `{player}` 占位符检查，见 `target/controller-mixed-20261003/glyphs/checks.json`；独立正确性和 ponytail-review 复审均无剩余发现，结论 `Lean already. Ship.`。本批未新增 GPU 截图或物理设备操作，Windows/Linux 双手柄、混合设备和 USB/蓝牙验收仍为 NOT RUN
 
 此前 `66d0771` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37099092172) 已完成且通过，缓存恢复及保存成功；该远端结果只覆盖对应提交的轻量工作流，不包含本批 runtime 修改
+
+## 严格 canonical 读回入口
+
+2026-10-03，`decode_canonical` 复用有界源解码与 Ogg 页校验，以调用方提供的编码输入帧数验证最终文件；仅接受 Ogg Vorbis、48 kHz、恰好双声道，输出有限 PCM，并验证 CRC、EOS、帧 0 连续性和最终实际帧数。既有源入口仍允许单声道复制和其他支持格式，严格入口不做该转换；所有回调块在整次成功前仍是临时结果
+
+`cargo test --offline --locked -j1 -p cocobeat-media` 的 8 项测试、media/lab all-targets Clippy、lab 构建及格式检查通过。新增 4,800 帧原创双频立体声样本验证左右声道、样本时间坐标和消费者取消；错误容器、单声道、错误采样率、越界期望、CRC/截断及伪造 EOS 均被拒绝。首轮负例对失败发生时机的测试预期已修正，原失败日志保留，产品代码未为测试绕过校验
+
+冻结 lab CLI 完成 21 项实际调用检查，严格成功输出与同一文件的源解码输出逐字节一致；另以较长 Ogg 伪造末页 EOS 并修复 CRC，确认已经写出临时 PCM 后仍会因最终实际帧数不符而失败，并删除本次半成品；已有输出原字节保留。完整命令、结果及源码/二进制哈希见 `target/canonical-readback-20261003/validation-summary.json` 和 `cli-results.json`，冻结二进制 SHA-256 为 `71c6503d1594606c2a35ef5bae1fbbf6aab45309b8f567db6a99d767308c2e11`
+
+上述是最终文件的结构、时轴和有限性软件检查，不能证明编码前后瞬态完全重合或音质达标；生产编码器准入、seek、曲库听感、跨平台读回和 SongPackage Ready 继续按 05 验收。独立审查为 `Lean already. Ship.`，未添加产品依赖
+
+## 单边频谱 HFC 后续候选
+
+隔离工具 `tools/mir-spectral-probe/` 复用 oxifft 的 Hamming/FFT 与 OxiMedia 的 HFC onset API，固定 128 帧窗、64 帧 hop 和 1.5 倍局部门槛；以实际 PCM 窗支持区间确定中心坐标，补实际尾窗，不平移预测或改真值。等能量不同频率的单边 HFC 比值为 4.19990，完整镜像谱对照几乎相同，验证单边频率加权确实生效
+
+2 项软件测试、Clippy、格式、构建及独立指标复算通过；原 10 声道和 3 个控制通过，另 5 个控制仍 FAIL，保留首帧/单样本漏检与噪声误报。固定 [观察清单](../testdata/synthetic/mir-spectral-probe/observations-20261003.json) 记录完整矩阵与源码、产物身份，复现入口见 [工具说明](../tools/mir-spectral-probe/README.md)；原两批工具和观察保持不变，没有启用生产 MIR，最终编码回读、真实音乐及人工标签仍待验收

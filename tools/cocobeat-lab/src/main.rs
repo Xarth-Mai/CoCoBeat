@@ -40,12 +40,28 @@ fn main() -> ExitCode {
             report(media::decode(
                 Path::new(input),
                 Path::new(output),
-                command == "resample-audio",
+                if command == "resample-audio" {
+                    media::Operation::Resample
+                } else {
+                    media::Operation::Decode
+                },
             ))
         }
+        [command, input, frames, output] if command == "readback-canonical" => report(
+            frames
+                .parse::<u64>()
+                .map_err(|_| "Expected canonical frames must be an unsigned integer".to_string())
+                .and_then(|expected| {
+                    media::decode(
+                        Path::new(input),
+                        Path::new(output),
+                        media::Operation::Readback(expected),
+                    )
+                }),
+        ),
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le>"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS

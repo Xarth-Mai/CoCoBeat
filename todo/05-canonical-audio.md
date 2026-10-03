@@ -1,6 +1,6 @@
 # 05 · 唯一标准音频路径
 
-前置：完整阶段退出仍需本地体验通过；2026-10-03 用户批准在设备与真人验收并行期间继续软件开发，现已创建 cocobeat-media，由 lab 消费有上限的源解码与固定 48 kHz 重采样
+前置：完整阶段退出仍需本地体验通过；2026-10-03 用户批准在设备与真人验收并行期间继续软件开发，现已创建 cocobeat-media，由 lab 消费有上限的源解码、固定 48 kHz 重采样与严格 canonical 读回
 
 2026-10-02 的首轮前置隔离实验：`oxiaudio-encode 0.2.1` 与 `rusty_vorbis 0.1.1` 原始 API 未保持实际帧数，前者还出现严重越界幅度；`oxideav-vorbis 0.0.12` 原生封装与 rusty 显式 priming/mux 适配通过本次合成输入的有限检查，包含首尾脉冲和 64 秒双路完整回读，见 [实验记录与可复现工具](../docs/canonical-audio-probe.md)；当时未创建 media，Windows、真实音乐与听感尚未验收，以下正式准入任务按后续证据更新
 
@@ -9,7 +9,8 @@
 - [x] Symphonia 源导入；有上限的源解码与 lab 入口已完成，3 项窄测和正式 CLI 的 22 项格式/损坏/失败清理检查通过，64 秒原创音乐输出与独立 PCM16 转换逐字节一致；标准音频输出仍待后续接线
 - [ ] 评估 OxiMedia audio 重采样：High 已接入 media/lab，合成质量、3 项行为测试、正式 CLI 19 项及独立 API 7 项通过，包含原创音乐位精确透传、十分钟流式摘要与 1 Hz 完整 flush 资源检查；跨平台执行与听感继续取证，见 [软件验证](../docs/testing.md#固定-48-khz-源重采样)
 - [ ] 验证最新纯 Rust Ogg Vorbis 编码器；OxideAV 十分钟在 2 GiB 内存上限下失败；patched rusty q10 已完成四平台原生短样本测试与构建、原始 64 秒歌曲回归、Linux 十分钟静默及显式前滚 seek；后续三例有限超范围诊断通过，但原范围 guard 会拒绝合法重采样输出，继续确定编码数值域、曲库和听感准入；尚无生产准入编码器
-- [ ] 重新解码最终 Ogg，检查采样率、声道、帧数、首尾瞬态、静默、clipping、seek 与长曲。
+- [x] 严格最终读回软件入口：`decode_canonical` 与 lab 的 `readback-canonical` 全量检查 Ogg Vorbis、48 kHz、恰好双声道、有限值、CRC、帧 0 连续性及调用方期望帧数；2 项新增行为测试与 21 项正式 CLI 检查通过，包含错误后半成品清理和已有输出保留，[原创样本](../testdata/synthetic/media-import/README.md) 与本地 `target/canonical-readback-20261003/validation-summary.json` 保留复现及证据
+- [ ] 最终编码闭环继续验收首尾瞬态、静默、clipping、seek、长曲和曲库听感，并在 Windows/Linux 各目标验证；严格读回入口通过不等于编码器准入或 SongPackage Ready
 - [ ] MIR 的输入以最终回读音频为准，不能分析另一个时间原点的 PCM。
 - [ ] SongPackage staging、对象哈希、版本头和原子 Ready 提交；损坏对象明确失败。
 

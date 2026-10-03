@@ -2,7 +2,7 @@
 
 2026-10-03 的阶段 05 实验已覆盖长曲、信号边界、精确 seek 和重采样合成质量；OxiMedia High 通过本批频点门槛，OxideAV 在十分钟输入、2 GiB 虚拟地址空间限制下编码失败，rusty_vorbis 仍因近满幅合法输入的明显波形误差不准入；以下保留首轮结构结果与后续发现
 
-`cocobeat-media` 的有界源解码与 48 kHz 重采样已由 lab 消费；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲和四平台短样本软件路径，外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
+`cocobeat-media` 的有界源解码、48 kHz 重采样与严格最终读回已由 lab 消费；`readback-canonical` 要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本、CRC、帧 0 连续性和独立提供的期望帧数，2 项新增行为测试与 21 项正式 CLI 检查通过，证据在本地 `target/canonical-readback-20261003/validation-summary.json`，固定 [原创样本](../testdata/synthetic/media-import/README.md) 为 4,800 帧。生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲和四平台候选短样本软件路径，外部音乐曲库与真人听感仍为 NOT RUN，严格读回入口不改变本文候选实验的准入边界
 
 ## 方法与证据边界
 

@@ -58,3 +58,9 @@ cargo build --locked --release --manifest-path "$mir_manifest" --target-dir "$mi
 另行交付的 [诊断工具](../tools/mir-onset-diagnostic/README.md) 定位到左对齐窗起点被作为 onset 时间、峰选择排除首尾以及不足窗或 hop 的尾部被丢弃；原基准及上述 FAIL 保持不变
 
 同库公开的能量差检测 API 加入端点和尾块处理后，64/128 帧 hop 两种配置均通过原 10 声道门槛，以及独立相位扫描、低幅度和 partial-hop 尾部控制；但持续正弦与噪声产生大量额外峰，单样本和恒定电平控制也有失败，因此仍未准入生产 MIR。参数、90 项逐例矩阵、软件检查与报告身份见 [固定观察](../testdata/synthetic/mir-onset-diagnostic/observations-20261003.json)，工具最终退出 1 并报告整体质量 FAIL
+
+## 后续频谱候选
+
+[单边频谱 HFC 候选](../tools/mir-spectral-probe/README.md) 继续读取同一批原始 PCM 和独立控制，原生 FFT 单边谱先通过等能量不同频率的加权核验；固定 window=128、hop=64、Hamming 窗与 1.5 倍局部均值阈值，预测映射到真实窗支持区间中心，未补 PCM 或平移旧输出
+
+该候选的原 10 声道和 3 项控制通过，另 5 项控制仍 FAIL：持续音与恒定电平的额外峰为 0、噪声额外峰为 1，但这些持续信号的首帧攻击及单样本攻击仍漏检；逐项结果、坐标约定与冻结身份见 [谱候选观察清单](../testdata/synthetic/mir-spectral-probe/observations-20261003.json)，软件检查和独立审查通过不等于生产 MIR 准入，以上后续结果不覆盖本页原始基准结论
