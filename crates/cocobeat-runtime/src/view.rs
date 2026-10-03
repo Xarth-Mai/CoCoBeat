@@ -28,6 +28,9 @@ pub(crate) struct VisualState {
     pub quality: QualitySettings,
 }
 
+#[derive(Resource)]
+struct SignMaterials([Handle<StandardMaterial>; 2]);
+
 #[derive(Component)]
 enum Motion {
     Spirit(usize),
@@ -86,7 +89,7 @@ pub fn install(app: &mut App) {
         .add_systems(
             PostUpdate,
             (
-                (apply_quality, animate).chain(),
+                (apply_quality, animate, update_signs).chain(),
                 (ensure_menu_rows, update_hud, layout_hud).chain(),
             )
                 .before(TransformSystems::Propagate)
@@ -168,6 +171,13 @@ fn setup(
             ..default()
         })
     });
+    let signs = colors.map(|color| {
+        materials.add(StandardMaterial {
+            base_color: color,
+            emissive: LinearRgba::from(color) * 0.35,
+            ..default()
+        })
+    });
     let bodies = colors.map(|color| {
         materials.add(StandardMaterial {
             base_color: color,
@@ -217,13 +227,13 @@ fn setup(
             ));
             commands.spawn(part(
                 &cube,
-                &neon[player],
+                &signs[player],
                 Vec3::new(side * 4.22, height * 0.62, z),
                 Vec3::new(0.08, 0.09, 2.2),
             ));
             commands.spawn(part(
                 &cube,
-                &neon[player],
+                &signs[player],
                 Vec3::new(side * 4.22, height * 0.62 - 0.3, z),
                 Vec3::new(0.08, 0.035, 1.3),
             ));
@@ -329,6 +339,30 @@ fn setup(
             NotShadowCaster,
         ));
     }
+    commands.insert_resource(SignMaterials(signs));
+}
+
+fn update_signs(
+    state: Res<VisualState>,
+    signs: Res<SignMaterials>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut applied: Local<Option<f32>>,
+) {
+    let resonance = if state.resonance.is_finite() {
+        state.resonance.clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
+    let strength = 0.35 + resonance * 2.15;
+    if *applied == Some(strength) {
+        return;
+    }
+    for handle in &signs.0 {
+        if let Some(mut material) = materials.get_mut(handle) {
+            material.emissive = LinearRgba::from(material.base_color) * strength;
+        }
+    }
+    *applied = Some(strength);
 }
 
 fn apply_quality(
@@ -952,7 +986,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn quality_changes_apply_to_the_scene_and_preserve_core_feedback() {
+    fn quality_and_resonance_preserve_core_feedback_and_geometry() {
         use crate::{display::PresentationCamera, settings::QualityPreset};
 
         let mut app = App::new();
@@ -968,7 +1002,7 @@ mod tests {
             .init_resource::<Assets<Mesh>>()
             .init_resource::<Assets<StandardMaterial>>()
             .add_systems(Startup, setup)
-            .add_systems(PostUpdate, (apply_quality, animate).chain());
+            .add_systems(PostUpdate, (apply_quality, animate, update_signs).chain());
         let presentation = app
             .world_mut()
             .spawn((Camera2d, PresentationCamera, Msaa::Off))
@@ -991,6 +1025,64 @@ mod tests {
         assert!(core.iter().all(|(_, _, v)| *v != Visibility::Hidden));
         let meshes = app.world().resource::<Assets<Mesh>>().len();
         let materials = app.world().resource::<Assets<StandardMaterial>>().len();
+        let sign_ids = app
+            .world()
+            .resource::<SignMaterials>()
+            .0
+            .each_ref()
+            .map(Handle::id);
+        let mut visible_meshes = app
+            .world_mut()
+            .query::<(&Transform, &MeshMaterial3d<StandardMaterial>)>();
+        let mut sign_count = 0;
+        for (transform, material) in visible_meshes.iter(app.world()) {
+            let sign = transform.translation.x.abs() == 4.22 && transform.scale.x == 0.08;
+            assert_eq!(sign_ids.contains(&material.0.id()), sign);
+            sign_count += usize::from(sign);
+        }
+        assert_eq!(sign_count, 36);
+        let mut transforms = app.world_mut().query::<(Entity, &Transform)>();
+        let transforms: Vec<_> = transforms
+            .iter(app.world())
+            .map(|(entity, transform)| (entity, *transform))
+            .collect();
+        let feedback_materials: Vec<_> = app
+            .world()
+            .resource::<Assets<StandardMaterial>>()
+            .iter()
+            .filter(|(id, _)| !sign_ids.contains(id))
+            .map(|(id, material)| (id, material.emissive))
+            .collect();
+        for (resonance, expected_strength) in [
+            (0.0, 0.35),
+            (0.5, 1.425),
+            (1.0, 2.5),
+            (0.0, 0.35),
+            (-1.0, 0.35),
+            (2.0, 2.5),
+            (f32::NAN, 0.35),
+        ] {
+            app.world_mut().resource_mut::<VisualState>().resonance = resonance;
+            app.update();
+            let materials = app.world().resource::<Assets<StandardMaterial>>();
+            for id in sign_ids {
+                let material = materials.get(id).unwrap();
+                let expected = LinearRgba::from(material.base_color) * expected_strength;
+                assert!((material.emissive.red - expected.red).abs() < 1e-6);
+                assert!((material.emissive.green - expected.green).abs() < 1e-6);
+                assert!((material.emissive.blue - expected.blue).abs() < 1e-6);
+            }
+            for &(id, emissive) in &feedback_materials {
+                assert_eq!(materials.get(id).unwrap().emissive, emissive);
+            }
+            for &(entity, transform) in &transforms {
+                assert_eq!(*app.world().get::<Transform>(entity).unwrap(), transform);
+            }
+            for &(entity, _, visibility) in &core {
+                assert_eq!(*app.world().get::<Visibility>(entity).unwrap(), visibility);
+            }
+            assert_eq!(app.world().resource::<VisualState>().song_seconds, 12.5);
+        }
         let all_off = QualitySettings {
             preset: QualityPreset::Custom,
             antialiasing: AntiAliasing::Off,
