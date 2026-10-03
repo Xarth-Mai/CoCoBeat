@@ -33,6 +33,8 @@ media 的 `read_package` 检查四对象，从同一份有界音频字节快照�
 
 editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最多 1024 步增量撤销历史，成功新变更清空 redo，失败与原地移动保留状态；lab 的 `edit-anchors` 解析有界补丁并核对完整源包身份，操作全部成功后调用 media 的 `export_anchors`。media 保留原音频与分析对象字节，真实变更只重建 chart 和 manifest，无变化导出保留四对象原字节及身份；输出位于源包外的全新目录，来源校验、复制与发布沿用内容事务，具体使用见 [内容编辑](editor.md)
 
+media 的纯 `compile_anchor_proposal` 只消费完整合法 MusicAnalysis、实际帧数和显式策略，以稳定排序选择 onset，返回独立 AnchorProposal 与全部接受 / 拒绝证据；lab 将其保存为有界报告，采用时核对来源并完整重编，再交给原保真导出。现有手工包没有 onset 时返回空提案，报告不代表生产 MIR / 音乐置信度准入，也不取代原 chart 的 SectionCue，详细字段见 [Anchor 提案](anchors.md)
+
 `SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数三轴位置差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
 
 stage 的 `compile` 把短于 16 秒的真实分析区间编为 Plaza，长区间前半为 Curve、后半为 Bridge，把区间空隙编为 Straight，形成覆盖全曲的内存 StagePlan；模型与采样只使用 schema 和标准库，以整数帧与毫米计算距离、三角形路宽、四次曲线侧移 / 抬升及其切线，不按 cue 补区间、不从 label 或 confidence 推断音乐含义；runtime 在包加载时编译一次并用 `Arc` 共享，lab 的 `inspect-stage PACKAGE FRAME` 复用相同入口，无参数开发歌曲保留原手写场景且没有 StagePlan

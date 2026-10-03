@@ -539,3 +539,21 @@ ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两�
 剩余 3 个 kick 额外峰支持窗跨过构造音符的截断，1 个 snare 额外峰仍处于衰减内；相位脉冲 E 约 0.520 / 0.524，背景门槛约 0.559，明确保留这些真实删峰而不改标签或补点。全部 34 项实际 PCM 的独立 f64 FFT 预测一致，四个旧基线的 51,158 窗及五路 Matcher 全部复现；数值检查脚本曾因 Python 求和策略产生 1 ulp 差异，改为与 Rust 实现一致的逐项左折叠后通过，候选公式与质量门槛未改
 
 执行、日志和全窗证据位于 `target/mir-band-background-20261003/`；实际工具 SHA-256 为 `8f4d14e7d4c40e0f56b9b98d2a7e932744aef0a58db2a39135867bdf4f77ebd3`，报告为 `a74c95773476534c45740ff39a49cde13e1e81f2301845e36e1391bc3742da28`，[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-background-20261003.json) 为 `91c66d532f697b96a3a533d43ba09af5cb44c997f3e1e5cb98b0de62a8003228`。未新增 PCM、依赖或生产 MIR 接线，真实音乐、编码回读、人工标签和音乐置信度仍待独立验收
+
+该批以 `7e7bd66` 提交并推送，[Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37119012035) 通过 62 项测试；远端提交与八项文件身份已核对，交付记录 `target/mir-band-background-20261003/delivery.json` 的 SHA-256 为 `d499edfee155dfcf28cd3c8808dac9b8187b92bdd5b7b95274ec472221cfc717`，CI 软件通过不改变上述候选质量 FAIL
+
+## Anchor 提案审阅与明确采用
+
+2026-10-03，media 新增纯 AnchorProposal 编译器，lab 接入 `propose-anchors` / `adopt-anchor-proposal`：显式策略、原始整数帧、稳定选择、全部接受 / 拒绝证据、完整来源与报告重编核对，再通过原保真导出替换明确选中的 Anchor，详细契约见 [Anchor 提案](anchors.md)
+
+`cargo test --locked --offline -p cocobeat-media -p cocobeat-lab` 通过 41 项测试，其中 media 32、lab 9；新增的 4 项纯编译测试和 3 项报告 / 采用测试覆盖两侧冲突、确定性、未知置信度、100,000 项边界、f32 正负零、报告篡改、选择错误与字节上限。workspace Clippy、格式、边界和 game / lab 构建通过，没有新增依赖或修改 SongPackage / Replay 格式
+
+真实 64 秒开发音频保持原字节，通过现有 `build_package` 构建 15 条明确声明的测试 onset，保留原真实能量、分析段落与 chart；置信度使用精确 Q8 分数，只验证选择机制，不代表音乐标签。独立整数 oracle 用完整已选集合检查冲突，主策略 `0.5 / 480000` 选择原索引 `[3,7,10,12,13]`，即 10 / 20 / 30 / 50 / 60 秒，全部证据逐项吻合，重复报告字节相同；原手工包的空 onset 始终返回空提案
+
+冻结程序执行 32 项 CPU 检查，含 6 次提案、4 次实际采用、16 次拒绝、3 次直接 core / Replay 对照和 3 次生产 runtime Replay。完整、乱序子集和显式清空均经独立 Postcard / BLAKE3 读回，原音频 / analysis 字节、cue / rules 保留，新身份正确；原两个包与所有已创建输入维持快照，失败不改已有目标或留下新包
+
+采用后的 5 / 3 / 0 个 Anchor 分别得到 16 / 10 / 1 个规则事件，逐项核对原 ID、玩家、输入序号、Precise 零偏差、AnchorSync 内嵌判定和 40 秒 FreeSync；直接 DuoEngine 与 Replay 重放的事件、Resonance 完全一致，编解码往返一致。实际游戏接受新包及匹配 Replay，拒绝旧身份 Replay，原包仍接受旧录制
+
+独立复核补齐消费 helper 的 AnchorSync 内嵌判定比较后才执行矩阵；原超长选择负例还包含缺字段，故保留原日志并只补一次合法 JSON 加空白至 1 MiB + 1，明确得到字节上限错误，没有重跑整套矩阵或修改生产实现
+
+152 项构建输入前后一致，最终 lab SHA-256 为 `873014eb76f3edaefaa13c8d5145e70282416c985456e8bdf133a6c726f3feb0`，game 为 `8672f50f6168c8f89b3751f656ef8c6b561465e153e960b9bdbacf4c5c629219`；原始命令、源快照、独立 oracle 和四个采用包的身份记录于 `target/anchor-runtime-20261003/qa-report.json`。本批没有新 UI 或 GPU 验收，真人试听、置信度校准、独立音乐标注、可玩性、Windows / ARM 和物理设备继续单独验收

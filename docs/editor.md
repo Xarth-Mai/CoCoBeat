@@ -2,7 +2,7 @@
 
 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 用整数音频帧修正已有 SongPackage 的 Anchor，并导出可重新加载的新包；当前支持增删、移动、撤销和重做，不修改分析事实、SectionCue 或判定规则，包格式继续使用 [SongPackage v1](song-package.md)
 
-这是可保存补丁、可重复执行的 CLI 编辑入口，时间线 UI、波形 GUI、试听校准、候选证据视图和正式菜单接入仍未实现；Replay JSONL 诊断也不在此命令中
+这是可保存补丁、可重复执行的 CLI 编辑入口，时间线 UI、波形 GUI、试听校准、候选证据视图和正式菜单接入仍未实现；候选的 JSON 报告与明确采用另见 [Anchor 提案](anchors.md)，Replay JSONL 诊断也不在此命令中
 
 ## 使用方式
 

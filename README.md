@@ -111,6 +111,8 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)；波形时间线与 Replay 诊断界面仍待后续
 
+`propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
+
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
 
 歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排和跨版本视觉 Replay 仍待后续

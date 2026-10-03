@@ -27,7 +27,7 @@
 | 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；25 项 media 测试通过；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
 | 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；完整 MIR/Anchor/Stage 输出及游戏曲库仍待后续 |
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定背景门控质量 FAIL：20 PASS / 11 FAIL、4 额外峰、16 漏检；8 项软件测试和 51,158 窗/全部预测独立复现；noise burst 恢复，近邻及弱叠加保持，两项相位扫描新退化，全部旧基线与人工标签缺口保留 |
-| 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
+| 18 | 精度优先的 AnchorCompiler · 07 | editor_core + stage_curve_plan + section_qa + root | IN PROGRESS | 现有分析结构可先行；生产策略依赖 17 | 纯 AnchorProposal、逐项证据、完整重编及明确采用 CLI 已交付；41 项相关测试和 32 项真实包 CPU 检查通过，原音频/分析/cue 保真，core 与 Replay 一致；音乐置信度校准、标注与试听继续保留 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | v2 已接直道/广场/缓弯/低桥、固定拱门和同轨道预告；121 项相关测试、5 项场景补验、42 项 CPU 与最终 16 张 GPU 图通过，原拱门遮挡已修并保留失败图；完整自动编排、跨版本视觉 Replay、设备性能与真人可读性仍待完成 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + editor_export + editor_cli + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 已实现精确 Anchor 编辑、撤销重做、原字节保真导出和实际修包 CLI；47 项相关测试、35 项真实包/CLI 用例和 1 张改谱 GPU 图通过，Replay JSONL、时间线界面和完整退出继续后续 |
 | 21 | QUIC 会话、时钟同步与可靠历史 · 10 | 待分配 | NOT RUN | 20 | 指纹邀请、内容一致性、有界资源流、输入/水位、epoch 与完成握手 |
