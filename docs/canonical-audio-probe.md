@@ -315,3 +315,13 @@ done
 后续实测原始材料为 `target/rusty-vorbis-limits/`、`target/oxideav-near-full/`、`target/canonical-seek-probe/` 和 `target/resample-preflight/`；Rusty 原短样本、脉冲与 64 秒共 28 个产物逐字节回归通过，OxideAV 原 1025 帧输入及 Ogg 字节不变；新增研究依赖单列于 [研究台账](../licenses/CANONICAL_PROBE_DEPENDENCIES.csv)，不并入产品依赖
 
 最终比较器未重新编码，复算四组编码结果的双路 PCM 共八路，SNR/RMSE 与历史记录最大差 1.17e-12；自检覆盖已知 6.0206 dB、RMSE、跨块统计及损坏输入拒绝
+
+## 有限数值域与全频带组合
+
+2026-10-03 的[固定组合诊断](../tools/canonical-audio-probe/numeric-fullband/README.md) 复用四个已冻结的 8 / 44.1 / 96 / 192 kHz sign-kernel 源，从提交 `e1b3a26` 的隔离源码构建 finite-only + fullband 研究副本，q10、Q_SCALE=30 与 max-abs coupling 保持。四次编码和两路完整回读均在各自 30 秒 / 2 GiB 限额内，实际 PCM 与旧对照逐字节一致，strict 与 FFmpeg 都得到 48000 帧，最大差 `4.76837158203125e-7`
+
+在实际解码源峰值不超过 1、固定本机系数表和标准 IEEE 基本运算的前提下，逐运算向外舍入的核证书给出所有上采样率的输出界 `2.757214069366455`，96 / 192 kHz 的界分别为 `2.225487232208252` / `1.9629822969436646`；其他降采样率、源幅度大于 1 和跨平台系数一致性未包含。编码器另以 `|PCM|≤4` 推导条件式算术余量，并对实际四例的 14 个阶段观测有限性，不把这个包络当作已准入的新 guard 或整个 codec 的普遍证明
+
+44.1 / 96 / 192 kHz 的左右 SNR 分别从约 `4.42/4.52`、`1.29/1.37`、`1.15/1.21` dB 改善为 `15.31/16.90`、`10.60/12.25`、`8.80/10.05` dB，8 kHz 保持 `18.31/22.78` dB；残余损失、低频误差增量和更多超 unity 样本均保留，不能据此准入。正式 vendor、profile 和原 guard 没有修改，完整[观察记录](../testdata/synthetic/canonical-audio-probe/numeric-fullband-observations-20261003.json)保留条件、逐例指标及失败日志
+
+此工具依赖两批历史冻结 target 证据，四个 sign-kernel 源的完整生成器尚只存在工作区；README 已列出精确依赖及来源，不宣称 fresh checkout 单命令复现。缺失输入时明确失败，没有新 PCM 或重复素材条目；下一步完善可维护的候选幅度合同、质量与平台准入，并将仍需保留的历史生成入口整理为可独立重建的回归样本

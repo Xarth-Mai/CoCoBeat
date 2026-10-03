@@ -1,0 +1,1002 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-03",
+  "status": "PASS_FIXED_NUMERIC_FULLBAND_COMBINATION_NOT_ADMITTED",
+  "source_snapshot": "e1b3a261f1e4866dc377680f846225e75cf9b670",
+  "scope": "Four frozen sign-kernel sources; q10/Q_SCALE30/max-abs coupling; finite-only diagnostic plus residue end 1760->2048; official guard/vendor/profile unchanged",
+  "matrix": {
+    "source_encodes": 4,
+    "external_strict_full_readbacks": 4,
+    "external_ffmpeg_full_readbacks": 4,
+    "host": "x86_64 Linux",
+    "each_timeout_seconds": 30,
+    "each_address_space_limit_bytes": 2147483648
+  },
+  "metric_contract": "Same frame0 position; no shift, normalization, clipping or gain fitting; spectral rows below/above20625Hz; stereo L/R; pathological transients do not establish music or listening quality",
+  "proof_scope": {
+    "source_peak_precondition": "Actual decoded f32 source abs<=1; fixtures abs=32700/32768",
+    "covered_rates_hz": "1..47999 shared upsampling table phases; 48000 identity; fixed96000/192000",
+    "not_covered": "Other downsampling rates, source amplitudes>1, arbitrary finite f32, cross-platform libm coefficient identity",
+    "resampler_assumptions": [
+      "IEEE round-to-nearest primitive arithmetic without fast-math reassociation",
+      "Actual finite coefficient tables identified by sha256",
+      "Outward rounded product/sum recurrence followed by upper f32 rounding",
+      "f32 input converts exactly to f64; zero padding preserves amplitude bound"
+    ],
+    "conditional_encoder_pcm_envelope": 4,
+    "encoder_budget_status": "Conditional basic arithmetic budget with actual constants/codebooks checked; transcendental ranges are explicit assumptions; not a universal codec proof",
+    "instrumentation_boundary": "14 stage observations for four inputs; class0 energy uses static32term budget; no uninstrumented combined re-encode to prove instrumentation byte equivalence",
+    "budget_display_boundary": "codec-budget native f32 decimal fields are roundtrip displays, not exact real upper bounds; actual work549756338176 and difference549756403712 are below exact2^40; kernel certificate/stage logs expand f32 to f64"
+  },
+  "kernel_certificates": [
+    {
+      "source_rate": 1,
+      "phases": 48000,
+      "stored_row_real_l1_upper": 2.7572138886876414,
+      "actual_interpolated_l1_upper": 2.7572138886876414,
+      "output_f32_upper_for_peak1": 2.757214069366455,
+      "output_f32_upper_for_fixture_peak": 2.7514922618865967,
+      "table_sha256": "fbe274cb99918b685d2a93e56d3127be0f5fe656e9549e328b39e8567fc933f5"
+    },
+    {
+      "source_rate": 8000,
+      "phases": 6,
+      "stored_row_real_l1_upper": 2.7572138886876414,
+      "actual_interpolated_l1_upper": 2.7572138886876414,
+      "output_f32_upper_for_peak1": 2.757214069366455,
+      "output_f32_upper_for_fixture_peak": 2.7514922618865967,
+      "table_sha256": "fbe274cb99918b685d2a93e56d3127be0f5fe656e9549e328b39e8567fc933f5"
+    },
+    {
+      "source_rate": 44100,
+      "phases": 160,
+      "stored_row_real_l1_upper": 2.7572138886876414,
+      "actual_interpolated_l1_upper": 2.7572138886876414,
+      "output_f32_upper_for_peak1": 2.757214069366455,
+      "output_f32_upper_for_fixture_peak": 2.7514922618865967,
+      "table_sha256": "fbe274cb99918b685d2a93e56d3127be0f5fe656e9549e328b39e8567fc933f5"
+    },
+    {
+      "source_rate": 96000,
+      "phases": 1,
+      "stored_row_real_l1_upper": 2.2627176186911875,
+      "actual_interpolated_l1_upper": 2.2254871486896404,
+      "output_f32_upper_for_peak1": 2.225487232208252,
+      "output_f32_upper_for_fixture_peak": 2.2208690643310547,
+      "table_sha256": "b3094a0d907e0bc5b0688e4708d6ca5b69236fd7acdef5cc31c3dce9131a93eb"
+    },
+    {
+      "source_rate": 192000,
+      "phases": 1,
+      "stored_row_real_l1_upper": 1.9629821859034289,
+      "actual_interpolated_l1_upper": 1.9629821859034289,
+      "output_f32_upper_for_peak1": 1.9629822969436646,
+      "output_f32_upper_for_fixture_peak": 1.9589086771011353,
+      "table_sha256": "a896616b8bc46cb89d596c27b99808a8967cfe6caa97ec3638bef0c78fc29a23"
+    }
+  ],
+  "stage_observations": {
+    "names": [
+      "mdct",
+      "psy_band_energy",
+      "masking_target",
+      "floor_curve",
+      "uncoupled_residue",
+      "coupled_residue",
+      "vq_work",
+      "vq_cost",
+      "mean_log_power",
+      "geometric_power",
+      "spread_power",
+      "rd_cost",
+      "encoder_pcm",
+      "flatness_ratio"
+    ],
+    "maximum_abs_across_four": [
+      0.4200574457645416,
+      0.37409794330596924,
+      0.051549628376960754,
+      0.05186134949326515,
+      17.848085403442383,
+      35.696170806884766,
+      35.696170806884766,
+      3708305.75,
+      27.631044387817383,
+      0.015038629993796349,
+      0.4154989719390869,
+      3951.225830078125,
+      2.7514920234680176,
+      1.0000131130218506
+    ],
+    "bound_exponents": [
+      14,
+      39,
+      13,
+      0,
+      38,
+      39,
+      40,
+      85,
+      5,
+      47,
+      49,
+      86,
+      2,
+      87
+    ],
+    "calls_by_source": {
+      "8000": [
+        96,
+        4320,
+        96,
+        96,
+        96,
+        96,
+        9512,
+        159040,
+        4320,
+        4320,
+        4320,
+        18548,
+        50,
+        4320
+      ],
+      "44100": [
+        96,
+        4320,
+        96,
+        96,
+        96,
+        96,
+        9959,
+        275160,
+        4320,
+        4320,
+        4320,
+        18870,
+        78,
+        4320
+      ],
+      "96000": [
+        96,
+        4320,
+        96,
+        96,
+        96,
+        96,
+        10010,
+        273616,
+        4320,
+        4320,
+        4320,
+        18962,
+        168,
+        4320
+      ],
+      "192000": [
+        96,
+        4320,
+        96,
+        96,
+        96,
+        96,
+        10004,
+        270636,
+        4320,
+        4320,
+        4320,
+        18960,
+        334,
+        4320
+      ]
+    }
+  },
+  "findings": [
+    "All four source PCM files byte-identical to frozen baseline; strict PCM byte-identical to internal reader; all decoder outputs finite and48000frames",
+    "8k decoded PCM identical to old finite-only baseline; wideband error reduction at44.1/96/192k does not remove residual8.804..22.784dB SNR limits",
+    "44.1/96/192k overs increase;192k left lowband error energy increases about6.7e-8; full metrics retained",
+    "No audio playback, licensed music download, additional parameter search or production admission"
+  ],
+  "next_choice": "Use explicit bounded actual-PCM contract plus arithmetic/kernel certificate for subsequent candidate work; do not adopt finite-only guard or extrapolate current rate tables. Keep production guard until supported-domain, quality, seek, native-platform and listening acceptance are completed",
+  "not_run": [
+    "other sources",
+    "other downsampling rates",
+    "native other platforms",
+    "human listening",
+    "seek",
+    "production admission"
+  ],
+  "resources_note": "ru_maxrss includes inherited harness high-water memory; limits passed, values are not cross-batch performance rankings",
+  "preserved_pre_encode_failures": {
+    "preflight-failure.json": "1971e1fe7add3d8fb68bda5f3db6b1f2fb9ad551f00fcfd36e9c08576f2fe143",
+    "interruption.json": "774288d0ba5bcf67b9482ac83797f46614e0213d7c22ae52a2b9a71bcdfe85f1",
+    "outer_exit143": "Cause unknown; parent confirmed no stop/kill; no source encoded before final recovery"
+  },
+  "reproduction": {
+    "fresh_checkout_single_command": false,
+    "command": "python tools/canonical-audio-probe/numeric-fullband/probe.py target/numeric-fullband-new",
+    "requires_frozen_target": [
+      "target/resample-l1-domain-20261003",
+      "target/fullband-regression-20261003"
+    ],
+    "sign_kernel_source_generator_tracked": false,
+    "source_generator": "target/resample-l1-domain-20261003/run.py plus kernels.csv and kernel/; imports tracked rusty-candidate/domain_probe.py WAV helper; old finite-only baseline binary required for original batch",
+    "fullband_generator": "tools/canonical-audio-probe/fullband-regression/probe.py; also requires its documented historical target evidence"
+  },
+  "references": {
+    "target/resample-l1-domain-20261003/FROZEN.json": "3a89feec13c3062d1615172f3e5579b65d07c0d4e7f3c6d8e34feb23df4c7c2c",
+    "target/fullband-regression-20261003/FROZEN.json": "09c3f20472f3ef52df8abc60b827010a73d8dd30328a0103408293db1e7fca18",
+    "target/resample-l1-domain-20261003/run.py": "adde391d937e473086f8604f52309c9f893980986f09c2029637bdc171ae3052",
+    "target/resample-l1-domain-20261003/kernels.csv": "c37a92c88eb785ac31f2e897b1158a0aac0c95d651d18f9fb49dc0c7b6548474"
+  },
+  "identity": {
+    "binary_sha256": "ed92447ef01af934234b99647c301545a91c799ee37df63cbb838837e16346a1",
+    "strict_reader_sha256": "ae3f4ce3172cbed7b036965782970c90adf47388dcfb1541ac235a65f6a88eac",
+    "policy_sha256": "d3fe028cfd0e494d6c58e93f176ac9b8c18a33f28a5c573db8c4beaae351bbf9",
+    "kernel_certificates_sha256": "7d178e74e3bf29649cef3c7577e9d98ef4fe60536db85c2ba7f63d87c530921a",
+    "codec_budget_sha256": "35ab7557f7bdb0e88031bec13a88ba1f4fe807d54628e452592d9d1aecc9c078",
+    "execution_identity_sha256": "f8bb5f30591f911240dfc526fefc35f8e3beef1090f810d2752448a44e9fdc1c",
+    "full_results_sha256": "37658c33a7eae3b00facdd58c9da53c9485988c00fad6236fa16188f91fc88d9",
+    "tools": {
+      "tools/canonical-audio-probe/numeric-fullband/README.md": "9a8913c45123dbd4260ba95c2d9edc9c3d24b7c277f0b7992c489f09fa8f7354",
+      "tools/canonical-audio-probe/numeric-fullband/codec_numeric.rs": "7344facd24afb2b7888ffa5e307d7808661c25aad504b99162c18e189b8fa5d9",
+      "tools/canonical-audio-probe/numeric-fullband/kernel_bound.rs": "6bf03ef239a383a9aa4963db79f1fcdef5325cf81d890b63e5f97d6d576d2993",
+      "tools/canonical-audio-probe/numeric-fullband/probe.py": "2734e0871ffc55b5aa65d770c55f5f4ab7dde1b585fc82a9ea0d9eddd39eb701"
+    }
+  },
+  "cases": [
+    {
+      "source_rate": 8000,
+      "source_sha256": "2cebd6d8ad9c97baa0075f6c5a326861f8e06fce01b77e707e7836636e6fe932",
+      "source_peak": 0.9979248046875,
+      "resampled_peak": 2.7514920234680176,
+      "status": "PASS_FIXED_COMBINATION_WITH_QUALITY_OBSERVATIONS_NOT_ADMITTED",
+      "source_frames": 8000,
+      "readback_frames": 48000,
+      "decoder_max_abs_difference": 4.76837158203125e-07,
+      "resampled_byte_identical_to_baseline": true,
+      "decoded_byte_identical_to_baseline": true,
+      "whole": {
+        "baseline": {
+          "signal_energy": [
+            587.429269979943,
+            587.429269979943
+          ],
+          "decoded_energy": [
+            578.7059707625996,
+            594.8582013241536
+          ],
+          "error_energy": [
+            8.661864878164286,
+            3.0939393122959817
+          ],
+          "source_over_unity": [
+            151,
+            151
+          ],
+          "decoded_over_unity": [
+            150,
+            157
+          ],
+          "max_abs_error": [
+            0.18566447496414185,
+            0.11124658101471141
+          ],
+          "source_peak": [
+            2.7514920234680176,
+            2.7514920234680176
+          ],
+          "decoded_peak": [
+            2.799694538116455,
+            2.7426698207855225
+          ],
+          "frames": 48000,
+          "snr_db": [
+            18.313441778058202,
+            22.784437916730546
+          ],
+          "rmse": [
+            0.01343337330290085,
+            0.008028515990279043
+          ]
+        },
+        "combined": {
+          "signal_energy": [
+            587.429269979943,
+            587.429269979943
+          ],
+          "decoded_energy": [
+            578.7059707625996,
+            594.8582013241536
+          ],
+          "error_energy": [
+            8.661864878164286,
+            3.0939393122959817
+          ],
+          "source_over_unity": [
+            151,
+            151
+          ],
+          "decoded_over_unity": [
+            150,
+            157
+          ],
+          "max_abs_error": [
+            0.18566447496414185,
+            0.11124658101471141
+          ],
+          "source_peak": [
+            2.7514920234680176,
+            2.7514920234680176
+          ],
+          "decoded_peak": [
+            2.799694538116455,
+            2.7426698207855225
+          ],
+          "frames": 48000,
+          "snr_db": [
+            18.313441778058202,
+            22.784437916730546
+          ],
+          "rmse": [
+            0.01343337330290085,
+            0.008028515990279043
+          ]
+        },
+        "snr_delta_db": [
+          0.0,
+          0.0
+        ]
+      },
+      "spectral_error_energy_below_above_20625hz": {
+        "baseline": [
+          [
+            8.661864878162056,
+            3.093939312294375
+          ],
+          [
+            1.3816502684952044e-12,
+            1.5275901394505475e-12
+          ]
+        ],
+        "combined": [
+          [
+            8.661864878162056,
+            3.093939312294375
+          ],
+          [
+            1.3816502684952044e-12,
+            1.5275901394505475e-12
+          ]
+        ]
+      },
+      "first_last_2048_max_error": {
+        "first_2048": [
+          0.0,
+          0.0
+        ],
+        "last_2048": [
+          0.0,
+          0.0
+        ]
+      },
+      "source_peak_before_after_2048_snr_db": {
+        "source_peak_ch0_before": [
+          20.36041178270514,
+          23.411867373146396
+        ],
+        "source_peak_ch0_after": [
+          16.958229741181935,
+          22.24962312832805
+        ]
+      },
+      "ogg": {
+        "bytes": 8039,
+        "baseline_bytes": 7943,
+        "pages": 51,
+        "packets": 51,
+        "eos": [
+          48000
+        ],
+        "all_crc_sequence_serial_checks": true
+      },
+      "resources": {
+        "encode": {
+          "elapsed_seconds": 0.036267415998736396,
+          "max_rss_kib": 22256,
+          "user_seconds": 0.085353,
+          "system_seconds": 0.003217
+        },
+        "strict": {
+          "elapsed_seconds": 0.005464586007292382,
+          "max_rss_kib": 22380,
+          "user_seconds": 0.002996,
+          "system_seconds": 0.0018
+        },
+        "ffmpeg": {
+          "elapsed_seconds": 0.24241142999380827,
+          "max_rss_kib": 51468,
+          "user_seconds": 0.03015,
+          "system_seconds": 0.052357999999999995
+        }
+      },
+      "sha256": {
+        "8000/result.json": "ccd4bb8df3f0dced84474a47f781b713ecbe4e5a6dc2ae3815992879c110118a",
+        "8000/candidate/canonical.ogg": "4cf6efd4f8bf148ba2031f506493b92e3dd225cf250c4471b9720c9a556fff09",
+        "8000/candidate/resampled.f32le": "a2f928cafce928598ed9f073754ba54c3e232829913c962742e981dc1c5cf4b9",
+        "8000/candidate/decoded.f32le": "92d9af83e5665b56de99b4bb005971ceadfab29b1761d790f8e1562ea89517ad",
+        "8000/candidate/report.json": "562aef98c9935393b83cec29866dde4313363eee2808a993e9f640bcb33c744b",
+        "8000/strict.f32le": "92d9af83e5665b56de99b4bb005971ceadfab29b1761d790f8e1562ea89517ad",
+        "8000/ffmpeg.f32le": "1d0c99d02096b8c2f9c86181712bbef96061f25a5a6db44ed7f7944467783db5"
+      }
+    },
+    {
+      "source_rate": 44100,
+      "source_sha256": "097ae1874c4aa86a5fff8057f30fa97e8917a328b0357d8b19cd85576e10bad0",
+      "source_peak": 0.9979248046875,
+      "resampled_peak": 2.7514920234680176,
+      "status": "PASS_FIXED_COMBINATION_WITH_QUALITY_OBSERVATIONS_NOT_ADMITTED",
+      "source_frames": 44100,
+      "readback_frames": 48000,
+      "decoder_max_abs_difference": 2.980232238769531e-07,
+      "resampled_byte_identical_to_baseline": true,
+      "decoded_byte_identical_to_baseline": false,
+      "whole": {
+        "baseline": {
+          "signal_energy": [
+            106.56307557551513,
+            106.56307557551513
+          ],
+          "decoded_energy": [
+            68.18367646729793,
+            76.93936906432702
+          ],
+          "error_energy": [
+            38.511527958206536,
+            37.60788009992676
+          ],
+          "source_over_unity": [
+            29,
+            29
+          ],
+          "decoded_over_unity": [
+            14,
+            18
+          ],
+          "max_abs_error": [
+            0.6460245847702026,
+            0.6701521277427673
+          ],
+          "source_peak": [
+            2.7514920234680176,
+            2.7514920234680176
+          ],
+          "decoded_peak": [
+            2.3726377487182617,
+            2.5527310371398926
+          ],
+          "frames": 48000,
+          "snr_db": [
+            4.420159966704336,
+            4.523278928383805
+          ],
+          "rmse": [
+            0.028325315516853522,
+            0.02799102538460868
+          ]
+        },
+        "combined": {
+          "signal_energy": [
+            106.56307557551513,
+            106.56307557551513
+          ],
+          "decoded_energy": [
+            103.31317516547666,
+            112.88831390379919
+          ],
+          "error_energy": [
+            3.1366352500034576,
+            2.1781745712724505
+          ],
+          "source_over_unity": [
+            29,
+            29
+          ],
+          "decoded_over_unity": [
+            26,
+            29
+          ],
+          "max_abs_error": [
+            0.22526919841766357,
+            0.1312410831451416
+          ],
+          "source_peak": [
+            2.7514920234680176,
+            2.7514920234680176
+          ],
+          "decoded_peak": [
+            2.624272584915161,
+            2.819390296936035
+          ],
+          "frames": 48000,
+          "snr_db": [
+            15.311427276003347,
+            16.895140627796657
+          ],
+          "rmse": [
+            0.008083722391844328,
+            0.006736366743394349
+          ]
+        },
+        "snr_delta_db": [
+          10.89126730929901,
+          12.371861699412852
+        ]
+      },
+      "spectral_error_energy_below_above_20625hz": {
+        "baseline": [
+          [
+            4.549874404829198,
+            3.8250208610012275
+          ],
+          [
+            33.96165355337734,
+            33.782859238925276
+          ]
+        ],
+        "combined": [
+          [
+            3.0356751080390603,
+            2.131209726464374
+          ],
+          [
+            0.10096014196439113,
+            0.04696484480808029
+          ]
+        ]
+      },
+      "first_last_2048_max_error": {
+        "first_2048": [
+          0.0,
+          0.0
+        ],
+        "last_2048": [
+          0.0,
+          0.0
+        ]
+      },
+      "source_peak_before_after_2048_snr_db": {
+        "source_peak_ch0_before": [
+          15.28759238155686,
+          16.779966452225786
+        ],
+        "source_peak_ch0_after": [
+          15.33220660737559,
+          16.997570222730292
+        ]
+      },
+      "ogg": {
+        "bytes": 8759,
+        "baseline_bytes": 8581,
+        "pages": 51,
+        "packets": 51,
+        "eos": [
+          48000
+        ],
+        "all_crc_sequence_serial_checks": true
+      },
+      "resources": {
+        "encode": {
+          "elapsed_seconds": 0.04226284800097346,
+          "max_rss_kib": 23272,
+          "user_seconds": 0.09239699999999999,
+          "system_seconds": 0.004144
+        },
+        "strict": {
+          "elapsed_seconds": 0.005464246001793072,
+          "max_rss_kib": 23272,
+          "user_seconds": 0.001148,
+          "system_seconds": 0.0035659999999999997
+        },
+        "ffmpeg": {
+          "elapsed_seconds": 0.042100660008145496,
+          "max_rss_kib": 51916,
+          "user_seconds": 0.029928999999999997,
+          "system_seconds": 0.012853
+        }
+      },
+      "sha256": {
+        "44100/result.json": "0d48cc319463ac7b0975271ce9fcf4f520f1c60ea8abc538c096f449a54ae322",
+        "44100/candidate/canonical.ogg": "421644e2d2601b48a601c3704b0dbcc28558912d57c9a546164a9884498177fd",
+        "44100/candidate/resampled.f32le": "6292dbd7938aab068897113a899df885d2a8fe169b78f71d26f49843089df8a3",
+        "44100/candidate/decoded.f32le": "2d140d2813d606754faf67681cc9f877d257234426b2fb163b366c575951ef58",
+        "44100/candidate/report.json": "76066508d20dcccb97794c5a9039bf415709a35a81d7ebc1ebeca3369cc49c38",
+        "44100/strict.f32le": "2d140d2813d606754faf67681cc9f877d257234426b2fb163b366c575951ef58",
+        "44100/ffmpeg.f32le": "a1fa568b1ab6ce6d1bb2a4189c84bd73fafa1912e661050ce6fd06d62a494932"
+      }
+    },
+    {
+      "source_rate": 96000,
+      "source_sha256": "f8e10dd4cea60c1d810b2971252a7ed322a8d0ea47623e7750e04a7b53012a07",
+      "source_peak": 0.9979248046875,
+      "resampled_peak": 2.2208688259124756,
+      "status": "PASS_FIXED_COMBINATION_WITH_QUALITY_OBSERVATIONS_NOT_ADMITTED",
+      "source_frames": 96000,
+      "readback_frames": 48000,
+      "decoder_max_abs_difference": 1.7881393432617188e-07,
+      "resampled_byte_identical_to_baseline": true,
+      "decoded_byte_identical_to_baseline": false,
+      "whole": {
+        "baseline": {
+          "signal_energy": [
+            33.994098450726696,
+            33.994098450726696
+          ],
+          "decoded_energy": [
+            8.524454966976156,
+            12.491209599690723
+          ],
+          "error_energy": [
+            25.263340709095235,
+            24.811787662356977
+          ],
+          "source_over_unity": [
+            7,
+            7
+          ],
+          "decoded_over_unity": [
+            1,
+            1
+          ],
+          "max_abs_error": [
+            0.925694465637207,
+            0.8317078351974487
+          ],
+          "source_peak": [
+            2.2208688259124756,
+            2.2208688259124756
+          ],
+          "decoded_peak": [
+            1.2951743602752686,
+            1.6515998840332031
+          ],
+          "frames": 48000,
+          "snr_db": [
+            1.2891274870310407,
+            1.3674547199852434
+          ],
+          "rmse": [
+            0.022941656394126184,
+            0.02273570414492963
+          ]
+        },
+        "combined": {
+          "signal_energy": [
+            33.994098450726696,
+            33.994098450726696
+          ],
+          "decoded_energy": [
+            30.664104206132016,
+            39.882021732795565
+          ],
+          "error_energy": [
+            2.9607320311983325,
+            2.0262985958741013
+          ],
+          "source_over_unity": [
+            7,
+            7
+          ],
+          "decoded_over_unity": [
+            7,
+            7
+          ],
+          "max_abs_error": [
+            0.22165322303771973,
+            0.16262000799179077
+          ],
+          "source_peak": [
+            2.2208688259124756,
+            2.2208688259124756
+          ],
+          "decoded_peak": [
+            2.0015437602996826,
+            2.3816757202148438
+          ],
+          "frames": 48000,
+          "snr_db": [
+            10.600044256346035,
+            12.247000843589188
+          ],
+          "rmse": [
+            0.007853783630622372,
+            0.0064972728187071265
+          ]
+        },
+        "snr_delta_db": [
+          9.310916769314995,
+          10.879546123603944
+        ]
+      },
+      "spectral_error_energy_below_above_20625hz": {
+        "baseline": [
+          [
+            1.3956859700740245,
+            0.944130379168717
+          ],
+          [
+            23.867654739021145,
+            23.86765728318815
+          ]
+        ],
+        "combined": [
+          [
+            1.395685717977118,
+            0.9441302923657817
+          ],
+          [
+            1.5650463132212031,
+            1.0821683035083178
+          ]
+        ]
+      },
+      "first_last_2048_max_error": {
+        "first_2048": [
+          0.0,
+          0.0
+        ],
+        "last_2048": [
+          0.0,
+          0.0
+        ]
+      },
+      "source_peak_before_after_2048_snr_db": {
+        "source_peak_ch0_before": [
+          9.352935128842843,
+          11.357816833705918
+        ],
+        "source_peak_ch0_after": [
+          11.839827894681177,
+          13.054287429927221
+        ]
+      },
+      "ogg": {
+        "bytes": 8693,
+        "baseline_bytes": 8454,
+        "pages": 51,
+        "packets": 51,
+        "eos": [
+          48000
+        ],
+        "all_crc_sequence_serial_checks": true
+      },
+      "resources": {
+        "encode": {
+          "elapsed_seconds": 0.04167547200631816,
+          "max_rss_kib": 23276,
+          "user_seconds": 0.08649899999999999,
+          "system_seconds": 0.0060609999999999995
+        },
+        "strict": {
+          "elapsed_seconds": 0.005213647993514314,
+          "max_rss_kib": 23276,
+          "user_seconds": 0.000856,
+          "system_seconds": 0.003777
+        },
+        "ffmpeg": {
+          "elapsed_seconds": 0.042369378003058955,
+          "max_rss_kib": 51972,
+          "user_seconds": 0.029914999999999997,
+          "system_seconds": 0.013118
+        }
+      },
+      "sha256": {
+        "96000/result.json": "3b13fc9e47a79bbc5a00614d79d14efd62fb814ce8fb7c5587d5ea3337bc0889",
+        "96000/candidate/canonical.ogg": "20357e371aee099273ffd88a6b4d3f8da8d3bcd33839fece3c9fab7652937713",
+        "96000/candidate/resampled.f32le": "5b5611c613b4a0c855e28bb63dc45e045227b18a68b73a185cb22381ab4115f3",
+        "96000/candidate/decoded.f32le": "459abac3ebc35a907fa4b28ff060e233c43771769966127382ac48eb76973f5e",
+        "96000/candidate/report.json": "0badc7ba5483631e7d9212aaebd1bf04f9edd41b7d99771b4b5c9d42cd7b8f7c",
+        "96000/strict.f32le": "459abac3ebc35a907fa4b28ff060e233c43771769966127382ac48eb76973f5e",
+        "96000/ffmpeg.f32le": "2c254a484cdd700d12d4b3e822d6de85373b11b4a4cc2cbdea3c0576e7e2c416"
+      }
+    },
+    {
+      "source_rate": 192000,
+      "source_sha256": "8a76b8d049e2cd7a216d02bde9d83a826dafc24b34bbddaa93a88aec1f0c511f",
+      "source_peak": 0.9979248046875,
+      "resampled_peak": 1.9589085578918457,
+      "status": "PASS_FIXED_COMBINATION_WITH_QUALITY_OBSERVATIONS_NOT_ADMITTED",
+      "source_frames": 192000,
+      "readback_frames": 48000,
+      "decoder_max_abs_difference": 1.1920928955078125e-07,
+      "resampled_byte_identical_to_baseline": true,
+      "decoded_byte_identical_to_baseline": false,
+      "whole": {
+        "baseline": {
+          "signal_energy": [
+            15.127007967944131,
+            15.127007967944131
+          ],
+          "decoded_energy": [
+            3.320028928808073,
+            5.494480182196511
+          ],
+          "error_energy": [
+            11.613183900749778,
+            11.440198043003695
+          ],
+          "source_over_unity": [
+            1,
+            1
+          ],
+          "decoded_over_unity": [
+            1,
+            1
+          ],
+          "max_abs_error": [
+            0.8333631753921509,
+            0.8309023082256317
+          ],
+          "source_peak": [
+            1.9589085578918457,
+            1.9589085578918457
+          ],
+          "decoded_peak": [
+            1.1255453824996948,
+            1.539851188659668
+          ],
+          "frames": 48000,
+          "snr_db": [
+            1.148017322862996,
+            1.2131949299649007
+          ],
+          "rmse": [
+            0.015554463387260275,
+            0.015438181862811555
+          ]
+        },
+        "combined": {
+          "signal_energy": [
+            15.127007967944131,
+            15.127007967944131
+          ],
+          "decoded_energy": [
+            12.135404479104691,
+            19.57494094244442
+          ],
+          "error_energy": [
+            1.992256200605568,
+            1.4967405749962626
+          ],
+          "source_over_unity": [
+            1,
+            1
+          ],
+          "decoded_over_unity": [
+            1,
+            3
+          ],
+          "max_abs_error": [
+            0.3067622184753418,
+            0.1667107343673706
+          ],
+          "source_peak": [
+            1.9589085578918457,
+            1.9589085578918457
+          ],
+          "decoded_peak": [
+            1.652146339416504,
+            2.057631731033325
+          ],
+          "frames": 48000,
+          "snr_db": [
+            8.804078484788791,
+            10.046065035904665
+          ],
+          "rmse": [
+            0.006442463621365354,
+            0.005584093060866924
+          ]
+        },
+        "snr_delta_db": [
+          7.656061161925795,
+          8.832870105939763
+        ]
+      },
+      "spectral_error_energy_below_above_20625hz": {
+        "baseline": [
+          [
+            0.7082985867047922,
+            0.5353141528063897
+          ],
+          [
+            10.904885314045034,
+            10.90488389019732
+          ]
+        ],
+        "combined": [
+          [
+            0.7082986533751134,
+            0.5353140575945401
+          ],
+          [
+            1.2839575472304556,
+            0.9614265174017209
+          ]
+        ]
+      },
+      "first_last_2048_max_error": {
+        "first_2048": [
+          0.0,
+          0.0
+        ],
+        "last_2048": [
+          0.0,
+          0.0
+        ]
+      },
+      "source_peak_before_after_2048_snr_db": {
+        "source_peak_ch0_before": [
+          7.590033359777038,
+          9.281540228428817
+        ],
+        "source_peak_ch0_after": [
+          9.729986310219587,
+          10.57461011131333
+        ]
+      },
+      "ogg": {
+        "bytes": 8664,
+        "baseline_bytes": 8418,
+        "pages": 51,
+        "packets": 51,
+        "eos": [
+          48000
+        ],
+        "all_crc_sequence_serial_checks": true
+      },
+      "resources": {
+        "encode": {
+          "elapsed_seconds": 0.044550384001922794,
+          "max_rss_kib": 23296,
+          "user_seconds": 0.08864,
+          "system_seconds": 0.007202999999999999
+        },
+        "strict": {
+          "elapsed_seconds": 0.005322247990989126,
+          "max_rss_kib": 23304,
+          "user_seconds": 0.0022919999999999998,
+          "system_seconds": 0.0024289999999999997
+        },
+        "ffmpeg": {
+          "elapsed_seconds": 0.041535393000231124,
+          "max_rss_kib": 51928,
+          "user_seconds": 0.026921999999999998,
+          "system_seconds": 0.015151999999999999
+        }
+      },
+      "sha256": {
+        "192000/result.json": "363dbc4658838d6c09fc162128a7a37dd6ec626fef325795a7cde7fb88b0c62b",
+        "192000/candidate/canonical.ogg": "3b33dc7f6e5e2bfc17dcfe64721fc185c226932a5d9816ebda3baa76830b0954",
+        "192000/candidate/resampled.f32le": "19055790e96ddf8119dad60d8ef14baca4d9deeae40ffca781086e70bb65857f",
+        "192000/candidate/decoded.f32le": "0fdd1900605144d6e848c5a87bc8876b5a9116739c76cffb10d5a0f537a291de",
+        "192000/candidate/report.json": "e590f111d10fa793de208e51cc9b54da749d413bb2ef2ac852b7ab39c4015d36",
+        "192000/strict.f32le": "0fdd1900605144d6e848c5a87bc8876b5a9116739c76cffb10d5a0f537a291de",
+        "192000/ffmpeg.f32le": "b5f5de9fc5b257701d7d4ef1f1a06fe4bb77e344381c67169902ff2722bfaf31"
+      }
+    }
+  ],
+  "independent_review": {
+    "status": "PASS; Lean already. Ship.",
+    "path": "target/numeric-fullband-20261003/independent-source-review.md",
+    "sha256": "76f2688854d560baf100f729ecbbc5421b5b4dca5267be58de41f66bdc044677",
+    "checks": [
+      "all kernel phases independently outward recomputed",
+      "704 metrics and full spectral energy independently recomputed",
+      "64 source and5 helper identities",
+      "fixed setup and14 numeric stages",
+      "strict and FFmpeg full readback plus source PCM identity",
+      "README provenance and f32 budget-display boundary"
+    ]
+  }
+}

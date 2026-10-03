@@ -402,3 +402,11 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 新增 6 项离散音色控制全部通过，24 项离散控制的额外峰从 537 降为 0；旧 18 项仍为 11 PASS / 7 FAIL，两个持续音此前在容差内的假峰被删除后新增两次首帧漏检，全部失败保留。连续 fade 从 125 峰降为 0，仍不计 F1；实际曲库、慢起音、叠加声部、近邻强弱事件和最终 Ogg 回读尚未验证，整体质量为 FAIL，未接生产 MIR
 
 紧凑[观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-20261003.json) SHA-256 为 `f5bf5cca255bf31353671eef32a1c7216ae9a57e19387733f940da383f58199b`，完整窗口报告保留在 `target/mir-flux-gate-20261003/results-v1/report.json`；本批没有生成新 PCM 或新增第三方版本，研究台账仅补相同 37 个包的使用方
+
+## 数值域与全频带组合检查
+
+2026-10-03 的[独立诊断](../tools/canonical-audio-probe/numeric-fullband/README.md) 仅编码四个冻结的 sign-kernel 源一次，每例执行严格与 FFmpeg 完整回读，均为 48000 帧，最大解码差 `4.76837158203125e-7`；原 PCM 身份、首尾、逐声道 SNR、峰值与频段误差全部保留。已核对实际 High 系数表的 48000 相位证书及有条件的 codec 算术预算，14 个插桩阶段实际有限；独立复审复算证书及 704 个质量指标，通过后保持正式候选和生产 guard 不变
+
+源码 hash 分隔换行检查失败及外层进程退出 143 都发生在编码前，原日志保留，最终四次编码没有扩大矩阵。上采样率及固定 96/192 kHz 的核界只适用于实际源峰值不超过 1 的声明条件，编码包络 4 不是生产配置；仍有明显残余失真与局部退步，质量准入、seek、其他原生平台与听感均未因此通过。工作区复现需要两批冻结 target 证据，缺少完整历史生成器的 fresh checkout 复现边界已明确写入工具说明
+
+数值域组合的 171 项冻结产物清单 `target/numeric-fullband-20261003/FROZEN.json` SHA-256 为 `0bfa350ac218f6448aa7259ad9061f7025a96bd780e07ad5261402c26c65961a`，持久[观察清单](../testdata/synthetic/canonical-audio-probe/numeric-fullband-observations-20261003.json) SHA-256 为 `af49b1feede15ae0eb7164d9506e34ab82cf810d5fb318e3c3362882f97abe6d`；最终独立复审为 `Lean already. Ship.`
