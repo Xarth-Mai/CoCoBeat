@@ -540,7 +540,8 @@ pub(crate) fn animate(
                     Motion::AnchorRing(index) => (
                         state.anchor_sync_pulse.clamp(0.0, 1.0),
                         2.15 + index as f32 * 0.25,
-                        0.95 - index as f32 * 0.3,
+                        (0.95 - index as f32 * 0.3)
+                            * if state.anchor_sync_precise { 1.0 } else { 0.68 },
                     ),
                     _ => (state.free_sync_pulse.clamp(0.0, 1.0), 1.95, 0.65),
                 };
@@ -549,9 +550,12 @@ pub(crate) fn animate(
                 } else {
                     Visibility::Hidden
                 };
-                let radius = radius + (1.0 - sync) * 0.9;
+                let radius = radius + (1.0 - sync * sync) * 0.9;
                 transform.scale = Vec3::new(radius, 0.2, radius);
-                Some(sync * sync * alpha)
+                // Grade changes strength only; the same age drives growth and lifetime
+                let attack = ((1.0 - sync) / 0.1).clamp(0.0, 1.0);
+                let attack = 0.15 + 0.85 * attack * attack * (3.0 - 2.0 * attack);
+                Some(attack * sync * sync * alpha)
             }
             Motion::AnchorPreview => {
                 let ahead = state.next_anchor_seconds.map(|at| at - state.song_seconds);
@@ -775,7 +779,7 @@ mod tests {
             .add_systems(PostUpdate, animate);
         app.update();
         let mut entities = app.world_mut().query::<(Entity, &Motion)>();
-        let mut selected = [None; 6];
+        let mut selected = [None; 7];
         for (entity, motion) in entities.iter(app.world()) {
             let index = match motion {
                 Motion::Spirit(0) => 0,
@@ -784,11 +788,12 @@ mod tests {
                 Motion::AnchorRing(0) => 3,
                 Motion::AnchorPreview => 4,
                 Motion::Street(9.0) => 5,
+                Motion::AnchorRing(1) => 6,
                 _ => continue,
             };
             selected[index] = Some(entity);
         }
-        let [spirit, local, free, anchor, preview, street] = selected.map(Option::unwrap);
+        let [spirit, local, free, anchor, preview, street, outer] = selected.map(Option::unwrap);
         let base = *app.world().get::<Transform>(spirit).unwrap();
         for (local_pulse, free_pulse, anchor_pulse, expected) in [
             (0.0, 0.0, 0.0, [false, false, false]),
@@ -814,6 +819,10 @@ mod tests {
                 base.translation
             );
         }
+        app.world_mut()
+            .resource_mut::<VisualState>()
+            .anchor_sync_pulse = 0.9;
+        app.update();
         let material = app
             .world()
             .get::<MeshMaterial3d<StandardMaterial>>(anchor)
@@ -896,6 +905,52 @@ mod tests {
                 *app.world().get::<Visibility>(preview).unwrap(),
                 Visibility::Hidden
             );
+        }
+
+        // Both grades finish the same motion; only confirmed precision changes brightness
+        let samples = [false, true].map(|precise| {
+            [1.0, 0.975, 0.95, 0.9, 0.75, 0.5, 0.25, 0.01, 0.0].map(|remaining| {
+                {
+                    let mut state = app.world_mut().resource_mut::<VisualState>();
+                    state.anchor_sync_precise = precise;
+                    state.anchor_sync_pulse = remaining;
+                    state.free_sync_pulse = remaining;
+                }
+                app.update();
+                [anchor, outer, free].map(|entity| {
+                    let material = app
+                        .world()
+                        .get::<MeshMaterial3d<StandardMaterial>>(entity)
+                        .unwrap();
+                    (
+                        *app.world().get::<Transform>(entity).unwrap(),
+                        *app.world().get::<Visibility>(entity).unwrap(),
+                        app.world()
+                            .resource::<Assets<StandardMaterial>>()
+                            .get(&material.0)
+                            .unwrap()
+                            .base_color
+                            .alpha(),
+                    )
+                })
+            })
+        });
+        for (good, precise) in samples[0].iter().zip(&samples[1]) {
+            for (ring, (good, precise)) in good.iter().zip(precise).enumerate() {
+                assert_eq!(good.0, precise.0);
+                assert_eq!(good.1, precise.1);
+                let strength = if ring == 2 { 1.0 } else { 0.68 };
+                assert!((good.2 - precise.2 * strength).abs() < 1e-6);
+            }
+        }
+        for ring in 0..3 {
+            let alpha = samples[1].map(|sample| sample[ring].2);
+            assert!(alpha[0] > 0.0);
+            assert!(alpha[0] < alpha[1]);
+            assert!(alpha[1] < alpha[2]);
+            assert!(alpha[2] < alpha[3]);
+            assert!(alpha[3..].windows(2).all(|w| w[0] > w[1]));
+            assert_eq!(alpha[8], 0.0);
         }
     }
 }

@@ -20,6 +20,7 @@ pub(crate) struct VisualState {
     pub hit_pulses: [f32; 2],
     pub free_sync_pulse: f32,
     pub anchor_sync_pulse: f32,
+    pub anchor_sync_precise: bool,
     pub miss_pulses: [f32; 2],
     pub next_anchor_seconds: Option<f64>,
     pub resonance: f32,

@@ -3,7 +3,9 @@
 use crate::{clock::*, dev_song};
 use cocobeat_core::DuoEngine;
 use cocobeat_replay::{MAX_FACTS, Replay, ReplayIdentity};
-use cocobeat_schema::{DuoEvent, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime};
+use cocobeat_schema::{
+    AnchorGrade, DuoEvent, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime,
+};
 use std::path::{Path, PathBuf};
 
 pub const CONTENT_ID: &str = "dev64-pcm16-3390dd080cb536fd4-anchors-v1";
@@ -19,6 +21,14 @@ pub struct CaptureDiagnostic {
     pub consumed_ns: u64,
     pub song_frames: i64,
     pub uncertainty_frames: u64,
+}
+
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct SessionResults {
+    pub hits: [u64; 2],
+    pub anchors: [[u64; 4]; 2],
+    pub free_sync: u64,
+    pub anchor_sync: u64,
 }
 
 pub struct Session {
@@ -200,6 +210,31 @@ impl Session {
         Ok(events)
     }
 
+    pub fn summary(&self) -> SessionResults {
+        let mut results = SessionResults::default();
+        for fact in self.replay.facts() {
+            if let DuoInput::Hit(hit) = fact {
+                results.hits[hit.player.index()] += 1;
+            }
+        }
+        for event in self.engine.events() {
+            match event {
+                DuoEvent::AnchorJudged(judgement) => {
+                    let grade = match judgement.grade {
+                        AnchorGrade::Precise => 0,
+                        AnchorGrade::Good => 1,
+                        AnchorGrade::LateOrEarly => 2,
+                        AnchorGrade::Miss => 3,
+                    };
+                    results.anchors[judgement.player.index()][grade] += 1;
+                }
+                DuoEvent::FreeSync(_) => results.free_sync += 1,
+                DuoEvent::AnchorSync(_) => results.anchor_sync += 1,
+            }
+        }
+        results
+    }
+
     pub fn save(&self, directory: &Path) -> Result<PathBuf, String> {
         std::fs::create_dir_all(directory).map_err(|error| error.to_string())?;
         let stamp = std::time::SystemTime::now()
@@ -237,6 +272,55 @@ impl Session {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn summary_counts_recorded_hits_and_only_confirmed_grades_for_the_whole_session() {
+        let mut session = Session::new(SessionEpoch(7)).unwrap();
+        for (seq, frame) in [
+            48_000,
+            dev_song::ANCHOR_FRAMES[0],
+            dev_song::ANCHOR_FRAMES[1] + 3_000,
+            dev_song::ANCHOR_FRAMES[2] + 6_000,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            for player in [PlayerId::P1, PlayerId::P2] {
+                session
+                    .ingest(DuoInput::Hit(Hit {
+                        epoch: session.epoch(),
+                        player,
+                        seq: seq as u64,
+                        song_time: SongTime::from_frames(frame),
+                    }))
+                    .unwrap();
+            }
+        }
+        assert_eq!(session.summary().hits, [4, 4]);
+        assert_eq!(session.summary().anchors, [[0; 4]; 2]);
+        session.finish().unwrap();
+        let results = session.summary();
+        assert_eq!(results.hits, [4, 4]);
+        assert_eq!(results.anchors, [[1, 1, 1, 4]; 2]);
+        assert_eq!(results.anchor_sync, 2);
+        assert_eq!(results.free_sync, 2);
+        assert_eq!(session.engine.resonance().inputs, [0, 0]);
+        assert_eq!(session.summary(), results);
+        let restored = session
+            .replay
+            .replay(
+                CONTENT_ID,
+                RULES_ID,
+                dev_song::anchors(),
+                DuoRules::default(),
+            )
+            .unwrap();
+        assert_eq!(session.engine.events(), restored.events());
+        assert_eq!(
+            Session::new(SessionEpoch(8)).unwrap().summary(),
+            SessionResults::default()
+        );
+    }
 
     #[test]
     fn captured_time_survives_late_consumption_and_replays_identically() {

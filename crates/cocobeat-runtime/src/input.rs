@@ -119,6 +119,7 @@ enum Binding {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum MenuAction {
     Start,
+    Resume,
     Players,
     Settings,
     Restart,
@@ -133,6 +134,7 @@ impl MenuAction {
     fn label(self, locale: Locale) -> String {
         let (key, player) = match self {
             Self::Start => ("menu.start", None),
+            Self::Resume => ("menu.resume", None),
             Self::Players => ("menu.players", None),
             Self::Settings => ("menu.settings", None),
             Self::Restart => ("menu.restart", None),
@@ -148,13 +150,20 @@ impl MenuAction {
     }
 }
 
-const MENU: [MenuAction; 7] = [
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub(crate) enum MenuPhase {
+    #[default]
+    Ready,
+    Paused,
+    Finished,
+    Fault,
+    Transition,
+}
+
+const MENU: [MenuAction; 4] = [
     MenuAction::Start,
     MenuAction::Players,
     MenuAction::Settings,
-    MenuAction::Restart,
-    MenuAction::SaveReplay,
-    MenuAction::MainMenu,
     MenuAction::Quit,
 ];
 
@@ -175,6 +184,8 @@ pub struct InputState {
     pub menu_open: bool,
     pub status: Message,
     settings_open: bool,
+    menu_phase: MenuPhase,
+    replay_unsaved: bool,
     menu_transitioning: bool,
     players_open: bool,
     menu_owner: Option<InputSource>,
@@ -201,6 +212,8 @@ impl Default for InputState {
             menu_open: true,
             status: Message::new("input.ready"),
             settings_open: false,
+            menu_phase: MenuPhase::Ready,
+            replay_unsaved: false,
             menu_transitioning: false,
             players_open: false,
             menu_owner: None,
@@ -253,6 +266,8 @@ impl InputState {
     }
 
     pub fn open_main_menu(&mut self) {
+        self.menu_phase = MenuPhase::Ready;
+        self.replay_unsaved = false;
         self.menu_open = true;
         self.settings_open = false;
         self.players_open = false;
@@ -260,6 +275,22 @@ impl InputState {
         self.selection = 0;
         self.queued.clear();
         self.reset_edges();
+    }
+
+    pub(crate) fn set_menu_phase(&mut self, phase: MenuPhase, replay_unsaved: bool) {
+        if self.menu_phase != phase || self.replay_unsaved != replay_unsaved {
+            if self.menu_phase != phase && matches!(phase, MenuPhase::Finished | MenuPhase::Fault) {
+                self.players_open = false;
+                self.selection = 0;
+                self.reset_edges();
+            }
+            self.menu_phase = phase;
+            self.replay_unsaved = replay_unsaved;
+            if !self.players_open && !self.settings_open {
+                self.selection = 0;
+                self.menu_row_count = self.menu_actions().len().max(1);
+            }
+        }
     }
 
     pub(crate) fn set_menu_transitioning(&mut self, transitioning: bool) {
@@ -399,9 +430,14 @@ impl InputState {
         let mut rows = self
             .menu_actions()
             .iter()
-            .map(|action| MenuRow {
+            .enumerate()
+            .map(|(index, action)| MenuRow {
                 text: action.label(locale),
-                role: if *action == MenuAction::Start {
+                role: if index == 0
+                    && matches!(
+                        action,
+                        MenuAction::Start | MenuAction::Resume | MenuAction::Restart
+                    ) {
                     MenuRowRole::Primary
                 } else {
                     MenuRowRole::Action
@@ -409,11 +445,11 @@ impl InputState {
                 ..default()
             })
             .collect::<Vec<_>>();
-        for text in [locale.text("menu.controls").into()]
+        for text in information
             .into_iter()
+            .chain([locale.text("menu.controls").into()])
             .chain(self.binding_lines(locale))
             .chain([self.status.render(locale)])
-            .chain(information)
         {
             rows.extend(
                 text.lines()
@@ -462,7 +498,8 @@ impl InputState {
                 | Control::Restart
                 | Control::MainMenu
                 | Control::FocusLost
-        ) {
+        ) || (control == Control::SaveReplay && self.menu_open)
+        {
             self.capture_transitioned = true;
         }
         self.queued.push(CapturedControl {
@@ -547,12 +584,35 @@ impl InputState {
         self.held_pad_axes.retain(|(entity, _)| *entity != pad);
     }
 
-    fn menu_actions(&self) -> &'static [MenuAction] {
-        if self.players_open {
-            &PLAYERS_MENU
+    fn menu_actions(&self) -> Vec<MenuAction> {
+        let actions = if self.players_open {
+            PLAYERS_MENU.to_vec()
         } else {
-            &MENU
-        }
+            match self.menu_phase {
+                MenuPhase::Ready => MENU.to_vec(),
+                MenuPhase::Paused => vec![
+                    MenuAction::Resume,
+                    MenuAction::Players,
+                    MenuAction::Settings,
+                    MenuAction::Restart,
+                    MenuAction::SaveReplay,
+                    MenuAction::MainMenu,
+                    MenuAction::Quit,
+                ],
+                MenuPhase::Finished | MenuPhase::Fault => vec![
+                    MenuAction::Restart,
+                    MenuAction::SaveReplay,
+                    MenuAction::Settings,
+                    MenuAction::MainMenu,
+                    MenuAction::Quit,
+                ],
+                MenuPhase::Transition => vec![],
+            }
+        };
+        actions
+            .into_iter()
+            .filter(|action| *action != MenuAction::SaveReplay || self.replay_unsaved)
+            .collect()
     }
 
     fn players_page(&mut self, open: bool, scroll: &mut MenuScroll) {
@@ -564,9 +624,10 @@ impl InputState {
         self.selection = if open {
             0
         } else {
-            MENU.iter()
+            self.menu_actions()
+                .iter()
                 .position(|action| *action == MenuAction::Players)
-                .unwrap()
+                .unwrap_or(0)
         };
         scroll.reset();
     }
@@ -577,7 +638,7 @@ impl InputState {
         };
         scroll.reset();
         match action {
-            MenuAction::Start => self.emit(Control::Start, now),
+            MenuAction::Start | MenuAction::Resume => self.emit(Control::Start, now),
             MenuAction::Restart => self.emit(Control::Restart, now),
             MenuAction::SaveReplay => self.emit(Control::SaveReplay, now),
             MenuAction::MainMenu => self.emit(Control::MainMenu, now),
@@ -705,8 +766,15 @@ impl InputState {
                 self.players_page(false, scroll)
             }
             KeyCode::Escape => self.emit(Control::TogglePause(InputSource::Keyboard), now),
-            KeyCode::F5 if !self.players_open => self.emit(Control::Restart, now),
-            KeyCode::F6 if !self.players_open => self.emit(Control::SaveReplay, now),
+            KeyCode::F5
+                if !self.players_open
+                    && (!self.menu_open || self.menu_actions().contains(&MenuAction::Restart)) =>
+            {
+                self.emit(Control::Restart, now)
+            }
+            KeyCode::F6 if !self.players_open && self.replay_unsaved => {
+                self.emit(Control::SaveReplay, now)
+            }
             KeyCode::Enter if self.menu_open => self.activate(None, now, scroll),
             _ if !self.menu_open => {
                 for player in [PlayerId::P1, PlayerId::P2] {
@@ -844,7 +912,12 @@ impl InputState {
         }
         match button {
             GamepadButton::Start
-                if !self.players_open && (self.menu_open || self.pads.contains(&Some(pad))) =>
+                if !self.players_open
+                    && ((!self.menu_open && self.pads.contains(&Some(pad)))
+                        || (self.menu_open
+                            && self.menu_actions().iter().any(|action| {
+                                matches!(action, MenuAction::Start | MenuAction::Resume)
+                            }))) =>
             {
                 self.emit(
                     if self.menu_open {
@@ -855,7 +928,9 @@ impl InputState {
                     now,
                 )
             }
-            GamepadButton::Select if !self.players_open => self.emit(Control::SaveReplay, now),
+            GamepadButton::Select if !self.players_open && self.replay_unsaved => {
+                self.emit(Control::SaveReplay, now)
+            }
             GamepadButton::East if self.menu_open && self.players_open => {
                 self.players_page(false, scroll)
             }
@@ -1070,6 +1145,132 @@ mod tests {
     }
 
     #[test]
+    fn ending_under_settings_keeps_the_draft_and_returns_to_the_primary_game_action() {
+        use crate::{
+            display::DisplayState, settings::DisplaySettings, settings_menu::SettingsMenu,
+        };
+        for phase in [MenuPhase::Finished, MenuPhase::Fault] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            let mut display = DisplayState::new(DisplaySettings::default());
+            display.set_headless_surface([1920, 1080]);
+            let mut settings = SettingsMenu::default();
+            select(&mut input, MenuAction::Settings);
+            input.activate(None, 0, &mut scroll);
+            assert!(input.settings_open);
+            assert_eq!(
+                input.queued[0].control,
+                Control::Settings(SettingsAction::Open)
+            );
+            settings.begin(&display);
+            settings.handle(SettingsAction::Down, 0.0, &mut display);
+            settings.handle(SettingsAction::Confirm, 0.0, &mut display);
+            let draft = settings.presentation(0.0, &display, Locale::EnUs).unwrap();
+            input.set_menu_phase(phase, false);
+            assert!(input.settings_open);
+            assert_eq!(
+                settings.presentation(0.0, &display, Locale::EnUs).unwrap(),
+                draft
+            );
+            assert!(settings.handle(SettingsAction::Back, 0.0, &mut display));
+            input.set_settings_open(false);
+            let menu = input
+                .menu_presentation(Locale::EnUs, "Stopped".into(), vec![])
+                .unwrap();
+            assert!(menu.rows[0].selected);
+            assert_eq!(menu.rows[0].role, MenuRowRole::Primary);
+            assert_eq!(menu.rows[0].text, "Restart song");
+            assert!(menu.rows.iter().skip(1).all(|row| !row.selected));
+            assert_eq!(input.menu_owner, Some(InputSource::Keyboard));
+        }
+    }
+
+    #[test]
+    fn saving_while_playing_keeps_later_hits_in_the_same_capture_batch() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        for use_pad in [false, true] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            input.join_pad(PlayerId::P1, pad);
+            input.set_menu_phase(MenuPhase::Paused, true);
+            input.set_menu_open(false);
+            next_frame(&mut input);
+            if use_pad {
+                input.pad_button(pad, GamepadButton::Select, true, 1, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, true, 2, &mut scroll);
+            } else {
+                input.key(KeyCode::F6, true, false, 1, &mut scroll);
+                input.key(KeyCode::KeyF, true, false, 2, &mut scroll);
+            }
+            assert_eq!(
+                input
+                    .queued
+                    .iter()
+                    .map(|event| event.control)
+                    .collect::<Vec<_>>(),
+                [Control::SaveReplay, Control::Hit(PlayerId::P1)]
+            );
+        }
+    }
+
+    #[test]
+    fn phase_actions_match_available_work_and_do_not_save_empty_or_already_saved_history() {
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        for (phase, primary, has_main) in [
+            (MenuPhase::Ready, MenuAction::Start, false),
+            (MenuPhase::Paused, MenuAction::Resume, true),
+            (MenuPhase::Finished, MenuAction::Restart, true),
+            (MenuPhase::Fault, MenuAction::Restart, true),
+        ] {
+            for unsaved in [false, true] {
+                input.set_menu_phase(phase, unsaved);
+                let actions = input.menu_actions();
+                assert_eq!(actions[0], primary);
+                assert_eq!(actions.contains(&MenuAction::MainMenu), has_main);
+                assert_eq!(
+                    actions.contains(&MenuAction::SaveReplay),
+                    unsaved && phase != MenuPhase::Ready
+                );
+                assert_eq!(
+                    actions.contains(&MenuAction::Start),
+                    phase == MenuPhase::Ready
+                );
+                assert_eq!(
+                    actions.contains(&MenuAction::Resume),
+                    phase == MenuPhase::Paused
+                );
+                assert_eq!(
+                    actions
+                        .iter()
+                        .filter(|action| **action == MenuAction::Restart)
+                        .count(),
+                    usize::from(phase != MenuPhase::Ready)
+                );
+                input.selection = 0;
+                input.queued.clear();
+                next_frame(&mut input);
+                input.activate(None, 0, &mut scroll);
+                assert_eq!(
+                    input.queued[0].control,
+                    if matches!(phase, MenuPhase::Ready | MenuPhase::Paused) {
+                        Control::Start
+                    } else {
+                        Control::Restart
+                    }
+                );
+            }
+        }
+        input.set_menu_phase(MenuPhase::Ready, false);
+        input.queued.clear();
+        next_frame(&mut input);
+        input.key(KeyCode::F5, true, false, 1, &mut scroll);
+        input.key(KeyCode::F6, true, false, 2, &mut scroll);
+        assert!(input.queued.is_empty());
+    }
+
+    #[test]
     fn existing_notice_and_bindings_follow_the_selected_locale() {
         let mut world = World::new();
         let pad = world.spawn_empty().id();
@@ -1174,7 +1375,9 @@ mod tests {
             next_frame(&mut input);
             input.key(KeyCode::KeyD, true, false, 1, &mut scroll);
             input.pad_button(pad, GamepadButton::West, true, 1, &mut scroll);
-            for _ in 0..MENU
+            input.set_menu_phase(MenuPhase::Paused, true);
+            for _ in 0..input
+                .menu_actions()
                 .iter()
                 .position(|action| *action == MenuAction::MainMenu)
                 .unwrap()
@@ -1221,7 +1424,7 @@ mod tests {
                     .find(|row| row.selected)
                     .unwrap()
                     .text,
-                "Start / Resume"
+                "Start"
             );
             assert!(input.queued.is_empty());
             assert_eq!(input.binding_lines(Locale::EnUs), bindings);
@@ -1449,12 +1652,12 @@ mod tests {
                 locale.text("menu.quit")
             );
             assert_eq!(
-                presentation.rows[MENU.len()].text,
+                presentation.rows[MENU.len() + 2].text,
                 locale.text("menu.controls")
             );
-            assert!(presentation.rows[MENU.len() + 1].text.contains("P1"));
-            assert!(presentation.rows[MENU.len() + 2].text.contains("P2"));
-            assert_eq!(presentation.rows.last().unwrap().text, "notice");
+            assert!(presentation.rows[MENU.len() + 3].text.contains("P1"));
+            assert!(presentation.rows[MENU.len() + 4].text.contains("P2"));
+            assert_eq!(presentation.rows[MENU.len() + 1].text, "notice");
             assert_eq!(
                 presentation.rows.iter().filter(|row| row.selected).count(),
                 1
@@ -2047,6 +2250,13 @@ mod tests {
         app.world_mut()
             .resource_mut::<InputState>()
             .claim_menu(InputSource::Keyboard);
+        select(
+            &mut app.world_mut().resource_mut::<InputState>(),
+            MenuAction::Settings,
+        );
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .set_menu_phase(MenuPhase::Paused, false);
         select(
             &mut app.world_mut().resource_mut::<InputState>(),
             MenuAction::Settings,

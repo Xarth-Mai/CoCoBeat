@@ -7,8 +7,11 @@ use crate::{
     dev_song,
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
-    input::{self, Control, InputSource, InputState, MenuPresentation, MenuScroll, SettingsAction},
-    session::{CONTENT_ID, RULES_ID, Session},
+    input::{
+        self, Control, InputSource, InputState, MenuPhase, MenuPresentation, MenuRowRole,
+        MenuScroll, SettingsAction,
+    },
+    session::{CONTENT_ID, RULES_ID, Session, SessionResults},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
     ui_assets,
@@ -48,8 +51,10 @@ enum Phase {
 enum Smoke {
     Scene,
     Feedback(FeedbackSmoke),
+    FeedbackMotion,
     Startup,
     Settings,
+    SettingsFault(Locale),
     Locale(Locale),
     Languages(Locale),
     Menu(Locale, Phase),
@@ -64,6 +69,7 @@ enum FeedbackSmoke {
     Local,
     Free,
     Anchor,
+    AnchorGood,
     Miss,
     Approach,
 }
@@ -120,6 +126,9 @@ struct Game {
     phase: Phase,
     notice: Message,
     saved_facts: usize,
+    replay_status: Message,
+    fault_details: Option<String>,
+    results: Option<SessionResults>,
     transition_started: std::time::Instant,
 }
 
@@ -130,17 +139,48 @@ impl Game {
             phase: Phase::Ready,
             notice: Message::new("game.welcome"),
             saved_facts: 0,
+            replay_status: Message::default(),
+            fault_details: None,
+            results: None,
             transition_started: std::time::Instant::now(),
         })
     }
 
     fn save(&mut self) -> Result<(), String> {
+        self.save_to(Path::new("replays"))
+    }
+
+    fn save_to(&mut self, directory: &Path) -> Result<(), String> {
         if self.session.replay.facts().is_empty() {
-            self.notice = Message::new("game.nothing_to_save");
+            if self.phase != Phase::Fault {
+                self.notice = Message::new("game.nothing_to_save");
+            }
         } else if self.saved_facts != self.session.replay.facts().len() {
-            let path = self.session.save(Path::new("replays"))?;
+            let path = self.session.save(directory).inspect_err(|error| {
+                self.replay_status =
+                    Message::with("results.replay_failed", [("error", error.clone())]);
+            })?;
             self.saved_facts = self.session.replay.facts().len();
-            self.notice = Message::with("game.saved", [("path", path.display().to_string())]);
+            self.replay_status = Message::with(
+                "results.replay_saved",
+                [("path", path.display().to_string())],
+            );
+            if self.phase != Phase::Fault {
+                self.notice = Message::with("game.saved", [("path", path.display().to_string())]);
+            }
+        }
+        Ok(())
+    }
+
+    fn save_before_terminal_transition(
+        &mut self,
+        control: Control,
+        directory: &Path,
+    ) -> Result<(), String> {
+        if matches!(self.phase, Phase::Finished | Phase::Fault)
+            && matches!(control, Control::Restart | Control::MainMenu)
+        {
+            self.save_to(directory)?;
         }
         Ok(())
     }
@@ -157,6 +197,9 @@ impl Game {
         audio.start()?;
         self.session = session;
         self.saved_facts = 0;
+        self.replay_status = Message::default();
+        self.fault_details = None;
+        self.results = None;
         self.phase = Phase::Starting;
         self.transition_started = std::time::Instant::now();
         self.notice = Message::new("game.waiting_audio");
@@ -168,6 +211,9 @@ impl Game {
         // Keep the epoch until the next explicit Start advances it
         self.session = Session::new(self.session.epoch())?;
         self.saved_facts = 0;
+        self.replay_status = Message::default();
+        self.fault_details = None;
+        self.results = None;
         self.phase = Phase::Ready;
         self.notice = Message::new("game.ready");
         Ok(())
@@ -176,12 +222,13 @@ impl Game {
     fn fault(&mut self, audio: &mut AudioOutput, error: String, message: &'static str) {
         audio.stop();
         self.phase = Phase::Fault;
+        self.fault_details = Some(error.clone());
+        self.results = Some(self.session.summary());
         let saved = self.save();
         eprintln!("Session stopped: {error}");
         self.notice = Message::new(message);
         if let Err(save_error) = saved {
             eprintln!("Replay save failed: {save_error}");
-            self.notice = Message::new("game.replay_failed");
         }
     }
 
@@ -257,17 +304,21 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/miss/approach feedback samples\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/paused/finished/fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/anchor-good/miss/approach samples\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
         [flag, path] if flag == "--replay" => validate_replay(path),
         [flag, path] if flag == "--visual-smoke" => visual_smoke(PathBuf::from(path), Smoke::Scene),
+        [flag, path] if flag == "--feedback-motion-smoke" => {
+            visual_smoke(PathBuf::from(path), Smoke::FeedbackMotion)
+        }
         [flag, effect, path] if flag == "--feedback-smoke" => {
             let effect = match effect.as_str() {
                 "local" => Ok(FeedbackSmoke::Local),
                 "free" => Ok(FeedbackSmoke::Free),
                 "anchor" => Ok(FeedbackSmoke::Anchor),
+                "anchor-good" => Ok(FeedbackSmoke::AnchorGood),
                 "miss" => Ok(FeedbackSmoke::Miss),
                 "approach" => Ok(FeedbackSmoke::Approach),
                 _ => Err(format!("Unsupported feedback sample: {effect}")),
@@ -349,6 +400,7 @@ pub fn run() -> ExitCode {
                     "paused" => Smoke::Menu(locale, Phase::Paused),
                     "finished" => Smoke::Menu(locale, Phase::Finished),
                     "fault" => Smoke::Menu(locale, Phase::Fault),
+                    "settings-fault" => Smoke::SettingsFault(locale),
                     _ => return Err(format!("Unsupported settings page: {page}")),
                 };
                 let viewport = SmokeViewport::parse(width, height, scale, selection)?;
@@ -524,7 +576,11 @@ fn feedback(
 fn visual_feedback(event: DuoEvent, visual: &mut VisualState) -> bool {
     match event {
         DuoEvent::FreeSync(_) => visual.free_sync_pulse = 1.0,
-        DuoEvent::AnchorSync(_) => visual.anchor_sync_pulse = 1.0,
+        DuoEvent::AnchorSync(event) => {
+            visual.anchor_sync_pulse = 1.0;
+            visual.anchor_sync_precise =
+                event.p1.grade == AnchorGrade::Precise && event.p2.grade == AnchorGrade::Precise;
+        }
         DuoEvent::AnchorJudged(judgement) => {
             if judgement.grade == AnchorGrade::Miss {
                 visual.miss_pulses[judgement.player.index()] = 1.0;
@@ -539,7 +595,19 @@ fn reset_feedback(visual: &mut VisualState) {
     visual.hit_pulses = [0.0; 2];
     visual.free_sync_pulse = 0.0;
     visual.anchor_sync_pulse = 0.0;
+    visual.anchor_sync_precise = false;
     visual.miss_pulses = [0.0; 2];
+}
+
+fn decay_feedback(visual: &mut VisualState, delta: f32) {
+    for pulse in &mut visual.hit_pulses {
+        *pulse = (*pulse - delta * 4.0).max(0.0);
+    }
+    for pulse in &mut visual.miss_pulses {
+        *pulse = (*pulse - delta * 2.0).max(0.0);
+    }
+    visual.free_sync_pulse = (visual.free_sync_pulse - delta * 1.8).max(0.0);
+    visual.anchor_sync_pulse = (visual.anchor_sync_pulse - delta * 1.4).max(0.0);
 }
 
 fn update_game(
@@ -619,14 +687,7 @@ fn update_game(
         return;
     }
     let delta = time.delta_secs().min(1.0);
-    for pulse in &mut visual.hit_pulses {
-        *pulse = (*pulse - delta * 4.0).max(0.0);
-    }
-    for pulse in &mut visual.miss_pulses {
-        *pulse = (*pulse - delta * 2.0).max(0.0);
-    }
-    visual.free_sync_pulse = (visual.free_sync_pulse - delta * 1.8).max(0.0);
-    visual.anchor_sync_pulse = (visual.anchor_sync_pulse - delta * 1.4).max(0.0);
+    decay_feedback(&mut visual, delta);
 
     let mut fault_message = "game.stopped";
     let result = (|| -> Result<(), String> {
@@ -669,7 +730,9 @@ fn update_game(
                 if action == SettingsAction::Open {
                     menu_scroll.reset();
                     if input.menu_open && !matches!(game.phase, Phase::Running | Phase::Starting) {
-                        settings.begin(&display);
+                        if !settings.is_open() {
+                            settings.begin(&display);
+                        }
                         input.set_settings_open(true);
                     } else {
                         input.set_settings_open(false);
@@ -685,6 +748,12 @@ fn update_game(
             }
             if settings.is_open() && event.control != Control::FocusLost {
                 continue;
+            }
+            if let Err(error) =
+                game.save_before_terminal_transition(event.control, Path::new("replays"))
+            {
+                eprintln!("Replay save failed before leaving session: {error}");
+                break;
             }
             match event.control {
                 Control::Hit(player) if game.phase == Phase::Running => {
@@ -705,9 +774,7 @@ fn update_game(
                     game.transition_started = std::time::Instant::now();
                     menu_scroll.reset();
                 }
-                Control::Start
-                    if matches!(game.phase, Phase::Ready | Phase::Finished | Phase::Fault) =>
-                {
+                Control::Start if game.phase == Phase::Ready => {
                     game.start(&mut audio)?;
                     reset_feedback(&mut visual);
                     menu_scroll.reset();
@@ -738,9 +805,16 @@ fn update_game(
                         break;
                     }
                 }
-                Control::SaveReplay => game.save().inspect_err(|_| {
-                    fault_message = "game.replay_failed";
-                })?,
+                Control::SaveReplay => {
+                    if let Err(error) = game.save() {
+                        if matches!(game.phase, Phase::Finished | Phase::Fault) {
+                            eprintln!("Replay save failed: {error}");
+                        } else {
+                            fault_message = "game.replay_failed";
+                            return Err(error);
+                        }
+                    }
+                }
                 Control::Quit => {
                     close_game(&mut game, &mut audio, &mut exit);
                     return Ok(());
@@ -753,11 +827,16 @@ fn update_game(
             Phase::Starting | Phase::Running | Phase::Pausing | Phase::Paused
         ) {
             if audio.state() == Some(PlaybackState::Stopped) {
-                feedback(game.session.finish()?, &mut audio, &mut visual)?;
+                let events = game.session.finish()?;
+                game.results = Some(game.session.summary());
+                feedback(events, &mut audio, &mut visual)?;
                 game.phase = Phase::Finished;
                 input.set_menu_open(true);
                 menu_scroll.reset();
-                game.save()?;
+                if let Err(error) = game.save() {
+                    eprintln!("Replay save failed after song end: {error}");
+                    game.notice = Message::new("game.replay_failed");
+                }
             } else if game.phase == Phase::Running {
                 feedback(game.session.advance()?, &mut audio, &mut visual)?;
             }
@@ -781,13 +860,11 @@ fn update_game(
     visual.quality = settings.values.quality;
     let locale = settings.values.locale;
     visual.locale = locale;
-    visual.menu = settings
-        .presentation(settings_now, &display, locale)
-        .map(|mut menu| {
-            menu.owner_hint = Some(input.menu_owner_hint(locale));
-            menu
-        })
-        .or_else(|| game_menu(&game, &mut input, &settings));
+    input.set_menu_phase(
+        menu_phase(game.phase),
+        game.saved_facts != game.session.replay.facts().len(),
+    );
+    visual.menu = runtime_menu(&game, &mut input, &settings, settings_now, &display);
     if visual.menu.is_none() {
         visual.status = game_status(&game, &input, &settings);
     }
@@ -828,23 +905,147 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
         title.push('\n');
         title.push_str(&game.notice.render(locale));
     }
-    let details = [
-        next_anchor_label(game, locale),
-        game.notice.render(locale),
-        settings.notice.render(locale),
-        Message::with(
-            "hud.timing",
-            [(
-                "milliseconds",
-                format!("{:.1}", game.session.uncertainty_frames as f64 / 48.0),
-            )],
+    let mut details = Vec::new();
+    if let Some(results) = &game.results {
+        let pair = |key, counts: [u64; 2]| {
+            Message::with(
+                key,
+                [
+                    ("first", counts[0].to_string()),
+                    ("second", counts[1].to_string()),
+                ],
+            )
+            .render(locale)
+        };
+        details.push(pair("results.hits", results.hits));
+        for (grade, key) in [
+            "results.precise",
+            "results.good",
+            "results.late_early",
+            "results.miss",
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            details.push(pair(
+                key,
+                [results.anchors[0][grade], results.anchors[1][grade]],
+            ));
+        }
+        let together = Message::with(
+            "results.sync",
+            [
+                ("free", results.free_sync.to_string()),
+                ("anchor", results.anchor_sync.to_string()),
+            ],
         )
-        .render(locale),
-    ]
-    .into_iter()
-    .filter(|line| !line.is_empty())
-    .collect();
+        .render(locale);
+        if game.phase == Phase::Finished {
+            title.push('\n');
+            title.push_str(&together);
+            title.push('\n');
+            title.push_str(
+                locale.text(if game.replay_status.key == "results.replay_failed" {
+                    "results.replay_failed_short"
+                } else if game.saved_facts == game.session.replay.facts().len() {
+                    "results.replay_saved_short"
+                } else {
+                    "results.replay_pending"
+                }),
+            );
+        }
+        details.push(together);
+    } else {
+        details.push(next_anchor_label(game, locale));
+    }
+    if !game.session.replay.facts().is_empty() {
+        details.push(
+            if game.replay_status.key == "results.replay_failed"
+                || game.saved_facts == game.session.replay.facts().len()
+            {
+                game.replay_status.render(locale)
+            } else {
+                locale.text("results.replay_pending").into()
+            },
+        );
+    }
+    if let Some(error) = &game.fault_details {
+        details
+            .push(Message::with("game.error_details", [("error", error.clone())]).render(locale));
+    }
+    details.extend(
+        [
+            if game.results.is_some() && game.notice.key == "game.saved" {
+                String::new()
+            } else {
+                game.notice.render(locale)
+            },
+            settings.notice.render(locale),
+            Message::with(
+                "hud.timing",
+                [(
+                    "milliseconds",
+                    format!("{:.1}", game.session.uncertainty_frames as f64 / 48.0),
+                )],
+            )
+            .render(locale),
+        ]
+        .into_iter()
+        .filter(|line| !line.is_empty()),
+    );
     (title, details)
+}
+
+fn menu_phase(phase: Phase) -> MenuPhase {
+    match phase {
+        Phase::Ready => MenuPhase::Ready,
+        Phase::Running | Phase::Paused => MenuPhase::Paused,
+        Phase::Finished => MenuPhase::Finished,
+        Phase::Fault => MenuPhase::Fault,
+        Phase::Starting | Phase::Pausing => MenuPhase::Transition,
+    }
+}
+
+fn runtime_menu(
+    game: &Game,
+    input: &mut InputState,
+    settings: &SettingsMenu,
+    now: f64,
+    display: &DisplayState,
+) -> Option<MenuPresentation> {
+    settings
+        .presentation(now, display, settings.values.locale)
+        .map(|mut menu| {
+            let locale = settings.values.locale;
+            menu.owner_hint = Some(input.menu_owner_hint(locale));
+            if game.phase == Phase::Fault {
+                menu.title = format!(
+                    "{}\n{}\n{}",
+                    locale.text("phase.fault"),
+                    game.notice.render(locale),
+                    menu.title
+                );
+                if let Some(row) = menu
+                    .rows
+                    .iter_mut()
+                    .find(|row| row.role == MenuRowRole::Information)
+                {
+                    let mut details = vec![row.text.clone()];
+                    if let Some(error) = &game.fault_details {
+                        details.push(
+                            Message::with("game.error_details", [("error", error.clone())])
+                                .render(locale),
+                        );
+                    }
+                    if !game.replay_status.key.is_empty() {
+                        details.push(game.replay_status.render(locale));
+                    }
+                    row.text = details.join("\n");
+                }
+            }
+            menu
+        })
+        .or_else(|| game_menu(game, input, settings))
 }
 
 fn game_menu(
@@ -855,6 +1056,10 @@ fn game_menu(
     if !input.menu_open {
         return None;
     }
+    input.set_menu_phase(
+        menu_phase(game.phase),
+        game.saved_facts != game.session.replay.facts().len(),
+    );
     let (title, information) = game_text(game, settings);
     input.menu_presentation(settings.values.locale, title, information)
 }
@@ -936,8 +1141,101 @@ fn smoke_layout_metrics(
     }))
 }
 
+const FEEDBACK_MOTION_FRAMES: u32 = 240;
+const FEEDBACK_MOTION_ANCHORS: [u32; 4] = [34, 35, 36, 40];
+
+fn feedback_motion_engine() -> Result<cocobeat_core::DuoEngine, String> {
+    use cocobeat_schema::{Anchor, SongTime};
+
+    cocobeat_core::DuoEngine::new(
+        SessionEpoch(1),
+        FEEDBACK_MOTION_ANCHORS
+            .into_iter()
+            .enumerate()
+            .map(|(id, seconds)| Anchor {
+                id: id as u64,
+                song_time: SongTime::from_frames(i64::from(seconds) * 48_000),
+            })
+            .collect(),
+        DuoRules::default(),
+    )
+    .map_err(|error| error.to_string())
+}
+
+// Synthetic captured inputs exercise the production rules and feedback at 30 Hz
+fn advance_feedback_motion(
+    frame: u32,
+    engine: &mut cocobeat_core::DuoEngine,
+    visual: &mut VisualState,
+) -> Result<Vec<DuoEvent>, String> {
+    use cocobeat_schema::{DuoInput, Hit, PlayerId, SongTime};
+
+    if frame == 0 {
+        reset_feedback(visual);
+    }
+    decay_feedback(visual, 1.0 / 30.0);
+    let song_time = SongTime::from_frames(32 * 48_000 + i64::from(frame) * 1_600);
+    for (player, hit) in [
+        (PlayerId::P1, matches!(frame, 9 | 30 | 62 | 90)),
+        (PlayerId::P2, matches!(frame, 31 | 62 | 90)),
+    ] {
+        if hit {
+            engine
+                .ingest(DuoInput::Hit(Hit {
+                    epoch: SessionEpoch(1),
+                    player,
+                    seq: u64::from(frame),
+                    song_time,
+                }))
+                .map_err(|error| error.to_string())?;
+            visual.hit_pulses[player.index()] = 1.0;
+            eprintln!(
+                "FEEDBACK_INPUT {}",
+                serde_json::json!({"frame": frame, "player": player.index(), "song_frames": song_time.frames()})
+            );
+        }
+    }
+    let mut events = Vec::new();
+    for player in [PlayerId::P1, PlayerId::P2] {
+        events.extend(
+            engine
+                .ingest(DuoInput::Watermark {
+                    epoch: SessionEpoch(1),
+                    player,
+                    through: song_time,
+                })
+                .map_err(|error| error.to_string())?,
+        );
+    }
+    for event in &events {
+        visual_feedback(*event, visual);
+    }
+    visual.song_seconds = song_time.as_seconds_f64();
+    visual.next_anchor_seconds = FEEDBACK_MOTION_ANCHORS
+        .into_iter()
+        .map(f64::from)
+        .find(|at| *at >= visual.song_seconds);
+    visual.resonance = f32::from(engine.resonance().level_per_mille) / 1_000.0;
+    visual.status = "FEEDBACK MOTION | captured inputs, confirmed core events\nAudio, physical input and frame-rate acceptance NOT RUN".into();
+    Ok(events)
+}
+
 fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
-    let startup = !matches!(mode, Smoke::Scene | Smoke::Feedback(_) | Smoke::Quality(_));
+    #[derive(Resource, Default)]
+    struct SavedFrames(u32);
+
+    let motion = mode == Smoke::FeedbackMotion;
+    let mut motion_engine = if motion {
+        std::fs::create_dir(&path)
+            .map_err(|error| format!("Motion output must be a new directory: {error}"))?;
+        Some(feedback_motion_engine()?)
+    } else {
+        None
+    };
+    let startup = !matches!(
+        mode,
+        Smoke::Scene | Smoke::Feedback(_) | Smoke::FeedbackMotion | Smoke::Quality(_)
+    );
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins
@@ -965,8 +1263,11 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                     | Smoke::Players(_)
                     | Smoke::Graphics(_)
                     | Smoke::Pacing(_)
+                    | Smoke::SettingsFault(_)
             ) {
                 0.1
+            } else if motion {
+                1.0 / 30.0
             } else {
                 1.0 / 60.0
             },
@@ -974,7 +1275,8 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     ));
     ui_assets::install(&mut app)?;
     view::install(&mut app);
-    app.init_resource::<InputState>();
+    app.init_resource::<InputState>()
+        .init_resource::<SavedFrames>();
     display::install(&mut app, default());
     app.world_mut()
         .resource_mut::<DisplayState>()
@@ -982,6 +1284,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     if matches!(
         mode,
         Smoke::Settings
+            | Smoke::SettingsFault(_)
             | Smoke::Locale(_)
             | Smoke::Languages(_)
             | Smoke::Graphics(_)
@@ -1000,6 +1303,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             display: selected,
             locale: match mode {
                 Smoke::Locale(locale)
+                | Smoke::SettingsFault(locale)
                 | Smoke::Languages(locale)
                 | Smoke::Graphics(locale)
                 | Smoke::Pacing(locale) => locale,
@@ -1009,6 +1313,13 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         };
         menu.sync_pacing(app.world().resource::<DisplayState>());
         menu.begin(app.world().resource::<DisplayState>());
+        if matches!(mode, Smoke::SettingsFault(_)) {
+            let mut display = app.world_mut().resource_mut::<DisplayState>();
+            menu.handle(SettingsAction::Down, 0.0, &mut display);
+            menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+            menu.handle(SettingsAction::Down, 0.0, &mut display);
+            menu.handle(SettingsAction::Confirm, 1.0, &mut display);
+        }
         if matches!(
             mode,
             Smoke::Languages(_) | Smoke::Graphics(_) | Smoke::Pacing(_)
@@ -1050,13 +1361,11 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             Update,
             (|settings: Res<SettingsMenu>,
               display: Res<DisplayState>,
-              input: Res<InputState>,
+              mut input: ResMut<InputState>,
+              game: Res<Game>,
               mut visual: ResMut<VisualState>| {
                 visual.locale = settings.values.locale;
-                visual.menu = settings.presentation(0.0, &display, visual.locale);
-                if let Some(menu) = &mut visual.menu {
-                    menu.owner_hint = Some(input.menu_owner_hint(settings.values.locale));
-                }
+                visual.menu = runtime_menu(&game, &mut input, &settings, 1.0, &display);
             })
             .after(DisplaySystems::Sync),
         );
@@ -1064,14 +1373,35 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     if startup {
         brand_intro::install(&mut app);
         let mut game = Game::new()?;
+        if matches!(mode, Smoke::SettingsFault(_)) {
+            game.phase = Phase::Fault;
+            game.notice = Message::new("game.audio_failed");
+            game.fault_details = Some(
+                "Audio backend disconnected during display preview\nThe original playback error remains available while display settings are restored".into(),
+            );
+            game.replay_status = Message::with(
+                "results.replay_failed",
+                [(
+                    "error",
+                    "Permission denied: replay directory is not writable".into(),
+                )],
+            );
+        }
         if let Smoke::Menu(_, phase) = mode {
             game.phase = phase;
             game.notice = Message::new(match phase {
                 Phase::Paused => "game.listening",
-                Phase::Finished => "game.nothing_to_save",
+                Phase::Finished => "",
                 Phase::Fault => "game.audio_failed",
                 _ => "game.welcome",
             });
+            if phase == Phase::Finished {
+                game.session.finish()?;
+                game.results = Some(game.session.summary());
+            }
+            if phase == Phase::Fault {
+                game.fault_details = Some("Smoke fixture: audio output became unavailable".into());
+            }
             game.session.current = cocobeat_schema::SongTime::from_frames(match phase {
                 Phase::Paused | Phase::Fault => 1_536_000,
                 Phase::Finished => 3_072_000,
@@ -1156,6 +1486,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             song_seconds: 32.0,
             hit_pulses: [0.8, 0.6],
             anchor_sync_pulse: 0.8,
+            anchor_sync_precise: true,
             next_anchor_seconds: Some(34.0),
             resonance: 0.7,
             status:
@@ -1172,7 +1503,10 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         match effect {
             FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
             FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
-            FeedbackSmoke::Anchor => visual.anchor_sync_pulse = 0.7,
+            FeedbackSmoke::Anchor | FeedbackSmoke::AnchorGood => {
+                visual.anchor_sync_pulse = 0.7;
+                visual.anchor_sync_precise = effect == FeedbackSmoke::Anchor;
+            }
             FeedbackSmoke::Miss => visual.miss_pulses = [0.8, 0.0],
             FeedbackSmoke::Approach => visual.next_anchor_seconds = Some(34.0),
         }
@@ -1194,7 +1528,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                mut completed_frames: Local<u32>,
                mut requested: Local<bool>,
                intro: Option<Res<BrandIntroStatus>>,
-               visual: Res<VisualState>,
+               mut visual: ResMut<VisualState>,
                cameras: Query<&Camera, With<PresentationCamera>>,
                panels: Query<(&ComputedNode, &UiGlobalTransform), With<view::StatusPanel>>,
                rows: Query<(&view::MenuRowNode, &ComputedNode, &UiGlobalTransform)>,
@@ -1216,7 +1550,9 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 } else {
                     *completed_frames = 0;
                 }
-                if matches!(mode, Smoke::Menu(_, phase) if phase != Phase::Ready) {
+                if matches!(mode, Smoke::SettingsFault(_))
+                    || matches!(mode, Smoke::Menu(_, phase) if phase != Phase::Ready)
+                {
                     *completed_frames >= 3
                 } else {
                     complete
@@ -1224,13 +1560,44 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                             .as_ref()
                             .is_some_and(|status| status.idle_seconds >= 6.1)
                 }
+            } else if motion {
+                (30..30 + FEEDBACK_MOTION_FRAMES).contains(&*frame)
             } else {
                 *frame == 30
             };
             if !*requested && ready {
+                if let Some(engine) = &mut motion_engine {
+                    match advance_feedback_motion(*frame - 30, engine, &mut visual) {
+                        Ok(events) => eprintln!(
+                            "FEEDBACK_FRAME {}",
+                            serde_json::json!({
+                                "frame": *frame - 30,
+                                "song_seconds": visual.song_seconds,
+                                "watermark_frames": 32 * 48_000 + u64::from(*frame - 30) * 1_600,
+                                "events": events.iter().map(|event| format!("{event:?}")).collect::<Vec<_>>(),
+                                "hit_pulses": visual.hit_pulses,
+                                "free_sync_pulse": visual.free_sync_pulse,
+                                "anchor_sync_pulse": visual.anchor_sync_pulse,
+                                "anchor_sync_precise": visual.anchor_sync_precise,
+                                "miss_pulses": visual.miss_pulses,
+                                "next_anchor_seconds": visual.next_anchor_seconds,
+                                "resonance": visual.resonance,
+                            })
+                        ),
+                        Err(error) => {
+                            eprintln!("Motion feedback failed: {error}");
+                            exit.write(AppExit::error());
+                            return;
+                        }
+                    }
+                }
                 if !matches!(
                     mode,
-                    Smoke::Scene | Smoke::Feedback(_) | Smoke::Startup | Smoke::Quality(_)
+                    Smoke::Scene
+                        | Smoke::Feedback(_)
+                        | Smoke::FeedbackMotion
+                        | Smoke::Startup
+                        | Smoke::Quality(_)
                 ) && visual.menu.is_none()
                 {
                     eprintln!("Expected menu presentation is missing");
@@ -1255,6 +1622,10 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                             (selected, row, transform),
                         )?;
                         metrics["menu_row_count"] = serde_json::json!(menu.rows.len());
+                        metrics["menu_title"] = serde_json::json!(menu.title);
+                        metrics["menu_rows"] = serde_json::json!(
+                            menu.rows.iter().map(|row| &row.text).collect::<Vec<_>>()
+                        );
                         Ok::<_, String>(metrics)
                     })();
                     match metrics {
@@ -1266,15 +1637,21 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                         }
                     }
                 }
-                *requested = true;
-                let output = path.clone();
+                *requested = !motion;
+                let output = if motion {
+                    path.join(format!("frame_{:04}.png", *frame - 30))
+                } else {
+                    path.clone()
+                };
                 commands
                     .spawn(Screenshot(RenderTarget::Image(ImageRenderTarget {
                         handle: target.clone(),
                         scale_factor: viewport.scale,
                     })))
                     .observe(
-                        move |capture: On<ScreenshotCaptured>, mut exit: MessageWriter<AppExit>| {
+                        move |capture: On<ScreenshotCaptured>,
+                              mut saved: ResMut<SavedFrames>,
+                              mut exit: MessageWriter<AppExit>| {
                             let result = capture
                                 .image
                                 .clone()
@@ -1288,7 +1665,10 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                                 });
                             match result {
                                 Ok(()) => {
-                                    exit.write(AppExit::Success);
+                                    saved.0 += 1;
+                                    if !motion || saved.0 == FEEDBACK_MOTION_FRAMES {
+                                        exit.write(AppExit::Success);
+                                    }
                                 }
                                 Err(error) => {
                                     eprintln!("Screenshot failed: {error}");
@@ -1325,6 +1705,62 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn motion_preview_uses_real_confirmations_and_equal_grade_lifetimes() {
+        let mut engine = feedback_motion_engine().unwrap();
+        let mut visual = VisualState::default();
+        let mut confirmed = Vec::new();
+        let mut samples = Vec::new();
+        for frame in 0..FEEDBACK_MOTION_FRAMES {
+            let events = advance_feedback_motion(frame, &mut engine, &mut visual).unwrap();
+            if !events.is_empty() {
+                confirmed.push((frame, events));
+            }
+            samples.push((
+                visual.hit_pulses,
+                visual.anchor_sync_pulse,
+                visual.anchor_sync_precise,
+            ));
+        }
+        assert_eq!(
+            confirmed
+                .iter()
+                .map(|(frame, _)| *frame)
+                .collect::<Vec<_>>(),
+            [44, 66, 96, 126]
+        );
+        assert!(matches!(confirmed[0].1.as_slice(), [DuoEvent::FreeSync(_)]));
+        for (index, grade) in [(1, AnchorGrade::Good), (2, AnchorGrade::Precise)] {
+            let [
+                DuoEvent::AnchorJudged(p1),
+                DuoEvent::AnchorJudged(p2),
+                DuoEvent::AnchorSync(sync),
+            ] = confirmed[index].1.as_slice()
+            else {
+                panic!("Both individual judgements must precede confirmed AnchorSync");
+            };
+            assert_eq!((p1.grade, p2.grade), (grade, grade));
+            assert_eq!((sync.p1.grade, sync.p2.grade), (grade, grade));
+        }
+        assert!(confirmed[3].1.iter().all(|event| matches!(
+            event,
+            DuoEvent::AnchorJudged(judgement) if judgement.grade == AnchorGrade::Miss
+        )));
+        assert_eq!(samples[9].0, [1.0, 0.0]);
+        assert_eq!(samples[62].0, [1.0; 2]);
+        assert_eq!(samples[90].0, [1.0; 2]);
+        assert!(!samples[66].2);
+        assert!(samples[96].2);
+        assert_eq!(samples[66].1, 1.0);
+        for elapsed in 0..=22 {
+            assert_eq!(samples[66 + elapsed].1, samples[96 + elapsed].1);
+        }
+        assert_eq!(samples[118].1, 0.0);
+        assert_eq!(engine.events().len(), 9);
+        assert_eq!(visual.next_anchor_seconds, Some(40.0));
+        assert_eq!(visual.song_seconds, 32.0 + 239.0 / 30.0);
+    }
 
     #[test]
     fn viewport_smoke_parsing_bounds_physical_sizes_scales_and_row_indices() {
@@ -1390,7 +1826,7 @@ mod tests {
             }
             let menu = game_menu(&game, &mut input, &settings).unwrap();
             assert!(menu.rows[last].selected);
-            assert!(menu.rows[last].text.contains("ms"));
+            assert!(menu.rows.iter().any(|row| row.text.contains("ms")));
             assert!(input.queued.is_empty());
             input.set_settings_open(true);
             assert!(game_menu(&game, &mut input, &settings).is_none());
@@ -1414,6 +1850,238 @@ mod tests {
                 assert!(!status.contains("ms"));
                 game.notice = Message::new("game.audio_failed");
             }
+        }
+    }
+
+    #[test]
+    fn terminal_transition_waits_for_replay_storage_without_replacing_results_or_fault() {
+        for phase in [Phase::Finished, Phase::Fault] {
+            for control in [Control::Restart, Control::MainMenu] {
+                let mut game = Game::new().unwrap();
+                game.session.finish().unwrap();
+                game.results = Some(game.session.summary());
+                game.phase = phase;
+                game.notice = Message::new("game.audio_failed");
+                game.fault_details = Some("original backend failure".into());
+                let facts = game.session.replay.facts().to_vec();
+                let summary = game.session.summary();
+                let directory = std::env::temp_dir().join(format!(
+                    "cocobeat-terminal-save-{}-{}",
+                    std::process::id(),
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_nanos()
+                ));
+                std::fs::write(&directory, b"blocks replay directory").unwrap();
+                assert!(
+                    game.save_before_terminal_transition(control, &directory)
+                        .is_err()
+                );
+                assert_eq!(game.phase, phase);
+                assert_eq!(game.session.replay.facts(), facts);
+                assert_eq!(game.results.as_ref(), Some(&summary));
+                assert_eq!(game.notice.key, "game.audio_failed");
+                assert_eq!(
+                    game.fault_details.as_deref(),
+                    Some("original backend failure")
+                );
+                assert_eq!(game.replay_status.key, "results.replay_failed");
+                assert_eq!(game.saved_facts, 0);
+                std::fs::remove_file(&directory).unwrap();
+                game.save_before_terminal_transition(control, &directory)
+                    .unwrap();
+                assert_eq!(game.saved_facts, facts.len());
+                assert_eq!(game.phase, phase);
+                assert_eq!(game.session.replay.facts(), facts);
+                assert_eq!(game.results.as_ref(), Some(&summary));
+                if phase == Phase::Fault {
+                    assert_eq!(game.notice.key, "game.audio_failed");
+                    assert_eq!(
+                        game.fault_details.as_deref(),
+                        Some("original backend failure")
+                    );
+                }
+                // The real MainMenu transition now sees saved history and makes no second write
+                if control == Control::MainMenu {
+                    game.main_menu().unwrap();
+                    assert_eq!(game.phase, Phase::Ready);
+                    assert!(game.results.is_none());
+                    assert!(game.session.replay.facts().is_empty());
+                }
+                std::fs::remove_dir_all(directory).unwrap();
+            }
+        }
+    }
+
+    #[test]
+    fn replay_retry_preserves_stopped_cause_on_failure_success_and_empty_history() {
+        let mut game = Game::new().unwrap();
+        game.phase = Phase::Fault;
+        game.notice = Message::new("game.audio_failed");
+        game.fault_details = Some("original audio backend failure".into());
+        let directory = std::env::temp_dir().join(format!(
+            "cocobeat-results-retry-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        game.save_to(&directory).unwrap();
+        assert!(!directory.exists());
+        assert_eq!(game.notice.key, "game.audio_failed");
+        game.session.finish().unwrap();
+        std::fs::write(&directory, b"blocks replay directory").unwrap();
+        assert!(game.save_to(&directory).is_err());
+        assert_eq!(game.replay_status.key, "results.replay_failed");
+        assert_eq!(game.saved_facts, 0);
+        assert_eq!(game.phase, Phase::Fault);
+        assert_eq!(game.notice.key, "game.audio_failed");
+        assert_eq!(
+            game.fault_details.as_deref(),
+            Some("original audio backend failure")
+        );
+        std::fs::remove_file(&directory).unwrap();
+        game.save_to(&directory).unwrap();
+        assert_eq!(game.saved_facts, game.session.replay.facts().len());
+        assert_eq!(game.replay_status.key, "results.replay_saved");
+        assert_eq!(game.notice.key, "game.audio_failed");
+        assert_eq!(
+            game.fault_details.as_deref(),
+            Some("original audio backend failure")
+        );
+        let json = std::fs::read_dir(&directory)
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .find(|path| {
+                path.extension()
+                    .is_some_and(|extension| extension == "json")
+            })
+            .unwrap();
+        let saved = Replay::decode(std::fs::read(json).unwrap().as_slice()).unwrap();
+        assert_eq!(saved.facts(), game.session.replay.facts());
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn finished_results_and_settings_fault_keep_truth_and_display_rollback() {
+        let mut game = Game::new().unwrap();
+        game.session.finish().unwrap();
+        game.results = Some(game.session.summary());
+        game.phase = Phase::Finished;
+        let mut settings = SettingsMenu::default();
+        settings.values.locale = Locale::EnUs;
+        let mut input = InputState::default();
+        let menu = game_menu(&game, &mut input, &settings).unwrap();
+        assert_eq!(menu.rows[0].text, "Restart song");
+        assert!(menu.rows.iter().any(|row| row.text == "Miss · P1 7 / P2 7"));
+        assert!(
+            menu.rows
+                .iter()
+                .any(|row| row.text == "Recorded Hits · P1 0 / P2 0")
+        );
+        assert!(
+            menu.rows
+                .iter()
+                .any(|row| row.text == "Replay has unsaved history")
+        );
+        game.saved_facts = game.session.replay.facts().len();
+        game.replay_status = Message::with(
+            "results.replay_saved",
+            [("path", "replays/completed.json".into())],
+        );
+        assert!(
+            !game_menu(&game, &mut input, &settings)
+                .unwrap()
+                .rows
+                .iter()
+                .any(|row| row.text == "Save replay")
+        );
+
+        let mut display = DisplayState::new(DisplaySettings::default());
+        display.set_headless_surface([1920, 1080]);
+        let original = display.actual();
+        settings.begin(&display);
+        settings.handle(SettingsAction::Down, 0.0, &mut display);
+        settings.handle(SettingsAction::Confirm, 0.0, &mut display);
+        settings.handle(SettingsAction::Down, 0.0, &mut display);
+        settings.handle(SettingsAction::Confirm, 1.0, &mut display);
+        assert_ne!(display.actual(), original);
+        let preview = settings.presentation(1.0, &display, Locale::EnUs).unwrap();
+        assert!(preview.title.contains("KEEP DISPLAY"));
+        input.set_settings_open(true);
+        game.phase = Phase::Fault;
+        game.notice = Message::new("game.audio_failed");
+        game.fault_details = Some("backend stopped\nlong diagnostic is preserved".into());
+        game.replay_status = Message::with(
+            "results.replay_failed",
+            [("error", "permission denied".into())],
+        );
+        let fault = runtime_menu(&game, &mut input, &settings, 1.0, &display).unwrap();
+        assert!(fault.title.starts_with("Stopped\nAudio failed"));
+        assert!(fault.title.contains(&preview.title));
+        assert_eq!(fault.rows.len(), preview.rows.len());
+        assert!(
+            fault
+                .rows
+                .iter()
+                .any(|row| row.text.contains("long diagnostic is preserved")
+                    && row.text.contains("permission denied"))
+        );
+        assert!(settings.is_open());
+        assert!(!settings.tick(15.0, &mut display));
+        assert!(settings.tick(16.0, &mut display));
+        assert_eq!(display.actual(), original);
+        assert!(settings.is_open());
+        assert_eq!(game.phase, Phase::Fault);
+    }
+
+    #[test]
+    fn real_anchor_grades_share_pulse_age_but_only_two_precise_hits_get_the_precise_style() {
+        use cocobeat_core::DuoEngine;
+        use cocobeat_schema::{Anchor, DuoInput, Hit, PlayerId};
+        for offset in [0, 3_000] {
+            let epoch = SessionEpoch(1);
+            let mut engine = DuoEngine::new(
+                epoch,
+                vec![Anchor {
+                    id: 1,
+                    song_time: SongTime::from_frames(48_000),
+                }],
+                DuoRules::default(),
+            )
+            .unwrap();
+            for player in [PlayerId::P1, PlayerId::P2] {
+                engine
+                    .ingest(DuoInput::Hit(Hit {
+                        epoch,
+                        player,
+                        seq: 0,
+                        song_time: SongTime::from_frames(48_000 + offset),
+                    }))
+                    .unwrap();
+            }
+            for player in [PlayerId::P1, PlayerId::P2] {
+                engine
+                    .ingest(DuoInput::Watermark {
+                        epoch,
+                        player,
+                        through: SongTime::from_frames(96_000),
+                    })
+                    .unwrap();
+            }
+            let mut visual = VisualState::default();
+            let sync = *engine
+                .events()
+                .iter()
+                .find(|event| matches!(event, DuoEvent::AnchorSync(_)))
+                .unwrap();
+            assert!(visual_feedback(sync, &mut visual));
+            assert_eq!(visual.anchor_sync_pulse, 1.0);
+            assert_eq!(visual.anchor_sync_precise, offset == 0);
+            reset_feedback(&mut visual);
+            assert!(!visual.anchor_sync_precise);
         }
     }
 

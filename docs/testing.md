@@ -284,3 +284,27 @@ MenuOwner 改动前的完整 `CARGO_BUILD_JOBS=1 CARGO_NET_OFFLINE=true cargo xt
 最终 UI 矩阵共 22 项逐图 PASS：13 语言 Ready、语言列表、设置、双人输入、暂停、完成、故障，以及 180×120 / 400×300 / 1280×800 scale 2 的主菜单最后信息行。21 张使用主批二进制 `089a422e…`，Fault 修正图使用 `114fd06d…`，原失败图、日志和报告保存在 `before-fault-fix/`；没有把旧二进制的画面声明为重新构建后的重复验收。命令、退出码、PNG/日志哈希、每图检查结论及实测几何见 `target/ui-redesign-20261003/ui-qa.json`
 
 GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断按每次运行记录，实际字形、换行和选中行检查通过，未将诊断日志表述为零告警。代码终审按 ponytail-review 删除重复输入状态和无消费者的菜单分类后，结论为 `Lean already. Ship.`；总共 31 个通过的 UI/场景静态样例不替代 Windows/Linux 原生窗口、真实双手柄及混合输入、USB/蓝牙热插拔、物理音频、连续动效体验或母语真人校对，这些仍为 NOT RUN
+
+## 完成结果、故障保留与共同反馈
+
+2026-10-03，完成页只统计本局已记录 Hit 和 core 已确认的判定、Free Sync 与 Anchor Sync，结束或故障时缓存摘要，显示时使用当前语言；不把滚动 Resonance 当全局得分。Ready、暂停、结束和故障各自只提供可用动作，未保存时才显示 Replay 保存；正常结束后保存失败仍保持 Finished，故障后保存成功也不覆盖原播放原因
+
+新增真实规则回归覆盖两位玩家各 4 个 Hit、四档判定 `[1,1,1,4]`、2 次 Anchor Sync 与 2 次 Free Sync，Replay 重放事件一致；显示预览中的故障保留草稿并在 16 秒时安全回退。审查发现并修复菜单保存屏障误吞演奏期同批 Hit，以及保存重试覆盖故障原因或把完成变为故障的问题；键盘和手柄保存后 Hit、磁盘路径被普通文件阻塞后重试成功及保存事实回读均有行为测试
+
+合作双环的 Precise / Good 由真实 Anchor Sync 中双方判定决定，双方均 Precise 时使用完整强度，其他成功组合为 0.68 倍 alpha；两档共用半径、开始帧、衰减和持续时间，Free Sync 不受该等级标志影响。共同环从非零亮度短暂增强后淡出，本地 Hit 仍立即反馈；三环九个时间采样的 ECS 检查验证强度、几何、可见性与生命周期
+
+`cargo test --offline --locked -j1 -p cocobeat-runtime` 的 82 项测试、workspace all-targets Clippy `-D warnings`、格式、依赖边界及游戏构建全部通过；124 个已记录源码、配置和资源输入前后稳定，二进制 SHA-256 为 `b373a534a75ed4735f45b3fc531c653379f34f3aca3028ca2aba07c29181787b`，见 `target/followup-20261003/validation.json`。此前 `c08ac33` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37096598255) 也已通过，29 项轻量测试和缓存恢复/保存成功；该工作流不编译运行时或测 GPU，不能代替本次本地检查
+
+13 个语言变体各新增 13 个结果/故障键并修改开始菜单键，完整键集合和占位符一致；逐 locale 对实际差异文本执行 `python3 assets/fonts/verify.py --text LOCALE FILE` 全部通过，见 `target/followup-20261003/glyphs/checks.json`。这些证据验证字形和软件契约，母语校对、真实设备、音画同步和参与者体验继续单独验收
+
+`--feedback-motion-smoke NEW_DIR` 复用原生 Bevy 离屏截图和生产反馈衰减，以默认 DuoRules 推进实际 Hit 与双方 Watermark；7 个模拟 Hit 在记录帧 9/30/31/62/90 输入，共同 Free / Good Anchor / Precise Anchor / Miss 分别在真实规则确认帧 44/66/96/126 出现，确认前没有共同环。240 张 1280×800 原始 GPU 帧完整保存，双方 Good / Precise 脉冲拥有相同衰减，未来 Anchor 只按预定帧表接近；逐张目检 17 个关键帧通过，原帧另经开发期 FFmpeg 打包为 8 秒、30 fps 的预览视频，不进入产品编码路径
+
+连续反馈取证使用 `b373a534…187b` 的保留二进制，命令、124 个原构建输入、完整帧/日志/视频哈希及逐帧事实见 `target/feedback-motion-20261003/evidence.json`，视频 SHA-256 为 `9401a14f6465a7ba7d4d79a443e8bc660aabc7c327788f8d19cc8278701755d0`。固定 30 Hz 模拟和视频时间轴不代表实测渲染帧率；没有真实输入、音频播放或真人连续观感验收
+
+随后输入复查发现设置页内变为 Finished/Fault 时，底层旧焦点可能对应另一动作；仅修改 input.rs，在阶段变化时重置底层游戏焦点，设置页自身焦点、草稿和主控不变。17 项输入窄测和完整 83 项 runtime 测试通过，补充 Clippy、格式和构建通过；相对上述 124 个输入仅 input.rs 改变，证据见 `target/followup-20261003/focus-validation.json`，该批 UI 二进制为 `7b99f614b583696a0703af6020c49cd94fb34e2fb9d38263e978de2a0ab43bc3`，既有连续反馈不据此声明重新录制
+
+该二进制完成 12 项 GPU 渲染和逐图检查，覆盖中文/英文/德语/法语/俄语完成页、中文暂停/故障/显示预览中故障、三个极小或缩放视口的最后信息行及 400×300 的 Miss 7/7 行；Finished 样例真实调用空输入会话的 finish，7 次 Miss/人来自实际开发 Anchor，未写盘保存。报告为 `target/followup-20261003/results-ui/report.json`，完整长错误、Replay 失败和预览还原提示可读；设置 smoke 将预览时间固定在 1 秒，实际 15 秒回退由上述行为检查验证
+
+最后补齐 Finished/Fault 中重新开始或返回主菜单的共享保存预检，磁盘失败时仍保留当前阶段、结果、原错误和全部 Replay 事实；恢复目录后允许迁移，新增真实文件阻塞与恢复检查通过。目检还发现完成标题的 Anchor Sync 数值孤立换行，13 语言共同统计改为明确两行；最终 84 项 runtime 测试、workspace all-targets Clippy、格式、构建和全部差异字形检查通过，见 `final-validation.json` 与 `glyphs-final/checks.json`，二进制 SHA-256 为 `3ac7ecf1f40f6eba2a3b011a00ff20c3596af0fb0f8954646d7196715ac460e2`
+
+最终二进制对五语言完成标题、三个末行视口和 Miss 7/7 共 9 项补验全部通过，逐图确认共同次数同行、焦点和完整信息可读；报告为 `target/followup-20261003/results-ui-final/report.json`，SHA-256 为 `851352124e09eb656823e1e2f7f4af84e8d7d23c861b2d4ff469e068b8754680`。暂停、故障和显示预览中故障沿用明确标注的 `7b99f614…` 三项画面证据，原 12 图、补验 9 图及各自二进制均保留；最终代码和文档复核为 `Lean already. Ship.`，设备与真人退出条件没有据此勾选
