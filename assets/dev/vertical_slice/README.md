@@ -22,3 +22,5 @@ v1 WAV 的 FNV-1a64 为 `c7b1f9a25ff6458a`，SHA-256 为 `3390dd080cb536fd4a598e
 `anchors.csv` 手写 7 个 Anchor，位于 26、30、34、38、50、54、58 秒；`event_frames.csv` 独立列出秒数与帧号，作为生成器之外的静态规格，测试同时核对运行时 Anchor 与此表
 
 本资源是开发用 PCM 源，不代表 canonical Ogg 编码回读管线已验收；当前没有听感人工验收、真实设备音频验收或外部 loopback 测量
+
+`authoring.json` 将上述独立 CSV 的 7 个 Anchor 和 6 个段落转为 lab 可消费的手工内容输入，使用相同的整数帧及 `duo-watermark-v1` 规则身份；它不包含自动检测标签，实际能量在打包时从最终 canonical 音频副本测量，命令和范围见 [SongPackage](../../../docs/song-package.md)

@@ -24,9 +24,9 @@
 | 12 | Windows/Linux 平台与手柄验收 · 02 | root + 设备测试 | NOT RUN | 09/10/11 | 双键盘、双手柄、混合输入、菜单、重绑定、USB/蓝牙及重连记录 |
 | 13 | 真人双人体验与规则反馈 · 03 | root + 测试参与者 | NOT RUN | 10/11/12 | 对照顺序、实际行为、访谈、沉默/模仿/连点与打乱输入对照；失败返回 02 |
 | 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
-| 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；11 项 media 测试通过；全频带固定 19 例保留 34 次编码读回、4 次 guard 拒绝及局部质量退步，编码准入、曲库及听感继续推进 |
-| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 已实现最终音频对象的有界复制、实际字节 BLAKE3、严格读回与失败清理；完整 manifest、分析/谱面对象、版本和原子 Ready 仍待实现 |
-| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 新增固定 Flux/HFC 对照与预先声明的音色控制，原 HFC 全部复现；旧 18 项 Flux 11 PASS / 7 FAIL，新 6 项两者各 1 PASS / 5 FAIL，连续观察不计 F1；3 项软件检查和独立复算通过，质量 FAIL 保留，生产与人工标签未准入 |
+| 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；23 项 media 测试通过；全频带固定 19 例保留 34 次编码读回、4 次 guard 拒绝及局部质量退步，编码准入、曲库及听感继续推进 |
+| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，手工 Anchor/段落有实际消费者；完整 MIR/Anchor 输出与游戏曲库接入仍待后续 |
+| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定谱变化过滤使新增 6 项控制全部通过，离散额外峰 537 → 0；旧 18 项仍 11 PASS / 7 FAIL，两个新增首帧漏检保留；4 项软件检查及独立逐窗复算通过，生产与人工标签未准入 |
 | 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
 | 19 | 确定性 StageCompiler · 08 | 待分配 | NOT RUN | 18 | 连续轨道、预告可见性、版本身份与 Replay；表现不改关键几何 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | 待分配 | NOT RUN | 04/16/18/19 | 精确时间、撤销重做、哈希更新、无损导出/载入与同一 core 重放 |
@@ -39,7 +39,7 @@
 | 27 | 首批 13 个语言变体的界面 · 02a | 国际化 agents，root 集成 | IN PROGRESS | 26 的设置流程 | 软件实现已完成，13 × 91 条文案、系统识别、地区变体、原子保存和即时切换已接入；75 项 workspace 测试、Clippy、构建及 29 张 GPU 图检查通过，Noto Sans 与旗帜已在 b02dc42 提交；CJK 词边界诊断保留并记录上游修复路径；Windows/Linux 实际输入导航与母语使用者验收仍为 NOT RUN |
 | 28 | 画质预设、独立效果与帧率/VSync · 02a | quality_settings / quality_render / quality_pacing，root 集成 | IN PROGRESS | 26 的设置流程 | 已实现低中高/自定义、五项效果、最高刷新率档位、独立 VSync 与生产 CPU 门控；81 项 workspace 测试、Clippy 与构建通过，覆盖联合事务、跨屏归一化和有效历史窗内的 Session/Replay 消费批次一致性；46 张 GPU 离屏图已逐张检查通过，实际呈现帧率/VSync 与平台设备验收仍为 NOT RUN |
 | 29 | 窗口、无边框全屏与渲染尺寸 · 02a | display_settings + root | IN PROGRESS | 26 的设置与显示预览流程 | 已接请求/回读、原生 UI、游戏与设置菜单共用结构化滚动、Windows 工作区与 X11 保守交集、环境变化时一次容纳；92 项测试、Clippy、Linux 构建及 Linux 上的 Windows 目标编译检查通过；已修复未编辑显示草稿与外部窗口变化的同步，极小 Ready 菜单越界已修复，28 张菜单与设置 GPU 图逐张检查通过，真实 WM/DPI/跨屏和 Windows 运行仍为 NOT RUN |
-| 30 | UI、HUD 与双人输入体验 · 02b | UI/input agents + root | IN PROGRESS | 02/02a 的输入与设置契约 | 独立菜单主控、混合输入换席、真实结果/故障、160 ms 焦点反馈和阶段等待标记已实现；本批完整检查含 88 项 runtime 测试，滚动标记修复后 6 项 view 窄测通过，GPU 原失败及补验保留；设备和真人验收继续见 02b |
+| 30 | UI、HUD 与双人输入体验 · 02b | UI/input agents + root | IN PROGRESS | 02/02a 的输入与设置契约 | 独立菜单主控、混合输入换席、真实结果/故障、160 ms 焦点反馈和阶段等待标记已实现；本批完整检查含 89 项 runtime 测试，四档画质与小窗口 15 项必要反馈图通过，GPU 历史失败及补验保留；设备和真人验收继续见 02b |
 
 当前软件范围 02–10 已汇合并验证，确定性规则与 Replay 已提交为 `378f95b`；完整阶段 01/02 的退出仍等待 11/12；root 按里程碑提交主线程实现，保留品牌线程后续改动，代码修订需补充对应验证
 

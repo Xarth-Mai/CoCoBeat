@@ -378,3 +378,27 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 四档画质 × Free / Good / Miss 共 12 张 1280×800 图，以及关闭效果的三张 400×300 图全部逐张通过；独立核对命令、PNG 尺寸、实际 UI/3D camera 尺寸、所有画质字段和反馈采样，3D 分别为 640×480 / 320×240，HUD 仍按原生窗口尺寸呈现。关闭效果时单环、双环与 P1 Miss 倾斜可辨，小窗口身份标签正常换行；底部仅用于 smoke 的说明覆盖少量环底缘，但环数和玩家身份仍可辨，该限制在报告中保留
 
 完整结果为 `target/quality-feedback-20261003/gpu/report.json`，SHA-256 `12c883f89d3360d629a07e278c39c051a8605e0ca46107dc3c78434fdf8c1563`；冻结二进制前后相同，GPU 为 AMD RX 6650 XT / RADV Mesa 26.2.3 Vulkan，15 次运行均无 WARN/ERROR。这是合成静态状态检查，没有新增真实 core 连续帧、物理设备、音频同步或实际 FPS 结论
+
+## 初始 SongPackage 与手工创作入口
+
+2026-10-03 已实现标准库内容类型、私有有界 Postcard 编码、四对象构建/验证及 lab 的 `build-authored-package` / `verify-package`，完整字段与命令见 [包契约](song-package.md)。实际能量来自最终音频，Anchor / 段落来自带来源说明的手工输入；没有用空壳对象代替未运行的自动 MIR
+
+初版完整 `CARGO_NET_OFFLINE=true CARGO_BUILD_JOBS=1 cargo xtask check` 通过 141 项测试、边界、格式和 Clippy，日志为 `target/song-package-20261003/workspace-check.log`。独立审查随后发现先 hash 原路径、再测量、再 hash 的流程仍允许源文件在测量期间变化，已改为先准备并严格读回自有 staging 副本，再通过一次性 callback 从同一副本测量；新增测试实际替换/删除原路径并验证最终音频和能量不变，也覆盖 callback 失败清理
+
+最终 23 项 media、7 项 schema 和 4 项 lab 窄测通过，workspace all-targets Clippy、格式、边界及 lab 构建通过，构建输入前后稳定；未因局部事务修改重复运行未变的十分钟 Replay 压测。命令和来源身份见 `target/song-package-20261003/final-validation.json`，最终 lab SHA-256 为 `e0c4708a18c91cce0b2978a50b53aa9c1e08c90732a90f47c101d35e1d3e3f26`，独立正确性与 ponytail 复审为 `Lean already. Ship.`
+
+冻结 CLI 的 47 项独立检查记录为 46 PASS / 1 FAIL：两种包均成功构建并通过对象身份检查，64 秒包还通过完整独立能量对照；未知 JSON 字段/版本、越界/乱序事件、期望帧数错误、源与对象损坏、已有目标、符号链接及失败清理等负例均按预期拒绝并保留原内容。检查器要求正常错误退出码 1，不将 panic 或信号终止当作负例通过
+
+64 秒包的独立 Python Postcard 读取器与 BLAKE3 helper 核对实际四对象、规范 manifest 身份、7 个 Anchor、6 个段落和 3000 个能量块；FFmpeg 解码实际包内 Ogg 后逐块重算左右 RMS / peak，预先固定绝对容差 `1e-6`，最大误差分别为 `9.82816e-9` / `4.47035e-8`。包 BLAKE3 为 `8ba83a120c57b51db990c044c4dee77116872d92c282a9a09a6ff59a283bd5df`，该开发编码候选只用于内容格式实验
+
+唯一 FAIL 是 4800 帧短 fixture 的默认 FFmpeg 读回仅输出 4672 帧，原门槛和失败保留。诊断表明共同的前 4672 帧与 Symphonia 最大差 `7.45058e-8`，没有生产起点平移；显式 `-flags2 +skip_manual` 得到 4928 帧，其前 128 帧为额外前滚，余下 4800 帧与 Symphonia 一致，末包 side data 报告 `discard_padding=128`。独立原始正弦也确认 Symphonia 尾部是实际内容而非补零；这不阻断新包的格式和事务实现，但该 fixture 的默认 FFmpeg 跨解码器帧数检查仍为 FAIL，未修改产品时间轴或放宽比较门槛
+
+完整报告、原始矩阵和短样本诊断分别为 `target/song-package-20261003/cli-report.json`、`cli-summary.json`、`cli-diagnostic-4800/diagnostic.json`；265 项产物封存清单 `cli-sealed.json` 的 SHA-256 为 `3db893174e1516bc263b0e0482d6db4459af37711cbd62207425dab70abcf706`。这批只证明初始内容包的软件行为，Windows/ARM 包事务、完整 MIR/Anchor/舞台、游戏曲库接入、编码音质、听感与设备验收继续单独推进
+
+## 固定归一化 Flux 过滤
+
+2026-10-03 的[隔离工具](../tools/mir-flux-gate-probe/README.md) 保留原生 Flux 的预测坐标和峰选择，仅使用提前声明的局部谱幅值变化比例 `0.5` 过滤。4 项测试、fmt、Clippy、release 构建及独立审查通过，25 个输入的 44,417 个窗口、原生预测和 48 组指标逐项复现；独立 DFT 抽查 96 个实际 PCM 窗验证幅值总和，未改旧 Matcher、真值或时间原点
+
+新增 6 项离散音色控制全部通过，24 项离散控制的额外峰从 537 降为 0；旧 18 项仍为 11 PASS / 7 FAIL，两个持续音此前在容差内的假峰被删除后新增两次首帧漏检，全部失败保留。连续 fade 从 125 峰降为 0，仍不计 F1；实际曲库、慢起音、叠加声部、近邻强弱事件和最终 Ogg 回读尚未验证，整体质量为 FAIL，未接生产 MIR
+
+紧凑[观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-20261003.json) SHA-256 为 `f5bf5cca255bf31353671eef32a1c7216ae9a57e19387733f940da383f58199b`，完整窗口报告保留在 `target/mir-flux-gate-20261003/results-v1/report.json`；本批没有生成新 PCM 或新增第三方版本，研究台账仅补相同 37 个包的使用方

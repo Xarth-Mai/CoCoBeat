@@ -10,6 +10,8 @@ publish.workspace = true
 cocobeat-schema.workspace = true
 cocobeat-runtime.workspace = true
 cocobeat-media.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 
 [lints]
 workspace = true

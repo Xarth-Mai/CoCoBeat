@@ -6,7 +6,7 @@
 game ───────────────→ runtime
 runtime ────────────→ schema / core / replay
 replay ─────────────→ schema / core
-media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）
+media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -21,15 +21,17 @@ media 当前负责有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 顺序解码与
 
 media 的 `decode_canonical` 复用同一顺序解码核心和 Ogg 页校验，由 lab 的 `readback-canonical` 实际消费；最终文件必须是 Ogg Vorbis、48 kHz、恰好双声道，EOS 声明和独立累计的实际帧数均须等于调用方提供的编码器输入帧数。输出从解码帧 0 连续交付，不做声道复制、重采样或裁幅，拒绝非有限样本；读回成功本身不证明源音频经过编码后的瞬态对齐或音质
 
-schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不依赖序列化或哈希库。media 的 `prepare_canonical_audio` 由 lab 的 `prepare-audio` 消费，流式复制最终 Ogg 至全新目录中的固定文件名，记录写入字节身份，关闭文件后严格读回该副本；返回 `PreparedCanonicalAudio`，不将它当作完整 `ValidatedPackage`。文件只在成功独占创建后才归本次清理，目录清理仅允许空目录；完整 SongPackage 的分析、谱面、版本、对象复核和原子 Ready 仍是后续事务
+schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不依赖序列化或哈希库。media 的 `prepare_canonical_audio` 由 lab 的 `prepare-audio` 消费，流式复制最终 Ogg 至全新目录中的固定文件名，记录写入字节身份，关闭文件后严格读回该副本；返回 `PreparedCanonicalAudio`，不将它当作完整 `ValidatedPackage`。文件只在成功独占创建后才归本次清理，目录清理仅允许空目录；完整包由独立的 `build_package` 事务持有，先准备同一最终音频副本，再调用内容构建函数，写入分析、谱面和 manifest 并整体复核后重命名发布
 
-源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，生产编码器准入和 SongPackage Ready 尚未完成
+源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，生产编码器准入与游戏中的完整导入流程尚未完成
+
+schema 的初始 `MusicAnalysis` / `CompiledChart` / `SongPackage` 已由 lab 的实际手工内容包消费，能量从最终 staging Ogg 全量读回计算，Anchor 和段落来自有来源说明的创作 JSON；media 的私有 Postcard DTO 持有版本头、字节/元素限额、语义检查和对象身份，schema 仍仅依赖标准库。`validate_package` 检查四对象和完整音频后才返回内容，完整契约见 [SongPackage](song-package.md)；它不重新执行 MIR 或证明谱面合理性，后续 TempoRegion、重复结构、AnchorEvidence 和 TrackPlan 按实际消费者扩展并升级版本
 
 ## 未来模块何时出生
 
 | 模块 | 独立责任 | 引入时机 |
 |---|---|---|
-| media（已创建） | 源解码、重采样与严格最终读回；后续标准编码、MusicAnalysis、AnchorCompiler、导入事务 | 05 三个软件入口已有 lab 消费；其余按 05–07 的实际契约加入 |
+| media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口和手工内容包已有 lab 消费；其余按 05–07 的实际契约加入 |
 | stage | MusicAnalysis / 编译后的音乐结构 → StagePlan，确定性轨道和几何校验 | 08 自动舞台；手写场景先在 runtime |
 | editor | 波形、Anchor、Replay 的可视化与人工修改 | 09 已有可编辑内容契约 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |

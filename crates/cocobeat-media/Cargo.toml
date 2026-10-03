@@ -12,6 +12,8 @@ symphonia.workspace = true
 oximedia-audio.workspace = true
 oximedia-core.workspace = true
 blake3.workspace = true
+serde.workspace = true
+postcard.workspace = true
 
 [lints]
 workspace = true

@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前游戏只使用开发歌曲，实验工具已接入有资源上限的源音频解码、48 kHz 重采样和严格 canonical 读回，完整歌曲导入、自动 MIR、编辑器与联网仍在后续路线图
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；当前游戏只使用开发歌曲，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，完整歌曲导入、自动 MIR、编辑器与联网仍在后续路线图
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
@@ -18,7 +18,7 @@ crates/cocobeat-schema   整数时间、输入身份与规则事件
 crates/cocobeat-core     Anchor 判定、一对一配对与有界 Resonance
 crates/cocobeat-runtime  Bevy / Kira、ClockBridge、输入、会话与表现
 crates/cocobeat-replay   有界 JSON 持久化与同一 core 重放
-crates/cocobeat-media    有界源解码、48 kHz 重采样与严格 canonical 读回
+crates/cocobeat-media    有界音频处理、严格读回与四对象内容包事务
 tools/cocobeat-lab       研究实验，不进入正式游戏 UX
 xtask                   开发检查命令
 assets/dev              开发资源约定
@@ -98,9 +98,11 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `decode-audio` 支持 WAV/PCM、FLAC、MP3 和 Ogg Vorbis，输出原采样率的立体声 F32LE，单声道复制为双声道；保留静默与原始幅度，源文件限 512 MiB、192 kHz、十分钟。`resample-audio` 复用该入口，以 OxiMedia High 转为 48 kHz，48 kHz 原件直接保留样本；实际输出帧数为 `ceil(源帧数 × 48000 / 源采样率)`，不裁静默或归一化
 
-`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，编码器准入与 SongPackage Ready 仍待完成
+`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，生产编码器准入与游戏中的完整导入流程仍待完成
 
 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>` 将最终 Ogg 有界复制到全新的目录，按实际复制字节记录 BLAKE3 和长度，关闭写入后严格读回其中的 `song.audio.ogg`；原文件保留，已有目录拒绝覆盖。失败只清理本次音频文件和空目录，成功只表示该音频对象已准备，不创建分析、谱面、manifest 或 Ready；源上限仍为 512 MiB 和十分钟
+
+`build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，游戏仍使用内置开发内容，自动 MIR、AnchorCompiler 与舞台编译继续按路线图推进
 
 `--quality-smoke low|medium|high|off PNG` 保存指定画质的固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 通过生产菜单控制进入画质或帧率子页，运行品牌到 Ready 后截图。两种预览均不播放音频、不读写用户配置，也不运行生产帧率门控，不能用截图耗时推断实际帧率
 

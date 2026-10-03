@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "song_id": "cocobeat-development-duet-v1",
+  "ruleset_id": "duo-watermark-v1",
+  "source_note": "Manually authored from the original anchors.csv and event_frames.csv in assets/dev/vertical_slice; no automatic beat or onset detector was used",
+  "anchors": [
+    { "id": 1, "frame": 1248000 },
+    { "id": 2, "frame": 1440000 },
+    { "id": 3, "frame": 1632000 },
+    { "id": 4, "frame": 1824000 },
+    { "id": 5, "frame": 2400000 },
+    { "id": 6, "frame": 2592000 },
+    { "id": 7, "frame": 2784000 }
+  ],
+  "sections": [
+    { "id": 1, "start_frame": 0, "end_frame": 384000, "label": "orientation" },
+    { "id": 2, "start_frame": 384000, "end_frame": 1152000, "label": "free_imitation" },
+    { "id": 3, "start_frame": 1152000, "end_frame": 1920000, "label": "sparse_anchors" },
+    { "id": 4, "start_frame": 1920000, "end_frame": 2304000, "label": "silence" },
+    { "id": 5, "start_frame": 2304000, "end_frame": 2880000, "label": "shared_release" },
+    { "id": 6, "start_frame": 2880000, "end_frame": 3072000, "label": "ending" }
+  ]
+}

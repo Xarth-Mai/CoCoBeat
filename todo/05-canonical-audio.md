@@ -13,7 +13,8 @@
 - [x] 最终音频对象准备：`prepare_canonical_audio` 与 lab 的 `prepare-audio` 有界复制最终 Ogg 至新 staging 目录，记录实际对象 BLAKE3/长度并严格读回副本；3 项新增行为测试覆盖身份、已有目录保护、上限和失败清理，11 项 media 测试通过；只准备音频对象，不创建虚构分析、谱面或 Ready
 - [x] 固定全频带实验：冻结提交 `e1b3a26`，只比较长块 residue 扩带；19 例的 34 次编码与双路完整回读、4 次原 guard 拒绝及原 10 例字节复现通过；逐例保留全长和局部音质退步，见 [观察清单](../testdata/synthetic/canonical-audio-probe/fullband-observations-20261003.json)，正式 vendor/profile 与生产准入保持未变
 - [ ] 最终编码闭环继续验收首尾瞬态、静默、clipping、seek、长曲和曲库听感，并在 Windows/Linux 各目标验证；严格读回入口通过不等于编码器准入或 SongPackage Ready
-- [ ] MIR 的输入以最终回读音频为准，不能分析另一个时间原点的 PCM。
-- [ ] SongPackage staging、对象哈希、版本头和原子 Ready 提交；损坏对象明确失败。
+- [ ] 完整 MIR 的输入以最终回读音频为准；lab 的实际能量测量已从本次 staging 最终副本按帧 0 读取，自动 MIR 的编码回读对照仍待完成
+- [x] 初始 SongPackage 四对象事务、BLAKE3、版本头和原子目录发布已由 lab 实际消费；staging 严格读回后从同一副本测量能量，组合带来源的手工 Anchor / 段落，完整复核后才发布，损坏与失败保留覆盖见 [契约](../docs/song-package.md)
+- [ ] 将准入后的生产编码、完整 MIR / Anchor 输出和包事务接入游戏曲库 Ready；当前手工开发包不替代完整导入流程
 
 退出条件：Windows/Linux 编码回读与独立互操作证据通过。失败时阻止导入，在开发期替换实现，不引入 FFmpeg 或运行时备用编码路径。

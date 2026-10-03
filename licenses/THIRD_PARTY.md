@@ -1,6 +1,6 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 543 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 547 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
@@ -9,9 +9,10 @@
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 源解码 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
-| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：已准备的最终音频对象字节身份，复用既有解析版本 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
-| [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化 | MIT OR Apache-2.0 |
-| [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
+| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：最终音频、分析、谱面对象及规范 manifest 的字节身份 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
+| [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化；media/lab：私有内容格式和创作输入 | MIT OR Apache-2.0 |
+| [postcard](https://github.com/jamesmunns/postcard) | 1.1.3 | media：有界且带独立版本头的内容对象编码，schema 保持标准库类型 | MIT OR Apache-2.0 |
+| [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime/lab：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
 | [winit](https://github.com/rust-windowing/winit) | 0.30.13 | runtime：窗口图标，复用 Bevy 已启用的平台功能 | Apache-2.0 |
 | [sys-locale](https://github.com/1Password/sys-locale) | 0.3.2 | runtime：Windows/Linux 系统首选语言识别 | MIT OR Apache-2.0 |
 | [winsafe](https://github.com/rodrigocfd/winsafe) | 0.0.29 | runtime：Windows 显示器工作区的安全原生接口 | MIT |
@@ -20,7 +21,7 @@
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
-独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的五个工具包、`tools/mir-onset-probe/`、`tools/mir-onset-diagnostic/`、`tools/mir-spectral-probe/` 与 `tools/mir-flux-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 88 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，四个 MIR 工具分别解析相同的 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，谱候选另将已有的 Apache-2.0 `oxifft 0.4.2` 列为直接依赖并开启 `std`、`streaming`，第三方包版本集合不变；产品未启用该分析库，该研究台账不扩充产品 Cargo.lock 或发行组件清单
+独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的五个工具包、`tools/mir-onset-probe/`、`tools/mir-onset-diagnostic/`、`tools/mir-spectral-probe/`、`tools/mir-flux-probe/` 与 `tools/mir-flux-gate-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 88 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，五个 MIR 工具分别解析相同的 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，谱候选另将已有的 Apache-2.0 `oxifft 0.4.2` 列为直接依赖并开启 `std`、`streaming`，第三方包版本集合不变；产品未启用该分析库，该研究台账不扩充产品 Cargo.lock 或发行组件清单
 
 `cocobeat-rusty-candidate` 的独立闭包包含 64 个 registry 包和一个 patched vendor。`rusty_vorbis 0.1.1` 的 name/version 台账记录许可元数据，其发布版与修补版的代码身份分别保存；候选 vendor 从官方 crate archive 提取，仅修改 `forward_couple`，完整 Apache-2.0 LICENSE、原 README 与上游说明保留，来源、14 个文件身份与唯一补丁见 [UPSTREAM.md](../tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md)。该副本用于复现编码候选，未进入产品或游戏发行包
 
@@ -28,7 +29,7 @@ CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`�
 
 工作流使用 `actions/checkout@v7`、`actions/cache@v6`、`actions/upload-artifact@v7`、`actions/download-artifact@v8`（均 MIT），跟随各主版本的稳定更新，不属于 Cargo 解析图或游戏运行时依赖
 
-原创开发音乐、Anchor、独立事件帧标注、反馈音、探针脉冲与品牌落点合成音的来源见 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，这些生成资源使用 CC0-1.0，生成器源代码使用 MPL-2.0。`source_hash` 使用 SHA-256，反馈音、探针脉冲与品牌落点生成器条目记录源码哈希，其他条目记录资源文件哈希；听感人工验收与真实设备音频验收均为 NOT RUN
+原创开发音乐、Anchor、独立事件帧标注及其手工包创作 JSON、反馈音、探针脉冲与品牌落点合成音的来源见 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，这些生成资源使用 CC0-1.0，生成器源代码使用 MPL-2.0。`source_hash` 使用 SHA-256，反馈音、探针脉冲与品牌落点生成器条目记录源码哈希，其他条目记录资源文件哈希；听感人工验收与真实设备音频验收均为 NOT RUN
 
 MIR 原创脉冲、静默和独立字面帧号真值也使用 CC0-1.0，`mir-onset-clean-v1` 记录生成器源码哈希，源码使用 MPL-2.0；后续 `mir-onset-holdout-v1` 记录相位扫描、短尾、持续音与固定种子噪声的生成器身份，`mir-spectral-frequency-check-v1` 记录原创 1500 Hz 与 7500 Hz 同能量正弦的频谱自检生成器身份，`mir-flux-declared-controls-v1` 记录预先声明的静默后起音、等能量换音、稀疏打击与连续渐变生成器身份，PCM 和构造标签同为 CC0-1.0；这些标签表示构造攻击的位置，不能作为 beat 或人工 Anchor 标签
 

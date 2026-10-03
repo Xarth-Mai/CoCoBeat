@@ -19,3 +19,5 @@
 | [../todo/README.md](../todo/README.md) | 按依赖与验收门槛推进的工作顺序 |
 
 新增专题文档应承载实际设计或实验结果；开发音乐见 [资源说明](../assets/dev/vertical_slice/README.md)，软件计时模拟见 [实验说明](../testdata/synthetic/README.md)
+
+- [SongPackage](song-package.md)：初始四对象格式、手工创作入口、完整验证与原子发布

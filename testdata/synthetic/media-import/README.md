@@ -23,3 +23,5 @@ cargo test --locked -p cocobeat-media canonical_readback
 | `mono.mp3` | 1822 | `d923f64fa8d33576b85608ac20f13a1cf512f8dfd0e94e9c0e1342d652ca6085` |
 | `mono.ogg` | 7156 | `2e98fad0c74320af0e9a98ec6e3e3ddc9b219afdc90826abc78aa9bd625fe33a` |
 | `stereo-canonical.ogg` | 5245 | `fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf` |
+
+2026-10-03 独立包验证发现短 `stereo-canonical.ogg` 的默认 FFmpeg 解码仅输出前 4672 帧，Symphonia 连续输出源长度 4800 帧；共同部分差值小于 `7.46e-8`，显式关闭自动 trim 后的原始读回与原始正弦诊断确认完整尾部存在。默认 FFmpeg 跨解码器帧数结果保留为 FAIL，不据此裁剪产品时轴或修改此 fixture，详细边界见 [SongPackage 验证](../../../docs/testing.md#初始-songpackage-与手工创作入口)

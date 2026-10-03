@@ -4,6 +4,7 @@ use std::process::ExitCode;
 
 mod content;
 mod media;
+mod package;
 mod timing;
 
 fn main() -> ExitCode {
@@ -69,9 +70,29 @@ fn main() -> ExitCode {
                     }),
             )
         }
+        [command, input, frames, authoring, output] if command == "build-authored-package" => {
+            report(
+                frames
+                    .parse::<u64>()
+                    .map_err(|_| {
+                        "Expected canonical frames must be an unsigned integer".to_string()
+                    })
+                    .and_then(|frames| {
+                        package::build(
+                            Path::new(input),
+                            frames,
+                            Path::new(authoring),
+                            Path::new(output),
+                        )
+                    }),
+            )
+        }
+        [command, input] if command == "verify-package" => {
+            report(package::verify(Path::new(input)))
+        }
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir>"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS

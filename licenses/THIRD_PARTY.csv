@@ -109,6 +109,7 @@ cc,1.5.1,MIT OR Apache-2.0,https://github.com/rust-lang/cc-rs
 cfg-if,1.0.5,MIT OR Apache-2.0,https://github.com/rust-lang/cfg-if
 cfg_aliases,0.2.2,MIT,https://github.com/katharostech/cfg_aliases
 clipboard-win,5.4.1,BSL-1.0,https://github.com/DoumanAsh/clipboard-win
+cobs,0.3.0,MIT OR Apache-2.0,https://github.com/jamesmunns/cobs.rs
 codespan-reporting,0.12.0,Apache-2.0,https://github.com/brendanzab/codespan
 codespan-reporting,0.13.1,Apache-2.0,https://github.com/brendanzab/codespan
 combine,4.6.8,MIT,https://github.com/Marwes/combine
@@ -153,6 +154,8 @@ downcast-rs,2.0.2,MIT OR Apache-2.0,https://github.com/marcianx/downcast-rs
 dpi,0.1.2,Apache-2.0 AND MIT,https://github.com/rust-windowing/winit
 either,1.18.0,MIT OR Apache-2.0,https://github.com/rayon-rs/either
 embed-resource,3.0.11,MIT,https://github.com/nabijaczleweli/rust-embed-resource
+embedded-io,0.4.0,MIT OR Apache-2.0,https://github.com/embassy-rs/embedded-io
+embedded-io,0.6.1,MIT OR Apache-2.0,https://github.com/rust-embedded/embedded-hal
 encase,0.12.1,MIT-0,https://github.com/teoxoy/encase
 encase_derive,0.12.1,MIT-0,https://github.com/teoxoy/encase
 encase_derive_impl,0.12.1,MIT-0,https://github.com/teoxoy/encase
@@ -328,6 +331,7 @@ png,0.18.1,MIT OR Apache-2.0,https://github.com/image-rs/image-png
 polling,3.11.0,Apache-2.0 OR MIT,https://github.com/smol-rs/polling
 portable-atomic,1.15.0,Apache-2.0 OR MIT,https://github.com/taiki-e/portable-atomic
 portable-atomic-util,0.2.8,Apache-2.0 OR MIT,https://github.com/taiki-e/portable-atomic-util
+postcard,1.1.3,MIT OR Apache-2.0,https://github.com/jamesmunns/postcard
 potential_utf,0.1.6,Unicode-3.0,https://github.com/unicode-org/icu4x
 pp-rs,0.2.1,BSD-3-Clause,https://github.com/Kangz/glslpp-rs
 presser,0.3.1,MIT OR Apache-2.0,https://github.com/EmbarkStudios/presser

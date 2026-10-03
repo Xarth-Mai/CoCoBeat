@@ -1,10 +1,16 @@
 //! CoCoBeat-owned data contracts. No engine, audio, transport, or MIR types.
 
 pub mod asset;
+pub mod content;
 pub mod gameplay;
 pub mod time;
 
 pub use asset::AssetRef;
+pub use content::{
+    BeatFeature, CONTENT_SCHEMA_VERSION, CompiledChart, EnergySample, MAX_CANONICAL_FRAMES,
+    MAX_CONTENT_DIAGNOSTICS_BYTES, MAX_CONTENT_ITEMS, MAX_CONTENT_TEXT_BYTES, MusicAnalysis,
+    OnsetFeature, SectionCue, SectionFeature, SongPackage,
+};
 pub use gameplay::{
     Anchor, AnchorGrade, AnchorJudgement, AnchorSyncEvent, DuoEvent, DuoInput, DuoRules,
     FreeSyncEvent, Hit, PlayerId, ResonanceState,
