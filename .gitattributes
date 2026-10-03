@@ -1,0 +1,4 @@
+* text=auto eol=lf
+# Preserve source and fixture hashes on every checkout
+assets/** -text
+testdata/** -text
