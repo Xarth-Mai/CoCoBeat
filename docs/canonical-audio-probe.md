@@ -2,7 +2,7 @@
 
 2026-10-03 的阶段 05 实验已覆盖长曲、信号边界、精确 seek 和重采样合成质量；OxiMedia High 通过本批频点门槛，OxideAV 在十分钟输入、2 GiB 虚拟地址空间限制下编码失败，rusty_vorbis 仍因近满幅合法输入的明显波形误差不准入；以下保留首轮结构结果与后续发现
 
-`cocobeat-media` 的有界源解码与 48 kHz 重采样已由 lab 消费；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲，Windows、外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
+`cocobeat-media` 的有界源解码与 48 kHz 重采样已由 lab 消费；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲和四平台短样本软件路径，外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
 
 ## 方法与证据边界
 
@@ -127,6 +127,10 @@ q5 仍有明显波形误差与 overs，不能仅因右声道改善便准入；�
 来源、完整 Apache 许可和逐文件补丁身份见 [UPSTREAM.md](../tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md)；仅本独立工具引用该副本，产品未启用候选编码器。[Native media candidate](../.github/workflows/media-candidate.yml) 提供 Windows/Linux × x64/ARM64 手动原生测试和 release CLI 构建，使用独立的平台、架构与 Rust 版本缓存；它不创建 GitHub Release，实测状态与普通工作流定义分别记录
 
 Linux x86_64 的 4 项自包含测试、格式、Clippy 和 release 构建通过；新 CLI 对原始 64 秒 WAV 单次运行，在 2 GiB 地址空间与 30 秒墙钟上限内耗时 0.409 秒、最大 RSS 35404 KiB，精确回读 3,072,000 帧，非有限和 overs 计数均为零。重采样 PCM、Ogg 和回读 PCM 与此前冻结 patched q10 的三份产物逐字节一致；源码、二进制、资源计数和回归身份见 [新入口固定观察](../testdata/synthetic/canonical-audio-probe/candidate-cli-observations-20261003.json)，本次没有重跑十分钟或 seek，也未据单首音乐的 SNR 判定听感准入
+
+随后 `75b82f4` 的 [原生四平台 run](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725) 全部通过：Windows/Linux 的 x64、ARM64 各使用对应 host 的 Rust 1.99.0，执行 6 项 media 测试、4 项候选短样本测试并构建 release CLI；下载后二进制的 PE32+/ELF 架构与 SHA-256 已核验，未执行下载的产物。四组候选缓存均为首次 MISS 后成功保存，不据此声称缓存命中或构建提速；日志、产物身份和范围见 [原生与长曲固定观察](../testdata/synthetic/canonical-audio-probe/candidate-native-long-observations-20261003.json)
+
+同一冻结源码在本机 Linux 对既有 600 秒、44.1 kHz 单声道静默 WAV 单次执行完整新入口，源 26,460,000 帧重采样并完整回读为 28,800,000 帧；在 2 GiB 地址空间与 30 秒墙钟限制内耗时 14.2897 秒、最大 RSS 233688 KiB，所有样本有限，双声道 peak/overs 均为零。回读每声道含 28125 个 `-0.0`，与参考数值相同而字节不同；原检查器误要求全为正零的失败断言已保留，独立只读扫描修正验证，没有重新编码或提高限额。本次只测静默长曲，不扩大为十分钟复杂音乐、四平台长曲或听感验收
 
 ## 精确 seek：原生 FAIL，显式前滚 PASS_LIMITED
 

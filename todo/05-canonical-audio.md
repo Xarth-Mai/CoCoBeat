@@ -8,7 +8,7 @@
 
 - [x] Symphonia 源导入；有上限的源解码与 lab 入口已完成，3 项窄测和正式 CLI 的 22 项格式/损坏/失败清理检查通过，64 秒原创音乐输出与独立 PCM16 转换逐字节一致；标准音频输出仍待后续接线
 - [ ] 评估 OxiMedia audio 重采样：High 已接入 media/lab，合成质量、3 项行为测试、正式 CLI 19 项及独立 API 7 项通过，包含原创音乐位精确透传、十分钟流式摘要与 1 Hz 完整 flush 资源检查；跨平台执行与听感继续取证，见 [软件验证](../docs/testing.md#固定-48-khz-源重采样)
-- [ ] 验证最新纯 Rust Ogg Vorbis 编码器；OxideAV 十分钟在 2 GiB 内存上限下失败；patched rusty q10 独立工具已完成源文件到最终 Ogg 回读的 4 项窄测与原始 64 秒歌曲回归，原生四平台验证继续推进；尚无生产准入编码器
+- [ ] 验证最新纯 Rust Ogg Vorbis 编码器；OxideAV 十分钟在 2 GiB 内存上限下失败；patched rusty q10 已完成四平台原生短样本测试与构建、原始 64 秒歌曲回归及 Linux 十分钟静默完整路径，待曲库、seek 与听感准入；尚无生产准入编码器
 - [ ] 重新解码最终 Ogg，检查采样率、声道、帧数、首尾瞬态、静默、clipping、seek 与长曲。
 - [ ] MIR 的输入以最终回读音频为准，不能分析另一个时间原点的 PCM。
 - [ ] SongPackage staging、对象哈希、版本头和原子 Ready 提交；损坏对象明确失败。

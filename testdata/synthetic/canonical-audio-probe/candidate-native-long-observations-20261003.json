@@ -1,0 +1,419 @@
+{
+  "recorded_date": "2026-10-03",
+  "scope": "Native software tests and local 600-second silent source pipeline; no production or listening admission",
+  "source_commit": "75b82f4e3f663560641686209c3f0437599bd9e0",
+  "native": {
+    "schema": 1,
+    "observed_utc": "2026-10-03T02:46:27.108127+00:00",
+    "repository": "Xarth-Mai/CoCoBeat",
+    "source_sha": "75b82f4e3f663560641686209c3f0437599bd9e0",
+    "run_id": 37090646725,
+    "run_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "results": [
+      {
+        "target": "aarch64-pc-windows-msvc",
+        "job_id": 111110078758,
+        "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725/job/111110078758",
+        "result": "PASS",
+        "runner_labels": [
+          "windows-11-arm"
+        ],
+        "runner_name": "GitHub Actions 1000000214",
+        "rustc": "1.99.0 (b940084d7 2026-09-28)",
+        "rustc_host": "aarch64-pc-windows-msvc",
+        "started_at": "2026-10-03T02:41:08Z",
+        "completed_at": "2026-10-03T02:43:53Z",
+        "tests": {
+          "media": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.99
+          },
+          "candidate": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.19
+          }
+        },
+        "cache": {
+          "restore": "MISS",
+          "saved": "PASS",
+          "saved_key": "media-candidate-Windows-aarch64-pc-windows-msvc-1.99.0-b404cb433916e368ba42097dd7ce37c696c050594a2f235167ccf76f85f1fdb9-aa1f88e0f1ea8128b1172a4147b73092a017b4e0217f02eb0c2e5f60fa2e821c",
+          "uploaded_bytes": 141829652,
+          "log": "target/rusty-candidate-native-20261003/logs/aarch64-pc-windows-msvc.cache.log",
+          "log_sha256": "123f3cce1e31d9ad935f1f3ef5933ab4bdb8c3dbc23dd21758a6336aca8e81ef"
+        },
+        "artifact": {
+          "id": 11262278141,
+          "name": "media-candidate-aarch64-pc-windows-msvc-75b82f4e3f663560641686209c3f0437599bd9e0",
+          "archive_bytes": 740869,
+          "archive_digest_remote": "sha256:3af93ef58fb167f1216b7ce69462afcfc7c5799942bdb752e59230e7996f060a",
+          "binary": "target/rusty-candidate-native-20261003/artifacts/media-candidate-aarch64-pc-windows-msvc-75b82f4e3f663560641686209c3f0437599bd9e0/cocobeat-rusty-candidate.exe",
+          "binary_bytes": 1619968,
+          "binary_sha256": "1b167ec10028523b9e7e6d244e8045fc16b13de8962a0ccbd095651c8becffca",
+          "format": "PE32+",
+          "machine": "0xaa64",
+          "architecture_check": "PASS",
+          "executed_after_download": false
+        },
+        "log": "target/rusty-candidate-native-20261003/logs/aarch64-pc-windows-msvc.log",
+        "log_sha256": "ae513893e0cbd431ab518061dcfa92ff9cb82306e769bb5d4ea14da006d211d9"
+      },
+      {
+        "target": "aarch64-unknown-linux-gnu",
+        "job_id": 111110078786,
+        "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725/job/111110078786",
+        "result": "PASS",
+        "runner_labels": [
+          "ubuntu-24.04-arm"
+        ],
+        "runner_name": "GitHub Actions 1000000213",
+        "rustc": "1.99.0 (b940084d7 2026-09-28)",
+        "rustc_host": "aarch64-unknown-linux-gnu",
+        "started_at": "2026-10-03T02:41:10Z",
+        "completed_at": "2026-10-03T02:42:13Z",
+        "tests": {
+          "media": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 1.08
+          },
+          "candidate": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.15
+          }
+        },
+        "cache": {
+          "restore": "MISS",
+          "saved": "PASS",
+          "saved_key": "media-candidate-Linux-aarch64-unknown-linux-gnu-1.99.0-01de771d469c7ee57d3de654dbc4125a1b74a093910ac5e92b342ed78de5099d-aa1f88e0f1ea8128b1172a4147b73092a017b4e0217f02eb0c2e5f60fa2e821c",
+          "uploaded_bytes": 166727975,
+          "log": "target/rusty-candidate-native-20261003/logs/aarch64-unknown-linux-gnu.cache.log",
+          "log_sha256": "d575e91e8c4938e34522d0e3371782af95cae531d1ea8e7b2bbdc2eca5fb3522"
+        },
+        "artifact": {
+          "id": 11261843454,
+          "name": "media-candidate-aarch64-unknown-linux-gnu-75b82f4e3f663560641686209c3f0437599bd9e0",
+          "archive_bytes": 965134,
+          "archive_digest_remote": "sha256:e1c01eb9bf9aa9a972f9b6404641f5ab6f988d55fe6cc86a68839aacc1fcdce1",
+          "binary": "target/rusty-candidate-native-20261003/artifacts/media-candidate-aarch64-unknown-linux-gnu-75b82f4e3f663560641686209c3f0437599bd9e0/cocobeat-rusty-candidate",
+          "binary_bytes": 2514720,
+          "binary_sha256": "74dadeb8a1c4295ee767c785dfb6aec802f01478a30d63b0f00ec9fde6fce134",
+          "format": "ELF64 little-endian",
+          "machine": 183,
+          "architecture_check": "PASS",
+          "executed_after_download": false
+        },
+        "log": "target/rusty-candidate-native-20261003/logs/aarch64-unknown-linux-gnu.log",
+        "log_sha256": "18d98c7791edc7a78a6db3a30c3c72c84dd63faca46369027c72f470b39f8eb2"
+      },
+      {
+        "target": "x86_64-unknown-linux-gnu",
+        "job_id": 111110078885,
+        "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725/job/111110078885",
+        "result": "PASS",
+        "runner_labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_name": "GitHub Actions 1000000215",
+        "rustc": "1.99.0 (b940084d7 2026-09-28)",
+        "rustc_host": "x86_64-unknown-linux-gnu",
+        "started_at": "2026-10-03T02:41:09Z",
+        "completed_at": "2026-10-03T02:42:06Z",
+        "tests": {
+          "media": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.55
+          },
+          "candidate": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.08
+          }
+        },
+        "cache": {
+          "restore": "MISS",
+          "saved": "PASS",
+          "saved_key": "media-candidate-Linux-x86_64-unknown-linux-gnu-1.99.0-01de771d469c7ee57d3de654dbc4125a1b74a093910ac5e92b342ed78de5099d-aa1f88e0f1ea8128b1172a4147b73092a017b4e0217f02eb0c2e5f60fa2e821c",
+          "uploaded_bytes": 166790000,
+          "log": "target/rusty-candidate-native-20261003/logs/x86_64-unknown-linux-gnu.cache.log",
+          "log_sha256": "a1c52f15e0ec41f641c33331f14974daaae0c76ad2b405bd2c6f5825d9c155d4"
+        },
+        "artifact": {
+          "id": 11261663735,
+          "name": "media-candidate-x86_64-unknown-linux-gnu-75b82f4e3f663560641686209c3f0437599bd9e0",
+          "archive_bytes": 996368,
+          "archive_digest_remote": "sha256:6452ef409cb1f6ee617f9c53eb2ac8654dc1281bceeca1afbac2a7014978a123",
+          "binary": "target/rusty-candidate-native-20261003/artifacts/media-candidate-x86_64-unknown-linux-gnu-75b82f4e3f663560641686209c3f0437599bd9e0/cocobeat-rusty-candidate",
+          "binary_bytes": 2589296,
+          "binary_sha256": "5d614ad33133db2850b385fd4be881461046780d32625b6fa9d3fa5bf9a66fd7",
+          "format": "ELF64 little-endian",
+          "machine": 62,
+          "architecture_check": "PASS",
+          "executed_after_download": false
+        },
+        "log": "target/rusty-candidate-native-20261003/logs/x86_64-unknown-linux-gnu.log",
+        "log_sha256": "7cf79126f4aedfa4b914cb84f63d55f533019bf8369df4b482c0a9adc86f4bfb"
+      },
+      {
+        "target": "x86_64-pc-windows-msvc",
+        "job_id": 111110078900,
+        "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37090646725/job/111110078900",
+        "result": "PASS",
+        "runner_labels": [
+          "windows-latest"
+        ],
+        "runner_name": "GitHub Actions 1000000216",
+        "rustc": "1.99.0 (b940084d7 2026-09-28)",
+        "rustc_host": "x86_64-pc-windows-msvc",
+        "started_at": "2026-10-03T02:41:10Z",
+        "completed_at": "2026-10-03T02:43:37Z",
+        "tests": {
+          "media": {
+            "passed": 6,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.75
+          },
+          "candidate": {
+            "passed": 4,
+            "failed": 0,
+            "ignored": 0,
+            "duration_seconds": 0.16
+          }
+        },
+        "cache": {
+          "restore": "MISS",
+          "saved": "PASS",
+          "saved_key": "media-candidate-Windows-x86_64-pc-windows-msvc-1.99.0-b404cb433916e368ba42097dd7ce37c696c050594a2f235167ccf76f85f1fdb9-aa1f88e0f1ea8128b1172a4147b73092a017b4e0217f02eb0c2e5f60fa2e821c",
+          "uploaded_bytes": 144579567,
+          "log": "target/rusty-candidate-native-20261003/logs/x86_64-pc-windows-msvc.cache.log",
+          "log_sha256": "4eca8c33daa5cc369297c6c3e862cdacce3d105dd6c64733401d4d62e96e2725"
+        },
+        "artifact": {
+          "id": 11261858473,
+          "name": "media-candidate-x86_64-pc-windows-msvc-75b82f4e3f663560641686209c3f0437599bd9e0",
+          "archive_bytes": 771768,
+          "archive_digest_remote": "sha256:640e6805a47eeb5021282d25fdfd9a13c5ba5910833d7e2372bc76768e59fa94",
+          "binary": "target/rusty-candidate-native-20261003/artifacts/media-candidate-x86_64-pc-windows-msvc-75b82f4e3f663560641686209c3f0437599bd9e0/cocobeat-rusty-candidate.exe",
+          "binary_bytes": 1762816,
+          "binary_sha256": "b280e3cb063e330ab1aa857d0f0f80fbf648af79a6b8d4fa49c3243b26954032",
+          "format": "PE32+",
+          "machine": "0x8664",
+          "architecture_check": "PASS",
+          "executed_after_download": false
+        },
+        "log": "target/rusty-candidate-native-20261003/logs/x86_64-pc-windows-msvc.log",
+        "log_sha256": "1cd2d1cb7d911c76460658d5d75d274b3232e962be34e67fcc58ae0167371b74"
+      }
+    ],
+    "limits": [
+      "Native hosted-runner software tests and release CLI builds; no real audio-device acceptance",
+      "Binary PE/ELF architecture and SHA256 inspected only after download; no downloaded binary executed",
+      "This patched candidate is not an official upstream release or production encoder admission",
+      "No additional workflow dispatched, retry, tracked edit or commit by monitoring task"
+    ],
+    "api_evidence": [
+      {
+        "path": "target/rusty-candidate-native-20261003/native-run.json",
+        "sha256": "847449eec6df6d0967f3ba7d121a039c74c9c03044140be76c809b458b7c50e0"
+      },
+      {
+        "path": "target/rusty-candidate-native-20261003/native-jobs.json",
+        "sha256": "1b50fce3559e7bd9ffac9913864960295981247fe9498d023671dcb5c550ff57"
+      },
+      {
+        "path": "target/rusty-candidate-native-20261003/native-artifacts.json",
+        "sha256": "de5082c84657f279e75244198dfb987c9f05271a92cee4deee0f6099ba25c9ff"
+      }
+    ]
+  },
+  "native_raw_evidence": {
+    "path": "target/rusty-candidate-native-20261003/native-result.json",
+    "sha256": "e4b7fa857c95f0c4aedee77e5f1c32b6e8abfaf7aafb25c867afb9a3434fc756"
+  },
+  "linux_600s": {
+    "status": "PASS_COMPLETE_600S_SOFTWARE_PATH",
+    "source": "/home/lzzz/MyProjects/CoCoBeat/target/resample-integration-20261003/inputs/silence-600s-44100.wav",
+    "source_sha256": "9b221a14d9e59aae26cc0433e060880e2017a4a8152057ed074e87bd537c6a1b",
+    "source_sample_rate": 44100,
+    "source_channels": 1,
+    "source_frames": 26460000,
+    "output_sample_rate": 48000,
+    "output_channels": 2,
+    "output_frames": 28800000,
+    "candidate_process": {
+      "command": [
+        "prlimit",
+        "--as=2147483648",
+        "timeout",
+        "--kill-after=5s",
+        "30s",
+        "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-build/release/cocobeat-rusty-candidate",
+        "/home/lzzz/MyProjects/CoCoBeat/target/resample-integration-20261003/inputs/silence-600s-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-cli-600s-20261003/silence-600s"
+      ],
+      "runs": 1,
+      "exit_code": 0,
+      "wall_seconds": 14.2896887389943,
+      "max_rss_kib": 233688,
+      "user_seconds": 21.819833,
+      "system_seconds": 0.44329199999999996,
+      "address_space_limit_bytes": 2147483648,
+      "wall_timeout_seconds": 30,
+      "kill_grace_seconds": 5,
+      "resource_scope": "Linux child process tree including prlimit/timeout launch overhead; CLI includes decoding/resampling/encoding/full readback/hashing/PCM file I/O/reporting"
+    },
+    "artifact_checks": {
+      "resampled.f32le": {
+        "sha256": "68306144c20c258ebc68282cf37ecc61391a8222b955774ac7686e914bfcfaf4",
+        "bytes": 230400000,
+        "frames": 28800000,
+        "all_samples_numeric_zero": true,
+        "positive_zero_samples": [
+          28800000,
+          28800000
+        ],
+        "negative_zero_samples": [
+          0,
+          0
+        ],
+        "nonfinite": [
+          0,
+          0
+        ],
+        "peak": [
+          0.0,
+          0.0
+        ],
+        "overs": [
+          0,
+          0
+        ]
+      },
+      "canonical.ogg": {
+        "sha256": "d5f568678e7581f03e19eff7e72327ea5a34079557cc139708d283cb3caabfa9",
+        "bytes": 1579377
+      },
+      "decoded.f32le": {
+        "sha256": "ba92e80fb662d94e2a11a4a546a7a9e801cf64a0089274a9583c2cdf90220a09",
+        "bytes": 230400000,
+        "frames": 28800000,
+        "all_samples_numeric_zero": true,
+        "positive_zero_samples": [
+          28771875,
+          28771875
+        ],
+        "negative_zero_samples": [
+          28125,
+          28125
+        ],
+        "nonfinite": [
+          0,
+          0
+        ],
+        "peak": [
+          0.0,
+          0.0
+        ],
+        "overs": [
+          0,
+          0
+        ]
+      },
+      "pcm_byte_identical": false,
+      "pcm_numeric_identical": true,
+      "status": "PASS_COMPLETE_600S_SOFTWARE_PATH",
+      "source_sha256": "9b221a14d9e59aae26cc0433e060880e2017a4a8152057ed074e87bd537c6a1b",
+      "full_readback_decoder": "cocobeat-media/Symphonia; no FFmpeg invoked"
+    },
+    "initial_postprocess_status": "FAIL_INVALID_POSITIVE_ZERO_ONLY_ASSUMPTION",
+    "corrected_readonly_postprocess_status": "PASS_NUMERIC_ZERO_AND_FINITE",
+    "candidate_runs": 1,
+    "candidate_source_unchanged_after": true,
+    "source_unchanged_after": true,
+    "binary_unchanged_after": true,
+    "independent_review": "all PCM bytes and SHA/frames/finite checked read-only by separate agent; no candidate rerun",
+    "scope": "Existing 600-second 44.1kHz mono silence only; no new listening or cross-platform claim"
+  },
+  "harness_observation": {
+    "original_harness": "run.py",
+    "script_exit_code": 1,
+    "candidate_exit_code": 0,
+    "error": "AssertionError at run.py:53; positive-zero-only byte assertion on decoded.f32le",
+    "cause": "decoded PCM contains numerically valid negative zero (first at float896, bytes00000080); resampled PCM contains positive zero only",
+    "resolution": "separate read-only verify.py scanned all float bit patterns; all are +0 or -0, exactly28800000 stereo frames and finite; no candidate execution repeated",
+    "original_script_preserved": true
+  },
+  "long_source_frozen_evidence": {
+    "path": "target/rusty-candidate-cli-600s-20261003/FROZEN.json",
+    "sha256": "bb01e8b502a5e73ea41faed5a2f3b10f5a3f584a11681cbd558e328690af86d5",
+    "index": {
+      "frozen_at_utc": "2026-10-03T02:45:30.162542+00:00",
+      "status": "PASS_COMPLETE_600S_SOFTWARE_PATH",
+      "candidate_source_sha256": {
+        "tools/canonical-audio-probe/rusty-candidate/Cargo.lock": "b6d6f71571e97be00e90349bd4c2f7006fa47eeeaf03c1d5d8d56319e48fd27f",
+        "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+        "tools/canonical-audio-probe/rusty-candidate/README.md": "b9bffa7b0819bae6c0628ac2d02207857ca4036ca5b4cc29714cc497d1b6fb6a",
+        "tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md": "5505e7a31ac3cb707eda10734318955f2136cc42c74a44cf8d36c43eb483c64d",
+        "tools/canonical-audio-probe/rusty-candidate/patches/max-abs-coupling.patch": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+        "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+        "tools/canonical-audio-probe/rusty-candidate/src/tests.rs": "86f2aa0b43d2de18ec2087251d6e15c62ed2bc9598ba595c6b6c594ffa971a54",
+        "tools/canonical-audio-probe/rusty-candidate/upstream.json": "ec3f2a6e9465aa1e58c5a3e1fec8ae6d264fa3a588163880376bc1c8acbc14ef",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/.cargo_vcs_info.json": "5bc292b581c85905869bf7e4e0bf008a81f55f86436a8a60dc7838a39e991f14",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.lock": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml.orig": "7d91bd6dfec49c19bb3d2229df0fbe3cac7eb5c532bdd28f4bff50d0b03d2881",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/LICENSE": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/README.md": "acca07b1ed74777bb83c2950ffef8305fc4d55b28833a6bd248ea52d67c77882",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup_q4_stereo.bin": "8dbb400d1883f8e30fd473a66978e934dfd4029393d187050f82e2069ceef7eb"
+      },
+      "binary_sha256": "861e726a755d8e2ca2659cfe3001f0b773bdc31aa2b8429df2cbc763ba1a0af7",
+      "external_source": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/resample-integration-20261003/inputs/silence-600s-44100.wav",
+        "sha256": "9b221a14d9e59aae26cc0433e060880e2017a4a8152057ed074e87bd537c6a1b"
+      },
+      "sha256": {
+        "REPORT.md": "0cf4fef8fe8cd24407c30971344d96e9e98bea13a7fcea618eef99ede666fed5",
+        "checks.json": "a448c909018b1b496b7df34152cc969683abe343213c7fd2da755d6e13f3012e",
+        "harness-observation.json": "669e0e4bf91211ae63769374679914814f8c848477bc555c84e02690ac641bd9",
+        "preflight.json": "7e9c4ad65b3fc4b756801cde60c570b4511974431d9d378830640b9df8685a92",
+        "resources.json": "b135705d8c8bf710c825fbe4b3a4d3d580ba31b867154e4833bae0ea122d64c1",
+        "run.py": "02a003018b83fb4cfb8be6d6eee89fc2c50b254af921523b89455ef03cc49692",
+        "silence-600s/canonical.ogg": "d5f568678e7581f03e19eff7e72327ea5a34079557cc139708d283cb3caabfa9",
+        "silence-600s/decoded.f32le": "ba92e80fb662d94e2a11a4a546a7a9e801cf64a0089274a9583c2cdf90220a09",
+        "silence-600s/report.json": "6f1662408ecab82a2e684d58ce73c427a216690c117b1345a4e1c33ea27532f5",
+        "silence-600s/resampled.f32le": "68306144c20c258ebc68282cf37ecc61391a8222b955774ac7686e914bfcfaf4",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "summary.json": "17263a8ea31bde45337fb10f866386f3fdc45eade8d66cd2e961326f1d042cd1",
+        "verify.py": "6a8b7b1d76e60851c01270f0dde368c03d748702d91799ce967e06f3803f0423"
+      }
+    }
+  },
+  "limits": [
+    "Each native job ran 6 media tests and 4 short candidate tests; downloaded release CLIs were inspected but not executed",
+    "All four native candidate caches were first-run MISS then saved; no cache-hit or acceleration claim for this workflow",
+    "600-second whole-pipeline run is one local Linux x86_64 silent file only",
+    "Final PCM is numerically silent but contains negative zero; it is not byte-identical to the resampled reference",
+    "No new seek matrix, curated listening set, audio hardware, MusicAnalysis or SongPackage Ready acceptance"
+  ]
+}
