@@ -16,6 +16,10 @@ const DECLARATION: &str = include_str!(
     "../../../testdata/synthetic/mir-flux-gate-probe/declared-experiment-20261003.json"
 );
 
+const NEXT_CONTROLS: &str = include_str!(
+    "../../../testdata/synthetic/mir-flux-gate-probe/declared-next-controls-20261003.json"
+);
+
 fn evidence(strength: f64, mass: &[f64], index: usize) -> (f64, f64) {
     let lo = index.saturating_sub(RADIUS);
     let hi = (index + RADIUS + 1).min(mass.len());
@@ -191,15 +195,112 @@ fn run(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error::Erro
     Ok(passed)
 }
 
+fn generate(control: &Value) -> Vec<f32> {
+    let frames = control["frames"].as_u64().unwrap() as usize;
+    let mut samples = vec![0.0_f64; frames];
+    for voice in control["voices"].as_array().unwrap() {
+        let start = voice["start_frame"].as_u64().unwrap() as usize;
+        let frequency = voice["frequency_hz"].as_f64().unwrap();
+        let amplitude = voice["amplitude"].as_f64().unwrap();
+        let duration = voice["duration_frames"]
+            .as_u64()
+            .map_or(frames - start, |value| value as usize);
+        for (age, sample) in samples[start..start + duration].iter_mut().enumerate() {
+            let envelope = match control["generator"].as_str().unwrap() {
+                "burst" => (-((age as f64) / voice["decay_frames"].as_f64().unwrap())).exp(),
+                "hard_tone" => 1.0,
+                "slow_tone" => {
+                    let rise = voice["rise_frames"].as_u64().unwrap() as usize;
+                    if age < rise {
+                        0.5 * (1.0 - (std::f64::consts::PI * age as f64 / rise as f64).cos())
+                    } else {
+                        1.0
+                    }
+                }
+                other => panic!("Undeclared generator {other}"),
+            };
+            *sample += amplitude
+                * envelope
+                * (std::f64::consts::TAU * frequency * age as f64 / 48_000.0).cos();
+        }
+    }
+    samples.into_iter().map(|sample| sample as f32).collect()
+}
+
+fn run_controls(output: &Path) -> Result<bool, Box<dyn std::error::Error>> {
+    fs::create_dir(output)?;
+    fs::write(output.join("declaration.json"), NEXT_CONTROLS)?;
+    let declaration: Value = serde_json::from_str(NEXT_CONTROLS)?;
+    let mut cases = Vec::new();
+    for control in declaration["controls"].as_array().unwrap() {
+        let name = control["name"].as_str().unwrap();
+        let samples = generate(control);
+        let path = output.join(format!("{name}.f32le"));
+        fs::write(
+            &path,
+            samples
+                .iter()
+                .flat_map(|sample| sample.to_le_bytes())
+                .collect::<Vec<_>>(),
+        )?;
+        let samples = frozen::load(&path, 1, 0, samples.len())?;
+        let mut result = analyze(&samples);
+        let native: Vec<usize> = serde_json::from_value(result["predicted_frames"].clone())?;
+        let accepted: Vec<usize> = serde_json::from_value(result["accepted_frames"].clone())?;
+        assert!(accepted.windows(2).all(|pair| pair[0] < pair[1]));
+        assert!(
+            accepted
+                .iter()
+                .all(|frame| native.binary_search(frame).is_ok())
+        );
+        // Labels enter only after the same frozen analyzer and fixed gate
+        let truth: Option<Vec<usize>> = serde_json::from_value(control["truth_frames"].clone())?;
+        result["native_metrics"] = truth
+            .as_ref()
+            .map_or(Value::Null, |truth| frozen::score(truth, &native));
+        result["metrics"] = truth
+            .as_ref()
+            .map_or(Value::Null, |truth| frozen::score(truth, &accepted));
+        result["case"] = json!(name);
+        result["pcm_path"] = json!(path);
+        result["sample_frames"] = json!(samples.len());
+        result["truth_frames"] = control["truth_frames"].clone();
+        result["uncertain_interval_frames_inclusive"] =
+            control["uncertain_interval_frames_inclusive"].clone();
+        cases.push(result);
+    }
+    let passed = cases
+        .iter()
+        .all(|case| case["metrics"].is_null() || case["metrics"]["status"] == "PASS");
+    let report = json!({"status": if passed {"PASS"} else {"FAIL"}, "declaration": declaration,
+        "scope": "New engineering controls only; earlier FAIL cases remain authoritative and are not replaced",
+        "prediction_subset": "PASS: filter only, identical original coordinates", "confidence": null,
+        "real_music": "NOT RUN", "canonical_ogg": "NOT RUN", "human_labels": "NOT RUN", "cases": cases});
+    fs::write(
+        output.join("report.json"),
+        format!("{}\n", serde_json::to_string_pretty(&report)?),
+    )?;
+    println!(
+        "{}: {}",
+        output.join("report.json").display(),
+        report["status"]
+    );
+    Ok(passed)
+}
+
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
-    let [reference, output] = args.as_slice() else {
-        eprintln!(
-            "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>"
-        );
-        return ExitCode::FAILURE;
+    let result = match args.as_slice() {
+        [mode, output] if mode == "--controls" => run_controls(Path::new(output)),
+        [reference, output] => run(Path::new(reference), Path::new(output)),
+        _ => {
+            eprintln!(
+                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>"
+            );
+            return ExitCode::FAILURE;
+        }
     };
-    match run(Path::new(reference), Path::new(output)) {
+    match result {
         Ok(true) => ExitCode::SUCCESS,
         Ok(false) => ExitCode::FAILURE,
         Err(error) => {
@@ -212,6 +313,58 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn constructed_entries_rises_and_mixture_have_the_declared_support() {
+        let declaration: Value = serde_json::from_str(NEXT_CONTROLS).unwrap();
+        assert_eq!(declaration["controls"].as_array().unwrap().len(), 9);
+        for control in declaration["controls"].as_array().unwrap() {
+            let samples = generate(control);
+            assert_eq!(samples.len(), 48_000);
+            assert!(
+                samples
+                    .iter()
+                    .all(|value| value.is_finite() && value.abs() < 1.0)
+            );
+            let voices = control["voices"].as_array().unwrap();
+            let first = voices[0]["start_frame"].as_u64().unwrap() as usize;
+            assert!(samples[..first].iter().all(|&value| value == 0.0));
+            if control["generator"] == "slow_tone" {
+                assert!(control["truth_frames"].is_null());
+                assert_eq!(samples[first], 0.0);
+                assert!(samples[first + 1] > 0.0);
+                let rise = voices[0]["rise_frames"].as_u64().unwrap() as usize;
+                assert_eq!(
+                    control["uncertain_interval_frames_inclusive"],
+                    json!([first, first + rise])
+                );
+                let full = 0.2 * (std::f64::consts::TAU * 440.0 * rise as f64 / 48_000.0).cos();
+                assert_eq!(samples[first + rise], full as f32);
+            } else {
+                assert_eq!(
+                    samples[first],
+                    voices[0]["amplitude"].as_f64().unwrap() as f32
+                );
+                assert_eq!(
+                    control["truth_frames"].as_array().unwrap().len(),
+                    voices.len()
+                );
+                if control["generator"] == "burst" {
+                    for voice in voices {
+                        let start = voice["start_frame"].as_u64().unwrap() as usize;
+                        assert_ne!(samples[start + 127], 0.0);
+                        assert_eq!(samples[start + 128], 0.0);
+                    }
+                }
+            }
+        }
+        let controls = declaration["controls"].as_array().unwrap();
+        let mixture = generate(&controls[7]);
+        let isolated = generate(&controls[8]);
+        assert_eq!(isolated[24_000], 0.02);
+        // At age 18000 the base completes exactly 165 periods, and the added voice begins at cos(0)
+        assert_eq!(mixture[24_000], 0.22);
+    }
 
     #[test]
     fn normalization_rejects_phase_minimum_and_preserves_gain_and_zero() {

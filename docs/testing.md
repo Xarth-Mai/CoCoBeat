@@ -440,3 +440,15 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 批量执行在前八张完成后收到退出码 143，原因未知，确认无存活子进程后只补执行尚未完成的 EOF 和中点两张，原图与中断记录保留。四组 CJK 日志共 13 条既有 ICU 分词模型诊断仍保留，实际字形与裁剪通过不等于日志零告警；已知稳定版限制见上文国际化记录
 
 最终 `qa-report.json`、`qa-visual-review.json` 与 105 项 `qa-sealed.json` 均在 `target/section-runtime-20261003/`，封存清单 SHA-256 为 `e98012428eeb9e0c6b7366b5bb5fe08d359275ea80f7e66179fe33ace26929de`，主线程已逐项复核哈希。正确性与 ponytail 独立复审为 `Lean already. Ship.`；本批静态画面、排版与软件检查不替代真实音频、物理手柄、连续动效、性能、Windows/ARM 运行时或真人双人体验，这些仍为 NOT RUN
+
+## MIR 近邻与弱声部控制
+
+2026-10-03，同一[谱变化过滤工具](../tools/mir-flux-gate-probe/README.md#近邻慢起音与叠加声部)在运行前冻结九项各一秒的构造控制：四种强弱近邻、两种慢起音、等幅叠加、弱声部叠加及弱声部独奏；128 帧窗、64 帧 hop、原生峰选择、归一化门槛和 ±480 帧 Matcher 不变。384 帧近邻的匹配窗重叠，保留最早可行的一对一配对，不能用匹配数量推断物理声部；慢起音的 truth 和 metrics 为 null
+
+隔离 manifest 的 5 项测试、fmt、Clippy 和 release 构建通过，工具实际 `--controls target/mir-next-controls-20261003/controls-v1` 及旧报告回归均因质量 FAIL 退出 1。新七项离散控制为原生 2 PASS / 5 FAIL、过滤后 4 PASS / 3 FAIL，额外峰 229 → 0，漏检 2 → 3；两项慢起音的 97 / 95 峰均过滤为零，只作观察。旧 25 项所有 44,417 窗在仅去除计时字段后完全重现，累计 31 项离散控制为 21 PASS / 10 FAIL，未准入生产 MIR
+
+逐窗证据区分两处问题：384 帧近邻弱峰被原生局部均值门槛压制，过滤前后没有差别；弱叠加在 frame 24000 确有原生候选，谱变化比例约 0.13956，被固定 0.5 门槛删除，而同一弱声部独奏比例约 1 并通过。原 Matcher 曾把较早的 23552 假峰匹配给 24000，原始配对和实际候选均保留，不能把过滤前的匹配数当成已正确恢复该声部
+
+独立检查从实际 f32le 重建全部 432000 帧并逐位匹配，用 NumPy f64 FFT 与数学 Hamming 复算 6741 窗，谱通量最大绝对差约 1.15e-5、归一化比例最大差约 4.87e-7；全部原生候选上的过滤去留及 Matcher 字段一致，未宣称跨 FFT 的 f32 位一致或独立复现微小噪声的原生选峰。新增声明与生成器已有来源台账，无新增依赖版本，软件验证与独立复审为 `Lean already. Ship.`
+
+命令、日志与冻结输入见 `target/mir-next-controls-20261003/execution.json`，独立数值检查见 `independent-controls.json`；执行器准备阶段发现 `/usr/bin/time` 不存在，尚未生成 PCM，随后直接调用工具并保留该记录。当前工具 SHA-256 为 `21188dee93996d16dfa66f3400fea3350f2e512f55e9423684fb07419bf04cf2`，完整报告为 `controls-v1/report.json`，SHA-256 `ac90ae616cb00169a1c3b4e8bae83850b419114ae3e8da05509d27a508b2d232`；持久[观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-next-controls-20261003.json) SHA-256 为 `1e70786c4a8639a1eef10c4b32c2fd8ab269d12a5beb8a8829c6ba1341b19616`，真实音乐、最终 Ogg 回读、人工标签、beat/downbeat、置信度和 Anchor 可玩性继续为 NOT RUN

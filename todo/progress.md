@@ -26,7 +26,7 @@
 | 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
 | 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；25 项 media 测试通过；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
 | 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；完整 MIR/Anchor/Stage 输出及游戏曲库仍待后续 |
-| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定谱变化过滤使新增 6 项控制全部通过，离散额外峰 537 → 0；旧 18 项仍 11 PASS / 7 FAIL，两个新增首帧漏检保留；4 项软件检查及独立逐窗复算通过，生产与人工标签未准入 |
+| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 近邻/叠加新增 7 项离散控制为 4 PASS / 3 FAIL，2 项慢起音只观察；旧 25 项 44,417 窗完全重现，累计离散门槛 21 PASS / 10 FAIL；5 项软件测试、432000 帧重建和 6741 窗独立 FFT 核对通过，弱音漏检仍阻止生产准入，人工标签待验收 |
 | 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
 | 19 | 确定性 StageCompiler · 08 | 待分配 | NOT RUN | 18 | 连续轨道、预告可见性、版本身份与 Replay；表现不改关键几何 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | 待分配 | NOT RUN | 04/16/18/19 | 精确时间、撤销重做、哈希更新、无损导出/载入与同一 core 重放 |

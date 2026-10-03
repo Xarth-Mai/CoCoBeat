@@ -1,0 +1,1182 @@
+{
+  "date": "2026-10-03",
+  "baseline_commit": "90a1378b4597b74b9e5fe5d1346ed83db6878a02",
+  "software_status": "PASS",
+  "quality_status": "FAIL",
+  "scope": "Fixed-gate engineering controls, 7 discrete and 2 unscored slow-rise observations; not production admission",
+  "declaration": {
+    "path": "testdata/synthetic/mir-flux-gate-probe/declared-next-controls-20261003.json",
+    "sha256": "3d74071f6c59bd82535b5b86300850d8a16ac7605850eebd450ce8c2b1d3dd31",
+    "frozen_before_first_generation_and_analysis": true
+  },
+  "source_sha256": "d9585f0ace983ce1f063930a5d78657444f22b1f0c9a57f6e0a5623a040780ec",
+  "binary_sha256": "21188dee93996d16dfa66f3400fea3350f2e512f55e9423684fb07419bf04cf2",
+  "report": {
+    "path": "target/mir-next-controls-20261003/controls-v1/report.json",
+    "sha256": "ac90ae616cb00169a1c3b4e8bae83850b419114ae3e8da05509d27a508b2d232",
+    "window_count": 6741
+  },
+  "old_reproduction": {
+    "status": "PASS",
+    "original_report_sha256": "6d7e7c5037d52e747ac54ec0c98d82503a496273b52ba9164c9f10a79dab57e2",
+    "new_report_sha256": "8d49070155f669f39fb2dc22b7a5dd9f857d5f37dc5b0054b46b5783043ad6bd",
+    "case_count": 25,
+    "window_count": 44417,
+    "comparison": "All fields exactly equal after removal of elapsed_seconds and adapter_elapsed_seconds only",
+    "old_failures_preserved": 7
+  },
+  "summary": {
+    "native_new": {
+      "scored_cases": 7,
+      "statuses": {
+        "FAIL": 5,
+        "PASS": 2
+      },
+      "true_positive": 11,
+      "false_positive": 229,
+      "false_negative": 2
+    },
+    "filtered_new": {
+      "scored_cases": 7,
+      "statuses": {
+        "FAIL": 3,
+        "PASS": 4
+      },
+      "true_positive": 10,
+      "false_positive": 0,
+      "false_negative": 3
+    },
+    "native_all_discrete": {
+      "scored_cases": 31,
+      "statuses": {
+        "PASS": 14,
+        "FAIL": 17
+      },
+      "true_positive": 333,
+      "false_positive": 766,
+      "false_negative": 7
+    },
+    "filtered_all_discrete": {
+      "scored_cases": 31,
+      "statuses": {
+        "PASS": 21,
+        "FAIL": 10
+      },
+      "true_positive": 330,
+      "false_positive": 0,
+      "false_negative": 10
+    }
+  },
+  "new_cases": [
+    {
+      "case": "close-strong-weak-384",
+      "sample_frames": 48000,
+      "truth_frames": [
+        12000,
+        12384
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        11968
+      ],
+      "accepted_frames": [
+        11968
+      ],
+      "native_metrics": {
+        "f1": 0.6666666666666666,
+        "false_negative": 1,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 0.5,
+        "signed_error_frames": [
+          -32
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "metrics": {
+        "f1": 0.6666666666666666,
+        "false_negative": 1,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 0.5,
+        "signed_error_frames": [
+          -32
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "pcm_sha256": "77219fc0344d525a81c49da452ecb4a562cb6f04be10b1a30547e2f051eed53b",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 11968,
+              "strength": 17.944326400756836,
+              "context_maximum_spectrum_mass": 24.68377646803856,
+              "normalized_positive_change": 0.7269684371024747,
+              "accepted": true
+            }
+          ]
+        },
+        {
+          "boundary": 12384,
+          "native_peaks_within_128_frames": []
+        }
+      ]
+    },
+    {
+      "case": "close-weak-strong-384",
+      "sample_frames": 48000,
+      "truth_frames": [
+        12000,
+        12384
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        12352
+      ],
+      "accepted_frames": [
+        12352
+      ],
+      "native_metrics": {
+        "f1": 0.6666666666666666,
+        "false_negative": 1,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            12352
+          ]
+        ],
+        "median_absolute_error_frames": 352.0,
+        "p95_absolute_error_frames": 352,
+        "precision": 1.0,
+        "recall": 0.5,
+        "signed_error_frames": [
+          352
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "metrics": {
+        "f1": 0.6666666666666666,
+        "false_negative": 1,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            12352
+          ]
+        ],
+        "median_absolute_error_frames": 352.0,
+        "p95_absolute_error_frames": 352,
+        "precision": 1.0,
+        "recall": 0.5,
+        "signed_error_frames": [
+          352
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "pcm_sha256": "eed4c6ba627ed9b596593d845ba8681f916956e08f8ca0033d6c9dcb24c0f625",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": []
+        },
+        {
+          "boundary": 12384,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 12352,
+              "strength": 17.944326400756836,
+              "context_maximum_spectrum_mass": 24.68377646803856,
+              "normalized_positive_change": 0.7269684371024747,
+              "accepted": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "close-strong-weak-1536",
+      "sample_frames": 48000,
+      "truth_frames": [
+        12000,
+        13536
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        11968,
+        13504
+      ],
+      "accepted_frames": [
+        11968,
+        13504
+      ],
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ],
+          [
+            13536,
+            13504
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          -32,
+          -32
+        ],
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ],
+          [
+            13536,
+            13504
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          -32,
+          -32
+        ],
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "pcm_sha256": "36b236efe985bc3491f4ff7a7529d979f7c08b5eadf200178f63f076851025d5",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 11968,
+              "strength": 17.944326400756836,
+              "context_maximum_spectrum_mass": 24.68377646803856,
+              "normalized_positive_change": 0.7269684371024747,
+              "accepted": true
+            }
+          ]
+        },
+        {
+          "boundary": 13536,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 13504,
+              "strength": 1.7944331169128418,
+              "context_maximum_spectrum_mass": 2.4683775678277016,
+              "normalized_positive_change": 0.7269686535403231,
+              "accepted": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "close-weak-strong-1536",
+      "sample_frames": 48000,
+      "truth_frames": [
+        12000,
+        13536
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        11968,
+        13504
+      ],
+      "accepted_frames": [
+        11968,
+        13504
+      ],
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ],
+          [
+            13536,
+            13504
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          -32,
+          -32
+        ],
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            12000,
+            11968
+          ],
+          [
+            13536,
+            13504
+          ]
+        ],
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          -32,
+          -32
+        ],
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "pcm_sha256": "4954c8d281180c41203472f62731b0d7bd8cc39081ee98b457d24f75fbbe3129",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 11968,
+              "strength": 1.7944331169128418,
+              "context_maximum_spectrum_mass": 2.4683775678277016,
+              "normalized_positive_change": 0.7269686535403231,
+              "accepted": true
+            }
+          ]
+        },
+        {
+          "boundary": 13536,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 13504,
+              "strength": 17.944326400756836,
+              "context_maximum_spectrum_mass": 24.68377646803856,
+              "normalized_positive_change": 0.7269684371024747,
+              "accepted": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "slow-rise-1152",
+      "sample_frames": 48000,
+      "truth_frames": null,
+      "uncertain_interval_frames_inclusive": [
+        12000,
+        13152
+      ],
+      "predicted_frames": [
+        12480,
+        12800,
+        13184,
+        13568,
+        13952,
+        14336,
+        14656,
+        15040,
+        15424,
+        15808,
+        16128,
+        16512,
+        16896,
+        17280,
+        17600,
+        17984,
+        18368,
+        18752,
+        19136,
+        19456,
+        19840,
+        20224,
+        20608,
+        20928,
+        21312,
+        21696,
+        22080,
+        22400,
+        22784,
+        23168,
+        23552,
+        23936,
+        24256,
+        24640,
+        25024,
+        25408,
+        25728,
+        26112,
+        26496,
+        26880,
+        27200,
+        27584,
+        27968,
+        28352,
+        28736,
+        29056,
+        29440,
+        29824,
+        30208,
+        30528,
+        30912,
+        31296,
+        31680,
+        32000,
+        32384,
+        32768,
+        33152,
+        33536,
+        33856,
+        34240,
+        34624,
+        35008,
+        35328,
+        35712,
+        36096,
+        36480,
+        36800,
+        37184,
+        37568,
+        37952,
+        38336,
+        38656,
+        39040,
+        39424,
+        39808,
+        40128,
+        40512,
+        40896,
+        41280,
+        41600,
+        41984,
+        42368,
+        42752,
+        43136,
+        43456,
+        43840,
+        44224,
+        44608,
+        44928,
+        45312,
+        45696,
+        46080,
+        46400,
+        46784,
+        47168,
+        47552,
+        47936
+      ],
+      "accepted_frames": [],
+      "native_metrics": null,
+      "metrics": null,
+      "pcm_sha256": "cced612b9de7ca397f97118822af8bc16284d7372c40a85b255980698d2c2771",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": []
+        },
+        {
+          "boundary": 13152,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 13184,
+              "strength": 2.0918092727661133,
+              "context_maximum_spectrum_mass": 15.023528770310804,
+              "normalized_positive_change": 0.13923554876800348,
+              "accepted": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "slow-rise-4800",
+      "sample_frames": 48000,
+      "truth_frames": null,
+      "uncertain_interval_frames_inclusive": [
+        12000,
+        16800
+      ],
+      "predicted_frames": [
+        13184,
+        13568,
+        13952,
+        14336,
+        14656,
+        15040,
+        15424,
+        15808,
+        16128,
+        16512,
+        16896,
+        17280,
+        17600,
+        17984,
+        18368,
+        18752,
+        19136,
+        19456,
+        19840,
+        20224,
+        20608,
+        20928,
+        21312,
+        21696,
+        22080,
+        22400,
+        22784,
+        23168,
+        23552,
+        23936,
+        24256,
+        24640,
+        25024,
+        25408,
+        25728,
+        26112,
+        26496,
+        26880,
+        27200,
+        27584,
+        27968,
+        28352,
+        28736,
+        29056,
+        29440,
+        29824,
+        30208,
+        30528,
+        30912,
+        31296,
+        31680,
+        32000,
+        32384,
+        32768,
+        33152,
+        33536,
+        33856,
+        34240,
+        34624,
+        35008,
+        35328,
+        35712,
+        36096,
+        36480,
+        36800,
+        37184,
+        37568,
+        37952,
+        38336,
+        38656,
+        39040,
+        39424,
+        39808,
+        40128,
+        40512,
+        40896,
+        41280,
+        41600,
+        41984,
+        42368,
+        42752,
+        43136,
+        43456,
+        43840,
+        44224,
+        44608,
+        44928,
+        45312,
+        45696,
+        46080,
+        46400,
+        46784,
+        47168,
+        47552,
+        47936
+      ],
+      "accepted_frames": [],
+      "native_metrics": null,
+      "metrics": null,
+      "pcm_sha256": "82410ef67749cbad058ad27c364b2a902ecf83c2a552e3e447a768562e03c792",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 12000,
+          "native_peaks_within_128_frames": []
+        },
+        {
+          "boundary": 16800,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 16896,
+              "strength": 1.9675509929656982,
+              "context_maximum_spectrum_mass": 15.026446861680597,
+              "normalized_positive_change": 0.13093920412970084,
+              "accepted": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "polyphonic-equal-entry",
+      "sample_frames": 48000,
+      "truth_frames": [
+        6000,
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        6016,
+        6912,
+        7296,
+        7680,
+        8000,
+        8384,
+        8768,
+        9152,
+        9536,
+        9856,
+        10240,
+        10624,
+        11008,
+        11328,
+        11712,
+        12096,
+        12480,
+        12800,
+        13184,
+        13568,
+        13952,
+        14336,
+        14656,
+        15040,
+        15424,
+        15808,
+        16128,
+        16512,
+        16896,
+        17280,
+        17600,
+        17984,
+        18368,
+        18752,
+        19136,
+        19456,
+        19840,
+        20224,
+        20608,
+        20928,
+        21312,
+        21696,
+        22080,
+        22400,
+        22784,
+        23168,
+        24000,
+        24640,
+        25024,
+        25408,
+        25728,
+        26112,
+        26496,
+        26880,
+        27200,
+        27584,
+        27968,
+        28352,
+        28736,
+        29056,
+        29440,
+        29824,
+        30208,
+        30528,
+        30912,
+        31296,
+        31680,
+        32000,
+        32384,
+        32768,
+        33152,
+        33536,
+        33856,
+        34240,
+        34624,
+        35008,
+        35328,
+        35712,
+        36096,
+        36480,
+        36800,
+        37184,
+        37568,
+        37952,
+        38336,
+        38656,
+        39040,
+        39424,
+        39808,
+        40128,
+        40512,
+        40896,
+        41280,
+        41600,
+        41984,
+        42368,
+        42752,
+        43136,
+        43456,
+        43840,
+        44224,
+        44608,
+        44928,
+        45312,
+        45696,
+        46080,
+        46400,
+        46784,
+        47168,
+        47552,
+        47936
+      ],
+      "accepted_frames": [
+        6016,
+        24000
+      ],
+      "native_metrics": {
+        "f1": 0.035398230088495575,
+        "false_negative": 0,
+        "false_positive": 109,
+        "matched_frames": [
+          [
+            6000,
+            6016
+          ],
+          [
+            24000,
+            24000
+          ]
+        ],
+        "median_absolute_error_frames": 8.0,
+        "p95_absolute_error_frames": 16,
+        "precision": 0.018018018018018018,
+        "recall": 1.0,
+        "signed_error_frames": [
+          16,
+          0
+        ],
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            6000,
+            6016
+          ],
+          [
+            24000,
+            24000
+          ]
+        ],
+        "median_absolute_error_frames": 8.0,
+        "p95_absolute_error_frames": 16,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          16,
+          0
+        ],
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "pcm_sha256": "89df522bebb1f9a1f7039414b72415f9c1dd4c6c174218d2341a617a486071a4",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 6000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 6016,
+              "strength": 18.521385192871094,
+              "context_maximum_spectrum_mass": 22.570589557290077,
+              "normalized_positive_change": 0.8205982012946077,
+              "accepted": true
+            }
+          ]
+        },
+        {
+          "boundary": 24000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 24000,
+              "strength": 22.874263763427734,
+              "context_maximum_spectrum_mass": 37.65407107025385,
+              "normalized_positive_change": 0.6074844794537518,
+              "accepted": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "polyphonic-weak-entry",
+      "sample_frames": 48000,
+      "truth_frames": [
+        6000,
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        6016,
+        6912,
+        7296,
+        7680,
+        8000,
+        8384,
+        8768,
+        9152,
+        9536,
+        9856,
+        10240,
+        10624,
+        11008,
+        11328,
+        11712,
+        12096,
+        12480,
+        12800,
+        13184,
+        13568,
+        13952,
+        14336,
+        14656,
+        15040,
+        15424,
+        15808,
+        16128,
+        16512,
+        16896,
+        17280,
+        17600,
+        17984,
+        18368,
+        18752,
+        19136,
+        19456,
+        19840,
+        20224,
+        20608,
+        20928,
+        21312,
+        21696,
+        22080,
+        22400,
+        22784,
+        23168,
+        23552,
+        24000,
+        24256,
+        24640,
+        25024,
+        25408,
+        25728,
+        26112,
+        26496,
+        26880,
+        27200,
+        27584,
+        27968,
+        28352,
+        28736,
+        29056,
+        29440,
+        29824,
+        30208,
+        30528,
+        30912,
+        31296,
+        31680,
+        32000,
+        32384,
+        32768,
+        33152,
+        33536,
+        33856,
+        34240,
+        34624,
+        35008,
+        35328,
+        35712,
+        36096,
+        36480,
+        36800,
+        37184,
+        37568,
+        37952,
+        38336,
+        38656,
+        39040,
+        39424,
+        39808,
+        40128,
+        40512,
+        40896,
+        41280,
+        41600,
+        41984,
+        42368,
+        42752,
+        43136,
+        43456,
+        43840,
+        44224,
+        44608,
+        44928,
+        45312,
+        45696,
+        46080,
+        46400,
+        46784,
+        47168,
+        47552,
+        47936
+      ],
+      "accepted_frames": [
+        6016
+      ],
+      "native_metrics": {
+        "f1": 0.034782608695652174,
+        "false_negative": 0,
+        "false_positive": 111,
+        "matched_frames": [
+          [
+            6000,
+            6016
+          ],
+          [
+            24000,
+            23552
+          ]
+        ],
+        "median_absolute_error_frames": 232.0,
+        "p95_absolute_error_frames": 448,
+        "precision": 0.017699115044247787,
+        "recall": 1.0,
+        "signed_error_frames": [
+          16,
+          -448
+        ],
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "metrics": {
+        "f1": 0.6666666666666666,
+        "false_negative": 1,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            6000,
+            6016
+          ]
+        ],
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 16,
+        "precision": 1.0,
+        "recall": 0.5,
+        "signed_error_frames": [
+          16
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "pcm_sha256": "e8fc89a7e12c38838c8ff0753245e6f93832446e00e0770265744f924cfeaa16",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 6000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 6016,
+              "strength": 18.521385192871094,
+              "context_maximum_spectrum_mass": 22.570589557290077,
+              "normalized_positive_change": 0.8205982012946077,
+              "accepted": true
+            }
+          ]
+        },
+        {
+          "boundary": 24000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 24000,
+              "strength": 2.394998073577881,
+              "context_maximum_spectrum_mass": 17.161582275293767,
+              "normalized_positive_change": 0.13955578426039297,
+              "accepted": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "case": "isolated-weak-entry",
+      "sample_frames": 48000,
+      "truth_frames": [
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null,
+      "predicted_frames": [
+        24000,
+        46016,
+        46272,
+        46400,
+        46528,
+        46656,
+        46912,
+        47488,
+        47744,
+        47872
+      ],
+      "accepted_frames": [
+        24000
+      ],
+      "native_metrics": {
+        "f1": 0.18181818181818182,
+        "false_negative": 0,
+        "false_positive": 9,
+        "matched_frames": [
+          [
+            24000,
+            24000
+          ]
+        ],
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 0.1,
+        "recall": 1.0,
+        "signed_error_frames": [
+          0
+        ],
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [
+          [
+            24000,
+            24000
+          ]
+        ],
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "signed_error_frames": [
+          0
+        ],
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "pcm_sha256": "fe80d40092cea9fd8efd292ad593a8bdd2f156915b7139473c4fd589ab573fa4",
+      "pcm_bytes": 192000,
+      "peak_observations_at_construction_boundaries": [
+        {
+          "boundary": 24000,
+          "native_peaks_within_128_frames": [
+            {
+              "coordinate_frame": 24000,
+              "strength": 2.2919349670410156,
+              "context_maximum_spectrum_mass": 2.2919346690177917,
+              "normalized_positive_change": 1.000000130031291,
+              "accepted": true
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "validation": {
+    "cargo_tests": {
+      "passed": 5,
+      "new": 1,
+      "existing_including_included_sources": 4
+    },
+    "clippy": "PASS",
+    "release_build": "PASS",
+    "old_mode_exact_reproduction": "PASS",
+    "prediction_subset": "PASS: native predictions remain ordered with unchanged PCM coordinates",
+    "independent": {
+      "status": "PASS",
+      "path": "target/mir-next-controls-20261003/independent-controls.json",
+      "sha256": "9369d5a831ad6703b7e39d7e4dd3670f332b62ab1f52fbb4d4c10f24567d1111",
+      "actual_pcm_frames_bitwise_reconstructed": 432000,
+      "independent_numpy_f64_fft_windows": 6741,
+      "native_peak_gate_decisions": "all reproduced",
+      "matching_metrics": "all native and filtered fields independently reproduced",
+      "scope_limit": "Independent f64 FFT checks spectral quantities and gate decisions at existing native peaks; it does not claim native f32 FFT bit identity or independently reproduce microscopic-noise native peak selection"
+    }
+  },
+  "admission": "FAIL: preserve all old failures and 3 new discrete failures; no per-case tuning or frame-zero supplement",
+  "real_music": "NOT RUN",
+  "canonical_ogg": "NOT RUN",
+  "human_annotation": "NOT RUN",
+  "beat_and_anchor_quality": "NOT RUN",
+  "confidence": null
+}

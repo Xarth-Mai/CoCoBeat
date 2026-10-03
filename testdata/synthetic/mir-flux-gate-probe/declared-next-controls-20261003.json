@@ -1,0 +1,246 @@
+{
+  "date": "2026-10-03",
+  "baseline_commit": "90a1378b4597b74b9e5fe5d1346ed83db6878a02",
+  "experiment": "Fixed-gate stress controls: close unequal attacks, uncertain slow rises, and polyphonic entries",
+  "sample_rate": 48000,
+  "sample_format": "mono little-endian f32, exactly 48000 frames, original frame-zero origin",
+  "fixed_algorithm_declaration": "testdata/synthetic/mir-flux-gate-probe/declared-experiment-20261003.json",
+  "parameters_unchanged": {
+    "window_frames": 128,
+    "hop_frames": 64,
+    "window": "Hamming",
+    "native_threshold_factor": 1.5,
+    "native_mean_radius": 8,
+    "native_peak_radius": 2,
+    "normalization_radius": 8,
+    "minimum_normalized_positive_change_inclusive": 0.5
+  },
+  "gate_unchanged": {
+    "matcher": "tools/mir-onset-probe/src/main.rs::metrics",
+    "inclusive_tolerance_frames": 480,
+    "all_truth_matched_once": true,
+    "zero_extra_peaks": true,
+    "maximum_median_absolute_error_frames": 96
+  },
+  "construction": {
+    "burst": "For ages 0..127 inclusive: amplitude * exp(-age/24) * cos(TAU*3000*age/48000); all other frames zero; sum voices in f64 then cast once to f32",
+    "hard_tone": "From start through EOF: amplitude * cos(TAU*frequency_hz*age/48000); zero before start; sum voices in f64 then cast once to f32",
+    "slow_tone": "From start through EOF: amplitude * envelope * cos(TAU*440*age/48000), envelope = (1-cos(PI*age/rise_frames))/2 for 0<=age<rise_frames and 1 afterward; zero before start; cast once to f32",
+    "tail_policy": "No manufactured release or tail padding; burst support ends after age127; sustained tones continue through file EOF without asserting a note-off event",
+    "burst_tail": "The age127 sample is not forced to zero, so the abrupt finite-support cutoff is retained; any resulting extra candidate is scored as an extra, not silently excluded"
+  },
+  "label_policy": {
+    "discrete": "Literal hard-entry frames identify designed acoustic source activations with nonzero first samples, not perceptually annotated onsets, beats, downbeats, or playable Anchors",
+    "slow": "Envelope support start and full-amplitude boundary are known; there is no unique declared perceptual onset. The inclusive interval is a construction-defined observation region, not a calibrated human-annotation confidence interval. truth_frames and both metrics remain null",
+    "close_matcher_ambiguity": "The 384-frame pair lies within the unchanged 480-frame matching tolerance. Chronological one-to-one maximum-cardinality matching is retained; inspect recorded pairs and original peak coordinates, and do not identify the missed physical voice solely from matched-pair assignment",
+    "analysis_blinding": "Generate and analyze PCM before labels enter the unchanged matcher; no truth-driven shifts, threshold sweeps, frame-zero additions, per-case tuning, or new candidate creation",
+    "admission": "Keep all earlier failures and native/filtered outcomes; success on these engineering controls cannot establish MusicAnalysis admission; real music, canonical Ogg readback, independent human labels, beat, confidence and Anchor quality remain NOT RUN",
+    "causal_attribution": "The 384-frame pair shares both native picker mean context and gate denominator context; a missing native candidate cannot be attributed to the gate. Record both output lists and both metrics"
+  },
+  "controls": [
+    {
+      "name": "close-strong-weak-384",
+      "frames": 48000,
+      "generator": "burst",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 3000,
+          "amplitude": 0.4,
+          "duration_frames": 128,
+          "decay_frames": 24
+        },
+        {
+          "start_frame": 12384,
+          "frequency_hz": 3000,
+          "amplitude": 0.04,
+          "duration_frames": 128,
+          "decay_frames": 24
+        }
+      ],
+      "truth_frames": [
+        12000,
+        12384
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "close-weak-strong-384",
+      "frames": 48000,
+      "generator": "burst",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 3000,
+          "amplitude": 0.04,
+          "duration_frames": 128,
+          "decay_frames": 24
+        },
+        {
+          "start_frame": 12384,
+          "frequency_hz": 3000,
+          "amplitude": 0.4,
+          "duration_frames": 128,
+          "decay_frames": 24
+        }
+      ],
+      "truth_frames": [
+        12000,
+        12384
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "close-strong-weak-1536",
+      "frames": 48000,
+      "generator": "burst",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 3000,
+          "amplitude": 0.4,
+          "duration_frames": 128,
+          "decay_frames": 24
+        },
+        {
+          "start_frame": 13536,
+          "frequency_hz": 3000,
+          "amplitude": 0.04,
+          "duration_frames": 128,
+          "decay_frames": 24
+        }
+      ],
+      "truth_frames": [
+        12000,
+        13536
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "close-weak-strong-1536",
+      "frames": 48000,
+      "generator": "burst",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 3000,
+          "amplitude": 0.04,
+          "duration_frames": 128,
+          "decay_frames": 24
+        },
+        {
+          "start_frame": 13536,
+          "frequency_hz": 3000,
+          "amplitude": 0.4,
+          "duration_frames": 128,
+          "decay_frames": 24
+        }
+      ],
+      "truth_frames": [
+        12000,
+        13536
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "slow-rise-1152",
+      "frames": 48000,
+      "generator": "slow_tone",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 440,
+          "amplitude": 0.2,
+          "rise_frames": 1152
+        }
+      ],
+      "truth_frames": null,
+      "uncertain_interval_frames_inclusive": [
+        12000,
+        13152
+      ]
+    },
+    {
+      "name": "slow-rise-4800",
+      "frames": 48000,
+      "generator": "slow_tone",
+      "voices": [
+        {
+          "start_frame": 12000,
+          "frequency_hz": 440,
+          "amplitude": 0.2,
+          "rise_frames": 4800
+        }
+      ],
+      "truth_frames": null,
+      "uncertain_interval_frames_inclusive": [
+        12000,
+        16800
+      ]
+    },
+    {
+      "name": "polyphonic-equal-entry",
+      "frames": 48000,
+      "generator": "hard_tone",
+      "voices": [
+        {
+          "start_frame": 6000,
+          "frequency_hz": 440,
+          "amplitude": 0.2
+        },
+        {
+          "start_frame": 24000,
+          "frequency_hz": 3000,
+          "amplitude": 0.2
+        }
+      ],
+      "truth_frames": [
+        6000,
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "polyphonic-weak-entry",
+      "frames": 48000,
+      "generator": "hard_tone",
+      "voices": [
+        {
+          "start_frame": 6000,
+          "frequency_hz": 440,
+          "amplitude": 0.2
+        },
+        {
+          "start_frame": 24000,
+          "frequency_hz": 3000,
+          "amplitude": 0.02
+        }
+      ],
+      "truth_frames": [
+        6000,
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null
+    },
+    {
+      "name": "isolated-weak-entry",
+      "frames": 48000,
+      "generator": "hard_tone",
+      "voices": [
+        {
+          "start_frame": 24000,
+          "frequency_hz": 3000,
+          "amplitude": 0.02
+        }
+      ],
+      "truth_frames": [
+        24000
+      ],
+      "uncertain_interval_frames_inclusive": null
+    }
+  ],
+  "licensing": {
+    "new_synthetic_audio_and_constructed_labels": "CC0-1.0",
+    "adapter_source": "MPL-2.0"
+  }
+}
