@@ -1,4 +1,4 @@
-"""Compare repeated accurate seeks with existing full decodes; never encode or play"""
+"""Compare explicit head reads and accurate seeks with existing full decodes; never encode or play"""
 import argparse
 import array
 import csv
@@ -46,13 +46,14 @@ def main():
     args.output_dir.mkdir(parents=True, exist_ok=True)
     references = {name: read_pcm(getattr(args, name + '_pcm')) for name in ['symphonia', 'ffmpeg']}
     total = len(references['symphonia']) // 2
-    if total < 4096 or len(references['ffmpeg']) != total * 2:
-        raise ValueError('this experiment requires matching complete baselines of at least 4096 stereo frames')
+    if total < 1 or len(references['ffmpeg']) != total * 2:
+        raise ValueError('this experiment requires matching complete baselines of at least one stereo frame')
     window = 4096
     targets = [0, total - 1, 1, total - 1025, 1023, 1024, 1025, total // 2,
                total - 1024, total - 1023, total - 257, total - 256, total - 255,
                255, 256, 257, total - 129, total - 128, total - 127, total,
                0, total // 2, 1, total - 1, 0]
+    targets = [target for target in targets if 0 <= target <= total]
     command = [str(args.seek_bin.resolve()), str(args.ogg.resolve()), str(args.output_dir.resolve()), str(window), str(args.preroll_frames), *map(str, targets)]
     result = {'status': 'FAIL', 'window_frames': window, 'preroll_frames': args.preroll_frames, 'eof_semantics': 'target=N is an empty positive sentinel; target<0 or target>N must be explicitly rejected', 'total_frames': total, 'targets': targets,
               'comparison': 'same absolute frame slice, max_abs_error <= 1e-6, exact count, finite values',
@@ -69,16 +70,22 @@ def main():
         rows = list(csv.DictReader(io.StringIO(process.stdout)))
         for index, target in enumerate(targets):
             row = rows[index]
-            metadata = {key: int(value) for key, value in row.items() if key != 'status' and value}
+            metadata = {key: int(value) if value else None for key, value in row.items() if key not in ['status', 'method']}
+            metadata['method'] = row['method']
             if row['status'] != 'PASS':
                 result['cases'].append({'status': 'FAIL', 'metadata': metadata, 'error': 'seek API or decode failed; see seek.stderr'})
                 continue
             actual = read_pcm(args.output_dir / f'seek-{index}-{target}.f32le')
             expected_frames = min(window, total - target)
             matches = {name: compare(actual, values[target * 2:(target + expected_frames) * 2]) for name, values in references.items()}
-            timing = (metadata['index'] == index and metadata['target'] == target
-                      and metadata['request'] == metadata['required_ts'] == max(0, target - args.preroll_frames)
-                      and metadata['actual_ts'] <= metadata['request'] and metadata['first_packet_frames'] == 0
+            from_start = args.preroll_frames == 1024 and target <= 1024
+            method_ok = (metadata['method'] == 'from_start'
+                         and all(metadata[key] is None for key in ['request', 'required_ts', 'actual_ts'])) if from_start else (
+                         metadata['method'] == 'seek'
+                         and metadata['request'] == metadata['required_ts'] == max(0, target - args.preroll_frames)
+                         and metadata['actual_ts'] <= metadata['request'])
+            timing = (metadata['index'] == index and metadata['target'] == target and method_ok
+                      and metadata['first_packet_frames'] == 0
                       and metadata['output_frames'] == expected_frames
                       and metadata['first_output_frame'] == (target if expected_frames else -1))
             result['cases'].append({'status': 'PASS' if timing and all(m['status'] == 'PASS' for m in matches.values()) else 'FAIL',

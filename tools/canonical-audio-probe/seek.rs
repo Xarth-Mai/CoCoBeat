@@ -29,43 +29,47 @@ fn main() -> Result<(), Box<dyn Error>> {
     if !(1..=48_000).contains(&window) {
         return Err("window must be 1..=48000 frames".into());
     }
-    let mss = MediaSourceStream::new(Box::new(File::open(&args[1])?), Default::default());
-    let mut format = symphonia::default::get_probe().probe(
-        &Hint::new(),
-        mss,
-        FormatOptions::default(),
-        MetadataOptions::default(),
-    )?;
-    let track = format
-        .default_track(TrackType::Audio)
-        .ok_or("no audio track")?;
-    let params = track
-        .codec_params
-        .as_ref()
-        .ok_or("no codec")?
-        .audio()
-        .ok_or("not audio")?;
-    let time_base = track.time_base.ok_or("no time base")?;
-    let track_start = track.start_ts.get();
-    let delay = track.delay.unwrap_or(0);
-    let total = track.num_frames.ok_or("missing valid frame count")?;
-    if preroll != 0 && delay != 1024 {
-        return Err("extra preroll experiment requires observed delay=1024".into());
-    }
-    if params.sample_rate != Some(48_000)
-        || params.channels.as_ref().map(|c| c.count()) != Some(2)
-        || time_base.numer.get() != 1
-        || time_base.denom.get() != 48_000
-        || track_start.checked_add(i64::from(delay)) != Some(0)
-    {
-        return Err(format!("experiment requires 48k stereo, playable start=0, frame time base=1/48000; got rate={:?}, channels={:?}, time_base={time_base:?}, start={}", params.sample_rate, params.channels.as_ref().map(|c| c.count()), track.start_ts.get()).into());
-    }
-    let id = track.id;
-    let mut decoder = symphonia::default::get_codecs()
-        .make_audio_decoder(params, &AudioDecoderOptions::default())?;
+    let open = || -> Result<_, Box<dyn Error>> {
+        let mss = MediaSourceStream::new(Box::new(File::open(&args[1])?), Default::default());
+        let format = symphonia::default::get_probe().probe(
+            &Hint::new(),
+            mss,
+            FormatOptions::default(),
+            MetadataOptions::default(),
+        )?;
+        let track = format
+            .default_track(TrackType::Audio)
+            .ok_or("no audio track")?;
+        let params = track
+            .codec_params
+            .as_ref()
+            .ok_or("no codec")?
+            .audio()
+            .ok_or("not audio")?;
+        let time_base = track.time_base.ok_or("no time base")?;
+        let track_start = track.start_ts.get();
+        let delay = track.delay.unwrap_or(0);
+        let total = track.num_frames.ok_or("missing valid frame count")?;
+        if preroll != 0 && delay != 1024 {
+            return Err("extra preroll experiment requires observed delay=1024".into());
+        }
+        if params.sample_rate != Some(48_000)
+            || params.channels.as_ref().map(|c| c.count()) != Some(2)
+            || time_base.numer.get() != 1
+            || time_base.denom.get() != 48_000
+            || track_start.checked_add(i64::from(delay)) != Some(0)
+        {
+            return Err(format!("experiment requires 48k stereo, playable start=0, frame time base=1/48000; got rate={:?}, channels={:?}, time_base={time_base:?}, start={}", params.sample_rate, params.channels.as_ref().map(|c| c.count()), track.start_ts.get()).into());
+        }
+        let id = track.id;
+        let decoder = symphonia::default::get_codecs()
+            .make_audio_decoder(params, &AudioDecoderOptions::default())?;
+        Ok((format, decoder, id, track_start, delay, total))
+    };
+    let (mut format, mut decoder, id, track_start, delay, total) = open()?;
     fs::create_dir_all(&output)?;
     println!(
-        "index,target,request,required_ts,actual_ts,first_packet_pts,first_packet_frames,first_output_frame,discarded_frames,packets,output_frames,track_start,delay,status"
+        "index,target,request,required_ts,actual_ts,first_packet_pts,first_packet_frames,first_output_frame,discarded_frames,packets,output_frames,track_start,delay,method,status"
     );
     let mut samples = Vec::<f32>::new();
     let mut failed = false;
@@ -78,21 +82,38 @@ fn main() -> Result<(), Box<dyn Error>> {
             return Err("target exceeds declared valid frame count".into());
         }
         let request = (target - preroll).max(0);
+        let from_start = preroll == 1024 && target <= 1024;
+        let method = if from_start { "from_start" } else { "seek" };
+        let request_csv = if from_start {
+            String::new()
+        } else {
+            request.to_string()
+        };
         let attempt = (|| -> Result<String, Box<dyn Error>> {
-            let seeked = format.seek(
-                SeekMode::Accurate,
-                SeekTo::Timestamp {
-                    ts: Timestamp::new(request),
-                    track_id: id,
-                },
-            )?;
-            decoder.reset();
-            if seeked.track_id != id
-                || seeked.required_ts.get() != request
-                || seeked.actual_ts.get() > request
-            {
-                return Err("accurate seek contract violated".into());
-            }
+            let (required_ts, actual_ts) = if from_start {
+                // A clamped preroll starts with a fresh stream, before any seek call
+                (format, decoder, _, _, _, _) = open()?;
+                (String::new(), String::new())
+            } else {
+                let seeked = format.seek(
+                    SeekMode::Accurate,
+                    SeekTo::Timestamp {
+                        ts: Timestamp::new(request),
+                        track_id: id,
+                    },
+                )?;
+                decoder.reset();
+                if seeked.track_id != id
+                    || seeked.required_ts.get() != request
+                    || seeked.actual_ts.get() > request
+                {
+                    return Err("accurate seek contract violated".into());
+                }
+                (
+                    seeked.required_ts.get().to_string(),
+                    seeked.actual_ts.get().to_string(),
+                )
+            };
             let mut out = BufWriter::new(File::create(
                 output.join(format!("seek-{index}-{target}.f32le")),
             )?);
@@ -137,7 +158,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                 }
                 let first = start.checked_add(skip as i64).ok_or("timestamp overflow")?;
                 if first != target + written as i64 {
-                    return Err(format!("missing or overlapping frames after seek preroll: requested={target}, actual_seek={}, first_packet_pts={first_packet_pts}, first_packet_frames={first_packet_frames}, next_output={first}, expected={}", seeked.actual_ts.get(), target + written as i64).into());
+                    return Err(format!("missing or overlapping frames after seek preroll: requested={target}, method={method}, actual_seek={actual_ts}, first_packet_pts={first_packet_pts}, first_packet_frames={first_packet_frames}, next_output={first}, expected={}", target + written as i64).into());
                 }
                 if written == 0 {
                     first_output_frame = first;
@@ -152,9 +173,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
             out.flush()?;
             Ok(format!(
-                "{index},{target},{request},{},{},{first_packet_pts},{first_packet_frames},{first_output_frame},{discarded},{packets},{written},{track_start},{delay},PASS",
-                seeked.required_ts.get(),
-                seeked.actual_ts.get()
+                "{index},{target},{request_csv},{required_ts},{actual_ts},{first_packet_pts},{first_packet_frames},{first_output_frame},{discarded},{packets},{written},{track_start},{delay},{method},PASS"
             ))
         })();
         match attempt {
@@ -162,7 +181,9 @@ fn main() -> Result<(), Box<dyn Error>> {
             Err(error) => {
                 failed = true;
                 eprintln!("FAIL index={index} target={target}: {error}");
-                println!("{index},{target},{request},,,,,,,,,{track_start},{delay},FAIL");
+                println!(
+                    "{index},{target},{request_csv},,,,,,,,,{track_start},{delay},{method},FAIL"
+                );
             }
         }
     }
