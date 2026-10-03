@@ -470,3 +470,13 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 204 项产物的 `qa-sealed.json` SHA-256 为 `3e8a44206a8f5251bb29b075ca442193e361490f5aa0a63f9803470c0dc1bd41`，主线程已逐一核验；独立正确性与 ponytail 复审为 `Lean already. Ship.`
 
 本批覆盖软件行为和静态呈现，完整舞台组合、跨编译版本视觉 Replay、连续帧性能、Windows/ARM 运行时、真实音频/手柄及真人双人可读性仍待对应验收；原路线图的完整退出条件保持
+
+## MIR 分频候选的退化记录
+
+2026-10-03，现有工具新增单一 `--band-candidate`，将同一 128 帧 Hamming / 64 帧 hop 的正谱通量按六个固定频带归一化，再用固定 0.5 门槛和局部极值选择；复用全部既有 PCM、真实窗支持坐标和 Matcher。运行前声明及所有 34 项输入身份已冻结，没有重新生成音频、筛选输入或运行后扫描参数，详见[候选说明](../tools/mir-flux-gate-probe/README.md#分频带局部变化候选)
+
+6 项软件测试、fmt、隔离 Clippy、release 构建及独立审查通过；唯一正式全矩阵运行因质量 FAIL 退出 1。31 项离散控制为 17 PASS / 14 FAIL，665 个额外峰，6 项旧 PASS 退化；3 项连续控制保持不评分。两项近邻控制通过，弱叠加虽然恢复了 frame 24000 的候选，仍有 35 个额外峰，因此修复未通过，旧全谱过滤的 21 PASS / 10 FAIL 结果继续保留
+
+旧基线 51,158 窗逐项完全复现，独立 f64 FFT 进一步复现全部 34 项新预测列表与 665 个额外峰。440 Hz 持续音的高频带和 9973 Hz 持续音的低频带暴露确定性窗旁瓣被小分母放大，不能将问题归结为浮点舍入噪声；真实弱进入的频带幅值与旁瓣证据分别保留。下一步只增加有明确局部频谱尺度的分母下限，保持原完整回归集和门槛，不将这批已用于设计的控制称为未见测试集
+
+执行证据为 `target/mir-band-local-20261003/execution.json`，工具 SHA-256 为 `76ac3ed483985d69c20907b8e4047327b888a6c4b78952154560a6a06c4a2f9a`；[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-local-20261003.json) SHA-256 为 `d986c52e3c6acd952a49016123080f868c2b71a8ee60b3a8de43fd94b6db752f`。独立复算、失败定位和最终审查均在同一证据目录，复审为 `Lean already. Ship.`；没有新增依赖版本或新音频，生产 MusicAnalysis、真实音乐、最终编码回读与人工标签仍未通过本批验收

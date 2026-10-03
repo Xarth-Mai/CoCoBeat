@@ -1,6 +1,6 @@
 # 正向谱变化证据门槛
 
-本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；两者共用同一固定过滤器，不接生产 MIR
+本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；这两种模式共用原固定过滤器，`--band-candidate` 对同一批固定输入验证独立选峰候选；均不接生产 MIR
 
 ## 根因与固定适配
 
@@ -100,3 +100,65 @@ cargo build --locked --release --manifest-path "$mir_manifest" --target-dir "$mi
 独立验证从实际 f32le 重建全部 432000 帧，逐样本位一致；另用 NumPy f64 FFT 与数学 Hamming 重算全部 6741 窗，谱通量最大绝对差约 1.15e-5，比例最大差约 4.87e-7，所有原生候选上的过滤去留与所有 Matcher 字段均复现。这是独立数值核对，没有宣称跨 FFT 的 f32 位一致或独立重现极小噪声的原生选峰
 
 当前候选仍不能进入生产 MusicAnalysis。下一次修复应分别针对原生局部均值选择对近邻弱峰的压制，以及全频谱总幅值分母对低对比声部的压制，在预先固定的同一矩阵验证；直接调低 0.5 不能证明已解决持续音假峰。慢起音没有唯一离散标注，本轮只确认没有输出候选，不能将其记为准确检出或准确排除；独立人工标注、真实音乐、编码回读、beat/downbeat、confidence 与 Anchor 可玩性继续保留为待验收项
+
+## 分频带局部变化候选
+
+`--band-candidate` 实施针对近邻均值压制和全谱分母压制的单一修复候选，复用全部现有 34 项 PCM（31 项离散评分、3 项连续观测），不生成音频或改写旧报告；[运行前声明](../../testdata/synthetic/mir-flux-gate-probe/declared-band-local-20261003.json) SHA-256 为 `bdb0190741a83eb8c1fa1527719339f7ab1dc056bf43b7a74da9dacec8ed1219`，参数和输入身份在候选执行前冻结
+
+128 / 64 Hamming 与真实支持窗保持原样，单边 bins 分为 `[0,2)`、`[2,4)`、`[4,8)`、`[8,16)`、`[16,32)`、`[32,65)`；每带复用原生 f32 正向谱幅值差和 `F`，质量 `S` 为该带幅值的 f64 和，分母 `D` 改为同带 ±2 窗的最大 S；`D=0` 时比例为 0，否则取 `F/D`，再令 E 为六带比例最大值
+
+新选峰器要求 E 至少为 0.5 且为 ±2 窗局部最大，完全相等时只留该邻域最早窗；它独立选择真实支持窗中心，候选不再是旧原生预测子集。短窗裁剪频带到真实 bins，空带无输出，首窗原生 Flux 仍为 0；不加入能量 floor、epsilon、比例 clamp、平移、首帧补点或按样本调整的参数
+
+每个输入的同一份加载样本同时用于重算原生 Flux、旧全谱过滤和新候选；原生与旧过滤的逐窗字段、预测和指标必须与冻结报告一致。完整文件 SHA-256 在独立执行器运行前后核对，单独调用 Rust CLI 不声称提供不可变文件快照
+
+按前节构建工具后，以下复现命令检查全部参考报告与 PCM 身份，再执行唯一固定候选并再次检查，输出目录须尚不存在；退出码保留质量 FAIL
+
+```sh
+python3 - "$mir_build/release/cocobeat-mir-flux-gate-probe" target/mir-band-local-reproduction <<'PY'
+import hashlib, json, pathlib, subprocess, sys
+p = pathlib.Path('testdata/synthetic/mir-flux-gate-probe/declared-band-local-20261003.json')
+assert hashlib.sha256(p.read_bytes()).hexdigest() == 'bdb0190741a83eb8c1fa1527719339f7ab1dc056bf43b7a74da9dacec8ed1219'
+d = json.loads(p.read_text())
+files = d['references'] + [d['upstream_source_reference']] + [
+    {'path': i['pcm_path'], 'sha256': i['pcm_sha256']} for i in d['inputs']]
+def verify():
+    for item in files:
+        assert hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest() == item['sha256']
+verify()
+result = subprocess.call([sys.argv[1], '--band-candidate',
+                          *(r['path'] for r in d['references']), sys.argv[2]])
+verify()
+raise SystemExit(result)
+PY
+```
+
+### 分频带候选首次运行结果
+
+软件验证 PASS，针对两种压制的修复验收与整体质量均 FAIL；[完整观察清单](../../testdata/synthetic/mir-flux-gate-probe/observations-band-local-20261003.json)记录全部预测、配对和退化，实际全窗报告位于 `target/mir-band-local-20261003/results-v1/report.json`，未进行参数扫描或二次调参采样
+
+| 31 项离散控制 | 原生 Flux | 原全谱过滤 | 分频带候选 |
+| --- | --- | --- | --- |
+| PASS / FAIL | 14 / 17 | 21 / 10 | 17 / 14 |
+| TP / FP / FN | 333 / 766 / 7 | 330 / 0 / 10 | 336 / 665 / 4 |
+
+两种 384 帧强弱次序均恢复 `[11968,12352]` 并通过原门槛；弱叠加的 frame 24000 也恢复为候选，胜出带为 bins `[8,16)`、比例约 0.81194，但该案例还有 35 个额外峰，仍为 FAIL。6 项旧 PASS 退化：静默后 440 Hz / 9973 Hz 持续音、噪声 burst、kick-like、snare-like 和等幅叠加；不能据三处攻击附近出现候选就宣称修复完成
+
+持续音回归的假峰显示低幅值质量旁瓣被逐带比例放大：440 Hz 持续音的 40 个新峰全部由 12–24 kHz 的 band 5 胜出；9973 Hz 持续音的 142 个新峰全部由 0–375 Hz 的 band 0 胜出。独立 f64 FFT 复算仍产生相同的全部 34 项预测列表，包括 665 个离散额外峰，因此本次回归不能仅归于原生 f32 舍入噪声
+
+实际 PCM 的独立代表窗量化如下；S 占比为单边幅值总和之比，平方占比为未对内部 bins 加倍的单边平方幅值之比，两者都不冒充感知响度或 Parseval 时域能量
+
+| 代表窗 / 胜出带 | S 带 / S 全谱 | 平方幅值占比 | F 带 | D 带 | F / D |
+| --- | --- | --- | --- | --- | --- |
+| 440 Hz，frame 1920 / band 5 | 1.1770% | 0.001285% | 0.0780894 | 0.1526605 | 0.5115235 |
+| 9973 Hz，frame 576 / band 0 | 0.3152% | 0.001566% | 0.0185748 | 0.0247650 | 0.7500408 |
+| 弱叠加，frame 24000 / band 3 | 6.0711% | 0.302427% | 0.9133437 | 1.1248915 | 0.8119393 |
+
+前两项胜出带避开了主音的最大谱 bin，却因自身低质量旁瓣随窗口相位变化而通过相对门槛；第三项包含真实进入的 3 kHz 声部。该区别支持研究带有明确频谱尺度的分母下限，不能把前两项当作可直接忽略的浮点残差
+
+FN 从 10 降到 4 也不表示可靠恢复了 6 个真实攻击：持续噪声的 frame 384、440 Hz 持续音的 frame 448 和 9973 Hz 持续音的 frame 128 恰落入原 frame-zero 标签的 ±480 帧容差，原 Matcher 将其配成 TP；这不能证明未知文件前史中的 onset，原有 7 项边界/持续信号工程案例仍全部 FAIL。三个连续观测只记录 37 / 29 / 27 个候选，truth 和 metrics 继续为 null
+
+6 项软件测试通过，其中 1 项覆盖新的选峰、平台、空带/短窗、零分母、同窗多带、增益和坐标边界；Clippy 发现并移除了 `E>=0.5` 后冗余的 `E>0` 条件，未改数学规则或声明，原诊断保留。fmt、Clippy、release 构建通过，首次正式运行约 1.078 秒、最大子进程 RSS 503748 KiB，仅记录研究工具成本
+
+独立核对全部 34 项 PCM 身份、51,158 窗和 306,948 个带窗口，旧原生与全谱过滤逐窗/预测/指标完全复现，新公式与全部 Matcher 字段也复算通过；另对实际 PCM 做 NumPy f64 FFT，34 项预测坐标全部一致，谱质量/Flux/ratio 最大绝对差分别约 1.59e-5 / 1.65e-5 / 2.21e-5，不宣称跨 FFT 的原生 f32 位或近似平局胜出带一致
+
+本候选保留为失败的研究实现，不接入 MusicAnalysis；下一步只针对已有的低质量带放大问题形成有明确幅值尺度的归一化下限约束，再验证同一完整矩阵，不追加标签、缩小范围或降低质量门槛

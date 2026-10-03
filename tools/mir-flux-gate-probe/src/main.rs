@@ -1,3 +1,4 @@
+use oximedia_mir::onset_strength::{OnsetDetector, OnsetFunction};
 use serde_json::{Value, json};
 use std::{fs, path::Path, process::ExitCode, time::Instant};
 
@@ -19,6 +20,12 @@ const DECLARATION: &str = include_str!(
 const NEXT_CONTROLS: &str = include_str!(
     "../../../testdata/synthetic/mir-flux-gate-probe/declared-next-controls-20261003.json"
 );
+
+const BAND_DECLARATION: &str = include_str!(
+    "../../../testdata/synthetic/mir-flux-gate-probe/declared-band-local-20261003.json"
+);
+const BANDS: [(usize, usize); 6] = [(0, 2), (2, 4), (4, 8), (8, 16), (16, 32), (32, 65)];
+const LOCAL_RADIUS: usize = 2;
 
 fn evidence(strength: f64, mass: &[f64], index: usize) -> (f64, f64) {
     let lo = index.saturating_sub(RADIUS);
@@ -288,14 +295,178 @@ fn run_controls(output: &Path) -> Result<bool, Box<dyn std::error::Error>> {
     Ok(passed)
 }
 
+fn local_peak(values: &[f64], index: usize) -> bool {
+    let value = values[index];
+    let lo = index.saturating_sub(LOCAL_RADIUS);
+    let hi = (index + LOCAL_RADIUS + 1).min(values.len());
+    value >= MINIMUM_CHANGE
+        && values[lo..index].iter().all(|&other| other < value)
+        && values[index + 1..hi].iter().all(|&other| other <= value)
+}
+
+fn analyze_bands(samples: &[f32]) -> Value {
+    let started = Instant::now();
+    let windows = frozen::windows(samples.len());
+    let mut detectors: [_; 6] =
+        std::array::from_fn(|_| OnsetDetector::new(OnsetFunction::SpectralFlux, 48_000.0, 64, 1.5));
+    let mut strengths = Vec::new();
+    let mut masses = Vec::new();
+    for &(start, end) in &windows {
+        let magnitudes = frozen::magnitudes(&samples[start..end]);
+        let bins = magnitudes.len() / 2 + 1;
+        let mut strength = [0.0; 6];
+        let mut mass = [0.0; 6];
+        for (band, &(lo, hi)) in BANDS.iter().enumerate() {
+            let slice = &magnitudes[lo.min(bins)..hi.min(bins)];
+            strength[band] = detectors[band].add_frame(slice, &[]);
+            mass[band] = slice.iter().map(|&value| f64::from(value)).sum::<f64>();
+        }
+        strengths.push(strength);
+        masses.push(mass);
+    }
+    let mut envelope = Vec::new();
+    let mut evidence = Vec::new();
+    for (index, &(start, end)) in windows.iter().enumerate() {
+        let lo = index.saturating_sub(LOCAL_RADIUS);
+        let hi = (index + LOCAL_RADIUS + 1).min(windows.len());
+        let mut denominator = [0.0; 6];
+        let mut ratio = [0.0; 6];
+        let mut winner = 0;
+        for band in 0..BANDS.len() {
+            denominator[band] = masses[lo..hi]
+                .iter()
+                .map(|mass| mass[band])
+                .fold(0.0, f64::max);
+            if denominator[band] > 0.0 {
+                ratio[band] = f64::from(strengths[index][band]) / denominator[band];
+            }
+            if ratio[band] > ratio[winner] {
+                winner = band;
+            }
+        }
+        evidence.push(ratio[winner]);
+        envelope.push(json!({"analysis_index": index, "support_start": start,
+            "support_end_exclusive": end, "coordinate_frame": start + (end - start) / 2,
+            "band_strength": strengths[index], "band_mass": masses[index],
+            "band_denominator": denominator, "band_ratio": ratio,
+            "winning_band": winner, "evidence": ratio[winner]}));
+    }
+    let mut predicted = Vec::new();
+    for (index, row) in envelope.iter_mut().enumerate() {
+        let peak = local_peak(&evidence, index);
+        row["peak"] = json!(peak);
+        if peak {
+            predicted.push(row["coordinate_frame"].as_u64().unwrap() as usize);
+        }
+    }
+    assert!(predicted.windows(2).all(|pair| pair[0] < pair[1]));
+    assert!(predicted.iter().all(|&frame| frame < samples.len()));
+    json!({"predicted_frames": predicted, "envelope": envelope,
+        "elapsed_seconds": started.elapsed().as_secs_f64()})
+}
+
+fn run_bands(
+    old: &Path,
+    controls: &Path,
+    output: &Path,
+) -> Result<bool, Box<dyn std::error::Error>> {
+    fs::create_dir(output)?;
+    fs::write(output.join("declaration.json"), BAND_DECLARATION)?;
+    let declaration: Value = serde_json::from_str(BAND_DECLARATION)?;
+    let old: Value = serde_json::from_slice(&fs::read(old)?)?;
+    let controls: Value = serde_json::from_slice(&fs::read(controls)?)?;
+    let references: Vec<_> = old["cases"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .chain(controls["cases"].as_array().unwrap())
+        .collect();
+    let inputs = declaration["inputs"].as_array().unwrap();
+    assert_eq!(references.len(), 34);
+    assert_eq!(references.len(), inputs.len());
+    let mut cases = Vec::new();
+    for (reference, input) in references.into_iter().zip(inputs) {
+        for key in ["case", "pcm_path", "sample_frames", "truth_frames"] {
+            assert_eq!(reference[key], input[key], "declared input changed: {key}");
+        }
+        let samples = frozen::load(
+            Path::new(input["pcm_path"].as_str().unwrap()),
+            input["channels"].as_u64().unwrap() as usize,
+            input["channel"].as_u64().unwrap() as usize,
+            input["sample_frames"].as_u64().unwrap() as usize,
+        )?;
+        let mut baseline = analyze(&samples);
+        verify_native(&baseline, reference);
+        let mut result = analyze_bands(&samples);
+        // Both algorithms finish before labels enter the unchanged matcher
+        let truth: Option<Vec<usize>> = serde_json::from_value(reference["truth_frames"].clone())?;
+        for (predictions, metrics) in [
+            ("predicted_frames", "native_metrics"),
+            ("accepted_frames", "metrics"),
+        ] {
+            let frames: Vec<usize> = serde_json::from_value(baseline[predictions].clone())?;
+            baseline[metrics] = truth
+                .as_ref()
+                .map_or(Value::Null, |truth| frozen::score(truth, &frames));
+        }
+        let parsed: Value = serde_json::from_str(&serde_json::to_string(&baseline)?)?;
+        for key in [
+            "envelope",
+            "predicted_frames",
+            "accepted_frames",
+            "native_metrics",
+            "metrics",
+        ] {
+            assert_eq!(
+                parsed[key], reference[key],
+                "frozen baseline changed: {key}"
+            );
+        }
+        let predicted: Vec<usize> = serde_json::from_value(result["predicted_frames"].clone())?;
+        result["metrics"] = truth
+            .as_ref()
+            .map_or(Value::Null, |truth| frozen::score(truth, &predicted));
+        result["baseline"] = baseline;
+        result["input"] = input.clone();
+        cases.push(result);
+    }
+    assert_eq!(
+        cases
+            .iter()
+            .filter(|case| !case["metrics"].is_null())
+            .count(),
+        31
+    );
+    let passed = cases
+        .iter()
+        .all(|case| case["metrics"].is_null() || case["metrics"]["status"] == "PASS");
+    let report = json!({"status": if passed {"PASS"} else {"FAIL"}, "declaration": declaration,
+        "baseline_reproduction": "PASS: all34 native and full-spectrum-gate predictions, windows and metrics match frozen reports",
+        "independent_picker": true, "confidence": null,
+        "real_music": "NOT RUN", "canonical_ogg": "NOT RUN", "human_labels": "NOT RUN", "cases": cases});
+    fs::write(
+        output.join("report.json"),
+        format!("{}\n", serde_json::to_string_pretty(&report)?),
+    )?;
+    println!(
+        "{}: {}",
+        output.join("report.json").display(),
+        report["status"]
+    );
+    Ok(passed)
+}
+
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     let result = match args.as_slice() {
+        [mode, old, controls, output] if mode == "--band-candidate" => {
+            run_bands(Path::new(old), Path::new(controls), Path::new(output))
+        }
         [mode, output] if mode == "--controls" => run_controls(Path::new(output)),
         [reference, output] => run(Path::new(reference), Path::new(output)),
         _ => {
             eprintln!(
-                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>"
+                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>\n       cocobeat-mir-flux-gate-probe --band-candidate <frozen-gate-report.json> <frozen-controls-report.json> <new-output-directory>"
             );
             return ExitCode::FAILURE;
         }
@@ -313,6 +484,64 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn band_evidence_selects_one_earliest_real_support_without_inventing_history() {
+        let declaration: Value = serde_json::from_str(BAND_DECLARATION).unwrap();
+        assert_eq!(
+            declaration["parameters"]["half_open_bin_bands"],
+            json!(BANDS)
+        );
+        assert_eq!(
+            declaration["parameters"]["normalization_radius"],
+            LOCAL_RADIUS
+        );
+        assert_eq!(declaration["parameters"]["peak_radius"], LOCAL_RADIUS);
+        assert_eq!(
+            declaration["parameters"]["minimum_change_inclusive"],
+            MINIMUM_CHANGE
+        );
+        let values: Vec<f64> =
+            serde_json::from_value(declaration["software_test_only"]["selection_values"].clone())
+                .unwrap();
+        let peaks: Vec<_> = (0..values.len())
+            .filter(|&i| local_peak(&values, i))
+            .collect();
+        assert_eq!(
+            json!(peaks),
+            declaration["software_test_only"]["expected_peak_indices"]
+        );
+        let short = analyze_bands(&[1.0]);
+        assert_eq!(short["predicted_frames"], json!([]));
+        assert_eq!(short["envelope"][0]["coordinate_frame"], 0);
+        assert_eq!(short["envelope"][0]["band_ratio"], json!(vec![0.0; 6]));
+        assert_eq!(short["envelope"][0]["band_mass"][1], 0.0);
+        assert_eq!(analyze_bands(&[0.0; 128])["predicted_frames"], json!([]));
+        let mut samples = vec![0.0; 2048];
+        samples[512] = 0.25;
+        let result = analyze_bands(&samples);
+        assert_eq!(result["predicted_frames"], json!([512]));
+        let peak = result["envelope"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["peak"] == true)
+            .unwrap();
+        assert!(
+            peak["band_ratio"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|ratio| ratio.as_f64().unwrap() >= MINIMUM_CHANGE)
+        );
+        assert_eq!(peak["support_start"], 448);
+        assert_eq!(peak["support_end_exclusive"], 576);
+        let scaled: Vec<_> = samples.iter().map(|value| value * 0.5).collect();
+        assert_eq!(
+            result["predicted_frames"],
+            analyze_bands(&scaled)["predicted_frames"]
+        );
+    }
 
     #[test]
     fn constructed_entries_rises_and_mixture_have_the_declared_support() {
