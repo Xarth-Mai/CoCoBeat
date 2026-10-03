@@ -304,7 +304,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/anchor-good/miss/approach samples\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/anchor-good/miss/approach samples\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -397,6 +397,8 @@ pub fn run() -> ExitCode {
                     "languages" => Smoke::Languages(locale),
                     "ready" => Smoke::Menu(locale, Phase::Ready),
                     "players" => Smoke::Players(locale),
+                    "starting" => Smoke::Menu(locale, Phase::Starting),
+                    "pausing" => Smoke::Menu(locale, Phase::Pausing),
                     "paused" => Smoke::Menu(locale, Phase::Paused),
                     "finished" => Smoke::Menu(locale, Phase::Finished),
                     "fault" => Smoke::Menu(locale, Phase::Fault),
@@ -849,7 +851,8 @@ fn update_game(
         input.set_menu_open(true);
         menu_scroll.reset();
     }
-    input.set_menu_transitioning(matches!(game.phase, Phase::Starting | Phase::Pausing));
+    visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
+    input.set_menu_transitioning(visual.transitioning);
     visual.song_seconds = game.session.current.as_seconds_f64();
     visual.next_anchor_seconds = dev_song::ANCHOR_FRAMES
         .iter()
@@ -1390,7 +1393,8 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         if let Smoke::Menu(_, phase) = mode {
             game.phase = phase;
             game.notice = Message::new(match phase {
-                Phase::Paused => "game.listening",
+                Phase::Starting => "game.waiting_audio",
+                Phase::Pausing | Phase::Paused => "game.listening",
                 Phase::Finished => "",
                 Phase::Fault => "game.audio_failed",
                 _ => "game.welcome",
@@ -1403,7 +1407,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 game.fault_details = Some("Smoke fixture: audio output became unavailable".into());
             }
             game.session.current = cocobeat_schema::SongTime::from_frames(match phase {
-                Phase::Paused | Phase::Fault => 1_536_000,
+                Phase::Pausing | Phase::Paused | Phase::Fault => 1_536_000,
                 Phase::Finished => 3_072_000,
                 _ => 0,
             });
@@ -1446,6 +1450,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                  mut visual: ResMut<VisualState>| {
                     visual.locale = settings.values.locale;
                     visual.song_seconds = game.session.current.as_seconds_f64();
+                    visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
                     visual.menu = game_menu(&game, &mut input, &settings);
                 },
             );

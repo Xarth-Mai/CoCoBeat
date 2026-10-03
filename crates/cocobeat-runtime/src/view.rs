@@ -26,6 +26,7 @@ pub(crate) struct VisualState {
     pub resonance: f32,
     pub status: String,
     pub running: bool,
+    pub transitioning: bool,
     pub locale: Locale,
     pub menu: Option<MenuPresentation>,
     pub quality: QualitySettings,
@@ -53,6 +54,7 @@ struct Subtitle;
 #[derive(Component)]
 enum HudNode {
     Progress,
+    Waiting,
     Rows,
     Row(usize),
     Flag(usize),
@@ -74,6 +76,12 @@ struct PlayerCards;
 
 #[derive(Component)]
 struct LanguageFlag(usize);
+
+#[derive(Default)]
+struct FocusFeedback {
+    selected: Option<(MenuKind, usize)>,
+    remaining: f32,
+}
 
 pub fn install(app: &mut App) {
     app.init_resource::<VisualState>()
@@ -170,6 +178,21 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
             StatusPanel,
         ))
         .with_children(|panel| {
+            panel.spawn((
+                HudNode::Waiting,
+                IgnoreScroll(BVec2::TRUE),
+                Node {
+                    position_type: PositionType::Absolute,
+                    top: px(1),
+                    left: percent(0),
+                    width: percent(18),
+                    height: px(2),
+                    border_radius: BorderRadius::all(px(1)),
+                    display: Display::None,
+                    ..default()
+                },
+                BackgroundColor(Color::srgb(0.57, 0.93, 0.97)),
+            ));
             let color = TextColor(Color::srgb(0.87, 0.91, 0.96));
             panel.spawn((
                 Text::default(),
@@ -560,10 +583,12 @@ fn update_brand_layout(
 
 #[allow(clippy::type_complexity)]
 fn update_hud(
-    (state, assets, intro): (
+    (state, assets, intro, time, mut feedback): (
         Res<VisualState>,
         Res<UiAssets>,
         Option<Res<BrandIntroStatus>>,
+        Res<Time>,
+        Local<FocusFeedback>,
     ),
     mut texts: Query<(&UiText, &mut Text, &mut TextFont, &mut TextColor), Without<TextSpan>>,
     mut spans: Query<(&UiText, &mut TextSpan, &mut TextFont, &mut TextColor), Without<Text>>,
@@ -580,9 +605,25 @@ fn update_hud(
     >,
     mut labels: Query<&mut Visibility, With<PlayerLabel>>,
 ) {
+    let selected = state.menu.as_ref().and_then(|menu| {
+        menu.rows
+            .iter()
+            .position(|row| row.selected)
+            .map(|index| (menu.kind, index))
+    });
+    let was_animating = feedback.remaining > 0.0;
+    if feedback.selected != selected {
+        feedback.selected = selected;
+        feedback.remaining = if selected.is_some() { 0.16 } else { 0.0 };
+    } else {
+        feedback.remaining = (feedback.remaining - time.delta_secs()).max(0.0);
+    }
     if !state.is_changed()
         && !assets.is_changed()
         && !intro.as_ref().is_some_and(|intro| intro.is_changed())
+        && !was_animating
+        && feedback.remaining == 0.0
+        && !state.transitioning
     {
         return;
     }
@@ -750,6 +791,10 @@ fn update_hud(
                 node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
                 continue;
             }
+            HudNode::Waiting => {
+                node.left = percent(36.0 * (1.0 + (time.elapsed_secs() * 4.0).sin()));
+                state.transitioning && state.menu.is_some()
+            }
             HudNode::Rows => state.menu.is_some(),
             HudNode::OwnerHint => state
                 .menu
@@ -785,7 +830,12 @@ fn update_hud(
                     }
                     if let Some(mut border) = border {
                         *border = BorderColor::all(if row.selected {
-                            Color::srgb(0.57, 0.93, 0.97)
+                            let strength = feedback.remaining / 0.16;
+                            Color::srgb(
+                                0.57 + 0.18 * strength,
+                                0.93 + 0.05 * strength,
+                                0.97 + 0.03 * strength,
+                            )
                         } else {
                             Color::NONE
                         });
@@ -833,12 +883,156 @@ mod tests {
     fn hud_app() -> App {
         let mut app = App::new();
         app.init_resource::<VisualState>()
+            .init_resource::<Time>()
             .init_resource::<Assets<Font>>()
             .init_resource::<Assets<Image>>()
             .add_systems(Startup, setup_hud)
             .add_systems(PostUpdate, (ensure_menu_rows, update_hud).chain());
         crate::ui_assets::install(&mut app).unwrap();
         app
+    }
+
+    #[test]
+    fn focus_feedback_is_brief_and_never_delays_or_moves_the_selected_row() {
+        let mut app = hud_app();
+        app.world_mut().resource_mut::<VisualState>().menu = Some(MenuPresentation {
+            rows: ["Start", "Settings"]
+                .into_iter()
+                .enumerate()
+                .map(|(index, text)| MenuRow {
+                    text: text.into(),
+                    selected: index == 0,
+                    ..default()
+                })
+                .collect(),
+            ..default()
+        });
+        app.update();
+        let mut rows = app
+            .world_mut()
+            .query::<(Entity, &MenuRowNode)>()
+            .iter(app.world())
+            .map(|(entity, row)| (row.0, entity))
+            .collect::<Vec<_>>();
+        rows.sort_by_key(|(index, _)| *index);
+        let [first, second] = [rows[0].1, rows[1].1];
+        let geometry =
+            [first, second].map(|entity| app.world().get::<Node>(entity).unwrap().clone());
+        let highlighted = app.world().get::<BorderColor>(first).unwrap().top;
+        let settled = Color::srgb(0.57, 0.93, 0.97);
+        assert_ne!(highlighted, settled);
+        app.world_mut()
+            .resource_mut::<Time>()
+            .advance_by(std::time::Duration::from_millis(40));
+        app.update();
+        assert_ne!(
+            app.world().get::<BorderColor>(first).unwrap().top,
+            highlighted
+        );
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            let rows = &mut state.menu.as_mut().unwrap().rows;
+            rows[0].selected = false;
+            rows[1].selected = true;
+        }
+        app.update();
+        assert_eq!(
+            app.world().get::<BorderColor>(first).unwrap().top,
+            Color::NONE
+        );
+        assert_eq!(
+            app.world().get::<BorderColor>(second).unwrap().top,
+            highlighted
+        );
+        let prefix = app
+            .world_mut()
+            .query::<(&UiText, &Text)>()
+            .iter(app.world())
+            .find(|(kind, _)| matches!(kind, UiText::RowPrefix(1)))
+            .unwrap()
+            .1;
+        assert_eq!(prefix.0, "> Settings");
+        app.world_mut()
+            .resource_mut::<Time>()
+            .advance_by(std::time::Duration::from_millis(80));
+        app.update();
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            state.locale = Locale::ZhCn;
+            state.menu.as_mut().unwrap().owner_hint = Some("P2 controller".into());
+        }
+        app.world_mut()
+            .resource_mut::<Time>()
+            .advance_by(std::time::Duration::from_millis(80));
+        app.update();
+        assert_eq!(app.world().get::<BorderColor>(second).unwrap().top, settled);
+        for (entity, node) in [first, second].into_iter().zip(geometry) {
+            assert_eq!(app.world().get::<Node>(entity).unwrap(), &node);
+        }
+        for color in app.world_mut().query::<&TextColor>().iter(app.world()) {
+            assert_eq!(color.0.alpha(), 1.0);
+        }
+        app.world_mut().resource_mut::<VisualState>().menu = None;
+        app.update();
+        assert_eq!(
+            app.world().get::<Node>(second).unwrap().display,
+            Display::None
+        );
+    }
+
+    #[test]
+    fn waiting_marker_stops_with_the_transition_and_progress_keeps_song_time() {
+        let mut app = hud_app();
+        app.insert_resource(VisualState {
+            song_seconds: 16.0,
+            menu: Some(MenuPresentation::default()),
+            ..default()
+        });
+        let sample = |app: &mut App| {
+            let mut nodes = app.world_mut().query::<(&HudNode, &Node)>();
+            let waiting = nodes
+                .iter(app.world())
+                .find(|(kind, _)| matches!(kind, HudNode::Waiting))
+                .unwrap()
+                .1;
+            let progress = nodes
+                .iter(app.world())
+                .find(|(kind, _)| matches!(kind, HudNode::Progress))
+                .unwrap()
+                .1;
+            (waiting.display, waiting.left, progress.width)
+        };
+        app.update();
+        let waiting = app
+            .world_mut()
+            .query::<(&HudNode, &IgnoreScroll)>()
+            .iter(app.world())
+            .find(|(kind, _)| matches!(kind, HudNode::Waiting))
+            .unwrap()
+            .1;
+        assert_eq!(waiting.0, BVec2::TRUE);
+        assert_eq!(sample(&mut app).0, Display::None);
+        app.world_mut().resource_mut::<VisualState>().transitioning = true;
+        app.update();
+        let first = sample(&mut app);
+        assert_eq!(first.0, Display::Flex);
+        assert_eq!(first.2, percent(25));
+        app.world_mut()
+            .resource_mut::<Time>()
+            .advance_by(std::time::Duration::from_millis(100));
+        app.update();
+        let moved = sample(&mut app);
+        assert_ne!(moved.1, first.1);
+        assert_eq!(moved.2, first.2);
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            state.transitioning = false;
+            state.song_seconds = 0.0;
+        }
+        app.update();
+        let stopped = sample(&mut app);
+        assert_eq!(stopped.0, Display::None);
+        assert_eq!(stopped.2, percent(0));
     }
 
     #[test]
@@ -867,6 +1061,7 @@ mod tests {
             HierarchyPropagatePlugin::<ComputedUiRenderTargetInfo>::new(PostUpdate),
         ))
         .init_resource::<VisualState>()
+        .init_resource::<Time>()
         .init_resource::<MenuScroll>()
         .init_resource::<Assets<Image>>()
         .init_resource::<UiScale>()
