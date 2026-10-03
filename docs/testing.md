@@ -368,3 +368,13 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 修复只为标记添加 Bevy 原生 `IgnoreScroll`，137 个已记录输入中仅 view.rs 改变；6 项 view 窄测、workspace Clippy、格式和构建通过，见 `target/staging-ui-20261003/scroll-fix/validation.json`。最终游戏 SHA-256 为 `db071c3f37b3739727246e5e5da3e0a8611c96bf80eb3572c555b7dee49e5164`，补验仅重拍两个失败状态及 Ready/Paused 的滚动对照，四张均通过，等待标记固定、按阶段隐藏，Logo 和选中行完整可读，见 `target/menu-feedback-20261003/scroll-fix/report.json`
 
 本批 GPU 为 Linux AMD RX 6650 XT / RADV Vulkan，CJK 词边界诊断继续如实记录；160 ms 连续变化由 ECS Time 检查覆盖，GPU 是静态取样，没有据此声称连续录像、音频确认时延、真实性能或物理设备操作。主控和混合输入规则独立复核无新遗漏，最小修复后的 ponytail-review 为 `Lean already. Ship.`，双手柄、混合设备及 USB/蓝牙实测继续为 NOT RUN
+
+## 画质与必要反馈矩阵
+
+2026-10-03 扩展既有 `--feedback-smoke`，保留双参数用法，并接受 `EFFECT PRESET PNG` 或 `EFFECT PRESET WIDTH HEIGHT SCALE PNG`；新增 ECS 检查确认四档画质只影响呈现设置，同一预设反馈的 pulse、等级、SongTime 和 Resonance 保持一致，错误参数明确失败
+
+11 项 app 窄测、runtime all-targets Clippy 与 game 构建通过，构建输入前后稳定，记录见 `target/quality-feedback-20261003/validation.json`；随后完整 workspace 检查的 141 项测试包含 89 项 runtime。游戏冻结二进制 SHA-256 为 `1fa42d26741d5117e83f1a2e0f94ab2a7bfed2bac4dd3d759c5e652e4a6e42fe`
+
+四档画质 × Free / Good / Miss 共 12 张 1280×800 图，以及关闭效果的三张 400×300 图全部逐张通过；独立核对命令、PNG 尺寸、实际 UI/3D camera 尺寸、所有画质字段和反馈采样，3D 分别为 640×480 / 320×240，HUD 仍按原生窗口尺寸呈现。关闭效果时单环、双环与 P1 Miss 倾斜可辨，小窗口身份标签正常换行；底部仅用于 smoke 的说明覆盖少量环底缘，但环数和玩家身份仍可辨，该限制在报告中保留
+
+完整结果为 `target/quality-feedback-20261003/gpu/report.json`，SHA-256 `12c883f89d3360d629a07e278c39c051a8605e0ca46107dc3c78434fdf8c1563`；冻结二进制前后相同，GPU 为 AMD RX 6650 XT / RADV Mesa 26.2.3 Vulkan，15 次运行均无 WARN/ERROR。这是合成静态状态检查，没有新增真实 core 连续帧、物理设备、音频同步或实际 FPS 结论

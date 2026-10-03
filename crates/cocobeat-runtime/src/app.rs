@@ -50,7 +50,7 @@ enum Phase {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Smoke {
     Scene,
-    Feedback(FeedbackSmoke),
+    Feedback(FeedbackSmoke, Option<QualitySettings>),
     FeedbackMotion,
     Startup,
     Settings,
@@ -64,7 +64,7 @@ enum Smoke {
     Pacing(Locale),
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum FeedbackSmoke {
     Local,
     Free,
@@ -304,7 +304,7 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/anchor-good/miss/approach samples\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -313,17 +313,19 @@ pub fn run() -> ExitCode {
         [flag, path] if flag == "--feedback-motion-smoke" => {
             visual_smoke(PathBuf::from(path), Smoke::FeedbackMotion)
         }
-        [flag, effect, path] if flag == "--feedback-smoke" => {
-            let effect = match effect.as_str() {
-                "local" => Ok(FeedbackSmoke::Local),
-                "free" => Ok(FeedbackSmoke::Free),
-                "anchor" => Ok(FeedbackSmoke::Anchor),
-                "anchor-good" => Ok(FeedbackSmoke::AnchorGood),
-                "miss" => Ok(FeedbackSmoke::Miss),
-                "approach" => Ok(FeedbackSmoke::Approach),
-                _ => Err(format!("Unsupported feedback sample: {effect}")),
-            };
-            effect.and_then(|effect| visual_smoke(PathBuf::from(path), Smoke::Feedback(effect)))
+        [flag, effect, path] if flag == "--feedback-smoke" => feedback_smoke_mode(effect, None)
+            .and_then(|mode| visual_smoke(PathBuf::from(path), mode)),
+        [flag, effect, preset, path] if flag == "--feedback-smoke" => {
+            feedback_smoke_mode(effect, Some(preset))
+                .and_then(|mode| visual_smoke(PathBuf::from(path), mode))
+        }
+        [flag, effect, preset, width, height, scale, path] if flag == "--feedback-smoke" => {
+            (|| {
+                let mode = feedback_smoke_mode(effect, Some(preset))?;
+                let mut viewport = SmokeViewport::parse(width, height, scale, "0")?;
+                viewport.selection = None;
+                visual_smoke_at(PathBuf::from(path), mode, viewport)
+            })()
         }
         [flag, path] if flag == "--startup-smoke" => {
             visual_smoke(PathBuf::from(path), Smoke::Startup)
@@ -347,27 +349,8 @@ pub fn run() -> ExitCode {
                 Err(format!("Unsupported locale: {code}"))
             }
         }
-        [flag, preset, path] if flag == "--quality-smoke" => {
-            let mut quality = QualitySettings::default();
-            match preset.as_str() {
-                "low" => quality.set_preset(QualityPreset::Low),
-                "medium" => quality.set_preset(QualityPreset::Medium),
-                "high" => quality.set_preset(QualityPreset::High),
-                "off" => {
-                    quality.set_preset(QualityPreset::Low);
-                    quality.preset = QualityPreset::Custom;
-                    quality.rain = crate::settings::RainAmount::Off;
-                    quality.fog = false;
-                }
-                _ => {
-                    return {
-                        eprintln!("Unsupported graphics preset: {preset}");
-                        ExitCode::FAILURE
-                    };
-                }
-            }
-            visual_smoke(PathBuf::from(path), Smoke::Quality(quality))
-        }
+        [flag, preset, path] if flag == "--quality-smoke" => smoke_quality(preset)
+            .and_then(|quality| visual_smoke(PathBuf::from(path), Smoke::Quality(quality))),
         [flag, page, code, path] if flag == "--settings-page-smoke" => {
             match (
                 page.as_str(),
@@ -1083,6 +1066,59 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
     lines.join("\n")
 }
 
+fn smoke_quality(preset: &str) -> Result<QualitySettings, String> {
+    let mut quality = QualitySettings::default();
+    match preset {
+        "low" => quality.set_preset(QualityPreset::Low),
+        "medium" => quality.set_preset(QualityPreset::Medium),
+        "high" => quality.set_preset(QualityPreset::High),
+        "off" => {
+            quality.set_preset(QualityPreset::Low);
+            quality.preset = QualityPreset::Custom;
+            quality.rain = crate::settings::RainAmount::Off;
+            quality.fog = false;
+        }
+        _ => return Err(format!("Unsupported graphics preset: {preset}")),
+    }
+    Ok(quality)
+}
+
+fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, String> {
+    let effect = match effect {
+        "local" => FeedbackSmoke::Local,
+        "free" => FeedbackSmoke::Free,
+        "anchor" => FeedbackSmoke::Anchor,
+        "anchor-good" => FeedbackSmoke::AnchorGood,
+        "miss" => FeedbackSmoke::Miss,
+        "approach" => FeedbackSmoke::Approach,
+        _ => return Err(format!("Unsupported feedback sample: {effect}")),
+    };
+    Ok(Smoke::Feedback(
+        effect,
+        preset.map(smoke_quality).transpose()?,
+    ))
+}
+
+fn apply_smoke_visuals(visual: &mut VisualState, mode: Smoke) {
+    if let Smoke::Feedback(effect, _) = mode {
+        reset_feedback(visual);
+        visual.next_anchor_seconds = None;
+        match effect {
+            FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
+            FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
+            FeedbackSmoke::Anchor | FeedbackSmoke::AnchorGood => {
+                visual.anchor_sync_pulse = 0.7;
+                visual.anchor_sync_precise = effect == FeedbackSmoke::Anchor;
+            }
+            FeedbackSmoke::Miss => visual.miss_pulses = [0.8, 0.0],
+            FeedbackSmoke::Approach => visual.next_anchor_seconds = Some(34.0),
+        }
+    }
+    if let Smoke::Quality(quality) | Smoke::Feedback(_, Some(quality)) = mode {
+        visual.quality = quality;
+    }
+}
+
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
     visual_smoke_at(path, mode, SmokeViewport::default())
 }
@@ -1237,7 +1273,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     };
     let startup = !matches!(
         mode,
-        Smoke::Scene | Smoke::Feedback(_) | Smoke::FeedbackMotion | Smoke::Quality(_)
+        Smoke::Scene | Smoke::Feedback(..) | Smoke::FeedbackMotion | Smoke::Quality(_)
     );
     let mut app = App::new();
     app.add_plugins(
@@ -1501,28 +1537,17 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             ..default()
         }
     };
-    if let Smoke::Feedback(effect) = mode {
-        let mut visual = app.world_mut().resource_mut::<VisualState>();
-        reset_feedback(&mut visual);
-        visual.next_anchor_seconds = None;
-        match effect {
-            FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
-            FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
-            FeedbackSmoke::Anchor | FeedbackSmoke::AnchorGood => {
-                visual.anchor_sync_pulse = 0.7;
-                visual.anchor_sync_precise = effect == FeedbackSmoke::Anchor;
-            }
-            FeedbackSmoke::Miss => visual.miss_pulses = [0.8, 0.0],
-            FeedbackSmoke::Approach => visual.next_anchor_seconds = Some(34.0),
-        }
-    }
-    if let Smoke::Quality(quality) = mode {
-        app.world_mut().resource_mut::<VisualState>().quality = quality;
+    apply_smoke_visuals(&mut app.world_mut().resource_mut::<VisualState>(), mode);
+    if matches!(mode, Smoke::Quality(_) | Smoke::Feedback(_, Some(_))) {
         app.world_mut()
             .resource_mut::<DisplayState>()
             .request(DisplaySettings {
                 fullscreen: true,
-                fullscreen_size: [640, 480],
+                fullscreen_size: if viewport.size[0] < 640 || viewport.size[1] < 480 {
+                    [320, 240]
+                } else {
+                    [640, 480]
+                },
                 ..default()
             });
     }
@@ -1535,6 +1560,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                intro: Option<Res<BrandIntroStatus>>,
                mut visual: ResMut<VisualState>,
                cameras: Query<&Camera, With<PresentationCamera>>,
+               game_cameras: Query<&Camera, With<display::GameCamera>>,
                panels: Query<(&ComputedNode, &UiGlobalTransform), With<view::StatusPanel>>,
                rows: Query<(&view::MenuRowNode, &ComputedNode, &UiGlobalTransform)>,
                mut exit: MessageWriter<AppExit>| {
@@ -1571,6 +1597,27 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 *frame == 30
             };
             if !*requested && ready {
+                if let Smoke::Feedback(effect, _) = mode {
+                    eprintln!(
+                        "FEEDBACK_SAMPLE {}",
+                        serde_json::json!({
+                            "effect": format!("{effect:?}"),
+                            "quality": visual.quality,
+                            "game_physical_size": game_cameras.single().ok()
+                                .and_then(Camera::physical_viewport_size).map(|size| size.to_array()),
+                            "ui_physical_size": cameras.single().ok()
+                                .and_then(Camera::physical_viewport_size).map(|size| size.to_array()),
+                            "scale_factor": viewport.scale,
+                            "song_seconds": visual.song_seconds,
+                            "hit_pulses": visual.hit_pulses,
+                            "free_sync_pulse": visual.free_sync_pulse,
+                            "anchor_sync_pulse": visual.anchor_sync_pulse,
+                            "anchor_sync_precise": visual.anchor_sync_precise,
+                            "miss_pulses": visual.miss_pulses,
+                            "next_anchor_seconds": visual.next_anchor_seconds,
+                        })
+                    );
+                }
                 if let Some(engine) = &mut motion_engine {
                     match advance_feedback_motion(*frame - 30, engine, &mut visual) {
                         Ok(events) => eprintln!(
@@ -1599,7 +1646,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 if !matches!(
                     mode,
                     Smoke::Scene
-                        | Smoke::Feedback(_)
+                        | Smoke::Feedback(..)
                         | Smoke::FeedbackMotion
                         | Smoke::Startup
                         | Smoke::Quality(_)
@@ -1765,6 +1812,57 @@ mod tests {
         assert_eq!(engine.events().len(), 9);
         assert_eq!(visual.next_anchor_seconds, Some(40.0));
         assert_eq!(visual.song_seconds, 32.0 + 239.0 / 30.0);
+    }
+
+    #[test]
+    fn feedback_smoke_keeps_default_quality_and_accepts_explicit_presets() {
+        use crate::settings::{AntiAliasing, RainAmount};
+
+        let feedback = |visual: &VisualState| {
+            (
+                visual.hit_pulses,
+                visual.free_sync_pulse,
+                visual.anchor_sync_pulse,
+                visual.anchor_sync_precise,
+                visual.miss_pulses,
+                visual.next_anchor_seconds,
+                visual.song_seconds,
+                visual.resonance,
+            )
+        };
+        for effect in ["local", "free", "anchor", "anchor-good", "miss", "approach"] {
+            let default_mode = feedback_smoke_mode(effect, None).unwrap();
+            assert!(matches!(default_mode, Smoke::Feedback(_, None)));
+            let mut visual = VisualState {
+                song_seconds: 32.0,
+                resonance: 0.7,
+                ..default()
+            };
+            apply_smoke_visuals(&mut visual, default_mode);
+            let expected = feedback(&visual);
+            assert_eq!(visual.quality, QualitySettings::default());
+            for preset in ["low", "medium", "high", "off"] {
+                visual.hit_pulses = [1.0; 2];
+                visual.free_sync_pulse = 1.0;
+                visual.anchor_sync_pulse = 1.0;
+                visual.miss_pulses = [1.0; 2];
+                let mode = feedback_smoke_mode(effect, Some(preset)).unwrap();
+                apply_smoke_visuals(&mut visual, mode);
+                assert_eq!(visual.quality, smoke_quality(preset).unwrap());
+                assert_eq!(feedback(&visual), expected);
+            }
+        }
+        let Smoke::Feedback(FeedbackSmoke::AnchorGood, Some(off)) =
+            feedback_smoke_mode("anchor-good", Some("off")).unwrap()
+        else {
+            panic!("The selected effect must survive the quality override");
+        };
+        assert_eq!(off.antialiasing, AntiAliasing::Off);
+        assert_eq!(off.rain, RainAmount::Off);
+        assert!(!off.bloom && !off.fog && !off.shadows);
+        assert!(feedback_smoke_mode("unknown", Some("off")).is_err());
+        assert!(feedback_smoke_mode("free", Some("unknown")).is_err());
+        assert!(smoke_quality("unknown").is_err());
     }
 
     #[test]
