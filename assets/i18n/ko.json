@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay 저장 완료",
   "results.replay_failed_short": "Replay 저장 실패",
   "hud.subtitle": "깊은 밤   /   빗속의 듀엣",
+  "hud.section_recent": "최근 표시 · {label}",
+  "hud.section_next": "다음 표시 · {label}",
   "hud.player_one": "P1  /  두 귀",
   "hud.player_two": "P2  /  하나의 왕관",
   "hud.clock": "{elapsed} / {duration}초\nResonance {resonance}%  /  {state}",

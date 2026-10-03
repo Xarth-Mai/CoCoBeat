@@ -24,6 +24,8 @@ pub(crate) struct VisualState {
     pub anchor_sync_precise: bool,
     pub miss_pulses: [f32; 2],
     pub next_anchor_seconds: Option<f64>,
+    pub section_hint: Option<String>,
+    pub next_section_seconds: Option<f64>,
     pub resonance: f32,
     pub status: String,
     pub running: bool,
@@ -109,19 +111,31 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
     let font =
         |font_size: f32| TextFont::from_font_size(font_size).with_font(assets.font(state.locale));
     let colors = [Color::srgb(0.12, 0.92, 0.9), Color::srgb(0.96, 0.28, 0.67)];
-    commands.spawn((
-        Text::default(),
-        UiText::Subtitle,
-        font(13.0),
-        TextColor(Color::srgb(0.72, 0.79, 0.88)),
-        Node {
-            position_type: PositionType::Absolute,
-            top: px(88),
-            left: px(38),
-            ..default()
-        },
-        Subtitle,
-    ));
+    commands
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                top: px(88),
+                left: px(38),
+                width: percent(45),
+                max_width: px(600),
+                height: px(20),
+                overflow: Overflow::clip(),
+                ..default()
+            },
+            Subtitle,
+        ))
+        .with_child((
+            Text::default(),
+            UiText::Subtitle,
+            font(13.0),
+            TextColor(Color::srgb(0.72, 0.79, 0.88)),
+            TextLayout::no_wrap(),
+            Node {
+                flex_shrink: 0.0,
+                ..default()
+            },
+        ));
     commands.spawn((
         Text::default(),
         UiText::Clock,
@@ -374,7 +388,16 @@ fn layout_hud(
     cameras: Query<&Camera, With<IsDefaultUiCamera>>,
     mut panels: Query<&mut Node, With<StatusPanel>>,
     mut auxiliary: Query<(&UiText, &mut Node), Without<StatusPanel>>,
-    mut cards: Query<&mut Node, (With<PlayerCards>, Without<StatusPanel>, Without<UiText>)>,
+    mut cards: Query<
+        &mut Node,
+        (
+            With<PlayerCards>,
+            Without<StatusPanel>,
+            Without<UiText>,
+            Without<Subtitle>,
+        ),
+    >,
+    mut subtitles: Query<&mut Node, (With<Subtitle>, Without<StatusPanel>, Without<UiText>)>,
 ) {
     let Some(viewport) = cameras
         .single()
@@ -436,11 +459,20 @@ fn layout_hud(
             node.flex_direction = direction;
         }
     }
+    // This optional decoration remains hidden in compact layouts
+    for mut node in &mut subtitles {
+        let display = if compact {
+            Display::None
+        } else {
+            Display::Flex
+        };
+        if node.display != display {
+            node.display = display;
+        }
+    }
     for (kind, mut node) in &mut auxiliary {
-        if matches!(kind, UiText::Subtitle | UiText::Clock) {
-            let display = if (state.menu.is_some() && matches!(kind, UiText::Clock))
-                || (compact && matches!(kind, UiText::Subtitle))
-            {
+        if matches!(kind, UiText::Clock) {
+            let display = if state.menu.is_some() {
                 Display::None
             } else {
                 Display::Flex
@@ -448,8 +480,6 @@ fn layout_hud(
             if node.display != display {
                 node.display = display;
             }
-        }
-        if matches!(kind, UiText::Clock) {
             node.right = px(margin);
             node.top = px(margin);
             node.max_width = px((viewport.x - 2.0 * margin).max(1.0));
@@ -665,7 +695,10 @@ fn update_hud(
                 .as_ref()
                 .and_then(|menu| menu.owner_hint.clone())
                 .unwrap_or_default(),
-            UiText::Subtitle => locale.text("hud.subtitle").into(),
+            UiText::Subtitle => state
+                .section_hint
+                .clone()
+                .unwrap_or_else(|| locale.text("hud.subtitle").into()),
             UiText::Clock => Message::with(
                 "hud.clock",
                 [
@@ -889,6 +922,7 @@ mod tests {
         app.init_resource::<VisualState>()
             .init_resource::<Time>()
             .init_resource::<Assets<Font>>()
+            .init_resource::<bevy::text::FontCx>()
             .init_resource::<Assets<Image>>()
             .add_systems(Startup, setup_hud)
             .add_systems(PostUpdate, (ensure_menu_rows, update_hud).chain());
@@ -1082,20 +1116,16 @@ mod tests {
         }
     }
 
-    #[test]
-    fn menu_summary_measures_wrapped_device_and_owner_text() {
+    fn measured_hud_app() -> (App, Entity) {
         use bevy::{
             app::{HierarchyPropagatePlugin, PropagateSet},
             asset::AssetPlugin,
             camera::{ComputedCameraValues, RenderTargetInfo},
-            text::{
-                TextLayoutInfo, TextPlugin, detect_text_needs_rerender,
-                load_font_assets_into_font_collection,
-            },
+            text::{TextPlugin, detect_text_needs_rerender, load_font_assets_into_font_collection},
             ui::{
                 ui_layout_system,
                 ui_surface::UiSurface,
-                update::propagate_ui_target_cameras,
+                update::{propagate_ui_target_cameras, update_clipping_system},
                 widget::{measure_text_system, text_system},
             },
         };
@@ -1108,12 +1138,14 @@ mod tests {
             HierarchyPropagatePlugin::<ComputedUiRenderTargetInfo>::new(PostUpdate),
         ))
         .init_resource::<VisualState>()
+        .init_resource::<BrandIntroLayout>()
         .init_resource::<Time>()
         .init_resource::<MenuScroll>()
         .init_resource::<Assets<Image>>()
         .init_resource::<UiScale>()
         .init_resource::<UiSurface>()
         .add_systems(Startup, setup_hud)
+        .add_systems(Update, update_brand_layout)
         .add_systems(PostUpdate, (ensure_menu_rows, update_hud).chain())
         .add_systems(
             PostUpdate,
@@ -1125,6 +1157,7 @@ mod tests {
                     .after(load_font_assets_into_font_collection),
                 ui_layout_system,
                 text_system,
+                update_clipping_system,
             )
                 .chain(),
         )
@@ -1156,6 +1189,105 @@ mod tests {
                 },
             ))
             .id();
+        (app, camera)
+    }
+
+    #[test]
+    fn optional_section_hint_uses_original_fallback_and_clips_long_single_lines() {
+        use bevy::{camera::RenderTargetInfo, text::TextLayoutInfo};
+
+        let (mut app, camera) = measured_hud_app();
+        app.world_mut().resource_mut::<VisualState>().locale = Locale::EnUs;
+        app.update();
+        let subtitle = app
+            .world_mut()
+            .query::<(Entity, &UiText)>()
+            .iter(app.world())
+            .find(|(_, kind)| matches!(kind, UiText::Subtitle))
+            .unwrap()
+            .0;
+        let frame = app.world().get::<ChildOf>(subtitle).unwrap().parent();
+        assert_eq!(
+            app.world().get::<Text>(subtitle).unwrap().0,
+            Locale::EnUs.text("hud.subtitle")
+        );
+        let hint = Message::with(
+            "hud.section_recent",
+            [("label", format!("#7 {}", "W".repeat(256)))],
+        )
+        .render(Locale::EnUs);
+        app.world_mut().resource_mut::<VisualState>().section_hint = Some(hint.clone());
+        for (size, scale, visible) in [
+            (UVec2::new(1280, 800), 1.0, true),
+            (UVec2::new(900, 600), 1.0, true),
+            (UVec2::new(899, 800), 1.0, false),
+            (UVec2::new(1280, 599), 1.0, false),
+            (UVec2::new(1280, 800), 2.0, false),
+        ] {
+            app.world_mut()
+                .get_mut::<Camera>(camera)
+                .unwrap()
+                .computed
+                .target_info = Some(RenderTargetInfo {
+                physical_size: size,
+                scale_factor: scale,
+            });
+            for _ in 0..4 {
+                app.update();
+            }
+            assert_eq!(app.world().get::<Text>(subtitle).unwrap().0, hint);
+            let node = app.world().get::<Node>(frame).unwrap();
+            assert_eq!(
+                node.display,
+                if visible {
+                    Display::Flex
+                } else {
+                    Display::None
+                }
+            );
+            let clip = app.world().get::<CalculatedClip>(subtitle).unwrap().clip;
+            if visible {
+                let layout = app.world().get::<TextLayoutInfo>(subtitle).unwrap();
+                let expected_width = (size.x as f32 * 0.45).min(600.0);
+                assert!((clip.width() - expected_width).abs() < 1.0, "{clip:?}");
+                assert_eq!(clip.height(), 20.0);
+                assert!(layout.size.x > clip.width());
+                assert!(layout.size.y <= clip.height());
+                assert!(!layout.glyphs.is_empty());
+                let dock = app.world().resource::<BrandIntroLayout>().dock_rect;
+                assert!(clip.min.y > dock.max.y);
+                assert!(clip.max.y < dock.max.y + 44.0);
+                let clock = app
+                    .world_mut()
+                    .query::<(&UiText, &ComputedNode, &UiGlobalTransform)>()
+                    .iter(app.world())
+                    .find(|(kind, _, _)| matches!(kind, UiText::Clock))
+                    .map(|(_, node, transform)| {
+                        Rect::from_center_size(transform.translation, node.size)
+                    })
+                    .unwrap();
+                assert!(clip.max.x < clock.min.x || clip.min.y > clock.max.y);
+            } else {
+                assert!(clip.is_empty());
+            }
+        }
+        {
+            let mut state = app.world_mut().resource_mut::<VisualState>();
+            state.section_hint = None;
+            state.locale = Locale::ZhCn;
+        }
+        app.update();
+        assert_eq!(
+            app.world().get::<Text>(subtitle).unwrap().0,
+            Locale::ZhCn.text("hud.subtitle")
+        );
+    }
+
+    #[test]
+    fn menu_summary_measures_wrapped_device_and_owner_text() {
+        use bevy::{camera::RenderTargetInfo, text::TextLayoutInfo};
+
+        let (mut app, camera) = measured_hud_app();
         let players = [
             "P1：键盘 KeyF 可用 / 可选手柄".to_owned(),
             "P2：键盘 KeyJ 可用 / 可选手柄".to_owned(),

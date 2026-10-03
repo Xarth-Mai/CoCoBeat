@@ -27,7 +27,11 @@ schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不
 
 schema 的初始 `MusicAnalysis` / `CompiledChart` / `SongPackage` 由 lab 构建手工内容包，再由 runtime 加载；能量从最终 staging Ogg 全量读回计算，Anchor 和段落来自有来源说明的创作 JSON，media 的私有 Postcard DTO 持有版本头、字节/元素限额、语义检查和对象身份，schema 仍仅依赖标准库
 
-media 的 `read_package` 检查四对象，从同一份有界音频字节快照验证引用哈希并严格解码，将 PCM 块交给调用方，整次调用成功后才返回 `ValidatedPackage`；失败时调用方丢弃临时 PCM，`validate_package` 复用该路径并丢弃 PCM，完整契约见 [SongPackage](song-package.md)；校验不重新执行 MIR 或证明谱面合理性，runtime 当前只消费音频、实际长度、包身份与 Anchor，energy、分析段落和 SectionCue 尚未参与舞台渲染，后续 TempoRegion、重复结构、AnchorEvidence 和 TrackPlan 按实际消费者扩展并升级版本
+media 的 `read_package` 检查四对象，从同一份有界音频字节快照验证引用哈希并严格解码，将 PCM 块交给调用方，整次调用成功后才返回 `ValidatedPackage`；失败时调用方丢弃临时 PCM，`validate_package` 复用该路径并丢弃 PCM，完整契约见 [SongPackage](song-package.md)；校验不重新执行 MIR 或证明谱面合理性，runtime 消费音频、实际长度、包身份、Anchor 与 SectionCue，energy 和分析段落区间尚未驱动场景，后续 TempoRegion、重复结构、AnchorEvidence 和 TrackPlan 按实际消费者扩展并升级版本
+
+`SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示，按 `z = -3 × ahead` 移动，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
+
+`ui_assets` 复用既有六份 Noto Sans 字体，通过 Bevy 的 fontique 字体集合配置原生脚本回退；每个文本仍以 locale 对应的地区字体为首选，回退处理其缺少的拉丁 / 西里尔 / 希腊 / 汉字 / 假名 / 韩文字形，不引入系统字体依赖或任意 Unicode 覆盖承诺，字体类型止于 runtime 表现适配层
 
 ## 未来模块何时出生
 
@@ -50,7 +54,7 @@ Bevy 输入消息 → ClockBridge → Hit / 水位 → core::DuoEngine → 语�
 
 相同输入历史、规则版本、内容和 epoch 必须得到相同规则结果；Replay 不另写判定算法，未来网络到达时间不能改写原始输入时间，view 不获得规则引擎的可变控制能力
 
-正常启动接受 `--package DIR`，也可追加 `--replay FILE` 或 `--visual-smoke PNG` 校验该包的 Replay 或生成无音频场景预览；加载失败或规则不是 `duo-watermark-v1` 时退出，无参数正常启动才选择确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口保留开发内容
+正常启动接受 `--package DIR`，也可追加 `--replay FILE` 或 `--visual-smoke PNG` 校验该包的 Replay 或生成无音频场景预览；`--section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 用同一 cue 查询生成指定帧的无音频预览，帧范围包含 EOF，完整参数见 [SongPackage](song-package.md)；加载失败或规则不是 `duo-watermark-v1` 时退出，无参数正常启动才选择确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口保留开发内容
 
 runtime 以完整 manifest 的 `package_hash` 构造 `package-blake3:<64 个十六进制字符>` 内容身份，Session 使用包的实际结束帧与 Anchor；Replay 记录内容/规则/构建身份和原始输入、水位，保存失败明确报错，校验与大小上限由 replay 持有，runtime 另检查 Hit 是否处于歌曲范围内；诊断 CSV 由 session 写入，二者不包含歌曲音频
 

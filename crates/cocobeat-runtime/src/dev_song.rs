@@ -20,6 +20,25 @@ pub fn anchors() -> Vec<cocobeat_schema::Anchor> {
         .collect()
 }
 
+pub fn sections() -> Vec<cocobeat_schema::SectionCue> {
+    [
+        (0, "orientation"),
+        (384_000, "free_imitation"),
+        (1_152_000, "sparse_anchors"),
+        (1_920_000, "silence"),
+        (2_304_000, "shared_release"),
+        (2_880_000, "ending"),
+    ]
+    .into_iter()
+    .enumerate()
+    .map(|(index, (frame, label))| cocobeat_schema::SectionCue {
+        id: index as u64 + 1,
+        time: cocobeat_schema::SongTime::from_frames(frame),
+        label: label.into(),
+    })
+    .collect()
+}
+
 /// PCM16 conversion uses a power-of-two divisor and is exact in f32
 pub fn samples() -> Vec<[f32; 2]> {
     (0..FRAMES)

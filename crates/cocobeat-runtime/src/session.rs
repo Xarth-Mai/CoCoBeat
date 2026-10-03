@@ -303,6 +303,7 @@ mod tests {
                 id: 1,
                 song_time: SongTime::from_frames(frames - 1),
             }],
+            sections: vec![],
         }
     }
 

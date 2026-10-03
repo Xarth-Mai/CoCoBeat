@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay enregistré",
   "results.replay_failed_short": "Échec de l’enregistrement du replay",
   "hud.subtitle": "TARD DANS LA NUIT   /   UN DUO SOUS LA PLUIE",
+  "hud.section_recent": "Dernier repère · {label}",
+  "hud.section_next": "Prochain repère · {label}",
   "hud.player_one": "P1  /  DEUX OREILLES",
   "hud.player_two": "P2  /  UNE COURONNE",
   "hud.clock": "{elapsed} / {duration} S\nRÉSONANCE {resonance}%  /  {state}",

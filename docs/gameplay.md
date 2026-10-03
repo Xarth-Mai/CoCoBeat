@@ -1,10 +1,10 @@
 # 规则与表现约束
 
-当前 core 已实现手写 Anchor 判定、一对一 Free Sync、Anchor Sync 和有界 Resonance；自动 Anchor 与 SectionCue 尚未实现，以下初始参数的可玩性仍需真人验证
+当前 core 已实现手写 Anchor 判定、一对一 Free Sync、Anchor Sync 和有界 Resonance，runtime 已消费手工 SectionCue 提供辅助字幕与空间预告；自动 Anchor、自动段落分析和 StagePlan 编译仍待实现，以下初始参数的可玩性仍需真人验证
 
 ## Anchor
 
-Anchor 表示邀请玩家共同落点的音乐时刻，当前开发歌曲在 26、30、34、38、50、54、58 秒放置 7 个手写 Anchor；未来 SectionCue 只表达结构变化，不自动要求按键，低置信度区域保留自由空间
+Anchor 表示邀请玩家共同落点的音乐时刻，当前开发歌曲在 26、30、34、38、50、54、58 秒放置 7 个手写 Anchor，歌曲包使用自身 chart 的 Anchor；SectionCue 只提供作者标记的段落点提示，不自动要求按键，也不替代 Anchor
 
 Judge 对显式 Anchor 判定音乐相对误差：一个输入不能完成两个 Anchor，一个玩家不能重复完成同一个 Anchor。只有时间/进度水位证明机会已结束后才可确认 Miss；未匹配的自由输入没有 Miss。
 
@@ -33,4 +33,16 @@ Resonance 使用已确认滚动窗口内的 `2 × 匹配对数 / 双方输入总
 
 本地 Hit 在当次输入消费时播放对应音色并触发角色形变和半环，共享确认后播放组合音色与完整环；P1/P2 使用不同轮廓、音色和声像，端到端延迟及玩家可辨识性尚未实测
 
-表现只消费规则事实和 SongTime，不修改判定；当前手写街道随歌曲时间移动，Resonance 显示在 HUD，完整环境联动、空间 Anchor 预告和结果视图仍待实现与体验验证
+表现只消费规则事实、内容提示和 SongTime，不修改判定；当前手写街道随歌曲时间移动，HUD 显示 Resonance 并联动霓虹招牌强度，地面 Anchor 预告在未来四秒内接近玩家；结算菜单显示双方 Hit、各档 Anchor、Free / Anchor Sync 次数与 Replay 保存状态，完整音乐驱动场景仍待后续实现，当前反馈的体验效果仍需真人验证
+
+## SectionCue 辅助提示
+
+SectionCue 是带 ID、时刻和作者标签的点提示，分析中的 SectionFeature 才是 `[start, end)` 区间；运行时保留 chart 的 cue，不用下一 cue 补推当前段落的结束时间，不将分析区间间隙归入某段，也不推断音乐置信度
+
+最近 cue 的时刻不晚于当前歌曲游标，下一 cue 严格晚于游标；同一时点存在多个 cue 时选择 ID 最大的一项，HUD 优先显示“下一提示”，没有下一项时显示“最近提示”，该顺序只是表现选择，不影响判定结果
+
+动态文案复用 Logo 下的辅助字幕，保留 cue ID，标签按单行展示并裁剪超长内容；菜单打开、非 Running / Pausing / Paused 阶段或 EOF 时清空动态文案，恢复原氛围字幕，逻辑宽度小于 900 或高度小于 600 时整行仍隐藏，因此它不承载必要按键或错误信息
+
+下一 cue 的预告门由两个立柱和一个横梁共三个固定实体组成，只在 `0 < cue_time - song_time <= 6` 秒时显示，位置为 `z = -3 × (cue_time - song_time)`；暂停后沿用冻结的歌曲游标，菜单隐藏字幕不改变这个位置，到 cue 时刻切换到下一提示，门框不产生 Hit、Anchor、Sync、音效或额外输入控制
+
+开发歌曲用与手工 authoring 一致的代码常量在 0、8、24、40、48、60 秒提供六个 cue，无需运行时读取 JSON；歌曲包、无音频场景预览与指定帧 `--section-smoke` 共用内容查询，字段与命令见 [SongPackage](song-package.md)

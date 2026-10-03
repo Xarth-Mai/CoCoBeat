@@ -105,7 +105,11 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>` 将最终 Ogg 有界复制到全新的目录，按实际复制字节记录 BLAKE3 和长度，关闭写入后严格读回其中的 `song.audio.ogg`；原文件保留，已有目录拒绝覆盖。失败只清理本次音频文件和空目录，成功只表示该音频对象已准备，不创建分析、谱面、manifest 或 Ready；源上限仍为 512 MiB 和十分钟
 
-`build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度和手工 Anchor；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与舞台编译继续按路线图推进
+`build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度、手工 Anchor 与段落提示；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与舞台编译继续按路线图推进
+
+手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
+
+`--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 可在指定整数音频帧预览段落提示，`FRAME` 为 `0..=总帧数`，`CODE` 使用语言代码，`PRESET` 为 `low|medium|high|off`；画面没有音频或真实输入，不能代替设备验收。包内标签保持作者原文，换行和控制空白只在显示时折成单行，过长标签限制在字幕区域内；Noto 使用现有嵌入字体的跨脚本回退，英文界面可显示中日韩标签，CJK 界面可显示乌克兰字母，各地区首选字体保留
 
 `--quality-smoke low|medium|high|off PNG` 保存指定画质的固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 通过生产菜单控制进入画质或帧率子页，运行品牌到 Ready 后截图。两种预览均不播放音频、不读写用户配置，也不运行生产帧率门控，不能用截图耗时推断实际帧率
 

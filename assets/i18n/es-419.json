@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Repetición guardada",
   "results.replay_failed_short": "Error al guardar la repetición",
   "hud.subtitle": "ENTRADA LA NOCHE   /   UN DÚO BAJO LA LLUVIA",
+  "hud.section_recent": "Última marca · {label}",
+  "hud.section_next": "Siguiente marca · {label}",
   "hud.player_one": "P1  /  DOS OREJAS",
   "hud.player_two": "P2  /  UNA CORONA",
   "hud.clock": "{elapsed} / {duration} S\nRESONANCIA {resonance}%  /  {state}",

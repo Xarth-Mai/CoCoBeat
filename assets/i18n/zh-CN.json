@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay 已保存",
   "results.replay_failed_short": "Replay 保存失败",
   "hud.subtitle": "夜深之后   /   雨中二重奏",
+  "hud.section_recent": "最近提示 · {label}",
+  "hud.section_next": "下一提示 · {label}",
   "hud.player_one": "P1  /  双耳",
   "hud.player_two": "P2  /  一顶王冠",
   "hud.clock": "{elapsed} / {duration} 秒\nResonance {resonance}%  /  {state}",

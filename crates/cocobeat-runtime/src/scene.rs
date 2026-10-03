@@ -30,6 +30,7 @@ pub(crate) enum Motion {
     FreeRing,
     AnchorRing(usize),
     AnchorPreview,
+    SectionGate,
     Street(f32),
     Rain(usize),
 }
@@ -404,6 +405,27 @@ pub(crate) fn setup(
             NotShadowCaster,
         ));
     }
+    // Section gates frame the route above the spirits; Anchor previews stay on the road
+    for (position, scale, material) in [
+        (
+            Vec3::new(-3.2, 1.65, 0.0),
+            Vec3::new(0.1, 3.3, 0.12),
+            &neon[0],
+        ),
+        (
+            Vec3::new(3.2, 1.65, 0.0),
+            Vec3::new(0.1, 3.3, 0.12),
+            &neon[1],
+        ),
+        (Vec3::new(0.0, 3.3, 0.0), Vec3::new(6.5, 0.1, 0.12), &white),
+    ] {
+        commands.spawn((
+            part(&cube, material, position, scale),
+            Motion::SectionGate,
+            Visibility::Hidden,
+            NotShadowCaster,
+        ));
+    }
     for drop in 0..48 {
         let phase = drop as f32 * 0.73;
         commands.spawn((
@@ -568,6 +590,16 @@ pub(crate) fn animate(
                     Some(0.0)
                 }
             }
+            Motion::SectionGate => {
+                let ahead = state.next_section_seconds.map(|at| at - state.song_seconds);
+                if let Some(ahead) = ahead.filter(|ahead| *ahead > 0.0 && *ahead <= 6.0) {
+                    *visibility = Visibility::Visible;
+                    transform.translation.z = -ahead as f32 * 3.0;
+                } else {
+                    *visibility = Visibility::Hidden;
+                }
+                None
+            }
             Motion::Street(offset) => {
                 transform.translation.z = 6.0 - (offset - song * 3.0).rem_euclid(36.0);
                 None
@@ -605,6 +637,7 @@ mod tests {
                 free_sync_pulse: 0.7,
                 anchor_sync_pulse: 0.7,
                 next_anchor_seconds: Some(14.5),
+                next_section_seconds: Some(15.0),
                 ..default()
             })
             .init_resource::<Time>()
@@ -630,7 +663,7 @@ mod tests {
             .filter(|(_, motion, _, _)| !matches!(motion, Motion::Rain(_)))
             .map(|(entity, _, transform, visibility)| (entity, *transform, *visibility))
             .collect();
-        assert_eq!(core.len(), 34);
+        assert_eq!(core.len(), 37);
         assert!(core.iter().all(|(_, _, v)| *v != Visibility::Hidden));
         let meshes = app.world().resource::<Assets<Mesh>>().len();
         let materials = app.world().resource::<Assets<StandardMaterial>>().len();
@@ -693,7 +726,10 @@ mod tests {
             for &(entity, _, visibility) in &core {
                 assert_eq!(*app.world().get::<Visibility>(entity).unwrap(), visibility);
             }
-            assert_eq!(app.world().resource::<VisualState>().song_seconds, 12.5);
+            let state = app.world().resource::<VisualState>();
+            assert_eq!(state.song_seconds, 12.5);
+            assert_eq!(state.next_anchor_seconds, Some(14.5));
+            assert_eq!(state.next_section_seconds, Some(15.0));
         }
         let all_off = QualitySettings {
             preset: QualityPreset::Custom,
@@ -754,7 +790,10 @@ mod tests {
                 assert_eq!(*app.world().get::<Transform>(entity).unwrap(), transform);
                 assert_eq!(*app.world().get::<Visibility>(entity).unwrap(), visibility);
             }
-            assert_eq!(app.world().resource::<VisualState>().song_seconds, 12.5);
+            let state = app.world().resource::<VisualState>();
+            assert_eq!(state.song_seconds, 12.5);
+            assert_eq!(state.next_anchor_seconds, Some(14.5));
+            assert_eq!(state.next_section_seconds, Some(15.0));
             assert_eq!(app.world().resource::<Assets<Mesh>>().len(), meshes);
             assert_eq!(
                 app.world().resource::<Assets<StandardMaterial>>().len(),
@@ -764,6 +803,83 @@ mod tests {
             assert!(app.world().get::<Hdr>(presentation).is_none());
             assert!(app.world().get::<Bloom>(presentation).is_none());
             assert!(app.world().get::<DistanceFog>(presentation).is_none());
+        }
+    }
+
+    #[test]
+    fn section_gate_tracks_only_future_cues_on_the_song_clock() {
+        let mut app = App::new();
+        app.register_required_components::<Mesh3d, Visibility>()
+            .init_resource::<VisualState>()
+            .init_resource::<Time>()
+            .init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .add_systems(Startup, setup)
+            .add_systems(PostUpdate, animate);
+        app.update();
+        let gates: Vec<_> = app
+            .world_mut()
+            .query::<(Entity, &Motion, &Transform)>()
+            .iter(app.world())
+            .filter(|(_, motion, _)| matches!(motion, Motion::SectionGate))
+            .map(|(entity, _, transform)| (entity, *transform))
+            .collect();
+        assert_eq!(gates.len(), 3);
+        for &(entity, transform) in &gates {
+            // A 6.3-unit opening with its crossbar above the characters' heads
+            if transform.translation.x == 0.0 {
+                assert!(transform.translation.y - transform.scale.y * 0.5 > 3.2);
+            } else {
+                assert!(transform.translation.x.abs() - transform.scale.x * 0.5 > 3.1);
+            }
+            assert!(app.world().get::<NotShadowCaster>(entity).is_some());
+        }
+        let entity_count = app.world().entities().len();
+        for (song, next, expected_z) in [
+            (3.999, Some(10.0), None),
+            (4.0, Some(10.0), Some(-18.0)),
+            (7.0, Some(10.0), Some(-9.0)),
+            (9.999, Some(10.0), Some(-0.003)),
+            (10.0, Some(10.0), None),
+            (12.0, Some(10.0), None),
+            (12.0, Some(20.0), None),
+            (14.0, Some(20.0), Some(-18.0)),
+            (20.0, None, None),
+            (0.0, Some(10.0), None),
+            (4.0, Some(10.0), Some(-18.0)),
+            (0.0, Some(f64::NAN), None),
+        ] {
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.song_seconds = song;
+                state.next_section_seconds = next;
+            }
+            app.update();
+            for &(entity, base) in &gates {
+                let transform = app.world().get::<Transform>(entity).unwrap();
+                assert_eq!(transform.translation.xy(), base.translation.xy());
+                assert_eq!(transform.scale, base.scale);
+                assert_eq!(transform.rotation, base.rotation);
+                assert_eq!(
+                    *app.world().get::<Visibility>(entity).unwrap() == Visibility::Visible,
+                    expected_z.is_some()
+                );
+                if let Some(z) = expected_z {
+                    assert!((transform.translation.z - z).abs() < 1e-5);
+                }
+            }
+            let paused: Vec<_> = gates
+                .iter()
+                .map(|(entity, _)| *app.world().get::<Transform>(*entity).unwrap())
+                .collect();
+            app.world_mut()
+                .resource_mut::<Time>()
+                .advance_by(std::time::Duration::from_secs(10));
+            app.update();
+            for ((entity, _), transform) in gates.iter().zip(paused) {
+                assert_eq!(*app.world().get::<Transform>(*entity).unwrap(), transform);
+            }
+            assert_eq!(app.world().entities().len(), entity_count);
         }
     }
 

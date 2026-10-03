@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay gespeichert",
   "results.replay_failed_short": "Replay-Speicherung fehlgeschlagen",
   "hud.subtitle": "ZU SPÄTER STUNDE   /   EIN DUETT IM REGEN",
+  "hud.section_recent": "Letzte Marke · {label}",
+  "hud.section_next": "Nächste Marke · {label}",
   "hud.player_one": "P1  /  ZWEI OHREN",
   "hud.player_two": "P2  /  EINE KRONE",
   "hud.clock": "{elapsed} / {duration} SEK\nRESONANZ {resonance}%  /  {state}",

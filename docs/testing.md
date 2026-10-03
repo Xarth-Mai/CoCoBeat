@@ -424,3 +424,19 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 两张 1280×800 Vulkan 离屏图逐张检查通过，实际 HUD、50% 进度及 Anchor 预告分别来自 4800 帧短包和 3,072,000 帧长包，`CONTENT_SAMPLE` 与独立包数据逐字段一致；短包中点为 0.05 秒，HUD 一位小数显示 `000.1 / 0.1`，不能据此认为进度已满。GPU 为本机 RX 6650 XT / RADV，预览中的反馈为合成状态，不代表真实输入或音频驱动的画面
 
 最终报告为 `target/package-runtime-20261003/qa-report.json`，238 项证据路径及哈希清单 `qa-sealed.json` 的 SHA-256 为 `2871e9cacd16327d9ce543218317927759a9dbad5e9a0b01fddfbc86514d1f86`；真实音频输出、物理键盘/手柄、听感和 Windows/ARM 运行时验收仍为 NOT RUN，上轮短 fixture 默认 FFmpeg 的 4672/4800 帧互操作 FAIL 保留，未被本次运行时结果改写
+
+## 手工段落表现与混合字体
+
+2026-10-03，包内 SectionCue 接入运行时字幕与原生三维门框，严格选择未来提示，同帧取最高 ID；没有未来提示时保留最近提示，负时间及歌曲 EOF 清空。门仅在未来六秒内显示，使用歌曲游标确定位置，暂停保持位置，菜单隐藏辅助字幕；Ready、重启等待及结束不保留旧提示，判定、Replay 与 Anchor 事实保持独立，完整接口见 [歌曲包](song-package.md)
+
+`cargo test --locked --offline -p cocobeat-runtime` 的 103 项测试通过，覆盖 cue 边界、同帧、内容身份、菜单与结束清空、暂停门位置、长文本裁剪和真实 TextPipeline 字形排版。六份已有 Noto 使用 Fontique 原生回退并保留地区主字体，测试包含字体晚加载、字体集重建、非持续脏标记、CJK 中的乌克兰语和英文界面的 CJK；初次测试编译误用 FontData 的 `blob` 字段，修为实际公开 `data` 后通过，失败日志仍保留
+
+workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，140 个构建输入前后哈希一致；新增 Fontique 直接依赖使用主版本范围，解析版本仍为已有的 0.9.0，第三方版本总数仍为 547。当前游戏 SHA-256 为 `c27609700b05615ff38a87ac61de6a80712f001f21d097e2254896bc863f1f5b`，lab 为 `70d893d2f5ab3e11afa1a96c5c8cfc33fcf90b80acc292128abbfca7cef9670a`，源输入、命令和日志见 `target/section-runtime-20261003/validation.json`；本批只重跑相关 runtime 测试，上一批 152 项完整 workspace 结果按原源码保留
+
+冻结 lab 实际构建三份只修改标签的包，独立 Postcard/BLAKE3 读取器复核原始数据和完整身份；13 项 CLI 全部通过，覆盖帧范围、整数与溢出、语言、画质、视口及参数错误，以及各包自身 Replay 通过、相同音频不同 cue 包双向 Replay 拒绝。256 字节标签中的换行和制表符仅在显示时折叠，`{label}` 保留字面值，包内原文不变
+
+10 张 Vulkan GPU 图已逐张检查通过：21 秒远门、23 秒近门与独立 Anchor 标记、24 秒到达清空、400×300 关闭装饰保留必要门框、英文 UI 中的中日韩标签、中文 UI 中的乌克兰语、最长标签裁剪、61 秒最近提示、64 秒 EOF 以及原有中点预览；三张混合字体图另经独立复核。场景现为 197 个固定网格实体，不按帧创建门；数量检查不代表帧时间或性能预算通过
+
+批量执行在前八张完成后收到退出码 143，原因未知，确认无存活子进程后只补执行尚未完成的 EOF 和中点两张，原图与中断记录保留。四组 CJK 日志共 13 条既有 ICU 分词模型诊断仍保留，实际字形与裁剪通过不等于日志零告警；已知稳定版限制见上文国际化记录
+
+最终 `qa-report.json`、`qa-visual-review.json` 与 105 项 `qa-sealed.json` 均在 `target/section-runtime-20261003/`，封存清单 SHA-256 为 `e98012428eeb9e0c6b7366b5bb5fe08d359275ea80f7e66179fe33ace26929de`，主线程已逐项复核哈希。正确性与 ponytail 独立复审为 `Lean already. Ship.`；本批静态画面、排版与软件检查不替代真实音频、物理手柄、连续动效、性能、Windows/ARM 运行时或真人双人体验，这些仍为 NOT RUN

@@ -51,6 +51,7 @@ enum Phase {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Smoke {
     Scene,
+    Section(Locale, SongTime, QualitySettings),
     Feedback(FeedbackSmoke, Option<QualitySettings>),
     FeedbackMotion,
     Startup,
@@ -333,9 +334,37 @@ pub fn run() -> ExitCode {
                 )
             })
         }
+        [
+            flag,
+            directory,
+            smoke,
+            frame,
+            code,
+            preset,
+            width,
+            height,
+            scale,
+            path,
+        ] if flag == "--package" && smoke == "--section-smoke" => (|| {
+            let (content, _sound) = content::load_package(Path::new(directory))?;
+            let frame = frame
+                .parse::<i64>()
+                .map_err(|_| "Invalid section preview frame")?;
+            if !(0..=content.end.frames()).contains(&frame) {
+                return Err("Section preview frame must lie within the song timeline".into());
+            }
+            let locale = Locale::ALL
+                .into_iter()
+                .find(|locale| locale.code() == code)
+                .ok_or("Unsupported section preview locale")?;
+            let mode = Smoke::Section(locale, SongTime::from_frames(frame), smoke_quality(preset)?);
+            let mut viewport = SmokeViewport::parse(width, height, scale, "0")?;
+            viewport.selection = None;
+            visual_smoke_for_content(PathBuf::from(path), mode, viewport, content)
+        })(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -891,9 +920,55 @@ fn update_game(
         game.saved_facts != game.session.replay.facts().len(),
     );
     visual.menu = runtime_menu(&game, &mut input, &settings, settings_now, &display);
+    update_section_visuals(
+        &game.content,
+        game.session.current,
+        matches!(game.phase, Phase::Running | Phase::Pausing | Phase::Paused),
+        &mut visual,
+    );
     if visual.menu.is_none() {
         visual.status = game_status(&game, &input, &settings);
     }
+}
+
+fn update_section_visuals(
+    content: &SongContent,
+    time: SongTime,
+    active: bool,
+    visual: &mut VisualState,
+) {
+    let (latest, next) = if active {
+        content.section_cues(time)
+    } else {
+        (None, None)
+    };
+    visual.next_section_seconds = next.map(|cue| cue.time.as_seconds_f64());
+    visual.section_hint = if visual.menu.is_some() {
+        None
+    } else {
+        next.map(|cue| ("hud.section_next", cue))
+            .or_else(|| latest.map(|cue| ("hud.section_recent", cue)))
+            .map(|(key, cue)| {
+                let label: String = cue
+                    .label
+                    .chars()
+                    .map(|character| {
+                        if character.is_control() {
+                            ' '
+                        } else {
+                            character
+                        }
+                    })
+                    .collect();
+                let label = label.split_whitespace().collect::<Vec<_>>().join(" ");
+                let label = if label.is_empty() {
+                    format!("#{}", cue.id)
+                } else {
+                    format!("#{} · {label}", cue.id)
+                };
+                Message::with(key, [("label", label)]).render(visual.locale)
+            })
+    };
 }
 
 fn next_anchor_label(game: &Game, locale: Locale) -> String {
@@ -1321,7 +1396,11 @@ fn visual_smoke_for_content(
     };
     let startup = !matches!(
         mode,
-        Smoke::Scene | Smoke::Feedback(..) | Smoke::FeedbackMotion | Smoke::Quality(_)
+        Smoke::Scene
+            | Smoke::Section(..)
+            | Smoke::Feedback(..)
+            | Smoke::FeedbackMotion
+            | Smoke::Quality(_)
     );
     let mut app = App::new();
     app.add_plugins(
@@ -1593,6 +1672,24 @@ fn visual_smoke_for_content(
         }
     };
     apply_smoke_visuals(&mut app.world_mut().resource_mut::<VisualState>(), mode);
+    if matches!(mode, Smoke::Scene | Smoke::Section(..)) {
+        let mut visual = app.world_mut().resource_mut::<VisualState>();
+        let time = if let Smoke::Section(locale, time, quality) = mode {
+            visual.locale = locale;
+            visual.quality = quality;
+            visual.song_seconds = time.as_seconds_f64();
+            visual.next_anchor_seconds = content
+                .anchors
+                .iter()
+                .find(|anchor| anchor.song_time >= time)
+                .map(|anchor| anchor.song_time.as_seconds_f64());
+            reset_feedback(&mut visual);
+            time
+        } else {
+            SongTime::from_frames(content.end.frames() / 2)
+        };
+        update_section_visuals(&content, time, true, &mut visual);
+    }
     if matches!(mode, Smoke::Quality(_) | Smoke::Feedback(_, Some(_))) {
         app.world_mut()
             .resource_mut::<DisplayState>()
@@ -1652,7 +1749,7 @@ fn visual_smoke_for_content(
                 *frame == 30
             };
             if !*requested && ready {
-                if mode == Smoke::Scene {
+                if matches!(mode, Smoke::Scene | Smoke::Section(..)) {
                     eprintln!(
                         "CONTENT_SAMPLE {}",
                         serde_json::json!({
@@ -1661,6 +1758,10 @@ fn visual_smoke_for_content(
                             "duration_seconds": visual.duration_seconds,
                             "song_seconds": visual.song_seconds,
                             "next_anchor_seconds": visual.next_anchor_seconds,
+                            "next_section_seconds": visual.next_section_seconds,
+                            "section_hint": visual.section_hint,
+                            "locale": visual.locale.code(),
+                            "quality": visual.quality,
                         })
                     );
                 }
@@ -1713,6 +1814,7 @@ fn visual_smoke_for_content(
                 if !matches!(
                     mode,
                     Smoke::Scene
+                        | Smoke::Section(..)
                         | Smoke::Feedback(..)
                         | Smoke::FeedbackMotion
                         | Smoke::Startup
@@ -1827,6 +1929,75 @@ mod tests {
     };
 
     #[test]
+    fn section_presentation_follows_the_song_and_clears_on_menus_or_inactive_phases() {
+        let mut content = SongContent::development();
+        content.sections = [
+            (4, 48_000, "\n 雨\t夜 {label}\r\u{0} "),
+            (7, 96_000, " \t\n "),
+        ]
+        .into_iter()
+        .map(|(id, frame, label)| cocobeat_schema::SectionCue {
+            id,
+            time: SongTime::from_frames(frame),
+            label: label.into(),
+        })
+        .collect();
+        let original = content.sections.clone();
+        let mut visual = VisualState {
+            locale: Locale::EnUs,
+            ..default()
+        };
+        update_section_visuals(&content, SongTime::ZERO, true, &mut visual);
+        assert!(
+            visual
+                .section_hint
+                .as_ref()
+                .unwrap()
+                .contains("#4 · 雨 夜 {label}")
+        );
+        assert!(
+            !visual
+                .section_hint
+                .as_ref()
+                .unwrap()
+                .chars()
+                .any(char::is_control)
+        );
+        assert_eq!(visual.next_section_seconds, Some(1.0));
+
+        // A pause menu hides auxiliary text while the cue geometry keeps the same song position
+        let mut game = Game::with_content(content.clone()).unwrap();
+        game.phase = Phase::Paused;
+        let mut input = InputState::default();
+        input.claim_menu(InputSource::Keyboard);
+        visual.menu = game_menu(&game, &mut input, &SettingsMenu::default());
+        assert!(visual.menu.is_some());
+        update_section_visuals(&content, SongTime::ZERO, true, &mut visual);
+        assert!(visual.section_hint.is_none());
+        assert_eq!(visual.next_section_seconds, Some(1.0));
+        visual.menu = None;
+        update_section_visuals(&content, SongTime::from_frames(48_000), true, &mut visual);
+        assert!(visual.section_hint.as_ref().unwrap().ends_with("#7"));
+        assert_eq!(visual.next_section_seconds, Some(2.0));
+        update_section_visuals(&content, SongTime::from_frames(96_000), true, &mut visual);
+        assert_eq!(
+            visual.section_hint,
+            Some(
+                Message::with("hud.section_recent", [("label", "#7".into())]).render(Locale::EnUs)
+            )
+        );
+        assert_eq!(visual.next_section_seconds, None);
+        for (time, active) in [(content.end, true), (SongTime::ZERO, false)] {
+            update_section_visuals(&content, time, active, &mut visual);
+            assert!(visual.section_hint.is_none());
+            assert_eq!(visual.next_section_seconds, None);
+        }
+        update_section_visuals(&content, SongTime::ZERO, true, &mut visual);
+        assert_eq!(visual.next_section_seconds, Some(1.0));
+        assert_eq!(content.sections, original);
+    }
+
+    #[test]
     fn returning_to_ready_keeps_the_selected_content_and_anchor_hints() {
         for frames in [4_800, 3_120_017] {
             let content = SongContent {
@@ -1836,6 +2007,7 @@ mod tests {
                     id: 71,
                     song_time: SongTime::from_frames(frames - 1),
                 }],
+                sections: vec![],
             };
             let mut game = Game::with_content(content.clone()).unwrap();
             assert_eq!(game.phase, Phase::Ready);

@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay saved",
   "results.replay_failed_short": "Replay save failed",
   "hud.subtitle": "AFTER HOURS   /   A DUET IN THE RAIN",
+  "hud.section_recent": "Latest cue · {label}",
+  "hud.section_next": "Next cue · {label}",
   "hud.player_one": "P1  /  TWO EARS",
   "hud.player_two": "P2  /  ONE CROWN",
   "hud.clock": "{elapsed} / {duration} SEC\nRESONANCE {resonance}%  /  {state}",

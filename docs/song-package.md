@@ -1,6 +1,6 @@
 # 初始 SongPackage 契约
 
-当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建和校验，lab 入口为 `build-authored-package` 与 `verify-package`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度与 Anchor，仍未接入自动 MIR、AnchorCompiler、StageCompiler 或生产编码器
+当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建和校验，lab 入口为 `build-authored-package` 与 `verify-package`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，提供段落点提示和空间预告门，仍未接入自动 MIR、AnchorCompiler、StageCompiler 或生产编码器
 
 字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，运行时适配见 [runtime/content.rs](../crates/cocobeat-runtime/src/content.rs)，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
 
@@ -98,7 +98,7 @@ cargo run --locked -p cocobeat-lab -- verify-package target/manual-duet-package
 
 ## 运行时加载与会话
 
-游戏入口接受 `--package DIR [--replay FILE|--visual-smoke PNG]`，包参数必须位于可选模式之前；普通模式进入游戏，`--replay` 校验该包的本地 Replay，`--visual-smoke` 按该包的实际长度与 Anchor 生成无音频场景预览
+游戏入口接受 `--package DIR`，包参数必须位于可选模式之前；普通模式进入游戏，追加 `--replay FILE` 校验该包的本地 Replay，追加 `--visual-smoke PNG` 按该包的实际长度、Anchor 与 SectionCue 生成无音频场景预览
 
 ```sh
 cargo run --locked -p cocobeat-game -- --package /path/to/song-package
@@ -114,7 +114,21 @@ runtime 在创建游戏和音频输出前完成 `media::read_package`，检查�
 
 无参数正常启动继续使用确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口也保留开发内容；正常包启动完整播放品牌开场，结束后保持 Ready，用户显式选择 Start 才开始歌曲，开场期间按住的控制不能穿透到演奏
 
-当前运行时消费包的音频、长度、身份与 Anchor，`energy`、分析段落和 `SectionCue` 虽参与包校验，尚未进入舞台渲染；现有手写场景不能视为 MusicAnalysis → StagePlan 的完整管线
+`SongContent` 同时保留 chart 的 `sections`，按 Session 的整数游标查询最近 `time <= 当前帧` 的 cue 和严格未来 `time > 当前帧` 的下一 cue，同一时点多项统一选择 ID 最大的一项；HUD 优先显示下一提示，没有下一项才显示最近提示，不把下一 cue 当成当前 cue 的结束帧，也不从分析区间的空隙推断段落或置信度
+
+段落文案复用 Logo 下的辅助字幕，显示本地化前缀、cue ID 与作者标签；显示层将控制字符和连续空白折为单行，纯空白标签只显示 ID，长行在限定区域裁剪，原始标签与包身份不变；菜单打开、不处于 Running / Pausing / Paused 阶段或到达 EOF 时清空动态文案并恢复原氛围字幕，逻辑宽度小于 900 或高度小于 600 的 compact 布局仍隐藏整行
+
+下一 cue 的空间预告使用固定三个实体组成的门框，仅在 `0 < ahead <= 6` 秒时出现，纵深位置为 `z = -3 × ahead`；位置跟随现有歌曲游标，暂停时冻结，到点后查询下一 cue，不产生按键要求、Anchor 判定、输入事实或额外音频
+
+字幕使用既有六份 Noto Sans 字体，界面 locale 继续决定首选地区字形，缺少字符时通过原生 fontique 按脚本回退，涵盖英文界面中的已有 CJK / 韩文字集以及 CJK 界面中的乌克兰字母；此处不承诺任意 Unicode、emoji 或扩展汉字覆盖
+
+开发歌曲在代码中保留与现有 authoring 一致的六个固定 cue：0、8、24、40、48、60 秒，生产启动不读取 authoring JSON；`energy` 和分析段落区间尚未驱动场景，当前字幕与固定门框不等于 MusicAnalysis → StagePlan 的完整管线
+
+指定整数帧的无音频预览入口为 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG`；`FRAME` 接受 `0..=canonical_frames`，EOF 用于观察提示清空，`CODE` 必须是已支持的完整语言代码，`PRESET` 为 `low`、`medium`、`high` 或 `off`，宽高使用物理像素，`SCALE` 为 DPI 缩放；预览复用生产 cue 查询并输出 PNG 与 `CONTENT_SAMPLE` 状态，不代替音频或物理输入验收
+
+```sh
+cargo run --locked -p cocobeat-game -- --package /path/to/song-package --section-smoke 0 en-US high 1280 720 1 /path/to/section.png
+```
 
 ## 构建、发布与失败清理
 

@@ -12,6 +12,7 @@ cocobeat-core.workspace = true
 cocobeat-replay.workspace = true
 cocobeat-media.workspace = true
 bevy.workspace = true
+fontique.workspace = true
 kira.workspace = true
 winit.workspace = true
 serde.workspace = true

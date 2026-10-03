@@ -1744,6 +1744,7 @@ dependencies = [
  "cocobeat-media",
  "cocobeat-replay",
  "cocobeat-schema",
+ "fontique",
  "kira",
  "serde",
  "serde_json",

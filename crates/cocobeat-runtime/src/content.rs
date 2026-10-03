@@ -1,7 +1,7 @@
 //! Session facts and final PCM are loaded together before a song can start
 
 use crate::{audio::sound_data, dev_song};
-use cocobeat_schema::{Anchor, SongTime};
+use cocobeat_schema::{Anchor, SectionCue, SongTime};
 use kira::{Frame, sound::static_sound::StaticSoundData};
 use std::path::Path;
 
@@ -13,6 +13,7 @@ pub struct SongContent {
     pub content_id: String,
     pub end: SongTime,
     pub anchors: Vec<Anchor>,
+    pub sections: Vec<SectionCue>,
 }
 
 impl SongContent {
@@ -21,7 +22,22 @@ impl SongContent {
             content_id: CONTENT_ID.into(),
             end: SongTime::from_frames(i64::from(dev_song::FRAMES)),
             anchors: dev_song::anchors(),
+            sections: dev_song::sections(),
         }
+    }
+
+    pub fn section_cues(&self, time: SongTime) -> (Option<&SectionCue>, Option<&SectionCue>) {
+        if time < SongTime::ZERO || time >= self.end {
+            return (None, None);
+        }
+        let split = self.sections.partition_point(|cue| cue.time <= time);
+        let latest = split.checked_sub(1).map(|index| &self.sections[index]);
+        let next = self.sections.get(split).map(|first| {
+            // Validated cues sort by (time, id); preview and arrival select the same ID
+            let end = self.sections.partition_point(|cue| cue.time <= first.time);
+            &self.sections[end - 1]
+        });
+        (latest, next)
     }
 }
 
@@ -59,6 +75,7 @@ pub fn load_package(path: &Path) -> Result<(SongContent, StaticSoundData), Strin
             content_id: format!("package-blake3:{hash}"),
             end: SongTime::from_frames(package.manifest.canonical_frames as i64),
             anchors: package.chart.anchors,
+            sections: package.chart.sections,
         },
         sound_data(pcm),
     ))
@@ -96,7 +113,13 @@ mod tests {
             Self(path)
         }
 
-        fn package(&self, name: &str, ruleset_id: &str, anchor_frame: i64) -> PathBuf {
+        fn package(
+            &self,
+            name: &str,
+            ruleset_id: &str,
+            anchor_frame: i64,
+            sections: Vec<SectionCue>,
+        ) -> PathBuf {
             let destination = self.0.join(name);
             build_package(
                 self.0.join("source.ogg"),
@@ -142,7 +165,7 @@ mod tests {
                                 id: 5,
                                 song_time: SongTime::from_frames(anchor_frame),
                             }],
-                            sections: vec![],
+                            sections,
                         },
                     })
                 },
@@ -161,8 +184,8 @@ mod tests {
     #[test]
     fn package_pcm_is_exact_and_shared_while_identity_binds_the_chart() {
         let root = TestDirectory::new();
-        let first = root.package("first", RULES_ID, 1_200);
-        let second = root.package("second", RULES_ID, 2_400);
+        let first = root.package("first", RULES_ID, 1_200, vec![]);
+        let second = root.package("second", RULES_ID, 2_400, vec![]);
         let (content, sound) = load_package(&first).unwrap();
         let (other_content, other_sound) = load_package(&second).unwrap();
         assert_ne!(content.content_id, other_content.content_id);
@@ -172,6 +195,7 @@ mod tests {
         assert_eq!(content.anchors.len(), 1);
         assert_eq!(content.anchors[0].id, 5);
         assert_eq!(content.anchors[0].song_time.frames(), 1_200);
+        assert!(content.sections.is_empty());
         assert_eq!(sound.sample_rate, 48_000);
         assert_eq!(sound.frames.len(), 4_800);
         assert_eq!(sound.frames, other_sound.frames);
@@ -186,6 +210,76 @@ mod tests {
         })
         .unwrap();
         assert_eq!(offset, sound.frames.len());
+    }
+
+    #[test]
+    fn package_cues_are_preserved_and_alone_change_content_identity() {
+        let root = TestDirectory::new();
+        let sections = vec![
+            SectionCue {
+                id: 2,
+                time: SongTime::ZERO,
+                label: "雨夜\n\t{label}".into(),
+            },
+            SectionCue {
+                id: 4,
+                time: SongTime::ZERO,
+                label: " \t ".into(),
+            },
+            SectionCue {
+                id: 7,
+                time: SongTime::from_frames(4_799),
+                label: "ending".into(),
+            },
+        ];
+        let mut changed = sections.clone();
+        changed[0].label = "雨后".into();
+        let (content, sound) =
+            load_package(&root.package("cues", RULES_ID, 1_200, sections.clone())).unwrap();
+        let (other, other_sound) =
+            load_package(&root.package("changed-cues", RULES_ID, 1_200, changed.clone())).unwrap();
+        assert_eq!(content.sections, sections);
+        assert_eq!(other.sections, changed);
+        assert_eq!(content.anchors, other.anchors);
+        assert_eq!(sound.frames, other_sound.frames);
+        assert_ne!(content.content_id, other.content_id);
+    }
+
+    #[test]
+    fn section_queries_use_point_times_and_same_frame_highest_ids() {
+        let mut content = SongContent {
+            content_id: "cue-query".into(),
+            end: SongTime::from_frames(4_800),
+            anchors: vec![],
+            sections: [(4, 100), (7, 100), (9, 500), (3, 4_799), (10, 4_799)]
+                .into_iter()
+                .map(|(id, frame)| SectionCue {
+                    id,
+                    time: SongTime::from_frames(frame),
+                    label: "marker".into(),
+                })
+                .collect(),
+        };
+        for (frame, expected) in [
+            (-1, (None, None)),
+            (0, (None, Some(7))),
+            (99, (None, Some(7))),
+            (100, (Some(7), Some(9))),
+            (499, (Some(7), Some(9))),
+            (500, (Some(9), Some(10))),
+            (4_798, (Some(9), Some(10))),
+            (4_799, (Some(10), None)),
+            (4_800, (None, None)),
+            (i64::MAX, (None, None)),
+            (0, (None, Some(7))),
+            (4_799, (Some(10), None)),
+            (100, (Some(7), Some(9))),
+        ] {
+            let (latest, next) = content.section_cues(SongTime::from_frames(frame));
+            assert_eq!((latest.map(|cue| cue.id), next.map(|cue| cue.id)), expected);
+        }
+        content.sections.clear();
+        assert_eq!(content.section_cues(SongTime::ZERO), (None, None));
     }
 
     #[test]
@@ -209,7 +303,7 @@ mod tests {
         }
 
         let root = TestDirectory::new();
-        let (_, sound) = load_package(&root.package("playback", RULES_ID, 1_200)).unwrap();
+        let (_, sound) = load_package(&root.package("playback", RULES_ID, 1_200, vec![])).unwrap();
         // Kira's four-frame interpolation history can drain after the final source sample
         let maximum_frames = sound.frames.len() + 4;
         let captured = Arc::new(Mutex::new(Vec::with_capacity(maximum_frames)));
@@ -260,13 +354,13 @@ mod tests {
     #[test]
     fn invalid_packages_and_unknown_rules_cannot_return_playback_data() {
         let root = TestDirectory::new();
-        let unknown = root.package("unknown", "unknown-rules-v1", 1_200);
+        let unknown = root.package("unknown", "unknown-rules-v1", 1_200, vec![]);
         assert!(
             load_package(&unknown)
                 .unwrap_err()
                 .contains("Unsupported song ruleset")
         );
-        let corrupt = root.package("corrupt", RULES_ID, 1_200);
+        let corrupt = root.package("corrupt", RULES_ID, 1_200, vec![]);
         let mut bytes = STEREO.to_vec();
         let last = bytes.len() - 1;
         bytes[last] ^= 1;
@@ -283,6 +377,17 @@ mod tests {
         );
         assert_eq!(content.end.frames(), 3_072_000);
         assert_eq!(content.anchors, dev_song::anchors());
+        let authoring: serde_json::Value = serde_json::from_str(include_str!(
+            "../../../assets/dev/vertical_slice/authoring.json"
+        ))
+        .unwrap();
+        let authored_sections = authoring["sections"].as_array().unwrap();
+        assert_eq!(content.sections.len(), authored_sections.len());
+        for (cue, authored) in content.sections.iter().zip(authored_sections) {
+            assert_eq!(Some(cue.id), authored["id"].as_u64());
+            assert_eq!(Some(cue.time.frames()), authored["start_frame"].as_i64());
+            assert_eq!(Some(cue.label.as_str()), authored["label"].as_str());
+        }
         let sound = development_sound();
         assert_eq!(sound.sample_rate, dev_song::SAMPLE_RATE);
         assert_eq!(sound.frames.len(), dev_song::FRAMES as usize);

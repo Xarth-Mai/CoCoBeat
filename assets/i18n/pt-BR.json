@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay salvo",
   "results.replay_failed_short": "Falha ao salvar o replay",
   "hud.subtitle": "NOITE ADENTRO   /   UM DUETO NA CHUVA",
+  "hud.section_recent": "Última marca · {label}",
+  "hud.section_next": "Próxima marca · {label}",
   "hud.player_one": "P1  /  DUAS ORELHAS",
   "hud.player_two": "P2  /  UMA COROA",
   "hud.clock": "{elapsed} / {duration} S\nRESSONÂNCIA {resonance}%  /  {state}",

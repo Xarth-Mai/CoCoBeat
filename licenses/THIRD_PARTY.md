@@ -6,6 +6,7 @@
 |---|---|---|---|
 | [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI | MIT OR Apache-2.0 |
 | [kira](https://github.com/tesselode/kira) | 0.12.5 | runtime：音乐与即时反馈音频 | MIT OR Apache-2.0 |
+| [fontique](https://github.com/linebender/parley) | 0.9.0 | runtime：复用 Bevy 已解析的字体集合，为嵌入 Noto 配置原生跨脚本回退 | Apache-2.0 OR MIT |
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
@@ -39,6 +40,6 @@ MIR 原创脉冲、静默和独立字面帧号真值也使用 CC0-1.0，`mir-ons
 
 品牌的 18 条来源记录从 [assets/brand/PROVENANCE.csv](../assets/brand/PROVENANCE.csv) 原样并入资源总台账。用户提供的字标与 Symbol 参考图未附原作者信息及原始再分发授权，相关条目保留 `UNSPECIFIED_REFERENCE` 与 `unverified`；项目代码许可证与这些品牌参考图的权利信息分别记录，本轮未核验其对外再分发许可
 
-界面字体采用六份未经修改的官方 Noto Sans 字体：基础 Noto Sans 2.015 与 Noto Sans CJK 2.004 的 SC、TC、HK、JP、KR 地区字体，共覆盖首批 13 个 locale 的字体选择；逐文件来源、固定提交、SHA-256、内嵌版权和语言映射见 [字体来源清单](../assets/fonts/SOURCES.json)，六条字体记录已并入资源总台账，发行包保留原始 [Noto Sans OFL](../assets/fonts/NotoSans-OFL.txt) 与 [Noto Sans CJK OFL](../assets/fonts/NotoSansCJK-OFL.txt) 及版权声明，均使用 SIL Open Font License 1.1
+界面字体采用六份未经修改的官方 Noto Sans 字体：基础 Noto Sans 2.015 与 Noto Sans CJK 2.004 的 SC、TC、HK、JP、KR 地区字体，共覆盖首批 13 个 locale 的字体选择；保留各 locale 首选字形，缺字时在现有字集中按脚本回退，未承诺任意 Unicode；逐文件来源、固定提交、SHA-256、内嵌版权和语言映射见 [字体来源清单](../assets/fonts/SOURCES.json)，六条字体记录已并入资源总台账，发行包保留原始 [Noto Sans OFL](../assets/fonts/NotoSans-OFL.txt) 与 [Noto Sans CJK OFL](../assets/fonts/NotoSansCJK-OFL.txt) 及版权声明，均使用 SIL Open Font License 1.1
 
 语言选择器的 13 组旗帜来自 [flag-icons v7.5.0](https://github.com/lipis/flag-icons/releases/tag/v7.5.0)，原始 4:3 SVG 与派生 96×72 PNG 的 26 条记录已并入资源总台账；固定提交、原件和派生文件 SHA-256、导出方式见 [旗帜来源清单](../assets/flags/SOURCES.json)，发行包保留上游 [MIT 许可和版权声明](../assets/flags/LICENSE)，这些资源不新增游戏运行时依赖

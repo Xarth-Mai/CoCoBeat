@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Replay 保存済み",
   "results.replay_failed_short": "Replay 保存失敗",
   "hud.subtitle": "夜更けに   /   雨の中のデュエット",
+  "hud.section_recent": "直近の目印 · {label}",
+  "hud.section_next": "次の目印 · {label}",
   "hud.player_one": "P1  /  ふたつの耳",
   "hud.player_two": "P2  /  ひとつの王冠",
   "hud.clock": "{elapsed} / {duration} 秒\nResonance {resonance}%  /  {state}",

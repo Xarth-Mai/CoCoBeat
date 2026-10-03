@@ -69,6 +69,8 @@
   "results.replay_saved_short": "Повтор збережено",
   "results.replay_failed_short": "Не вдалося зберегти повтор",
   "hud.subtitle": "ПІСЛЯ ЗАКРИТТЯ   /   ДУЕТ ПІД ДОЩЕМ",
+  "hud.section_recent": "Остання позначка · {label}",
+  "hud.section_next": "Наступна позначка · {label}",
   "hud.player_one": "P1  /  ДВА ВУХА",
   "hud.player_two": "P2  /  ОДНА КОРОНА",
   "hud.clock": "{elapsed} / {duration} СЕК\nRESONANCE {resonance}%  /  {state}",
