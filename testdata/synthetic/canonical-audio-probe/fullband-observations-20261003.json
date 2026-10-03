@@ -1,0 +1,1681 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-03",
+  "status": "PASS_FIXED_STRUCTURE_WITH_QUALITY_LIMITS_NOT_ADMITTED",
+  "source_revision": "e1b3a261f1e4866dc377680f846225e75cf9b670",
+  "scope": "q10/Q_SCALE30/max-abs coupling; only long residue end changes 1760 to 2048; original guard unchanged",
+  "metrics_contract": "Frame0 same-position, no shift, gain fit, clipping or normalization; bands are summed unwindowed <=1s block DFT energies, rows below/above 20625Hz; channels L/R",
+  "matrix": {
+    "inputs": 19,
+    "encoded_variants": 34,
+    "expected_guard_rejections": 4,
+    "original_10_baseline_oggs_byte_identical": true,
+    "host": "x86_64 Linux",
+    "encode_decode_limits": {
+      "seconds": 30,
+      "address_space_bytes": 2147483648
+    }
+  },
+  "findings": [
+    "Only long residue end changes 1760->2048; source domain guard, q10, Q_SCALE30, coupling, floor and windows unchanged",
+    "64-second original whole SNR increases 0.05293/0.05574dB but its 7-8second blocks regress 0.00707/0.00829dB; all negative block deltas retained",
+    "Low-frequency quiet whole worst regression is -0.0000898401dB; near-full, swapped and edge-silence also contain negative whole deltas",
+    "Near-full right over-unity sample count rises 2196->2197 without clipping; structural PASS is not quality acceptance",
+    "600-second non-silent right tail SNR improves 0.02355->17.40881dB; 64-second music final2048 SNR remains 13.44752/12.90092dB",
+    "Finite-only diagnostics are not combined with this patch; both source-valid resampling overshoot inputs remain unsupported by both guarded variants",
+    "All encoding and decoding commands remain within existing limits; resource figures include harness inherited RSS and are not a cross-batch ranking"
+  ],
+  "not_run": [
+    "human listening",
+    "native other platforms",
+    "seek",
+    "production admission",
+    "finite-only fullband encoding"
+  ],
+  "binary_sha256": {
+    "baseline": "7c7e961de7496b57f6ade9ae794c27824114e482da86cd6bb738e99a3625563c",
+    "fullband": "6ff1bda53a0ac2eb4209cb9dedb908d1f9ae127cc4f1bc6da98990e9eea60b62"
+  },
+  "strict_reader_sha256": "ae3f4ce3172cbed7b036965782970c90adf47388dcfb1541ac235a65f6a88eac",
+  "executed_probe_sha256": "f2ec5076e246e6b3bcc3f9579bd3340e3f4b010dc94b22d1bbbbc0b54493b3a1",
+  "reviewed_probe_sha256": "12cbd79f4213a439e2430e8b80dfa1956ecebd326ba76a3e50ba67192ef36194",
+  "next_choice": "Retain as experimental fullband variant for broader fixed licensed music/listening and native-platform regression; do not raise quality acceptance or remove input guard",
+  "frozen_evidence": {
+    "path": "target/fullband-regression-20261003/FROZEN.json",
+    "sha256": "09c3f20472f3ef52df8abc60b827010a73d8dd30328a0103408293db1e7fca18",
+    "summary_path": "target/fullband-regression-20261003/summary.json",
+    "summary_sha256": "dae7deed929beec4f5bd1f22db890228b31f2438a8871b5609d064026e4562a8"
+  },
+  "references": {
+    "target/codec-transient-20261003/FROZEN.json": "b71111c6d994eabcffbce23924a5beeb0eba196229e73b11f85acf536e0e69cf",
+    "target/resample-l1-domain-20261003/FROZEN.json": "3a89feec13c3062d1615172f3e5579b65d07c0d4e7f3c6d8e34feb23df4c7c2c",
+    "target/media-finite-domain-final-20261003/FROZEN.json": "e2a7a80c607ab1f6aa491827542368ad87738d15d7b95bfb550ece1c3de8a511",
+    "target/rusty-candidate-q10-20261003/FROZEN.json": "dde5fa71567e128b9addc441fe83233990ca1769956a222268c9036f454db5a5"
+  },
+  "cases": [
+    {
+      "name": "long-600s",
+      "frames": 28800000,
+      "source": "target/rusty-candidate-q10-20261003/long-600s/input.f32le",
+      "source_sha256": "6e2e8df69433d8c2d8415706473ea89d8ef95be2976ac85caff3d1886e1f6642",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.921618056676095,
+            0.02355174879423114
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            0.27774477005004883
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 2298366,
+          "dual_decoder_max_abs_difference": 4.470348358154297e-08,
+          "head_tail_snr_db": [
+            [
+              29.47769179747546,
+              null
+            ],
+            [
+              29.237543241230497,
+              0.02355174879423114
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 2.8447864140034653,
+          "maximum_recorded_rss_kib": 235112
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.921618067319756,
+            17.408806649993885
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            0.89924556016922
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 2354725,
+          "dual_decoder_max_abs_difference": 1.7881393432617188e-07,
+          "head_tail_snr_db": [
+            [
+              29.47769179747546,
+              null
+            ],
+            [
+              29.237670889277165,
+              17.408806649993885
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 2.9613308889965992,
+          "maximum_recorded_rss_kib": 234864
+        }
+      },
+      "snr_delta_db": [
+        1.0643660175446712e-08,
+        17.385254901199655
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 600,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 0.0
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 28752000,
+            "frames": 48000,
+            "snr_delta_db": 17.385254901199655
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "dev-song-64s",
+      "frames": 3072000,
+      "source": "target/rusty-candidate-q10-20261003/dev-song-64s/input.f32le",
+      "source_sha256": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            28.023081946577836,
+            28.038585519664323
+          ],
+          "decoded_peak": [
+            0.2939924895763397,
+            0.26985570788383484
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 1101424,
+          "dual_decoder_max_abs_difference": 7.450580596923828e-08,
+          "head_tail_snr_db": [
+            [
+              28.55021058313158,
+              29.318720910383682
+            ],
+            [
+              13.447518601379684,
+              12.900918825737975
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.39590596400375944,
+          "maximum_recorded_rss_kib": 62396
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            28.07601328949096,
+            28.094326270721297
+          ],
+          "decoded_peak": [
+            0.29476863145828247,
+            0.2712414562702179
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 1156474,
+          "dual_decoder_max_abs_difference": 8.940696716308594e-08,
+          "head_tail_snr_db": [
+            [
+              28.550213760233962,
+              29.318723997433445
+            ],
+            [
+              13.447518601379684,
+              12.900918825737975
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.4119371419947129,
+          "maximum_recorded_rss_kib": 65000
+        }
+      },
+      "snr_delta_db": [
+        0.05293134291312285,
+        0.05574075105697318
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 56,
+          "worst": {
+            "start_frame": 336000,
+            "frames": 48000,
+            "snr_delta_db": -0.007074473763264422
+          },
+          "regressions": [
+            {
+              "start_frame": 336000,
+              "frames": 48000,
+              "snr_delta_db": -0.007074473763264422
+            }
+          ]
+        },
+        {
+          "comparable_blocks": 56,
+          "worst": {
+            "start_frame": 336000,
+            "frames": 48000,
+            "snr_delta_db": -0.008293812143001844
+          },
+          "regressions": [
+            {
+              "start_frame": 336000,
+              "frames": 48000,
+              "snr_delta_db": -0.008293812143001844
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "short-1",
+      "frames": 1,
+      "source": "target/rusty-candidate-q10-20261003/short-1/input.f32le",
+      "source_sha256": "218d7d84576380b6d3620172c18391242f92c3fcabb25123b6421c3a7eb35b3e",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            null,
+            15.833230234323707
+          ],
+          "decoded_peak": [
+            0.0,
+            0.6288287043571472
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 5030,
+          "dual_decoder_max_abs_difference": 0.0,
+          "head_tail_snr_db": [
+            [
+              null,
+              15.833230234323707
+            ],
+            [
+              null,
+              15.833230234323707
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.04207662299450021,
+          "maximum_recorded_rss_kib": 66376
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            null,
+            32.73461424954158
+          ],
+          "decoded_peak": [
+            0.0,
+            0.7326886653900146
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 5119,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              32.73461424954158
+            ],
+            [
+              null,
+              32.73461424954158
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.0408823680045316,
+          "maximum_recorded_rss_kib": 66500
+        }
+      },
+      "snr_delta_db": [
+        null,
+        16.90138401521787
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 0,
+          "worst": null,
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 1,
+            "snr_delta_db": 16.90138401521787
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "short-1024",
+      "frames": 1024,
+      "source": "target/rusty-candidate-q10-20261003/short-1024/input.f32le",
+      "source_sha256": "0c1c527685e4d52977630c5311ff4fdce8e55e3dc673b717fcac4c0d96452adf",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            28.755696776475332,
+            0.041274849797558605
+          ],
+          "decoded_peak": [
+            0.13203051686286926,
+            0.37038111686706543
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 5776,
+          "dual_decoder_max_abs_difference": 4.470348358154297e-08,
+          "head_tail_snr_db": [
+            [
+              28.755696776475332,
+              0.041274849797558605
+            ],
+            [
+              28.755696776475332,
+              0.041274849797558605
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.0413538559951121,
+          "maximum_recorded_rss_kib": 66384
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            28.783898333928786,
+            15.716766734054255
+          ],
+          "decoded_peak": [
+            0.132048100233078,
+            1.0124460458755493
+          ],
+          "decoded_over_unity": [
+            0,
+            2
+          ],
+          "ogg_bytes": 5914,
+          "dual_decoder_max_abs_difference": 1.1920928955078125e-07,
+          "head_tail_snr_db": [
+            [
+              28.783898333928786,
+              15.716766734054255
+            ],
+            [
+              28.783898333928786,
+              15.716766734054255
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04191926300700288,
+          "maximum_recorded_rss_kib": 66504
+        }
+      },
+      "snr_delta_db": [
+        0.02820155745345332,
+        15.675491884256697
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 1024,
+            "snr_delta_db": 0.02820155745345332
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 1024,
+            "snr_delta_db": 15.675491884256697
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "short-1025",
+      "frames": 1025,
+      "source": "target/rusty-candidate-q10-20261003/short-1025/input.f32le",
+      "source_sha256": "ef6d3d47180447ec8ae00de47060ce9196b0a1a76d7693791477b3fb52a1d466",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            27.159074748280414,
+            0.03057523880506525
+          ],
+          "decoded_peak": [
+            0.13212385773658752,
+            0.28720295429229736
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 5838,
+          "dual_decoder_max_abs_difference": 3.725290298461914e-08,
+          "head_tail_snr_db": [
+            [
+              27.159074748280414,
+              0.03057523880506525
+            ],
+            [
+              27.159074748280414,
+              0.03057523880506525
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.0419353739998769,
+          "maximum_recorded_rss_kib": 66520
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            27.188444799766735,
+            17.913344876291056
+          ],
+          "decoded_peak": [
+            0.1315476894378662,
+            0.9001997709274292
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 5963,
+          "dual_decoder_max_abs_difference": 1.1920928955078125e-07,
+          "head_tail_snr_db": [
+            [
+              27.188444799766735,
+              17.913344876291056
+            ],
+            [
+              27.188444799766735,
+              17.913344876291056
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.043158508007763885,
+          "maximum_recorded_rss_kib": 66404
+        }
+      },
+      "snr_delta_db": [
+        0.029370051486321103,
+        17.882769637485993
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 1025,
+            "snr_delta_db": 0.029370051486321103
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 1025,
+            "snr_delta_db": 17.882769637485993
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "short-48128",
+      "frames": 48128,
+      "source": "target/rusty-candidate-q10-20261003/short-48128/input.f32le",
+      "source_sha256": "120eb77bb481f841be92b917d030beecb245dff2ad2f28e167df2616bee8f25c",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.07759544560016,
+            0.039512098118572855
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            0.380912721157074
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 9802,
+          "dual_decoder_max_abs_difference": 4.470348358154297e-08,
+          "head_tail_snr_db": [
+            [
+              29.47769179747546,
+              null
+            ],
+            [
+              27.74663381358733,
+              0.039512098118572855
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.04285735001030844,
+          "maximum_recorded_rss_kib": 66404
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.078837907115506,
+            15.631256788053676
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            1.0378048419952393
+          ],
+          "decoded_over_unity": [
+            0,
+            2
+          ],
+          "ogg_bytes": 10016,
+          "dual_decoder_max_abs_difference": 1.1920928955078125e-07,
+          "head_tail_snr_db": [
+            [
+              29.47769179747546,
+              null
+            ],
+            [
+              27.763866288760653,
+              15.631256788053676
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04219817199918907,
+          "maximum_recorded_rss_kib": 66420
+        }
+      },
+      "snr_delta_db": [
+        0.0012424615153463492,
+        15.591744689935103
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 2,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -0.00019080384664960093
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -0.00019080384664960093
+            }
+          ]
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 48000,
+            "frames": 128,
+            "snr_delta_db": 17.604976568251814
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "near-full",
+      "frames": 48000,
+      "source": "target/rusty-candidate-q10-20261003/near-full/input.f32le",
+      "source_sha256": "a607b99dbcc7b03e3b5f496466e8f15ed078e1fc864b96be7143996f3600027b",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.091832599619835,
+            30.880269960874255
+          ],
+          "decoded_peak": [
+            1.07511305809021,
+            1.0524215698242188
+          ],
+          "decoded_over_unity": [
+            1755,
+            2196
+          ],
+          "ogg_bytes": 10023,
+          "dual_decoder_max_abs_difference": 4.172325134277344e-07,
+          "head_tail_snr_db": [
+            [
+              32.59276943107072,
+              31.738918149381274
+            ],
+            [
+              29.456703603997102,
+              28.888703221484093
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.042718320997664705,
+          "maximum_recorded_rss_kib": 66540
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.091859329468825,
+            30.880243450736295
+          ],
+          "decoded_peak": [
+            1.07511305809021,
+            1.0525490045547485
+          ],
+          "decoded_over_unity": [
+            1755,
+            2197
+          ],
+          "ogg_bytes": 10186,
+          "dual_decoder_max_abs_difference": 4.172325134277344e-07,
+          "head_tail_snr_db": [
+            [
+              32.59394661959223,
+              31.735774782679393
+            ],
+            [
+              29.45681266355635,
+              28.889940205331946
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04270857998926658,
+          "maximum_recorded_rss_kib": 66432
+        }
+      },
+      "snr_delta_db": [
+        2.6729848990214577e-05,
+        -2.651013796040047e-05
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 2.6729848990214577e-05
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -2.651013796040047e-05
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -2.651013796040047e-05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pulse-1s",
+      "frames": 48000,
+      "source": "target/rusty-candidate-q10-20261003/pulse-1s/input.f32le",
+      "source_sha256": "42eac834323e797ae2e41c0cfd25e3bc1f6880cd04926e92fccdf8f3fa0fc843",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.02163151388757,
+            26.904963013101604
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            0.49423205852508545
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 9441,
+          "dual_decoder_max_abs_difference": 8.940696716308594e-08,
+          "head_tail_snr_db": [
+            [
+              27.683325091943992,
+              29.22353112993261
+            ],
+            [
+              28.743504301131363,
+              25.401487043909647
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.042960780003340915,
+          "maximum_recorded_rss_kib": 66436
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.021641482944872,
+            26.904963013101604
+          ],
+          "decoded_peak": [
+            0.13425269722938538,
+            0.49423205852508545
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 9572,
+          "dual_decoder_max_abs_difference": 8.940696716308594e-08,
+          "head_tail_snr_db": [
+            [
+              27.683325091943992,
+              29.22353112993261
+            ],
+            [
+              28.74367809019732,
+              25.401487043909647
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042643451000913046,
+          "maximum_recorded_rss_kib": 66440
+        }
+      },
+      "snr_delta_db": [
+        9.96905730232811e-06,
+        0.0
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 9.96905730232811e-06
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 0.0
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "silence-1s",
+      "frames": 48000,
+      "source": "target/rusty-candidate-q10-20261003/silence-1s/input.f32le",
+      "source_sha256": "fec9afb531a8e036eba1d81651896e1b2c1f78b0234dbadc8e7549563f09407b",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            null,
+            null
+          ],
+          "decoded_peak": [
+            0.0,
+            0.0
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 7009,
+          "dual_decoder_max_abs_difference": 0.0,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.04274221099331044,
+          "maximum_recorded_rss_kib": 66444
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            null,
+            null
+          ],
+          "decoded_peak": [
+            0.0,
+            0.0
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 7105,
+          "dual_decoder_max_abs_difference": 0.0,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042228951992001384,
+          "maximum_recorded_rss_kib": 66448
+        }
+      },
+      "snr_delta_db": [
+        null,
+        null
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 0,
+          "worst": null,
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 0,
+          "worst": null,
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "edge-silence-3s",
+      "frames": 144000,
+      "source": "target/rusty-candidate-q10-20261003/edge-silence-3s/input.f32le",
+      "source_sha256": "d14d028249d42152b7d1233f623b17f5600dd520f28aee10749c50ca57aeb475",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.22766430739289,
+            30.913255727152162
+          ],
+          "decoded_peak": [
+            0.13417571783065796,
+            0.1376367211341858
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 19402,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "prior_frozen_ogg_identical": true,
+          "maximum_command_elapsed_seconds": 0.04373837499588262,
+          "maximum_recorded_rss_kib": 66456
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.227662562196286,
+            30.913272271315456
+          ],
+          "decoded_peak": [
+            0.13417571783065796,
+            0.1376236230134964
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 19771,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04335784800059628,
+          "maximum_recorded_rss_kib": 66460
+        }
+      },
+      "snr_delta_db": [
+        -1.7451966023429577e-06,
+        1.654416329444075e-05
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 3,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -7.863851756439999e-06
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -7.863851756439999e-06
+            }
+          ]
+        },
+        {
+          "comparable_blocks": 3,
+          "worst": {
+            "start_frame": 48000,
+            "frames": 48000,
+            "snr_delta_db": 0.0
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "quiet",
+      "frames": 48000,
+      "source": "target/rusty-quality-diagnosis/patched-quiet-q10/input.f32le",
+      "source_sha256": "942050ef7e8b9d4704523cbd6c32028900a63d005a0964625033e4a40f9978b1",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.485242448774788,
+            30.960714757608372
+          ],
+          "decoded_peak": [
+            0.13751114904880524,
+            0.13527105748653412
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 9993,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              27.098881144966196,
+              27.924133386631816
+            ],
+            [
+              29.281321181590236,
+              30.739727676183122
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04267008999886457,
+          "maximum_recorded_rss_kib": 66540
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            29.48520222847037,
+            30.96062491752331
+          ],
+          "decoded_peak": [
+            0.13751955330371857,
+            0.1352747231721878
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 10153,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              27.098608315871036,
+              27.923932378334015
+            ],
+            [
+              29.280873844743923,
+              30.738108427243894
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04273381999519188,
+          "maximum_recorded_rss_kib": 66580
+        }
+      },
+      "snr_delta_db": [
+        -4.0220304416749286e-05,
+        -8.984008506018881e-05
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -4.0220304416749286e-05
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -4.0220304416749286e-05
+            }
+          ]
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -8.984008506018881e-05
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -8.984008506018881e-05
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "swapped",
+      "frames": 48000,
+      "source": "target/rusty-quality-diagnosis/patched-swapped-q10/input.f32le",
+      "source_sha256": "3bbf5f5fcb66787bca2d4f24961c7ec33f6ded2ed759c6226e6d045523275701",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.87851401283444,
+            29.09182845986882
+          ],
+          "decoded_peak": [
+            1.0524215698242188,
+            1.07511305809021
+          ],
+          "decoded_over_unity": [
+            2198,
+            1754
+          ],
+          "ogg_bytes": 10010,
+          "dual_decoder_max_abs_difference": 4.172325134277344e-07,
+          "head_tail_snr_db": [
+            [
+              31.68915122676847,
+              32.59276943107072
+            ],
+            [
+              28.888750515378213,
+              29.45670061012606
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04242860099475365,
+          "maximum_recorded_rss_kib": 66616
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.878492074551787,
+            29.091855188639745
+          ],
+          "decoded_peak": [
+            1.0525490045547485,
+            1.07511305809021
+          ],
+          "decoded_over_unity": [
+            2199,
+            1754
+          ],
+          "ogg_bytes": 10173,
+          "dual_decoder_max_abs_difference": 4.172325134277344e-07,
+          "head_tail_snr_db": [
+            [
+              31.68617266648387,
+              32.59394661959223
+            ],
+            [
+              28.889987512698596,
+              29.456809642822886
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.0425954110105522,
+          "maximum_recorded_rss_kib": 66664
+        }
+      },
+      "snr_delta_db": [
+        -2.1938282653621854e-05,
+        2.672877092280146e-05
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": -2.1938282653621854e-05
+          },
+          "regressions": [
+            {
+              "start_frame": 0,
+              "frames": 48000,
+              "snr_delta_db": -2.1938282653621854e-05
+            }
+          ]
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 2.672877092280146e-05
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "correlated",
+      "frames": 48000,
+      "source": "target/rusty-quality-diagnosis/patched-correlated-q10/input.f32le",
+      "source_sha256": "3364f5d39077cc0434e95ccd42d8ca527f33c15b36b7d17983b8dae4561d9657",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.06854546577193,
+            30.06854546577193
+          ],
+          "decoded_peak": [
+            1.0517827272415161,
+            1.0517827272415161
+          ],
+          "decoded_over_unity": [
+            1623,
+            1623
+          ],
+          "ogg_bytes": 9172,
+          "dual_decoder_max_abs_difference": 3.5762786865234375e-07,
+          "head_tail_snr_db": [
+            [
+              33.13743750503952,
+              33.13743750503952
+            ],
+            [
+              30.952762741216215,
+              30.952762741216215
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042763189994730055,
+          "maximum_recorded_rss_kib": 66704
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            30.068554873071886,
+            30.068554873071886
+          ],
+          "decoded_peak": [
+            1.0517827272415161,
+            1.0517827272415161
+          ],
+          "decoded_over_unity": [
+            1623,
+            1623
+          ],
+          "ogg_bytes": 9292,
+          "dual_decoder_max_abs_difference": 3.5762786865234375e-07,
+          "head_tail_snr_db": [
+            [
+              33.13743750503952,
+              33.13743750503952
+            ],
+            [
+              30.953032560277624,
+              30.953032560277624
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042887949995929375,
+          "maximum_recorded_rss_kib": 66752
+        }
+      },
+      "snr_delta_db": [
+        9.407299955910275e-06,
+        9.407299955910275e-06
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 9.407299955910275e-06
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 9.407299955910275e-06
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "opposed",
+      "frames": 48000,
+      "source": "target/rusty-quality-diagnosis/patched-opposed-q10/input.f32le",
+      "source_sha256": "5f6dc42b8e6d1707209b1a67a505dd196ead94e05555a5385424c1e4de0baf4c",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            24.86619604279914,
+            30.043468656047274
+          ],
+          "decoded_peak": [
+            1.111608624458313,
+            1.0543867349624634
+          ],
+          "decoded_over_unity": [
+            2343,
+            1613
+          ],
+          "ogg_bytes": 10298,
+          "dual_decoder_max_abs_difference": 3.5762786865234375e-07,
+          "head_tail_snr_db": [
+            [
+              27.251569229713514,
+              33.41391176672777
+            ],
+            [
+              25.010986540768872,
+              30.91884840428026
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042384742002468556,
+          "maximum_recorded_rss_kib": 66796
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            24.86619604279914,
+            30.04349267553433
+          ],
+          "decoded_peak": [
+            1.111608624458313,
+            1.0543867349624634
+          ],
+          "decoded_over_unity": [
+            2343,
+            1613
+          ],
+          "ogg_bytes": 10499,
+          "dual_decoder_max_abs_difference": 3.5762786865234375e-07,
+          "head_tail_snr_db": [
+            [
+              27.251569229713514,
+              33.4143874486835
+            ],
+            [
+              25.010986540768872,
+              30.919268395977223
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.0432328780007083,
+          "maximum_recorded_rss_kib": 66832
+        }
+      },
+      "snr_delta_db": [
+        0.0,
+        2.4019487057103106e-05
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 0.0
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 2.4019487057103106e-05
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "head-tail-impulses",
+      "frames": 48000,
+      "source": "target/fullband-regression-20261003/head-tail.f32le",
+      "source_sha256": "4a1294c97901bf53b5b852a31163b725834c823cdfde27011a28d52ba5356fa8",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            10.198428914408407,
+            10.30376486544504
+          ],
+          "decoded_peak": [
+            0.6297435164451599,
+            0.6731487512588501
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 9838,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              10.301807359116907,
+              9.38863480351585
+            ],
+            [
+              9.974450184527353,
+              10.781896238347615
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.042540191003354266,
+          "maximum_recorded_rss_kib": 66888
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            18.374280762046478,
+            16.86633440441567
+          ],
+          "decoded_peak": [
+            0.7362502813339233,
+            0.7813650369644165
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 10354,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              19.150868455041955,
+              13.708067915171753
+            ],
+            [
+              17.01210121680923,
+              19.666819882339645
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04244885100342799,
+          "maximum_recorded_rss_kib": 66932
+        }
+      },
+      "snr_delta_db": [
+        8.175851847638071,
+        6.5625695389706316
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 8.175851847638071
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 6.5625695389706316
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "resample-44100-control",
+      "frames": 48000,
+      "source": "target/resample-l1-domain-20261003/44100-control025/source.wav",
+      "source_sha256": "b53fde6af5be8b0febd0e230db9c6084f775a36cd384b1947d18bfc197b1b7da",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            4.373331326759064,
+            4.507239202194258
+          ],
+          "decoded_peak": [
+            0.6049637198448181,
+            0.6343405246734619
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 8571,
+          "dual_decoder_max_abs_difference": 1.1920928955078125e-07,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04254620100255124,
+          "maximum_recorded_rss_kib": 66960
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            14.757604132159194,
+            16.600142372377242
+          ],
+          "decoded_peak": [
+            0.6706327199935913,
+            0.6999325752258301
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 8739,
+          "dual_decoder_max_abs_difference": 5.960464477539063e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04307346900168341,
+          "maximum_recorded_rss_kib": 67012
+        }
+      },
+      "snr_delta_db": [
+        10.38427280540013,
+        12.092903170182984
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 10.38427280540013
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 12.092903170182984
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "resample-44100-overunity",
+      "frames": 4800,
+      "source": "target/media-finite-domain-final-20261003/step-44100/source.wav",
+      "source_sha256": "1b0b039cc79ef3c89be54e40758cddaa12be52dfad952ffe69d647f14d478206",
+      "variants": {
+        "baseline": {
+          "status": "PASS_GUARD_REJECTION",
+          "error": "candidate unsupported input domain: resampled PCM must be finite and in [-1, 1] per rusty_vorbis::push_pcm_f32; no normalization or clipping applied",
+          "maximum_command_elapsed_seconds": 0.007513446005759761,
+          "maximum_recorded_rss_kib": 67048
+        },
+        "fullband": {
+          "status": "PASS_GUARD_REJECTION",
+          "error": "candidate unsupported input domain: resampled PCM must be finite and in [-1, 1] per rusty_vorbis::push_pcm_f32; no normalization or clipping applied",
+          "maximum_command_elapsed_seconds": 0.006742969999322668,
+          "maximum_recorded_rss_kib": 67052
+        }
+      }
+    },
+    {
+      "name": "resample-96000-control",
+      "frames": 48000,
+      "source": "target/resample-l1-domain-20261003/96000-control025/source.wav",
+      "source_sha256": "788a2c7832c7eb28189da039e8bd54d77ed818b767b81ba1f9f94a5079dc813a",
+      "variants": {
+        "baseline": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            1.2889177131105547,
+            1.3679338850156055
+          ],
+          "decoded_peak": [
+            0.32425713539123535,
+            0.41358131170272827
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 8455,
+          "dual_decoder_max_abs_difference": 2.9802322387695312e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.043551547001698054,
+          "maximum_recorded_rss_kib": 67068
+        },
+        "fullband": {
+          "status": "PASS_STRUCTURAL",
+          "snr_db": [
+            10.598003536496192,
+            12.24223168893339
+          ],
+          "decoded_peak": [
+            0.5010519027709961,
+            0.5974681377410889
+          ],
+          "decoded_over_unity": [
+            0,
+            0
+          ],
+          "ogg_bytes": 8694,
+          "dual_decoder_max_abs_difference": 4.470348358154297e-08,
+          "head_tail_snr_db": [
+            [
+              null,
+              null
+            ],
+            [
+              null,
+              null
+            ]
+          ],
+          "maximum_command_elapsed_seconds": 0.04348968701378908,
+          "maximum_recorded_rss_kib": 67108
+        }
+      },
+      "snr_delta_db": [
+        9.309085823385637,
+        10.874297803917784
+      ],
+      "per_channel_block_changes": [
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 9.309085823385637
+          },
+          "regressions": []
+        },
+        {
+          "comparable_blocks": 1,
+          "worst": {
+            "start_frame": 0,
+            "frames": 48000,
+            "snr_delta_db": 10.874297803917784
+          },
+          "regressions": []
+        }
+      ]
+    },
+    {
+      "name": "resample-96000-overunity",
+      "frames": 4800,
+      "source": "target/media-finite-domain-final-20261003/step-96000/source.wav",
+      "source_sha256": "3db86b3561e1049d53ad85962274c97a0ef251b42a3b974883623479f81063d3",
+      "variants": {
+        "baseline": {
+          "status": "PASS_GUARD_REJECTION",
+          "error": "candidate unsupported input domain: resampled PCM must be finite and in [-1, 1] per rusty_vorbis::push_pcm_f32; no normalization or clipping applied",
+          "maximum_command_elapsed_seconds": 0.00783647499338258,
+          "maximum_recorded_rss_kib": 67140
+        },
+        "fullband": {
+          "status": "PASS_GUARD_REJECTION",
+          "error": "candidate unsupported input domain: resampled PCM must be finite and in [-1, 1] per rusty_vorbis::push_pcm_f32; no normalization or clipping applied",
+          "maximum_command_elapsed_seconds": 0.006574171013198793,
+          "maximum_recorded_rss_kib": 67140
+        }
+      }
+    }
+  ],
+  "validation": {
+    "metric_self_check": "PASS",
+    "malformed_case_failure_preserved": "PASS",
+    "wrong_expected_length_strictly_rejected": "PASS",
+    "independent_review": "Lean already. Ship.",
+    "review_path": "target/fullband-regression-20261003/independent-review.json",
+    "review_sha256": "64c15c30775a26d0f341f2ca3b4944bd6e8f5a24a386de054c24ec0442994851"
+  }
+}

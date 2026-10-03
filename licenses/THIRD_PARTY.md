@@ -9,6 +9,7 @@
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 源解码 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
+| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：已准备的最终音频对象字节身份，复用既有解析版本 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
 | [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化 | MIT OR Apache-2.0 |
 | [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
 | [winit](https://github.com/rust-windowing/winit) | 0.30.13 | runtime：窗口图标，复用 Bevy 已启用的平台功能 | Apache-2.0 |
@@ -19,7 +20,7 @@
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
-独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的五个工具包、`tools/mir-onset-probe/`、`tools/mir-onset-diagnostic/` 与 `tools/mir-spectral-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 88 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，三个 MIR 工具分别解析相同的 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，谱候选另将已有的 Apache-2.0 `oxifft 0.4.2` 列为直接依赖并开启 `std`、`streaming`，第三方包版本集合不变；产品未启用该分析库，该研究台账不扩充产品 Cargo.lock 或发行组件清单
+独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的五个工具包、`tools/mir-onset-probe/`、`tools/mir-onset-diagnostic/`、`tools/mir-spectral-probe/` 与 `tools/mir-flux-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 88 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，四个 MIR 工具分别解析相同的 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，谱候选另将已有的 Apache-2.0 `oxifft 0.4.2` 列为直接依赖并开启 `std`、`streaming`，第三方包版本集合不变；产品未启用该分析库，该研究台账不扩充产品 Cargo.lock 或发行组件清单
 
 `cocobeat-rusty-candidate` 的独立闭包包含 64 个 registry 包和一个 patched vendor。`rusty_vorbis 0.1.1` 的 name/version 台账记录许可元数据，其发布版与修补版的代码身份分别保存；候选 vendor 从官方 crate archive 提取，仅修改 `forward_couple`，完整 Apache-2.0 LICENSE、原 README 与上游说明保留，来源、14 个文件身份与唯一补丁见 [UPSTREAM.md](../tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md)。该副本用于复现编码候选，未进入产品或游戏发行包
 
@@ -29,7 +30,9 @@ CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`�
 
 原创开发音乐、Anchor、独立事件帧标注、反馈音、探针脉冲与品牌落点合成音的来源见 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，这些生成资源使用 CC0-1.0，生成器源代码使用 MPL-2.0。`source_hash` 使用 SHA-256，反馈音、探针脉冲与品牌落点生成器条目记录源码哈希，其他条目记录资源文件哈希；听感人工验收与真实设备音频验收均为 NOT RUN
 
-MIR 原创脉冲、静默和独立字面帧号真值也使用 CC0-1.0，`mir-onset-clean-v1` 记录生成器源码哈希，源码使用 MPL-2.0；后续 `mir-onset-holdout-v1` 记录相位扫描、短尾、持续音与固定种子噪声的生成器身份，`mir-spectral-frequency-check-v1` 记录原创 1500 Hz 与 7500 Hz 同能量正弦的频谱自检生成器身份，PCM 和构造标签同为 CC0-1.0；这些标签表示构造攻击的位置，不能作为 beat 或人工 Anchor 标签
+MIR 原创脉冲、静默和独立字面帧号真值也使用 CC0-1.0，`mir-onset-clean-v1` 记录生成器源码哈希，源码使用 MPL-2.0；后续 `mir-onset-holdout-v1` 记录相位扫描、短尾、持续音与固定种子噪声的生成器身份，`mir-spectral-frequency-check-v1` 记录原创 1500 Hz 与 7500 Hz 同能量正弦的频谱自检生成器身份，`mir-flux-declared-controls-v1` 记录预先声明的静默后起音、等能量换音、稀疏打击与连续渐变生成器身份，PCM 和构造标签同为 CC0-1.0；这些标签表示构造攻击的位置，不能作为 beat 或人工 Anchor 标签
+
+全频带诊断的 `canonical-fullband-controls-v1` 记录低音量、声道对称与边界脉冲生成器的源码哈希；生成 PCM 使用 CC0-1.0，脚本使用 MPL-2.0，复用的旧样本保留原来源，不作为听感或生产准入证据
 
 源导入回归的 `mono.mp3`、`mono.ogg` 与 `stereo-canonical.ogg` 均是原创 CC0-1.0 合成正弦，资源台账记录各文件 SHA-256，精确生成命令见 [样本说明](../testdata/synthetic/media-import/README.md)；FFmpeg 及其编码器仅用于开发期生成独立样本，不进入测试执行环境或产品依赖
 

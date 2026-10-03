@@ -1,0 +1,222 @@
+{
+  "date": "2026-10-03",
+  "stage": "DECLARED_BEFORE_FIRST_GENERATION_OR_DETECTION",
+  "fixture_license": "CC0-1.0",
+  "generator_source_license": "MPL-2.0",
+  "sample_rate": 48000,
+  "channels": 1,
+  "comparison": {
+    "algorithms": [
+      "onset_strength::HfcEnergy",
+      "onset_strength::SpectralFlux"
+    ],
+    "window_frames": 128,
+    "hop_frames": 64,
+    "window": "native oxifft Hamming",
+    "spectrum": "one-sided magnitude bins0..=N/2",
+    "threshold_factor": 1.5,
+    "picking": "native one-shot pick_onsets, no vendor change",
+    "coordinates": "actual real PCM support center, same as frozen mir-spectral-probe",
+    "time_origin": "original PCM frame0; no padding, cropping, prediction translation or truth-driven parameters"
+  },
+  "fixed_previous_inputs": {
+    "original_cases": 10,
+    "holdout_cases": 8,
+    "clean_source": "target/mir-onset-probe-20261003",
+    "control_source": "target/mir-timing-20261003/results-v2",
+    "prior_hfc_reference": "target/mir-spectral-20261003/results-v1/report.json",
+    "policy": "Preserve all18strict cases, truth and gates, including frame0 engineering failures"
+  },
+  "new_controls": [
+    {
+      "name": "leading-silence-tone-440",
+      "frames": 48000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frame": 12000,
+        "frequency_hz": 440,
+        "amplitude": 0.1,
+        "phase": "cosine starts at1",
+        "end": "continues through EOF"
+      },
+      "literal_truth_frames": [
+        12000
+      ],
+      "event_kinds": [
+        "note_start"
+      ],
+      "independent_check": "PCM0..11999 zero, frame12000=0.1; frame12000 is a literal not a time-conversion result"
+    },
+    {
+      "name": "leading-silence-tone-9973",
+      "frames": 48000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frame": 12000,
+        "frequency_hz": 9973,
+        "amplitude": 0.1,
+        "phase": "cosine starts at1",
+        "end": "continues through EOF"
+      },
+      "literal_truth_frames": [
+        12000
+      ],
+      "event_kinds": [
+        "note_start"
+      ],
+      "independent_check": "PCM0..11999 zero, frame12000=0.1"
+    },
+    {
+      "name": "equal-energy-note-switch",
+      "frames": 48000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frame": 12000,
+        "switch_frame": 24000,
+        "frequencies_hz": [
+          7500,
+          1500
+        ],
+        "amplitude": 0.1,
+        "phase": "each note cosine starts at1",
+        "end": "second note continues through EOF"
+      },
+      "literal_truth_frames": [
+        12000,
+        24000
+      ],
+      "event_kinds": [
+        "note_start",
+        "constructed_pitch_switch"
+      ],
+      "independent_check": "7500Hz completes1875cycles over12000frames; both notes have equal amplitude and complete-cycle mean-square energy; pitch-switch label is symbolic construction, not a human attack judgment"
+    },
+    {
+      "name": "leading-silence-noise-burst",
+      "frames": 48000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frame": 12000,
+        "end_frame_exclusive": 36000,
+        "amplitude": 0.1,
+        "generator": "xorshift32",
+        "seed": 24301,
+        "uniform_scale": "[-1,1]",
+        "release_frames": 256,
+        "release": "last256samples multiplied by0.5*(1+cos(pi*j/255)), j=0..255"
+      },
+      "literal_truth_frames": [
+        12000
+      ],
+      "event_kinds": [
+        "burst_start"
+      ],
+      "independent_check": "PCM0..11999 and36000..47999zero; nonzero first burst sample at literal12000; smooth release is not an onset label"
+    },
+    {
+      "name": "sparse-kick-like",
+      "frames": 96000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frames": [
+          12000,
+          36000,
+          66000
+        ],
+        "duration_frames": 6000,
+        "amplitude": 0.3,
+        "decay_samples": 900,
+        "frequency_start_hz": 120,
+        "frequency_end_hz": 50,
+        "phase": "cos(2*pi*(120*t-0.5*70*t*t/0.125)), t=age/48000",
+        "envelope": "exp(-age/900)"
+      },
+      "literal_truth_frames": [
+        12000,
+        36000,
+        66000
+      ],
+      "event_kinds": [
+        "constructed_percussion_start",
+        "constructed_percussion_start",
+        "constructed_percussion_start"
+      ],
+      "independent_check": "Each predecessor sample is zero and each literal start has amplitude0.3; frame labels are independently enumerated"
+    },
+    {
+      "name": "sparse-snare-like",
+      "frames": 96000,
+      "score": "discrete_constructed_events",
+      "parameters": {
+        "start_frames": [
+          18000,
+          42000,
+          78000
+        ],
+        "duration_frames": 4096,
+        "amplitude": 0.2,
+        "decay_samples": 700,
+        "generator": "xorshift32",
+        "seed_per_note": [
+          24301,
+          24302,
+          24303
+        ],
+        "uniform_scale": "[-1,1]",
+        "envelope": "exp(-age/700)"
+      },
+      "literal_truth_frames": [
+        18000,
+        42000,
+        78000
+      ],
+      "event_kinds": [
+        "constructed_percussion_start",
+        "constructed_percussion_start",
+        "constructed_percussion_start"
+      ],
+      "independent_check": "Each predecessor sample is zero and each literal start contains the first PRNG sample; frame labels are independently enumerated"
+    },
+    {
+      "name": "continuous-fade-440",
+      "frames": 48000,
+      "score": "continuous_observation_only",
+      "parameters": {
+        "frequency_hz": 440,
+        "amplitude": 0.1,
+        "envelope": "sin(pi*i/47999)^2, exact0atfirst/lastsample",
+        "phase": "cos(2*pi*440*i/48000)"
+      },
+      "literal_truth_frames": null,
+      "event_kinds": null,
+      "independent_check": "No unique discrete attack is asserted; report emitted peak counts/coordinates/strength only, no precision/recall/F1 or gate status"
+    }
+  ],
+  "gate": {
+    "matcher": "unchanged tools/mir-onset-probe/src/main.rs",
+    "inclusive_tolerance_frames": 480,
+    "median_absolute_error_limit_frames": 96,
+    "all_truth_matched_once": true,
+    "extra_predictions_allowed": 0,
+    "research_original": "clean onsetF1>=0.98 at+/-10ms and median<=2ms; the all-match policy is the existing stricter engineering control, not a verbatim research requirement"
+  },
+  "boundary_interpretation": "A file beginning with nonzero ongoing content does not reveal pre-file silence versus a crop; old constructed frame0truth is retained, not recast as observed musical onset or removed from scoring",
+  "upstream_state_regression": {
+    "hfc_strength_prefix": [
+      0,
+      0,
+      1,
+      0,
+      0
+    ],
+    "hfc_strength_suffix": [
+      100,
+      0,
+      0,
+      0
+    ],
+    "procedure": "pick prefix, append suffix, pick again; compare fresh detector on full sequence picked once",
+    "expected_source_bug": "Old index2flag remains despite no longer exceeding local threshold; record separately, no vendor mutation, candidate picks once"
+  },
+  "admission": "No production wiring or confidence calibration; no parameter changes after first run to fit these controls"
+}

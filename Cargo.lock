@@ -1705,6 +1705,7 @@ dependencies = [
 name = "cocobeat-media"
 version = "0.1.0"
 dependencies = [
+ "blake3",
  "cocobeat-schema",
  "oximedia-audio",
  "oximedia-core",

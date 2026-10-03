@@ -64,3 +64,13 @@ cargo build --locked --release --manifest-path "$mir_manifest" --target-dir "$mi
 [单边频谱 HFC 候选](../tools/mir-spectral-probe/README.md) 继续读取同一批原始 PCM 和独立控制，原生 FFT 单边谱先通过等能量不同频率的加权核验；固定 window=128、hop=64、Hamming 窗与 1.5 倍局部均值阈值，预测映射到真实窗支持区间中心，未补 PCM 或平移旧输出
 
 该候选的原 10 声道和 3 项控制通过，另 5 项控制仍 FAIL：持续音与恒定电平的额外峰为 0、噪声额外峰为 1，但这些持续信号的首帧攻击及单样本攻击仍漏检；逐项结果、坐标约定与冻结身份见 [谱候选观察清单](../testdata/synthetic/mir-spectral-probe/observations-20261003.json)，软件检查和独立审查通过不等于生产 MIR 准入，以上后续结果不覆盖本页原始基准结论
+
+## 固定谱通量与音色控制
+
+2026-10-03，[谱通量对照工具](../tools/mir-flux-probe/README.md) 沿用相同 PCM、单边 FFT、128 帧窗、64 帧 hop、1.5 倍阈值和真实窗坐标，比较原生 HFC 与 SpectralFlux；在首次生成和检测前冻结 6 个离散控制及 1 个连续渐变观察的参数、字面真值和指标边界，原 18 项及其全部 FAIL 保持
+
+HFC 完全复现原 13 PASS / 5 FAIL，Flux 为 11 PASS / 7 FAIL；新增 6 项离散控制两者各 1 PASS / 5 FAIL。Flux 对等能量换音通过，但 9973 Hz 静默后起音产生 105 个额外峰，持续 440 / 9973 Hz 音产生 129 / 141 个额外峰；HFC 对 9973 Hz 起音通过，440 Hz 起音的 160 帧偏差超过 96 帧 median 门槛。平滑渐入渐出没有唯一离散真值，只记录 HFC 0 峰与 Flux 125 峰，不纳入 F1 或通过率
+
+3 项软件测试、格式、Clippy、release 构建与独立复算通过，检测命令因质量 FAIL 退出 1；首轮跨 JSON 序列化比较 f32 强度时误用 f64 逐值比较的失败保留，修复为还原 f32 后逐位比较，没有改动质量容差、参数或标签。另复现上游重复 `pick_onsets` 不清旧标记的状态问题；当前离线管线只调用一次，因此该问题不解释本批质量失败
+
+完整矩阵和身份见 [观察清单](../testdata/synthetic/mir-flux-probe/observations-20261003.json)。非零文件首样本不能揭示文件之前是静默还是持续录音，旧构造首帧标签继续参与工程评分，不自动视为可观测音乐起音；下一步集中验证谱泄漏、微幅谱变化与峰选择，真实音乐、最终 Ogg、人工标签和生产准入继续独立执行

@@ -10,6 +10,25 @@ pub enum Operation {
     Readback(u64),
 }
 
+pub fn prepare(input: &Path, expected_frames: u64, staging: &Path) -> Result<(), String> {
+    let prepared = cocobeat_media::prepare_canonical_audio(input, expected_frames, staging)?;
+    let hash: String = prepared
+        .asset
+        .blake3
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect();
+    println!(
+        "Prepared canonical audio: {} frames, {} bytes, {}",
+        prepared.canonical_frames,
+        prepared.asset.byte_len,
+        staging.join(&prepared.asset.file_name).display()
+    );
+    println!("BLAKE3: {hash}");
+    println!("Audio object only; SongPackage manifest and Ready are not created.");
+    Ok(())
+}
+
 pub fn decode(input: &Path, output: &Path, operation: Operation) -> Result<(), String> {
     let file = OpenOptions::new()
         .write(true)

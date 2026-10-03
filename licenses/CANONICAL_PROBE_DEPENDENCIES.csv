@@ -1,73 +1,73 @@
 name,version,license,repository,used_by
-allocator-api2,0.2.21,MIT OR Apache-2.0,https://github.com/zakarumych/allocator-api2,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-autocfg,1.5.1,Apache-2.0 OR MIT,https://github.com/cuviper/autocfg,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
-bitflags,2.13.2,MIT OR Apache-2.0,https://github.com/bitflags/bitflags,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
+allocator-api2,0.2.21,MIT OR Apache-2.0,https://github.com/zakarumych/allocator-api2,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+autocfg,1.5.1,Apache-2.0 OR MIT,https://github.com/cuviper/autocfg,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
+bitflags,2.13.2,MIT OR Apache-2.0,https://github.com/bitflags/bitflags,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 block-buffer,0.10.4,MIT OR Apache-2.0,https://github.com/RustCrypto/utils,cocobeat-canonical-probe
 block-buffer,0.12.1,MIT OR Apache-2.0,https://github.com/RustCrypto/utils,cocobeat-rusty-candidate
 built,0.7.7,MIT,https://github.com/lukaslueg/built,cocobeat-canonical-probe
 bytemuck,1.25.2,Zlib OR Apache-2.0 OR MIT,https://github.com/Lokathor/bytemuck,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 byteorder,1.5.0,Unlicense OR MIT,https://github.com/BurntSushi/byteorder,cocobeat-canonical-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
-bytes,1.12.1,MIT,https://github.com/tokio-rs/bytes,cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+bytes,1.12.1,MIT,https://github.com/tokio-rs/bytes,cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 cfg-if,1.0.5,MIT OR Apache-2.0,https://github.com/rust-lang/cfg-if,cocobeat-canonical-probe;cocobeat-rusty-candidate
 const-oid,0.10.2,Apache-2.0 OR MIT,https://github.com/RustCrypto/formats,cocobeat-rusty-candidate
 cpufeatures,0.3.1,MIT OR Apache-2.0,https://github.com/RustCrypto/utils,cocobeat-rusty-candidate
 crc,3.4.0,MIT OR Apache-2.0,https://github.com/mrhooray/crc-rs.git,cocobeat-canonical-probe
 crc-catalog,2.5.0,MIT OR Apache-2.0,https://github.com/akhilles/crc-catalog.git,cocobeat-canonical-probe
 crossbeam-channel,0.5.17,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe
-crossbeam-deque,0.8.8,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-crossbeam-epoch,0.9.21,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-crossbeam-utils,0.8.23,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+crossbeam-deque,0.8.8,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+crossbeam-epoch,0.9.21,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+crossbeam-utils,0.8.23,MIT OR Apache-2.0,https://github.com/crossbeam-rs/crossbeam,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 crypto-common,0.1.7,MIT OR Apache-2.0,https://github.com/RustCrypto/traits,cocobeat-canonical-probe
 crypto-common,0.2.2,MIT OR Apache-2.0,https://github.com/RustCrypto/traits,cocobeat-rusty-candidate
 digest,0.10.7,MIT OR Apache-2.0,https://github.com/RustCrypto/traits,cocobeat-canonical-probe
 digest,0.11.3,MIT OR Apache-2.0,https://github.com/RustCrypto/traits,cocobeat-rusty-candidate
-either,1.18.0,MIT OR Apache-2.0,https://github.com/rayon-rs/either,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-equivalent,1.0.2,Apache-2.0 OR MIT,https://github.com/indexmap-rs/equivalent,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+either,1.18.0,MIT OR Apache-2.0,https://github.com/rayon-rs/either,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+equivalent,1.0.2,Apache-2.0 OR MIT,https://github.com/indexmap-rs/equivalent,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 extended,0.1.0,MIT,https://github.com/depp/extended-rs,cocobeat-rusty-candidate
 flacenc,0.5.1,Apache-2.0,https://github.com/yotarok/flacenc-rs/,cocobeat-canonical-probe
-foldhash,0.2.0,Zlib,https://github.com/orlp/foldhash,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+foldhash,0.2.0,Zlib,https://github.com/orlp/foldhash,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 generic-array,0.14.7,MIT,https://github.com/fizyk20/generic-array.git,cocobeat-canonical-probe
 hash32,0.3.1,MIT OR Apache-2.0,https://github.com/japaric/hash32,cocobeat-canonical-probe
-hashbrown,0.17.1,MIT OR Apache-2.0,https://github.com/rust-lang/hashbrown,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+hashbrown,0.17.1,MIT OR Apache-2.0,https://github.com/rust-lang/hashbrown,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 heapless,0.8.0,MIT OR Apache-2.0,https://github.com/rust-embedded/heapless,cocobeat-canonical-probe
 hound,3.5.1,Apache-2.0,https://github.com/ruuda/hound,cocobeat-canonical-probe
 hybrid-array,0.4.14,MIT OR Apache-2.0,https://github.com/RustCrypto/hybrid-array,cocobeat-rusty-candidate
-itoa,1.0.18,MIT OR Apache-2.0,https://github.com/dtolnay/itoa,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+itoa,1.0.18,MIT OR Apache-2.0,https://github.com/dtolnay/itoa,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 lazy_static,1.5.1,MIT OR Apache-2.0,https://github.com/rust-lang-nursery/lazy-static.rs,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 libc,0.2.189,MIT OR Apache-2.0,https://github.com/rust-lang/libc,cocobeat-rusty-candidate
-libm,0.2.16,MIT,https://github.com/rust-lang/compiler-builtins,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+libm,0.2.16,MIT,https://github.com/rust-lang/compiler-builtins,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 log,0.4.34,MIT OR Apache-2.0,https://github.com/rust-lang/log,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 md-5,0.10.6,MIT OR Apache-2.0,https://github.com/RustCrypto/hashes,cocobeat-canonical-probe
-memchr,2.8.3,Unlicense OR MIT,https://github.com/BurntSushi/memchr,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-num-complex,0.4.6,MIT OR Apache-2.0,https://github.com/rust-num/num-complex,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
-num-traits,0.2.19,MIT OR Apache-2.0,https://github.com/rust-num/num-traits,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
+memchr,2.8.3,Unlicense OR MIT,https://github.com/BurntSushi/memchr,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+num-complex,0.4.6,MIT OR Apache-2.0,https://github.com/rust-num/num-complex,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
+num-traits,0.2.19,MIT OR Apache-2.0,https://github.com/rust-num/num-traits,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 ogg,0.8.0,BSD-3-Clause,https://github.com/RustAudio/ogg,cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 oxiaudio-core,0.2.1,Apache-2.0,https://github.com/cool-japan/oxiaudio,cocobeat-canonical-probe
 oxiaudio-encode,0.2.1,Apache-2.0,https://github.com/cool-japan/oxiaudio,cocobeat-canonical-probe
 oxideav-core,0.1.37,MIT,https://github.com/OxideAV/oxideav-core,cocobeat-oxideav-probe
 oxideav-ogg,0.1.8,MIT,https://github.com/OxideAV/oxideav-ogg,cocobeat-oxideav-probe
 oxideav-vorbis,0.0.12,MIT,https://github.com/OxideAV/oxideav-vorbis,cocobeat-oxideav-probe
-oxifft,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-oxifft-codegen,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-oxifft-codegen-impl,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-oximedia-audio,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-oximedia-core,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-oximedia-mir,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe
-proc-macro2,1.0.107,MIT OR Apache-2.0,https://github.com/dtolnay/proc-macro2,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-quote,1.0.47,MIT OR Apache-2.0,https://github.com/dtolnay/quote,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-rayon,1.12.0,MIT OR Apache-2.0,https://github.com/rayon-rs/rayon,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-rayon-core,1.13.0,MIT OR Apache-2.0,https://github.com/rayon-rs/rayon,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oxifft,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oxifft-codegen,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oxifft-codegen-impl,0.4.2,Apache-2.0,https://github.com/cool-japan/oxifft,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oximedia-audio,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oximedia-core,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+oximedia-mir,0.2.1,Apache-2.0,https://github.com/cool-japan/oximedia,cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe
+proc-macro2,1.0.107,MIT OR Apache-2.0,https://github.com/dtolnay/proc-macro2,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+quote,1.0.47,MIT OR Apache-2.0,https://github.com/dtolnay/quote,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+rayon,1.12.0,MIT OR Apache-2.0,https://github.com/rayon-rs/rayon,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+rayon-core,1.13.0,MIT OR Apache-2.0,https://github.com/rayon-rs/rayon,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 regex-lite,0.1.9,MIT OR Apache-2.0,https://github.com/rust-lang/regex,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 rustversion,1.0.23,MIT OR Apache-2.0,https://github.com/dtolnay/rustversion,cocobeat-canonical-probe
 rusty_vorbis,0.1.1,Apache-2.0,https://github.com/Remade-With-Rust/remade_ffmpeg_rs,cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 seq-macro,0.3.6,MIT OR Apache-2.0,https://github.com/dtolnay/seq-macro,cocobeat-canonical-probe
-serde,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-serde_core,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-serde_derive,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-serde_json,1.0.151,MIT OR Apache-2.0,https://github.com/serde-rs/json,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+serde,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+serde_core,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+serde_derive,1.0.229,MIT OR Apache-2.0,https://github.com/serde-rs/serde,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+serde_json,1.0.151,MIT OR Apache-2.0,https://github.com/serde-rs/json,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 sha2,0.11.0,MIT OR Apache-2.0,https://github.com/RustCrypto/hashes,cocobeat-rusty-candidate
 smallvec,1.16.2,MIT OR Apache-2.0,https://github.com/servo/rust-smallvec,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
-spin,0.12.3,MIT,https://codeberg.org/zesterer/spin,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+spin,0.12.3,MIT,https://codeberg.org/zesterer/spin,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 stable_deref_trait,1.2.1,MIT OR Apache-2.0,https://github.com/storyyeller/stable_deref_trait,cocobeat-canonical-probe
 symphonia,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 symphonia-bundle-flac,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-rusty-candidate
@@ -79,11 +79,11 @@ symphonia-core,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-can
 symphonia-format-ogg,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
 symphonia-format-riff,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-rusty-candidate
 symphonia-metadata,0.6.1,MPL-2.0,https://github.com/pdeljanov/Symphonia,cocobeat-canonical-probe;cocobeat-oxideav-probe;cocobeat-rusty-candidate;cocobeat-rusty-vorbis-probe
-syn,2.0.119,MIT OR Apache-2.0,https://github.com/dtolnay/syn,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-syn,3.0.6,MIT OR Apache-2.0,https://github.com/dtolnay/syn,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-thiserror,2.0.21,MIT OR Apache-2.0,https://github.com/dtolnay/thiserror,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
-thiserror-impl,2.0.21,MIT OR Apache-2.0,https://github.com/dtolnay/thiserror,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+syn,2.0.119,MIT OR Apache-2.0,https://github.com/dtolnay/syn,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+syn,3.0.6,MIT OR Apache-2.0,https://github.com/dtolnay/syn,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+thiserror,2.0.21,MIT OR Apache-2.0,https://github.com/dtolnay/thiserror,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+thiserror-impl,2.0.21,MIT OR Apache-2.0,https://github.com/dtolnay/thiserror,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 typenum,1.20.1,MIT OR Apache-2.0,https://github.com/paholg/typenum,cocobeat-canonical-probe;cocobeat-rusty-candidate
-unicode-ident,1.0.26,(MIT OR Apache-2.0) AND Unicode-3.0,https://github.com/dtolnay/unicode-ident,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+unicode-ident,1.0.26,(MIT OR Apache-2.0) AND Unicode-3.0,https://github.com/dtolnay/unicode-ident,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
 version_check,0.9.5,MIT/Apache-2.0,https://github.com/SergioBenitez/version_check,cocobeat-canonical-probe
-zmij,1.0.23,MIT,https://github.com/dtolnay/zmij,cocobeat-canonical-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate
+zmij,1.0.23,MIT,https://github.com/dtolnay/zmij,cocobeat-canonical-probe;cocobeat-mir-flux-probe;cocobeat-mir-onset-diagnostic;cocobeat-mir-onset-probe;cocobeat-mir-spectral-probe;cocobeat-oxideav-probe;cocobeat-resample-preflight;cocobeat-rusty-candidate

@@ -21,6 +21,8 @@ media 当前负责有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 顺序解码与
 
 media 的 `decode_canonical` 复用同一顺序解码核心和 Ogg 页校验，由 lab 的 `readback-canonical` 实际消费；最终文件必须是 Ogg Vorbis、48 kHz、恰好双声道，EOS 声明和独立累计的实际帧数均须等于调用方提供的编码器输入帧数。输出从解码帧 0 连续交付，不做声道复制、重采样或裁幅，拒绝非有限样本；读回成功本身不证明源音频经过编码后的瞬态对齐或音质
 
+schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不依赖序列化或哈希库。media 的 `prepare_canonical_audio` 由 lab 的 `prepare-audio` 消费，流式复制最终 Ogg 至全新目录中的固定文件名，记录写入字节身份，关闭文件后严格读回该副本；返回 `PreparedCanonicalAudio`，不将它当作完整 `ValidatedPackage`。文件只在成功独占创建后才归本次清理，目录清理仅允许空目录；完整 SongPackage 的分析、谱面、版本、对象复核和原子 Ready 仍是后续事务
+
 源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，生产编码器准入和 SongPackage Ready 尚未完成
 
 ## 未来模块何时出生

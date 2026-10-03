@@ -142,6 +142,14 @@ Linux x86_64 的 4 项自包含测试、格式、Clippy 和 release 构建通过
 
 5 项候选测试、Clippy 与格式通过，显式传入构建目录使诊断不受外部 `CARGO_TARGET_DIR` 影响；每次编码和独立解码仍限 30 秒 / 2 GiB。完整命令、29 个参与源码身份、二进制、三例产物和数值见 [固定观察](../testdata/synthetic/canonical-audio-probe/domain-observations-20261003.json)，本批未下载新曲库、播放音频或改变产品依赖
 
+### 固定全频带回归
+
+2026-10-03，[隔离工具](../tools/canonical-audio-probe/fullband-regression/README.md) 从提交 `e1b3a26` 冻结 media/schema 和两份候选，只把 scratch 长块 residue 的 `end=1760` 扩至 `2048`；q10、`Q_SCALE=30`、coupling、窗口和原输入域 guard 保持。19 个固定输入包含原 10 例、低音量、声道交换、同相/反相、首尾脉冲、两种重采样瞬态及两种超范围拒绝，共 34 次编码与严格完整双路回读通过，4 次 guard 拒绝符合预期，原 10 例 baseline Ogg 逐字节复现
+
+整体改善没有覆盖局部退步：64 秒原创音乐全长 SNR 提高约 `0.05293 / 0.05574 dB`，但 `[7,8)` 秒降低约 `0.00707 / 0.00829 dB`；quiet 右声道全长降低 `0.00008984 dB`，near-full 右声道超出 ±1 的样本从 2196 增至 2197。600 秒非静音右尾 SNR 从 `0.02355` 提高至 `17.40881 dB`，两种域内重采样瞬态也改善；逐秒、首尾、峰值周边和频段指标全部保留，未裁幅、归一化、拟合增益或平移时间轴
+
+每条编码与解码仍限 30 秒 / 2 GiB，错误用例、错误期望长度和独立指标复核通过，命令和身份见 [固定观察](../testdata/synthetic/canonical-audio-probe/fullband-observations-20261003.json)。保留全频带实验变体，正式 vendor/profile 未修改；听感、许可音乐语料、seek、其他原生平台及生产准入仍未完成，本批也没有组合 finite-only 改动
+
 ## 精确 seek：原生 FAIL，显式前滚 PASS_LIMITED
 
 用两个候选各自的 64 秒文件与一秒首尾脉冲，反复前后 seek 25 次，窗口最多 4096 帧；原生 `Accurate` 调用每文件 9 PASS / 16 FAIL；额外请求前滚 1024 帧后，四文件的 100 个正例与 8 个拒绝负例全部通过，窗口与完整 Symphonia PCM 最大差为 0，与 FFmpeg 最大差不超过 1.1921e-7

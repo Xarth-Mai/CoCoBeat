@@ -336,3 +336,35 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 隔离工具 `tools/mir-spectral-probe/` 复用 oxifft 的 Hamming/FFT 与 OxiMedia 的 HFC onset API，固定 128 帧窗、64 帧 hop 和 1.5 倍局部门槛；以实际 PCM 窗支持区间确定中心坐标，补实际尾窗，不平移预测或改真值。等能量不同频率的单边 HFC 比值为 4.19990，完整镜像谱对照几乎相同，验证单边频率加权确实生效
 
 2 项软件测试、Clippy、格式、构建及独立指标复算通过；原 10 声道和 3 个控制通过，另 5 个控制仍 FAIL，保留首帧/单样本漏检与噪声误报。固定 [观察清单](../testdata/synthetic/mir-spectral-probe/observations-20261003.json) 记录完整矩阵与源码、产物身份，复现入口见 [工具说明](../tools/mir-spectral-probe/README.md)；原两批工具和观察保持不变，没有启用生产 MIR，最终编码回读、真实音乐及人工标签仍待验收
+
+## 最终音频对象 staging
+
+2026-10-03，`prepare_canonical_audio` 与 lab `prepare-audio` 把最终 Ogg 有界复制到新建目录，记录实际写入字节的 BLAKE3 和长度，落盘后严格读回同一副本。已有目录不会覆盖；失败只清理本次创建的音频和空目录，源文件保持，成功时也只有 `song.audio.ogg`，完整 SongPackage manifest、分析/谱面与原子 Ready 尚未创建
+
+新增 3 项行为测试覆盖精确副本身份、已有目录保护、期望帧数/源文件/512 MiB 上限和失败清理，media 共 11 项通过。本轮工作区完整 `CARGO_BUILD_JOBS=1 CARGO_NET_OFFLINE=true cargo xtask check` 通过 125 项测试，包含并行菜单实现的 88 项 runtime 测试；格式、Clippy、依赖边界及 game/lab 构建通过，137 个已记录源码、资源和样本输入前后稳定，记录见 `target/staging-ui-20261003/recheck/validation.json`
+
+冻结 lab 二进制 SHA-256 为 `2f1d2198d76f26674e5e8063e545a311ccc7863f62c023c6ae5f27d7c7b1fe12`，27 项真实 CLI 调用全部通过：三次准备结果一致，两次严格读回、8 项期望帧数拒绝、9 项输入拒绝及 5 项已有内容/路径保护均符合预期。5245 字节样本得到 BLAKE3 `5dc59c4887fd564ce500c9f9eabd07e5f0fdc85c847662d77098899e03a47e2d`，单测与库的一次性 hash 比较，CLI 独立核对格式、确定性及副本字节，没有另写哈希算法
+
+首两轮脚本对 CRC 与截断错误的自由文本和检测层做了过窄假设，产品均已正确拒绝并清理；失败报告保留，最终依据非零退出、非空错误、完整清理与原文件保留判断。最终报告 `target/audio-staging-20261003/cli-results.json` 的 SHA-256 为 `559d642234fa75e0a7efc8061afe9f63863b1173564c4a84562ff617450c0f98`，独立复审为 `Lean already. Ship.`。本批未新增第三方包版本，schema 保持仅标准库；编码音质、完整包事务和跨平台执行仍待后续验收
+
+随后仅修改 runtime/view 的滚动标记也使链接 runtime 的 lab 重新构建，最终 lab SHA-256 为 `73b13c5994384e37a8a885f635a13d0d730a5788284be0785f1216481de71835`；对新二进制补执行准备成功、严格读回和已有目录拒绝三项检查，字节、BLAKE3 及 PCM 与原矩阵一致，原 27 项证据不覆盖。media/schema/lab/Cargo 源码身份保持，补验见 `target/audio-staging-20261003/scroll-followup.json`
+
+## 全频带与谱通量固定对照
+
+全频带诊断从不可变提交 `e1b3a26` 构建基线与仅改两个 setup 字节的扩带副本，19 例固定输入完成 34 次编码及严格双路完整回读、4 次原 guard 拒绝，原 10 例基线 Ogg 逐字节重现。完整长度、每秒、首尾、峰值邻域与频段诊断保留质量改善和退步，不据整体 SNR 遮盖局部退步；独立审查和错误路径检查通过，见 [固定观察](../testdata/synthetic/canonical-audio-probe/fullband-observations-20261003.json)，正式 vendor/profile、输入域与生产准入未变
+
+谱通量对照在首次生成/检测前冻结新增音色控制，3 项软件测试、格式、Clippy 和 release 构建通过；独立复核重建 7 个 PCM，复算 50 次分析、88,834 个窗口及 48 项离散评分。HFC 完全复现旧 13 PASS / 5 FAIL，Flux 旧矩阵为 11 PASS / 7 FAIL，新 6 项两者各 1 PASS / 5 FAIL；连续渐变只记录 HFC 0 峰与 Flux 125 峰，不纳入 F1。声明、首次 JSON 数值比较失败、修正、完整质量 FAIL 和来源身份均保留，见 [观察清单](../testdata/synthetic/mir-flux-probe/observations-20261003.json)
+
+两批均未播放音频、引入真实音乐库或人工标签，也未接入生产编码/MIR；听感、seek、最终编码回读分析、Windows/ARM 与设备验收分别保持 NOT RUN。第三方研究台账沿用 88 个版本，新增控制的 PCM 和构造标签为 CC0-1.0，生成器源码为 MPL-2.0
+
+## 菜单焦点与真实阶段等待
+
+2026-10-03，菜单选中描边以 160 ms 亮度反馈收尾，箭头、正文、背景与操作立即更新，语言和菜单主控变化不重新触发该反馈；`Starting` / `Pausing` 共用生产阶段的过渡状态，在面板顶部显示 2 px 短等待标记，真实阶段变化后隐藏。歌曲进度保持直接取 SongTime，装饰不改布局、文字 alpha、输入门控或规则事实
+
+完整检查与音频 staging 共用上节记录：125 项 workspace 测试包含 88 项 runtime，两个新增 ECS 行为检查用手动 Time 验证描边衰减、选中即刻更新、几何及文字不变、等待标记显隐和歌曲进度。首轮 Clippy 参数数量失败已按既有 system 元组方式修复；通过后的游戏 SHA-256 为 `83638be50132a7874f387bb7ca227bb5c24cdb2848b8975f21d7e468a261a5da`
+
+首轮 12 项 Vulkan 离屏截图覆盖 Starting/Pausing/Ready/Paused、中文 1280×800 / 400×300、英文对照及滚动末行，逐图为 10 PASS / 2 FAIL：两张过渡末行图的等待标记随面板滚走，虽然进程和几何检查退出 0，仍按视觉 FAIL 保留。原尺寸和像素复核确认正文从面板上缘内开始，没有进入 Logo 区；既有裁剪保持，失败图和逐图结论见 `target/menu-feedback-20261003/gpu/report.json`
+
+修复只为标记添加 Bevy 原生 `IgnoreScroll`，137 个已记录输入中仅 view.rs 改变；6 项 view 窄测、workspace Clippy、格式和构建通过，见 `target/staging-ui-20261003/scroll-fix/validation.json`。最终游戏 SHA-256 为 `db071c3f37b3739727246e5e5da3e0a8611c96bf80eb3572c555b7dee49e5164`，补验仅重拍两个失败状态及 Ready/Paused 的滚动对照，四张均通过，等待标记固定、按阶段隐藏，Logo 和选中行完整可读，见 `target/menu-feedback-20261003/scroll-fix/report.json`
+
+本批 GPU 为 Linux AMD RX 6650 XT / RADV Vulkan，CJK 词边界诊断继续如实记录；160 ms 连续变化由 ECS Time 检查覆盖，GPU 是静态取样，没有据此声称连续录像、音频确认时延、真实性能或物理设备操作。主控和混合输入规则独立复核无新遗漏，最小修复后的 ponytail-review 为 `Lean already. Ship.`，双手柄、混合设备及 USB/蓝牙实测继续为 NOT RUN
