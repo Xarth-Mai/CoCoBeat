@@ -1,0 +1,72 @@
+name: Native media candidate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: media-candidate-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: ${{ matrix.target }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-latest
+            target: x86_64-pc-windows-msvc
+            executable: cocobeat-rusty-candidate.exe
+          - runner: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            executable: cocobeat-rusty-candidate.exe
+          - runner: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            executable: cocobeat-rusty-candidate
+          - runner: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            executable: cocobeat-rusty-candidate
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+    env:
+      RUSTUP_TOOLCHAIN: stable-${{ matrix.target }}
+      CARGO_TARGET_DIR: target/media-candidate
+      CANDIDATE_MANIFEST: tools/canonical-audio-probe/rusty-candidate/Cargo.toml
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - name: Install latest stable native Rust
+        id: rust
+        run: |
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --no-self-update
+          rustc -vV
+          echo "version=$(rustc --version | cut -d ' ' -f 2)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v6
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target/media-candidate
+          key: media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          restore-keys: |
+            media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-
+            media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-
+      - name: Test source decoding and resampling
+        run: cargo test --locked --package cocobeat-media
+      - name: Test complete candidate encode and readback
+        run: cargo test --locked --manifest-path "$CANDIDATE_MANIFEST"
+      - name: Build optimized candidate CLI
+        run: cargo build --locked --release --manifest-path "$CANDIDATE_MANIFEST"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: media-candidate-${{ matrix.target }}-${{ github.sha }}
+          path: target/media-candidate/release/${{ matrix.executable }}
+          if-no-files-found: error
+          retention-days: 14

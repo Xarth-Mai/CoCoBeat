@@ -2,7 +2,7 @@
 
 2026-10-03 的阶段 05 实验已覆盖长曲、信号边界、精确 seek 和重采样合成质量；OxiMedia High 通过本批频点门槛，OxideAV 在十分钟输入、2 GiB 虚拟地址空间限制下编码失败，rusty_vorbis 仍因近满幅合法输入的明显波形误差不准入；以下保留首轮结构结果与后续发现
 
-`cocobeat-media` 的有界源解码已开始实现；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲，Windows、外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
+`cocobeat-media` 的有界源解码与 48 kHz 重采样已由 lab 消费；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲，Windows、外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
 
 ## 方法与证据边界
 
@@ -117,6 +117,16 @@ libvorbis 仅通过已安装 FFmpeg 执行独立参照，不进入产品或研�
 q5 仍有明显波形误差与 overs，不能仅因右声道改善便准入；有损编码的 overs 本身也不等于结构失败。相同声道的两档 Ogg 原字节不变，但反相声道 q10 的左/右 SNR 从 30.069/24.999 变为 24.866/30.043 dB，双声道总 SNR 从 26.8327 小幅降为 26.7251 dB，补丁并未改善所有输入或每个声道
 
 [固定观察清单](../testdata/synthetic/canonical-audio-probe/admission-observations-20261003.json) 归档全部 20 例的紧凑指标、命令、源文件/补丁/二进制及报告哈希；本批重新核对 19 项冻结身份与 80 个输入/Ogg/PCM 哈希，均匹配；本批不覆盖该补丁的 64 秒或十分钟实验、seek、Windows/ARM 运行和真人听感，后续长曲结果另行归档
+
+### patched q10 的独立源文件入口
+
+[rusty-candidate](../tools/canonical-audio-probe/rusty-candidate/README.md) 将上述唯一 coupling 补丁固定为独立 vendor，复用产品 `cocobeat-media`，实际执行源文件解码 → 48 kHz 重采样 → q10 编码和固定 profile 封装 → 关闭 Ogg → 完整解码同一最终文件；输出重采样 PCM、Ogg、回读 PCM 和含 SHA-256、实际帧数、峰值、overs、SNR 的报告，既有目录拒绝覆盖，失败保留本次半成品和失败原因
+
+原始发布版工具和历史 FAIL 保持不变；新入口的 `PASS_SOFTWARE_CANDIDATE` 只表示软件链路成功，不代表音质、精确 seek 或生产准入。候选遵循上游 `push_pcm_f32` 的 `[-1,1]` 输入域，重采样产生的有限超范围样本也会明确拒绝，不能将该候选限制当作非法媒体，也不裁剪或归一化；编码器仍缓存全曲，实际输入上限为 600 秒
+
+来源、完整 Apache 许可和逐文件补丁身份见 [UPSTREAM.md](../tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md)；仅本独立工具引用该副本，产品未启用候选编码器。[Native media candidate](../.github/workflows/media-candidate.yml) 提供 Windows/Linux × x64/ARM64 手动原生测试和 release CLI 构建，使用独立的平台、架构与 Rust 版本缓存；它不创建 GitHub Release，实测状态与普通工作流定义分别记录
+
+Linux x86_64 的 4 项自包含测试、格式、Clippy 和 release 构建通过；新 CLI 对原始 64 秒 WAV 单次运行，在 2 GiB 地址空间与 30 秒墙钟上限内耗时 0.409 秒、最大 RSS 35404 KiB，精确回读 3,072,000 帧，非有限和 overs 计数均为零。重采样 PCM、Ogg 和回读 PCM 与此前冻结 patched q10 的三份产物逐字节一致；源码、二进制、资源计数和回归身份见 [新入口固定观察](../testdata/synthetic/canonical-audio-probe/candidate-cli-observations-20261003.json)，本次没有重跑十分钟或 seek，也未据单首音乐的 SNR 判定听感准入
 
 ## 精确 seek：原生 FAIL，显式前滚 PASS_LIMITED
 
@@ -278,7 +288,7 @@ done
 
 分析器的 NaN/±Inf 检查已修复：保留 `nonfinite` 失败计数，把无效 RMSE/SNR 与预览值写为 JSON null，避免统计结果在落盘时丢失；一个标准库自检覆盖有限值不变和三种非有限值，历史全有限数值不变
 
-原始全量材料仍在本地 `target/canonical-probe/`、`target/oxideav-probe/`、`target/rusty-vorbis-probe/`；PCM/Ogg、第三方源码、crate archive、编译缓存和大日志不进入 Git，仓库保留原创生成/分析代码、锁文件与小型固定观察清单
+首轮原始全量材料仍在本地 `target/canonical-probe/`、`target/oxideav-probe/`、`target/rusty-vorbis-probe/`；这些实验的 PCM/Ogg、第三方源码、crate archive、编译缓存和大日志不进入 Git，仓库保留原创生成/分析代码、锁文件与小型固定观察清单；后续 `rusty-candidate` 为复现唯一函数修补而单独保留上述有来源记录的 vendor
 
 后续实测原始材料为 `target/rusty-vorbis-limits/`、`target/oxideav-near-full/`、`target/canonical-seek-probe/` 和 `target/resample-preflight/`；Rusty 原短样本、脉冲与 64 秒共 28 个产物逐字节回归通过，OxideAV 原 1025 帧输入及 Ogg 字节不变；新增研究依赖单列于 [研究台账](../licenses/CANONICAL_PROBE_DEPENDENCIES.csv)，不并入产品依赖
 

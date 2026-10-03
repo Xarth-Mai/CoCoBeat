@@ -1,0 +1,7 @@
+{
+  "git": {
+    "sha1": "54df3fe0abfc6bda8589010d27102ecf81b1d106",
+    "dirty": true
+  },
+  "path_in_vcs": "crates/rusty_vorbis"
+}

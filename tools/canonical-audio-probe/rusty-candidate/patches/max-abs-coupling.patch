@@ -1,0 +1,23 @@
+--- a/src/frame.rs
++++ b/src/frame.rs
+@@ -49,17 +49,9 @@
+ /// the decoder must reconstruct, return the encoded `(m, a)`. Exact inverse of lewton's
+ /// `inverse_couple` (verified in tests).
+ fn forward_couple(m_out: f32, a_out: f32) -> (f32, f32) {
+-    if m_out > 0.0 {
+-        if a_out < m_out {
+-            (m_out, m_out - a_out)
+-        } else {
+-            (a_out, m_out - a_out)
+-        }
+-    } else if a_out > m_out {
+-        (m_out, a_out - m_out)
+-    } else {
+-        (a_out, a_out - m_out)
+-    }
++    let magnitude = if m_out.abs() > a_out.abs() { m_out } else { a_out };
++    let angle = if magnitude > 0.0 { m_out - a_out } else { a_out - m_out };
++    (magnitude, angle)
+ }
+ 
+ /// Write the codeword for entry `e` of `book`. Errors if the entry is unused (length 0).

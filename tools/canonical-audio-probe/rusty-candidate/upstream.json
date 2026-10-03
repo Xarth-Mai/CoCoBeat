@@ -1,0 +1,166 @@
+{
+  "package": {
+    "name": "rusty_vorbis",
+    "version": "0.1.1",
+    "repository": "https://github.com/Remade-With-Rust/remade_ffmpeg_rs",
+    "authors": [
+      "Mata Network <https://www.mata.network>"
+    ]
+  },
+  "source": {
+    "archive_url": "https://static.crates.io/crates/rusty_vorbis/rusty_vorbis-0.1.1.crate",
+    "archive_sha256": "6eddf79e697ce9279ef0e012432cd2889a7b6305a45efb5bb16e8a1d6338646f",
+    "cache_and_live_official_archive_match": true,
+    "package_file_count": 14,
+    "vcs_info": {
+      "git": {
+        "sha1": "54df3fe0abfc6bda8589010d27102ecf81b1d106",
+        "dirty": true
+      },
+      "path_in_vcs": "crates/rusty_vorbis"
+    },
+    "authority": "The exact crates.io archive is authoritative; embedded VCS metadata marks its worktree dirty"
+  },
+  "vendor_directory": "vendor/rusty_vorbis",
+  "modification": {
+    "path": "src/frame.rs",
+    "function": "forward_couple",
+    "patch": "patches/max-abs-coupling.patch",
+    "patch_sha256": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+    "description": "Select magnitude by maximum absolute channel residue and compute angle from its sign",
+    "upstream_sha256": "5e53c8efbfedda59fc10abbe9b309f1c32c597d1b912eb4ed7ea42b7288b74aa",
+    "candidate_sha256": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c"
+  },
+  "license": {
+    "spdx": "Apache-2.0",
+    "path": "vendor/rusty_vorbis/LICENSE",
+    "sha256": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+    "preserved_byte_for_byte": true,
+    "separate_notice_file_in_archive": false,
+    "upstream_readme_metadata_and_source_notices_preserved": true
+  },
+  "pcm_contract": {
+    "api": "VorbisEncoder::push_pcm_f32",
+    "documented_range": [
+      -1,
+      1
+    ],
+    "documentation": "vendor/rusty_vorbis/src/lib.rs:256",
+    "implementation": "vendor/rusty_vorbis/src/lib.rs:269-277",
+    "sample_range_validation": false,
+    "sample_finiteness_validation": false,
+    "sample_clamping": false,
+    "lib_rs_preserved_byte_for_byte": true,
+    "meaning": "The implementation buffers samples directly; lack of validation or clamping does not extend the documented PCM range"
+  },
+  "files": {
+    ".cargo_vcs_info.json": {
+      "upstream_sha256": "5bc292b581c85905869bf7e4e0bf008a81f55f86436a8a60dc7838a39e991f14",
+      "candidate_sha256": "5bc292b581c85905869bf7e4e0bf008a81f55f86436a8a60dc7838a39e991f14",
+      "upstream_bytes": 132,
+      "candidate_bytes": 132,
+      "modified": false
+    },
+    "Cargo.lock": {
+      "upstream_sha256": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+      "candidate_sha256": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+      "upstream_bytes": 156,
+      "candidate_bytes": 156,
+      "modified": false
+    },
+    "Cargo.toml": {
+      "upstream_sha256": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+      "candidate_sha256": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+      "upstream_bytes": 1335,
+      "candidate_bytes": 1335,
+      "modified": false
+    },
+    "Cargo.toml.orig": {
+      "upstream_sha256": "7d91bd6dfec49c19bb3d2229df0fbe3cac7eb5c532bdd28f4bff50d0b03d2881",
+      "candidate_sha256": "7d91bd6dfec49c19bb3d2229df0fbe3cac7eb5c532bdd28f4bff50d0b03d2881",
+      "upstream_bytes": 679,
+      "candidate_bytes": 679,
+      "modified": false
+    },
+    "LICENSE": {
+      "upstream_sha256": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+      "candidate_sha256": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+      "upstream_bytes": 11342,
+      "candidate_bytes": 11342,
+      "modified": false
+    },
+    "README.md": {
+      "upstream_sha256": "acca07b1ed74777bb83c2950ffef8305fc4d55b28833a6bd248ea52d67c77882",
+      "candidate_sha256": "acca07b1ed74777bb83c2950ffef8305fc4d55b28833a6bd248ea52d67c77882",
+      "upstream_bytes": 4702,
+      "candidate_bytes": 4702,
+      "modified": false
+    },
+    "src/error.rs": {
+      "upstream_sha256": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+      "candidate_sha256": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+      "upstream_bytes": 2104,
+      "candidate_bytes": 2104,
+      "modified": false
+    },
+    "src/floor.rs": {
+      "upstream_sha256": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+      "candidate_sha256": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+      "upstream_bytes": 15106,
+      "candidate_bytes": 15106,
+      "modified": false
+    },
+    "src/frame.rs": {
+      "upstream_sha256": "5e53c8efbfedda59fc10abbe9b309f1c32c597d1b912eb4ed7ea42b7288b74aa",
+      "candidate_sha256": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+      "upstream_bytes": 33163,
+      "candidate_bytes": 33082,
+      "modified": true
+    },
+    "src/lib.rs": {
+      "upstream_sha256": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+      "candidate_sha256": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+      "upstream_bytes": 19780,
+      "candidate_bytes": 19780,
+      "modified": false
+    },
+    "src/mdct.rs": {
+      "upstream_sha256": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+      "candidate_sha256": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+      "upstream_bytes": 17067,
+      "candidate_bytes": 17067,
+      "modified": false
+    },
+    "src/psy.rs": {
+      "upstream_sha256": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+      "candidate_sha256": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+      "upstream_bytes": 9032,
+      "candidate_bytes": 9032,
+      "modified": false
+    },
+    "src/setup.rs": {
+      "upstream_sha256": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+      "candidate_sha256": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+      "upstream_bytes": 43565,
+      "candidate_bytes": 43565,
+      "modified": false
+    },
+    "src/setup_q4_stereo.bin": {
+      "upstream_sha256": "8dbb400d1883f8e30fd473a66978e934dfd4029393d187050f82e2069ceef7eb",
+      "candidate_sha256": "8dbb400d1883f8e30fd473a66978e934dfd4029393d187050f82e2069ceef7eb",
+      "upstream_bytes": 4140,
+      "candidate_bytes": 4140,
+      "modified": false
+    }
+  },
+  "verification": {
+    "archive_checksum": "PASS",
+    "official_archive_live_checksum": "PASS",
+    "exact_package_file_set": "PASS",
+    "unique_modified_file_and_function": "PASS",
+    "exact_frozen_patch": "PASS",
+    "all_other_files_byte_identical": "PASS",
+    "registry_generated_files_in_vendor": false,
+    "audio_experiments": "NOT_RUN"
+  }
+}

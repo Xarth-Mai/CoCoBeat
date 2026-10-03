@@ -1,0 +1,230 @@
+{
+  "recorded_date": "2026-10-03",
+  "scope": "Independent source-file to patched q10 candidate pipeline; local Linux x86_64 software validation only",
+  "status": "PASS_SOFTWARE_CANDIDATE",
+  "validation": {
+    "host": {
+      "os": "linux",
+      "arch": "x86_64"
+    },
+    "checks": [
+      {
+        "command": "cargo test --locked --offline --manifest-path tools/canonical-audio-probe/rusty-candidate/Cargo.toml --target-dir target/rusty-candidate-build",
+        "result": "PASS",
+        "tests_passed": 4
+      },
+      {
+        "command": "cargo clippy --locked --offline --manifest-path tools/canonical-audio-probe/rusty-candidate/Cargo.toml --target-dir target/rusty-candidate-build --all-targets -- -D warnings",
+        "result": "PASS"
+      },
+      {
+        "command": "cargo build --release --locked --offline --manifest-path tools/canonical-audio-probe/rusty-candidate/Cargo.toml --target-dir target/rusty-candidate-build",
+        "result": "PASS"
+      },
+      {
+        "command": "rustfmt --check --edition 2024 tools/canonical-audio-probe/rusty-candidate/src/main.rs tools/canonical-audio-probe/rusty-candidate/src/tests.rs",
+        "result": "PASS"
+      },
+      {
+        "command": "python3 target/rusty-candidate-cli-20261003/run.py",
+        "result": "PASS",
+        "runs": 1
+      }
+    ],
+    "independent_reviews": [
+      "vendor official archive/file hashes/single function patch PASS",
+      "candidate correctness/file lifecycle review: no findings",
+      "ponytail-review: Lean already. Ship."
+    ],
+    "scope": "Linux software evidence; new source-to-canonical full path; no MusicAnalysis or SongPackage Ready; no real listener acceptance",
+    "not_run": [
+      "Windows and ARM native execution",
+      "new candidate 600-second whole pipeline",
+      "new seek experiments"
+    ],
+    "sha2": "latest resolved 0.11.0; output Array does not implement LowerHex (E0277); retain per-byte hex formatting"
+  },
+  "music64": {
+    "report": {
+      "candidate": "rusty_vorbis-0.1.1-max-abs-q10",
+      "host": {
+        "arch": "x86_64",
+        "os": "linux"
+      },
+      "result": {
+        "evidence": {
+          "artifacts": {
+            "canonical.ogg": {
+              "bytes": 1101424,
+              "sha256": "58166e5a9ad30e48a6218b3081ff930683545d9eed1e9fe19e62aa80fd153f0b"
+            },
+            "decoded.f32le": {
+              "bytes": 24576000,
+              "sha256": "adeb730bbbe754a77ffa9e14e3c7cccd71e8d3cb40b9769df5b8eb9fc44fb461"
+            },
+            "resampled.f32le": {
+              "bytes": 24576000,
+              "sha256": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538"
+            }
+          },
+          "encoder": {
+            "buffers_whole_input": true,
+            "channels": 2,
+            "coupling_patch_sha256": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+            "hop": 1024,
+            "kept_packets": 3004,
+            "long_block": 2048,
+            "padding_frames_each_side": 1024,
+            "produced_packets": 3005,
+            "quality": 0.9800000190734863,
+            "sample_rate": 48000,
+            "upstream_archive_sha256": "6eddf79e697ce9279ef0e012432cd2889a7b6305a45efb5bb16e8a1d6338646f",
+            "vorbis_q": 10
+          },
+          "readback": {
+            "error_power": [
+              9.445889946909112,
+              8.2219914463985
+            ],
+            "pcm": {
+              "frames": 3072000,
+              "non_finite": 0,
+              "overs": [
+                0,
+                0
+              ],
+              "peak": [
+                0.2939924895763397,
+                0.26985570788383484
+              ]
+            },
+            "sample_rate": 48000,
+            "signal_power": [
+              5991.7140113012865,
+              5234.022347519174
+            ],
+            "snr_db": [
+              28.02308194656977,
+              28.03858551965451
+            ]
+          },
+          "resampled": {
+            "frames": 3072000,
+            "non_finite": 0,
+            "overs": [
+              0,
+              0
+            ],
+            "peak": [
+              0.299163818359375,
+              0.2745361328125
+            ]
+          },
+          "source": {
+            "bytes": 12288044,
+            "frames": 3072000,
+            "sample_rate": 48000,
+            "sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8"
+          }
+        },
+        "status": "PASS_SOFTWARE_CANDIDATE"
+      },
+      "schema": 1,
+      "source_path": "/home/lzzz/MyProjects/CoCoBeat/target/media-import-evidence/20261003/input/cocobeat-64.wav"
+    },
+    "resources": {
+      "command": [
+        "prlimit",
+        "--as=2147483648",
+        "timeout",
+        "--kill-after=5s",
+        "30s",
+        "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-build/release/cocobeat-rusty-candidate",
+        "/home/lzzz/MyProjects/CoCoBeat/target/media-import-evidence/20261003/input/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-cli-20261003/music64"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.4090904040058376,
+      "max_rss_kib": 35404,
+      "address_space_limit_bytes": 2147483648,
+      "wall_timeout_seconds": 30,
+      "source_sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+      "binary_sha256": "861e726a755d8e2ca2659cfe3001f0b773bdc31aa2b8429df2cbc763ba1a0af7"
+    },
+    "comparison_to_prior_frozen_candidate": {
+      "resampled.f32le": {
+        "previous": "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-q10-20261003/dev-song-64s/input.f32le",
+        "bytes": 24576000,
+        "sha256": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+        "previous_sha256": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+        "byte_identical": true
+      },
+      "canonical.ogg": {
+        "previous": "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-q10-20261003/dev-song-64s/encoded.ogg",
+        "bytes": 1101424,
+        "sha256": "58166e5a9ad30e48a6218b3081ff930683545d9eed1e9fe19e62aa80fd153f0b",
+        "previous_sha256": "58166e5a9ad30e48a6218b3081ff930683545d9eed1e9fe19e62aa80fd153f0b",
+        "byte_identical": true
+      },
+      "decoded.f32le": {
+        "previous": "/home/lzzz/MyProjects/CoCoBeat/target/rusty-candidate-q10-20261003/dev-song-64s/symphonia.f32le",
+        "bytes": 24576000,
+        "sha256": "adeb730bbbe754a77ffa9e14e3c7cccd71e8d3cb40b9769df5b8eb9fc44fb461",
+        "previous_sha256": "adeb730bbbe754a77ffa9e14e3c7cccd71e8d3cb40b9769df5b8eb9fc44fb461",
+        "byte_identical": true
+      }
+    }
+  },
+  "frozen_evidence": {
+    "path": "target/rusty-candidate-cli-20261003/FROZEN.json",
+    "sha256": "7f777025785066eb3ce1e0f841012574bff3241b12c3a01e3586860a1a0ab5bd",
+    "index": {
+      "frozen_at_utc": "2026-10-03T02:35:45.385385+00:00",
+      "source_file_count": 22,
+      "source_sha256": {
+        "tools/canonical-audio-probe/rusty-candidate/Cargo.lock": "b6d6f71571e97be00e90349bd4c2f7006fa47eeeaf03c1d5d8d56319e48fd27f",
+        "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+        "tools/canonical-audio-probe/rusty-candidate/README.md": "b9bffa7b0819bae6c0628ac2d02207857ca4036ca5b4cc29714cc497d1b6fb6a",
+        "tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md": "5505e7a31ac3cb707eda10734318955f2136cc42c74a44cf8d36c43eb483c64d",
+        "tools/canonical-audio-probe/rusty-candidate/patches/max-abs-coupling.patch": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+        "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+        "tools/canonical-audio-probe/rusty-candidate/src/tests.rs": "86f2aa0b43d2de18ec2087251d6e15c62ed2bc9598ba595c6b6c594ffa971a54",
+        "tools/canonical-audio-probe/rusty-candidate/upstream.json": "ec3f2a6e9465aa1e58c5a3e1fec8ae6d264fa3a588163880376bc1c8acbc14ef",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/.cargo_vcs_info.json": "5bc292b581c85905869bf7e4e0bf008a81f55f86436a8a60dc7838a39e991f14",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.lock": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml.orig": "7d91bd6dfec49c19bb3d2229df0fbe3cac7eb5c532bdd28f4bff50d0b03d2881",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/LICENSE": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/README.md": "acca07b1ed74777bb83c2950ffef8305fc4d55b28833a6bd248ea52d67c77882",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+        "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup_q4_stereo.bin": "8dbb400d1883f8e30fd473a66978e934dfd4029393d187050f82e2069ceef7eb"
+      },
+      "evidence_sha256": {
+        "comparison.json": "e102466f05cfccc109bffa790635ab5d62c45045525abd8b7fa4cf41862219ce",
+        "music64/canonical.ogg": "58166e5a9ad30e48a6218b3081ff930683545d9eed1e9fe19e62aa80fd153f0b",
+        "music64/decoded.f32le": "adeb730bbbe754a77ffa9e14e3c7cccd71e8d3cb40b9769df5b8eb9fc44fb461",
+        "music64/report.json": "a89758a502457db2ae7bcd4c72b61bcb185174d4d9c4f78702ed968254983c4c",
+        "music64/resampled.f32le": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+        "resources.json": "9389803d396d8e1cc60942476fad133870df1e1931a708ed3fd619bff858c07b",
+        "run.py": "0b0464ac1dbb490ebdc5694b0cbb916afa9d08b678a7c5bb945b21ed282548a0",
+        "stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "validation.json": "da416260ae7ce74705c6fc0e756976f9853b457ff46554acc49946feb4277532"
+      },
+      "binary_sha256": "861e726a755d8e2ca2659cfe3001f0b773bdc31aa2b8429df2cbc763ba1a0af7"
+    }
+  },
+  "limits": [
+    "Windows and ARM execution not included in this local observation",
+    "New full-pipeline 600-second resource check not run",
+    "No new seek check or human listening acceptance",
+    "Existing published probes and their failures remain unchanged",
+    "Not a production encoder, MusicAnalysis or SongPackage Ready decision"
+  ]
+}
