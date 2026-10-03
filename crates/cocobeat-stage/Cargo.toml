@@ -1,5 +1,5 @@
 [package]
-name = "cocobeat-lab"
+name = "cocobeat-stage"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -8,11 +8,6 @@ publish.workspace = true
 
 [dependencies]
 cocobeat-schema.workspace = true
-cocobeat-runtime.workspace = true
-cocobeat-media.workspace = true
-cocobeat-stage.workspace = true
-serde.workspace = true
-serde_json.workspace = true
 
 [lints]
 workspace = true

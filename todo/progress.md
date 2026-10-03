@@ -28,7 +28,7 @@
 | 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；完整 MIR/Anchor/Stage 输出及游戏曲库仍待后续 |
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 近邻/叠加新增 7 项离散控制为 4 PASS / 3 FAIL，2 项慢起音只观察；旧 25 项 44,417 窗完全重现，累计离散门槛 21 PASS / 10 FAIL；5 项软件测试、432000 帧重建和 6741 窗独立 FFT 核对通过，弱音漏检仍阻止生产准入，人工标签待验收 |
 | 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
-| 19 | 确定性 StageCompiler · 08 | 待分配 | NOT RUN | 18 | 连续轨道、预告可见性、版本身份与 Replay；表现不改关键几何 |
+| 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | 已实现真实区间的直道/广场、固定地面网格、实际终点和整数预告；115 项相关测试及 Clippy/构建通过，真实包与 GPU 证据见验证策略；缓弯/桥/完整组合、跨版本视觉 Replay 及设备性能仍待完成 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | 待分配 | NOT RUN | 04/16/18/19 | 精确时间、撤销重做、哈希更新、无损导出/载入与同一 core 重放 |
 | 21 | QUIC 会话、时钟同步与可靠历史 · 10 | 待分配 | NOT RUN | 20 | 指纹邀请、内容一致性、有界资源流、输入/水位、epoch 与完成握手 |
 | 22 | 网络模拟与故障验证 · 11 | 待分配 | NOT RUN | 21 | 延迟/丢包/非对称路径/漂移/中断模拟，历史完整且不重复奖励 |

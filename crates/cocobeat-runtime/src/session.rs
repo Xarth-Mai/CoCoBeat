@@ -304,6 +304,7 @@ mod tests {
                 song_time: SongTime::from_frames(frames - 1),
             }],
             sections: vec![],
+            stage: None,
         }
     }
 

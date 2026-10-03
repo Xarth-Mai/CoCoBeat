@@ -497,6 +497,9 @@ fn run_game(package: Option<&Path>) -> Result<(), String> {
     let game = Game::with_content(content)?;
     let audio = AudioOutput::new(Some(sound))?;
     let mut app = base_app()?;
+    if let Some(stage) = &game.content.stage {
+        app.insert_resource(crate::scene::StageScene(stage.clone()));
+    }
     let pacing = app.world().resource::<SettingsMenu>().values.pacing;
     display::install_frame_pacing(&mut app, pacing);
     input::install(&mut app);
@@ -908,8 +911,10 @@ fn update_game(
     }
     visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
     input.set_menu_transitioning(visual.transitioning);
-    visual.song_seconds = game.session.current.as_seconds_f64();
-    visual.next_anchor_seconds = game.next_anchor().map(SongTime::as_seconds_f64);
+    visual.song_time = game.session.current;
+    visual.song_seconds = visual.song_time.as_seconds_f64();
+    visual.next_anchor_time = game.next_anchor();
+    visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
     visual.quality = settings.values.quality;
@@ -942,7 +947,8 @@ fn update_section_visuals(
     } else {
         (None, None)
     };
-    visual.next_section_seconds = next.map(|cue| cue.time.as_seconds_f64());
+    visual.next_section_time = next.map(|cue| cue.time);
+    visual.next_section_seconds = visual.next_section_time.map(SongTime::as_seconds_f64);
     visual.section_hint = if visual.menu.is_some() {
         None
     } else {
@@ -1362,6 +1368,7 @@ fn advance_feedback_motion(
     for event in &events {
         visual_feedback(*event, visual);
     }
+    visual.song_time = song_time;
     visual.song_seconds = song_time.as_seconds_f64();
     visual.duration_seconds = f64::from(dev_song::FRAMES) / f64::from(dev_song::SAMPLE_RATE);
     visual.next_anchor_seconds = FEEDBACK_MOTION_ANCHORS
@@ -1441,6 +1448,9 @@ fn visual_smoke_for_content(
     ));
     ui_assets::install(&mut app)?;
     view::install(&mut app);
+    if let Some(stage) = &content.stage {
+        app.insert_resource(crate::scene::StageScene(stage.clone()));
+    }
     app.init_resource::<InputState>()
         .init_resource::<SavedFrames>();
     display::install(&mut app, default());
@@ -1612,6 +1622,7 @@ fn visual_smoke_for_content(
                  settings: Res<SettingsMenu>,
                  mut visual: ResMut<VisualState>| {
                     visual.locale = settings.values.locale;
+                    visual.song_time = game.session.current;
                     visual.song_seconds = game.session.current.as_seconds_f64();
                     visual.duration_seconds = game.content.end.as_seconds_f64();
                     visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
@@ -1653,6 +1664,7 @@ fn visual_smoke_for_content(
         }
     } else {
         VisualState {
+            song_time: SongTime::from_frames(content.end.frames() / 2),
             song_seconds: SongTime::from_frames(content.end.frames() / 2).as_seconds_f64(),
             duration_seconds: content.end.as_seconds_f64(),
             hit_pulses: [0.8, 0.6],
@@ -1677,17 +1689,19 @@ fn visual_smoke_for_content(
         let time = if let Smoke::Section(locale, time, quality) = mode {
             visual.locale = locale;
             visual.quality = quality;
-            visual.song_seconds = time.as_seconds_f64();
-            visual.next_anchor_seconds = content
-                .anchors
-                .iter()
-                .find(|anchor| anchor.song_time >= time)
-                .map(|anchor| anchor.song_time.as_seconds_f64());
             reset_feedback(&mut visual);
             time
         } else {
             SongTime::from_frames(content.end.frames() / 2)
         };
+        visual.song_time = time;
+        visual.song_seconds = time.as_seconds_f64();
+        visual.next_anchor_time = content
+            .anchors
+            .iter()
+            .find(|anchor| anchor.song_time >= time)
+            .map(|anchor| anchor.song_time);
+        visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
         update_section_visuals(&content, time, true, &mut visual);
     }
     if matches!(mode, Smoke::Quality(_) | Smoke::Feedback(_, Some(_))) {
@@ -1762,6 +1776,20 @@ fn visual_smoke_for_content(
                             "section_hint": visual.section_hint,
                             "locale": visual.locale.code(),
                             "quality": visual.quality,
+                            "stage": content.stage.as_ref().and_then(|plan| {
+                                plan.sample(visual.song_time).map(|sample| serde_json::json!({
+                                    "compiler_version": plan.compiler_version(),
+                                    "segment_count": plan.segments().len(),
+                                    "frame": visual.song_time.frames(),
+                                    "kind": match sample.kind {
+                                        cocobeat_stage::SegmentKind::Straight => "straight",
+                                        cocobeat_stage::SegmentKind::Plaza => "plaza",
+                                    },
+                                    "distance_mm": sample.distance_mm,
+                                    "half_width_mm": sample.half_width_mm,
+                                    "at_end": visual.song_time == plan.end(),
+                                }))
+                            }),
                         })
                     );
                 }
@@ -1964,6 +1992,10 @@ mod tests {
                 .any(char::is_control)
         );
         assert_eq!(visual.next_section_seconds, Some(1.0));
+        assert_eq!(
+            visual.next_section_time,
+            Some(SongTime::from_frames(48_000))
+        );
 
         // A pause menu hides auxiliary text while the cue geometry keeps the same song position
         let mut game = Game::with_content(content.clone()).unwrap();
@@ -1987,6 +2019,7 @@ mod tests {
             )
         );
         assert_eq!(visual.next_section_seconds, None);
+        assert_eq!(visual.next_section_time, None);
         for (time, active) in [(content.end, true), (SongTime::ZERO, false)] {
             update_section_visuals(&content, time, active, &mut visual);
             assert!(visual.section_hint.is_none());
@@ -2000,6 +2033,14 @@ mod tests {
     #[test]
     fn returning_to_ready_keeps_the_selected_content_and_anchor_hints() {
         for frames in [4_800, 3_120_017] {
+            let stage = std::sync::Arc::new(
+                cocobeat_stage::compile(
+                    &format!("test-package-{frames}"),
+                    SongTime::from_frames(frames),
+                    &[],
+                )
+                .unwrap(),
+            );
             let content = SongContent {
                 content_id: format!("test-package-{frames}"),
                 end: SongTime::from_frames(frames),
@@ -2008,6 +2049,7 @@ mod tests {
                     song_time: SongTime::from_frames(frames - 1),
                 }],
                 sections: vec![],
+                stage: Some(stage.clone()),
             };
             let mut game = Game::with_content(content.clone()).unwrap();
             assert_eq!(game.phase, Phase::Ready);
@@ -2017,6 +2059,10 @@ mod tests {
             game.phase = Phase::Finished;
             assert_eq!(game.next_anchor(), None);
             game.main_menu().unwrap();
+            assert!(std::sync::Arc::ptr_eq(
+                game.content.stage.as_ref().unwrap(),
+                &stage
+            ));
             assert_eq!(game.phase, Phase::Ready);
             assert_eq!(game.session.epoch(), SessionEpoch(9));
             assert_eq!(game.session.current, SongTime::ZERO);

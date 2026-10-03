@@ -1,6 +1,6 @@
 # 规则与表现约束
 
-当前 core 已实现手写 Anchor 判定、一对一 Free Sync、Anchor Sync 和有界 Resonance，runtime 已消费手工 SectionCue 提供辅助字幕与空间预告；自动 Anchor、自动段落分析和 StagePlan 编译仍待实现，以下初始参数的可玩性仍需真人验证
+当前 core 已实现手写 Anchor 判定、一对一 Free Sync、Anchor Sync 和有界 Resonance，runtime 已消费手工 SectionCue 提供辅助字幕与空间预告，并将包中真实段落区间编为直道 / 广场 StagePlan；自动 Anchor、自动段落分析和完整 StageCompiler 仍待实现，以下初始参数的可玩性仍需真人验证
 
 ## Anchor
 
@@ -43,6 +43,16 @@ SectionCue 是带 ID、时刻和作者标签的点提示，分析中的 SectionF
 
 动态文案复用 Logo 下的辅助字幕，保留 cue ID，标签按单行展示并裁剪超长内容；菜单打开、非 Running / Pausing / Paused 阶段或 EOF 时清空动态文案，恢复原氛围字幕，逻辑宽度小于 900 或高度小于 600 时整行仍隐藏，因此它不承载必要按键或错误信息
 
-下一 cue 的预告门由两个立柱和一个横梁共三个固定实体组成，只在 `0 < cue_time - song_time <= 6` 秒时显示，位置为 `z = -3 × (cue_time - song_time)`；暂停后沿用冻结的歌曲游标，菜单隐藏字幕不改变这个位置，到 cue 时刻切换到下一提示，门框不产生 Hit、Anchor、Sync、音效或额外输入控制
+下一 cue 的预告门由两个立柱和一个横梁共三个固定实体组成，只在 `0 < cue_time - song_time <= 6` 秒时显示；歌曲包按 StagePlan 的整数距离差定位，无参数开发场景沿用 `z = -3 × (cue_time - song_time)`；暂停后沿用冻结的歌曲游标，菜单隐藏字幕不改变这个位置，到 cue 时刻切换到下一提示，门框不产生 Hit、Anchor、Sync、音效或额外输入控制
 
 开发歌曲用与手工 authoring 一致的代码常量在 0、8、24、40、48、60 秒提供六个 cue，无需运行时读取 JSON；歌曲包、无音频场景预览与指定帧 `--section-smoke` 共用内容查询，字段与命令见 [SongPackage](song-package.md)
+
+## 歌曲包的地面舞台
+
+StagePlan 使用分析中的真实 `[start, end)` 区间，各区间为 Plaza，空隙为 Straight，空分析列表为全曲直道；Plaza 沿直行中心线对称拓宽再收回，基础半宽 3.5 m、最多增加 0.5 m，短区间按帧长度限制拓宽幅度，标签与置信度不决定几何；无参数开发歌曲仍使用原手写街道，不从 SectionCue 推造分析区间
+
+计划按 SongTime 计算整数毫米距离，Anchor 的四秒预告、SectionCue 的六秒门和终点使用同一距离关系；Resonance 只影响装饰材质，画质设置不改变计划、路宽、Anchor 或 cue 时刻，舞台不增加物理碰撞判定或玩家控制
+
+地面使用固定五个动态网格覆盖前 42 m、后 12 m，终点另用地面标线表示；有限横断面预算下，极密片段只能按基础采样近似展示，不能保证所有短广场的轮廓精确可见，采样规则与限制见 [SongPackage](song-package.md)
+
+歌曲范围外的基础宽度地面是场景衬底，终点标线也不是可演奏 Hit；音频停止确认前游标若短暂外推过 EOF，地面、标线和终点仅在显示层夹到合法时间范围，原始 Session 游标、输入和规则不因此改变，预告仍按原始时刻检查是否有效

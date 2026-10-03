@@ -105,12 +105,14 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                 false,
             ),
             "cocobeat-media" => (&["cocobeat-schema"], true),
+            "cocobeat-stage" => (&["cocobeat-schema"], false),
             "cocobeat-runtime" => (
                 &[
                     "cocobeat-schema",
                     "cocobeat-core",
                     "cocobeat-replay",
                     "cocobeat-media",
+                    "cocobeat-stage",
                 ],
                 true,
             ),
@@ -122,6 +124,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                     "cocobeat-replay",
                     "cocobeat-runtime",
                     "cocobeat-media",
+                    "cocobeat-stage",
                 ],
                 true,
             ),
@@ -195,6 +198,8 @@ mod tests {
             ("cocobeat-runtime", "helper-with-hidden-engine"),
             ("cocobeat-media", "cocobeat-runtime"),
             ("cocobeat-media", "unlisted-local-decoder"),
+            ("cocobeat-media", "cocobeat-stage"),
+            ("cocobeat-stage", "cocobeat-runtime"),
         ] {
             assert!(
                 verify_graph(&graph(

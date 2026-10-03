@@ -3,7 +3,7 @@
 use crate::{audio::sound_data, dev_song};
 use cocobeat_schema::{Anchor, SectionCue, SongTime};
 use kira::{Frame, sound::static_sound::StaticSoundData};
-use std::path::Path;
+use std::{path::Path, sync::Arc};
 
 pub const CONTENT_ID: &str = "dev64-pcm16-3390dd080cb536fd4-anchors-v1";
 pub const RULES_ID: &str = "duo-watermark-v1";
@@ -14,6 +14,7 @@ pub struct SongContent {
     pub end: SongTime,
     pub anchors: Vec<Anchor>,
     pub sections: Vec<SectionCue>,
+    pub stage: Option<Arc<cocobeat_stage::StagePlan>>,
 }
 
 impl SongContent {
@@ -23,6 +24,7 @@ impl SongContent {
             end: SongTime::from_frames(i64::from(dev_song::FRAMES)),
             anchors: dev_song::anchors(),
             sections: dev_song::sections(),
+            stage: None,
         }
     }
 
@@ -70,12 +72,16 @@ pub fn load_package(path: &Path) -> Result<(SongContent, StaticSoundData), Strin
         .iter()
         .map(|byte| format!("{byte:02x}"))
         .collect();
+    let content_id = format!("package-blake3:{hash}");
+    let end = SongTime::from_frames(package.manifest.canonical_frames as i64);
+    let stage = cocobeat_stage::compile(&content_id, end, &package.analysis.sections)?;
     Ok((
         SongContent {
-            content_id: format!("package-blake3:{hash}"),
-            end: SongTime::from_frames(package.manifest.canonical_frames as i64),
+            content_id,
+            end,
             anchors: package.chart.anchors,
             sections: package.chart.sections,
+            stage: Some(Arc::new(stage)),
         },
         sound_data(pcm),
     ))
@@ -147,7 +153,12 @@ mod tests {
                             audio_hash: prepared.asset.blake3,
                             beats: vec![],
                             onsets: vec![],
-                            sections: vec![],
+                            sections: vec![cocobeat_schema::SectionFeature {
+                                start: SongTime::from_frames(1_200),
+                                end: SongTime::from_frames(3_600),
+                                confidence: None,
+                                label: "Analysis interval independent of chart cues".into(),
+                            }],
                             energy: vec![EnergySample {
                                 start: SongTime::ZERO,
                                 frames: 4_800,
@@ -196,6 +207,18 @@ mod tests {
         assert_eq!(content.anchors[0].id, 5);
         assert_eq!(content.anchors[0].song_time.frames(), 1_200);
         assert!(content.sections.is_empty());
+        let stage = content.stage.as_ref().unwrap();
+        assert_eq!(stage.content_id(), content.content_id);
+        assert_eq!(stage.end(), content.end);
+        assert_eq!(stage.segments().len(), 3);
+        assert_eq!(
+            stage
+                .sample(SongTime::from_frames(2_400))
+                .unwrap()
+                .half_width_mm,
+            3_575
+        );
+        assert!(Arc::ptr_eq(stage, content.clone().stage.as_ref().unwrap()));
         assert_eq!(sound.sample_rate, 48_000);
         assert_eq!(sound.frames.len(), 4_800);
         assert_eq!(sound.frames, other_sound.frames);
@@ -251,6 +274,7 @@ mod tests {
             content_id: "cue-query".into(),
             end: SongTime::from_frames(4_800),
             anchors: vec![],
+            stage: None,
             sections: [(4, 100), (7, 100), (9, 500), (3, 4_799), (10, 4_799)]
                 .into_iter()
                 .map(|(id, frame)| SectionCue {
@@ -377,6 +401,7 @@ mod tests {
         );
         assert_eq!(content.end.frames(), 3_072_000);
         assert_eq!(content.anchors, dev_song::anchors());
+        assert!(content.stage.is_none());
         let authoring: serde_json::Value = serde_json::from_str(include_str!(
             "../../../assets/dev/vertical_slice/authoring.json"
         ))

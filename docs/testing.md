@@ -452,3 +452,21 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 独立检查从实际 f32le 重建全部 432000 帧并逐位匹配，用 NumPy f64 FFT 与数学 Hamming 复算 6741 窗，谱通量最大绝对差约 1.15e-5、归一化比例最大差约 4.87e-7；全部原生候选上的过滤去留及 Matcher 字段一致，未宣称跨 FFT 的 f32 位一致或独立复现微小噪声的原生选峰。新增声明与生成器已有来源台账，无新增依赖版本，软件验证与独立复审为 `Lean already. Ship.`
 
 命令、日志与冻结输入见 `target/mir-next-controls-20261003/execution.json`，独立数值检查见 `independent-controls.json`；执行器准备阶段发现 `/usr/bin/time` 不存在，尚未生成 PCM，随后直接调用工具并保留该记录。当前工具 SHA-256 为 `21188dee93996d16dfa66f3400fea3350f2e512f55e9423684fb07419bf04cf2`，完整报告为 `controls-v1/report.json`，SHA-256 `ac90ae616cb00169a1c3b4e8bae83850b419114ae3e8da05509d27a508b2d232`；持久[观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-next-controls-20261003.json) SHA-256 为 `1e70786c4a8639a1eef10c4b32c2fd8ab269d12a5beb8a8829c6ba1341b19616`，真实音乐、最终 Ogg 回读、人工标签、beat/downbeat、置信度和 Anchor 可玩性继续为 NOT RUN
+
+## 手工区间驱动的确定性轨道
+
+2026-10-03，新增只依赖 schema 的 `cocobeat-stage`，从真实 analysis 区间生成直道/广场，以整数 SongTime 采样距离和路宽；runtime 共享同一计划，用固定五张地面网格呈现区间和空隙，终点来自实际歌曲长度。Anchor 与 SectionCue 保留独立的真实时间，原四对象包与 Replay 格式不变，lab 增加 `inspect-stage PACKAGE FRAME`，完整契约见[歌曲包](song-package.md#内存-stageplan-与整数采样)
+
+`cargo test --locked --offline -p cocobeat-stage -p cocobeat-runtime -p cocobeat-lab -p xtask` 的 115 项相关测试通过，其中 runtime 104、stage 3、lab 4、xtask 4；全 workspace all-targets Clippy、格式、依赖边界及 game/lab 构建通过。147 个构建输入前后哈希一致，新增本地 crate 未增加第三方版本，仍为 547 项；游戏 SHA-256 为 `a3a556d9a29dc86fb1a8c84be5a7f8fe5fc1d11f150d37702af93a76ae96362e`，lab 为 `0b4ddf59eb1c7c77f9ed4a1fe9f96ccedb3724c3a429eb0b31b0e24a6d0c17a2`，源输入与实际命令见 `target/stage-runtime-20261003/validation.json`
+
+复查修复了密集区间回退遗漏首尾截面造成曲外拓宽，以及音频游标短暂越过 EOF 时终点显示不稳的问题；原始 SongTime 与判定事实保持，只有呈现游标限制在歌曲范围。首轮 Clippy 要求原生 `as_chunks_mut`，替换后重新通过全部上述检查，原失败日志保留。固定 257 截面预算会近似极密区间的细小轮廓，完整计划不截断；短区间的拓宽按长度收敛，未据有限网格数量宣称性能验收通过
+
+冻结二进制的 36 项 CPU/CLI 检查通过：真实 0.1 秒、64 秒和 600 秒包、空段落、段间空隙、独立 cue 变体、首尾与整数峰值均对照独立 Postcard/BLAKE3 读取器和整数 oracle；重复检查输出逐字节一致，负数、越界、溢出、非整数和缺参正常拒绝。原包及开发 Replay 与既有输出一致，改 cue 后的完整身份错配仍拒绝；全部音频复用已有 canonical 字节，没有新增编码质量结论
+
+14 张 Vulkan 离屏图已逐张目检，包含拓宽与收回、空隙上的独立提示门、关闭装饰的小窗口、DPI、短歌与 EOF、十分钟歌曲末段，以及旧/新默认开发场景对照。默认场景的 PNG 字节和 1,024,000 个 RGBA 像素完全相同，新增 `stage: null` 之外的采样字段一致；包场景为固定 198 个网格实体。实际报告见 `target/stage-runtime-20261003/qa-report.json`，该英文标签矩阵的日志检查不表示既有 CJK ICU 诊断已经修复
+
+0.1 秒极限夹具的最后 Anchor 与终点只差 1 帧，两者的中央横线在静态图中几乎重合，侧括号仍可见；该局限保留，不能据几何正确性认为实际反应时间与预告可读性已经通过
+
+204 项产物的 `qa-sealed.json` SHA-256 为 `3e8a44206a8f5251bb29b075ca442193e361490f5aa0a63f9803470c0dc1bd41`，主线程已逐一核验；独立正确性与 ponytail 复审为 `Lean already. Ship.`
+
+本批覆盖软件行为和静态呈现，完整舞台组合、跨编译版本视觉 Replay、连续帧性能、Windows/ARM 运行时、真实音频/手柄及真人双人可读性仍待对应验收；原路线图的完整退出条件保持

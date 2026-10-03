@@ -4,9 +4,10 @@
 
 ```text
 game ───────────────→ runtime
-runtime ────────────→ schema / core / replay / media
+runtime ────────────→ schema / core / replay / media / stage
 replay ─────────────→ schema / core
 media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
+stage ──────────────→ schema / std
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -27,18 +28,24 @@ schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不
 
 schema 的初始 `MusicAnalysis` / `CompiledChart` / `SongPackage` 由 lab 构建手工内容包，再由 runtime 加载；能量从最终 staging Ogg 全量读回计算，Anchor 和段落来自有来源说明的创作 JSON，media 的私有 Postcard DTO 持有版本头、字节/元素限额、语义检查和对象身份，schema 仍仅依赖标准库
 
-media 的 `read_package` 检查四对象，从同一份有界音频字节快照验证引用哈希并严格解码，将 PCM 块交给调用方，整次调用成功后才返回 `ValidatedPackage`；失败时调用方丢弃临时 PCM，`validate_package` 复用该路径并丢弃 PCM，完整契约见 [SongPackage](song-package.md)；校验不重新执行 MIR 或证明谱面合理性，runtime 消费音频、实际长度、包身份、Anchor 与 SectionCue，energy 和分析段落区间尚未驱动场景，后续 TempoRegion、重复结构、AnchorEvidence 和 TrackPlan 按实际消费者扩展并升级版本
+media 的 `read_package` 检查四对象，从同一份有界音频字节快照验证引用哈希并严格解码，将 PCM 块交给调用方，整次调用成功后才返回 `ValidatedPackage`；失败时调用方丢弃临时 PCM，`validate_package` 复用该路径并丢弃 PCM，完整契约见 [SongPackage](song-package.md)；校验不重新执行 MIR 或证明谱面合理性，runtime 消费音频、实际长度、包身份、Anchor、SectionCue 与分析段落区间，energy 尚未驱动场景，后续 TempoRegion、重复结构和 AnchorEvidence 按实际消费者扩展并升级版本
 
-`SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示，按 `z = -3 × ahead` 移动，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
+`SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数距离差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
+
+stage 的 `compile` 把真实分析区间编为 Plaza，把区间空隙编为 Straight，形成覆盖全曲的内存 StagePlan；模型与采样只使用 schema 和标准库，以整数帧与毫米计算距离和三角形宽度变化，不按 cue 补区间、不从 label 或 confidence 推断音乐含义；runtime 在包加载时编译一次并用 `Arc` 共享，lab 的 `inspect-stage PACKAGE FRAME` 复用相同入口，无参数开发歌曲保留原手写场景且没有 StagePlan
+
+runtime 将计划适配成五个固定动态地面网格和终点标线，显示窗口为前 42 m、后 12 m，最多 257 个横断面；基础 64 条带之外按预算补片段起点 / 中点 / 终点，极密时回退基础采样并保留窗口内的曲首 / EOF，有限网格不保证每个短片段轮廓都精确；曲外基础宽度地面只作场景衬底，Anchor / cue 的原四秒 / 六秒预告窗口不变，Resonance 与画质不改变计划或关键采样
+
+StagePlan 身份由完整内容身份与 `compiler_version = 1` 组成，计划不写入歌曲包，四对象 content v1 和 Replay v1 保持原格式；相同内容和编译版本的计划 / 整数采样可复现，当前 Replay 仍只校验内容与规则身份，不能据此声称跨舞台编译版本的视觉重放已实现
 
 `ui_assets` 复用既有六份 Noto Sans 字体，通过 Bevy 的 fontique 字体集合配置原生脚本回退；每个文本仍以 locale 对应的地区字体为首选，回退处理其缺少的拉丁 / 西里尔 / 希腊 / 汉字 / 假名 / 韩文字形，不引入系统字体依赖或任意 Unicode 覆盖承诺，字体类型止于 runtime 表现适配层
 
-## 未来模块何时出生
+## 模块职责与引入状态
 
 | 模块 | 独立责任 | 引入时机 |
 |---|---|---|
 | media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口与构包已有 lab 消费，runtime 加载已构建包；其余按 05–07 的实际契约加入 |
-| stage | MusicAnalysis / 编译后的音乐结构 → StagePlan，确定性轨道和几何校验 | 08 自动舞台；手写场景先在 runtime |
+| stage（已创建） | 真实分析区间 → Straight / Plaza StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；缓弯、桥和完整 StageCompiler 仍按 08 推进 |
 | editor | 波形、Anchor、Replay 的可视化与人工修改 | 09 已有可编辑内容契约 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |
 
@@ -63,7 +70,7 @@ runtime 以完整 manifest 的 `package_hash` 构造 `package-blake3:<64 个十�
 ## 自动约束
 
 `cargo xtask boundaries` 检查 Cargo metadata 中所有直接依赖声明，包括 build/dev、目标平台条件与重命名依赖。
-schema / core 不允许外部依赖，replay 仅允许 serde / serde_json 处理私有持久化格式，且只能沿上图依赖；game 的运行时只允许 runtime，Windows 构建脚本允许 embed-resource 编译 EXE 图标资源，例外不扩展到普通、dev 或其它平台依赖。media、runtime 和 lab 可接入第三方实现依赖；未声明的本地 helper 不得绕过边界
+schema / core 不允许外部依赖，stage 只允许 schema 与标准库并由 runtime / lab 消费，replay 仅允许 serde / serde_json 处理私有持久化格式，且只能沿上图依赖；game 的运行时只允许 runtime，Windows 构建脚本允许 embed-resource 编译 EXE 图标资源，例外不扩展到普通、dev 或其它平台依赖；media、runtime 和 lab 可接入第三方实现依赖，未声明的本地 helper 不得绕过边界
 需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
 
 边界检查约束模块图，不能证明所有函数都尊重语义；例如反馈不修改判定，还需要 API 设计、测试和代码审查。

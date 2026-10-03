@@ -1,13 +1,18 @@
-use std::f32::consts::PI;
+use std::{f32::consts::PI, sync::Arc};
 
 use bevy::{
-    camera::{ClearColorConfig, Hdr},
+    asset::RenderAssetUsages,
+    camera::{ClearColorConfig, Hdr, visibility::NoFrustumCulling},
     core_pipeline::tonemapping::Tonemapping,
     light::NotShadowCaster,
+    mesh::{Indices, PrimitiveTopology, VertexAttributeValues},
     post_process::bloom::Bloom,
     prelude::*,
     render::view::Msaa,
 };
+
+use cocobeat_schema::SongTime;
+use cocobeat_stage::{BASE_HALF_WIDTH_MM, StagePlan};
 
 use crate::{
     display::GameCamera,
@@ -16,6 +21,132 @@ use crate::{
 };
 
 const DISTANT_COLOR: Color = Color::srgb(0.055, 0.07, 0.12);
+const GROUND_ROWS: usize = 257;
+
+#[derive(Resource)]
+pub(crate) struct StageScene(pub Arc<StagePlan>);
+
+#[derive(Resource)]
+pub(crate) struct StageGround {
+    meshes: [Handle<Mesh>; 5],
+    last_time: Option<SongTime>,
+}
+
+fn ground_mesh() -> Mesh {
+    let indices = (0..GROUND_ROWS as u32 - 1)
+        .flat_map(|row| {
+            let left = row * 2;
+            [left, left + 1, left + 2, left + 1, left + 3, left + 2]
+        })
+        .collect();
+    Mesh::new(
+        PrimitiveTopology::TriangleList,
+        RenderAssetUsages::default(),
+    )
+    .with_inserted_attribute(Mesh::ATTRIBUTE_POSITION, vec![[0.0; 3]; GROUND_ROWS * 2])
+    .with_inserted_attribute(
+        Mesh::ATTRIBUTE_NORMAL,
+        vec![[0.0, 1.0, 0.0]; GROUND_ROWS * 2],
+    )
+    .with_inserted_attribute(Mesh::ATTRIBUTE_UV_0, vec![[0.0; 2]; GROUND_ROWS * 2])
+    .with_inserted_indices(Indices::U32(indices))
+}
+
+fn ground_rows(plan: &StagePlan, time: SongTime) -> Vec<(f32, f32)> {
+    // The base-width apron outside the song is scenery, not an extra StagePlan segment
+    let origin = time.frames().div_euclid(16);
+    let first = (origin - 12_000) * 16;
+    let last = (origin + 42_000) * 16;
+    let mut frames = Vec::with_capacity(GROUND_ROWS);
+    for row in 0..=64 {
+        frames.push(first + (last - first) * row / 64);
+    }
+    // Keep the apron at base width even when dense-plan tessellation skips internal seams
+    for boundary in [0, plan.end().frames()] {
+        if (first..=last).contains(&boundary) {
+            frames.push(boundary);
+        }
+    }
+    let segments = plan.segments();
+    let begin = segments.partition_point(|segment| segment.end.frames() < first);
+    let end = segments.partition_point(|segment| segment.start.frames() <= last);
+    // ponytail: dense plans use 64 joined strips; add finer tessellation if tiny plazas need exact silhouettes
+    if (end - begin) * 3 <= GROUND_ROWS - frames.len() {
+        for segment in &segments[begin..end] {
+            for frame in [
+                segment.start.frames(),
+                segment.start.frames() + (segment.end.frames() - segment.start.frames()) / 2,
+                segment.end.frames(),
+            ] {
+                if (first..=last).contains(&frame) {
+                    frames.push(frame);
+                }
+            }
+        }
+    }
+    frames.sort_unstable();
+    frames.dedup();
+    frames
+        .into_iter()
+        .map(|frame| {
+            let sample = plan.sample(SongTime::from_frames(frame));
+            let distance = sample.map_or_else(|| frame.div_euclid(16), |sample| sample.distance_mm);
+            let width = sample.map_or(BASE_HALF_WIDTH_MM, |sample| sample.half_width_mm);
+            ((origin - distance) as f32 / 1000.0, width as f32 / 1000.0)
+        })
+        .collect()
+}
+
+fn update_ground(
+    plan: &StagePlan,
+    time: SongTime,
+    ground: &mut StageGround,
+    meshes: &mut Assets<Mesh>,
+) {
+    if ground.last_time == Some(time) {
+        return;
+    }
+    let rows = ground_rows(plan, time);
+    for (kind, handle) in ground.meshes.iter().enumerate() {
+        let Some(mut mesh) = meshes.get_mut(handle) else {
+            continue;
+        };
+        let Some(VertexAttributeValues::Float32x3(positions)) =
+            mesh.attribute_mut(Mesh::ATTRIBUTE_POSITION)
+        else {
+            continue;
+        };
+        for (row, pair) in positions.as_chunks_mut::<2>().0.iter_mut().enumerate() {
+            let (z, width) = rows[row.min(rows.len() - 1)];
+            let (left, right, y) = match kind {
+                0 => (-width, width, 0.0),
+                1 => (-4.8, -width, 0.0),
+                2 => (width, 4.8, 0.0),
+                3 => (-width - 0.0125, -width + 0.0125, 0.02),
+                _ => (width - 0.0125, width + 0.0125, 0.02),
+            };
+            pair[0] = [left, y, z];
+            pair[1] = [right, y, z];
+        }
+    }
+    ground.last_time = Some(time);
+}
+
+fn stage_preview(
+    plan: &StagePlan,
+    now: SongTime,
+    at: SongTime,
+    window: i64,
+    strict: bool,
+) -> Option<(f32, f32)> {
+    let ahead = at.checked_frames_since(now)?;
+    if ahead < i64::from(strict) || ahead > window {
+        return None;
+    }
+    let origin = plan.sample(now)?.distance_mm;
+    let target = plan.sample(at)?.distance_mm;
+    Some((ahead as f32 / 48_000.0, (origin - target) as f32 / 1000.0))
+}
 
 #[derive(Resource)]
 pub(crate) struct SignMaterials([Handle<StandardMaterial>; 2]);
@@ -31,6 +162,7 @@ pub(crate) enum Motion {
     AnchorRing(usize),
     AnchorPreview,
     SectionGate,
+    EndLine,
     Street(f32),
     Rain(usize),
 }
@@ -52,6 +184,7 @@ pub(crate) fn setup(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    stage: Option<Res<StageScene>>,
 ) {
     commands.spawn((
         Camera3d::default(),
@@ -157,12 +290,37 @@ pub(crate) fn setup(
         ..default()
     });
 
-    commands.spawn(part(
-        &cube,
-        &asphalt,
-        Vec3::new(0.0, -0.1, -15.0),
-        Vec3::new(9.0, 0.2, 54.0),
-    ));
+    if stage.is_some() {
+        let ground = StageGround {
+            meshes: std::array::from_fn(|_| meshes.add(ground_mesh())),
+            last_time: None,
+        };
+        for (mesh, material) in ground
+            .meshes
+            .iter()
+            .zip([&asphalt, &pavement, &pavement, &neon[0], &neon[1]])
+        {
+            commands.spawn((
+                part(mesh, material, Vec3::ZERO, Vec3::ONE),
+                NoFrustumCulling,
+            ));
+        }
+        commands.spawn((
+            part(&cube, &white, Vec3::ZERO, Vec3::new(7.0, 0.025, 0.1)),
+            Motion::EndLine,
+            Visibility::Hidden,
+            NotShadowCaster,
+        ));
+        commands.insert_resource(ground);
+    } else {
+        commands.spawn(part(
+            &cube,
+            &asphalt,
+            Vec3::new(0.0, -0.1, -15.0),
+            Vec3::new(9.0, 0.2, 54.0),
+        ));
+    }
+    let side_offset = if stage.is_some() { 0.7 } else { 0.0 };
     commands.spawn((
         PointLight {
             color: Color::srgb(1.0, 0.94, 0.86),
@@ -175,18 +333,20 @@ pub(crate) fn setup(
         KeyLight,
     ));
     for (player, side) in [-1.0, 1.0].into_iter().enumerate() {
-        commands.spawn(part(
-            &cube,
-            &pavement,
-            Vec3::new(side * 4.05, 0.08, -15.0),
-            Vec3::new(1.1, 0.16, 54.0),
-        ));
-        commands.spawn(part(
-            &cube,
-            &neon[player],
-            Vec3::new(side * 3.5, 0.02, -15.0),
-            Vec3::new(0.025, 0.025, 54.0),
-        ));
+        if stage.is_none() {
+            commands.spawn(part(
+                &cube,
+                &pavement,
+                Vec3::new(side * 4.05, 0.08, -15.0),
+                Vec3::new(1.1, 0.16, 54.0),
+            ));
+            commands.spawn(part(
+                &cube,
+                &neon[player],
+                Vec3::new(side * 3.5, 0.02, -15.0),
+                Vec3::new(0.025, 0.025, 54.0),
+            ));
+        }
         commands.spawn((
             PointLight {
                 color: colors[player],
@@ -203,32 +363,32 @@ pub(crate) fn setup(
             commands.spawn(part(
                 &cube,
                 &building,
-                Vec3::new(side * 6.0, height / 2.0, z),
+                Vec3::new(side * (6.0 + side_offset), height / 2.0, z),
                 Vec3::new(3.5, height, 4.3),
             ));
             commands.spawn(part(
                 &cube,
                 &signs[player],
-                Vec3::new(side * 4.22, height * 0.62, z),
+                Vec3::new(side * (4.22 + side_offset), height * 0.62, z),
                 Vec3::new(0.08, 0.09, 2.2),
             ));
             commands.spawn(part(
                 &cube,
                 &signs[player],
-                Vec3::new(side * 4.22, height * 0.62 - 0.3, z),
+                Vec3::new(side * (4.22 + side_offset), height * 0.62 - 0.3, z),
                 Vec3::new(0.08, 0.035, 1.3),
             ));
             if block % 3 == 0 {
                 commands.spawn(part(
                     &cube,
                     &window,
-                    Vec3::new(side * 4.23, 1.15, z),
+                    Vec3::new(side * (4.23 + side_offset), 1.15, z),
                     Vec3::new(0.04, 1.6, 1.1),
                 ));
                 commands.spawn(part(
                     &cube,
                     &pavement,
-                    Vec3::new(side * 4.05, 2.1, z),
+                    Vec3::new(side * (4.05 + side_offset), 2.1, z),
                     Vec3::new(0.7, 0.1, 1.6),
                 ));
                 commands.spawn((
@@ -258,7 +418,7 @@ pub(crate) fn setup(
                 &cube,
                 &distant,
                 Vec3::new(
-                    side * (3.5 + block as f32 * 3.5),
+                    side * (3.5 + block as f32 * 3.5 + if stage.is_some() { 3.8 } else { 0.0 }),
                     height * 0.5,
                     -42.0 - block as f32 * 6.0,
                 ),
@@ -527,6 +687,9 @@ pub(crate) fn animate(
     state: Res<VisualState>,
     time: Res<Time>,
     mut materials: ResMut<Assets<StandardMaterial>>,
+    mut meshes: ResMut<Assets<Mesh>>,
+    stage: Option<Res<StageScene>>,
+    mut ground: Option<ResMut<StageGround>>,
     mut objects: Query<(
         &Motion,
         &mut Transform,
@@ -535,6 +698,16 @@ pub(crate) fn animate(
     )>,
 ) {
     let song = state.song_seconds as f32;
+    let stage_sample = if let Some(stage) = &stage {
+        // The audio cursor may briefly extrapolate past EOF while the stop acknowledgement arrives
+        let display_time = state.song_time.clamp(SongTime::ZERO, stage.0.end());
+        if let Some(ground) = &mut ground {
+            update_ground(&stage.0, display_time, ground, &mut meshes);
+        }
+        stage.0.sample(display_time)
+    } else {
+        None
+    };
     for (motion, mut transform, mut visibility, material) in &mut objects {
         let opacity = match *motion {
             Motion::Spirit(player) => {
@@ -580,28 +753,67 @@ pub(crate) fn animate(
                 Some(attack * sync * sync * alpha)
             }
             Motion::AnchorPreview => {
-                let ahead = state.next_anchor_seconds.map(|at| at - state.song_seconds);
-                if let Some(ahead) = ahead.filter(|ahead| (0.0..=4.0).contains(ahead)) {
+                let preview = if let Some(stage) = &stage {
+                    state
+                        .next_anchor_time
+                        .and_then(|at| stage_preview(&stage.0, state.song_time, at, 192_000, false))
+                } else {
+                    state
+                        .next_anchor_seconds
+                        .map(|at| at - state.song_seconds)
+                        .filter(|ahead| (0.0..=4.0).contains(ahead))
+                        .map(|ahead| (ahead as f32, -ahead as f32 * 3.0))
+                };
+                if let Some((ahead, z)) = preview {
                     *visibility = Visibility::Visible;
-                    transform.translation.z = -ahead as f32 * 3.0;
-                    Some(0.25 + (1.0 - ahead as f32 / 4.0) * 0.4)
+                    transform.translation.z = z;
+                    Some(0.25 + (1.0 - ahead / 4.0) * 0.4)
                 } else {
                     *visibility = Visibility::Hidden;
                     Some(0.0)
                 }
             }
             Motion::SectionGate => {
-                let ahead = state.next_section_seconds.map(|at| at - state.song_seconds);
-                if let Some(ahead) = ahead.filter(|ahead| *ahead > 0.0 && *ahead <= 6.0) {
+                let preview = if let Some(stage) = &stage {
+                    state
+                        .next_section_time
+                        .and_then(|at| stage_preview(&stage.0, state.song_time, at, 288_000, true))
+                } else {
+                    state
+                        .next_section_seconds
+                        .map(|at| at - state.song_seconds)
+                        .filter(|ahead| *ahead > 0.0 && *ahead <= 6.0)
+                        .map(|ahead| (ahead as f32, -ahead as f32 * 3.0))
+                };
+                if let Some((_, z)) = preview {
                     *visibility = Visibility::Visible;
-                    transform.translation.z = -ahead as f32 * 3.0;
+                    transform.translation.z = z;
+                } else {
+                    *visibility = Visibility::Hidden;
+                }
+                None
+            }
+            Motion::EndLine => {
+                if let Some(stage) = &stage
+                    && let Some(now) = stage_sample
+                    && let Some(end) = stage.0.sample(stage.0.end())
+                {
+                    let z = (now.distance_mm - end.distance_mm) as f32 / 1000.0;
+                    *visibility = if (-42.0..=12.0).contains(&z) {
+                        Visibility::Visible
+                    } else {
+                        Visibility::Hidden
+                    };
+                    transform.translation = Vec3::new(0.0, 0.025, z);
                 } else {
                     *visibility = Visibility::Hidden;
                 }
                 None
             }
             Motion::Street(offset) => {
-                transform.translation.z = 6.0 - (offset - song * 3.0).rem_euclid(36.0);
+                let distance =
+                    stage_sample.map_or(song * 3.0, |sample| sample.distance_mm as f32 / 1000.0);
+                transform.translation.z = 6.0 - (offset - distance).rem_euclid(36.0);
                 None
             }
             Motion::Rain(index) => {
@@ -623,6 +835,246 @@ pub(crate) fn animate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn stage_ground_joins_sampled_edges_and_stays_bounded() {
+        use cocobeat_schema::SectionFeature;
+
+        let section = |start, end| SectionFeature {
+            start: SongTime::from_frames(start),
+            end: SongTime::from_frames(end),
+            confidence: None,
+            label: "authored".into(),
+        };
+        let end = SongTime::from_frames(3_200_000);
+        let plan = Arc::new(
+            cocobeat_stage::compile(
+                "package-stage",
+                end,
+                &[section(32_000, 96_000), section(160_000, 256_000)],
+            )
+            .unwrap(),
+        );
+        let at = SongTime::from_frames(64_017);
+        let rows = ground_rows(&plan, at);
+        for (delta, window, strict, visible) in [
+            (-1, 192_000, false, false),
+            (0, 192_000, false, true),
+            (192_000, 192_000, false, true),
+            (192_001, 192_000, false, false),
+            (0, 288_000, true, false),
+            (1, 288_000, true, true),
+            (288_000, 288_000, true, true),
+            (288_001, 288_000, true, false),
+        ] {
+            assert_eq!(
+                stage_preview(
+                    &plan,
+                    at,
+                    at.checked_add_frames(delta).unwrap(),
+                    window,
+                    strict
+                )
+                .is_some(),
+                visible
+            );
+        }
+        assert!(
+            stage_preview(
+                &plan,
+                end,
+                end.checked_add_frames(1).unwrap(),
+                192_000,
+                false
+            )
+            .is_none()
+        );
+        // Exact authored seams and peaks supplement the regular window samples
+        for (frame, width) in [
+            (0, 3.5),
+            (32_000, 3.5),
+            (64_000, 4.0),
+            (96_000, 3.5),
+            (208_000, 4.0),
+            (256_000, 3.5),
+        ] {
+            let z = (4_001 - frame / 16) as f32 / 1000.0;
+            assert!(rows.contains(&(z, width)));
+        }
+        assert_eq!(rows.first().unwrap().0, 12.0);
+        assert_eq!(rows.last().unwrap().0, -42.0);
+        assert!(rows.windows(2).all(|pair| pair[0].0 >= pair[1].0));
+        assert!(rows.len() <= GROUND_ROWS);
+        let mut app = App::new();
+        app.register_required_components::<Mesh3d, Visibility>()
+            .insert_resource(StageScene(plan))
+            .insert_resource(VisualState {
+                song_time: at,
+                song_seconds: 999.0,
+                next_anchor_time: Some(SongTime::from_frames(112_019)),
+                next_section_time: Some(SongTime::from_frames(160_031)),
+                ..default()
+            })
+            .init_resource::<Time>()
+            .init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .add_systems(Startup, setup)
+            .add_systems(PostUpdate, (apply_quality, animate, update_signs).chain());
+        app.update();
+        let handles = app.world().resource::<StageGround>().meshes.clone();
+        let positions = |world: &World| {
+            handles.each_ref().map(|handle| {
+                let mesh = world.resource::<Assets<Mesh>>().get(handle).unwrap();
+                let VertexAttributeValues::Float32x3(positions) =
+                    mesh.attribute(Mesh::ATTRIBUTE_POSITION).unwrap()
+                else {
+                    panic!("position format")
+                };
+                assert_eq!(positions.len(), GROUND_ROWS * 2);
+                assert_eq!(mesh.indices().unwrap().len(), (GROUND_ROWS - 1) * 6);
+                positions.clone()
+            })
+        };
+        let original = positions(app.world());
+        for row in 0..GROUND_ROWS {
+            let left = original[0][row * 2];
+            let right = original[0][row * 2 + 1];
+            assert_eq!(left, original[1][row * 2 + 1]);
+            assert_eq!(right, original[2][row * 2]);
+            assert_eq!(left[2], original[3][row * 2][2]);
+            assert_eq!(right[2], original[4][row * 2][2]);
+            assert!((3.5..=4.0).contains(&right[0]));
+        }
+        assert_eq!(app.world().resource::<Assets<Mesh>>().len(), 10);
+        assert_eq!(
+            app.world_mut()
+                .query::<&NoFrustumCulling>()
+                .iter(app.world())
+                .count(),
+            5
+        );
+        let mesh_entities = app.world_mut().query::<&Mesh3d>().iter(app.world()).count();
+        assert_eq!(mesh_entities, 198);
+        let count = app.world().entities().len();
+        let mut motion = app
+            .world_mut()
+            .query::<(&Motion, &Transform, &Visibility)>();
+        for (kind, transform, visibility) in motion.iter(app.world()) {
+            match kind {
+                Motion::AnchorPreview => {
+                    assert_eq!(*visibility, Visibility::Visible);
+                    assert_eq!(transform.translation.z, -3.0);
+                }
+                Motion::SectionGate => {
+                    assert_eq!(*visibility, Visibility::Visible);
+                    assert_eq!(transform.translation.z, -6.0);
+                }
+                Motion::Spirit(_) => assert_eq!(transform.translation.z, 0.0),
+                Motion::EndLine => assert_eq!(*visibility, Visibility::Hidden),
+                _ => {}
+            }
+        }
+        for preset in [
+            crate::settings::QualityPreset::Low,
+            crate::settings::QualityPreset::High,
+        ] {
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.quality.set_preset(preset);
+                state.resonance = 1.0;
+            }
+            app.world_mut()
+                .resource_mut::<Time>()
+                .advance_by(std::time::Duration::from_secs(10));
+            app.update();
+            assert_eq!(positions(app.world()), original);
+            assert_eq!(app.world().entities().len(), count);
+        }
+        let mut at_end = None;
+        let mut at_start = None;
+        for frame in [
+            end.frames() - 16,
+            end.frames(),
+            end.frames() + 1,
+            i64::MAX,
+            0,
+            -16,
+            i64::MIN,
+        ] {
+            app.world_mut().resource_mut::<VisualState>().song_time = SongTime::from_frames(frame);
+            app.update();
+            for (kind, transform, visibility) in motion.iter(app.world()) {
+                if matches!(kind, Motion::EndLine) {
+                    assert_eq!(
+                        *visibility == Visibility::Visible,
+                        frame >= end.frames() - 16
+                    );
+                    if *visibility == Visibility::Visible {
+                        assert_eq!(
+                            transform.translation.z,
+                            (frame.min(end.frames()) / 16 - 200_000) as f32 / 1000.0
+                        );
+                    }
+                }
+            }
+            let road = motion
+                .iter(app.world())
+                .filter(|(motion, _, _)| matches!(motion, Motion::Street(_) | Motion::EndLine))
+                .map(|(_, transform, visibility)| (*transform, *visibility))
+                .collect::<Vec<_>>();
+            let snapshot = (positions(app.world()), road);
+            if frame == end.frames() {
+                at_end = Some(snapshot.clone());
+            }
+            if frame > end.frames() {
+                assert_eq!(Some(&snapshot), at_end.as_ref());
+            }
+            if frame == 0 {
+                at_start = Some(snapshot.clone());
+            }
+            if frame < 0 {
+                assert_eq!(Some(&snapshot), at_start.as_ref());
+            }
+            assert_eq!(app.world().entities().len(), count);
+            assert_eq!(app.world().resource::<Assets<Mesh>>().len(), 10);
+        }
+        // 100,000 authored intervals neither add entities nor enter a linear visible scan
+        let dense = (0..100_000)
+            .map(|i| section(i * 32, i * 32 + 16))
+            .collect::<Vec<_>>();
+        let dense = cocobeat_stage::compile("dense", end, &dense).unwrap();
+        let dense_rows = ground_rows(&dense, at);
+        assert!((65..=67).contains(&dense_rows.len()));
+        assert_eq!(dense_rows, ground_rows(&dense, at));
+        assert!(dense_rows.windows(2).all(|pair| pair[0].0 > pair[1].0));
+        assert!(dense_rows.iter().all(|(_, width)| *width == 3.5));
+        let dense_sections = (0..100)
+            .map(|i| section(i * 3000, if i == 99 { 300_123 } else { (i + 1) * 3000 }))
+            .collect::<Vec<_>>();
+        let dense = cocobeat_stage::compile(
+            "dense-edges",
+            SongTime::from_frames(300_123),
+            &dense_sections,
+        )
+        .unwrap();
+        for now in [0, 295_123] {
+            let rows = ground_rows(&dense, SongTime::from_frames(now));
+            let start_z = (now / 16) as f32 / 1000.0;
+            let end_z = (now / 16 - 300_123 / 16) as f32 / 1000.0;
+            assert!(rows.len() <= 67);
+            assert!(rows.iter().any(|(_, width)| *width > 3.5));
+            for z in [start_z, end_z] {
+                if (-42.0..=12.0).contains(&z) {
+                    assert!(rows.contains(&(z, 3.5)));
+                }
+            }
+            assert!(
+                rows.iter()
+                    .filter(|(z, _)| *z > start_z || *z < end_z)
+                    .all(|(_, width)| *width == 3.5)
+            );
+        }
+    }
 
     #[test]
     fn quality_and_resonance_preserve_core_feedback_and_geometry() {

@@ -7,6 +7,7 @@ members = [
     "crates/cocobeat-runtime",
     "crates/cocobeat-replay",
     "crates/cocobeat-media",
+    "crates/cocobeat-stage",
     "tools/cocobeat-lab",
     "xtask",
 ]
@@ -24,6 +25,7 @@ cocobeat-core = { path = "crates/cocobeat-core" }
 cocobeat-runtime = { path = "crates/cocobeat-runtime" }
 cocobeat-replay = { path = "crates/cocobeat-replay" }
 cocobeat-media = { path = "crates/cocobeat-media" }
+cocobeat-stage = { path = "crates/cocobeat-stage" }
 symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
 oximedia-audio = { version = "0", default-features = false }
 oximedia-core = "0"

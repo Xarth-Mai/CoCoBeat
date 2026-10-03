@@ -16,6 +16,7 @@ use crate::{
 
 #[derive(Resource, Default)]
 pub(crate) struct VisualState {
+    pub song_time: cocobeat_schema::SongTime,
     pub song_seconds: f64,
     pub duration_seconds: f64,
     pub hit_pulses: [f32; 2],
@@ -24,8 +25,10 @@ pub(crate) struct VisualState {
     pub anchor_sync_precise: bool,
     pub miss_pulses: [f32; 2],
     pub next_anchor_seconds: Option<f64>,
+    pub next_anchor_time: Option<cocobeat_schema::SongTime>,
     pub section_hint: Option<String>,
     pub next_section_seconds: Option<f64>,
+    pub next_section_time: Option<cocobeat_schema::SongTime>,
     pub resonance: f32,
     pub status: String,
     pub running: bool,

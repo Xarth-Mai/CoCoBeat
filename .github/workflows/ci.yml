@@ -54,5 +54,5 @@ jobs:
       - run: cargo fmt --all -- --check
       - run: cargo xtask boundaries
       # Rules, source decoding and tooling; no engine/device/GPU compilation
-      - run: cargo clippy --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p xtask --all-targets -- -D warnings
-      - run: cargo test --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p xtask
+      - run: cargo clippy --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-stage -p xtask --all-targets -- -D warnings
+      - run: cargo test --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-stage -p xtask

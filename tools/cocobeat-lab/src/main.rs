@@ -5,6 +5,7 @@ use std::process::ExitCode;
 mod content;
 mod media;
 mod package;
+mod stage;
 mod timing;
 
 fn main() -> ExitCode {
@@ -90,9 +91,12 @@ fn main() -> ExitCode {
         [command, input] if command == "verify-package" => {
             report(package::verify(Path::new(input)))
         }
+        [command, input, frame] if command == "inspect-stage" => {
+            report(stage::inspect(Path::new(input), frame))
+        }
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir> | inspect-stage <package-dir> <frame>"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS
