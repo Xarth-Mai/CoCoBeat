@@ -1,0 +1,51 @@
+{
+  "date": "2026-10-03",
+  "baseline_commit": "6f7b78495e4e85902655a6749cb1983e98690206",
+  "experiment": "single post-picker normalized positive spectral-change gate",
+  "parameters": {
+    "sample_rate": 48000,
+    "window_frames": 128,
+    "hop_frames": 64,
+    "window": "Hamming",
+    "native_function": "oximedia_mir::onset_strength::OnsetFunction::SpectralFlux",
+    "native_mean_radius": 8,
+    "native_threshold_factor": 1.5,
+    "native_peak_radius": 2,
+    "normalization_radius": 8,
+    "minimum_normalized_positive_change_inclusive": 0.5,
+    "formula": "accept native peak i iff D_i > 0 and native_flux_i / D_i >= 0.5, where D_i = max over j in clipped [i-8,i+8] of sum of one-sided magnitude bins in actual PCM support j",
+    "numeric_contract": "native FFT magnitudes and flux are f32; spectrum mass and quotient use f64 accumulation; no epsilon or PCM-volume cutoff",
+    "zero_denominator": "reject",
+    "short_file_and_tail": "unchanged real support windows from frozen spectral probe; no padding",
+    "coordinate": "unchanged native candidate's integer center of actual PCM support",
+    "threshold_rationale": "require new positive spectral magnitude at least half the largest nearby total spectral magnitude; use the native picker's existing context to avoid an adjacent phase minimum as denominator; this fixed research criterion is not perceptually calibrated"
+  },
+  "inputs": {
+    "frozen_report": "target/mir-flux-20261003/results-v2/report.json",
+    "frozen_report_sha256": "3d57012edc9a42b1ffa237de41654aa30ff794864bee1ab96eaf192057aaa63f",
+    "cases": "all existing 18 strict cases, all 6 new discrete controls, and the continuous fade observation from the frozen report",
+    "pcm": "reuse original landed f32le inputs without regeneration or alteration",
+    "labels": "use the frozen report's independently declared labels only after analysis, with the original matcher and unchanged all-match/zero-extra/median<=96-frame gate",
+    "continuous_fade": "truth and metrics remain null; report peaks without scoring"
+  },
+  "required_invariants": [
+    "Rerun the unmodified native Flux analyzer and compare every recorded native f32 strength bit, peak flag, support coordinate and prediction against the frozen report",
+    "Accepted predictions must be an ordered subset of unmodified native predictions at identical PCM coordinates",
+    "No output translation, frame-zero supplementation, new peak generation, truth-dependent parameters, threshold sweep or per-case tuning",
+    "No confidence probability is produced",
+    "Preserve all original FAIL cases and record newly introduced false negatives"
+  ],
+  "declared_failure_boundaries": [
+    "Native first-frame zero and unknown pre-file history remain unchanged",
+    "A weak onset close to a stronger event can be suppressed by the contextual denominator",
+    "Gradual attacks, continuous pitch changes and low-contrast overlapping notes may not change half the local spectral mass within one hop",
+    "Finite-window phase interference in low frequencies can still exceed the fixed criterion",
+    "A gain-invariant criterion cannot distinguish every noise fluctuation from an independently intended musical event",
+    "Real music, human annotation, confidence calibration, canonical Ogg readback and production MIR integration are outside this experiment"
+  ],
+  "licensing": {
+    "new_audio_fixtures": 0,
+    "existing_fixture_and_constructed_label_license": "CC0-1.0",
+    "adapter_source_license": "MPL-2.0"
+  }
+}

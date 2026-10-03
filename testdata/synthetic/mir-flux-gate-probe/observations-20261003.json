@@ -1,0 +1,961 @@
+{
+  "date": "2026-10-03",
+  "baseline_commit": "6f7b78495e4e85902655a6749cb1983e98690206",
+  "software_status": "PASS",
+  "quality_status": "FAIL",
+  "scope": "One fixed post-native-Flux gate; 24 discrete cases and one unscored continuous observation; no production integration",
+  "declaration": {
+    "path": "testdata/synthetic/mir-flux-gate-probe/declared-experiment-20261003.json",
+    "sha256": "5361353670d6d2d6647030d45afe16f571d8f8c33f5e9179cabf922762904939",
+    "frozen_before_first_run": true
+  },
+  "parameters": {
+    "sample_rate": 48000,
+    "window_frames": 128,
+    "hop_frames": 64,
+    "window": "Hamming",
+    "native_function": "oximedia_mir::onset_strength::OnsetFunction::SpectralFlux",
+    "native_mean_radius": 8,
+    "native_threshold_factor": 1.5,
+    "native_peak_radius": 2,
+    "normalization_radius": 8,
+    "minimum_normalized_positive_change_inclusive": 0.5,
+    "formula": "accept native peak i iff D_i > 0 and native_flux_i / D_i >= 0.5, where D_i = max over j in clipped [i-8,i+8] of sum of one-sided magnitude bins in actual PCM support j",
+    "numeric_contract": "native FFT magnitudes and flux are f32; spectrum mass and quotient use f64 accumulation; no epsilon or PCM-volume cutoff",
+    "zero_denominator": "reject",
+    "short_file_and_tail": "unchanged real support windows from frozen spectral probe; no padding",
+    "coordinate": "unchanged native candidate's integer center of actual PCM support",
+    "threshold_rationale": "require new positive spectral magnitude at least half the largest nearby total spectral magnitude; use the native picker's existing context to avoid an adjacent phase minimum as denominator; this fixed research criterion is not perceptually calibrated"
+  },
+  "gate": {
+    "one_to_one_tolerance_frames_inclusive": 480,
+    "all_declared_events_matched_once": true,
+    "zero_extra_peaks_required": true,
+    "maximum_median_absolute_error_frames": 96,
+    "unchanged_from_original_probe": true,
+    "continuous_fade_scored": false
+  },
+  "summary": {
+    "native": {
+      "existing": {
+        "PASS": 11,
+        "FAIL": 7
+      },
+      "new_controls": {
+        "FAIL": 5,
+        "PASS": 1
+      },
+      "discrete_totals": {
+        "true_positive": 322,
+        "false_positive": 537,
+        "false_negative": 5
+      }
+    },
+    "filtered": {
+      "existing": {
+        "PASS": 11,
+        "FAIL": 7
+      },
+      "new_controls": {
+        "PASS": 6
+      },
+      "discrete_totals": {
+        "true_positive": 320,
+        "false_positive": 0,
+        "false_negative": 7
+      }
+    }
+  },
+  "cases": [
+    {
+      "case": "pulse-120/channel-0",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "pulse-120/channel-1",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "pulse-137.5/channel-0",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 14.5,
+        "p95_absolute_error_frames": 29,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 14.5,
+        "p95_absolute_error_frames": 29,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "pulse-137.5/channel-1",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 14.5,
+        "p95_absolute_error_frames": 29,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 14.5,
+        "p95_absolute_error_frames": 29,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "first-last/channel-0",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 2,
+      "filtered_peaks": 2,
+      "native_metrics": {
+        "f1": 0.8,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": 31.5,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "filtered_metrics": {
+        "f1": 0.8,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": 31.5,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "first-last/channel-1",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 2,
+      "filtered_peaks": 2,
+      "native_metrics": {
+        "f1": 0.8,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": 31.5,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "filtered_metrics": {
+        "f1": 0.8,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": 31.5,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 0.6666666666666666,
+        "status": "FAIL",
+        "true_positive": 2
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "silence/channel-0",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 0,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": null,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": null,
+        "status": "PASS",
+        "true_positive": 0
+      },
+      "filtered_metrics": {
+        "f1": null,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": null,
+        "status": "PASS",
+        "true_positive": 0
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "silence/channel-1",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 0,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": null,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": null,
+        "status": "PASS",
+        "true_positive": 0
+      },
+      "filtered_metrics": {
+        "f1": null,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": null,
+        "status": "PASS",
+        "true_positive": 0
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "opposite-polarity/channel-0",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "opposite-polarity/channel-1",
+      "group": "existing",
+      "sample_frames": 240000,
+      "native_peaks": 8,
+      "filtered_peaks": 8,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 0.0,
+        "p95_absolute_error_frames": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 8
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "impulse-phase-scan",
+      "group": "existing",
+      "sample_frames": 270001,
+      "native_peaks": 128,
+      "filtered_peaks": 128,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 128
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 128
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "quiet-impulse-phase-scan",
+      "group": "existing",
+      "sample_frames": 270001,
+      "native_peaks": 128,
+      "filtered_peaks": 128,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 128
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 36,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 128
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "partial-hop-last-sample",
+      "group": "existing",
+      "sample_frames": 48001,
+      "native_peaks": 1,
+      "filtered_peaks": 1,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 63.0,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 63.0,
+        "p95_absolute_error_frames": 63,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "single-sample-boundary",
+      "group": "existing",
+      "sample_frames": 1,
+      "native_peaks": 0,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "filtered_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "constant-level-one-boundary-attack",
+      "group": "existing",
+      "sample_frames": 48001,
+      "native_peaks": 0,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "filtered_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "stationary-noise-no-interior-attack",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 1,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 1,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "filtered_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "continuous-tone-one-boundary-attack",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 130,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": 0.015267175572519083,
+        "false_negative": 0,
+        "false_positive": 129,
+        "median_absolute_error_frames": 256.0,
+        "p95_absolute_error_frames": 256,
+        "precision": 0.007692307692307693,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "removed_native_matches": [
+        [
+          0,
+          256
+        ]
+      ]
+    },
+    {
+      "case": "high-tone-one-boundary-attack",
+      "group": "existing",
+      "sample_frames": 48000,
+      "native_peaks": 142,
+      "filtered_peaks": 0,
+      "native_metrics": {
+        "f1": 0.013986013986013986,
+        "false_negative": 0,
+        "false_positive": 141,
+        "median_absolute_error_frames": 192.0,
+        "p95_absolute_error_frames": 192,
+        "precision": 0.007042253521126761,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 0.0,
+        "false_negative": 1,
+        "false_positive": 0,
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": 0.0,
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "removed_native_matches": [
+        [
+          0,
+          192
+        ]
+      ]
+    },
+    {
+      "case": "leading-silence-tone-440",
+      "group": "new_controls",
+      "sample_frames": 48000,
+      "native_peaks": 97,
+      "filtered_peaks": 1,
+      "native_metrics": {
+        "f1": 0.02040816326530612,
+        "false_negative": 0,
+        "false_positive": 96,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 0.010309278350515464,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "leading-silence-tone-9973",
+      "group": "new_controls",
+      "sample_frames": 48000,
+      "native_peaks": 106,
+      "filtered_peaks": 1,
+      "native_metrics": {
+        "f1": 0.018691588785046728,
+        "false_negative": 0,
+        "false_positive": 105,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 0.009433962264150943,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "equal-energy-note-switch",
+      "group": "new_controls",
+      "sample_frames": 48000,
+      "native_peaks": 2,
+      "filtered_peaks": 2,
+      "native_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 2
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "leading-silence-noise-burst",
+      "group": "new_controls",
+      "sample_frames": 48000,
+      "native_peaks": 4,
+      "filtered_peaks": 1,
+      "native_metrics": {
+        "f1": 0.4,
+        "false_negative": 0,
+        "false_positive": 3,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 0.25,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 1
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 1
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "sparse-kick-like",
+      "group": "new_controls",
+      "sample_frames": 96000,
+      "native_peaks": 64,
+      "filtered_peaks": 3,
+      "native_metrics": {
+        "f1": 0.08955223880597014,
+        "false_negative": 0,
+        "false_positive": 61,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 0.046875,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 3
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 32.0,
+        "p95_absolute_error_frames": 32,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 3
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "sparse-snare-like",
+      "group": "new_controls",
+      "sample_frames": 96000,
+      "native_peaks": 4,
+      "filtered_peaks": 3,
+      "native_metrics": {
+        "f1": 0.8571428571428571,
+        "false_negative": 0,
+        "false_positive": 1,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 48,
+        "precision": 0.75,
+        "recall": 1.0,
+        "status": "FAIL",
+        "true_positive": 3
+      },
+      "filtered_metrics": {
+        "f1": 1.0,
+        "false_negative": 0,
+        "false_positive": 0,
+        "median_absolute_error_frames": 16.0,
+        "p95_absolute_error_frames": 48,
+        "precision": 1.0,
+        "recall": 1.0,
+        "status": "PASS",
+        "true_positive": 3
+      },
+      "removed_native_matches": []
+    },
+    {
+      "case": "continuous-fade-440",
+      "group": "new_controls",
+      "sample_frames": 48000,
+      "native_peaks": 125,
+      "filtered_peaks": 0,
+      "native_metrics": null,
+      "filtered_metrics": null,
+      "removed_native_matches": []
+    }
+  ],
+  "continuous_observation": {
+    "case": "continuous-fade-440",
+    "native_peaks": 125,
+    "filtered_peaks": 0,
+    "truth": null,
+    "metrics": null
+  },
+  "invariants": {
+    "native_reproduction": "PASS: every prediction, peak flag, support, native f32 value and metric matches frozen Flux",
+    "native_windows_compared": 44417,
+    "prediction_subset": "PASS: filter only, identical original coordinates",
+    "matcher": "unchanged original include",
+    "labels_enter_after_analysis": true,
+    "parameters_revised_after_results": false,
+    "new_pcm_fixtures": 0
+  },
+  "source_findings": [
+    {
+      "source": "oximedia-mir 0.2.1 src/onset_strength.rs:186-200",
+      "finding": "True positive magnitude differences; first frame is zero"
+    },
+    {
+      "source": "oximedia-mir 0.2.1 src/onset_strength.rs:147-169",
+      "finding": "Only relative mean factor and local maximum; no minimum magnitude-change evidence"
+    },
+    {
+      "source": "oximedia-mir 0.2.1 src/onset_strength.rs:133-140",
+      "finding": "Global max normalization does not update internal peak-picker values and cannot remove relative small peaks"
+    },
+    {
+      "finding": "Absolute raw Flux cutoff rejected because quiet impulses 0.1196-0.325 overlap high-tone spurious peaks 0.242-0.290"
+    },
+    {
+      "finding": "Finite real sinusoid window spectrum contains interfering positive/negative shifted window terms; magnitude is phase dependent, not constant",
+      "formula": "X_k=A/2*(exp(i*phi)*W(k-omega)+exp(-i*phi)*W(k+omega))",
+      "diagnostic": "Read-only float64 NumPy reconstruction from frozen sustained-tone PCM, not a new detector or scored run",
+      "maximum_magnitude_residual_440_9973": [
+        5.832011051865038e-08,
+        8.692517772246333e-08
+      ],
+      "maximum_native_flux_residual_440_9973": [
+        2.889221133006714e-06,
+        1.0723707217219491e-06
+      ]
+    }
+  ],
+  "interpretation": {
+    "improvement": "All six visible-history tonal/noise/percussive controls now PASS; all 537 discrete extra peaks removed with fixed parameters",
+    "remaining_failures": "Seven strict file-boundary cases remain FAIL; the filter cannot generate missing frame-zero candidates",
+    "added_false_negatives": "Two sustained-tone early interior peaks formerly matched the frame-zero truth within tolerance; removing them adds two false negatives, retained in the unchanged score",
+    "other_event_retention": "Every other previously matched discrete event retains its original PCM coordinate",
+    "admission": "Not production admission; nearby weaker notes and gradual attacks require independent holdouts and music validation"
+  },
+  "software_checks": {
+    "fmt": "PASS",
+    "tests": "PASS 4/4",
+    "clippy": "PASS all-targets -D warnings",
+    "release_build": "PASS",
+    "quality_exit": "1, completed report.status=FAIL"
+  },
+  "run": {
+    "command": [
+      "target/mir-flux-gate-20261003/build/release/cocobeat-mir-flux-gate-probe",
+      "target/mir-flux-20261003/results-v2/report.json",
+      "target/mir-flux-gate-20261003/results-v1"
+    ],
+    "exit_code": 1,
+    "elapsed_seconds": 0.5152257120062131,
+    "maximum_rss_kib": 232832,
+    "address_space_limit_bytes": 2147483648,
+    "timeout_seconds": 60,
+    "source_sha256": "27727958555148267f44ebe0ae91a351ca51f79fd7437b6e42eb174fd36be9c8"
+  },
+  "dependencies": {
+    "metadata": "target/mir-flux-gate-20261003/metadata.json",
+    "third_party_package_versions": 37,
+    "new_third_party_versions": 0,
+    "manifest_policy": "major ranges with precise independent Cargo.lock"
+  },
+  "independent_review": {
+    "status": "PASS",
+    "agent": "mir_timing/flux_review",
+    "correctness": "No P1/P2 findings",
+    "report_recomputation": "All 25 cases and 44417 windows: native reproduction, contextual denominator, normalized value, accepted flags, ordered subsets and 24 native plus 24 filtered metric sets independently checked",
+    "pcm_spectrum_cross_check": {
+      "cases": 25,
+      "deterministic_windows": 96,
+      "method": "f32 Hamming and multiplication, independent f64 direct DFT of actual PCM; numerical cross-check against native f32 FFT, not a bit-equality claim",
+      "maximum_relative_mass_difference": 7.909076568e-07,
+      "maximum_absolute_mass_difference": 1.528907713e-05,
+      "effect_on_candidate": "No gate parameter or comparison epsilon changed"
+    },
+    "ponytail": "Lean already. Ship.",
+    "reviewer_scope": "Read-only source/JSON/PCM verification; no Cargo, GPU or mutations"
+  },
+  "not_run": [
+    "real music and independent human onset labels",
+    "canonical Ogg readback",
+    "production MIR integration",
+    "probability confidence calibration",
+    "full workspace or GPU validation by this agent"
+  ],
+  "source_sha256": {
+    "tools/mir-flux-gate-probe/Cargo.toml": "d1275637a06b1493c0a61eb89662c130e97b1e0ec9db9a1ba41d5ee2df04c511",
+    "tools/mir-flux-gate-probe/Cargo.lock": "40afc1dc0d6b9919a335a20a4313c5228409638ba028bb926df578d6a6f3e10f",
+    "tools/mir-flux-gate-probe/src/main.rs": "27727958555148267f44ebe0ae91a351ca51f79fd7437b6e42eb174fd36be9c8",
+    "tools/mir-flux-gate-probe/README.md": "5e84e09d955ebc5438ba9d1a0d9837f1ab49516f4c21f24a2bb3f9878eb8fe6f",
+    "testdata/synthetic/mir-flux-gate-probe/declared-experiment-20261003.json": "5361353670d6d2d6647030d45afe16f571d8f8c33f5e9179cabf922762904939",
+    "tools/mir-flux-probe/src/main.rs": "5343abafc6379100e6766b8d7fc6ea075803f88823a4eb4a149aeac84b8cd6f8",
+    "tools/mir-spectral-probe/src/main.rs": "4a29350f2283aff1a2955d4a5e33b487fa05348c65bdaf04550b8307d159932a",
+    "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26"
+  },
+  "input_sha256": {
+    "target/mir-flux-20261003/results-v2/continuous-fade-440.f32le": "40c226671bc738a61791d03fb4e01f06b9689eedb3df00cc7a27b410dec4b7da",
+    "target/mir-flux-20261003/results-v2/equal-energy-note-switch.f32le": "d7f8799ce7bad846a0f03269e541ac04876a73e78261129af84669366c4f31ef",
+    "target/mir-flux-20261003/results-v2/leading-silence-noise-burst.f32le": "9c38ae0061b695cd8133b31dbd6409d760748768b70338e32c75cd3464d96d1b",
+    "target/mir-flux-20261003/results-v2/leading-silence-tone-440.f32le": "3b59360977ac7e3a8b45d867638dc8263d85ea92ca3e41d3ca0ca31b0708dd1f",
+    "target/mir-flux-20261003/results-v2/leading-silence-tone-9973.f32le": "911caa7fb323f53f56cbe7cf3b2519cc52f3d2f2471992d6d6ac555f69f932cd",
+    "target/mir-flux-20261003/results-v2/sparse-kick-like.f32le": "8ef204bd5d2473b14ce62b71d8978b92e3b31a7a8b724b3849e3dbfb3b01683c",
+    "target/mir-flux-20261003/results-v2/sparse-snare-like.f32le": "9af8222fff2829a9497b4a33aacc604e31756a0232c79e78ac7784c9bd9b2fbd",
+    "target/mir-onset-probe-20261003/first-last/fixture.f32le": "5460a49b146aec859216d90c7b6948e091470206b69a34a685236fb251529992",
+    "target/mir-onset-probe-20261003/opposite-polarity/fixture.f32le": "f594591c52e4162383786a3ec97a8f31d21cd73dae8175c4b5f6e25cca90af8a",
+    "target/mir-onset-probe-20261003/pulse-120/fixture.f32le": "92a3413cd772ce9770b2a7a9022dddff338ea9c251085e74d220d4a4d85201e4",
+    "target/mir-onset-probe-20261003/pulse-137.5/fixture.f32le": "210d68c09bc1fd96b315c882cac3046d5e15f92a02e7c8a493ba23c51ee4675e",
+    "target/mir-onset-probe-20261003/silence/fixture.f32le": "fec9afb531a8e036eba1d81651896e1b2c1f78b0234dbadc8e7549563f09407b",
+    "target/mir-timing-20261003/results-v2/constant-level-one-boundary-attack.f32le": "63583802acc92ec4b1c3d532b26f5ba93828aeba1f9b5a187456e092af4f52ed",
+    "target/mir-timing-20261003/results-v2/continuous-tone-one-boundary-attack.f32le": "ccea1ee6f5135d4624aea7efb540d6e0a438e2f556e08cedb50d7ea05300a84c",
+    "target/mir-timing-20261003/results-v2/high-tone-one-boundary-attack.f32le": "2ef81671758ee28a47a7f14ec2ae5ef722b661b6ae3022d36819835eac395395",
+    "target/mir-timing-20261003/results-v2/impulse-phase-scan.f32le": "49e9116781ef0c5f779b287a1c6a9df137f5a1ae32cb767f7f361b8881a6ac87",
+    "target/mir-timing-20261003/results-v2/partial-hop-last-sample.f32le": "f922ef112c5d1fdee6bbe0dd2961d1d6de2d9abb620189ad445032c5d879a5d2",
+    "target/mir-timing-20261003/results-v2/quiet-impulse-phase-scan.f32le": "7ce7e9e782ca00c48117f84a06c6fd4d4bbaf097ccd3436e9d011895faf1a96a",
+    "target/mir-timing-20261003/results-v2/single-sample-boundary.f32le": "d99e58435243d9fef9c88273b8d553b4fba4d0baf8009d29eae74fa99e0d9f57",
+    "target/mir-timing-20261003/results-v2/stationary-noise-no-interior-attack.f32le": "ab527c14e3d020a3313a8bbfcb56ea6f0ca32acea894bf35b33741bca74df894",
+    "target/mir-flux-20261003/results-v2/report.json": "3d57012edc9a42b1ffa237de41654aa30ff794864bee1ab96eaf192057aaa63f"
+  },
+  "artifact_sha256": {
+    "target/mir-flux-gate-20261003/results-v1/report.json": "6d7e7c5037d52e747ac54ec0c98d82503a496273b52ba9164c9f10a79dab57e2",
+    "target/mir-flux-gate-20261003/results-v1/declaration.json": "5361353670d6d2d6647030d45afe16f571d8f8c33f5e9179cabf922762904939",
+    "target/mir-flux-gate-20261003/metadata.json": "f44a19171e6b2c4b6feee1f5d97131f7ca0cd87e16382fe2a734afdd827a9e8e",
+    "target/mir-flux-gate-20261003/run-v1.json": "c168c4ac1e3475573dba3820f23703dbd2cb187efdb5c80cb770603cddb51310",
+    "target/mir-flux-gate-20261003/run-v1.log": "9dea95a12fe1a40f88e2cad8bb4c8ee97ff3f4c5e2a68f8daa4a37b191e14c75",
+    "target/mir-flux-gate-20261003/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/mir-flux-gate-20261003/test-final.log": "f9ac184cebf6dc12d6d485cc5f47015e109491cf9ab46f28fb9612f00ae80a8d",
+    "target/mir-flux-gate-20261003/clippy-final.log": "2b88bb8738e365e476e260edfa7d0bb1493fd6eea467f24bcb54f427e7978d24",
+    "target/mir-flux-gate-20261003/build-final.log": "92434e198f27984c035c376ec77a7cf9e6ebdde782f8ccb1336ae3329b66ddb7",
+    "target/mir-flux-gate-20261003/build/release/cocobeat-mir-flux-gate-probe": "7812929de5f5c4828a0a4ce671380c53e68246af3af3745f17b219af230a9855"
+  },
+  "upstream_source_sha256": {
+    "/home/lzzz/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/oximedia-mir-0.2.1/src/onset_strength.rs": "73c0cc7d3a1d2ac0500ddfd4416857e2dbe70e3aa68316856cd8ab4979e09a57"
+  }
+}
