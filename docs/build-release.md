@@ -45,7 +45,9 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 
 CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/git 和对应 debug/release 编译目录；发行缓存按 OS、target 和 Rust 版本隔离。先匹配 manifest/lockfile 与源码，未命中再尝试同依赖版本，最后回退到同平台和工具链的旧缓存，Cargo 仍执行原有 `--locked` 检查与构建，重新编译受影响的内容。tag 发布复用同一构建工作流，可读取默认分支的缓存；不同 tag 之间的可见性遵循 [GitHub 缓存作用域](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching#restrictions-for-accessing-a-cache)
 
-2026-10-03 的只读远端核查确认已保存 9 条缓存，共 4,498,931,681 字节，包含四个发行目标；既有六次发行 run 都是未命中后成功保存，本次只据此确认缓存存在，尚不宣称新增回退已命中或节省多少构建时间。核查记录见 `target/github-readiness/cache-audit-20261003.json`
+2026-10-03 的只读远端核查确认当时已保存 9 条缓存，共 4,498,931,681 字节，包含四个发行目标；既有六次发行 run 都是未命中后成功保存，核查记录见 `target/github-readiness/cache-audit-20261003.json`
+
+随后 `39655a1` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37088699604) 实际通过新增的 `light-Linux-1.99.0-` 回退，恢复 manifest hash 不同的旧 main 缓存 65,440,537 字节，并成功保存新缓存 164,219,333 字节；Rust 1.99.0 的格式、依赖边界、Clippy 与 29 项测试通过。日志和完整 key 见 `target/resample-integration-20261003/ci-result.json`；该结果证明 Linux CI 的回退生效，四个平台与 tag 的缓存命中及实际提速仍分别取证
 
 ## 手动发行构建
 
