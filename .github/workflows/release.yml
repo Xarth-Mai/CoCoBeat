@@ -1,0 +1,121 @@
+name: Publish release
+
+on:
+  push:
+    tags: ['V*.*.*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tag-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+      - name: Match the tag to Cargo versions
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import re
+          import tomllib
+
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'V(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)', tag):
+              raise SystemExit('Release tags must use Vx.y.z with no leading zeroes')
+          workspace = tomllib.loads(pathlib.Path('Cargo.toml').read_text())['workspace']
+          version = workspace['package']['version']
+          if tag != 'V' + version:
+              raise SystemExit(f'Tag {tag} does not match Cargo version {version}')
+          for member in workspace['members']:
+              package = tomllib.loads((pathlib.Path(member) / 'Cargo.toml').read_text())['package']
+              declared = package['version']
+              if declared != {'workspace': True} and declared != version:
+                  raise SystemExit(f'{member} has a different Cargo version')
+          print(f'Validated {tag} for all workspace packages')
+          PY
+
+  ci:
+    needs: version
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: ci
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-pc-windows-msvc
+          - aarch64-pc-windows-msvc
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+    uses: ./.github/workflows/release-build.yml
+    with:
+      target: ${{ matrix.target }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.ref_name }}
+      SOURCE_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: cocobeat-*-${{ github.sha }}
+          path: dist
+          merge-multiple: true
+      - name: Verify and name all four archives
+        run: |
+          python3 - <<'PY'
+          import os
+          import pathlib
+          import tarfile
+          import zipfile
+
+          root = pathlib.Path('dist')
+          targets = {
+              'x86_64-pc-windows-msvc': 'zip',
+              'aarch64-pc-windows-msvc': 'zip',
+              'x86_64-unknown-linux-gnu': 'tar.gz',
+              'aarch64-unknown-linux-gnu': 'tar.gz',
+          }
+          expected = {f'cocobeat-{target}.{extension}' for target, extension in targets.items()}
+          if {path.name for path in root.iterdir()} != expected:
+              raise SystemExit('Expected exactly four platform archives')
+          for target, extension in targets.items():
+              path = root / f'cocobeat-{target}.{extension}'
+              if extension == 'zip':
+                  with zipfile.ZipFile(path) as archive:
+                      info = archive.read('BUILD-INFO.txt').decode('utf-8-sig')
+              else:
+                  with tarfile.open(path) as archive:
+                      info = archive.extractfile('./BUILD-INFO.txt').read().decode()
+              fields = dict(line.split('=', 1) for line in info.splitlines())
+              if fields['commit'] != os.environ['SOURCE_COMMIT'] or fields['target'] != target:
+                  raise SystemExit(f'Build identity mismatch: {path.name}')
+              path.rename(root / f'cocobeat-{os.environ["RELEASE_TAG"]}-{target}.{extension}')
+          PY
+      - name: Publish the release with four assets
+        run: |
+          current=$(gh api "repos/$GH_REPO/commits/refs%2Ftags%2F$RELEASE_TAG" --jq .sha)
+          if [ "$current" != "$SOURCE_COMMIT" ]; then
+            echo 'The release tag moved after this build started' >&2
+            exit 1
+          fi
+          gh release create "$RELEASE_TAG" dist/* \
+            --verify-tag --title "$RELEASE_TAG" --generate-notes

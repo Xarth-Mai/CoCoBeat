@@ -1,0 +1,247 @@
+{
+  "kind": "observed_github_hosted_builds_and_downloaded_artifacts",
+  "date": "2026-10-03",
+  "repository": "Xarth-Mai/CoCoBeat",
+  "source_commit": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+  "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+  "profile": "release (opt-level=3, fat LTO, codegen-units=1, panic=abort)",
+  "original_runs": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "run_id": 37082643568,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37082643568",
+      "head_sha": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+      "runner_labels": [
+        "windows-latest"
+      ],
+      "runner_image": "windows-2025-vs2026",
+      "runner_image_version": "20260925.250.1",
+      "operating_system": "Microsoft Windows Server 2025 / 10.0.26100 / Datacenter",
+      "build_status": "success",
+      "build_elapsed": "21m 44s",
+      "static_package_status": "FAIL",
+      "artifact_id": 11260101338,
+      "artifact_digest": "sha256:78a5066cbbeed982a90ff9f7728212f7058824d8214bff38bba453c95d054bdf",
+      "binary_sha256": "d27005a02e7ecb02c83c899f28f5d18e2a4db7f659f3aeb5830ffa2aede35366",
+      "machine": "0x8664",
+      "package_file_count": 52,
+      "byte_identical_source_files": 20,
+      "source_file_count": 50,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": false,
+      "binary_bytes": 72075264,
+      "icon_payloads_match_source": true,
+      "icon_sizes": [
+        256,
+        128,
+        64,
+        48,
+        32,
+        16
+      ],
+      "copied_text_crlf_changes": 30,
+      "source_manifest_mismatches": 16
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "run_id": 37082649929,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37082649929",
+      "head_sha": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+      "runner_labels": [
+        "windows-11-arm"
+      ],
+      "runner_image": "windows-11-vs2026-arm64",
+      "runner_image_version": "20260924.168.1",
+      "operating_system": "Microsoft Windows 11 / 10.0.26200 / Enterprise",
+      "build_status": "success",
+      "build_elapsed": "18m 01s",
+      "static_package_status": "FAIL",
+      "artifact_id": 11259501509,
+      "artifact_digest": "sha256:7b4aeeefbb8ef2affd189650e40c397f57dc51f8de26281f5ccd5da86dabd752",
+      "binary_sha256": "34d47bf655a6a831f21e37581b5552552f5883acbf992cd4d231715c1f947339",
+      "machine": "0xaa64",
+      "package_file_count": 52,
+      "byte_identical_source_files": 20,
+      "source_file_count": 50,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": false,
+      "binary_bytes": 67174912,
+      "icon_payloads_match_source": true,
+      "icon_sizes": [
+        256,
+        128,
+        64,
+        48,
+        32,
+        16
+      ],
+      "copied_text_crlf_changes": 30,
+      "source_manifest_mismatches": 16
+    },
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "run_id": 37082654417,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37082654417",
+      "head_sha": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+      "runner_labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_image": "ubuntu-24.04",
+      "runner_image_version": "20260927.320.1",
+      "operating_system": "Ubuntu / 24.04.5 / LTS",
+      "build_status": "success",
+      "build_elapsed": "11m 54s",
+      "static_package_status": "PASS",
+      "artifact_id": 11260290025,
+      "artifact_digest": "sha256:90e2d816348a538db8e913c40a5cd9176655d247ef35b1130a839dc8204107ab",
+      "binary_sha256": "aa547725f1e026e205479f94393e21255984e0d766caeac2868843caee361b76",
+      "machine": 62,
+      "package_file_count": 62,
+      "byte_identical_source_files": 60,
+      "source_file_count": 60,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": true,
+      "binary_bytes": 103629560,
+      "archive_sha256": "1d1b79de27b671814c6568845ca7575cf962d7a5e2e7849a9f57e434bf83589f",
+      "executable_mode": "0755",
+      "highest_direct_glibc_symbol": "2.39",
+      "copied_text_crlf_changes": 0,
+      "source_manifest_mismatches": 0
+    },
+    {
+      "target": "aarch64-unknown-linux-gnu",
+      "run_id": 37082661755,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37082661755",
+      "head_sha": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+      "runner_labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "runner_image": "ubuntu-24.04-arm",
+      "runner_image_version": "20260927.135.1",
+      "operating_system": "Ubuntu / 24.04.5 / LTS",
+      "build_status": "success",
+      "build_elapsed": "10m 27s",
+      "static_package_status": "PASS",
+      "artifact_id": 11259590508,
+      "artifact_digest": "sha256:fd04ebe35c22f4d1ee4afe07f7470aae8841961cf476c6658adfe25f944aa926",
+      "binary_sha256": "0468869b5e95ac8e1f1581077740ea3edf9cbb401adcbbcabcee7f53dfe8850a",
+      "machine": 183,
+      "package_file_count": 62,
+      "byte_identical_source_files": 60,
+      "source_file_count": 60,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": true,
+      "binary_bytes": 101817936,
+      "archive_sha256": "80c51c537ca005302a22cba5f5faa3a5061e906df3e9cab0418ca3c800edab69",
+      "executable_mode": "0755",
+      "highest_direct_glibc_symbol": "2.39",
+      "copied_text_crlf_changes": 0,
+      "source_manifest_mismatches": 0
+    }
+  ],
+  "followup_lightweight_ci": {
+    "id": 37083062753,
+    "head_sha": "0340ea954def3db68a2a6dff031036644f04d740",
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push",
+    "html_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37083062753",
+    "changed_paths_from_release_source": [
+      ".github/workflows/ci.yml"
+    ]
+  },
+  "windows_resource_failure": "Both Windows packages changed 30 copied text files from LF to CRLF; 16 upstream size/SHA records failed: two Noto OFL files, flag-icons LICENSE and 13 SVG files",
+  "windows_fix_status": "PASS: both native Windows builds and downloaded artifact validation",
+  "local_evidence": "target/github-readiness/20261003-results.json; 20261003-logs/; 20261003-artifacts/",
+  "limits": [
+    "Observed builds and package bytes, not synthetic execution; this record is stored beside existing test evidence",
+    "No Windows or ARM64 executable was run locally",
+    "No native graphical session, GPU, audio, input, clean-machine or human acceptance",
+    "Linux direct GLIBC_2.39 references do not establish all transitive library or distribution compatibility",
+    "Build and package results do not establish complete license/notices clearance",
+    "These runs predate explicit Windows ZIP packaging, media integration and the automatic tag release workflow; those changes are not validated by these builds"
+  ],
+  "windows_fixed_runs": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "run_id": 37084519612,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37084519612",
+      "head_sha": "34eaf5b2c4aa20a91a66bd85e34b5c39a48cbf0a",
+      "runner_labels": [
+        "windows-latest"
+      ],
+      "runner_image": "windows-2025-vs2026",
+      "runner_image_version": "20260925.250.1",
+      "operating_system": "Microsoft Windows Server 2025 / 10.0.26100 / Datacenter",
+      "build_status": "success",
+      "build_elapsed": "17m 48s",
+      "static_package_status": "PASS",
+      "artifact_id": 11260583527,
+      "artifact_digest": "sha256:58974e598bd2e8b0eb26ca30f344867913254f9491758144b681257a1f35987b",
+      "binary_sha256": "e719aac33a8fa99271a04cf406342259494f16b9314758ad82bc9a94a19ce771",
+      "machine": "0x8664",
+      "package_file_count": 52,
+      "byte_identical_source_files": 50,
+      "source_file_count": 50,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": true,
+      "binary_bytes": 72073728,
+      "icon_payloads_match_source": true,
+      "icon_sizes": [
+        256,
+        128,
+        64,
+        48,
+        32,
+        16
+      ],
+      "copied_text_crlf_changes": 0,
+      "source_manifest_mismatches": 0
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "run_id": 37084522075,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37084522075",
+      "head_sha": "34eaf5b2c4aa20a91a66bd85e34b5c39a48cbf0a",
+      "runner_labels": [
+        "windows-11-arm"
+      ],
+      "runner_image": "windows-11-vs2026-arm64",
+      "runner_image_version": "20260924.168.1",
+      "operating_system": "Microsoft Windows 11 / 10.0.26200 / Enterprise",
+      "build_status": "success",
+      "build_elapsed": "19m 04s",
+      "static_package_status": "PASS",
+      "artifact_id": 11259579911,
+      "artifact_digest": "sha256:3941398886095e6f8cc98a75d3a60d7664224f3e96fd18ddd1923b6e2f616af2",
+      "binary_sha256": "44ba8e9863b687d8b607332bdaa0ef76abb5bcc7bb1a04bf20bb05ee920712ab",
+      "machine": "0xaa64",
+      "package_file_count": 52,
+      "byte_identical_source_files": 50,
+      "source_file_count": 50,
+      "manifest_checks": 35,
+      "manifest_checks_all_pass": true,
+      "binary_bytes": 67173376,
+      "icon_payloads_match_source": true,
+      "icon_sizes": [
+        256,
+        128,
+        64,
+        48,
+        32,
+        16
+      ],
+      "copied_text_crlf_changes": 0,
+      "source_manifest_mismatches": 0
+    }
+  ],
+  "source_changes_for_windows_fix": [
+    ".gitattributes",
+    ".github/workflows/ci.yml"
+  ],
+  "accepted_package_sources": {
+    "linux": "4c63dccad735fb2dd403e28fbf4b60f3e35fd548",
+    "windows": "34eaf5b2c4aa20a91a66bd85e34b5c39a48cbf0a"
+  }
+}

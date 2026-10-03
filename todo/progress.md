@@ -10,7 +10,7 @@
 
 | 工作包 | 工作与阶段 | 负责人 | 状态 | 前置 | 交付证据 |
 |---|---|---|---|---|---|
-| 01 | 工程底座的远端 CI 与四目标首次构建 · 00 | root | IN PROGRESS | 既有底座 | 底座 b2950cc 的首次轻量 CI 已核实 PASS；5949c13 的本地 Ubuntu 24.04 x86-64 完整检查、release 打包与解包 CLI 为 PASS；当前源码远端 CI 与四目标手动构建仍为 NOT RUN，见底座进度和验证策略 |
+| 01 | 工程底座的远端 CI 与四目标首次构建 · 00 | root | PASS | 既有底座 | 0340ea9 的轻量 CI PASS；Linux 两架构在 4c63dcc、Windows 两架构在 34eaf5b 原生构建及下载包静态核验 PASS，Windows 首轮换行失败已修；新 tag 发布流程本地检查通过，实际发布仍单独取证，见构建记录 |
 | 02 | schema 输入事实、Anchor 判定、Free Sync 与 Resonance · 02 | core_engine | PASS | 既有 SongTime | schema/core 独立测试通过，包含 720 种交付排列；体验参数未验收 |
 | 03 | 软件时钟映射与失效状态 · 01 | clock_bridge | PASS | 既有 SongTime | ClockBridge 7 项软件测试；不代表真实设备精度 |
 | 04 | 输入持久化与同一 core 重放 · 02/09 | replay_engine | PASS | 02 的事实与规则契约 | Replay 5 项测试，含 60/144 Hz 与 500 ms 卡顿批次、损坏拒绝和保存失败 |
@@ -42,7 +42,7 @@
 
 当前软件范围 02–10 已汇合并验证，确定性规则与 Replay 已提交为 `378f95b`；完整阶段 01/02 的退出仍等待 11/12；root 按里程碑提交主线程实现，保留品牌线程后续改动，代码修订需补充对应验证
 
-提交 `7c37972` 的本机 Linux x86_64 release 构建、真实 tar.gz 打包、独立解包 CLI 与 GPU 离屏启动均为 PASS，命令、产物哈希和截图见 [release 验证记录](../docs/testing.md#原生-linux-release-证据)；产物要求 `GLIBC_2.44`，不代表 Ubuntu 24.04 兼容，Windows/ARM64、音频/输入设备与真人验收仍为 NOT RUN，工作包 01/24 保持未完成
+提交 `7c37972` 的本机 Linux x86_64 release 构建、真实 tar.gz 打包、独立解包 CLI 与 GPU 离屏启动均为 PASS，命令、产物哈希和截图见 [release 验证记录](../docs/testing.md#原生-linux-release-证据)；产物要求 `GLIBC_2.44`，不代表 Ubuntu 24.04 兼容，Windows/ARM64、音频/输入设备与真人验收仍为 NOT RUN，该段为当时结果，01 的后续原生构建结果见上表，24 的完整设备发行门槛仍未完成
 
 提交 `5949c13` 另在 Ubuntu 24.04 x86-64 容器完成 92 项测试、格式/Clippy/边界检查、原 release 配置构建和 62 文件包的独立解包检查，`--help` 与合成 Replay CLI 为 PASS，最高要求 `GLIBC_2.39` 且动态库全部解析；源码、镜像和产物身份见 [Ubuntu 基线验证](../docs/testing.md#ubuntu-2404-容器发行基线)。远端 [首次轻量 CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/36963977703) 的 PASS 仅适用于底座 `b2950cc`，该段记录的容器源码与后续远端构建分别取证，未新增实际桌面、设备、真人验收
 

@@ -1,6 +1,12 @@
-name: Manual release build
+name: Release build
 
 on:
+  workflow_call:
+    inputs:
+      target:
+        description: Platform and architecture (all targets are 64-bit)
+        type: string
+        required: true
   workflow_dispatch:
     inputs:
       target:
@@ -33,6 +39,8 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
       - name: Install latest stable Rust and target
         id: rust
         run: |
@@ -87,10 +95,11 @@ jobs:
             "cargo=$(cargo --version)"
             "sha256=$((Get-FileHash $exe -Algorithm SHA256).Hash)"
           ) | Set-Content dist/package/BUILD-INFO.txt
+          Compress-Archive -Path dist/package/* -DestinationPath "dist/cocobeat-$env:BUILD_TARGET.zip"
       - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}
-          path: dist/package/
+          path: dist/*.zip
           if-no-files-found: error
           retention-days: 14
 
@@ -106,6 +115,8 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
       - name: Install latest stable Rust and target
         id: rust
         run: |

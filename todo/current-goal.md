@@ -12,7 +12,7 @@
 
 - 工程底座、确定性规则、Replay、64 秒原创内容、本地双人运行时及品牌生产接线已有软件检查与 GPU 呈现证据，见 [验证策略](../docs/testing.md)
 - [02a](02a-runtime-settings.md) 的设置草稿、原子保存、显示预览、13 个语言变体、Noto Sans、旗帜、画质、帧率与小窗口滚动已实现；加入源解码与十分钟 Replay 后的完整软件基线为 97 项测试，原生 WM/DPI/跨屏、物理设备与母语真人校对仍待验收
-- `4c63dcc` 已推送并触发原生四目标发行构建，`0340ea9` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37083062753) 已通过；各结果只适用于记录的源码版本，见 [构建记录](../docs/build-release.md)
+- Linux 两架构在 `4c63dcc`、Windows 两架构在换行修复 `34eaf5b` 已通过原生发行构建及下载包静态核验，`0340ea9` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37083062753) 已通过；各结果只适用于记录的源码版本，见 [构建记录](../docs/build-release.md)
 - 真实 Kira 后端的 30 秒游标记录已取得，物理延迟、loopback、平台手柄与真人双人体验仍未验收；软件时钟、MockBackend、构建和截图不替代这些证据
 
 ## 当前并行里程碑
@@ -20,7 +20,7 @@
 | 工作 | 下一项交付 | 完成依据 |
 |---|---|---|
 | tag 自动发布 | `Vx.y.z` 与 Cargo 版本一致后，CI → 四目标构建 → 四份压缩包发布 | 工作流语法与本地门控检查通过；实际 tag 发布需按对应运行取证 |
-| 四目标构建 | 核对原生 Windows/Linux × x86-64/ARM64 产物 | 固定源码、运行链接、工具链、PE/ELF 架构、包布局和资源哈希；干净游戏设备运行另验 |
+| 四目标构建已通过 | 保留源码与包身份，继续实际设备发行验收 | 原生构建、PE/ELF、图标、来源哈希和包布局已有证据；干净游戏设备运行另验 |
 | 05 源音频导入 | media 的有上限顺序解码与 lab 消费 | WAV/PCM、FLAC、MP3、Ogg Vorbis 实际文件；保留时间、静默与幅度；损坏/超限/失败半成品检查 |
 | 05 重采样与编码准入 | 固定质量门槛、真实开发音乐和长曲检查 | 独立解码、实际帧数、首尾/静默/波形、seek、时间和内存；失败候选不进入生产 |
 | 05 SongPackage | 在编码准入及实际内容契约就绪后实现 | 最终 Ogg 回读、内容哈希、版本、staging 和原子 Ready；不写空 analysis/chart 冒充完整包 |
