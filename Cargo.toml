@@ -25,6 +25,8 @@ cocobeat-runtime = { path = "crates/cocobeat-runtime" }
 cocobeat-replay = { path = "crates/cocobeat-replay" }
 cocobeat-media = { path = "crates/cocobeat-media" }
 symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
+oximedia-audio = { version = "0", default-features = false }
+oximedia-core = "0"
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 bevy = { version = "0", default-features = false, features = ["std", "async_executor", "bevy_asset", "bevy_log", "bevy_winit", "bevy_gilrs", "bevy_render", "bevy_core_pipeline", "bevy_post_process", "bevy_pbr", "bevy_ui_render", "multi_threaded", "x11", "wayland", "png"] }

@@ -4,7 +4,7 @@ use std::{
     path::Path,
 };
 
-pub fn decode(input: &Path, output: &Path) -> Result<(), String> {
+pub fn decode(input: &Path, output: &Path, resample: bool) -> Result<(), String> {
     let file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -12,7 +12,7 @@ pub fn decode(input: &Path, output: &Path) -> Result<(), String> {
         .map_err(|error| format!("Create {}: {error}", output.display()))?;
     let result = (|| {
         let mut writer = BufWriter::new(file);
-        let decoded = cocobeat_media::decode_source(input, |_, frames| {
+        let mut consume = |frames: &[[f32; 2]]| {
             for frame in frames {
                 for sample in frame {
                     writer
@@ -21,19 +21,29 @@ pub fn decode(input: &Path, output: &Path) -> Result<(), String> {
                 }
             }
             Ok(())
-        })?;
+        };
+        let summary = if resample {
+            let decoded = cocobeat_media::resample_source(input, &mut consume)?;
+            format!(
+                "Resampled: {} Hz / {} source frames -> 48000 Hz, stereo F32LE, {} frames",
+                decoded.source_sample_rate, decoded.source_frames, decoded.output_frames
+            )
+        } else {
+            let decoded = cocobeat_media::decode_source(input, |_, frames| consume(frames))?;
+            format!(
+                "Source decoded: {} Hz, stereo F32LE, {} frames",
+                decoded.sample_rate, decoded.source_frames
+            )
+        };
         writer
             .flush()
             .map_err(|error| format!("Flush {}: {error}", output.display()))?;
-        Ok::<_, String>(decoded)
+        Ok::<_, String>(summary)
     })();
     match result {
-        Ok(decoded) => {
-            println!(
-                "Source decoded: {} Hz, stereo F32LE, {} frames",
-                decoded.sample_rate, decoded.source_frames
-            );
-            println!("Source PCM only; canonical encoding and SongPackage validation are pending.");
+        Ok(summary) => {
+            println!("{summary}");
+            println!("PCM only; canonical encoding and SongPackage validation are pending.");
             Ok(())
         }
         Err(error) => {

@@ -246,3 +246,19 @@ MP3 使用不可 seek 的源，避免上游按 bitrate 估算总时长后裁掉�
 原创 `cocobeat-64.wav` 经最终 lab 输出 3,072,000 帧，与 Python wave 按 PCM16/32768 独立转换的 F32LE 逐字节一致，SHA-256 为 `bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538`。完整命令、源码、日志和产物身份见 `target/media-import-evidence/20261003/evidence.json`，正式 CLI 矩阵为 `target/media-review-20261003/lab-results-official.json`
 
 本轮完成源解码软件路径；上限检查不是进程内存/CPU 隔离，未验证 Windows 源解码运行或真人听感。游戏仍使用开发歌曲，标准编码、最终音频回读、SongPackage Ready 和实际导入菜单继续按阶段 05 推进
+
+## 固定 48 kHz 源重采样
+
+`CARGO_BUILD_JOBS=1 CARGO_NET_OFFLINE=true cargo xtask check` 与 `cargo build --offline --locked -j1 -p cocobeat-lab` 均退出 0，完整 workspace 的 100 项测试、格式、Clippy、依赖边界及 lab 构建通过，命令、日志和源码身份见 `target/resample-integration-20261003/workspace-validation.json`
+
+2026-10-03，media 的 `resample_source` 复用有上限的源解码，以 OxiMedia 0.2.1 High 输出有限立体声块，每次回调最多 1024 帧；48 kHz 输入逐样本位精确透传，其他采样率使用窗化 sinc，不裁静默、不归一化或裁幅，完整输出严格核对整数 `ceil(源帧数 × 48000 / 源采样率)`。库类型仅在适配器内，采样率常量复用 schema
+
+3 项新增行为测试通过，覆盖分块、短音频、首尾、1/7/44100/96000/192000 Hz、48 kHz 位精确、流中与 flush 消费者取消、库整块非有限样本拒绝及公开源入口。正式 `cocobeat-lab resample-audio` 的 19 项检查通过，包括 WAV/FLAC/MP3/Ogg、14 个正常文件、4 个错误后的半成品清理和已有文件不覆盖；独立 API 的 7 项检查通过，确认取消后仅调用一次消费者，末尾 FLAC 校验或 NaN 失败即使已有临时块交付也仍返回错误
+
+原创 64 秒音乐的 48 kHz 输出为 3,072,000 帧，与原 PCM16 独立转换结果逐字节相同，SHA-256 保持 `bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538`；由该音乐经开发期 FFmpeg 派生的 44.1/96 kHz 输入也各输出 3,072,000 个有限帧。正式 debug lab 三次耗时分别为 1.134/22.608/24.374 秒，派生输入的往返转换不声称无损，FFmpeg 不进入产品路径
+
+独立 release API 探针对 600 秒、44.1 kHz 静音输入输出 28,800,000 帧，全零且每次回调不超过 1024 帧，耗时 12.492 秒、进程树峰值 RSS 32372 KiB；1 Hz、97 源帧的完整 flush 边界输出 4,656,000 帧，耗时 1.873 秒、峰值 RSS 78228 KiB。High 保留最多 96 个源帧，其 1 Hz flush 会在库内部一次生成最多 4,608,000 个输出帧，分块回调不能降低这个内部缓冲；这些是单次本机观察，debug lab 与独立 release 探针不能合并作发行性能结论
+
+一个独立 libvorbis 样本的原始输入、EOS、Symphonia 为 48001 帧，FFmpeg 输出 47873 帧；公共前缀在零移位时最大差 1.043e−7，Symphonia 额外末尾 128 帧全部为零，本例记录为解码器尾部保留差异，不调整期望帧数或声称任意 Ogg 的双路输出一致
+
+完整源码、依赖、二进制、命令与产物身份见 `target/resample-integration-20261003/evidence.json`，CLI 与 API 明细分别为 `results-cli/result.json`、`results-api/result.json`。重采样合成频响与抗混叠证据继续见 [隔离质量检查](canonical-audio-probe.md#2026-10-03high-合成质量-pass十分钟编码-fail)；Windows/ARM 执行及听感仍为 NOT RUN，标准 Ogg 编码、最终回读和 SongPackage Ready 尚未接入

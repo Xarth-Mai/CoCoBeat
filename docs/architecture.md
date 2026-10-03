@@ -6,7 +6,7 @@
 game ───────────────→ runtime
 runtime ────────────→ schema / core / replay
 replay ─────────────→ schema / core
-media ──────────────→ Symphonia（源解码）
+media ──────────────→ schema / Symphonia（源解码）/ OxiMedia（重采样）
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -17,20 +17,20 @@ schema 定义整数时间、玩家/epoch/序号、Hit、水位和语义事件；
 
 runtime 的 app 组合 Bevy、Kira 和 Session；input 记录软件观察时刻，clock 映射 SongTime，session 维护规则事实、Replay 与诊断，audio 管理播放及错误，view 只消费表现状态；game 只调用 runtime 入口，lab 复用 clock 与原创 dev_song 生成器
 
-media 当前负责有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 顺序解码，由 lab 的 `decode-audio` 实际消费；公开接口只包含项目自有的采样率、实际帧数和立体声 PCM 块，单声道复制为双声道，保留源采样率、静默和幅度，拒绝非有限值及超限输入
+media 当前负责有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 顺序解码与固定 48 kHz 重采样，由 lab 的 `decode-audio` / `resample-audio` 实际消费；公开接口只包含项目自有的采样率、实际帧数和立体声 PCM 块，单声道复制为双声道，拒绝非有限值及超限输入。源解码保留采样率、静默和幅度；重采样采用 OxiMedia High，48 kHz 样本直接透传，其他采样率核对实际输出帧数为整数 `ceil(源帧数 × 48000 / 源采样率)`
 
-源文件限 512 MiB、192 kHz 和十分钟，实际解码帧数独立累计；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次解码成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，重采样、标准编码、最终回读和 SongPackage Ready 尚未接入
+源文件限 512 MiB、192 kHz 和十分钟，实际解码帧数独立累计；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，标准编码、最终回读和 SongPackage Ready 尚未接入
 
 ## 未来模块何时出生
 
 | 模块 | 独立责任 | 引入时机 |
 |---|---|---|
-| media（已创建） | 源解码；后续重采样、标准编码回读、MusicAnalysis、AnchorCompiler、导入事务 | 05 源解码已有 lab 消费；其余按 05–07 的实际契约加入 |
+| media（已创建） | 源解码与重采样；后续标准编码回读、MusicAnalysis、AnchorCompiler、导入事务 | 05 源解码与重采样已有 lab 消费；其余按 05–07 的实际契约加入 |
 | stage | MusicAnalysis / 编译后的音乐结构 → StagePlan，确定性轨道和几何校验 | 08 自动舞台；手写场景先在 runtime |
 | editor | 波形、Anchor、Replay 的可视化与人工修改 | 09 已有可编辑内容契约 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |
 
-media / stage / net 允许依赖 schema，不能依赖 runtime；media 当前未使用 schema 类型，因此不添加空依赖。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
+media / stage / net 允许依赖 schema，不能依赖 runtime；media 复用 schema 的唯一标准采样率。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
 
 ## 事实流
 

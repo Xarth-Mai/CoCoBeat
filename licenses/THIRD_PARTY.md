@@ -1,12 +1,14 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 533 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 543 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
 | [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI | MIT OR Apache-2.0 |
 | [kira](https://github.com/tesselode/kira) | 0.12.5 | runtime：音乐与即时反馈音频 | MIT OR Apache-2.0 |
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 源解码 | MPL-2.0 |
+| [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
+| [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
 | [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化 | MIT OR Apache-2.0 |
 | [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
 | [winit](https://github.com/rust-windowing/winit) | 0.30.13 | runtime：窗口图标，复用 Bevy 已启用的平台功能 | Apache-2.0 |

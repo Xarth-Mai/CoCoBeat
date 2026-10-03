@@ -83,13 +83,14 @@ cargo run --locked -p cocobeat-game -- --viewport-smoke languages en-GB 1280 800
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 cargo run --locked -p cocobeat-lab -- decode-audio input.wav new-output.f32le
+cargo run --locked -p cocobeat-lab -- resample-audio input.wav new-output-48k.f32le
 ```
 
 `--replay` 用相同 core 校验开发歌曲历史；`--visual-smoke` 只渲染预设场景并保存 PNG，不播放音频或运行玩法；`--startup-smoke` 完整运行品牌时间线，使用生产菜单控制系统开启 Ready 眼睛循环，在循环 6.1 秒时保存界面，不播放音频；`--settings-smoke` 使用模拟的 1280×800 显示表面和 640×480 场景验证 letterbox 与原生分辨率设置文字，不读写用户配置，也不证明真实窗口模式转换；lab 默认把模拟报告和 WAV 分别写入 `target/timing-sim/` 与 `target/dev-assets/`，均支持目录参数，详见 [计时说明](docs/timing.md) 与 [开发内容](assets/dev/vertical_slice/README.md)
 
 `--locale-smoke CODE PNG`、`--menu-smoke CODE PNG` 和 `--language-smoke CODE PNG` 分别保存指定语言的设置、Ready 主菜单和语言选择页，`CODE` 使用上述完整语言代码；三者运行品牌呈现到 Ready，并使用固定时间步加速离屏预览，不播放音频、不读写用户配置，不代替原生窗口或物理输入验收
 
-`decode-audio` 支持 WAV/PCM、FLAC、MP3 和 Ogg Vorbis，输出原采样率的立体声 F32LE，单声道复制为双声道；保留静默与原始幅度，源文件限 512 MiB、192 kHz、十分钟，仅允许创建新输出，失败清理半成品。它用于验证源解码，还不生成可供游戏加载的 SongPackage
+`decode-audio` 支持 WAV/PCM、FLAC、MP3 和 Ogg Vorbis，输出原采样率的立体声 F32LE，单声道复制为双声道；保留静默与原始幅度，源文件限 512 MiB、192 kHz、十分钟。`resample-audio` 复用该入口，以 OxiMedia High 转为 48 kHz，48 kHz 原件直接保留样本；实际输出帧数为 `ceil(源帧数 × 48000 / 源采样率)`，不裁静默或归一化。两个命令仅允许创建新输出，失败清理半成品，尚不生成可供游戏加载的 SongPackage
 
 `--quality-smoke low|medium|high|off PNG` 保存指定画质的固定场景，`off` 关闭 MSAA、雨、雾、阴影与 Bloom；`--settings-page-smoke graphics|pacing CODE PNG` 通过生产菜单控制进入画质或帧率子页，运行品牌到 Ready 后截图。两种预览均不播放音频、不读写用户配置，也不运行生产帧率门控，不能用截图耗时推断实际帧率
 
