@@ -11,6 +11,7 @@ mod display_area;
 mod i18n;
 mod input;
 pub mod probe;
+mod scene;
 mod session;
 mod settings;
 mod settings_menu;

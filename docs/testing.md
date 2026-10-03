@@ -262,3 +262,25 @@ MP3 使用不可 seek 的源，避免上游按 bitrate 估算总时长后裁掉�
 一个独立 libvorbis 样本的原始输入、EOS、Symphonia 为 48001 帧，FFmpeg 输出 47873 帧；公共前缀在零移位时最大差 1.043e−7，Symphonia 额外末尾 128 帧全部为零，本例记录为解码器尾部保留差异，不调整期望帧数或声称任意 Ogg 的双路输出一致
 
 完整源码、依赖、二进制、命令与产物身份见 `target/resample-integration-20261003/evidence.json`，CLI 与 API 明细分别为 `results-cli/result.json`、`results-api/result.json`。重采样合成频响与抗混叠证据继续见 [隔离质量检查](canonical-audio-probe.md#2026-10-03high-合成质量-pass十分钟编码-fail)；Windows/ARM 执行及听感仍为 NOT RUN，标准 Ogg 编码、最终回读和 SongPackage Ready 尚未接入
+
+## UI、雨夜场景与菜单主控
+
+2026-10-03 首批界面采用柔和玩具主体、雨夜空间层次和关键同步强反馈，Ready 与暂停页将主操作和“双人输入”分开，标题下显示菜单主控与接管方式，P1/P2 设备卡和运行 HUD 为场景保留清晰区域；继续复用同一 Logo 停靠、13 个语言变体、Noto Sans、设置草稿与显示预览契约
+
+双手柄与键盘＋手柄共用独立于 P1/P2 的菜单主控，首次按键仅领权，副控 Enter/Start 仅接管，普通副控方向与确认不抢焦点；目标设备可以应答绑定而不转移主控。实际获准暂停的设备接手菜单，任一已加入手柄断线请求暂停，主控断线释放控制权；归中与持键释放屏障继续生效，设置草稿和预览不会因接管被确认或丢失，设计依据与细则见 [输入说明](platform-input.md#交互设计依据)
+
+新增真实 Bevy First/PreUpdate 输入回归覆盖两种键盘＋手柄玩家分配、双设备同批菜单操作、接管、绑定与断连。复查修复音频回调前捕获的旧确认在 Pausing→Paused 后误恢复，以及 Starting/Pausing 期间先修改输入侧设置状态的问题；旧阶段队列在读取音频回调前过滤，输入侧过渡门控保留释放与断连处理。打开设置同帧断连还需保留 Settings(Open) 协议事件而取消 Confirm，失败复现保存在 `target/controller-disconnect-settings-repro.log`，修复后输入 14 项检查通过
+
+参数网格生成双耳 P1、单冠 P2、几何五官、雨夜街道、湿表面与三盏灯；本地 Hit、已确认 Free Sync、Anchor Sync 和 Miss 使用不同表现，下一 Anchor 来自歌曲真实帧表。新开始、重开与返回主菜单清理脉冲，Resonance 仅驱动独立招牌材质；资源来源见 `licenses/ASSET_PROVENANCE.csv`。194 个网格实体及测试上限包含隐藏或视锥外对象，不代表 draw call、帧时或 FPS 测量
+
+MenuOwner 改动前的完整 `CARGO_BUILD_JOBS=1 CARGO_NET_OFFLINE=true cargo xtask check` 通过 105 项 workspace 测试，含十分钟 Replay 检查；计数和日志哈希见 `target/ui-redesign-20261003/workspace-log-summary.json`。最终输入改动后执行 `cargo test --offline --locked -j1 -p cocobeat-runtime`，75 项全部通过；`cargo clippy --offline --locked -j1 --workspace --all-targets -- -D warnings`、格式与游戏构建全部退出 0，116 个已记录源码及资源输入前后哈希一致，主批菜单二进制 SHA-256 为 `089a422e9cf3587d6dbb65be0dc40e1ce5b8548a496ea2a102e8668bdb4dab46`，见 `target/ui-redesign-20261003/final-validation.json`
+
+首轮截图实际目检发现设备卡文字为空，虽然进程与几何检查通过，仍记录为视觉 FAIL；为卡片文字补充真实 flex 宽度后，新增 Bevy 文字测量与布局检查覆盖真实 glyph、主控动态更新、400×300 及逻辑 160×120，原失败截图保留在 `first-pass/`。从最终翻译差异提取每种语言 14 个新增或修改值，13 个语言变体逐个执行 `python3 assets/fonts/verify.py --text LOCALE FILE`，全部通过，见 `glyphs/owner/checks.json`；字体覆盖不代表母语翻译验收
+
+场景使用冻结二进制 `cb0789efd4c7384d34f8c1806305b882ec8ea9627ba4f4c5b4dada2616fc42ea` 完成 Local / Free / Anchor / Miss / Approach 与低、中、高、关闭装饰共 9 项 Vulkan 离屏渲染，逐图检查通过，场景源码哈希保持不变；命令、图像、日志与产物身份见 `target/ui-redesign-20261003/scene/evidence.json`。固定反馈样例证明相应状态可绘制，生产事件接线由真实规则历史与 Replay 回归检查覆盖；截图不证明连续动效、音画同步或真实帧率
+
+主批界面取证实际发现 Fault 首屏只有“已停止”，具体原因被放在滚动信息区下方，记录为视觉 FAIL；修复仅将 Fault 的真实 notice 加入顶部标题，信息行仍保留以便极小窗口分页阅读。现有阶段测试增加首屏原因断言，5 项 app 窄测、runtime Clippy 和游戏构建退出 0；116 个记录输入中仅 app.rs 改变，补验二进制 SHA-256 为 `114fd06d8f2b23df9faf77b5aba264019b269391597632bf321e0a25b0b1bf4e`，见 `target/ui-redesign-20261003/fault-title-validation.json`
+
+最终 UI 矩阵共 22 项逐图 PASS：13 语言 Ready、语言列表、设置、双人输入、暂停、完成、故障，以及 180×120 / 400×300 / 1280×800 scale 2 的主菜单最后信息行。21 张使用主批二进制 `089a422e…`，Fault 修正图使用 `114fd06d…`，原失败图、日志和报告保存在 `before-fault-fix/`；没有把旧二进制的画面声明为重新构建后的重复验收。命令、退出码、PNG/日志哈希、每图检查结论及实测几何见 `target/ui-redesign-20261003/ui-qa.json`
+
+GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断按每次运行记录，实际字形、换行和选中行检查通过，未将诊断日志表述为零告警。代码终审按 ponytail-review 删除重复输入状态和无消费者的菜单分类后，结论为 `Lean already. Ship.`；总共 31 个通过的 UI/场景静态样例不替代 Windows/Linux 原生窗口、真实双手柄及混合输入、USB/蓝牙热插拔、物理音频、连续动效体验或母语真人校对，这些仍为 NOT RUN

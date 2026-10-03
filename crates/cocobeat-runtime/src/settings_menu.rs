@@ -1,7 +1,7 @@
 use crate::{
     display::DisplayState,
     i18n::{Locale, Message},
-    input::{MenuPresentation, MenuRow, SettingsAction},
+    input::{MenuKind, MenuPresentation, MenuRow, MenuRowRole, SettingsAction},
     settings::{self, AntiAliasing, FrameLimit, QualityPreset, RainAmount, Settings},
 };
 use bevy::prelude::Resource;
@@ -452,13 +452,19 @@ impl SettingsMenu {
         let presentation = |title, mut rows: Vec<MenuRow>, footer: String, selected: usize| {
             rows.extend(footer.lines().map(|text| MenuRow {
                 text: text.into(),
+                role: MenuRowRole::Information,
                 ..MenuRow::default()
             }));
             let selected = selected.min(rows.len().saturating_sub(1));
             for (index, row) in rows.iter_mut().enumerate() {
                 row.selected = index == selected;
             }
-            Some(MenuPresentation { title, rows })
+            Some(MenuPresentation {
+                title,
+                rows,
+                kind: MenuKind::Settings,
+                ..Default::default()
+            })
         };
         if let Some(selected) = self.language_selection {
             return presentation(
@@ -469,6 +475,7 @@ impl SettingsMenu {
                         text: "{language}".into(),
                         language: Some(language),
                         selected: false,
+                        ..MenuRow::default()
                     })
                     .collect(),
                 footer(
@@ -660,6 +667,7 @@ impl SettingsMenu {
             text: locale.text("settings.language").into(),
             language: Some(draft.locale),
             selected: false,
+            ..MenuRow::default()
         });
         presentation(
             locale.text("settings.title").into(),

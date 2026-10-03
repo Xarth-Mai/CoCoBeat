@@ -7,7 +7,7 @@ use crate::{
     dev_song,
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
-    input::{self, Control, InputState, MenuPresentation, MenuScroll, SettingsAction},
+    input::{self, Control, InputSource, InputState, MenuPresentation, MenuScroll, SettingsAction},
     session::{CONTENT_ID, RULES_ID, Session},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
@@ -26,7 +26,7 @@ use bevy::{
     winit::WinitPlugin,
 };
 use cocobeat_replay::Replay;
-use cocobeat_schema::{DuoEvent, DuoRules, SessionEpoch};
+use cocobeat_schema::{AnchorGrade, DuoEvent, DuoRules, SessionEpoch};
 use kira::sound::PlaybackState;
 use std::{
     path::{Path, PathBuf},
@@ -47,14 +47,25 @@ enum Phase {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Smoke {
     Scene,
+    Feedback(FeedbackSmoke),
     Startup,
     Settings,
     Locale(Locale),
     Languages(Locale),
     Menu(Locale, Phase),
+    Players(Locale),
     Quality(QualitySettings),
     Graphics(Locale),
     Pacing(Locale),
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum FeedbackSmoke {
+    Local,
+    Free,
+    Anchor,
+    Miss,
+    Approach,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -203,6 +214,41 @@ impl Game {
         }
         Ok(false)
     }
+
+    fn request_pause(
+        &mut self,
+        input: &mut InputState,
+        source: Option<InputSource>,
+        observed: MonotonicTime,
+    ) -> Result<bool, String> {
+        if !matches!(self.phase, Phase::Running | Phase::Starting) {
+            return Ok(false);
+        }
+        self.session
+            .clock
+            .invalidate_calibration(observed)
+            .map_err(|error| format!("Pause transition: {error:?}"))?;
+        self.phase = Phase::Pausing;
+        self.transition_started = std::time::Instant::now();
+        input.set_menu_open(true);
+        if let Some(source) = source {
+            input.claim_menu(source);
+        }
+        Ok(true)
+    }
+
+    fn filter_transition_controls(&self, input: &mut InputState) {
+        // Captured controls must be gated before reading this frame's audio acknowledgment
+        if self.phase == Phase::Pausing {
+            input
+                .queued
+                .retain(|event| event.control == Control::FocusLost);
+        } else if self.phase == Phase::Starting {
+            input.queued.retain(|event| {
+                matches!(event.control, Control::TogglePause(_) | Control::FocusLost)
+            });
+        }
+    }
 }
 
 pub fn run() -> ExitCode {
@@ -211,12 +257,23 @@ pub fn run() -> ExitCode {
         [] => run_game(),
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/paused/finished/fault at physical pixels and DPI; ROW starts at 0\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT PNG  render local/free/anchor/miss/approach feedback samples\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/paused/finished/fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
         [flag, path] if flag == "--replay" => validate_replay(path),
         [flag, path] if flag == "--visual-smoke" => visual_smoke(PathBuf::from(path), Smoke::Scene),
+        [flag, effect, path] if flag == "--feedback-smoke" => {
+            let effect = match effect.as_str() {
+                "local" => Ok(FeedbackSmoke::Local),
+                "free" => Ok(FeedbackSmoke::Free),
+                "anchor" => Ok(FeedbackSmoke::Anchor),
+                "miss" => Ok(FeedbackSmoke::Miss),
+                "approach" => Ok(FeedbackSmoke::Approach),
+                _ => Err(format!("Unsupported feedback sample: {effect}")),
+            };
+            effect.and_then(|effect| visual_smoke(PathBuf::from(path), Smoke::Feedback(effect)))
+        }
         [flag, path] if flag == "--startup-smoke" => {
             visual_smoke(PathBuf::from(path), Smoke::Startup)
         }
@@ -288,6 +345,7 @@ pub fn run() -> ExitCode {
                     "pacing" => Smoke::Pacing(locale),
                     "languages" => Smoke::Languages(locale),
                     "ready" => Smoke::Menu(locale, Phase::Ready),
+                    "players" => Smoke::Players(locale),
                     "paused" => Smoke::Menu(locale, Phase::Paused),
                     "finished" => Smoke::Menu(locale, Phase::Finished),
                     "fault" => Smoke::Menu(locale, Phase::Fault),
@@ -455,12 +513,33 @@ fn feedback(
     visual: &mut VisualState,
 ) -> Result<(), String> {
     for event in events {
-        if matches!(event, DuoEvent::FreeSync(_) | DuoEvent::AnchorSync(_)) {
-            visual.sync_pulse = 1.0;
+        if visual_feedback(event, visual) {
             audio.sync()?;
         }
     }
     Ok(())
+}
+
+// Only confirmed rule events produce shared feedback; local Hit remains immediate
+fn visual_feedback(event: DuoEvent, visual: &mut VisualState) -> bool {
+    match event {
+        DuoEvent::FreeSync(_) => visual.free_sync_pulse = 1.0,
+        DuoEvent::AnchorSync(_) => visual.anchor_sync_pulse = 1.0,
+        DuoEvent::AnchorJudged(judgement) => {
+            if judgement.grade == AnchorGrade::Miss {
+                visual.miss_pulses[judgement.player.index()] = 1.0;
+            }
+            return false;
+        }
+    }
+    true
+}
+
+fn reset_feedback(visual: &mut VisualState) {
+    visual.hit_pulses = [0.0; 2];
+    visual.free_sync_pulse = 0.0;
+    visual.anchor_sync_pulse = 0.0;
+    visual.miss_pulses = [0.0; 2];
 }
 
 fn update_game(
@@ -543,7 +622,11 @@ fn update_game(
     for pulse in &mut visual.hit_pulses {
         *pulse = (*pulse - delta * 4.0).max(0.0);
     }
-    visual.sync_pulse = (visual.sync_pulse - delta * 1.8).max(0.0);
+    for pulse in &mut visual.miss_pulses {
+        *pulse = (*pulse - delta * 2.0).max(0.0);
+    }
+    visual.free_sync_pulse = (visual.free_sync_pulse - delta * 1.8).max(0.0);
+    visual.anchor_sync_pulse = (visual.anchor_sync_pulse - delta * 1.4).max(0.0);
 
     let mut fault_message = "game.stopped";
     let result = (|| -> Result<(), String> {
@@ -552,6 +635,7 @@ fn update_game(
             fault_message = "game.audio_failed";
             return Err(error);
         }
+        game.filter_transition_controls(&mut input);
         if matches!(
             game.phase,
             Phase::Starting | Phase::Running | Phase::Pausing
@@ -576,6 +660,11 @@ fn update_game(
         }
 
         for event in std::mem::take(&mut input.queued) {
+            if matches!(game.phase, Phase::Starting | Phase::Pausing)
+                && !matches!(event.control, Control::TogglePause(_) | Control::FocusLost)
+            {
+                continue;
+            }
             if let Control::Settings(action) = event.control {
                 if action == SettingsAction::Open {
                     menu_scroll.reset();
@@ -606,7 +695,7 @@ fn update_game(
                     visual.hit_pulses[player.index()] = 1.0;
                     feedback(events, &mut audio, &mut visual)?;
                 }
-                Control::Start | Control::TogglePause if game.phase == Phase::Paused => {
+                Control::Start | Control::TogglePause(_) if game.phase == Phase::Paused => {
                     game.session
                         .clock
                         .resume(observed)
@@ -620,10 +709,12 @@ fn update_game(
                     if matches!(game.phase, Phase::Ready | Phase::Finished | Phase::Fault) =>
                 {
                     game.start(&mut audio)?;
+                    reset_feedback(&mut visual);
                     menu_scroll.reset();
                 }
                 Control::Restart => {
                     game.start(&mut audio)?;
+                    reset_feedback(&mut visual);
                     input.set_menu_open(true);
                     menu_scroll.reset();
                 }
@@ -632,23 +723,20 @@ fn update_game(
                     audio.stop();
                     input.open_main_menu();
                     menu_scroll.reset();
-                    visual.hit_pulses = [0.0; 2];
-                    visual.sync_pulse = 0.0;
+                    reset_feedback(&mut visual);
                     // Return to Ready without consuming a second confirmation from this batch
                     break;
                 }
-                Control::TogglePause | Control::FocusLost
-                    if matches!(game.phase, Phase::Running | Phase::Starting) =>
-                {
-                    audio.pause();
-                    game.session
-                        .clock
-                        .invalidate_calibration(observed)
-                        .map_err(|error| format!("Pause transition: {error:?}"))?;
-                    game.phase = Phase::Pausing;
-                    game.transition_started = std::time::Instant::now();
-                    input.set_menu_open(true);
-                    menu_scroll.reset();
+                Control::TogglePause(_) | Control::FocusLost => {
+                    let source = match event.control {
+                        Control::TogglePause(source) => Some(source),
+                        _ => None,
+                    };
+                    if game.request_pause(&mut input, source, observed)? {
+                        audio.pause();
+                        menu_scroll.reset();
+                        break;
+                    }
                 }
                 Control::SaveReplay => game.save().inspect_err(|_| {
                     fault_message = "game.replay_failed";
@@ -682,7 +770,12 @@ fn update_game(
         input.set_menu_open(true);
         menu_scroll.reset();
     }
+    input.set_menu_transitioning(matches!(game.phase, Phase::Starting | Phase::Pausing));
     visual.song_seconds = game.session.current.as_seconds_f64();
+    visual.next_anchor_seconds = dev_song::ANCHOR_FRAMES
+        .iter()
+        .find(|&&frame| frame >= game.session.current.frames())
+        .map(|&frame| frame as f64 / f64::from(dev_song::SAMPLE_RATE));
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
     visual.quality = settings.values.quality;
@@ -690,18 +783,21 @@ fn update_game(
     visual.locale = locale;
     visual.menu = settings
         .presentation(settings_now, &display, locale)
+        .map(|mut menu| {
+            menu.owner_hint = Some(input.menu_owner_hint(locale));
+            menu
+        })
         .or_else(|| game_menu(&game, &mut input, &settings));
     if visual.menu.is_none() {
         visual.status = game_status(&game, &input, &settings);
     }
 }
 
-fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
-    let locale = settings.values.locale;
+fn next_anchor_label(game: &Game, locale: Locale) -> String {
     let song_seconds = game.session.current.as_seconds_f64();
-    let next = dev_song::ANCHOR_FRAMES
+    dev_song::ANCHOR_FRAMES
         .iter()
-        .find(|&&frame| frame > game.session.current.frames())
+        .find(|&&frame| frame >= game.session.current.frames())
         .map(|&frame| {
             Message::with(
                 "hud.next_anchor",
@@ -712,10 +808,13 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
             )
             .render(locale)
         })
-        .unwrap_or_else(|| locale.text("hud.final_release").into());
-    let title = format!(
-        "{} | {next}",
-        locale.text(match game.phase {
+        .unwrap_or_else(|| locale.text("hud.final_release").into())
+}
+
+fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
+    let locale = settings.values.locale;
+    let mut title = locale
+        .text(match game.phase {
             Phase::Ready => "phase.ready",
             Phase::Starting => "phase.starting",
             Phase::Running => "phase.running",
@@ -723,9 +822,14 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
             Phase::Paused => "phase.paused",
             Phase::Finished => "phase.finished",
             Phase::Fault => "phase.fault",
-        }),
-    );
+        })
+        .to_string();
+    if game.phase == Phase::Fault {
+        title.push('\n');
+        title.push_str(&game.notice.render(locale));
+    }
     let details = [
+        next_anchor_label(game, locale),
         game.notice.render(locale),
         settings.notice.render(locale),
         Message::with(
@@ -756,19 +860,19 @@ fn game_menu(
 }
 
 fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> String {
+    // Binding details and timing diagnostics remain available in the pause menu
     let locale = settings.values.locale;
-    let (title, details) = game_text(game, settings);
-    [
-        title,
-        locale.text("input.game_controls").into(),
-        input.bindings_text(locale),
-        input.status.render(locale),
-    ]
-    .into_iter()
-    .chain(details)
-    .filter(|line| !line.is_empty())
-    .collect::<Vec<_>>()
-    .join("\n")
+    if game.phase == Phase::Fault {
+        return game.notice.render(locale);
+    }
+    let mut lines = vec![next_anchor_label(game, locale)];
+    if input.status.key == "input.controller_disconnected" {
+        lines.push(input.status.render(locale));
+    }
+    if matches!(game.notice.key, "game.saved" | "game.nothing_to_save") {
+        lines.push(game.notice.render(locale));
+    }
+    lines.join("\n")
 }
 
 fn visual_smoke(path: PathBuf, mode: Smoke) -> Result<(), String> {
@@ -833,7 +937,7 @@ fn smoke_layout_metrics(
 }
 
 fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
-    let startup = !matches!(mode, Smoke::Scene | Smoke::Quality(_));
+    let startup = !matches!(mode, Smoke::Scene | Smoke::Feedback(_) | Smoke::Quality(_));
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins
@@ -858,6 +962,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 Smoke::Locale(_)
                     | Smoke::Languages(_)
                     | Smoke::Menu(_, _)
+                    | Smoke::Players(_)
                     | Smoke::Graphics(_)
                     | Smoke::Pacing(_)
             ) {
@@ -869,6 +974,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     ));
     ui_assets::install(&mut app)?;
     view::install(&mut app);
+    app.init_resource::<InputState>();
     display::install(&mut app, default());
     app.world_mut()
         .resource_mut::<DisplayState>()
@@ -937,13 +1043,20 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 menu.handle(SettingsAction::Down, 0.0, &mut display);
             }
         }
+        app.world_mut()
+            .resource_mut::<InputState>()
+            .claim_menu(InputSource::Keyboard);
         app.insert_resource(menu).add_systems(
             Update,
             (|settings: Res<SettingsMenu>,
               display: Res<DisplayState>,
+              input: Res<InputState>,
               mut visual: ResMut<VisualState>| {
                 visual.locale = settings.values.locale;
                 visual.menu = settings.presentation(0.0, &display, visual.locale);
+                if let Some(menu) = &mut visual.menu {
+                    menu.owner_hint = Some(input.menu_owner_hint(settings.values.locale));
+                }
             })
             .after(DisplaySystems::Sync),
         );
@@ -969,11 +1082,16 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             .insert_resource(game)
             .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance));
     }
-    if let Smoke::Menu(locale, _) = mode {
+    if let Smoke::Menu(locale, _) | Smoke::Players(locale) = mode {
         let mut settings = SettingsMenu::default();
         settings.values.locale = locale;
         let mut input = InputState::default();
         let mut scroll = MenuScroll::default();
+        if matches!(mode, Smoke::Players(_)) {
+            input.claim_menu(InputSource::Keyboard);
+            input.navigate_menu(SettingsAction::Down, &mut scroll);
+            input.activate(None, 0, &mut scroll);
+        }
         let presentation =
             game_menu(app.world().resource::<Game>(), &mut input, &settings).unwrap();
         if let Some(selection) = viewport.selection {
@@ -1037,7 +1155,8 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         VisualState {
             song_seconds: 32.0,
             hit_pulses: [0.8, 0.6],
-            sync_pulse: 0.8,
+            anchor_sync_pulse: 0.8,
+            next_anchor_seconds: Some(34.0),
             resonance: 0.7,
             status:
                 "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
@@ -1046,6 +1165,18 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
             ..default()
         }
     };
+    if let Smoke::Feedback(effect) = mode {
+        let mut visual = app.world_mut().resource_mut::<VisualState>();
+        reset_feedback(&mut visual);
+        visual.next_anchor_seconds = None;
+        match effect {
+            FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
+            FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
+            FeedbackSmoke::Anchor => visual.anchor_sync_pulse = 0.7,
+            FeedbackSmoke::Miss => visual.miss_pulses = [0.8, 0.0],
+            FeedbackSmoke::Approach => visual.next_anchor_seconds = Some(34.0),
+        }
+    }
     if let Smoke::Quality(quality) = mode {
         app.world_mut().resource_mut::<VisualState>().quality = quality;
         app.world_mut()
@@ -1097,8 +1228,10 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 *frame == 30
             };
             if !*requested && ready {
-                if !matches!(mode, Smoke::Scene | Smoke::Startup | Smoke::Quality(_))
-                    && visual.menu.is_none()
+                if !matches!(
+                    mode,
+                    Smoke::Scene | Smoke::Feedback(_) | Smoke::Startup | Smoke::Quality(_)
+                ) && visual.menu.is_none()
                 {
                     eprintln!("Expected menu presentation is missing");
                     exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
@@ -1181,7 +1314,7 @@ mod tests {
     use super::*;
     use bevy::{
         input::{
-            gamepad::{GamepadButtonStateChangedEvent, GamepadConnectionEvent},
+            gamepad::{GamepadConnectionEvent, GamepadEvent},
             keyboard::KeyboardInput,
         },
         window::WindowFocused,
@@ -1241,6 +1374,9 @@ mod tests {
             let mut input = InputState::default();
             let mut scroll = MenuScroll::default();
             let menu = game_menu(&game, &mut input, &settings).unwrap();
+            if phase == Phase::Fault {
+                assert!(menu.title.contains(&game.notice.render(Locale::EnUs)));
+            }
             assert!(titles.insert(menu.title));
             for notice in [
                 game.notice.render(Locale::EnUs),
@@ -1262,8 +1398,22 @@ mod tests {
             input.set_menu_open(false);
             assert!(game_menu(&game, &mut input, &settings).is_none());
             let status = game_status(&game, &input, &settings);
-            assert!(status.contains(Locale::EnUs.text("input.game_controls")));
-            assert!(status.contains(&game.notice.render(Locale::EnUs)));
+            assert!(!status.contains("ms"));
+            if phase == Phase::Fault {
+                assert_eq!(status, game.notice.render(Locale::EnUs));
+            } else {
+                assert_eq!(status, next_anchor_label(&game, Locale::EnUs));
+            }
+            if phase == Phase::Ready {
+                input.status =
+                    Message::with("input.controller_disconnected", [("player", "P1".into())]);
+                game.notice = Message::with("game.saved", [("path", "replays/test.json".into())]);
+                let status = game_status(&game, &input, &settings);
+                assert!(status.contains(&input.status.render(Locale::EnUs)));
+                assert!(status.contains("replays/test.json"));
+                assert!(!status.contains("ms"));
+                game.notice = Message::new("game.audio_failed");
+            }
         }
     }
 
@@ -1295,6 +1445,7 @@ mod tests {
         for &hit in &expected_hits {
             expected.ingest(DuoInput::Hit(hit)).unwrap();
         }
+        assert!(expected.events().is_empty());
         for player in [PlayerId::P1, PlayerId::P2] {
             expected
                 .ingest(DuoInput::Watermark {
@@ -1398,6 +1549,21 @@ mod tests {
                     expected.resonance(),
                     "cadence={cadence:?}"
                 );
+                let mut visual = VisualState::default();
+                let shared = engine
+                    .events()
+                    .iter()
+                    .filter(|&&event| visual_feedback(event, &mut visual))
+                    .count();
+                assert_eq!(shared, 3);
+                assert_eq!(visual.free_sync_pulse, 1.0);
+                assert_eq!(visual.anchor_sync_pulse, 1.0);
+                assert_eq!(visual.miss_pulses, [1.0; 2]);
+                assert_eq!(visual.hit_pulses, [0.0; 2]);
+                reset_feedback(&mut visual);
+                assert_eq!(visual.free_sync_pulse, 0.0);
+                assert_eq!(visual.anchor_sync_pulse, 0.0);
+                assert_eq!(visual.miss_pulses, [0.0; 2]);
             }
         }
         for first in 0..consumption_times.len() {
@@ -1413,7 +1579,7 @@ mod tests {
         app.add_message::<WindowFocused>()
             .add_message::<KeyboardInput>()
             .add_message::<GamepadConnectionEvent>()
-            .add_message::<GamepadButtonStateChangedEvent>()
+            .add_message::<GamepadEvent>()
             .insert_resource(Game::new().unwrap())
             .init_resource::<BrandIntroControl>()
             .add_systems(Update, suspend_intro);
@@ -1477,7 +1643,7 @@ mod tests {
     }
 
     #[test]
-    fn initial_playing_state_waits_for_actual_callback_progress() {
+    fn playback_callbacks_gate_start_and_the_accepted_pause_owns_the_menu() {
         let mut audio = AudioManager::<MockBackend>::new(AudioManagerSettings {
             backend_settings: MockBackendSettings {
                 sample_rate: 48_000,
@@ -1485,7 +1651,7 @@ mod tests {
             ..default()
         })
         .unwrap();
-        let handle = audio
+        let mut handle = audio
             .play(StaticSoundData {
                 sample_rate: 48_000,
                 frames: vec![Frame::ZERO; 48_000].into(),
@@ -1523,5 +1689,90 @@ mod tests {
         );
         assert_eq!(game.phase, Phase::Running);
         assert!(game.session.clock.last_observation().is_some());
+
+        let pad = World::new().spawn_empty().id();
+        let mut input = InputState::default();
+        input.claim_menu(InputSource::Keyboard);
+        input.set_menu_open(false);
+        assert!(
+            game.request_pause(
+                &mut input,
+                Some(InputSource::Pad(pad)),
+                MonotonicTime::from_nanos(20_000_000),
+            )
+            .unwrap()
+        );
+        let accepted_owner = input.menu_owner_hint(Locale::EnUs);
+        assert!(input.menu_open);
+        assert_eq!(game.phase, Phase::Pausing);
+        // A second device in this batch cannot replace the accepted pausing device
+        assert!(
+            !game
+                .request_pause(
+                    &mut input,
+                    Some(InputSource::Keyboard),
+                    MonotonicTime::from_nanos(20_000_000),
+                )
+                .unwrap()
+        );
+        assert_eq!(input.menu_owner_hint(Locale::EnUs), accepted_owner);
+        game.observe_playback(
+            handle.position(),
+            handle.state(),
+            MonotonicTime::from_nanos(21_000_000),
+        )
+        .unwrap();
+        assert_eq!(game.phase, Phase::Pausing);
+        input.queued = [
+            Control::Start,
+            Control::TogglePause(InputSource::Keyboard),
+            Control::Restart,
+            Control::Settings(SettingsAction::Confirm),
+            Control::FocusLost,
+        ]
+        .map(|control| input::CapturedControl {
+            control,
+            monotonic_ns: 21_000_000,
+        })
+        .into();
+        game.filter_transition_controls(&mut input);
+        assert_eq!(input.queued.len(), 1);
+        assert_eq!(input.queued[0].control, Control::FocusLost);
+        handle.pause(kira::Tween {
+            duration: std::time::Duration::ZERO,
+            ..default()
+        });
+        audio.backend_mut().on_start_processing();
+        audio.backend_mut().process();
+        audio.backend_mut().on_start_processing();
+        assert_eq!(handle.state(), PlaybackState::Paused);
+        game.observe_playback(
+            handle.position(),
+            handle.state(),
+            MonotonicTime::from_nanos(30_000_000),
+        )
+        .unwrap();
+        assert_eq!(game.phase, Phase::Paused);
+        assert_eq!(input.menu_owner_hint(Locale::EnUs), accepted_owner);
+
+        // A resume callback cannot give stale menu confirmations a second meaning
+        game.phase = Phase::Starting;
+        input.queued = [
+            Control::Start,
+            Control::Restart,
+            Control::MainMenu,
+            Control::TogglePause(InputSource::Keyboard),
+        ]
+        .map(|control| input::CapturedControl {
+            control,
+            monotonic_ns: 40_000_000,
+        })
+        .into();
+        game.filter_transition_controls(&mut input);
+        assert_eq!(input.queued.len(), 1);
+        assert_eq!(
+            input.queued[0].control,
+            Control::TogglePause(InputSource::Keyboard)
+        );
     }
 }
