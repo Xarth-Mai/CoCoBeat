@@ -70,6 +70,8 @@ Bevy 输入消息 → ClockBridge → Hit / 水位 → core::DuoEngine → 语�
 
 runtime 以完整 manifest 的 `package_hash` 构造 `package-blake3:<64 个十六进制字符>` 内容身份，Session 使用包的实际结束帧与 Anchor；Replay 记录内容/规则/构建身份和原始输入、水位，保存失败明确报错，校验与大小上限由 replay 持有，runtime 另检查 Hit 是否处于歌曲范围内；诊断 CSV 由 session 写入，二者不包含歌曲音频
 
+lab 的 `inspect-replay` 复用 `Replay::replay` 唯一重放循环，从返回的 engine 读取已确认事件与 Resonance，再通过原 Hit 身份关联事实，输出有界 JSONL；core ingest 错误补入原文件 fact 序号，成功重放与 Replay v1 格式保持不变。报告不补水位，也不为缺少设备时刻的录制推算物理延迟，字段见 [Replay 诊断](replay-diagnostics.md)
+
 包的 PCM 在启动时一次加载为 Kira `StaticSoundData`，整首帧数组由 `Arc` 持有，开始和重开歌曲共享该数组；普通包启动仍完整播放品牌开场，随后停在 Ready，用户显式 Start 才播放歌曲，开场期间的控制由既有输入屏障隔离
 
 ## 自动约束

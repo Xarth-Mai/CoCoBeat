@@ -1712,8 +1712,10 @@ dependencies = [
 name = "cocobeat-lab"
 version = "0.1.0"
 dependencies = [
+ "cocobeat-core",
  "cocobeat-editor",
  "cocobeat-media",
+ "cocobeat-replay",
  "cocobeat-runtime",
  "cocobeat-schema",
  "cocobeat-stage",

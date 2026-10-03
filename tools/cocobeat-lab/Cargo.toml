@@ -8,6 +8,8 @@ publish.workspace = true
 
 [dependencies]
 cocobeat-schema.workspace = true
+cocobeat-core.workspace = true
+cocobeat-replay.workspace = true
 cocobeat-runtime.workspace = true
 cocobeat-media.workspace = true
 cocobeat-stage.workspace = true

@@ -113,6 +113,8 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
 
+`inspect-replay PACKAGE REPLAY.json NEW_REPORT.jsonl` 使用相同 core 重放真实歌曲包的录制，逐项输出原始 Hit、水位、已确认 Anchor 判定、两类 Sync 与原输入关联；未知水位保持未知，文件和语义错误明确拒绝。报告绑定完整内容身份，不包含音频或推算的设备延迟，字段、限额与使用方式见 [Replay 诊断](docs/replay-diagnostics.md)
+
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
 
 歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排和跨版本视觉 Replay 仍待后续

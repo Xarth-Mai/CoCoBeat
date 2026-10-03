@@ -557,3 +557,19 @@ ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两�
 独立复核补齐消费 helper 的 AnchorSync 内嵌判定比较后才执行矩阵；原超长选择负例还包含缺字段，故保留原日志并只补一次合法 JSON 加空白至 1 MiB + 1，明确得到字节上限错误，没有重跑整套矩阵或修改生产实现
 
 152 项构建输入前后一致，最终 lab SHA-256 为 `873014eb76f3edaefaa13c8d5145e70282416c985456e8bdf133a6c726f3feb0`，game 为 `8672f50f6168c8f89b3751f656ef8c6b561465e153e960b9bdbacf4c5c629219`；原始命令、源快照、独立 oracle 和四个采用包的身份记录于 `target/anchor-runtime-20261003/qa-report.json`。本批没有新 UI 或 GPU 验收，真人试听、置信度校准、独立音乐标注、可玩性、Windows / ARM 和物理设备继续单独验收
+
+该批以 `f19a069` 提交并推送，[Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37119902197) 通过 66 项测试，152 项构建输入与该提交吻合；174 项 QA 证据封存清单 SHA-256 为 `c5c3f35b8ded8de6dd7972714e755a395ad20ae1d14206892a44a838d08086d8`，交付记录 `target/anchor-runtime-20261003/delivery.json` 为 `56267d64bac21278a85272c0035aec7120bfb8f35aaa9e1ef13793fa8e44f0bf`
+
+## Replay JSONL 事实与规则诊断
+
+2026-10-03，`inspect-replay` 完整验证真实歌曲包和 Replay v1，复用唯一 core 重放入口，将原始输入 / 水位、已确认事件及整数 Hit 关联逐行输出；未知或不足水位不补 Miss，报告没有设备时间或推算的输入延迟。core 语义错误保留原事实序号，Replay 格式与成功规则结果保持，完整契约见 [Replay 诊断](replay-diagnostics.md)
+
+首版 `cargo test --locked --offline -p cocobeat-replay -p cocobeat-lab` 通过 20 项测试，包含 lab 13、replay 7 和十分钟输入历史重放；workspace Clippy、格式、边界及 game / lab 构建通过。独立复核指出测试不能把缺失 nullable 字段当成 null，也不能让空事件列表绕过 Miss 检查；随后只补强现有测试的完整对象 / 数量，以及交错水位后的原事实索引，4 项 lab replay 定向补验、Clippy、格式和构建再通过
+
+补强只涉及测试，最终两个二进制与首版字节相同，最终 153 项构建输入前后一致。最终 lab SHA-256 为 `ea4c472be808eb1cc19b2a08f28f94ce938aa7011995181fae3eb77c3b55e4ba`，game 为 `904eb1aaf1b4ed5dacae33d17ed8e93ae45c0c35c4a2f46b1ac8c8e83e0a1a2d`；Cargo.lock 仅增加 lab 到已有 core / replay 的两条本地依赖，没有新增第三方版本
+
+最终程序完成 20 项真实 CPU 检查：10 份成功 JSONL、8 次明确拒绝和 2 次 runtime 对照。报告逐行与完整显式整数对象及类型比对，包含三类事件、四等级、非零偏差、奇数中点、`u64::MAX` / 大于 2^53 的 seq、插入水位后的原事实索引；空和单方水位仍无已确认事件，部分历史只确认首个 Anchor 并保留其余 4 个 pending
+
+原包、无变化导出和全撤销导出生成完全相同报告，重复诊断字节相同；真实改谱在 lab / runtime 都拒绝旧身份、接受新身份。负 Hit、EOF Hit、重复输入、版本和目标路径错误均返回对应原因，已有目标、原包和录制字节保持；源包内部输出和源 Replay 同路径负例使用新目录中的等字节副本，既有封存目录始终只读
+
+所有命令、预期对象、实际 JSONL 和输入快照记录于 `target/replay-diagnostic-runtime-20261003/qa-report.json`，原始完整检查与测试补强后的检查分别保存在根目录及 `final/`；没有产品失败或矩阵补跑，也未执行新 GPU、设备延迟、真实控制器、Windows / ARM、真人体验或图形时间线验收

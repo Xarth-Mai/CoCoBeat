@@ -29,8 +29,8 @@
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定背景门控质量 FAIL：20 PASS / 11 FAIL、4 额外峰、16 漏检；8 项软件测试和 51,158 窗/全部预测独立复现；noise burst 恢复，近邻及弱叠加保持，两项相位扫描新退化，全部旧基线与人工标签缺口保留 |
 | 18 | 精度优先的 AnchorCompiler · 07 | editor_core + stage_curve_plan + section_qa + root | IN PROGRESS | 现有分析结构可先行；生产策略依赖 17 | 纯 AnchorProposal、逐项证据、完整重编及明确采用 CLI 已交付；41 项相关测试和 32 项真实包 CPU 检查通过，原音频/分析/cue 保真，core 与 Replay 一致；音乐置信度校准、标注与试听继续保留 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | v2 已接直道/广场/缓弯/低桥、固定拱门和同轨道预告；121 项相关测试、5 项场景补验、42 项 CPU 与最终 16 张 GPU 图通过，原拱门遮挡已修并保留失败图；完整自动编排、跨版本视觉 Replay、设备性能与真人可读性仍待完成 |
-| 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + editor_export + editor_cli + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 已实现精确 Anchor 编辑、撤销重做、原字节保真导出和实际修包 CLI；47 项相关测试、35 项真实包/CLI 用例和 1 张改谱 GPU 图通过，Replay JSONL、时间线界面和完整退出继续后续 |
-| 21 | QUIC 会话、时钟同步与可靠历史 · 10 | 待分配 | NOT RUN | 20 | 指纹邀请、内容一致性、有界资源流、输入/水位、epoch 与完成握手 |
+| 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + section_qa + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 精确编辑、保真导出和 Replay JSONL 已接通；诊断批次 20 项测试、4 项补验和 20 项真实包 CPU 用例通过，原始输入/水位/已确认事件与整数关联完整；波形时间线、计时关联和完整退出继续后续 |
+| 21 | QUIC 会话、时钟同步与可靠历史 · 10 | stage_curve_plan + net_wire + net_tls + root | IN PROGRESS | 20 | 已冻结两进程预装同包的指纹/能力邀请、可靠历史、同 core 和 FinishAck 契约，正在实现；实际网络验证、资源传输、音频 ClockSync 和生产接线尚未完成 |
 | 22 | 网络模拟与故障验证 · 11 | 待分配 | NOT RUN | 21 | 延迟/丢包/非对称路径/漂移/中断模拟，历史完整且不重复奖励 |
 | 23 | 两台真实机器验收 · 11 | 待分配 + 设备测试 | NOT RUN | 11/12/21/22 | 两端 Replay、真实音频偏移、伙伴反馈延迟、重启/断线与双人体验记录 |
 | 24 | 四目标发行与 V1 加固 · 12 | root | NOT RUN | 01/14–23/26–29 | 干净机器、GPU/音频/手柄、帧时间/underrun/内存、许可台账与已知限制 |

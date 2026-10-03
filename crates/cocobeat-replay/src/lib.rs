@@ -257,8 +257,10 @@ impl Replay {
             return Err(invalid("Replay content or rules identity mismatch"));
         }
         let mut engine = DuoEngine::new(self.epoch, anchors, rules).map_err(invalid)?;
-        for fact in &self.facts {
-            engine.ingest(*fact).map_err(invalid)?;
+        for (index, fact) in self.facts.iter().enumerate() {
+            engine
+                .ingest(*fact)
+                .map_err(|error| invalid(format!("Replay fact {}: {error}", index + 1)))?;
         }
         Ok(engine)
     }
@@ -546,5 +548,55 @@ mod tests {
             .unwrap();
         assert_eq!(restored.events(), live.events());
         assert_eq!(restored.resonance(), live.resonance());
+    }
+
+    #[test]
+    fn semantic_errors_identify_the_original_fact_without_reordering() {
+        for (facts, cause) in [
+            (
+                vec![hit(PlayerId::P1, 1, 0), hit(PlayerId::P1, 1, 0)],
+                "DuplicateHit",
+            ),
+            (
+                vec![hit(PlayerId::P1, 1, 0), hit(PlayerId::P1, 1, 1)],
+                "ConflictingHit",
+            ),
+            (
+                vec![watermark(PlayerId::P1, 1), watermark(PlayerId::P1, 0)],
+                "WatermarkRegression",
+            ),
+            (
+                vec![watermark(PlayerId::P1, 1), hit(PlayerId::P1, 1, 1)],
+                "ClosedHistory",
+            ),
+            (
+                vec![
+                    watermark(PlayerId::P1, -1),
+                    DuoInput::Watermark {
+                        epoch: SessionEpoch(8),
+                        player: PlayerId::P2,
+                        through: SongTime::ZERO,
+                    },
+                ],
+                "EpochMismatch",
+            ),
+        ] {
+            let mut replay = empty();
+            for fact in facts {
+                replay.record(fact).unwrap();
+            }
+            let error = replay
+                .replay("fixture-64s-v1", "duo-v1", vec![], DuoRules::default())
+                .unwrap_err()
+                .to_string();
+            assert!(error.starts_with("Replay fact 2:"), "{error}");
+            assert!(error.contains(cause), "{error}");
+        }
+        let error = empty()
+            .replay("wrong", "duo-v1", vec![], DuoRules::default())
+            .unwrap_err()
+            .to_string();
+        assert!(error.contains("identity mismatch"));
+        assert!(!error.contains("Replay fact"));
     }
 }
