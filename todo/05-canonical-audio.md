@@ -16,6 +16,7 @@
 - [ ] 最终编码闭环继续验收首尾瞬态、静默、clipping、seek、长曲和曲库听感，并在 Windows/Linux 各目标验证；严格读回入口通过不等于编码器准入或 SongPackage Ready
 - [ ] 完整 MIR 的输入以最终回读音频为准；lab 的实际能量测量已从本次 staging 最终副本按帧 0 读取，自动 MIR 的编码回读对照仍待完成
 - [x] 初始 SongPackage 四对象事务、BLAKE3、版本头和原子目录发布已由 lab 实际消费；staging 严格读回后从同一副本测量能量，组合带来源的手工 Anchor / 段落，完整复核后才发布，损坏与失败保留覆盖见 [契约](../docs/song-package.md)
+- [x] 手工包运行时入口：`--package DIR` 从同一份校验字节读取完整 PCM，Kira 使用共享 PCM 重播，Session / HUD 使用真实长度与 Anchor，Replay 绑定完整包身份；保留完整开场和 Ready 的独立确认，完整曲库和内容编译仍按后续任务推进
 - [ ] 将准入后的生产编码、完整 MIR / Anchor 输出和包事务接入游戏曲库 Ready；当前手工开发包不替代完整导入流程
 
 退出条件：Windows/Linux 编码回读与独立互操作证据通过。失败时阻止导入，在开发期替换实现，不引入 FFmpeg 或运行时备用编码路径。

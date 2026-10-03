@@ -1,15 +1,17 @@
 //! Live input and saved histories share one deterministic rule engine
 
-use crate::{clock::*, dev_song};
+use crate::{
+    clock::*,
+    content::{RULES_ID, SongContent},
+};
 use cocobeat_core::DuoEngine;
 use cocobeat_replay::{MAX_FACTS, Replay, ReplayIdentity};
 use cocobeat_schema::{
     AnchorGrade, DuoEvent, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime,
+    content::MAX_CANONICAL_FRAMES,
 };
 use std::path::{Path, PathBuf};
 
-pub const CONTENT_ID: &str = "dev64-pcm16-3390dd080cb536fd4-anchors-v1";
-pub const RULES_ID: &str = "duo-watermark-v1";
 // An initial software-cursor estimate for experimentation, not measured output latency
 pub const CURSOR_UNCERTAINTY_FRAMES: u64 = 2_400;
 
@@ -38,18 +40,34 @@ pub struct Session {
     pub diagnostics: Vec<CaptureDiagnostic>,
     pub current: SongTime,
     pub uncertainty_frames: u64,
+    end: SongTime,
     sequence: [u64; 2],
     watermark: Option<SongTime>,
 }
 
 impl Session {
+    #[cfg(test)]
     pub fn new(epoch: SessionEpoch) -> Result<Self, String> {
+        Self::for_content(epoch, &SongContent::development())
+    }
+
+    pub fn for_content(epoch: SessionEpoch, content: &SongContent) -> Result<Self, String> {
+        if !(1..=MAX_CANONICAL_FRAMES as i64).contains(&content.end.frames()) {
+            return Err("Session content must cover more than zero and at most ten minutes".into());
+        }
+        if content
+            .anchors
+            .iter()
+            .any(|anchor| anchor.song_time < SongTime::ZERO || anchor.song_time >= content.end)
+        {
+            return Err("Session Anchor lies outside the song timeline".into());
+        }
         Ok(Self {
-            engine: DuoEngine::new(epoch, dev_song::anchors(), DuoRules::default())
+            engine: DuoEngine::new(epoch, content.anchors.clone(), DuoRules::default())
                 .map_err(|error| error.to_string())?,
             replay: Replay::new(
                 ReplayIdentity {
-                    content_id: CONTENT_ID.into(),
+                    content_id: content.content_id.clone(),
                     rules_id: RULES_ID.into(),
                     build_id: env!("COCOBEAT_BUILD_ID").into(),
                 },
@@ -61,6 +79,7 @@ impl Session {
             diagnostics: Vec::new(),
             current: SongTime::ZERO,
             uncertainty_frames: CURSOR_UNCERTAINTY_FRAMES,
+            end: content.end,
             sequence: [0, 0],
             watermark: None,
         })
@@ -71,8 +90,8 @@ impl Session {
     }
 
     pub fn observe_audio(&mut self, position: f64, at: MonotonicTime) -> Result<(), String> {
-        if !(0.0..=f64::from(dev_song::FRAMES) / 48_000.0).contains(&position) {
-            return Err("Audio cursor is outside the development song".into());
+        if !(0.0..=self.end.as_seconds_f64()).contains(&position) {
+            return Err("Audio cursor is outside the song timeline".into());
         }
         let song_time = SongTime::try_from_seconds_f64(position)
             .ok_or("Audio cursor is outside the song timeline")?;
@@ -125,9 +144,7 @@ impl Session {
             .clock
             .estimate_song_time(MonotonicTime::from_nanos(observed_ns))
             .map_err(|error| format!("Captured input clock: {error:?}"))?;
-        if estimate.song_time < SongTime::ZERO
-            || estimate.song_time.frames() >= i64::from(dev_song::FRAMES)
-        {
+        if estimate.song_time < SongTime::ZERO || estimate.song_time >= self.end {
             return Ok(Vec::new());
         }
         let seq = self.sequence[player.index()];
@@ -203,10 +220,13 @@ impl Session {
     /// The known content end closes the remaining history, without inventing an audio observation
     pub fn finish(&mut self) -> Result<Vec<DuoEvent>, String> {
         let tail = self.engine.confirmation_delay_frames();
-        let events = self.close_history(SongTime::from_frames(
-            i64::from(dev_song::FRAMES) + tail + 1,
-        ))?;
-        self.current = SongTime::from_frames(i64::from(dev_song::FRAMES));
+        let through = self
+            .end
+            .checked_add_frames(tail)
+            .and_then(|time| time.checked_add_frames(1))
+            .ok_or("Final history watermark overflow")?;
+        let events = self.close_history(through)?;
+        self.current = self.end;
         Ok(events)
     }
 
@@ -272,6 +292,142 @@ impl Session {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::{content::CONTENT_ID, dev_song};
+    use cocobeat_schema::Anchor;
+
+    fn fixture_content(frames: i64) -> SongContent {
+        SongContent {
+            content_id: format!("session-fixture-{frames}"),
+            end: SongTime::from_frames(frames),
+            anchors: vec![Anchor {
+                id: 1,
+                song_time: SongTime::from_frames(frames - 1),
+            }],
+        }
+    }
+
+    #[test]
+    fn content_end_controls_eof_anchor_confirmation_and_replay_identity() {
+        for frames in [1, 4_801, 65 * 48_000 + 17, MAX_CANONICAL_FRAMES as i64] {
+            let content = fixture_content(frames);
+            let mut session = Session::for_content(SessionEpoch(7), &content).unwrap();
+            assert_eq!(session.replay.identity().content_id, content.content_id);
+            let last = SongTime::from_frames(frames - 1);
+            let captured = 1_000_000_000;
+            session
+                .observe_audio(last.as_seconds_f64(), MonotonicTime::from_nanos(captured))
+                .unwrap();
+            session
+                .update_position(MonotonicTime::from_nanos(captured))
+                .unwrap();
+            assert_eq!(session.current, last);
+            for player in [PlayerId::P1, PlayerId::P2] {
+                session
+                    .hit(player, captured, captured + 500_000_000)
+                    .unwrap();
+            }
+            assert!(
+                session
+                    .diagnostics
+                    .iter()
+                    .all(|hit| hit.song_frames == frames - 1)
+            );
+            session.advance().unwrap();
+            assert_eq!(session.summary().anchors, [[0; 4]; 2]);
+
+            let eof_at = MonotonicTime::from_nanos(captured + 20_834);
+            session
+                .observe_audio(content.end.as_seconds_f64(), eof_at)
+                .unwrap();
+            session.update_position(eof_at).unwrap();
+            assert_eq!(session.current, content.end);
+            let before = session.replay.facts().len();
+            for at in [eof_at.nanos(), eof_at.nanos() + 1_000_000] {
+                assert!(session.hit(PlayerId::P1, at, at + 1).unwrap().is_empty());
+            }
+            assert_eq!(session.replay.facts().len(), before);
+            assert_eq!(session.sequence, [1, 1]);
+            assert_eq!(session.diagnostics.len(), 2);
+            let observation = session.clock.last_observation();
+            for position in [
+                -0.1,
+                f64::NAN,
+                f64::INFINITY,
+                content.end.as_seconds_f64() + 1.0 / 48_000.0,
+            ] {
+                assert!(
+                    session
+                        .observe_audio(position, MonotonicTime::from_nanos(captured + 2_000_000))
+                        .is_err()
+                );
+                assert_eq!(session.clock.last_observation(), observation);
+            }
+            session.finish().unwrap();
+            assert_eq!(session.current, content.end);
+            assert_eq!(session.clock.last_observation(), observation);
+            assert_eq!(session.summary().hits, [1, 1]);
+            assert_eq!(session.summary().anchors, [[1, 0, 0, 0]; 2]);
+            assert_eq!(session.summary().anchor_sync, 1);
+            let recorded = Replay::decode(session.replay.encode().unwrap().as_slice()).unwrap();
+            let restored = recorded
+                .replay(
+                    &content.content_id,
+                    RULES_ID,
+                    content.anchors.clone(),
+                    DuoRules::default(),
+                )
+                .unwrap();
+            assert_eq!(session.engine.events(), restored.events());
+            assert_eq!(session.engine.resonance(), restored.resonance());
+            let mut other_chart = content.clone();
+            other_chart.content_id.push_str("-other-chart");
+            other_chart.anchors[0].id += 1;
+            assert!(
+                recorded
+                    .replay(
+                        &other_chart.content_id,
+                        RULES_ID,
+                        other_chart.anchors,
+                        DuoRules::default()
+                    )
+                    .unwrap_err()
+                    .to_string()
+                    .contains("identity mismatch")
+            );
+        }
+    }
+
+    #[test]
+    fn content_metadata_rejects_invalid_timelines_and_preserves_the_development_wrapper() {
+        let original = fixture_content(100);
+        for end in [-1, 0, MAX_CANONICAL_FRAMES as i64 + 1, i64::MAX] {
+            let mut content = original.clone();
+            content.end = SongTime::from_frames(end);
+            assert!(Session::for_content(SessionEpoch(1), &content).is_err());
+        }
+        for frame in [-1, 100, i64::MAX] {
+            let mut content = original.clone();
+            content.anchors[0].song_time = SongTime::from_frames(frame);
+            assert!(Session::for_content(SessionEpoch(1), &content).is_err());
+        }
+        let mut content = original.clone();
+        content.anchors.push(content.anchors[0]);
+        assert!(Session::for_content(SessionEpoch(1), &content).is_err());
+        for identity in [String::new(), "x".repeat(257)] {
+            content = original.clone();
+            content.content_id = identity;
+            assert!(Session::for_content(SessionEpoch(1), &content).is_err());
+        }
+        let mut old = Session::new(SessionEpoch(1)).unwrap();
+        let mut explicit =
+            Session::for_content(SessionEpoch(1), &SongContent::development()).unwrap();
+        assert_eq!(old.replay, explicit.replay);
+        assert_eq!(old.end.frames(), i64::from(dev_song::FRAMES));
+        old.finish().unwrap();
+        explicit.finish().unwrap();
+        assert_eq!(old.replay, explicit.replay);
+        assert_eq!(old.engine.events(), explicit.engine.events());
+    }
 
     #[test]
     fn summary_counts_recorded_hits_and_only_confirmed_grades_for_the_whole_session() {

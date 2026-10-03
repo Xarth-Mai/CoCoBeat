@@ -10,6 +10,7 @@ publish.workspace = true
 cocobeat-schema.workspace = true
 cocobeat-core.workspace = true
 cocobeat-replay.workspace = true
+cocobeat-media.workspace = true
 bevy.workspace = true
 kira.workspace = true
 winit.workspace = true

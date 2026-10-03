@@ -410,3 +410,17 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 源码 hash 分隔换行检查失败及外层进程退出 143 都发生在编码前，原日志保留，最终四次编码没有扩大矩阵。上采样率及固定 96/192 kHz 的核界只适用于实际源峰值不超过 1 的声明条件，编码包络 4 不是生产配置；仍有明显残余失真与局部退步，质量准入、seek、其他原生平台与听感均未因此通过。工作区复现需要两批冻结 target 证据，缺少完整历史生成器的 fresh checkout 复现边界已明确写入工具说明
 
 数值域组合的 171 项冻结产物清单 `target/numeric-fullband-20261003/FROZEN.json` SHA-256 为 `0bfa350ac218f6448aa7259ad9061f7025a96bd780e07ad5261402c26c65961a`，持久[观察清单](../testdata/synthetic/canonical-audio-probe/numeric-fullband-observations-20261003.json) SHA-256 为 `af49b1feede15ae0eb7164d9506e34ab82cf810d5fb318e3c3362882f97abe6d`；最终独立复审为 `Lean already. Ship.`
+
+## 手工歌曲包运行时闭环
+
+2026-10-03，游戏新增 `--package DIR`，使用包的最终 PCM、实际总帧数、手工 Anchor 与完整 manifest 身份；无参数保留开发歌曲，普通包启动沿用品牌开场、Ready 独立确认和原有输入门控。读取、哈希、CRC 与解码绑定同一份有界音频字节，重开共享 Kira PCM，未知规则明确拒绝；SectionCue 与能量尚未参与舞台呈现，完整使用见 [包契约](song-package.md#运行时加载与会话)
+
+`cargo test --locked --offline -p cocobeat-media -p cocobeat-runtime` 的 122 项测试通过，包含 25 项 media 与 97 项 runtime；真实短包经 Kira MockBackend 的完整输出逐帧等于加载 PCM，左右声道保持区别，结束后 clone 重播从零开始。Session 检查覆盖 1 帧、4801 帧、超过 64 秒及十分钟边界，HUD 检查覆盖短歌、90 秒、首尾越界与未加载状态；独立复查发现的品牌显露期间零时长 HUD 和奇数帧预览中点不一致均已修复
+
+最终 `CARGO_NET_OFFLINE=true CARGO_BUILD_JOBS=1 cargo xtask check` 通过依赖边界、格式、workspace all-targets Clippy 及 152 项测试；`cargo build --locked --offline -p cocobeat-game -p cocobeat-lab` 通过，174 个构建输入前后保持一致，547 项第三方版本与台账一致，未新增第三方版本。命令与哈希见 `target/package-runtime-20261003/validation.json`，游戏 SHA-256 为 `1dc74520b53098f99903be8313f8e1df59af7a252870213ae4514d6f5a5c6381`，独立正确性与 ponytail 复审为 `Lean already. Ship.`
+
+冻结游戏的 49 项 CLI 检查全部通过，独立 Postcard/BLAKE3 读取器给出包身份和 Anchor oracle；覆盖短包、64 秒包、相同音频不同谱面的双向 Replay 拒绝、未知规则、最后合法帧与负值/EOF/越界 Hit、损坏/缺失/符号链接对象、参数错误及旧开发 Replay。变谱面和未知规则夹具由上轮冻结 lab `e0c4708a18c91cce0b2978a50b53aa9c1e08c90732a90f47c101d35e1d3e3f26` 实际构建，正常错误必须退出 1，panic 或信号不算负例通过
+
+两张 1280×800 Vulkan 离屏图逐张检查通过，实际 HUD、50% 进度及 Anchor 预告分别来自 4800 帧短包和 3,072,000 帧长包，`CONTENT_SAMPLE` 与独立包数据逐字段一致；短包中点为 0.05 秒，HUD 一位小数显示 `000.1 / 0.1`，不能据此认为进度已满。GPU 为本机 RX 6650 XT / RADV，预览中的反馈为合成状态，不代表真实输入或音频驱动的画面
+
+最终报告为 `target/package-runtime-20261003/qa-report.json`，238 项证据路径及哈希清单 `qa-sealed.json` 的 SHA-256 为 `2871e9cacd16327d9ce543218317927759a9dbad5e9a0b01fddfbc86514d1f86`；真实音频输出、物理键盘/手柄、听感和 Windows/ARM 运行时验收仍为 NOT RUN，上轮短 fixture 默认 FFmpeg 的 4672/4800 帧互操作 FAIL 保留，未被本次运行时结果改写

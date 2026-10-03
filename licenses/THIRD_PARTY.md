@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI | MIT OR Apache-2.0 |
 | [kira](https://github.com/tesselode/kira) | 0.12.5 | runtime：音乐与即时反馈音频 | MIT OR Apache-2.0 |
-| [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的 WAV/PCM、FLAC、MP3、Ogg Vorbis 源解码 | MPL-2.0 |
+| [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：最终音频、分析、谱面对象及规范 manifest 的字节身份 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |

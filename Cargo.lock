@@ -1741,6 +1741,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "cocobeat-core",
+ "cocobeat-media",
  "cocobeat-replay",
  "cocobeat-schema",
  "kira",

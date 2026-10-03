@@ -24,8 +24,8 @@
 | 12 | Windows/Linux 平台与手柄验收 · 02 | root + 设备测试 | NOT RUN | 09/10/11 | 双键盘、双手柄、混合输入、菜单、重绑定、USB/蓝牙及重连记录 |
 | 13 | 真人双人体验与规则反馈 · 03 | root + 测试参与者 | NOT RUN | 10/11/12 | 对照顺序、实际行为、访谈、沉默/模仿/连点与打乱输入对照；失败返回 02 |
 | 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
-| 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；23 项 media 测试通过；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
-| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，手工 Anchor/段落有实际消费者；完整 MIR/Anchor 输出与游戏曲库接入仍待后续 |
+| 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；25 项 media 测试通过；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
+| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor 和完整包 Replay 身份；本批 152 项 workspace、49 项 CLI 和两张 GPU 图通过；手工段落表现、完整 MIR/Anchor 输出及游戏曲库仍待后续 |
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定谱变化过滤使新增 6 项控制全部通过，离散额外峰 537 → 0；旧 18 项仍 11 PASS / 7 FAIL，两个新增首帧漏检保留；4 项软件检查及独立逐窗复算通过，生产与人工标签未准入 |
 | 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
 | 19 | 确定性 StageCompiler · 08 | 待分配 | NOT RUN | 18 | 连续轨道、预告可见性、版本身份与 Replay；表现不改关键几何 |

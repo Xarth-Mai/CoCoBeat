@@ -6,8 +6,8 @@ use crate::{
         MAX_ANALYSIS_BYTES, MAX_CHART_BYTES, MAX_PACKAGE_BYTES, decode_analysis, decode_chart,
         decode_package, encode_analysis, encode_chart, encode_package, package_hash,
     },
-    decode::MAX_SOURCE_BYTES,
-    decode_canonical, prepare_canonical_audio,
+    decode::{MAX_SOURCE_BYTES, decode_canonical_bytes},
+    prepare_canonical_audio,
 };
 use cocobeat_schema::{
     AssetRef, CANONICAL_SAMPLE_RATE, CONTENT_SCHEMA_VERSION, CompiledChart, MusicAnalysis,
@@ -136,6 +136,15 @@ pub fn build_package(
 
 /// Returns content only after bounded object, envelope, semantic and canonical readback checks
 pub fn validate_package(root: impl AsRef<Path>) -> Result<ValidatedPackage, String> {
+    read_package(root, |_| Ok(()))
+}
+
+/// Delivers PCM from the same owned audio snapshot used for hash and strict decoding checks
+/// All blocks remain provisional until success; consumers must discard them on any error
+pub fn read_package(
+    root: impl AsRef<Path>,
+    consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+) -> Result<ValidatedPackage, String> {
     let root = root.as_ref();
     if !fs::symlink_metadata(root)
         .map_err(|error| format!("Cannot inspect package directory: {error}"))?
@@ -160,32 +169,8 @@ pub fn validate_package(root: impl AsRef<Path>) -> Result<ValidatedPackage, Stri
     if analysis.audio_hash != manifest.audio.blake3 || chart.audio_hash != manifest.audio.blake3 {
         return Err("Analysis or chart references a different canonical audio hash".into());
     }
-    let audio_path = root.join(&manifest.audio.file_name);
-    let (audio, length) = open_object(&audio_path, MAX_SOURCE_BYTES)?;
-    if length != manifest.audio.byte_len {
-        return Err("Canonical audio length does not match its object reference".into());
-    }
-    let mut audio = audio.take(MAX_SOURCE_BYTES + 1);
-    let mut hasher = blake3::Hasher::new();
-    let mut actual_length = 0;
-    let mut buffer = [0; 32 * 1024];
-    loop {
-        let read = audio.read(&mut buffer).map_err(|error| error.to_string())?;
-        if read == 0 {
-            break;
-        }
-        actual_length += read as u64;
-        if actual_length > manifest.audio.byte_len {
-            return Err("Canonical audio grew beyond its declared length".into());
-        }
-        hasher.update(&buffer[..read]);
-    }
-    if actual_length != manifest.audio.byte_len
-        || *hasher.finalize().as_bytes() != manifest.audio.blake3
-    {
-        return Err("Canonical audio bytes do not match their object reference".into());
-    }
-    decode_canonical(audio_path, manifest.canonical_frames, |_| Ok(()))?;
+    let audio = read_referenced(root, &manifest.audio, MAX_SOURCE_BYTES as usize)?;
+    decode_canonical_bytes(audio, manifest.canonical_frames, consume)?;
     Ok(ValidatedPackage {
         manifest,
         analysis,
@@ -222,12 +207,11 @@ fn open_object(path: &Path, max_bytes: u64) -> Result<(File, u64), String> {
 }
 
 fn read_object(path: &Path, max_bytes: usize) -> Result<Vec<u8>, String> {
-    let (file, length) = open_object(path, max_bytes as u64)?;
-    let mut bytes = Vec::with_capacity(length as usize);
-    file.take(max_bytes as u64 + 1)
-        .read_to_end(&mut bytes)
+    let (mut file, length) = open_object(path, max_bytes as u64)?;
+    let mut bytes = vec![0; length as usize];
+    file.read_exact(&mut bytes)
         .map_err(|error| error.to_string())?;
-    if bytes.len() > max_bytes || bytes.len() as u64 != length {
+    if file.read(&mut [0]).map_err(|error| error.to_string())? != 0 {
         return Err("Object changed length while being read".into());
     }
     Ok(bytes)
@@ -284,6 +268,7 @@ fn cleanup_staging(staging: &Path, created: &[PathBuf], mut error: String) -> St
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::decode_canonical;
     use cocobeat_schema::{Anchor, EnergySample, SongTime};
     use std::sync::{Arc, Barrier};
 
@@ -479,6 +464,81 @@ mod tests {
         assert!(!destination.exists());
         assert_eq!(fs::read(source).unwrap(), STEREO);
         assert_eq!(fs::read_dir(&root.0).unwrap().count(), 3);
+    }
+
+    #[test]
+    fn package_pcm_matches_strict_readback_when_the_audio_path_changes_during_consumption() {
+        let root = TestDirectory::new();
+        let (source, input) = root.source_and_input();
+        let destination = root.0.join("ready");
+        let package = build_package(&source, 4_800, &destination, |_, _| Ok(input)).unwrap();
+        let audio_path = destination.join(FILE_NAMES[0]);
+        let mut expected = Vec::new();
+        decode_canonical(&audio_path, 4_800, |block| {
+            expected.extend_from_slice(block);
+            Ok(())
+        })
+        .unwrap();
+
+        for remove_audio in [false, true] {
+            fs::write(&audio_path, STEREO).unwrap();
+            let mut actual = Vec::new();
+            let mut callbacks = 0;
+            let validated = read_package(&destination, |block| {
+                if callbacks == 0 {
+                    if remove_audio {
+                        fs::remove_file(&audio_path).unwrap();
+                    } else {
+                        fs::write(&audio_path, b"different bytes after snapshot").unwrap();
+                    }
+                }
+                callbacks += 1;
+                actual.extend_from_slice(block);
+                Ok(())
+            })
+            .unwrap();
+            assert!(callbacks > 1);
+            assert_eq!(actual, expected);
+            assert_eq!(validated, package);
+            assert!(validate_package(&destination).is_err());
+        }
+    }
+
+    #[test]
+    fn package_readback_propagates_cancellation_and_rejects_objects_before_pcm() {
+        let root = TestDirectory::new();
+        let (source, input) = root.source_and_input();
+        let destination = root.0.join("ready");
+        let mut package = build_package(&source, 4_800, &destination, |_, _| Ok(input)).unwrap();
+        let mut callbacks = 0;
+        let result = read_package(&destination, |_| {
+            callbacks += 1;
+            Err("consumer cancelled".into())
+        });
+        assert_eq!(result.unwrap_err(), "consumer cancelled");
+        assert_eq!(callbacks, 1);
+
+        for name in FILE_NAMES {
+            let path = destination.join(name);
+            let bytes = fs::read(&path).unwrap();
+            let mut changed = bytes.clone();
+            changed[bytes.len() / 2] ^= 1;
+            fs::write(&path, changed).unwrap();
+            assert!(
+                read_package(&destination, |_| panic!("invalid object delivered PCM")).is_err()
+            );
+            fs::write(path, bytes).unwrap();
+        }
+
+        // Even self-consistent object hashes cannot make a broken Ogg page valid
+        let mut corrupt_audio = STEREO.to_vec();
+        *corrupt_audio.last_mut().unwrap() ^= 1;
+        let hash = *blake3::hash(&corrupt_audio).as_bytes();
+        fs::write(destination.join(FILE_NAMES[0]), corrupt_audio).unwrap();
+        package.analysis.audio_hash = hash;
+        package.chart.audio_hash = hash;
+        rewrite_package(&destination, &mut package);
+        assert!(read_package(&destination, |_| panic!("invalid CRC delivered PCM")).is_err());
     }
 
     #[test]

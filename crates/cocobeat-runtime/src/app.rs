@@ -4,6 +4,7 @@ use crate::{
         self, BrandImpact, BrandIntroControl, BrandIntroPhase, BrandIntroStatus, BrandIntroSystems,
     },
     clock::MonotonicTime,
+    content::{self, RULES_ID, SongContent},
     dev_song,
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
@@ -11,7 +12,7 @@ use crate::{
         self, Control, InputSource, InputState, MenuPhase, MenuPresentation, MenuRowRole,
         MenuScroll, SettingsAction,
     },
-    session::{CONTENT_ID, RULES_ID, Session, SessionResults},
+    session::{Session, SessionResults},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
     ui_assets,
@@ -29,7 +30,7 @@ use bevy::{
     winit::WinitPlugin,
 };
 use cocobeat_replay::Replay;
-use cocobeat_schema::{AnchorGrade, DuoEvent, DuoRules, SessionEpoch};
+use cocobeat_schema::{AnchorGrade, DuoEvent, DuoInput, DuoRules, SessionEpoch, SongTime};
 use kira::sound::PlaybackState;
 use std::{
     path::{Path, PathBuf},
@@ -122,6 +123,7 @@ impl SmokeViewport {
 
 #[derive(Resource)]
 struct Game {
+    content: SongContent,
     session: Session,
     phase: Phase,
     notice: Message,
@@ -133,9 +135,15 @@ struct Game {
 }
 
 impl Game {
+    #[cfg(test)]
     fn new() -> Result<Self, String> {
+        Self::with_content(SongContent::development())
+    }
+
+    fn with_content(content: SongContent) -> Result<Self, String> {
         Ok(Self {
-            session: Session::new(SessionEpoch(0))?,
+            session: Session::for_content(SessionEpoch(0), &content)?,
+            content,
             phase: Phase::Ready,
             notice: Message::new("game.welcome"),
             saved_facts: 0,
@@ -193,7 +201,7 @@ impl Game {
             .0
             .checked_add(1)
             .ok_or("Session epoch overflow")?;
-        let session = Session::new(SessionEpoch(epoch))?;
+        let session = Session::for_content(SessionEpoch(epoch), &self.content)?;
         audio.start()?;
         self.session = session;
         self.saved_facts = 0;
@@ -209,7 +217,7 @@ impl Game {
     fn main_menu(&mut self) -> Result<(), String> {
         self.save()?;
         // Keep the epoch until the next explicit Start advances it
-        self.session = Session::new(self.session.epoch())?;
+        self.session = Session::for_content(self.session.epoch(), &self.content)?;
         self.saved_facts = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
@@ -217,6 +225,14 @@ impl Game {
         self.phase = Phase::Ready;
         self.notice = Message::new("game.ready");
         Ok(())
+    }
+
+    fn next_anchor(&self) -> Option<SongTime> {
+        self.content
+            .anchors
+            .iter()
+            .find(|anchor| anchor.song_time >= self.session.current)
+            .map(|anchor| anchor.song_time)
     }
 
     fn fault(&mut self, audio: &mut AudioOutput, error: String, message: &'static str) {
@@ -301,14 +317,29 @@ impl Game {
 pub fn run() -> ExitCode {
     let args: Vec<_> = std::env::args().skip(1).collect();
     let result = match args.as_slice() {
-        [] => run_game(),
+        [] => run_game(None),
+        [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory))),
+        [flag, directory, replay, path] if flag == "--package" && replay == "--replay" => {
+            content::load_package(Path::new(directory))
+                .and_then(|(content, _sound)| validate_replay(path, &content))
+        }
+        [flag, directory, smoke, path] if flag == "--package" && smoke == "--visual-smoke" => {
+            content::load_package(Path::new(directory)).and_then(|(content, _sound)| {
+                visual_smoke_for_content(
+                    PathBuf::from(path),
+                    Smoke::Scene,
+                    SmokeViewport::default(),
+                    content,
+                )
+            })
+        }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: 64-second local duet\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
-        [flag, path] if flag == "--replay" => validate_replay(path),
+        [flag, path] if flag == "--replay" => validate_replay(path, &SongContent::development()),
         [flag, path] if flag == "--visual-smoke" => visual_smoke(PathBuf::from(path), Smoke::Scene),
         [flag, path] if flag == "--feedback-motion-smoke" => {
             visual_smoke(PathBuf::from(path), Smoke::FeedbackMotion)
@@ -428,8 +459,14 @@ fn base_app() -> Result<App, String> {
     Ok(app)
 }
 
-fn run_game() -> Result<(), String> {
-    let audio = AudioOutput::new()?;
+fn run_game(package: Option<&Path>) -> Result<(), String> {
+    let (content, sound) = if let Some(path) = package {
+        content::load_package(path)?
+    } else {
+        (SongContent::development(), content::development_sound())
+    };
+    let game = Game::with_content(content)?;
+    let audio = AudioOutput::new(Some(sound))?;
     let mut app = base_app()?;
     let pacing = app.world().resource::<SettingsMenu>().values.pacing;
     display::install_frame_pacing(&mut app, pacing);
@@ -440,7 +477,7 @@ fn run_game() -> Result<(), String> {
         .set_controls_enabled(false);
     install_window_icon(&mut app)?;
     app.insert_non_send(audio)
-        .insert_resource(Game::new()?)
+        .insert_resource(game)
         .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance))
         .add_systems(
             Update,
@@ -525,13 +562,18 @@ fn close_game(game: &mut Game, audio: &mut AudioOutput, exit: &mut MessageWriter
     }
 }
 
-fn validate_replay(path: &str) -> Result<(), String> {
+fn validate_replay(path: &str, content: &SongContent) -> Result<(), String> {
     let replay = Replay::load(path).map_err(|error| error.to_string())?;
+    if replay.facts().iter().any(|fact| {
+        matches!(fact, DuoInput::Hit(hit) if hit.song_time < SongTime::ZERO || hit.song_time >= content.end)
+    }) {
+        return Err("Replay Hit lies outside the song timeline".into());
+    }
     let engine = replay
         .replay(
-            CONTENT_ID,
+            &content.content_id,
             RULES_ID,
-            dev_song::anchors(),
+            content.anchors.clone(),
             DuoRules::default(),
         )
         .map_err(|error| error.to_string())?;
@@ -628,6 +670,7 @@ fn update_game(
     }
     visual.quality = settings.values.quality;
     visual.locale = settings.values.locale;
+    visual.duration_seconds = game.content.end.as_seconds_f64();
     if !input.controls_enabled() {
         let error = if brand.phase == BrandIntroPhase::Failed {
             impacts.clear();
@@ -837,10 +880,7 @@ fn update_game(
     visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
     input.set_menu_transitioning(visual.transitioning);
     visual.song_seconds = game.session.current.as_seconds_f64();
-    visual.next_anchor_seconds = dev_song::ANCHOR_FRAMES
-        .iter()
-        .find(|&&frame| frame >= game.session.current.frames())
-        .map(|&frame| frame as f64 / f64::from(dev_song::SAMPLE_RATE));
+    visual.next_anchor_seconds = game.next_anchor().map(SongTime::as_seconds_f64);
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
     visual.quality = settings.values.quality;
@@ -858,15 +898,13 @@ fn update_game(
 
 fn next_anchor_label(game: &Game, locale: Locale) -> String {
     let song_seconds = game.session.current.as_seconds_f64();
-    dev_song::ANCHOR_FRAMES
-        .iter()
-        .find(|&&frame| frame >= game.session.current.frames())
-        .map(|&frame| {
+    game.next_anchor()
+        .map(|time| {
             Message::with(
                 "hud.next_anchor",
                 [(
                     "seconds",
-                    format!("{:.1}", frame as f64 / 48_000.0 - song_seconds),
+                    format!("{:.1}", time.as_seconds_f64() - song_seconds),
                 )],
             )
             .render(locale)
@@ -1250,6 +1288,7 @@ fn advance_feedback_motion(
         visual_feedback(*event, visual);
     }
     visual.song_seconds = song_time.as_seconds_f64();
+    visual.duration_seconds = f64::from(dev_song::FRAMES) / f64::from(dev_song::SAMPLE_RATE);
     visual.next_anchor_seconds = FEEDBACK_MOTION_ANCHORS
         .into_iter()
         .map(f64::from)
@@ -1260,6 +1299,15 @@ fn advance_feedback_motion(
 }
 
 fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
+    visual_smoke_for_content(path, mode, viewport, SongContent::development())
+}
+
+fn visual_smoke_for_content(
+    path: PathBuf,
+    mode: Smoke,
+    viewport: SmokeViewport,
+    content: SongContent,
+) -> Result<(), String> {
     #[derive(Resource, Default)]
     struct SavedFrames(u32);
 
@@ -1411,7 +1459,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     }
     if startup {
         brand_intro::install(&mut app);
-        let mut game = Game::new()?;
+        let mut game = Game::with_content(content.clone())?;
         if matches!(mode, Smoke::SettingsFault(_)) {
             game.phase = Phase::Fault;
             game.notice = Message::new("game.audio_failed");
@@ -1443,8 +1491,8 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 game.fault_details = Some("Smoke fixture: audio output became unavailable".into());
             }
             game.session.current = cocobeat_schema::SongTime::from_frames(match phase {
-                Phase::Pausing | Phase::Paused | Phase::Fault => 1_536_000,
-                Phase::Finished => 3_072_000,
+                Phase::Pausing | Phase::Paused | Phase::Fault => content.end.frames() / 2,
+                Phase::Finished => content.end.frames(),
                 _ => 0,
             });
         }
@@ -1486,6 +1534,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                  mut visual: ResMut<VisualState>| {
                     visual.locale = settings.values.locale;
                     visual.song_seconds = game.session.current.as_seconds_f64();
+                    visual.duration_seconds = game.content.end.as_seconds_f64();
                     visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
                     visual.menu = game_menu(&game, &mut input, &settings);
                 },
@@ -1517,6 +1566,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
     );
     *app.world_mut().resource_mut::<VisualState>() = if startup {
         VisualState {
+            duration_seconds: content.end.as_seconds_f64(),
             status:
                 "Ready | native startup and menu eye loop\nAudio and physical input acceptance NOT RUN"
                     .into(),
@@ -1524,11 +1574,16 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
         }
     } else {
         VisualState {
-            song_seconds: 32.0,
+            song_seconds: SongTime::from_frames(content.end.frames() / 2).as_seconds_f64(),
+            duration_seconds: content.end.as_seconds_f64(),
             hit_pulses: [0.8, 0.6],
             anchor_sync_pulse: 0.8,
             anchor_sync_precise: true,
-            next_anchor_seconds: Some(34.0),
+            next_anchor_seconds: content
+                .anchors
+                .iter()
+                .find(|anchor| anchor.song_time.frames() >= content.end.frames() / 2)
+                .map(|anchor| anchor.song_time.as_seconds_f64()),
             resonance: 0.7,
             status:
                 "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
@@ -1597,6 +1652,18 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
                 *frame == 30
             };
             if !*requested && ready {
+                if mode == Smoke::Scene {
+                    eprintln!(
+                        "CONTENT_SAMPLE {}",
+                        serde_json::json!({
+                            "content_id": content.content_id,
+                            "duration_frames": content.end.frames(),
+                            "duration_seconds": visual.duration_seconds,
+                            "song_seconds": visual.song_seconds,
+                            "next_anchor_seconds": visual.next_anchor_seconds,
+                        })
+                    );
+                }
                 if let Smoke::Feedback(effect, _) = mode {
                     eprintln!(
                         "FEEDBACK_SAMPLE {}",
@@ -1744,6 +1811,7 @@ fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Resul
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::content::CONTENT_ID;
     use bevy::{
         input::{
             gamepad::{GamepadConnectionEvent, GamepadEvent},
@@ -1757,6 +1825,46 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn returning_to_ready_keeps_the_selected_content_and_anchor_hints() {
+        for frames in [4_800, 3_120_017] {
+            let content = SongContent {
+                content_id: format!("test-package-{frames}"),
+                end: SongTime::from_frames(frames),
+                anchors: vec![cocobeat_schema::Anchor {
+                    id: 71,
+                    song_time: SongTime::from_frames(frames - 1),
+                }],
+            };
+            let mut game = Game::with_content(content.clone()).unwrap();
+            assert_eq!(game.phase, Phase::Ready);
+            assert_eq!(game.next_anchor(), Some(content.anchors[0].song_time));
+            game.session = Session::for_content(SessionEpoch(9), &content).unwrap();
+            game.session.current = content.end;
+            game.phase = Phase::Finished;
+            assert_eq!(game.next_anchor(), None);
+            game.main_menu().unwrap();
+            assert_eq!(game.phase, Phase::Ready);
+            assert_eq!(game.session.epoch(), SessionEpoch(9));
+            assert_eq!(game.session.current, SongTime::ZERO);
+            assert_eq!(game.next_anchor(), Some(content.anchors[0].song_time));
+            game.session.finish().unwrap();
+            assert_eq!(game.session.current, content.end);
+            assert_eq!(game.session.engine.events().len(), 2);
+            let replayed = game
+                .session
+                .replay
+                .replay(
+                    &content.content_id,
+                    RULES_ID,
+                    content.anchors,
+                    DuoRules::default(),
+                )
+                .unwrap();
+            assert_eq!(replayed.events(), game.session.engine.events());
+        }
+    }
 
     #[test]
     fn motion_preview_uses_real_confirmations_and_equal_grade_lifetimes() {

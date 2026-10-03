@@ -5,6 +5,7 @@ mod audio;
 mod brand_audio;
 mod brand_intro;
 pub mod clock;
+mod content;
 pub mod dev_song;
 mod display;
 mod display_area;

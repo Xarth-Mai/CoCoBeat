@@ -1,8 +1,8 @@
 # 初始 SongPackage 契约
 
-当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建和校验，入口为 `cocobeat-lab build-authored-package` 与 `verify-package`；运行时仍使用现有开发歌曲，本入口不启用自动 MIR、AnchorCompiler、StageCompiler 或生产编码器
+当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建和校验，lab 入口为 `build-authored-package` 与 `verify-package`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度与 Anchor，仍未接入自动 MIR、AnchorCompiler、StageCompiler 或生产编码器
 
-字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
+字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，运行时适配见 [runtime/content.rs](../crates/cocobeat-runtime/src/content.rs)，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
 
 ## 四个固定对象
 
@@ -96,6 +96,26 @@ cargo run --locked -p cocobeat-lab -- verify-package target/manual-duet-package
 
 仅需音频对象时可用 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>`，它只生成 `song.audio.ogg`，不等于完整包；需要导出严格回读 PCM 时可用 `readback-canonical <final.ogg> <expected-frames> <new-output.f32le>`，它不会自动创建分析或谱面
 
+## 运行时加载与会话
+
+游戏入口接受 `--package DIR [--replay FILE|--visual-smoke PNG]`，包参数必须位于可选模式之前；普通模式进入游戏，`--replay` 校验该包的本地 Replay，`--visual-smoke` 按该包的实际长度与 Anchor 生成无音频场景预览
+
+```sh
+cargo run --locked -p cocobeat-game -- --package /path/to/song-package
+cargo run --locked -p cocobeat-game -- --package /path/to/song-package --replay /path/to/replay.json
+cargo run --locked -p cocobeat-game -- --package /path/to/song-package --visual-smoke /path/to/scene.png
+```
+
+runtime 在创建游戏和音频输出前完成 `media::read_package`，检查全部对象并收集严格解码得到的 48 kHz 双声道 PCM；任何读取、校验或解码失败都会退出，`ruleset_id` 当前只接受 `duo-watermark-v1`，未知规则也会退出，不改用开发歌曲
+
+加载成功后，PCM 一次转换为 Kira `StaticSoundData`，完整帧数组保存在 `Arc` 中；开始和重开歌曲共享这份 PCM，不重新读取包或解码音频，当前播放路径将整首歌曲留在内存中
+
+`SongContent` 取 manifest 的 `canonical_frames` 作为实际结束时刻，取 chart 的 Anchor 构造 Session，音频游标、Hit 边界、结束确认与进度显示使用该长度；Replay 的内容身份为 `package-blake3:` 加完整 64 个十六进制字符的 `package_hash`，绑定整个规范 manifest 及其对象引用，同一音频配不同谱面也使用不同身份，校验拒绝内容身份不匹配和歌曲范围外的 Hit
+
+无参数正常启动继续使用确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口也保留开发内容；正常包启动完整播放品牌开场，结束后保持 Ready，用户显式选择 Start 才开始歌曲，开场期间按住的控制不能穿透到演奏
+
+当前运行时消费包的音频、长度、身份与 Anchor，`energy`、分析段落和 `SectionCue` 虽参与包校验，尚未进入舞台渲染；现有手写场景不能视为 MusicAnalysis → StagePlan 的完整管线
+
 ## 构建、发布与失败清理
 
 构建在目标目录的同一父目录下创建本次专用的 `.cocobeat-package-<pid>-<序号>` staging，复制音频时对实际写入字节计算长度与 BLAKE3，同步文件后严格回读副本；内容构建回调收到该副本路径和 `PreparedCanonicalAudio`，lab 从这个确切路径测量能量，并用已准备音频的身份生成分析和谱面引用，后续不依赖对原来源路径的重复读取
@@ -108,8 +128,10 @@ Rust 入口为 `build_package(source_audio, expected_frames, destination, build_
 
 ## 验证范围与后续准入
 
-`validate_package` 先验证目录和有界对象，再验证头、载荷、schema 语义、对象长度、完整字节哈希及交叉音频引用，最后通过 `decode_canonical` 完整读取最终 Ogg，检查单轨 Ogg Vorbis、48 kHz、双声道、有限样本、Ogg 页 CRC / 顺序 / EOS、从帧 0 开始的连续时间线以及声明和实际总帧数；严格路径不重采样、不复制单声道、不裁幅、不自动删头尾静默
+`read_package` 先验证目录和有界对象，再验证头、载荷、schema 语义、对象长度、完整字节哈希及交叉音频引用；音频读入一份有大小上限的字节快照，对这同一份字节验证引用哈希并通过 `decode_canonical_bytes` 严格解码，不在校验哈希后重新打开路径取得播放内容
 
-包格式验证成功只证明当前初始契约及最终音频结构通过，不等于编码音质、seek、设备兼容、真人听感或运行时曲库 Ready 已通过；编码候选的独立状态继续见 [canonical 音频实验](canonical-audio-probe.md)
+严格解码检查单轨 Ogg Vorbis、48 kHz、双声道、有限样本、Ogg 页 CRC / 顺序 / EOS、从帧 0 开始的连续时间线以及声明和实际总帧数，不重采样、不复制单声道、不裁幅、不自动删头尾静默；交给回调的 PCM 在整个调用成功前均为临时结果，失败必须丢弃，runtime 仅在成功后将收集的 PCM 交给音频输出，`validate_package` 复用相同读取路径并丢弃 PCM
+
+包格式验证成功只证明当前初始契约及最终音频结构通过，不等于编码音质、seek、设备兼容、真人听感或游戏内曲库导入流程已通过；编码候选的独立状态继续见 [canonical 音频实验](canonical-audio-probe.md)
 
 [06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 的 TrackPlan / StagePlan 及确定性关键几何仍待后续，本包当前没有对应舞台对象

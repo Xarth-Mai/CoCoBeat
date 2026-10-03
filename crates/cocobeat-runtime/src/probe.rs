@@ -54,7 +54,7 @@ pub fn audio_probe(duration_seconds: u32, output: &Path) -> Result<(), String> {
 
     let mut stats = ProbeStats::default();
     let result = (|| {
-        let mut audio = AudioOutput::new()?;
+        let mut audio = AudioOutput::new(None)?;
         metadata
             .write_all(audio.output_info().as_bytes())
             .and_then(|()| metadata.flush())

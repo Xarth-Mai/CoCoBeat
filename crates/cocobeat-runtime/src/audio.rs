@@ -35,7 +35,7 @@ pub struct AudioOutput {
 }
 
 impl AudioOutput {
-    pub fn new() -> Result<Self, String> {
+    pub fn new(song: Option<StaticSoundData>) -> Result<Self, String> {
         let host = cpal::default_host();
         let device = host
             .default_output_device()
@@ -65,7 +65,7 @@ impl AudioOutput {
         .map_err(|error| format!("Cannot initialize audio output: {error}"))?;
         Ok(Self {
             manager,
-            song: None,
+            song,
             music: None,
             hits: [None, None],
             brand_sounds: [BrandImpact::Co1, BrandImpact::Co2, BrandImpact::Beat]
@@ -77,18 +77,11 @@ impl AudioOutput {
     }
 
     pub fn start(&mut self) -> Result<(), String> {
+        let song = self.song.as_ref().ok_or("No song has been loaded")?.clone();
         self.stop();
-        let song = self.song.get_or_insert_with(|| {
-            sound_data(
-                dev_song::samples()
-                    .into_iter()
-                    .map(|[left, right]| Frame::new(left, right))
-                    .collect(),
-            )
-        });
         self.music = Some(ControlledSound::new(
             self.manager
-                .play(song.clone())
+                .play(song)
                 .map_err(|error| format!("Cannot start music: {error}"))?,
         ));
         Ok(())
@@ -303,7 +296,7 @@ fn immediate() -> Tween {
     }
 }
 
-fn sound_data(frames: Vec<Frame>) -> StaticSoundData {
+pub(crate) fn sound_data(frames: Vec<Frame>) -> StaticSoundData {
     StaticSoundData {
         sample_rate: dev_song::SAMPLE_RATE,
         frames: frames.into(),

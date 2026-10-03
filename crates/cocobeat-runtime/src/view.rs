@@ -17,6 +17,7 @@ use crate::{
 #[derive(Resource, Default)]
 pub(crate) struct VisualState {
     pub song_seconds: f64,
+    pub duration_seconds: f64,
     pub hit_pulses: [f32; 2],
     pub free_sync_pulse: f32,
     pub anchor_sync_pulse: f32,
@@ -645,6 +646,8 @@ fn update_hud(
         };
     }
     let locale = state.locale;
+    let duration = state.duration_seconds.max(0.0);
+    let elapsed = state.song_seconds.clamp(0.0, duration);
     let rows = state
         .menu
         .as_ref()
@@ -666,11 +669,8 @@ fn update_hud(
             UiText::Clock => Message::with(
                 "hud.clock",
                 [
-                    (
-                        "elapsed",
-                        format!("{:05.1}", state.song_seconds.clamp(0.0, 64.0)),
-                    ),
-                    ("duration", "64.0".into()),
+                    ("elapsed", format!("{elapsed:05.1}")),
+                    ("duration", format!("{duration:.1}")),
                     (
                         "resonance",
                         format!("{:3.0}", state.resonance.clamp(0.0, 1.0) * 100.0),
@@ -788,7 +788,11 @@ fn update_hud(
     for (kind, mut node, background, border) in &mut nodes {
         let visible = match *kind {
             HudNode::Progress => {
-                node.width = percent((state.song_seconds / 64.0).clamp(0.0, 1.0) as f32 * 100.0);
+                node.width = percent(if duration > 0.0 {
+                    (elapsed / duration) as f32 * 100.0
+                } else {
+                    0.0
+                });
                 continue;
             }
             HudNode::Waiting => {
@@ -985,6 +989,7 @@ mod tests {
         let mut app = hud_app();
         app.insert_resource(VisualState {
             song_seconds: 16.0,
+            duration_seconds: 64.0,
             menu: Some(MenuPresentation::default()),
             ..default()
         });
@@ -1033,6 +1038,48 @@ mod tests {
         let stopped = sample(&mut app);
         assert_eq!(stopped.0, Display::None);
         assert_eq!(stopped.2, percent(0));
+    }
+
+    #[test]
+    fn clock_and_progress_follow_loaded_duration_and_clamp_the_same_song_time() {
+        let mut app = hud_app();
+        for (duration, elapsed, progress, clock) in [
+            (0.0, 0.0, 0.0, "000.0 / 0.0 SEC"),
+            (0.1, 0.025, 25.0, "000.0 / 0.1 SEC"),
+            (0.1, 0.2, 100.0, "000.1 / 0.1 SEC"),
+            (90.0, 45.0, 50.0, "045.0 / 90.0 SEC"),
+            (90.0, 120.0, 100.0, "090.0 / 90.0 SEC"),
+            (90.0, -1.0, 0.0, "000.0 / 90.0 SEC"),
+            (0.0, 45.0, 0.0, "000.0 / 0.0 SEC"),
+        ] {
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.locale = Locale::EnUs;
+                state.duration_seconds = duration;
+                state.song_seconds = elapsed;
+            }
+            app.update();
+            let actual_clock = app
+                .world_mut()
+                .query::<(&UiText, &Text)>()
+                .iter(app.world())
+                .find(|(kind, _)| matches!(kind, UiText::Clock))
+                .unwrap()
+                .1
+                .0
+                .clone();
+            let actual_progress = app
+                .world_mut()
+                .query::<(&HudNode, &Node)>()
+                .iter(app.world())
+                .find(|(kind, _)| matches!(kind, HudNode::Progress))
+                .unwrap()
+                .1
+                .width;
+            assert_eq!(actual_clock.lines().next(), Some(clock));
+            assert_eq!(actual_progress, percent(progress));
+            assert_eq!(app.world().resource::<VisualState>().song_seconds, elapsed);
+        }
     }
 
     #[test]

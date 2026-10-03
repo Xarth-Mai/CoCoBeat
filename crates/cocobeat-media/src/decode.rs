@@ -3,7 +3,7 @@
 use cocobeat_schema::CANONICAL_SAMPLE_RATE;
 use std::{
     fs::File,
-    io::{Read, Seek, SeekFrom},
+    io::{Cursor, Read, Seek, SeekFrom},
     path::Path,
 };
 use symphonia::core::{
@@ -46,21 +46,46 @@ pub fn decode_canonical(
     expected_frames: u64,
     mut consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
 ) -> Result<u64, String> {
-    if !(1..=u64::from(CANONICAL_SAMPLE_RATE) * MAX_SOURCE_SECONDS).contains(&expected_frames) {
-        return Err(
-            "Expected canonical frames must cover more than zero and at most ten minutes".into(),
-        );
-    }
+    validate_canonical_frames(expected_frames)?;
     decode(path.as_ref(), Some(expected_frames), |_, frames| {
         consume(frames)
     })
     .map(|decoded| decoded.source_frames)
 }
 
+/// Consumes the one owned snapshot already checked against a package object reference
+pub(crate) fn decode_canonical_bytes(
+    bytes: Vec<u8>,
+    expected_frames: u64,
+    mut consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+) -> Result<u64, String> {
+    validate_canonical_frames(expected_frames)?;
+    if bytes.len() as u64 > MAX_SOURCE_BYTES {
+        return Err("Canonical audio snapshot exceeds 512 MiB".into());
+    }
+    let ogg_frames = verify_ogg(&mut Cursor::new(bytes.as_slice()), bytes.len() as u64)?;
+    decode_reader(
+        Cursor::new(bytes),
+        Some(expected_frames),
+        || Ok(ogg_frames),
+        |_, frames| consume(frames),
+    )
+    .map(|decoded| decoded.source_frames)
+}
+
+fn validate_canonical_frames(expected_frames: u64) -> Result<(), String> {
+    if !(1..=u64::from(CANONICAL_SAMPLE_RATE) * MAX_SOURCE_SECONDS).contains(&expected_frames) {
+        return Err(
+            "Expected canonical frames must cover more than zero and at most ten minutes".into(),
+        );
+    }
+    Ok(())
+}
+
 fn decode(
     path: &Path,
     expected_canonical_frames: Option<u64>,
-    mut consume: impl FnMut(u32, &[[f32; 2]]) -> Result<(), String>,
+    consume: impl FnMut(u32, &[[f32; 2]]) -> Result<(), String>,
 ) -> Result<DecodedSource, String> {
     if !path.is_file() {
         return Err("Audio source must be a regular file".into());
@@ -71,8 +96,32 @@ fn decode(
         return Err("Audio source must be a regular file no larger than 512 MiB".into());
     }
     let mut validation_file = file.try_clone().map_err(|error| error.to_string())?;
+    decode_reader(
+        file.take(metadata.len()),
+        expected_canonical_frames,
+        || {
+            // Cloned File handles share the cursor; restore it behind the demuxer's buffer
+            let position = validation_file
+                .stream_position()
+                .map_err(|error| error.to_string())?;
+            let frames = verify_ogg(&mut validation_file, metadata.len())?;
+            validation_file
+                .seek(SeekFrom::Start(position))
+                .map_err(|error| error.to_string())?;
+            Ok(frames)
+        },
+        consume,
+    )
+}
+
+fn decode_reader(
+    reader: impl Read + Send + Sync + 'static,
+    expected_canonical_frames: Option<u64>,
+    verify_ogg_frames: impl FnOnce() -> Result<u64, String>,
+    mut consume: impl FnMut(u32, &[[f32; 2]]) -> Result<(), String>,
+) -> Result<DecodedSource, String> {
     // Sequential import avoids MP3's bitrate-based duration estimate and tail trimming
-    let source = ReadOnlySource::new(file.take(metadata.len()));
+    let source = ReadOnlySource::new(reader);
     // This import stage does not consume tags or artwork
     let metadata_options = MetadataOptions::default()
         .limit_tag_bytes(Limit::Maximum(0))
@@ -86,15 +135,7 @@ fn decode(
         )
         .map_err(|error| format!("Unsupported or invalid audio source: {error}"))?;
     let ogg_frames = if format.format_info().format == FORMAT_ID_OGG {
-        // Cloned File handles share the cursor; restore it behind the demuxer's buffer
-        let position = validation_file
-            .stream_position()
-            .map_err(|error| error.to_string())?;
-        let frames = verify_ogg(&mut validation_file, metadata.len())?;
-        validation_file
-            .seek(SeekFrom::Start(position))
-            .map_err(|error| error.to_string())?;
-        Some(frames)
+        Some(verify_ogg_frames()?)
     } else {
         None
     };
@@ -274,7 +315,7 @@ fn checked_frame_count(total: u64, added: u64, rate: u32) -> Result<u64, String>
 }
 
 // Symphonia can recover past damaged Ogg pages; imports must reject that time loss
-fn verify_ogg(file: &mut File, length: u64) -> Result<u64, String> {
+fn verify_ogg(file: &mut (impl Read + Seek), length: u64) -> Result<u64, String> {
     file.rewind().map_err(|error| error.to_string())?;
     let mut position = 0;
     let mut serial = None;
