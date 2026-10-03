@@ -23,7 +23,7 @@
 | 11 | 真实输入/音频计时与校准 · 01 | root + 设备测试 | NOT RUN | 03/05/07/08 | loopback/硬件报告、设备与构建信息、偏移/漂移/不确定性，依据实测确定窗口 |
 | 12 | Windows/Linux 平台与手柄验收 · 02 | root + 设备测试 | NOT RUN | 09/10/11 | 双键盘、双手柄、混合输入、菜单、重绑定、USB/蓝牙及重连记录 |
 | 13 | 真人双人体验与规则反馈 · 03 | root + 测试参与者 | NOT RUN | 10/11/12 | 对照顺序、实际行为、访谈、沉默/模仿/连点与打乱输入对照；失败返回 02 |
-| 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 首批已交付双耳/单冠角色、街道纵深与五种反馈；9 张反馈/画质 GPU 样例通过，Resonance 仅改变独立招牌；判定等级强度细化、连续动效、真实性能及真人体验继续保留 |
+| 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
 | 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码与 High 重采样已接入 lab；patched q10 独立入口的四平台短测与构建、64 秒原创音乐回归及 Linux 十分钟静默完整链路通过，继续曲库、seek 与听感准入，见音频实验与软件验证记录 |
 | 16 | SongPackage 身份与原子 Ready · 05 | 待分配 | NOT RUN | 15 | 版本、对象哈希、staging、损坏与中断测试；分析基于最终回读音频 |
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 五个原创样本、十声道候选检测与独立帧真值已实测；软件 PASS、原始检测质量 FAIL，见 MIR 基准；编码回读、完整类型、真实数据与双人标注仍未执行 |
@@ -39,7 +39,7 @@
 | 27 | 首批 13 个语言变体的界面 · 02a | 国际化 agents，root 集成 | IN PROGRESS | 26 的设置流程 | 软件实现已完成，13 × 91 条文案、系统识别、地区变体、原子保存和即时切换已接入；75 项 workspace 测试、Clippy、构建及 29 张 GPU 图检查通过，Noto Sans 与旗帜已在 b02dc42 提交；CJK 词边界诊断保留并记录上游修复路径；Windows/Linux 实际输入导航与母语使用者验收仍为 NOT RUN |
 | 28 | 画质预设、独立效果与帧率/VSync · 02a | quality_settings / quality_render / quality_pacing，root 集成 | IN PROGRESS | 26 的设置流程 | 已实现低中高/自定义、五项效果、最高刷新率档位、独立 VSync 与生产 CPU 门控；81 项 workspace 测试、Clippy 与构建通过，覆盖联合事务、跨屏归一化和有效历史窗内的 Session/Replay 消费批次一致性；46 张 GPU 离屏图已逐张检查通过，实际呈现帧率/VSync 与平台设备验收仍为 NOT RUN |
 | 29 | 窗口、无边框全屏与渲染尺寸 · 02a | display_settings + root | IN PROGRESS | 26 的设置与显示预览流程 | 已接请求/回读、原生 UI、游戏与设置菜单共用结构化滚动、Windows 工作区与 X11 保守交集、环境变化时一次容纳；92 项测试、Clippy、Linux 构建及 Linux 上的 Windows 目标编译检查通过；已修复未编辑显示草稿与外部窗口变化的同步，极小 Ready 菜单越界已修复，28 张菜单与设置 GPU 图逐张检查通过，真实 WM/DPI/跨屏和 Windows 运行仍为 NOT RUN |
-| 30 | UI、HUD 与双人输入体验 · 02b | resample_quality / controller_flow + root | IN PROGRESS | 02/02a 的输入与设置契约 | 首批主操作/双人输入分层、设备卡、紧凑 HUD、双手柄与混合输入、独立菜单主控及接管已落地；75 项 runtime 测试、Clippy 与构建通过，品牌、13 语言和持键门控保持；22 项 UI 逐图检查通过，故障原因首屏问题已修复；结果页细化、连续动效和设备验收继续见 02b |
+| 30 | UI、HUD 与双人输入体验 · 02b | resample_quality / controller_flow + root | IN PROGRESS | 02/02a 的输入与设置契约 | 主操作/双人输入分层、设备卡、紧凑 HUD、真实结果/故障层级、独立菜单主控和混合输入换席已落地；86 项 runtime 测试、Clippy、格式及 13 语言差异字形通过，解除分配和断连保留焦点；此前 22 项 UI 及后续结果页、连续 GPU 帧取证见验证记录，设备和真人验收继续见 02b |
 
 当前软件范围 02–10 已汇合并验证，确定性规则与 Replay 已提交为 `378f95b`；完整阶段 01/02 的退出仍等待 11/12；root 按里程碑提交主线程实现，保留品牌线程后续改动，代码修订需补充对应验证
 

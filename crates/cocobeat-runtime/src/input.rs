@@ -127,6 +127,7 @@ enum MenuAction {
     MainMenu,
     Quit,
     Bind(Binding),
+    UnassignPad(PlayerId),
     Back,
 }
 
@@ -145,6 +146,7 @@ impl MenuAction {
             Self::Bind(Binding::Keyboard(player)) => ("menu.bind_keyboard", Some(player)),
             Self::Bind(Binding::JoinPad(player)) => ("menu.join_controller", Some(player)),
             Self::Bind(Binding::PadButton(player)) => ("menu.bind_controller", Some(player)),
+            Self::UnassignPad(player) => ("menu.unassign_controller", Some(player)),
         };
         Message::with(key, player.map(|player| ("player", format!("{player:?}")))).render(locale)
     }
@@ -167,9 +169,11 @@ const MENU: [MenuAction; 4] = [
     MenuAction::Quit,
 ];
 
-const PLAYERS_MENU: [MenuAction; 7] = [
+const PLAYERS_MENU: [MenuAction; 9] = [
     MenuAction::Bind(Binding::JoinPad(PlayerId::P1)),
+    MenuAction::UnassignPad(PlayerId::P1),
     MenuAction::Bind(Binding::JoinPad(PlayerId::P2)),
+    MenuAction::UnassignPad(PlayerId::P2),
     MenuAction::Bind(Binding::Keyboard(PlayerId::P1)),
     MenuAction::Bind(Binding::Keyboard(PlayerId::P2)),
     MenuAction::Bind(Binding::PadButton(PlayerId::P1)),
@@ -552,6 +556,10 @@ impl InputState {
     }
 
     fn disconnect_pad(&mut self, pad: Entity) {
+        let selected_action = self
+            .players_open
+            .then(|| self.menu_actions().get(self.selection).copied())
+            .flatten();
         let was_owner = self.menu_owner == Some(InputSource::Pad(pad));
         if was_owner {
             self.menu_owner = None;
@@ -579,6 +587,19 @@ impl InputState {
                     self.reset_edges();
                 }
             }
+        }
+        if let Some(action) = selected_action {
+            let action = match action {
+                MenuAction::UnassignPad(player) if self.pads[player.index()].is_none() => {
+                    MenuAction::Bind(Binding::JoinPad(player))
+                }
+                _ => action,
+            };
+            self.selection = self
+                .menu_actions()
+                .iter()
+                .position(|candidate| *candidate == action)
+                .unwrap();
         }
         self.held_pad_buttons.retain(|(entity, _)| *entity != pad);
         self.held_pad_axes.retain(|(entity, _)| *entity != pad);
@@ -612,6 +633,10 @@ impl InputState {
         actions
             .into_iter()
             .filter(|action| *action != MenuAction::SaveReplay || self.replay_unsaved)
+            .filter(|action| match action {
+                MenuAction::UnassignPad(player) => self.pads[player.index()].is_some(),
+                _ => true,
+            })
             .collect()
     }
 
@@ -649,6 +674,19 @@ impl InputState {
                 // Route the rest of this capture batch through the settings gate
                 self.set_settings_open(true);
                 self.emit(Control::Settings(SettingsAction::Open), now);
+            }
+            MenuAction::UnassignPad(player) => {
+                self.pads[player.index()] = None;
+                self.status = Message::with(
+                    "input.controller_unassigned",
+                    [("player", format!("{player:?}"))],
+                );
+                self.players_page(true, scroll);
+                self.selection = self
+                    .menu_actions()
+                    .iter()
+                    .position(|action| *action == MenuAction::Bind(Binding::JoinPad(player)))
+                    .unwrap();
             }
             MenuAction::Bind(binding) => {
                 if let Binding::PadButton(player) = binding
@@ -928,7 +966,11 @@ impl InputState {
                     now,
                 )
             }
-            GamepadButton::Select if !self.players_open && self.replay_unsaved => {
+            GamepadButton::Select
+                if !self.players_open
+                    && self.replay_unsaved
+                    && (self.menu_open || self.pads.contains(&Some(pad))) =>
+            {
                 self.emit(Control::SaveReplay, now)
             }
             GamepadButton::East if self.menu_open && self.players_open => {
@@ -1189,6 +1231,7 @@ mod tests {
     fn saving_while_playing_keeps_later_hits_in_the_same_capture_batch() {
         let mut world = World::new();
         let pad = world.spawn_empty().id();
+        let stranger = world.spawn_empty().id();
         for use_pad in [false, true] {
             let mut input = controlled_input();
             let mut scroll = MenuScroll::default();
@@ -1196,6 +1239,8 @@ mod tests {
             input.set_menu_phase(MenuPhase::Paused, true);
             input.set_menu_open(false);
             next_frame(&mut input);
+            input.pad_button(stranger, GamepadButton::Select, true, 0, &mut scroll);
+            assert!(input.queued.is_empty());
             if use_pad {
                 input.pad_button(pad, GamepadButton::Select, true, 1, &mut scroll);
                 input.pad_button(pad, GamepadButton::South, true, 2, &mut scroll);
@@ -1211,6 +1256,16 @@ mod tests {
                     .collect::<Vec<_>>(),
                 [Control::SaveReplay, Control::Hit(PlayerId::P1)]
             );
+            input.set_menu_open(true);
+            input.claim_menu(InputSource::Pad(stranger));
+            next_frame(&mut input);
+            input.pad_button(stranger, GamepadButton::Select, true, 3, &mut scroll);
+            assert!(input.queued.is_empty());
+            input.pad_button(stranger, GamepadButton::Select, false, 4, &mut scroll);
+            input.pad_button(stranger, GamepadButton::Select, true, 5, &mut scroll);
+            input.pad_button(stranger, GamepadButton::South, true, 6, &mut scroll);
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::SaveReplay);
         }
     }
 
@@ -1844,6 +1899,135 @@ mod tests {
         assert_eq!(input.menu_owner, Some(InputSource::Keyboard));
         assert_eq!(input.queued.last().unwrap().control, Control::FocusLost);
         assert!(input.held_pad_buttons.iter().all(|(pad, _)| *pad == first));
+    }
+
+    #[test]
+    fn unassigning_a_controller_keeps_menu_ownership_and_allows_either_mixed_arrangement() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        let other_pad = world.spawn_empty().id();
+        for from in [PlayerId::P1, PlayerId::P2] {
+            let to = if from == PlayerId::P1 {
+                PlayerId::P2
+            } else {
+                PlayerId::P1
+            };
+            for other_assigned in [false, true] {
+                let mut input = controlled_input();
+                let mut scroll = MenuScroll::default();
+                input.bind_key(PlayerId::P1, KeyCode::KeyD).unwrap();
+                input.bind_key(PlayerId::P2, KeyCode::KeyK).unwrap();
+                input.join_pad(from, pad);
+                if other_assigned {
+                    input.join_pad(to, other_pad);
+                    input.pad_buttons = [GamepadButton::West, GamepadButton::North];
+                }
+                let buttons = input.pad_buttons;
+                input.claim_menu(InputSource::Pad(pad));
+                input.players_page(true, &mut scroll);
+                select(&mut input, MenuAction::UnassignPad(from));
+                next_frame(&mut input);
+                input.pad_button(pad, GamepadButton::South, true, 1, &mut scroll);
+                input.pad_button(other_pad, GamepadButton::Start, true, 2, &mut scroll);
+                assert_eq!(input.pads[from.index()], None);
+                assert_eq!(input.pads[to.index()], other_assigned.then_some(other_pad));
+                assert_eq!(input.menu_owner, Some(InputSource::Pad(pad)));
+                assert_eq!(input.keys, [KeyCode::KeyD, KeyCode::KeyK]);
+                assert_eq!(input.pad_buttons, buttons);
+                assert!(input.queued.is_empty());
+                assert!(
+                    input
+                        .held_pad_buttons
+                        .contains(&(pad, GamepadButton::South))
+                );
+                let actions = input.menu_actions();
+                assert!(!actions.contains(&MenuAction::UnassignPad(from)));
+                assert_eq!(
+                    actions[input.selection],
+                    MenuAction::Bind(Binding::JoinPad(from))
+                );
+                let presentation = input
+                    .menu_presentation(Locale::EnUs, String::new(), vec![])
+                    .unwrap();
+                assert_eq!(
+                    presentation.rows.iter().filter(|row| row.selected).count(),
+                    1
+                );
+                if other_assigned {
+                    continue;
+                }
+                assert!(
+                    actions
+                        .iter()
+                        .all(|action| !matches!(action, MenuAction::UnassignPad(_)))
+                );
+                select(&mut input, MenuAction::Bind(Binding::JoinPad(to)));
+                next_frame(&mut input);
+                input.pad_button(pad, GamepadButton::South, true, 3, &mut scroll);
+                assert_eq!(input.pads, [None, None]);
+                input.pad_button(pad, GamepadButton::South, false, 4, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, true, 5, &mut scroll);
+                input.key(KeyCode::Enter, true, false, 6, &mut scroll);
+                assert_eq!(input.pads[from.index()], None);
+                assert_eq!(input.pads[to.index()], Some(pad));
+                assert_eq!(input.menu_owner, Some(InputSource::Pad(pad)));
+                assert!(input.queued.is_empty());
+                input.set_menu_open(false);
+                next_frame(&mut input);
+                input.pad_button(pad, GamepadButton::South, true, 7, &mut scroll);
+                assert!(input.queued.is_empty());
+                input.pad_button(pad, GamepadButton::South, false, 8, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, true, 9, &mut scroll);
+                input.key(input.keys[from.index()], true, false, 10, &mut scroll);
+                assert_eq!(
+                    input
+                        .queued
+                        .iter()
+                        .map(|event| event.control)
+                        .collect::<Vec<_>>(),
+                    [Control::Hit(to), Control::Hit(from)]
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn disconnecting_a_controller_preserves_the_selected_player_action() {
+        let mut world = World::new();
+        let first = world.spawn_empty().id();
+        let second = world.spawn_empty().id();
+        for (selected, after) in [
+            (
+                MenuAction::Bind(Binding::JoinPad(PlayerId::P2)),
+                MenuAction::Bind(Binding::JoinPad(PlayerId::P2)),
+            ),
+            (
+                MenuAction::UnassignPad(PlayerId::P1),
+                MenuAction::Bind(Binding::JoinPad(PlayerId::P1)),
+            ),
+            (MenuAction::Back, MenuAction::Back),
+        ] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            input.join_pad(PlayerId::P1, first);
+            input.join_pad(PlayerId::P2, second);
+            input.players_page(true, &mut scroll);
+            select(&mut input, selected);
+            input.disconnect_pad(first);
+            let presentation = input
+                .menu_presentation(Locale::EnUs, String::new(), vec![])
+                .unwrap();
+            assert_eq!(input.pads, [None, Some(second)]);
+            assert_eq!(input.menu_actions()[input.selection], after);
+            assert_eq!(
+                presentation.rows[input.selection].text,
+                after.label(Locale::EnUs)
+            );
+            assert_eq!(
+                presentation.rows.iter().filter(|row| row.selected).count(),
+                1
+            );
+        }
     }
 
     #[test]

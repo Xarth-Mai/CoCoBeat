@@ -308,3 +308,15 @@ GPU 使用 Linux AMD RX 6650 XT / RADV Vulkan；已知 ICU CJK 词边界诊断�
 最后补齐 Finished/Fault 中重新开始或返回主菜单的共享保存预检，磁盘失败时仍保留当前阶段、结果、原错误和全部 Replay 事实；恢复目录后允许迁移，新增真实文件阻塞与恢复检查通过。目检还发现完成标题的 Anchor Sync 数值孤立换行，13 语言共同统计改为明确两行；最终 84 项 runtime 测试、workspace all-targets Clippy、格式、构建和全部差异字形检查通过，见 `final-validation.json` 与 `glyphs-final/checks.json`，二进制 SHA-256 为 `3ac7ecf1f40f6eba2a3b011a00ff20c3596af0fb0f8954646d7196715ac460e2`
 
 最终二进制对五语言完成标题、三个末行视口和 Miss 7/7 共 9 项补验全部通过，逐图确认共同次数同行、焦点和完整信息可读；报告为 `target/followup-20261003/results-ui-final/report.json`，SHA-256 为 `851352124e09eb656823e1e2f7f4af84e8d7d23c861b2d4ff469e068b8754680`。暂停、故障和显示预览中故障沿用明确标注的 `7b99f614…` 三项画面证据，原 12 图、补验 9 图及各自二进制均保留；最终代码和文档复核为 `Lean already. Ship.`，设备与真人退出条件没有据此勾选
+
+## 混合输入换席与菜单焦点
+
+2026-10-03 复查双手柄及键盘＋手柄时，补齐“解除手柄分配”入口：唯一手柄可从 P1 解除后加入 P2，反向也成立；保留键盘绑定、菜单主控、另一玩家和按键释放屏障。演奏中未加入的手柄不再触发 Replay 保存，取得菜单主控后仍可使用菜单保存
+
+首轮 85 项 runtime 测试通过后，独立复审发现动态解除行在断连后消失可能改变所选操作，已按操作身份恢复焦点；被移除的解除操作返回对应玩家加入入口。新增行为回归覆盖两种换席、同批接管屏障、重按才生成 Hit、未加入手柄保存拒绝，以及断连前后 Join P2／解除 P1／返回的焦点身份；首轮记录保留在 `target/controller-mixed-20261003/validation.json`
+
+最终 `cargo test --offline --locked -j1 -p cocobeat-runtime --lib` 的 86 项测试、runtime all-targets Clippy `-D warnings`、格式及游戏构建通过；依赖边界检查通过，本批未改依赖。最终输入源码及 13 个 locale 的哈希前后稳定，命令和日志见 `target/controller-mixed-20261003/final-validation.json`，游戏二进制 SHA-256 为 `5c70a3be9d563be791f37f366f9cd6d21796301334967ebc054ba55b6421279d`
+
+每个 locale 的两条新增文案和一条冲突提示均通过 Noto 字形与 `{player}` 占位符检查，见 `target/controller-mixed-20261003/glyphs/checks.json`；独立正确性和 ponytail-review 复审均无剩余发现，结论 `Lean already. Ship.`。本批未新增 GPU 截图或物理设备操作，Windows/Linux 双手柄、混合设备和 USB/蓝牙验收仍为 NOT RUN
+
+此前 `66d0771` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37099092172) 已完成且通过，缓存恢复及保存成功；该远端结果只覆盖对应提交的轻量工作流，不包含本批 runtime 修改
