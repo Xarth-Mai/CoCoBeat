@@ -14,8 +14,10 @@ use std::{
 
 const FORMAT: &str = "CoCoBeat Replay";
 const VERSION: u32 = 1;
-pub const MAX_FILE_BYTES: u64 = 8 * 1024 * 1024;
-pub const MAX_FACTS: usize = 65_536;
+// Ten minutes of 10 ms player watermarks leave room for 39,996 hits
+// The byte bound also fits every fact and identity at their maximum encoded width
+pub const MAX_FILE_BYTES: u64 = 20 * 1024 * 1024;
+pub const MAX_FACTS: usize = 160_000;
 const MAX_IDENTITY_BYTES: usize = 256;
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
@@ -360,14 +362,30 @@ mod tests {
                 .contains("byte limit")
         );
         assert_eq!(source.position(), MAX_FILE_BYTES + 1);
-        let mut replay = empty();
-        let fact = hit(PlayerId::P1, 0, 0);
+        let mut replay = Replay::new(
+            ReplayIdentity {
+                content_id: "\0".repeat(MAX_IDENTITY_BYTES),
+                rules_id: "\0".repeat(MAX_IDENTITY_BYTES),
+                build_id: "\0".repeat(MAX_IDENTITY_BYTES),
+            },
+            SessionEpoch(u64::MAX),
+        )
+        .unwrap();
+        let fact = DuoInput::Hit(Hit {
+            epoch: SessionEpoch(u64::MAX),
+            player: PlayerId::P1,
+            seq: u64::MAX,
+            song_time: SongTime::from_frames(i64::MIN),
+        });
         for _ in 0..MAX_FACTS {
             replay.record(fact).unwrap();
         }
         assert!(replay.record(fact).is_err());
         assert_eq!(replay.facts().len(), MAX_FACTS);
-        let mut document: Document = serde_json::from_slice(&replay.encode().unwrap()).unwrap();
+        let bytes = replay.encode().unwrap();
+        assert!(bytes.len() as u64 <= MAX_FILE_BYTES);
+        assert_eq!(Replay::decode(bytes.as_slice()).unwrap(), replay);
+        let mut document: Document = serde_json::from_slice(&bytes).unwrap();
         document.facts.push(Fact::Hit {
             epoch: 7,
             player: 1,
@@ -493,5 +511,40 @@ mod tests {
                 .replay("fixture-64s-v1", "wrong-rules", anchors, rules)
                 .is_err()
         );
+    }
+
+    #[test]
+    fn ten_minute_duet_survives_save_and_replay_with_dense_input() {
+        let mut recorded = empty();
+        let rules = DuoRules::default();
+        let mut live = DuoEngine::new(recorded.epoch(), Vec::new(), rules).unwrap();
+        let mut record = |fact| {
+            live.ingest(fact).unwrap();
+            recorded.record(fact).unwrap();
+        };
+        // Twenty hits per second per player, with the runtime's 10 ms checkpoints
+        for step in 0..=60_000 {
+            if step < 60_000 && step % 5 == 0 {
+                for player in [PlayerId::P1, PlayerId::P2] {
+                    record(hit(player, step as u64 / 5, step * 480));
+                }
+            }
+            for player in [PlayerId::P1, PlayerId::P2] {
+                record(watermark(player, step * 480 - 2_400));
+            }
+        }
+        let end = 28_800_000 + rules.confirmation_delay_frames().unwrap() + 1;
+        for player in [PlayerId::P1, PlayerId::P2] {
+            record(watermark(player, end));
+        }
+        assert_eq!(recorded.facts().len(), 144_004);
+        assert_eq!(live.events().len(), 12_000);
+        let loaded = Replay::decode(recorded.encode().unwrap().as_slice()).unwrap();
+        assert_eq!(loaded, recorded);
+        let restored = loaded
+            .replay("fixture-64s-v1", "duo-v1", Vec::new(), rules)
+            .unwrap();
+        assert_eq!(restored.events(), live.events());
+        assert_eq!(restored.resonance(), live.resonance());
     }
 }

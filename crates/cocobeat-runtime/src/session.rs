@@ -306,4 +306,43 @@ mod tests {
         assert!(session.update_position(expired).is_err());
         assert_eq!(session.clock.state(), ClockState::Expired);
     }
+
+    #[test]
+    fn recorder_capacity_failure_keeps_rules_and_capture_state_unchanged() {
+        let mut session = Session::new(SessionEpoch(1)).unwrap();
+        session
+            .observe_audio(1.0, MonotonicTime::from_nanos(1_000_000_000))
+            .unwrap();
+        session
+            .hit(PlayerId::P1, 1_010_000_000, 1_020_000_000)
+            .unwrap();
+        let fact = DuoInput::Watermark {
+            epoch: session.epoch(),
+            player: PlayerId::P1,
+            through: SongTime::ZERO,
+        };
+        // Fill the recorder directly to isolate capacity preflight from rule processing
+        while session.replay.facts().len() < MAX_FACTS - 1 {
+            session.replay.record(fact).unwrap();
+        }
+        let before = format!("{:?}", session.engine);
+        assert!(session.finish().unwrap_err().contains("capacity"));
+        assert_eq!(format!("{:?}", session.engine), before);
+        assert_eq!(session.watermark, None);
+        assert_eq!(session.current, SongTime::ZERO);
+        assert_eq!(session.replay.facts().len(), MAX_FACTS - 1);
+
+        session.replay.record(fact).unwrap();
+        assert!(
+            session
+                .hit(PlayerId::P2, 1_015_000_000, 1_020_000_000)
+                .unwrap_err()
+                .contains("capacity")
+        );
+        assert_eq!(format!("{:?}", session.engine), before);
+        assert_eq!(session.sequence, [1, 0]);
+        assert_eq!(session.diagnostics.len(), 1);
+        assert_eq!(session.diagnostics[0].player, PlayerId::P1);
+        assert_eq!(session.replay.facts().len(), MAX_FACTS);
+    }
 }

@@ -222,3 +222,14 @@ Windows 目标检查仍在 Linux 上使用 `target/windows-cross-toolchain/` 内
 源码 `d1290a21d149b8f520b7f16e44b7a0497f4348c9` 以 `cargo build --offline --locked -j1 -p cocobeat-lab` 构建后，执行 `target/debug/cocobeat-lab audio-probe 30 target/audio-probe-evidence/20261002-d1290a2-30s/probe`，退出 0；CPAL 报告 ALSA `default`、48 kHz 双声道，30 秒探针完成 28,425 次观察、2,811 个游标更新间隔，未报告后端错误，软件游标更新间隔 p50/p95/p99 分别为 10.552203/11.607198/11.622668 ms
 
 命令、193 个源码文件哈希、二进制身份、前后输出状态和 CSV 哈希保存在该目录的 `evidence.json`；二进制 SHA-256 为 `014d0a123c96b3c957eaf63b8b3084abe11caad47b6b67bc88a83e6d8f6da6fc`。执行前后系统默认输出仍为静音、30% 音量，未修改设备或音量；本轮不录音，ALSA 默认设备描述不构成物理声路证明，游标统计不代表扬声器输出延迟，loopback、听感、校准与物理输入仍为 NOT RUN
+
+
+## 十分钟 Replay 容量
+
+2026-10-03，原 65,536 facts 上限在最密 10 ms 双人水位下于 327.68 秒触发，即使没有 Hit 也无法容纳十分钟；仅扩大 facts 仍可能超过原 8 MiB JSON 上限。现改为 160,000 facts / 20 MiB，保留 v1 JSON、原始事实顺序与现有明确失败行为
+
+`cargo test --offline --locked -p cocobeat-replay` 的 6 项测试通过，默认 debug 整组耗时 188.31 秒；十分钟压力用例记录双方各 20 Hit/s，共 24,000 Hit、144,004 facts，最后确认水位得到 12,000 个共同事件，保存、载入与同一 core 重放后的事件和 Resonance 与 live 一致。最大字段宽度与最大身份转义后的完整容量仍可编码/解码，超限拒绝与 limit+1 有界读取继续通过
+
+`cargo test --offline --locked -p cocobeat-runtime session::tests` 的 4 项测试通过，包含 recorder 满或仅余一条时，拒绝操作不改变规则、序号、水位与诊断；两个 crate 的 all-targets Clippy、格式及差异检查通过。命令、源码 SHA-256 和日志哈希见 `target/long-song-review-20261003/implementation-validation.json`
+
+生产运行时仍使用 64 秒开发歌曲，本次不证明十分钟音频播放或歌曲导入 Ready。core 仍扫描已记录历史，文件大小上限也不等于进程内存上限；真实平台性能、设备和未来网络突发输入分别验收
