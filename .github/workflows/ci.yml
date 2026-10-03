@@ -50,6 +50,7 @@ jobs:
           key: light-${{ runner.os }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
           restore-keys: |
             light-${{ runner.os }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
+            light-${{ runner.os }}-${{ steps.rust.outputs.version }}-
       - run: cargo fmt --all -- --check
       - run: cargo xtask boundaries
       # Rules, source decoding and tooling; no engine/device/GPU compilation

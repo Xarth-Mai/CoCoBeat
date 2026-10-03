@@ -63,6 +63,7 @@ jobs:
           key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
           restore-keys: |
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
+            release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-
       - name: Build optimized game
         run: cargo build --locked --release --package cocobeat-game --target $env:BUILD_TARGET
       - name: Verify architecture and prepare artifact
