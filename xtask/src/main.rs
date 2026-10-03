@@ -104,6 +104,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                 &["cocobeat-schema", "cocobeat-core", "serde", "serde_json"],
                 false,
             ),
+            "cocobeat-media" => (&["cocobeat-schema"], true),
             "cocobeat-runtime" => (
                 &["cocobeat-schema", "cocobeat-core", "cocobeat-replay"],
                 true,
@@ -115,6 +116,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                     "cocobeat-core",
                     "cocobeat-replay",
                     "cocobeat-runtime",
+                    "cocobeat-media",
                 ],
                 true,
             ),
@@ -186,6 +188,8 @@ mod tests {
             ("cocobeat-core", "cocobeat-runtime"),
             ("cocobeat-game", "cocobeat-core"),
             ("cocobeat-runtime", "helper-with-hidden-engine"),
+            ("cocobeat-media", "cocobeat-runtime"),
+            ("cocobeat-media", "unlisted-local-decoder"),
         ] {
             assert!(
                 verify_graph(&graph(

@@ -1,5 +1,5 @@
 [package]
-name = "cocobeat-lab"
+name = "cocobeat-media"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,9 +7,7 @@ repository.workspace = true
 publish.workspace = true
 
 [dependencies]
-cocobeat-schema.workspace = true
-cocobeat-runtime.workspace = true
-cocobeat-media.workspace = true
+symphonia.workspace = true
 
 [lints]
 workspace = true

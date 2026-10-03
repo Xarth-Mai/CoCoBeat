@@ -43,7 +43,7 @@ cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target
 
 图形检查使用 Bevy 原生离屏目标、显式 UI 相机、同步管线编译和固定时间步，避免 Xvfb/Vulkan 呈现限制；本地切片基线的离屏日志有未指定 ShadowLodOrigin 的警告，截图不能作为灯光阴影或性能验收
 
-CI 只检查单 Linux 上的 schema/core/replay/xtask，以及全仓库格式和依赖图；本地 `cargo xtask check` 覆盖完整 workspace，Windows/Linux 四目标发行构建使用手动 Action，见 [构建与 CI](build-release.md)
+CI 只检查单 Linux 上的 schema/core/replay/media/xtask，以及全仓库格式和依赖图；本地 `cargo xtask check` 覆盖完整 workspace，Windows/Linux 四目标发行构建使用手动 Action，见 [构建与 CI](build-release.md)
 
 ## 品牌集成证据
 
@@ -233,3 +233,16 @@ Windows 目标检查仍在 Linux 上使用 `target/windows-cross-toolchain/` 内
 `cargo test --offline --locked -p cocobeat-runtime session::tests` 的 4 项测试通过，包含 recorder 满或仅余一条时，拒绝操作不改变规则、序号、水位与诊断；两个 crate 的 all-targets Clippy、格式及差异检查通过。命令、源码 SHA-256 和日志哈希见 `target/long-song-review-20261003/implementation-validation.json`
 
 生产运行时仍使用 64 秒开发歌曲，本次不证明十分钟音频播放或歌曲导入 Ready。core 仍扫描已记录历史，文件大小上限也不等于进程内存上限；真实平台性能、设备和未来网络突发输入分别验收
+
+
+## 有上限的源音频解码
+
+2026-10-03，`CARGO_BUILD_JOBS=1 cargo xtask check` 完整通过 97 项 workspace 测试、格式、Clippy 与依赖边界；`cargo build --offline --locked -j1 -p cocobeat-lab` 通过。media 使用 Symphonia 0.6.1 顺序读取 WAV/PCM、FLAC、MP3、Ogg Vorbis，限制 512 MiB、192 kHz、十分钟及单块大小，公开接口交付原采样率的有限立体声 PCM，单声道原样复制
+
+正式 `decode-audio` CLI 的 22 项检查通过，覆盖 mono/stereo WAV24、FLAC、MP3、Ogg，拒绝 A-law、不存在/截断/缺页/坏 CRC/虚假 Xing 长度，已有输出保持原字节，新增半成品失败后清理。3 项内置测试包含原始静默与大于 1 的有限幅度保留、资源/非有限值拒绝、codec 裁尾和 Ogg 页回归，两个独立编码的原创微型原件及生成说明见 [样本](../testdata/synthetic/media-import/README.md)
+
+MP3 使用不可 seek 的源，避免上游按 bitrate 估算总时长后裁掉合法尾音；单声道接受前中/前左的布局描述差异，双声道布局仍一致。Ogg 在同一文件上复用 Symphonia CRC 做严格页预检，并检查序号、单一串流、granule 和 EOS，防止库容错恢复跳过损坏页、静默缩短歌曲；PTS 和实际帧数在解码时再次核对
+
+原创 `cocobeat-64.wav` 经最终 lab 输出 3,072,000 帧，与 Python wave 按 PCM16/32768 独立转换的 F32LE 逐字节一致，SHA-256 为 `bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538`。完整命令、源码、日志和产物身份见 `target/media-import-evidence/20261003/evidence.json`，正式 CLI 矩阵为 `target/media-review-20261003/lab-results-official.json`
+
+本轮完成源解码软件路径；上限检查不是进程内存/CPU 隔离，未验证 Windows 源解码运行或真人听感。游戏仍使用开发歌曲，标准编码、最终音频回读、SongPackage Ready 和实际导入菜单继续按阶段 05 推进

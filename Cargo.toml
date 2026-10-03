@@ -6,6 +6,7 @@ members = [
     "crates/cocobeat-core",
     "crates/cocobeat-runtime",
     "crates/cocobeat-replay",
+    "crates/cocobeat-media",
     "tools/cocobeat-lab",
     "xtask",
 ]
@@ -22,6 +23,8 @@ cocobeat-schema = { path = "crates/cocobeat-schema" }
 cocobeat-core = { path = "crates/cocobeat-core" }
 cocobeat-runtime = { path = "crates/cocobeat-runtime" }
 cocobeat-replay = { path = "crates/cocobeat-replay" }
+cocobeat-media = { path = "crates/cocobeat-media" }
+symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
 serde_json = "1"
 serde = { version = "1", features = ["derive"] }
 bevy = { version = "0", default-features = false, features = ["std", "async_executor", "bevy_asset", "bevy_log", "bevy_winit", "bevy_gilrs", "bevy_render", "bevy_core_pipeline", "bevy_post_process", "bevy_pbr", "bevy_ui_render", "multi_threaded", "x11", "wayland", "png"] }

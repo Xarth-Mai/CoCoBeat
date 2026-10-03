@@ -3,6 +3,7 @@ use std::path::Path;
 use std::process::ExitCode;
 
 mod content;
+mod media;
 mod timing;
 
 fn main() -> ExitCode {
@@ -35,9 +36,12 @@ fn main() -> ExitCode {
                     cocobeat_runtime::probe::audio_probe(duration, Path::new(output))
                 }),
         ),
+        [command, input, output] if command == "decode-audio" => {
+            report(media::decode(Path::new(input), Path::new(output)))
+        }
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le>"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS

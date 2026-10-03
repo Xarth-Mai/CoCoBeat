@@ -1,6 +1,6 @@
 # 测试数据
 
-时间、边界、规则和重放测试内置于相应 crate，不提交可由代码生成的媒体二进制 fixture
+时间、边界、规则和重放测试内置于相应 crate，通常不提交可由项目代码生成的媒体二进制 fixture；`synthetic/media-import/` 保留两个由独立编码器生成的微型原件，用于离线回归 MP3 声道/裁尾和 Ogg 损坏恢复边界，生成命令、来源与许可随文件记录，测试不需要 FFmpeg
 
 [`synthetic/`](synthetic/README.md) 说明确定性软件计时实验；原创开发资源的独立规格在 `assets/dev/vertical_slice/event_frames.csv`，运行产物写入忽略的 `target/`
 
