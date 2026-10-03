@@ -1,0 +1,1350 @@
+{
+  "date": "2026-10-03",
+  "scope": "Isolated Linux synthetic software probes; source decoding development has begun, production canonical Vorbis encoding remains not admitted",
+  "resample_high": {
+    "status": "PASS_SYNTHETIC_QUALITY_MATRIX",
+    "crate": "oximedia-audio",
+    "version": "0.2.1",
+    "quality": "High",
+    "method": {
+      "kind": "method",
+      "quality": "High",
+      "target_rate": 48000,
+      "channels": 2,
+      "amplitude": 0.5,
+      "tone_phases_rad": [
+        0,
+        0.7853981633974483
+      ],
+      "steady_trim_output_frames_each_edge": 4800,
+      "thresholds": {
+        "1khz_truth_snr_min_db": 70,
+        "passband_abs_gain_max_db": 0.1,
+        "stopband_min_suppression_db": 60
+      },
+      "quality_scope": "synthetic software measurements, not listening approval"
+    },
+    "counts": {
+      "method": 1,
+      "stream": 66,
+      "silence": 6,
+      "impulse": 6,
+      "tone": 32,
+      "length": 117,
+      "summary": 1
+    },
+    "checks": {
+      "stream_cases_passed": 66,
+      "length_cases_passed": 117,
+      "silence_channels_exact_zero": 6,
+      "passband_channels_passed": 18,
+      "stopband_channels_passed": 6,
+      "transition_channels_observed": 8,
+      "boundary_channels_observed": 6,
+      "source_rate_48000_passthrough_accepts_after_flush": true
+    },
+    "minimum_1khz_truth_snr_db": 138.10913522442684,
+    "maximum_tested_passband_abs_gain_db": 0.00036241632112716117,
+    "minimum_stopband_suppression_db": 117.25515944077574,
+    "tone_metrics": [
+      {
+        "source_rate": 44100,
+        "frequency_hz": 20,
+        "alias_hz": 20,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -2.4576641552613986e-08,
+            "phase_error_rad": 2.6645352591003757e-15,
+            "truth_snr_db": 147.76172833078655,
+            "fitted_snr_db": 147.78254547830963,
+            "suppression_db": 2.45767370558034e-08,
+            "steady_output_rms": 0.35355338959289395,
+            "truth_error_rms": 1.4466670503125762e-08,
+            "fitted_error_rms": 1.4432040248064103e-08,
+            "whole_signal_peak": 0.5
+          },
+          {
+            "channel": 1,
+            "gain_db": -3.562982665816828e-08,
+            "phase_error_rad": -8.843885623832648e-10,
+            "truth_snr_db": 147.7839780699863,
+            "fitted_snr_db": 147.8301331229942,
+            "suppression_db": 3.562970667247511e-08,
+            "steady_output_rms": 0.3535533891429901,
+            "truth_error_rms": 1.4429660162425976e-08,
+            "fitted_error_rms": 1.4353187181544426e-08,
+            "whole_signal_peak": 0.5
+          }
+        ]
+      },
+      {
+        "source_rate": 44100,
+        "frequency_hz": 1000,
+        "alias_hz": 1000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -6.307750219256967e-07,
+            "phase_error_rad": 3.2018832030189515e-13,
+            "truth_snr_db": 138.10913522442684,
+            "fitted_snr_db": 139.92173197576088,
+            "suppression_db": 6.307760858209984e-07,
+            "steady_output_rms": 0.3535533649179515,
+            "truth_error_rms": 4.395398395236546e-08,
+            "fitted_error_rms": 3.5675360977817166e-08,
+            "whole_signal_peak": 0.5000001192092896
+          },
+          {
+            "channel": 1,
+            "gain_db": -6.287138364264392e-07,
+            "phase_error_rad": 6.05845595913479e-10,
+            "truth_snr_db": 138.28343780300764,
+            "fitted_snr_db": 140.17371918755265,
+            "suppression_db": 6.28713580972135e-07,
+            "steady_output_rms": 0.3535533650019044,
+            "truth_error_rms": 4.308073620728499e-08,
+            "fitted_error_rms": 3.465524836681652e-08,
+            "whole_signal_peak": 0.5039318203926086
+          }
+        ]
+      },
+      {
+        "source_rate": 44100,
+        "frequency_hz": 20000,
+        "alias_hz": 20000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -0.0003623952336824286,
+            "phase_error_rad": 9.654499422140361e-13,
+            "truth_snr_db": 87.5195594392994,
+            "fitted_snr_db": 105.28504617882723,
+            "suppression_db": 0.0003623951050606182,
+            "steady_output_rms": 0.35353863984802486,
+            "truth_error_rms": 1.4875687094733583e-05,
+            "fitted_error_rms": 1.923909228321172e-06,
+            "whole_signal_peak": 0.5164768695831299
+          },
+          {
+            "channel": 1,
+            "gain_db": -0.00036241632112716117,
+            "phase_error_rad": 5.662808000295172e-10,
+            "truth_snr_db": 87.51896378599642,
+            "fitted_snr_db": 105.27914835319473,
+            "suppression_db": 0.0003624161924444308,
+            "steady_output_rms": 0.35353863898971266,
+            "truth_error_rms": 1.4876707261504089e-05,
+            "fitted_error_rms": 1.9252160252348892e-06,
+            "whole_signal_peak": 0.4972772002220154
+          }
+        ]
+      },
+      {
+        "source_rate": 48000,
+        "frequency_hz": 20,
+        "alias_hz": 20,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -1.1844353080343881e-08,
+            "phase_error_rad": 2.6645352591003757e-15,
+            "truth_snr_db": 153.34529578520483,
+            "fitted_snr_db": 153.36277831175067,
+            "suppression_db": 1.184448664777403e-08,
+            "steady_output_rms": 0.3535533901111518,
+            "truth_error_rms": 7.606593662428515e-09,
+            "fitted_error_rms": 7.591298876221933e-09,
+            "whole_signal_peak": 0.5
+          },
+          {
+            "channel": 1,
+            "gain_db": -1.1844636592619436e-08,
+            "phase_error_rad": 1.7763568394002505e-15,
+            "truth_snr_db": 153.34529577451013,
+            "fitted_snr_db": 153.362778299725,
+            "suppression_db": 1.1844484236955358e-08,
+            "steady_output_rms": 0.3535533901111519,
+            "truth_error_rms": 7.6065936717943e-09,
+            "fitted_error_rms": 7.591298886731888e-09,
+            "whole_signal_peak": 0.5
+          }
+        ]
+      },
+      {
+        "source_rate": 48000,
+        "frequency_hz": 1000,
+        "alias_hz": 1000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -8.267665816883357e-08,
+            "phase_error_rad": 2.948752353404416e-13,
+            "truth_snr_db": 153.79170108979196,
+            "fitted_snr_db": 154.8536728152264,
+            "suppression_db": 8.267723956962219e-08,
+            "steady_output_rms": 0.35355338722795143,
+            "truth_error_rms": 7.225534050774213e-09,
+            "fitted_error_rms": 6.393981297349882e-09,
+            "whole_signal_peak": 0.5
+          },
+          {
+            "channel": 1,
+            "gain_db": -8.267674110099647e-08,
+            "phase_error_rad": 1.141309269314661e-13,
+            "truth_snr_db": 153.7917010665819,
+            "fitted_snr_db": 154.85367282347588,
+            "suppression_db": 8.267723956962219e-08,
+            "steady_output_rms": 0.35355338722795143,
+            "truth_error_rms": 7.225534070081954e-09,
+            "fitted_error_rms": 6.393981291277126e-09,
+            "whole_signal_peak": 0.5
+          }
+        ]
+      },
+      {
+        "source_rate": 48000,
+        "frequency_hz": 20000,
+        "alias_hz": 20000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -7.794823075660872e-08,
+            "phase_error_rad": 6.470379787515412e-13,
+            "truth_snr_db": 157.92986500150815,
+            "fitted_snr_db": 160.9401674409358,
+            "suppression_db": 7.794804306250783e-08,
+            "steady_output_rms": 0.3535533874204503,
+            "truth_error_rms": 4.487058755679508e-09,
+            "fitted_error_rms": 3.1728287383237684e-09,
+            "whole_signal_peak": 0.5
+          },
+          {
+            "channel": 1,
+            "gain_db": -1.2763695817046652e-07,
+            "phase_error_rad": 9.78772618509538e-13,
+            "truth_snr_db": 156.54058462635697,
+            "fitted_snr_db": 172.32536940011855,
+            "suppression_db": 1.2763812449804057e-07,
+            "steady_output_rms": 0.3535533853978484,
+            "truth_error_rms": 5.265332179641423e-09,
+            "fitted_error_rms": 8.554340441696261e-10,
+            "whole_signal_peak": 0.4829629063606262
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 20,
+        "alias_hz": 20,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -1.761271794885287e-08,
+            "phase_error_rad": 2.6645352591003757e-15,
+            "truth_snr_db": 153.23228932423407,
+            "fitted_snr_db": 153.27004119112954,
+            "suppression_db": 1.7612874187760083e-08,
+            "steady_output_rms": 0.3535533898763534,
+            "truth_error_rms": 7.70620468745547e-09,
+            "fitted_error_rms": 7.67278353559485e-09,
+            "whole_signal_peak": 0.5
+          },
+          {
+            "channel": 1,
+            "gain_db": -1.7613016890368108e-08,
+            "phase_error_rad": 1.7763568394002505e-15,
+            "truth_snr_db": 153.23228931364707,
+            "fitted_snr_db": 153.27004117975014,
+            "suppression_db": 1.7612872741268882e-08,
+            "steady_output_rms": 0.35355338987635343,
+            "truth_error_rms": 7.706204696848348e-09,
+            "fitted_error_rms": 7.672783545646757e-09,
+            "whole_signal_peak": 0.5
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 1000,
+        "alias_hz": 1000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -8.267665816883357e-08,
+            "phase_error_rad": 3.086420008457935e-13,
+            "truth_snr_db": 153.79170108974955,
+            "fitted_snr_db": 154.85367281528573,
+            "suppression_db": 8.267723956962219e-08,
+            "steady_output_rms": 0.35355338722795143,
+            "truth_error_rms": 7.225534050809476e-09,
+            "fitted_error_rms": 6.3939812973061696e-09,
+            "whole_signal_peak": 0.5001378059387207
+          },
+          {
+            "channel": 1,
+            "gain_db": -8.267674206532396e-08,
+            "phase_error_rad": 1.2256862191861728e-13,
+            "truth_snr_db": 153.79170106650628,
+            "fitted_snr_db": 154.85367282236484,
+            "suppression_db": 8.267723956962219e-08,
+            "steady_output_rms": 0.35355338722795143,
+            "truth_error_rms": 7.225534070144866e-09,
+            "fitted_error_rms": 6.3939812920949805e-09,
+            "whole_signal_peak": 0.5026560425758362
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 20000,
+        "alias_hz": 20000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": 4.384171443362563e-06,
+            "phase_error_rad": 8.091305403468141e-13,
+            "truth_snr_db": 125.92527542649229,
+            "fitted_snr_db": 151.085004084679,
+            "suppression_db": -4.384170597283918e-06,
+            "steady_output_rms": 0.3535535690480821,
+            "truth_error_rms": 1.7872744015677748e-07,
+            "fitted_error_rms": 9.867451977774046e-09,
+            "whole_signal_peak": 0.5171343088150024
+          },
+          {
+            "channel": 1,
+            "gain_db": 4.560490431123723e-06,
+            "phase_error_rad": 9.78772618509538e-13,
+            "truth_snr_db": 125.5850884756078,
+            "fitted_snr_db": 151.568565340908,
+            "suppression_db": -4.560491114327617e-06,
+            "steady_output_rms": 0.3535535762250958,
+            "truth_error_rms": 1.8586626965861346e-07,
+            "fitted_error_rms": 9.33312252951771e-09,
+            "whole_signal_peak": 0.4964440166950226
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 24000,
+        "alias_hz": 24000,
+        "status": "OBSERVED_TRANSITION",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": null,
+            "phase_error_rad": null,
+            "truth_snr_db": 2.5651184826678324,
+            "fitted_snr_db": null,
+            "suppression_db": 228.37355201009987,
+            "steady_output_rms": 1.3482716601144196e-12,
+            "truth_error_rms": 2.628372055376875e-12,
+            "fitted_error_rms": null,
+            "whole_signal_peak": 0.2593722939491272
+          },
+          {
+            "channel": 1,
+            "gain_db": null,
+            "phase_error_rad": null,
+            "truth_snr_db": 0.046079619431007704,
+            "fitted_snr_db": null,
+            "suppression_db": 45.52913809099799,
+            "steady_output_rms": 0.0018706739647317506,
+            "truth_error_rms": 0.3516827166266569,
+            "fitted_error_rms": null,
+            "whole_signal_peak": 0.26786622405052185
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 24500,
+        "alias_hz": 23500,
+        "status": "OBSERVED_TRANSITION",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -89.65406701641199,
+            "phase_error_rad": 3.7911718209215906e-10,
+            "truth_snr_db": 0.00028583677423818125,
+            "fitted_snr_db": 67.83781922315902,
+            "suppression_db": 89.654066301911,
+            "steady_output_rms": 1.1634606286593313e-05,
+            "truth_error_rms": 0.35354175598794674,
+            "fitted_error_rms": 4.719116453260438e-09,
+            "whole_signal_peak": 0.22856362164020538
+          },
+          {
+            "channel": 1,
+            "gain_db": -89.6540670161891,
+            "phase_error_rad": 4.971041356327532e-10,
+            "truth_snr_db": 0.0002858367742352885,
+            "fitted_snr_db": 67.83781491789655,
+            "suppression_db": 89.65406630168746,
+            "steady_output_rms": 1.1634606286892722e-05,
+            "truth_error_rms": 0.3535417559879402,
+            "fitted_error_rms": 4.719118792466995e-09,
+            "whole_signal_peak": 0.24515166878700256
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 25000,
+        "alias_hz": 23000,
+        "status": "OBSERVED_TRANSITION",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -121.54661268010523,
+            "phase_error_rad": 1.1973030389356154e-07,
+            "truth_snr_db": 7.269153686731326e-06,
+            "fitted_snr_db": 36.12619766786079,
+            "suppression_db": 121.54555315423016,
+            "steady_output_rms": 2.9592206492217e-07,
+            "truth_error_rms": 0.35355309470730734,
+            "fitted_error_rms": 4.621835553871546e-09,
+            "whole_signal_peak": 0.20755046606063843
+          },
+          {
+            "channel": 1,
+            "gain_db": -121.5466126803293,
+            "phase_error_rad": 1.3660407516269402e-07,
+            "truth_snr_db": 7.269153715661101e-06,
+            "fitted_snr_db": 36.12619767787171,
+            "suppression_db": 121.5455531544566,
+            "steady_output_rms": 2.959220649144561e-07,
+            "truth_error_rms": 0.3535530947073137,
+            "fitted_error_rms": 4.621835548425457e-09,
+            "whole_signal_peak": 0.23028744757175446
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 25500,
+        "alias_hz": 22500,
+        "status": "OBSERVED_TRANSITION",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -115.99705770780751,
+            "phase_error_rad": -3.141592558024353,
+            "truth_snr_db": -1.3770860487967532e-05,
+            "fitted_snr_db": 44.43790284604763,
+            "suppression_db": 115.99690139800587,
+            "steady_output_rms": 5.605442946835692e-07,
+            "truth_error_rms": 0.35355395112748156,
+            "fitted_error_rms": 3.362845995037629e-09,
+            "whole_signal_peak": 0.19125790894031525
+          },
+          {
+            "channel": 1,
+            "gain_db": -115.99705771807396,
+            "phase_error_rad": -3.1415925894498216,
+            "truth_snr_db": -1.3770860464341433e-05,
+            "fitted_snr_db": 44.437903317059614,
+            "suppression_db": 115.99690140828933,
+            "steady_output_rms": 5.605442940199255e-07,
+            "truth_error_rms": 0.3535539511274792,
+            "fitted_error_rms": 3.3628458087048945e-09,
+            "whole_signal_peak": 0.218766450881958
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 26000,
+        "alias_hz": 22000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -117.25550957742115,
+            "phase_error_rad": -8.99924699204746e-08,
+            "truth_snr_db": 1.1913493387351392e-05,
+            "fitted_snr_db": 40.935292375587224,
+            "suppression_db": 117.25515944077574,
+            "steady_output_rms": 4.84950079055793e-07,
+            "truth_error_rms": 0.35355290566274056,
+            "fitted_error_rms": 4.3542655237484455e-09,
+            "whole_signal_peak": 0.1778489202260971
+          },
+          {
+            "channel": 1,
+            "gain_db": -117.25550957862531,
+            "phase_error_rad": -2.034988488830436e-08,
+            "truth_snr_db": 1.1913493324670278e-05,
+            "fitted_snr_db": 40.935292299786504,
+            "suppression_db": 117.25515944197383,
+            "steady_output_rms": 4.849500789889011e-07,
+            "truth_error_rms": 0.35355290566274244,
+            "fitted_error_rms": 4.354265561144064e-09,
+            "whole_signal_peak": 0.20928537845611572
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 30000,
+        "alias_hz": 18000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -130.09413264196905,
+            "phase_error_rad": 1.1735017881875365e-06,
+            "truth_snr_db": 2.717113289416231e-06,
+            "fitted_snr_db": 45.10997717018856,
+            "suppression_db": 130.0939987421779,
+            "steady_output_rms": 1.105999853379813e-07,
+            "truth_error_rms": 0.35355327999499375,
+            "fitted_error_rms": 6.141147321379601e-10,
+            "whole_signal_peak": 0.11375051736831665
+          },
+          {
+            "channel": 1,
+            "gain_db": -130.09413264058372,
+            "phase_error_rad": 2.183599151717175e-06,
+            "truth_snr_db": 2.717113275915655e-06,
+            "fitted_snr_db": 45.10997689178113,
+            "suppression_db": 130.093998740784,
+            "steady_output_rms": 1.1059998535573008e-07,
+            "truth_error_rms": 0.3535532799949931,
+            "fitted_error_rms": 6.141147519199156e-10,
+            "whole_signal_peak": 0.1639607846736908
+          }
+        ]
+      },
+      {
+        "source_rate": 96000,
+        "frequency_hz": 40000,
+        "alias_hz": 8000,
+        "status": "PASS",
+        "channels": [
+          {
+            "channel": 0,
+            "gain_db": -138.80282522432185,
+            "phase_error_rad": 5.676503171514469e-06,
+            "truth_snr_db": 9.96949328515993e-07,
+            "fitted_snr_db": 89.73214035061619,
+            "suppression_db": 138.8028252197024,
+            "steady_output_rms": 4.058015911009245e-08,
+            "truth_error_rms": 0.3535533500131179,
+            "fitted_error_rms": 1.323447530042849e-12,
+            "whole_signal_peak": 0.039955899119377136
+          },
+          {
+            "channel": 1,
+            "gain_db": -138.14728612554447,
+            "phase_error_rad": 0.019548868595249846,
+            "truth_snr_db": 1.0748974602906797e-06,
+            "fitted_snr_db": 157.37363923255214,
+            "suppression_db": 138.14728612554327,
+            "steady_output_rms": 4.3761348900026064e-08,
+            "truth_error_rms": 0.3535533468402859,
+            "fitted_error_rms": 5.921186476821515e-16,
+            "whole_signal_peak": 0.1117800772190094
+          }
+        ]
+      }
+    ],
+    "impulse_metrics": [
+      {
+        "source_rate": 44100,
+        "channel": 0,
+        "input_index": 0,
+        "expected_output_position": 0,
+        "peak_index": 0,
+        "peak_position_error_frames": 0,
+        "energy_centroid": 0.21878004547307142,
+        "centroid_error_frames": 0.21878004547307142,
+        "sum": 0.5083600736630842,
+        "energy": 0.23933428129538278,
+        "whole_signal_peak": 0.4725000560283661,
+        "status": "OBSERVED_BOUNDARY"
+      },
+      {
+        "source_rate": 44100,
+        "channel": 1,
+        "input_index": 44099,
+        "expected_output_position": 47998.91156462585,
+        "peak_index": 47999,
+        "peak_position_error_frames": 0.08843537414941238,
+        "energy_centroid": 47998.73370112392,
+        "centroid_error_frames": -0.17786350192909595,
+        "sum": 0.5384009789227804,
+        "energy": 0.24596082732670166,
+        "whole_signal_peak": 0.4679276645183563,
+        "status": "OBSERVED_BOUNDARY"
+      },
+      {
+        "source_rate": 48000,
+        "channel": 0,
+        "input_index": 0,
+        "expected_output_position": 0,
+        "peak_index": 0,
+        "peak_position_error_frames": 0,
+        "energy_centroid": 0,
+        "centroid_error_frames": 0,
+        "sum": 0.5,
+        "energy": 0.25,
+        "whole_signal_peak": 0.5,
+        "status": "OBSERVED_BOUNDARY"
+      },
+      {
+        "source_rate": 48000,
+        "channel": 1,
+        "input_index": 47999,
+        "expected_output_position": 47999,
+        "peak_index": 47999,
+        "peak_position_error_frames": 0,
+        "energy_centroid": 47999,
+        "centroid_error_frames": 0,
+        "sum": 0.5,
+        "energy": 0.25,
+        "whole_signal_peak": 0.5,
+        "status": "OBSERVED_BOUNDARY"
+      },
+      {
+        "source_rate": 96000,
+        "channel": 0,
+        "input_index": 0,
+        "expected_output_position": 0,
+        "peak_index": 0,
+        "peak_position_error_frames": 0,
+        "energy_centroid": 0.10072130138689056,
+        "centroid_error_frames": 0.10072130138689056,
+        "sum": 0.24312498345688027,
+        "energy": 0.057040826882080224,
+        "whole_signal_peak": 0.23624993860721588,
+        "status": "OBSERVED_BOUNDARY"
+      },
+      {
+        "source_rate": 96000,
+        "channel": 1,
+        "input_index": 95999,
+        "expected_output_position": 47999.5,
+        "peak_index": 47999,
+        "peak_position_error_frames": -0.5,
+        "energy_centroid": 47998.75965579078,
+        "centroid_error_frames": -0.7403442092181649,
+        "sum": 0.12499999020894004,
+        "energy": 0.02913377089342267,
+        "whole_signal_peak": 0.1584629863500595,
+        "status": "OBSERVED_BOUNDARY"
+      }
+    ],
+    "regression": {
+      "files_byte_identical": 12,
+      "baseline_jsonl_byte_identical": true,
+      "historical_artifacts": "target/resample-preflight/migration-outputs/",
+      "independent_dft_cases": 32,
+      "maximum_gain_difference_db": 6.567070524385655e-13
+    },
+    "identities_sha256": {
+      "tools/canonical-audio-probe/oximedia-resample/src/main.rs": "180e92fb72a2e687f7dcbca14296ac91b8644d7f2df2f9799f97f99e63510bc3",
+      "tools/canonical-audio-probe/oximedia-resample/Cargo.toml": "72c0f20dbd29e6b6724228f73c7c0dbf47560a16946de691fc51196d6675b483",
+      "tools/canonical-audio-probe/oximedia-resample/Cargo.lock": "a0f9fe8bfb03b52975d51d58c93e30559caedab617ef8790eb4e628aaaf94e95",
+      "target/resample-quality-20261003/build/release/cocobeat-resample-preflight": "b1917bbb670846e17fc2240b301acfcdc5b42af8079db137a1d164e7397c55cc",
+      "oximedia-audio-0.2.1/src/resample.rs": "fe796ee4ebb67ce290adda9c11f98425ba3080c53e480049376980e9dfacfd48"
+    },
+    "commands": [
+      {
+        "name": "fmt",
+        "argv": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "tools/canonical-audio-probe/oximedia-resample/Cargo.toml",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "test",
+        "argv": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "--manifest-path",
+          "tools/canonical-audio-probe/oximedia-resample/Cargo.toml",
+          "--target-dir",
+          "target/resample-quality-20261003/build",
+          "-j",
+          "1"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "clippy",
+        "argv": [
+          "cargo",
+          "clippy",
+          "--offline",
+          "--locked",
+          "--all-targets",
+          "--manifest-path",
+          "tools/canonical-audio-probe/oximedia-resample/Cargo.toml",
+          "--target-dir",
+          "target/resample-quality-20261003/build",
+          "-j",
+          "1",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "build",
+        "argv": [
+          "cargo",
+          "build",
+          "--offline",
+          "--locked",
+          "--release",
+          "--manifest-path",
+          "tools/canonical-audio-probe/oximedia-resample/Cargo.toml",
+          "--target-dir",
+          "target/resample-quality-20261003/build",
+          "-j",
+          "1"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "baseline",
+        "argv": [
+          "target/resample-quality-20261003/build/release/cocobeat-resample-preflight",
+          "target/resample-quality-20261003/baseline"
+        ],
+        "exit_code": 0
+      },
+      {
+        "name": "high",
+        "argv": [
+          "target/resample-quality-20261003/build/release/cocobeat-resample-preflight",
+          "quality",
+          "target/resample-quality-20261003/high",
+          "High"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "evidence_sha256": {
+      "target/resample-quality-20261003/observations.json": "7b6eaee0b6dc98156d4f8ef22c063f447bed2c4125aa0e183cf2f37106027d9d",
+      "target/resample-quality-20261003/logs/high.stdout": "456540cf200ece793473b07d34f395c7eee0c504f45fcaf29d1c701bd37f85d1",
+      "target/resample-quality-20261003/logs/baseline.stdout": "48ecdc5cd802240e45614ac14194be1580e783376bcdbfcd9b724a44baa2aed0",
+      "target/resample-quality-20261003/baseline-regression.json": "9c9dc8b3b745fb7bca938c31307f4fa618a2cc79b2bebb2d135cbdc2b67fa048",
+      "target/resample-quality-20261003/independent-dft-check.json": "8d4ebb60e3d76d807dab14a4e7d2008a380f132fc91f2e7231a8fb1ad92c5221",
+      "target/resample-quality-20261003/commands.json": "ad58a9ca20ecfa86bc2a5f865ad10b42b454282bea8ffdc3dd8d35c5b59298a1",
+      "target/resample-quality-20261003/logs/fmt.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target/resample-quality-20261003/logs/test.stdout": "631228eec7f9815d04a39d1060c4ef1dcb33210cadce5d367677cb28541e5849",
+      "target/resample-quality-20261003/logs/test.stderr": "f5524c5ca492c3d733bf8108304eb3f9050c994626c7e2d89661a8a7f3bbf643",
+      "target/resample-quality-20261003/logs/clippy.stderr": "cb171a19ae5e013571c586423fb66eb81f3dee5621bc94cc2fc0775adba28c96",
+      "target/resample-quality-20261003/logs/build.stderr": "7333dbd6bd5e6cae27268ea151edb0efc68b81545b58007aea861afe5239f87a"
+    },
+    "not_run": [
+      "Best: High passed predefined gates",
+      "continuous passband sweep",
+      "real music",
+      "human listening",
+      "Windows",
+      "long-duration memory bounds"
+    ],
+    "base_commit": "0340ea954def3db68a2a6dff031036644f04d740"
+  },
+  "oxideav_600s": {
+    "status": "FAIL_ENCODE",
+    "frames": 28800000,
+    "quality": 0.5,
+    "source_kind": "synthetic_tail",
+    "repo_commit": "0340ea954def3db68a2a6dff031036644f04d740",
+    "scope": "Linux file encoding and independent full readback only; no playback or production admission",
+    "resource_scope": "Per-process 2GiB RLIMIT_AS; wait4 RSS includes brief harness inheritance; no throughput ranking",
+    "phase": "completed",
+    "binary_sha256": {
+      "cocobeat-oxideav-probe": "9dda41ca2b1f88d8020649739d726807ba083910c9acbec4725a7366ffeccfa1",
+      "readback": "8355f58a0e673823f1e43173e4f2ca3cd89f59ce507ed6518e33f2030ff20161"
+    },
+    "boundary": {
+      "argv": [
+        "target/canonical-audio-probe/build/oxideav/release/cocobeat-oxideav-probe",
+        "target/oxideav-admission-20261003/long-600s/over-limit/output",
+        "28800001",
+        "0.5"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.002529778008465655,
+      "user_seconds": 0.00073,
+      "system_seconds": 0.001284,
+      "max_rss_kib": 14276,
+      "wall_timeout_seconds": 30,
+      "kill_grace_seconds": 5,
+      "address_space_limit_bytes": 2147483648,
+      "rejected_before_output": true
+    },
+    "encode": {
+      "argv": [
+        "target/canonical-audio-probe/build/oxideav/release/cocobeat-oxideav-probe",
+        "target/oxideav-admission-20261003/long-600s/case",
+        "28800000",
+        "0.5"
+      ],
+      "exit_code": -6,
+      "wall_seconds": 182.9654989959963,
+      "user_seconds": 181.052519,
+      "system_seconds": 1.019843,
+      "max_rss_kib": 2092880,
+      "wall_timeout_seconds": 3600,
+      "kill_grace_seconds": 5,
+      "address_space_limit_bytes": 2147483648
+    },
+    "error": "memory allocation of 4096 bytes failed\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntimeout: the monitored command dumped core\n",
+    "source_sha256": {
+      "tools/canonical-audio-probe/oxideav/limits.py": "22fcfeba75a126ea516271b4aa646672285918a057da90d6e5000c513583fa30",
+      "tools/canonical-audio-probe/oxideav/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+      "tools/canonical-audio-probe/oxideav/Cargo.toml": "085546c2ff0a0e930433b9432fd22101ffc4ab327fae90495d01fa9e4c017232",
+      "tools/canonical-audio-probe/oxideav/Cargo.lock": "3b06972c2b34bae71a95b9c65bf784f1a5bf1b35bfe3a31676cbac034a3abd16",
+      "tools/canonical-audio-probe/oxideav/probe.py": "4efdcca22fd7061cc8c0a7ecbc16e8e1567d682fd46c0938dc33c53b47be5836",
+      "tools/canonical-audio-probe/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+      "tools/canonical-audio-probe/rusty-vorbis/limits.py": "cf0fe607aaf1b7e2cb254c1af985996ec9ed935c139d652414ec0e4470b0e328",
+      "tools/canonical-audio-probe/rusty-vorbis/run.py": "abef374016de9f50823e77062581d3e417a62bcc4a025e6e785d77af14e933b5"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/long-600s/result.json": "16705233edb7bdd3973e4ea9db677c9d101b0be737dd232591a2d70b63316746",
+      "target/oxideav-admission-20261003/long-600s/case/encode.resources.json": "7e5d9b4810b00365877bf0f3d831352a6215795c3755f134d14a6ba381100114",
+      "target/oxideav-admission-20261003/long-600s/case/encode.stderr": "2b451831ac8ea6cb3b222bb4ae008505de71a75b4cf4a66d8523c3932e952dca",
+      "target/oxideav-admission-20261003/long-600s/case/input.f32le": "6e2e8df69433d8c2d8415706473ea89d8ef95be2976ac85caff3d1886e1f6642",
+      "target/oxideav-admission-20261003/source-memory-review.json": "0e77e721f897956480ec8c78357c13a8f7cb6c02c356f218db2973cc2c781293"
+    },
+    "checks": {
+      "over_limit_rejected_before_output": true,
+      "encoded_ogg_exists": false,
+      "full_decode": "NOT_RUN_ENCODE_FAILED",
+      "production_admission": "NOT_ADMITTED"
+    },
+    "reproduce_command": [
+      "python3",
+      "-B",
+      "tools/canonical-audio-probe/oxideav/limits.py",
+      "target/oxideav-admission-20261003/long-600s",
+      "target/canonical-audio-probe/build/oxideav/release",
+      "--frames",
+      "28800000",
+      "--quality",
+      "0.5",
+      "--encode-seconds",
+      "3600"
+    ],
+    "source_memory_analysis": {
+      "status": "SOURCE_OBSERVATION",
+      "whole_stream_intermediates": [
+        "spectra",
+        "unpred",
+        "maskings",
+        "envelopes",
+        "targets",
+        "bin_weights"
+      ],
+      "stream_entry": "VorbisStreamEncoder accumulates PCM until flush, then calls the whole-stream encoder",
+      "claim_boundary": "No allocation stack was captured; this identifies memory growth structure, not the exact failed allocation",
+      "published_source_sha256": {
+        "oxideav-vorbis-0.0.12/src/oggfile.rs": "428d296015d89b4c3966282fc5e03037ce9e7832a8fd1a1136bc297a41c9da37",
+        "oxideav-vorbis-0.0.12/src/encoder.rs": "eda9aecdd6cc2bb59b7fb27e328a03788caca094c4490f7d3c25720c4b1a6af6"
+      },
+      "published_source_lines": {
+        "oggfile.rs": [
+          1657,
+          1665,
+          1727,
+          1784,
+          1829,
+          1834
+        ],
+        "encoder.rs": [
+          6668,
+          6673,
+          6757,
+          6766
+        ]
+      },
+      "published_archive_sha256": "08878d1ec255f403363cad0a42273cbea90c01b817d49e45ad8ec13416b9e913"
+    }
+  },
+  "not_run": [
+    "production canonical encoding integration",
+    "Windows",
+    "external music corpus",
+    "human listening approval"
+  ],
+  "source_identity": "Probe changes were uncommitted at run time; base commits locate repository context and source SHA-256 identifies measured code",
+  "oxideav_dev_song_64s": {
+    "implementation": "PUBLISHED_0.0.12",
+    "status": "PASS_STRUCTURAL",
+    "frames": 3072000,
+    "quality": 0.5,
+    "source_kind": "original CoCoBeat development song exported to F32LE",
+    "input": {
+      "path": "target/media-import-evidence/20261003/input/cocobeat-64-oracle.f32le",
+      "sha256": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+      "bytes": 24576000
+    },
+    "encode": {
+      "exit_code": 0,
+      "wall_seconds": 383.2870169060043,
+      "max_rss_kib": 469400,
+      "wall_timeout_seconds": 600,
+      "address_space_limit_bytes": 2147483648
+    },
+    "encode_command": [
+      "target/canonical-audio-probe/build/oxideav/release/cocobeat-oxideav-probe",
+      "target/oxideav-admission-20261003/dev-song-64s/case",
+      "--input",
+      "target/media-import-evidence/20261003/input/cocobeat-64-oracle.f32le",
+      "0.5"
+    ],
+    "ogg": {
+      "packets": 4240,
+      "channels": 2,
+      "sample_rate": 48000,
+      "eos_granules": [
+        3072000
+      ],
+      "sha256": "ae052f7b045403ff8fdf720f482c5e913a0b01e5b6b9f73284273ff53703a3cf",
+      "bytes": 1367881
+    },
+    "checks": {
+      "single_serial": true,
+      "page_sequence": true,
+      "bos_only_first": true,
+      "eos_only_last": true,
+      "known_flags": true,
+      "monotonic_granules": true,
+      "exact_eos": true,
+      "canonical_format": true,
+      "decoded_format": true,
+      "symphonia_finite_exact_frames": true,
+      "ffmpeg_finite_exact_frames": true,
+      "decoder_agreement": true
+    },
+    "decoder_agreement": {
+      "same_byte_count": true,
+      "samples_compared": 6144000,
+      "nonfinite_pairs": 0,
+      "peak_difference": 7.450580596923828e-08,
+      "rms_difference": 5.151181592805017e-09
+    },
+    "decoders": {
+      "symphonia": {
+        "exit_code": 0,
+        "frames": 3072000,
+        "whole_channels": [
+          {
+            "samples": 3072000,
+            "nonfinite": 0,
+            "peak": 0.2971840500831604,
+            "energy": 6000.106529770014,
+            "over_unity": 0,
+            "nonzero": 2688000,
+            "rms": 0.0441945661553489
+          },
+          {
+            "samples": 3072000,
+            "nonfinite": 0,
+            "peak": 0.277194082736969,
+            "energy": 5241.702588262965,
+            "over_unity": 0,
+            "nonzero": 2688000,
+            "rms": 0.04130718332949913
+          }
+        ],
+        "aligned_whole_error": [
+          {
+            "samples": 3072000,
+            "error_energy": 2.4631328809410418,
+            "rmse": 0.0008954334525885561,
+            "snr_db": 33.860632342437725
+          },
+          {
+            "samples": 3072000,
+            "error_energy": 2.5575959938134285,
+            "rmse": 0.0009124422059704067,
+            "snr_db": 33.11003629608847
+          }
+        ]
+      },
+      "ffmpeg": {
+        "exit_code": 0,
+        "frames": 3072000,
+        "whole_channels": [
+          {
+            "samples": 3072000,
+            "nonfinite": 0,
+            "peak": 0.2971840798854828,
+            "energy": 6000.1067843206065,
+            "over_unity": 0,
+            "nonzero": 2688000,
+            "rms": 0.04419456709281165
+          },
+          {
+            "samples": 3072000,
+            "nonfinite": 0,
+            "peak": 0.277194082736969,
+            "energy": 5241.702814496659,
+            "over_unity": 0,
+            "nonzero": 2688000,
+            "rms": 0.04130718422091526
+          }
+        ],
+        "aligned_whole_error": [
+          {
+            "samples": 3072000,
+            "error_energy": 2.4631330599932717,
+            "rmse": 0.0008954334851343751,
+            "snr_db": 33.86063202673656
+          },
+          {
+            "samples": 3072000,
+            "error_energy": 2.5575960983038653,
+            "rmse": 0.0009124422246092934,
+            "snr_db": 33.11003611865771
+          }
+        ]
+      }
+    },
+    "binary_sha256": {
+      "cocobeat-oxideav-probe": "9dda41ca2b1f88d8020649739d726807ba083910c9acbec4725a7366ffeccfa1",
+      "readback": "8355f58a0e673823f1e43173e4f2ca3cd89f59ce507ed6518e33f2030ff20161"
+    },
+    "artifact_sha256": {
+      "input.f32le": "bd88f48a3b7b641e621a716d7b122d8abd326a6a51177eb06a3f2296896d3538",
+      "encoded.ogg": "ae052f7b045403ff8fdf720f482c5e913a0b01e5b6b9f73284273ff53703a3cf",
+      "symphonia.f32le": "15a5665bcb02563faca84e0e25c06e8b03285b264bc26e30af08bea8f9a68f02",
+      "ffmpeg.f32le": "d59bce3b9ff1623012df22481b9b8c3cbff2d9079344b326c2e5a242acec7437"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/dev-song-64s/result.json": "a7954382cefbbf5666ba812a108957af872bcff83767c5a7be4ecd0f35f07af7"
+    },
+    "scope": "Structural and waveform observations for one development song; no human listening or production admission"
+  },
+  "seek_profile_diagnostic": {
+    "status": "PASS_DIAGNOSTIC_PROFILE_PREROLL",
+    "scope": "Development diagnostic only: existing canonical Ogg Vorbis v0, 48000Hz stereo, 256/2048 blocks, observed delay 128 or 1024, extra preroll 1024; not a general import acceptance rule or production seek admission",
+    "profile": {
+      "vorbis_version": 0,
+      "sample_rate": 48000,
+      "channels": 2,
+      "block_sizes": [
+        256,
+        2048
+      ],
+      "observed_delay_frames": [
+        128,
+        1024
+      ],
+      "extra_preroll_frames": 1024
+    },
+    "cases": [
+      {
+        "name": "dev-song-64s-preroll1024",
+        "result": "target/oxideav-admission-20261003/seek-preroll-profile/dev-song-64s-preroll1024/result.json",
+        "result_sha256": "5a9904c1aa443b9b43deff91b511644ea36cdda228a20da5db3681b81ac119d7",
+        "status": "PASS",
+        "exit_code": 0,
+        "frames": 3072000,
+        "preroll_frames": 1024,
+        "seeks": 25,
+        "passed_seeks": 25,
+        "failed_targets": [],
+        "invalid_targets": [
+          {
+            "target": -1,
+            "status": "PASS_REJECTED"
+          },
+          {
+            "target": 3072001,
+            "status": "PASS_REJECTED"
+          }
+        ],
+        "observed_delays": [
+          128
+        ],
+        "max_abs_error": 7.450580596923828e-08
+      },
+      {
+        "name": "tail-64s-preroll1024",
+        "result": "target/oxideav-admission-20261003/seek-preroll-profile/tail-64s-preroll1024/result.json",
+        "result_sha256": "fd7259ffd2f7ce93c5d83d5a8c9bcd1c6f0cba888ce912b55057202159684a0e",
+        "status": "PASS",
+        "exit_code": 0,
+        "frames": 3072000,
+        "preroll_frames": 1024,
+        "seeks": 25,
+        "passed_seeks": 25,
+        "failed_targets": [],
+        "invalid_targets": [
+          {
+            "target": -1,
+            "status": "PASS_REJECTED"
+          },
+          {
+            "target": 3072001,
+            "status": "PASS_REJECTED"
+          }
+        ],
+        "observed_delays": [
+          1024
+        ],
+        "max_abs_error": 1.1920928955078125e-07
+      },
+      {
+        "name": "burst-1s-preroll1024",
+        "result": "target/oxideav-admission-20261003/seek-preroll-profile/burst-1s-preroll1024/result.json",
+        "result_sha256": "285f76676fbe2db7ceb44741a7df620710930078a18e7a00bd18a4be711e15f1",
+        "status": "PASS",
+        "exit_code": 0,
+        "frames": 48000,
+        "preroll_frames": 1024,
+        "seeks": 25,
+        "passed_seeks": 25,
+        "failed_targets": [],
+        "invalid_targets": [
+          {
+            "target": -1,
+            "status": "PASS_REJECTED"
+          },
+          {
+            "target": 48001,
+            "status": "PASS_REJECTED"
+          }
+        ],
+        "observed_delays": [
+          1024
+        ],
+        "max_abs_error": 5.960464477539063e-08
+      },
+      {
+        "name": "dev-song-64s-preroll0",
+        "result": "target/oxideav-admission-20261003/seek-preroll-profile/dev-song-64s-preroll0/result.json",
+        "result_sha256": "83f4a384fb104078b93e83a9f331ddbafbd6ab6b1aa6eccac85a9913e6f6733a",
+        "status": "FAIL",
+        "exit_code": 1,
+        "frames": 3072000,
+        "preroll_frames": 0,
+        "seeks": 25,
+        "passed_seeks": 21,
+        "failed_targets": [
+          3071999,
+          3071873,
+          3072000,
+          3071999
+        ],
+        "invalid_targets": [
+          {
+            "target": -1,
+            "status": "PASS_REJECTED"
+          },
+          {
+            "target": 3072001,
+            "status": "PASS_REJECTED"
+          }
+        ],
+        "observed_delays": [
+          128
+        ],
+        "max_abs_error": 7.450580596923828e-08
+      }
+    ],
+    "total_positive_windows_passed": 75,
+    "total_negative_targets_rejected": 6,
+    "original_native": {
+      "status": "FAIL",
+      "passed_windows": 21,
+      "failed_windows": 4,
+      "failed_targets": [
+        3071999,
+        3071873,
+        3072000,
+        3071999
+      ],
+      "observed_delay_frames": 128,
+      "track_start": -128
+    },
+    "old_fixed_delay_adapter": {
+      "status": "EXPERIMENT_GUARD_REJECTED",
+      "raw_status": "FAIL",
+      "executed_windows": 0,
+      "guard": "extra preroll experiment requires observed delay=1024",
+      "observed_delay_frames": 128,
+      "scope": "Guard excluded this input before seek; not an observed decoder or preroll algorithm failure"
+    },
+    "source_and_binary_sha256": {
+      "target/oxideav-admission-20261003/seek-preroll-profile/probe/seek.rs": "5ad080edbb1b375b848b965c12fbd3f4e3f9307364b2972468495275f11ce1a9",
+      "target/oxideav-admission-20261003/seek-preroll-profile/probe/seek.py": "c1f6e3c6c3088783b815647c8b79b869924183355440de5ffbd1f99ea5495217",
+      "target/oxideav-admission-20261003/seek-preroll-profile/probe/Cargo.toml": "c5d896c6dfb7576e86b13ad7931c3788227b2e1fbf7c65fd900013b4c1e0ab67",
+      "target/oxideav-admission-20261003/seek-preroll-profile/probe/Cargo.lock": "315b9ffb3262355fa7bad937e16f339800df0edc17a9d0ddcd57d4755ef87029",
+      "target/oxideav-admission-20261003/seek-preroll-profile/build/release/seek": "47f75adcb8df6644b67dd6055246a9d3fb8b73c65ca370729dc1aa1a7ce839b5",
+      "target/oxideav-admission-20261003/seek-preroll-profile/seek-rs.patch": "b56d36462e04a4ae61701e46bfded990fef3445417e7c56057df814cde04e34d",
+      "target/oxideav-admission-20261003/seek-preroll-profile/Cargo-toml.patch": "5fb63a10132674957b819902197babc73c7e522147ee462e4979a591f391728e",
+      "target/oxideav-admission-20261003/seek-preroll-profile/Cargo-lock.patch": "84d7bfec6bbbbb4f1a3f735d9ecb7cd63362cad438c57d887125634de7bfecf6"
+    },
+    "checks": {
+      "canonical_identification_unit_test": "PASS: 1 test",
+      "existing_seek_comparison_self_check": "PASS",
+      "independent_review": "Lean already. Ship.",
+      "lock_shared_packages_unchanged": true,
+      "all_symphonia_packages_version": "0.6.1"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/seek-preroll-profile/summary.json": "f48ea2609a7a1009e956da091763e654269ab183c1203c6779e1d7bda0d0088a",
+      "target/oxideav-admission-20261003/dev-song-64s/seek-native/result.json": "5f29f8d1711d7d7471e909b92cb080a8af7457bed5c5aa82237b924223a9699b",
+      "target/oxideav-admission-20261003/dev-song-64s/seek/result.json": "534d3d5b36395feadb74df315f119ffdd17f1e04a041bdfed58177cbfde5fa11"
+    }
+  },
+  "oxideav_two_drop_patch": {
+    "status": "FAIL_ENCODE",
+    "implementation": "DEVELOPMENT_PATCH_NOT_RELEASED",
+    "frames": 28800000,
+    "quality": 0.5,
+    "encode": {
+      "exit_code": -6,
+      "wall_seconds": 186.47351038298802,
+      "max_rss_kib": 2094084,
+      "wall_timeout_seconds": 3600,
+      "address_space_limit_bytes": 2147483648
+    },
+    "encode_command": [
+      "target/oxideav-admission-20261003/patched-lifetimes/build/release/cocobeat-oxideav-probe",
+      "target/oxideav-admission-20261003/patched-lifetimes/long-600s/case",
+      "28800000",
+      "0.5"
+    ],
+    "allocation_error": "memory allocation of 4096 bytes failed",
+    "binary_sha256": {
+      "cocobeat-oxideav-probe": "8aa98dd6c52ef79dd86c5399d0251209226dda4e637aea5819c3ecdc17f62b7c",
+      "readback": "626a04b2f30c67acdae9ac892da6ae9f7caf6c16de5bd8ef449bfea058c6e1b3"
+    },
+    "implementation_manifest_sha256": "0e74d31b3a659884c6c4de9573873a920302e7b501da56d4e9225c407501c21f",
+    "build_sources_sha256": {
+      "target/oxideav-admission-20261003/patched-lifetimes/probe/Cargo.toml": "c261e3ce9073da679f4997f5fcebd34c1d4d8a34dc6b7d556714dc12f077db11",
+      "target/oxideav-admission-20261003/patched-lifetimes/probe/Cargo.lock": "3763fc7b5258745159fa2fd78d0289ba73353a904cd2b4814f2b444131702238",
+      "target/oxideav-admission-20261003/patched-lifetimes/probe/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+      "target/oxideav-admission-20261003/patched-lifetimes/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+      "target/oxideav-admission-20261003/patched-lifetimes/seek.rs": "4df3d3e82a91c7debf9c6368fe62ff47db818d91c9fa43ef46b91d6b48807774",
+      "target/oxideav-admission-20261003/patched-lifetimes/vendor/oxideav-vorbis-0.0.12/src/oggfile.rs": "66fe9444198aae5ee8832608472b402ef3b6fd850d13e9020117b451fae2c77b"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/patched-lifetimes/long-600s/result.json": "94aa02c2a8cea7462c564a80839f6619255182d6d4d29fa9868c3e4e7d415395",
+      "target/oxideav-admission-20261003/patched-lifetimes/implementation.json": "0e74d31b3a659884c6c4de9573873a920302e7b501da56d4e9225c407501c21f",
+      "target/oxideav-admission-20261003/patched-lifetimes/long-600s/case/encode.stderr": "2b451831ac8ea6cb3b222bb4ae008505de71a75b4cf4a66d8523c3932e952dca",
+      "target/oxideav-admission-20261003/patched-lifetimes/regression.json": "1480700bfaf77aaac7f2771ff2da1e273df2e2f30374bc179b92d05d2dac0af9"
+    },
+    "encoded_ogg_exists": false,
+    "claim_boundary": "No production admission; original published failure evidence preserved",
+    "patch_sha256": "ca4a6eb4555567f8becb248b73bd2c23a85834bb75d5b80b16b56ff87c007966",
+    "regression": {
+      "status": "PASS",
+      "cases": [
+        "1025 frames",
+        "1 second head/tail burst"
+      ],
+      "byte_identical_artifacts": 8
+    }
+  },
+  "oxideav_stage_diagnostic": {
+    "status": "FAIL_ENCODE",
+    "implementation": "DEVELOPMENT_DIAGNOSTIC_NOT_RELEASED",
+    "frames": 28800000,
+    "quality": 0.5,
+    "encode": {
+      "exit_code": -6,
+      "wall_seconds": 182.9250130240107,
+      "max_rss_kib": 1983324,
+      "wall_timeout_seconds": 3600,
+      "address_space_limit_bytes": 2147483648
+    },
+    "encode_command": [
+      "target/oxideav-admission-20261003/diagnostic-stages/build/release/cocobeat-oxideav-probe",
+      "target/oxideav-admission-20261003/diagnostic-stages/long-600s/case",
+      "28800000",
+      "0.5"
+    ],
+    "allocation_error": "memory allocation of 4096 bytes failed",
+    "binary_sha256": {
+      "cocobeat-oxideav-probe": "37b642903f38000746699c694e5640cbc73b9cc65fb619aa692cb70b6cbb2947",
+      "readback": "ae60698ad7c9987f85356a0be36e1660b8be34f03bc9fcb51b9d87effde86c74"
+    },
+    "implementation_manifest_sha256": "8b7ad0d8f5eaee4500f638cde2c0a7b5071d426e3581fc0a4fffc210310f3157",
+    "build_sources_sha256": {
+      "target/oxideav-admission-20261003/diagnostic-stages/probe/Cargo.toml": "c261e3ce9073da679f4997f5fcebd34c1d4d8a34dc6b7d556714dc12f077db11",
+      "target/oxideav-admission-20261003/diagnostic-stages/probe/Cargo.lock": "3763fc7b5258745159fa2fd78d0289ba73353a904cd2b4814f2b444131702238",
+      "target/oxideav-admission-20261003/diagnostic-stages/probe/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+      "target/oxideav-admission-20261003/diagnostic-stages/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+      "target/oxideav-admission-20261003/diagnostic-stages/seek.rs": "4df3d3e82a91c7debf9c6368fe62ff47db818d91c9fa43ef46b91d6b48807774",
+      "target/oxideav-admission-20261003/diagnostic-stages/vendor/oxideav-vorbis-0.0.12/src/oggfile.rs": "a358ca4a856321a327fa40162df14abc014aa408a9720bb921681b576c3f2651"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/diagnostic-stages/long-600s/result.json": "3c7626e5155bcc78a2a62278637ef1f156f23cf46ad9e784f6e19ad70c542a74",
+      "target/oxideav-admission-20261003/diagnostic-stages/implementation.json": "8b7ad0d8f5eaee4500f638cde2c0a7b5071d426e3581fc0a4fffc210310f3157",
+      "target/oxideav-admission-20261003/diagnostic-stages/long-600s/case/encode.stderr": "8a30a809c865b0d17b580c2a33473a1ddbb9e157e340f7ee8c778eb07b24feae",
+      "target/oxideav-admission-20261003/diagnostic-stages/ownership-peak-estimate.json": "7c9fbfc3c67bed6b7192d5120141f25a05e10d8940f43984e1d49e0cf4ebc6ce"
+    },
+    "encoded_ogg_exists": false,
+    "claim_boundary": "No production admission; original published failure evidence preserved",
+    "diagnostic_patch_sha256": "230cef42699b89a489d6a7e678bbba5e19867fd03dbb7466dfe4ac89c2e8edda",
+    "stage_observation": {
+      "completed_stage_labels": [
+        "geometry_begin",
+        "spectra_begin",
+        "spectra_complete",
+        "maskings_begin",
+        "maskings_complete_before_unpred_drop",
+        "unpred_dropped",
+        "envelopes_begin",
+        "envelopes_complete",
+        "targets_begin"
+      ],
+      "first_failed_phase": "targets construction: after targets_begin but before targets_complete_before_analysis_drop",
+      "first_drop_reached": true,
+      "second_drop_reached": false,
+      "stderr_sha256": "8a30a809c865b0d17b580c2a33473a1ddbb9e157e340f7ee8c778eb07b24feae",
+      "observation_boundary": "Identifies construction phase and live ownership set, not the exact allocation stack"
+    },
+    "ownership_payload_estimate": {
+      "exact_logged_total_channel_bins": 57601280,
+      "lower_bound_element_payload_bytes": {
+        "input_pcm": 230400000,
+        "spectra": 230405120,
+        "maskings_threshold_and_bin_band": 691215360,
+        "envelopes": 230405120,
+        "new_targets": 230405120,
+        "new_bin_weights": 460810240
+      },
+      "excluded": "Vec headers, capacity slack, floor values, partition weights, masking band tonality, allocator/OS/runtime overhead and temporaries",
+      "note": "All named arrays except the two new output matrices already exist at targets_begin. Peak grows while outputs accumulate before entire old matrices are dropped.",
+      "minimum_when_target_matrices_complete_bytes": 2073640960,
+      "limit_bytes": 2147483648
+    }
+  },
+  "row_lifetime_experiment": {
+    "status_at_snapshot": "IN_PROGRESS",
+    "snapshot_at": "2026-10-03T01:21:07.266698+00:00",
+    "evidence_directory": "target/oxideav-admission-20261003/row-lifetimes",
+    "scope": "Separate target-only development experiment, no terminal outcome archived and no production admission"
+  }
+}

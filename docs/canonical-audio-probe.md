@@ -1,8 +1,8 @@
 # Canonical 音频候选实验
 
-2026-10-02 的阶段 05 前置实验已推进到长曲、信号边界、精确 seek 和重采样 API；OxideAV 仍是待评估候选，rusty_vorbis 虽能通过适配保留帧数，但近满幅合法输入出现明显波形误差，当前版本不准入；以下保留首轮结构结果与后续发现
+2026-10-03 的阶段 05 实验已覆盖长曲、信号边界、精确 seek 和重采样合成质量；OxiMedia High 通过本批频点门槛，OxideAV 在十分钟输入、2 GiB 虚拟地址空间限制下编码失败，rusty_vorbis 仍因近满幅合法输入的明显波形误差不准入；以下保留首轮结构结果与后续发现
 
-未创建 media crate，未改变产品依赖或运行时音频路径；正式 media、Windows、真实音乐与真人听感均为 NOT RUN，seek 与重采样已测范围见下文
+`cocobeat-media` 的有界源解码已开始实现；生产 canonical Vorbis 编码尚未准入，现有运行时音频路径未接入候选编码器；已测一首原创开发歌曲，Windows、外部音乐曲库与真人听感仍为 NOT RUN，源解码进展不改变本文候选实验的准入边界
 
 ## 方法与证据边界
 
@@ -115,7 +115,57 @@ libvorbis 仅通过已安装 FFmpeg 执行独立参照，不进入产品或研�
 
 44.1 kHz 一秒实际输出 47896+104=48000 帧，但 `output_sample_count()` 的浮点上取整估为 48001；96 kHz 一秒为 47952+48=48000；时轴以累计实际帧数及最终编码回读为准，不能用这个容量估算 helper；单帧的独立整数预期分别为 2/1 帧，空输入为 0
 
-源码有下采样 cutoff 缩放与真实窗化 sinc 卷积，但本轮未测频响、抗混叠衰减或边界音质；API 的输入 sample_rate 需由调用方验证，输出块 timestamp 不能作连续时轴，`with_max_buffering` 仅为 advisory；同库 `resampler::SimpleResampler::Polyphase` 实际调用线性插值，与本次入口不同；[官方 API](https://docs.rs/oximedia-audio/0.2.1/oximedia_audio/resample/struct.Resampler.html)
+源码有下采样 cutoff 缩放与真实窗化 sinc 卷积，首轮仅检查 API，后续合成质量见下节；API 的输入 sample_rate 需由调用方验证，输出块 timestamp 不能作连续时轴，`with_max_buffering` 仅为 advisory；同库 `resampler::SimpleResampler::Polyphase` 实际调用线性插值，与本次入口不同；[官方 API](https://docs.rs/oximedia-audio/0.2.1/oximedia_audio/resample/struct.Resampler.html)
+
+## 2026-10-03：High 合成质量 PASS，十分钟编码 FAIL
+
+[固定观察清单](../testdata/synthetic/canonical-audio-probe/admission-observations-20261003.json) 保存两项独立实验的数值、门槛、命令、源码与产物哈希；重采样成功不改变编码器准入结果
+
+OxiMedia 0.2.1 High 输入为一秒 F32 双声道、峰值 0.5 的解析正弦，左右相位为 0/π÷4；分别测 44.1/48/96 kHz→48 kHz，每个输入以 1/1024/8192 帧分块独立处理，输出恰为 48000 帧且逐字节相同；另有 117 个空、单帧及块边界长度检查，使用整数 `ceil(N×48000/source_rate)`，全部通过
+
+预设门槛为 1 kHz 对解析真值的 SNR≥70 dB、20 Hz/1 kHz/20 kHz 三个通带频点幅差≤±0.1 dB、96→48 kHz 的 26/30/40 kHz 阻带抑制≥60 dB；稳态统计去掉输出首尾各 4800 帧，幅相通过已知频率的正弦/余弦最小二乘拟合，真值 SNR 不调整增益或相位，另列拟合残差 SNR；阻带以完整稳态 RMS 对输入正弦 RMS 计算抑制，并测折叠频率的幅相
+
+| 输入→输出 | 两声道最低 1 kHz 真值 SNR dB | 三个通带频点最大绝对幅差 dB |
+| --- | ---: | ---: |
+| 44.1→48 kHz | 138.109 | 0.000362416 |
+| 48→48 kHz | 153.792 | 0.000000127638 |
+| 96→48 kHz | 153.792 | 0.00000456049 |
+
+96→48 kHz 的 26/30/40 kHz 输入分别折叠到 22/18/8 kHz，两声道最低抑制分别为 117.255/130.094/138.147 dB；三组全静默的六个声道全部精确为零，66 个流检查均通过有限值、长度、重复 flush 和分块一致性检查；同频 passthrough 没有 finished 状态，flush 后仍接受输入，该差异明确记录，仅实际重采样路径要求 flush 后拒绝输入
+
+24/24.5/25/25.5 kHz 另列为过渡带观察；24 kHz 落在输出 Nyquist，拟合两基向量退化，幅相写为 null，左右相位导致抑制分别约 228.374/45.529 dB；其余三个频点两声道最低抑制约为 89.654/121.546/115.997 dB，均不用于扩展预设阻带门槛的适用范围
+
+首尾脉冲分别放在左右声道的输入第 0/N−1 帧，保留完整输出，不作稳态裁剪；下表记录输出峰位置与能量质心相对解析位置的偏移，未设普遍边界音质准入阈值
+
+| 输入→输出 | 首/尾峰位置偏移（帧） | 首/尾能量质心偏移（帧） |
+| --- | --- | --- |
+| 44.1→48 kHz | 0 / +0.088435 | +0.218780 / −0.177864 |
+| 48→48 kHz | 0 / 0 | 0 / 0 |
+| 96→48 kHz | 0 / −0.5 | +0.100721 / −0.740344 |
+
+High 通过本批门槛，未继续测 Best；解析指标自检、fmt、Clippy 与 release 构建通过，原六例的 12 个 PCM 文件及 JSONL 逐字节不变；独立 Python DFT 复核 32 个声道频点，幅度计算差最大 6.57e−13 dB；这些结果不证明连续频带、长时内存、真实音乐、Windows 或真人听感合格
+
+OxideAV 0.0.12 quality=0.5 的 600 秒、28,800,000 帧合成输入在每进程 2 GiB `RLIMIT_AS` 下运行 182.9655 秒后发生 `memory allocation of 4096 bytes failed`，编码进程退出 −6，`wait4` 记录最大 RSS 2,092,880 KiB；RSS 包含短暂继承的 harness 内存，不作吞吐排名，3600 秒超时上限未触发
+
+该次未产生 Ogg，容器检查与双路完整回读均为 NOT RUN；28,800,001 帧的独立负例在创建输出前明确拒绝；保持 `FAIL_ENCODE` 和生产编码未准入，不通过扩大限制或缩短长曲门槛改写结果
+
+发布版源码的 `oggfile.rs` 按全曲保留 `spectra`、`unpred`、`maskings`、`envelopes`、`targets` 与 `bin_weights` 等中间数组；`VorbisStreamEncoder` 也先累计全部 PCM，到 flush 才调用同一全曲编码流程，因此该入口不能视为有界流式编码；这是内存增长的源码依据，本次错误没有分配调用栈，未据此声称定位到具体失败分配
+
+### 原创开发歌曲与受限 seek
+
+同一发布版 quality=0.5 对项目原创开发歌曲的 64 秒、3,072,000 帧 F32 输入完成编码，耗时 383.287 秒、最大 RSS 469400 KiB、Ogg 1,367,881 字节；两路回读与 EOS 都为 3,072,000 帧，样本全部有限，Ogg 页与双路一致性检查通过，状态为 `PASS_STRUCTURAL`；Symphonia 左/右峰值为 0.297184/0.277194，超过 1 的样本为零，对原始同位置 PCM 的 SNR 为 33.861/33.110 dB，双解码器最大逐点差为 7.45058e−8；这些波形指标是单首歌曲观测，没有据此判定真人听感或覆盖十分钟失败
+
+该文件 `delay=128`、`track_start=-128`；原生 seek 的 25 次窗口检查为 21 PASS / 4 FAIL，失败位于尾部及 EOF；旧前滚实验只允许 `delay=1024`，对新文件在执行任何窗口前由 guard 拒绝，应记录为实验适用范围不符，不能据此判定前滚算法失败
+
+独立诊断探针保持原前滚、解码和同位置窗口比较逻辑，只将 guard 收窄到已核实的 Vorbis v0、48 kHz/stereo、256/2048 块及 delay=128/1024，仍额外请求 1024 帧前滚；原创歌曲、原 64 秒尾信号和一秒脉冲共 75 个窗口与 6 个越界拒绝负例通过，对两路完整 PCM 的最大差不超过 1.19209e−7；前滚为 0 时重现原 4 处失败，原始失败证据与共享探针源码保留，该结果仅适用于本组诊断 profile，未形成任意导入或生产 seek 准入
+
+### 内存生命周期诊断
+
+独立开发补丁尝试在两个阶段结束后释放整组旧矩阵；1025 帧和一秒脉冲的 8 个产物与发布版逐字节相同，但十分钟输入仍在相同 2 GiB 限制下分配失败，耗时 186.474 秒、最大 RSS 2,094,084 KiB、退出 −6，未生成 Ogg；记录为 `DEVELOPMENT_PATCH_NOT_RELEASED` 的 `FAIL_ENCODE`，不覆盖发布版结果
+
+在两处释放补丁上追加阶段记录的诊断版本确认 `unpred` 已释放，随后进入 `targets` 构建阶段，尚未到达旧分析矩阵的第二个释放点便分配失败；日志记录 57,601,280 个声道频点，按源码元素类型估算，在新矩阵完整建立时仍存活的主要数组 payload 下限为 2,073,640,960 字节，尚未计入容器、容量余量、分配器与运行时开销；这定位了失败阶段和内存重叠，仍不是具体分配调用栈
+
+截至本批记录冻结，逐行释放旧矩阵的后续独立开发实验仍在进行中；其终态另行归档，生产编码保持未准入
 
 ## 从 fresh clone 复现
 
@@ -167,6 +217,15 @@ cargo build --locked -j 1 --manifest-path "$probe_root/oximedia-resample/Cargo.t
 
 `limits.py` 的退出 0 表示测量完成，需查看 `results.json` 的结构状态与波形指标；seek runner 对正例失败返回非零，原生失败与适配成功保存在各自输出目录
 
+2026-10-03 的 High 质量矩阵复用同一工具，质量门槛失败时返回非零；以下 OxideAV 长曲脚本采用每进程 2 GiB 虚拟地址空间限制，输出目录必须尚不存在，成功仅表示结构检查通过，编码失败返回非零并保留 `result.json`
+
+```sh
+cargo test --offline --locked --manifest-path "$probe_root/oximedia-resample/Cargo.toml" --target-dir "$probe_build/oximedia-resample"
+cargo build --offline --locked --release --manifest-path "$probe_root/oximedia-resample/Cargo.toml" --target-dir "$probe_build/oximedia-resample" -j 1
+"$probe_build/oximedia-resample/release/cocobeat-resample-preflight" quality "$probe_output/resample-high" High > "$probe_output/resample-high-results.jsonl"
+python3 -B "$probe_root/oxideav/limits.py" "$probe_output/oxideav-600s" "$probe_build/oxideav/release" --frames 28800000 --quality 0.5 --encode-seconds 3600
+```
+
 以下追加近满幅 q10 与 libvorbis 参照，后者要求 FFmpeg 已启用 libvorbis；比较器流式计算同位置的逐声道峰值、RMS、全曲和去掉首尾各 2048 帧后的 SNR/RMSE，拒绝不等长、不完整帧及非有限样本
 
 ```sh
@@ -190,7 +249,7 @@ for case_dir in "$probe_output/rusty-limits/near-full" "$q10_case" "$oracle_case
 done
 ```
 
-## 本次持久化验证
+## 首轮持久化验证
 
 三个工具包在独立 `/tmp` 构建目录以 `--offline --locked --release -j 2` 构建通过；重新运行 OxiAudio 四种边界、OxideAV 1025 帧、rusty baseline 八例及适配器短样本五例和脉冲，共享 reader 与 FFmpeg 保持各自原 PASS/FAIL 帧数结果
 
