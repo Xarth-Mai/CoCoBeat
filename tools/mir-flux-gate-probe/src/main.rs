@@ -30,6 +30,9 @@ const RELATIVE_PEAK_FLOOR: f64 = 0.01;
 const FLOOR_DECLARATION: &str = include_str!(
     "../../../testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json"
 );
+const BACKGROUND_DECLARATION: &str = include_str!(
+    "../../../testdata/synthetic/mir-flux-gate-probe/declared-band-background-20261003.json"
+);
 
 fn evidence(strength: f64, mass: &[f64], index: usize) -> (f64, f64) {
     let lo = index.saturating_sub(RADIUS);
@@ -488,10 +491,55 @@ fn run_bands(
     Ok(passed)
 }
 
-fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error::Error>> {
+fn analyze_background(floor: &Value) -> Value {
+    let started = Instant::now();
+    let evidence: Vec<_> = floor["envelope"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|row| row["evidence"].as_f64().unwrap())
+        .collect();
+    let mut envelope = floor["envelope"].clone();
+    let mut predicted = Vec::new();
+    for (index, row) in envelope.as_array_mut().unwrap().iter_mut().enumerate() {
+        let lo = index.saturating_sub(RADIUS);
+        let hi = (index + RADIUS + 1).min(evidence.len());
+        let mean = evidence[lo..hi].iter().sum::<f64>() / (hi - lo) as f64;
+        let threshold = mean + MINIMUM_CHANGE;
+        let floor_peak = row["peak"].as_bool().unwrap();
+        let accepted = floor_peak && evidence[index] >= threshold;
+        row["background_mean"] = json!(mean);
+        row["background_threshold"] = json!(threshold);
+        row["floor_peak"] = json!(floor_peak);
+        row["peak"] = json!(accepted);
+        if accepted {
+            predicted.push(row["coordinate_frame"].as_u64().unwrap() as usize);
+        }
+    }
+    assert!(predicted.windows(2).all(|pair| pair[0] < pair[1]));
+    assert!(predicted.iter().all(|frame| {
+        floor["predicted_frames"]
+            .as_array()
+            .unwrap()
+            .contains(&json!(frame))
+    }));
+    json!({"predicted_frames":predicted,"envelope":envelope,
+        "elapsed_seconds":started.elapsed().as_secs_f64()})
+}
+
+fn run_floor(
+    reference: &Path,
+    output: &Path,
+    with_background: bool,
+) -> Result<bool, Box<dyn std::error::Error>> {
     fs::create_dir(output)?;
-    fs::write(output.join("declaration.json"), FLOOR_DECLARATION)?;
-    let declaration: Value = serde_json::from_str(FLOOR_DECLARATION)?;
+    let declaration_text = if with_background {
+        BACKGROUND_DECLARATION
+    } else {
+        FLOOR_DECLARATION
+    };
+    fs::write(output.join("declaration.json"), declaration_text)?;
+    let declaration: Value = serde_json::from_str(declaration_text)?;
     let old: Value = serde_json::from_slice(&fs::read(reference)?)?;
     let references = old["cases"].as_array().unwrap();
     let inputs = declaration["inputs"].as_array().unwrap();
@@ -500,6 +548,11 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
     let mut cases = Vec::new();
     for (reference, input) in references.iter().zip(inputs) {
         assert_eq!(reference["input"], *input, "declared input changed");
+        let band_reference = if with_background {
+            &reference["baseline"]
+        } else {
+            reference
+        };
         let samples = frozen::load(
             Path::new(input["pcm_path"].as_str().unwrap()),
             input["channels"].as_u64().unwrap() as usize,
@@ -508,7 +561,8 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
         )?;
         let mut native = analyze(&samples);
         let [mut bands, mut floor] = analyze_band_variants(&samples);
-        // All four analyses finish before labels enter the unchanged matcher
+        let mut background = with_background.then(|| analyze_background(&floor));
+        // Every analysis finishes before labels enter the unchanged matcher
         let truth: Option<Vec<usize>> = serde_json::from_value(input["truth_frames"].clone())?;
         for (predictions, metrics) in [
             ("predicted_frames", "native_metrics"),
@@ -519,7 +573,10 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
                 .as_ref()
                 .map_or(Value::Null, |truth| frozen::score(truth, &frames));
         }
-        for result in [&mut bands, &mut floor] {
+        for result in [&mut bands, &mut floor]
+            .into_iter()
+            .chain(background.iter_mut())
+        {
             let frames: Vec<usize> = serde_json::from_value(result["predicted_frames"].clone())?;
             result["metrics"] = truth
                 .as_ref()
@@ -534,19 +591,34 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
             "metrics",
         ] {
             assert_eq!(
-                parsed[key], reference["baseline"][key],
+                parsed[key], band_reference["baseline"][key],
                 "native/full-gate baseline changed: {key}"
             );
         }
         let parsed: Value = serde_json::from_str(&serde_json::to_string(&bands)?)?;
         for key in ["envelope", "predicted_frames", "metrics"] {
-            assert_eq!(parsed[key], reference[key], "band baseline changed: {key}");
+            assert_eq!(
+                parsed[key], band_reference[key],
+                "band baseline changed: {key}"
+            );
+        }
+        if with_background {
+            let parsed: Value = serde_json::from_str(&serde_json::to_string(&floor)?)?;
+            for key in ["envelope", "predicted_frames", "metrics"] {
+                assert_eq!(parsed[key], reference[key], "floor baseline changed: {key}");
+            }
         }
         bands["baseline"] = native;
         bands["input"] = input.clone();
         floor["baseline"] = bands;
         floor["input"] = input.clone();
-        cases.push(floor);
+        if let Some(mut background) = background {
+            background["baseline"] = floor;
+            background["input"] = input.clone();
+            cases.push(background);
+        } else {
+            cases.push(floor);
+        }
     }
     assert_eq!(
         cases
@@ -559,8 +631,10 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
         .iter()
         .all(|case| case["metrics"].is_null() || case["metrics"]["status"] == "PASS");
     let report = json!({"status": if passed {"PASS"} else {"FAIL"}, "declaration": declaration,
-        "baseline_reproduction": "PASS: all34 native, full-spectrum-gate and band-local outputs exactly reproduced apart from timings",
-        "independent_picker": true, "confidence": null, "real_music": "NOT RUN",
+        "baseline_reproduction": if with_background {
+            "PASS: all34 native, full-spectrum-gate, band-local and band-peak-floor outputs exactly reproduced apart from timings"
+        } else { "PASS: all34 native, full-spectrum-gate and band-local outputs exactly reproduced apart from timings" },
+        "independent_picker": !with_background, "confidence": null, "real_music": "NOT RUN",
         "canonical_ogg": "NOT RUN", "human_labels": "NOT RUN", "cases": cases});
     fs::write(
         output.join("report.json"),
@@ -577,8 +651,11 @@ fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     let result = match args.as_slice() {
+        [mode, reference, output] if mode == "--background-candidate" => {
+            run_floor(Path::new(reference), Path::new(output), true)
+        }
         [mode, reference, output] if mode == "--floor-candidate" => {
-            run_floor(Path::new(reference), Path::new(output))
+            run_floor(Path::new(reference), Path::new(output), false)
         }
         [mode, old, controls, output] if mode == "--band-candidate" => {
             run_bands(Path::new(old), Path::new(controls), Path::new(output))
@@ -587,7 +664,7 @@ fn main() -> ExitCode {
         [reference, output] => run(Path::new(reference), Path::new(output)),
         _ => {
             eprintln!(
-                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>\n       cocobeat-mir-flux-gate-probe --band-candidate <frozen-gate-report.json> <frozen-controls-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --floor-candidate <frozen-band-report.json> <new-output-directory>"
+                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>\n       cocobeat-mir-flux-gate-probe --band-candidate <frozen-gate-report.json> <frozen-controls-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --floor-candidate <frozen-band-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --background-candidate <frozen-floor-report.json> <new-output-directory>"
             );
             return ExitCode::FAILURE;
         }
@@ -605,6 +682,73 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn background_uses_real_clipped_mean_without_refractory_or_new_coordinates() {
+        let declaration: Value = serde_json::from_str(BACKGROUND_DECLARATION).unwrap();
+        assert_eq!(
+            declaration["parameters"]["background_gate"]["radius"],
+            RADIUS
+        );
+        assert_eq!(
+            declaration["parameters"]["background_gate"]["excess_inclusive"],
+            MINIMUM_CHANGE
+        );
+        let fixture = |values: &[f64]| {
+            let envelope: Vec<_> = values.iter().enumerate().map(|(i, value)| json!({
+                "support_start": i*64, "support_end_exclusive": i*64+128,
+                "coordinate_frame": i*64+64, "evidence": value, "peak": local_peak(values, i)
+            })).collect();
+            let predicted: Vec<_> = envelope
+                .iter()
+                .filter(|row| row["peak"] == true)
+                .map(|row| row["coordinate_frame"].clone())
+                .collect();
+            json!({"envelope": envelope, "predicted_frames":predicted})
+        };
+        let mut values = vec![0.0; 31];
+        values[12] = 1.0;
+        values[18] = 1.0;
+        let floor = fixture(&values);
+        let gated = analyze_background(&floor);
+        assert_eq!(gated["predicted_frames"], json!([832, 1216]));
+        for i in [12, 18] {
+            assert_eq!(gated["envelope"][i]["background_mean"], 2.0 / 17.0);
+        }
+        for (old, new) in floor["envelope"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(gated["envelope"].as_array().unwrap())
+        {
+            for key in [
+                "support_start",
+                "support_end_exclusive",
+                "coordinate_frame",
+                "evidence",
+            ] {
+                assert_eq!(old[key], new[key]);
+            }
+        }
+        let clipped = analyze_background(&fixture(&[0.0, 1.0]));
+        assert_eq!(clipped["envelope"][1]["background_mean"], 0.5);
+        assert_eq!(clipped["envelope"][1]["background_threshold"], 1.0);
+        assert_eq!(clipped["predicted_frames"], json!([128]));
+        for values in [&[1.0; 17][..], &[][..]] {
+            assert_eq!(
+                analyze_background(&fixture(values))["predicted_frames"],
+                json!([])
+            );
+        }
+        let mut no_peak = fixture(&[0.0, 1.0]);
+        no_peak["envelope"][1]["peak"] = json!(false);
+        no_peak["predicted_frames"] = json!([]);
+        assert_eq!(analyze_background(&no_peak)["predicted_frames"], json!([]));
+        let mut impulse = vec![0.0; 2048];
+        impulse[512] = 0.25;
+        let [_, floor] = analyze_band_variants(&impulse);
+        assert_eq!(analyze_background(&floor)["predicted_frames"], json!([512]));
+    }
 
     #[test]
     fn relative_floor_retains_real_support_gain_and_only_reduces_evidence() {

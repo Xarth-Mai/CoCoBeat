@@ -1,6 +1,6 @@
 # 正向谱变化证据门槛
 
-本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；这两种模式共用原固定过滤器，`--band-candidate` 对同一批固定输入验证独立选峰候选，`--floor-candidate` 验证带分母下限；均不接生产 MIR
+本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；这两种模式共用原固定过滤器，`--band-candidate` 对同一批固定输入验证独立选峰候选，`--floor-candidate` 验证带分母下限，`--background-candidate` 验证归一化变化的时间背景门控；均不接生产 MIR
 
 ## 根因与固定适配
 
@@ -213,3 +213,52 @@ PY
 独立复算核对 34 项输入与 29 个 PCM 文件、4 份参考报告、全部 51,158 窗及 306,948 个带窗口，旧三基线和四路 Matcher 完整复现。另从实际 PCM 做 NumPy f64 FFT，34 项预测坐标全部相同，谱幅值和 / Flux / ratio 最大绝对差约 1.59e-5 / 1.65e-5 / 3.37e-6；不宣称原生 f32 位一致或近似平局的胜出带一致
 
 本轮结果冻结为未准入的研究候选；剩余修复须解释噪声统计波动和打击衰减过程，同时保留已恢复的 8 ms 弱近邻。真实音乐、独立人工标注、canonical Ogg、beat/downbeat、confidence 和 Anchor 可玩性尚未验收
+
+## 归一化变化的时间背景门控
+
+`--background-candidate` 实施唯一 `band-background-excess-v1`，复用当前 floor 的全部特征与原峰；令 `B[i] = mean(E[j], j ∈ clipped[i-8,i+8])`，只有原峰满足 `E[i] >= B[i] + 0.5` 才保留。均值包含当前值与实际零值，边界按真实窗数计算；不对 E-B 重新选峰，因此新预测严格为旧 floor 有序子集，坐标不变
+
+[运行前声明](../../testdata/synthetic/mir-flux-gate-probe/declared-band-background-20261003.json) SHA-256 为 `605f83ed62e7a9eb14e3d2905f7948bfe0dbb5b21f7d9bbf85c7a034a632ee4c`，保持原 34 项输入和 Matcher，复用半径 8 与门槛 0.5，参数不随样本调整。新增时间背景作用于已归一化 E，不继承原始强音的 10 倍幅度，也不设置 refractory；是否保住真实近邻仍由原完整矩阵判断
+
+17 个 E 的中心相距 21.333 ms，计入每个 E 自带的 ±2 窗，实际内区依赖 21 个 FFT 窗、29.333 ms PCM，最远未来窗末端距当前中心 14.667 ms；这是离线分析，报告仍使用原支持窗中心。新增门控只读取已有 E，不增加 FFT、依赖或音频；噪声背景过高可能删除真实进入，低频衰减尖峰也可能继续超过均值，软件检查不能代替质量验收
+
+运行要求声明中原冻结报告及 PCM 位于原路径，重新生成的报告有新计时值，不能替代这些固定哈希；运行前后检查 5 份报告和所有完整 PCM，输出目录须尚不存在
+
+```sh
+python3 - "$mir_build/release/cocobeat-mir-flux-gate-probe" target/mir-band-background-reproduction <<'PY'
+import hashlib, json, pathlib, subprocess, sys
+p = pathlib.Path('testdata/synthetic/mir-flux-gate-probe/declared-band-background-20261003.json')
+assert hashlib.sha256(p.read_bytes()).hexdigest() == '605f83ed62e7a9eb14e3d2905f7948bfe0dbb5b21f7d9bbf85c7a034a632ee4c'
+d = json.loads(p.read_text())
+files = d['references'] + [
+    {'path': i['pcm_path'], 'sha256': i['pcm_sha256']} for i in d['inputs']]
+def verify():
+    for item in files:
+        assert hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest() == item['sha256']
+verify()
+result = subprocess.call([sys.argv[1], '--background-candidate', d['references'][0]['path'], sys.argv[2]])
+verify()
+raise SystemExit(result)
+PY
+```
+
+### 时间背景门控首次运行结果
+
+软件验证 PASS，目标修复和整体质量均 FAIL；[完整观察清单](../../testdata/synthetic/mir-flux-gate-probe/observations-band-background-20261003.json)记录全部预测、原配对、275 个删峰和新增漏检，唯一正式报告位于 `target/mir-band-background-20261003/results-v1/report.json`
+
+| 31 项离散控制 | 原生 Flux | 原全谱过滤 | 原 band-local | 原 floor | 背景门控 |
+| --- | --- | --- | --- | --- | --- |
+| PASS / FAIL | 14 / 17 | 21 / 10 | 17 / 14 | 21 / 10 | 20 / 11 |
+| TP / FP / FN | 333 / 766 / 7 | 330 / 0 / 10 | 336 / 665 / 4 | 334 / 269 / 6 | 324 / 4 / 16 |
+
+noise burst 恢复 PASS，全部 70 个额外峰被删除；两种 384 帧近邻与弱叠加继续通过。kick 保留三次正确攻击但仍有 3 个额外峰，坐标为 17984、41984、72000，其真实支持窗跨越既定音符的 18000、42000、72000 帧截断；snare 仍有 frame 45888 的额外峰，并删除了首次真实攻击的 frame 18048 候选
+
+两项 128 相位脉冲控制各漏 4 次攻击，使原 floor 的两个 PASS 退化；被删峰 E 约为 0.51974 / 0.52448，背景约为 0.05882，未达约 0.55882 的固定门槛。snare 首次攻击 E 约为 0.72275，背景约为 0.28114，也未达约 0.78114 的门槛；这 9 次可观察攻击丢失构成实际退步，不能仅按额外峰下降宣布修复
+
+新增第 10 个 FN 来自持续噪声的内部 frame 384 不再被旧容差配给首帧标签；该例现在没有候选，原 7 项边界仍全部 FAIL。所有新预测均为 floor 的有序子集，没有新坐标；3 项连续控制仍为 0 峰且 truth/metrics=null，均不作为 onset 正确性结论
+
+8 项软件测试、fmt、隔离 Clippy 和 release 构建通过，声明与源码身份在运行前独立核对；本轮只执行一次正式质量矩阵，没有调参数重跑。约 3.636 秒、最大子进程 RSS 2033044 KiB 包含冻结输入报告和逐窗 JSON，仅为研究工具观测
+
+独立核验 34 项输入、29 个完整 PCM 文件、5 份参考报告、全部 51,158 窗、旧四基线及五路 Matcher，通过逐窗原 E、背景 B、门槛、flag 和有序子集检查；从实际 PCM 用 NumPy f64 FFT 复算的新 34 项坐标列表全部一致，E / B 最大绝对差约 2.15e-6 / 3.58e-7，不宣称原生 f32 位一致。验证器使用与 Rust 相同次序的逐项 f64 累加，避免 Python 3.14 内置 sum 的不同累加策略产生 1 ulp 差；没有因此修改候选或加入 epsilon
+
+该候选继续保留为失败的研究实现，生产 MusicAnalysis 不接入；后续修复必须同时保住脉冲相位和打击起音，解释仍保留的衰减/截断附近峰，并维持全部现有开发回归与独立音乐、编码和人工验收边界

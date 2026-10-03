@@ -527,3 +527,15 @@ ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两�
 最终 game SHA-256 为 `457f7d22d1ae94ef9801f16e2507ac2a50d17d950ff44112af9e715cbec07091`，lab 为 `f1e1e93d0fa22bdb96159cb935c603bfab4c471f5b76416c64b3f2f80dfe0a5e`，150 个构建输入前后相同；命令、日志与源码身份在 `target/stage-v2-runtime-20261003/validation.json`，SHA-256 `b41967b0ff2e5ec4dc072a38a774d1dde114b228a5d7c507a7e336878955b23c`。首次测试编译的 Children 迭代及 i64 推断失败也保留；本批没有新增第三方版本、图像或音频素材
 
 上述结果证明这批软件与静态场景行为，尚未验收真实手柄 / 音频、Windows / ARM 运行、设备帧时间、真人动晕 / 音乐预期、自动音乐编排或带版本的视觉 Replay；完整项目与 08 的退出继续保留这些条件
+
+舞台提交 `81d2849` 已推送至 main，[Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37117475442) 通过 62 项测试并恢复缓存；150 项冻结构建输入与该提交逐项一致，交付记录 `target/stage-v2-runtime-20261003/delivery.json` 的 SHA-256 为 `80591959d1b6a6e82bfd86b186f31357d5554b2de2f65ed56446b14b741e05ea`，CI 不包含 runtime / GPU 验证
+
+## MIR 时间背景门控的退化记录
+
+2026-10-03，在分母下限候选已有峰上增加固定 `E[i] >= mean(E[clipped i-8..i+8]) + 0.5` 门控，均值包含当前窗与零值，边界只使用实际窗；结果严格为旧峰的子集，不重新选峰或移动坐标。唯一候选的 [运行前声明](../testdata/synthetic/mir-flux-gate-probe/declared-band-background-20261003.json) SHA-256 为 `605f83ed62e7a9eb14e3d2905f7948bfe0dbb5b21f7d9bbf85c7a034a632ee4c`，源码 SHA-256 为 `434d3708ede7f9201a92dac408a6b4eca636538631f5a8544d3067b674387756`，正式运行前后保持不变
+
+8 项软件测试、隔离 fmt / Clippy / release 构建通过；唯一一次 34 项正式运行退出 1，31 项离散为 20 PASS / 11 FAIL，额外峰从 269 降至 4，漏检从 6 增至 16，另 3 项连续控制不评分。noise burst 恢复 PASS，两项 384 帧近邻及弱声部叠加仍 PASS，但两项相位扫描各新增 4 次漏检，snare 漏掉首攻击，stationary-noise 原来误配到首帧的峰被删除，目标修复与生产准入均 FAIL
+
+剩余 3 个 kick 额外峰支持窗跨过构造音符的截断，1 个 snare 额外峰仍处于衰减内；相位脉冲 E 约 0.520 / 0.524，背景门槛约 0.559，明确保留这些真实删峰而不改标签或补点。全部 34 项实际 PCM 的独立 f64 FFT 预测一致，四个旧基线的 51,158 窗及五路 Matcher 全部复现；数值检查脚本曾因 Python 求和策略产生 1 ulp 差异，改为与 Rust 实现一致的逐项左折叠后通过，候选公式与质量门槛未改
+
+执行、日志和全窗证据位于 `target/mir-band-background-20261003/`；实际工具 SHA-256 为 `8f4d14e7d4c40e0f56b9b98d2a7e932744aef0a58db2a39135867bdf4f77ebd3`，报告为 `a74c95773476534c45740ff39a49cde13e1e81f2301845e36e1391bc3742da28`，[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-background-20261003.json) 为 `91c66d532f697b96a3a533d43ba09af5cb44c997f3e1e5cb98b0de62a8003228`。未新增 PCM、依赖或生产 MIR 接线，真实音乐、编码回读、人工标签和音乐置信度仍待独立验收
