@@ -1342,9 +1342,324 @@
     }
   },
   "row_lifetime_experiment": {
-    "status_at_snapshot": "IN_PROGRESS",
-    "snapshot_at": "2026-10-03T01:21:07.266698+00:00",
-    "evidence_directory": "target/oxideav-admission-20261003/row-lifetimes",
-    "scope": "Separate target-only development experiment, no terminal outcome archived and no production admission"
+    "status": "FAIL_ENCODE",
+    "implementation": "DEVELOPMENT_ROW_LIFETIME_PATCH_NOT_RELEASED",
+    "previous_snapshot": {
+      "status_at_snapshot": "IN_PROGRESS",
+      "snapshot_at": "2026-10-03T01:21:07.266698+00:00",
+      "evidence_directory": "target/oxideav-admission-20261003/row-lifetimes",
+      "scope": "Separate target-only development experiment, no terminal outcome archived and no production admission"
+    },
+    "frames": 28800000,
+    "quality": 0.5,
+    "source_kind": "synthetic_tail",
+    "encode": {
+      "exit_code": -6,
+      "wall_seconds": 519.2485506380035,
+      "max_rss_kib": 2093400,
+      "wall_timeout_seconds": 3600,
+      "address_space_limit_bytes": 2147483648
+    },
+    "encode_command": [
+      "target/oxideav-admission-20261003/row-lifetimes/build/release/cocobeat-oxideav-probe",
+      "target/oxideav-admission-20261003/row-lifetimes/long-600s/case",
+      "28800000",
+      "0.5"
+    ],
+    "allocation_error": "memory allocation of 6144 bytes failed",
+    "stage_observation": {
+      "last_marker": "training_begin",
+      "next_marker_not_reached": "final_plans_begin",
+      "target_rows_completed": true,
+      "analysis_outer_vectors_dropped": true,
+      "boundary": "Failure is between these markers, covering training data construction, training calls and post-training allocations; exact iteration and allocation stack are unknown"
+    },
+    "encoded_ogg_exists": false,
+    "container_and_full_readback": "NOT RUN: no Ogg produced",
+    "over_limit": {
+      "frames": 28800001,
+      "exit_code": 1,
+      "rejected_before_output": true
+    },
+    "regression": {
+      "status": "PASS_BYTE_IDENTICAL",
+      "cases": [
+        {
+          "name": "1025",
+          "original": "target/oxideav-probe/cases/n1025-q0.5",
+          "experiment": "target/oxideav-admission-20261003/row-lifetimes/regression-1025",
+          "compared_files": [
+            "input.f32le",
+            "encoded.ogg",
+            "symphonia.f32le",
+            "ffmpeg.f32le"
+          ]
+        },
+        {
+          "name": "pulse",
+          "original": "target/oxideav-probe/cases/n48000-q0.5-burst",
+          "experiment": "target/oxideav-admission-20261003/row-lifetimes/regression-pulse",
+          "compared_files": [
+            "input.f32le",
+            "encoded.ogg",
+            "symphonia.f32le",
+            "ffmpeg.f32le"
+          ]
+        },
+        {
+          "name": "tail64",
+          "original": "target/oxideav-probe/cases/n3072000-q0.5",
+          "experiment": "target/oxideav-admission-20261003/row-lifetimes/regression-tail64",
+          "compared_files": [
+            "input.f32le",
+            "encoded.ogg",
+            "symphonia.f32le",
+            "ffmpeg.f32le"
+          ]
+        }
+      ],
+      "byte_identical_artifacts": 12,
+      "tail64_patch_run": {
+        "frames": 3072000,
+        "wall_seconds": 201.301359553996,
+        "max_rss_kib": 245344,
+        "scope": "Patched encoder regression on the previous 64-second synthetic-tail input, not an unchanged upstream baseline"
+      }
+    },
+    "binary_sha256": {
+      "cocobeat-oxideav-probe": "8797f6664e701e327fb79dc90cd88f32eee47c179b9bf430e25dd2ece3299d5b",
+      "readback": "5ca0c6ca8fc6feb99c5509d53e6bfc9d20b52651d9bcd443e036f55e2d2cfbff"
+    },
+    "row_lifetimes_patch_sha256": "7891e224a44577ee13690b123356242fb6aee3757da69c2c15898a0ecb59eca2",
+    "full_experiment_patch_sha256": "d53c089a6d72486e8836222af7c534f4a97f48a080ae63f9c452b1f9e340bb93",
+    "build_sources_sha256": {
+      "target/oxideav-admission-20261003/row-lifetimes/probe/Cargo.toml": "c261e3ce9073da679f4997f5fcebd34c1d4d8a34dc6b7d556714dc12f077db11",
+      "target/oxideav-admission-20261003/row-lifetimes/probe/Cargo.lock": "3763fc7b5258745159fa2fd78d0289ba73353a904cd2b4814f2b444131702238",
+      "target/oxideav-admission-20261003/row-lifetimes/probe/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+      "target/oxideav-admission-20261003/row-lifetimes/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+      "target/oxideav-admission-20261003/row-lifetimes/seek.rs": "4df3d3e82a91c7debf9c6368fe62ff47db818d91c9fa43ef46b91d6b48807774",
+      "target/oxideav-admission-20261003/row-lifetimes/vendor/oxideav-vorbis-0.0.12/src/oggfile.rs": "99abfe93f3f2b20b6d87d2ae8dbeaf2aea8d86a15dc32dac2f4e04c9c4f83b4e"
+    },
+    "evidence_sha256": {
+      "target/oxideav-admission-20261003/row-lifetimes/implementation.json": "610c88c73ab95e7e094ce5354bee06ad5f79e4385db8a5020ebeb2740fd4f747",
+      "target/oxideav-admission-20261003/row-lifetimes/build-identity.json": "fd7c23650195cf10b682a3750e254db58fe790e48dbc47bd4e643768223dd535",
+      "target/oxideav-admission-20261003/row-lifetimes/long-600s/result.json": "139635792de4f1562889c30bba168fcd76100cc0019a1420c6facccdc270a392",
+      "target/oxideav-admission-20261003/row-lifetimes/long-600s/case/encode.resources.json": "44aa4aafc98cfd5955d31685ff65bba02e6e0649491663fc12acd6e0e7d4912c",
+      "target/oxideav-admission-20261003/row-lifetimes/long-600s/case/encode.stderr": "02ed68c1b208ea85e4fc5ec82b8af720f19fc05c38fc2af2220c427bed076d45",
+      "target/oxideav-admission-20261003/row-lifetimes/regression.json": "638b95bb0e07a8f9c2d968f643a0c0b667e33899c4629d82415e7c188e92082f",
+      "target/oxideav-admission-20261003/row-lifetimes/regression-1025/result.json": "af27cd8ad039f0df0e54c5a4e5e6b48b86055d32e476a58aae3c863ca93b0130",
+      "target/oxideav-admission-20261003/row-lifetimes/regression-pulse/result.json": "07026240e2343e3b187e4aef4b4310dfe07de1d1fd7bad3317d39c8f6aef94b3",
+      "target/oxideav-admission-20261003/row-lifetimes/regression-tail64/result.json": "14c05ab76e9c95920cae47ed21cd60e79bbf6d01bab1aafdc6d4920ac2d46328"
+    },
+    "claim_boundary": "Target-only development patch, not an official release or production admission; published and earlier development-patch failures remain preserved; wait4 RSS includes brief harness inheritance, no throughput ranking",
+    "upstream": "oxideav-vorbis 0.0.12",
+    "sample_rate": 48000,
+    "channels": 2,
+    "repository_context_commits": {
+      "long_600s_harness": "aeed958405b44717ca2f2cc3a4609075b00f1b3d",
+      "tail64_regression_harness": "2568abcb4b797ab48abc26a84a27ad53c5345a0e",
+      "boundary": "Harness repository contexts, not identity of the separately compiled patched crate; build sources and binary hashes remain authoritative"
+    }
+  },
+  "rusty_max_abs_coupling_diagnostic": {
+    "status": "ROOT_CAUSE_CONFIRMED_FOR_CURRENT_CASE_NOT_ADMITTED",
+    "implementation": "DEVELOPMENT_PATCH_NOT_RELEASED",
+    "source_crate": "rusty_vorbis 0.1.1",
+    "root_cause": "forward_couple can choose the smaller left residual as magnitude for opposite-sign channels; quantization to zero changes the inverse-coupling branch and reverses the large right residual sign",
+    "patch": "Select magnitude by maximum absolute input, then derive angle from the selected magnitude sign; only src/frame.rs changes in the isolated crate copy",
+    "quantized_example": {
+      "bin": 41,
+      "input_left": 0.006012407,
+      "input_right": -6.0681543,
+      "magnitude": 0.006012407,
+      "angle": 6.074167,
+      "reconstructed_magnitude": 0,
+      "reconstructed_angle": 6,
+      "decoded_left": 0,
+      "decoded_right": 6
+    },
+    "real_vq_sign_flip_observations": {
+      "baseline": 58,
+      "patched": 0,
+      "scope": "Observed right residual absolute value greater than 1 whose reconstructed sign reverses; instrumented outputs match uninstrumented near-q10 Ogg bytes"
+    },
+    "method": {
+      "sample_rate": 48000,
+      "channels": 2,
+      "frames": 48000,
+      "qualities": [
+        5,
+        10
+      ],
+      "variants": [
+        "baseline",
+        "patched"
+      ],
+      "scenes": {
+        "near": {
+          "amplitude": 0.99,
+          "frequencies_hz": [
+            440,
+            1000
+          ]
+        },
+        "quiet": {
+          "amplitude": 0.125,
+          "frequencies_hz": [
+            440,
+            1000
+          ]
+        },
+        "swapped": {
+          "amplitude": 0.99,
+          "frequencies_hz": [
+            1000,
+            440
+          ]
+        },
+        "correlated": {
+          "amplitude": 0.99,
+          "frequencies_hz": [
+            440,
+            440
+          ]
+        },
+        "opposed": {
+          "amplitude": 0.99,
+          "frequencies_hz": [
+            440,
+            440
+          ],
+          "right_sign": -1
+        }
+      },
+      "comparison": "Same absolute input positions; no gain fit, normalization or time shift; interior excludes first and last 2048 frames",
+      "child_timeout_seconds": 30
+    },
+    "case_columns": [
+      "variant",
+      "q",
+      "scene",
+      "whole_snr_db_left_right",
+      "interior_snr_db_left_right",
+      "peak_left_right",
+      "over_unity_samples_left_right"
+    ],
+    "cases": [
+      ["baseline", 5, "near", [18.640609902657367, -1.288769722222444], [18.892739546227126, -1.5162444843688603], [1.3710678815841675, 1.9372496604919434], [4248, 7299]],
+      ["baseline", 5, "quiet", [18.250290366252027, -0.9506241562438482], [18.36423763827351, -1.1554890555516948], [0.14963343739509583, 0.25148361921310425], [0, 0]],
+      ["baseline", 5, "swapped", [16.468396362832905, 1.6733289686897108], [16.862120693832964, 1.7200309442957433], [1.7310165166854858, 1.671351671218872], [3549, 4573]],
+      ["baseline", 5, "correlated", [11.168753387137986, 11.168753387137986], [10.99179896936901, 10.99179896936901], [1.1050331592559814, 1.1050331592559814], [1032, 1032]],
+      ["baseline", 5, "opposed", [13.617502735052353, 9.409292242414896], [13.439019205645257, 9.304554354707795], [1.4815752506256104, 1.285177230834961], [13218, 442]],
+      ["baseline", 10, "near", [29.48266723290402, -0.9929833332872839], [29.328088075598515, -1.2504601469600554], [1.0709364414215088, 1.4647774696350098], [1708, 7597]],
+      ["baseline", 10, "quiet", [29.807845743822874, -1.0403512869280243], [29.815227098445124, -1.2980411632160918], [0.13417571783065796, 0.18332423269748688], [0, 0]],
+      ["baseline", 10, "swapped", [30.895276567771894, 0.8054905765833326], [30.96246308215601, 0.7148361058688966], [1.0566235780715942, 1.56548011302948], [2230, 6651]],
+      ["baseline", 10, "correlated", [30.068545465771514, 30.068545465771514], [29.930633435608975, 29.930633435608975], [1.0517827272415161, 1.0517827272415161], [1623, 1623]],
+      ["baseline", 10, "opposed", [30.069093399786468, 24.998966950556124], [29.93040729159256, 24.76923456879693], [1.0531338453292847, 1.1303070783615112], [1631, 2371]],
+      ["patched", 5, "near", [18.823880955360217, 16.463504732102074], [18.892779242572598, 16.862122524714344], [1.1595704555511475, 1.7799277305603027], [4117, 3482]],
+      ["patched", 5, "quiet", [18.309214685067747, 16.598522849309866], [18.36337973870387, 17.0710282260737], [0.1474846750497818, 0.2503703534603119], [0, 0]],
+      ["patched", 5, "swapped", [16.454902749150925, 18.378838694865813], [16.862122065247625, 18.88645169225185], [1.7887166738510132, 1.1595704555511475], [3461, 4146]],
+      ["patched", 5, "correlated", [11.168753387137986, 11.168753387137986], [10.99179896936901, 10.99179896936901], [1.1050331592559814, 1.1050331592559814], [1032, 1032]],
+      ["patched", 5, "opposed", [14.644279452359687, 18.59673498890838], [14.711049285323163, 18.641091252050735], [1.200005054473877, 1.2214264869689941], [2010, 6293]],
+      ["patched", 10, "near", [29.091832599619487, 30.880269960873832], [28.9651340051287, 30.962482478685402], [1.07511305809021, 1.0524215698242188], [1755, 2196]],
+      ["patched", 10, "quiet", [29.485242448774386, 30.96071475760781], [29.646446656875813, 31.181399117661883], [0.13751114904880524, 0.13527105748653412], [0, 0]],
+      ["patched", 10, "swapped", [30.87851401283401, 29.091828459868463], [30.96247082845074, 28.96512973372719], [1.0524215698242188, 1.07511305809021], [2198, 1754]],
+      ["patched", 10, "correlated", [30.068545465771514, 30.068545465771514], [29.930633435608975, 29.930633435608975], [1.0517827272415161, 1.0517827272415161], [1623, 1623]],
+      ["patched", 10, "opposed", [24.866196042797043, 30.04346865604684], [24.774818895733514, 29.89938808503124], [1.111608624458313, 1.0543867349624634], [2343, 1613]]
+    ],
+    "all_twenty_cases": {
+      "decoded_frames_per_decoder": 48000,
+      "all_samples_finite": true,
+      "maximum_decoder_pointwise_difference": 4.76837158203125e-07,
+      "correlated_ogg_unchanged_at_q5_and_q10": true,
+      "baseline_near_q5_q10_reproduce_previous_artifacts": true,
+      "artifact_hashes_rechecked": 80,
+      "frozen_manifest_hashes_rechecked": 19
+    },
+    "opposed_q10_stereo_snr_db": {
+      "baseline": 26.832701466176548,
+      "patched": 26.725120085382464
+    },
+    "commands": {
+      "build_patched": [
+        "cargo",
+        "build",
+        "--offline",
+        "--release",
+        "--manifest-path",
+        "target/rusty-quality-diagnosis/probe/Cargo.toml",
+        "--target-dir",
+        "target/rusty-quality-diagnosis/build",
+        "-j",
+        "2"
+      ],
+      "scalar_counterexample": [
+        "python3",
+        "-B",
+        "target/rusty-quality-diagnosis/coupling-check.py"
+      ],
+      "twenty_case_matrix": [
+        "python3",
+        "-B",
+        "target/rusty-quality-diagnosis/run.py"
+      ]
+    },
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Arch Linux rust 1:1.98.1-2)",
+    "ffmpeg": "ffmpeg version n9.0.2 Copyright (c) 2000-2026 the FFmpeg developers",
+    "original_frame_sha256": "5e53c8efbfedda59fc10abbe9b309f1c32c597d1b912eb4ed7ea42b7288b74aa",
+    "patched_frame_sha256": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+    "patch_sha256": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+    "reference": {
+      "url": "https://raw.githubusercontent.com/xiph/vorbis/c2aa86b05e981c96bf381fc6aa11cdd03eccc2fb/lib/psy.c",
+      "git_commit": "c2aa86b05e981c96bf381fc6aa11cdd03eccc2fb",
+      "sha256": "5d029f53d5c875214a326a66893aa0689806df36e214f135cc304da0409eae83",
+      "relevant_lines": [
+        {
+          "line": 1141,
+          "text": "                int A = iM[j];"
+        },
+        {
+          "line": 1144,
+          "text": "                if(abs(A)>abs(B)){"
+        },
+        {
+          "line": 1148,
+          "text": "                  iM[j]=B;"
+        },
+        {
+          "line": 1152,
+          "text": "                if(iA[j]>=abs(iM[j])*2){"
+        }
+      ]
+    },
+    "evidence_sha256": {
+      "target/rusty-quality-diagnosis/REPORT.md": "da24e7a73659feb0f345885791883dba648e507af2a3cbdcbda74c8d189314e2",
+      "target/rusty-quality-diagnosis/provenance.json": "67ec21b52cda1e53e938587582c38a7abe6f02942d46f036a2ec67ed69fc5eab",
+      "target/rusty-quality-diagnosis/summary.json": "8ec48cd533dda913288626b1494edd10ef63a939cf85ac757c15e01f4cb6549f",
+      "target/rusty-quality-diagnosis/results.json": "895c73b82872d298d411552e4e95a6a754a4c6338899db0cd70a03678f0e3414",
+      "target/rusty-quality-diagnosis/max-abs-coupling.patch": "28c3f3ed5d5f35ce239d0ea00c5aedf567859332cc521f665f46a0a5476848db",
+      "target/rusty-quality-diagnosis/coupling-check.py": "2951774ab7157cdc8a0abccc1752d41d70ea525868a2cf3c5b50c5bce38b0c12",
+      "target/rusty-quality-diagnosis/run.py": "6865861888f52714bbee7029d0ef4606b0997140015b0a4108403ea8c7c43d86",
+      "target/rusty-quality-diagnosis/probe/adapter.rs": "d4c478f1f48e06a47ab88058b5c9bec242c8fcb5ca0e04120f268bf2abb81a0b",
+      "target/rusty-quality-diagnosis/probe/Cargo.toml": "09febf55f74fd152944904a129438ca1593ef2eaea33efb1609488b0587978bd",
+      "target/rusty-quality-diagnosis/probe/Cargo.lock": "bf6ea8b3d3b7e96bc1844768a01c596e06007cbeb438d757b634f20068abd236",
+      "target/rusty-quality-diagnosis/rusty-vendor/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+      "target/rusty-quality-diagnosis/instrument-vendor/src/frame.rs": "42114e71773a1ebdfb4e263c99ecaa6d57e1cba5329e601ae1fa57891bb1f13c",
+      "target/rusty-quality-diagnosis/instrument-baseline-q10-flips.jsonl": "c3d52ebdb4da3959a5f1ae3043c6a471f150fddd020c3ea53a5e83a28cd30a72",
+      "target/rusty-quality-diagnosis/instrument-patched-q10-flips.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "target/rusty-quality-diagnosis/baseline": "18e4e495f3305d62551007d94f3f77b5801e27d6073d5e2027d3e82b1832a180",
+      "target/rusty-quality-diagnosis/patched": "7e07062b580afb594fc527d92ea325d307c91ee0a0f4c648d40ee6d4c7e78dc1",
+      "target/rusty-quality-diagnosis/instrumentation-commands.json": "9c4065f314b40fcc9ae73d17b254c1442144e49938246f0fe3754e15a94d8965",
+      "target/rusty-quality-diagnosis/instrument-baseline": "9080212e6001af46e477481dcb9332e99493ef198a21ef835d536ae22c1becef",
+      "target/rusty-quality-diagnosis/instrument-patched": "bc65c23d4e994b4a2020fff858b715538c52c832d4272d4aa849c28135d0fa7e",
+      "target/rusty-quality-diagnosis/evidence-sha256.json": "1912bc4de46551ea3a20ac68378376daccdab46e7a1eb5e0f76ba5a70927130e"
+    },
+    "limits": [
+      "The patched crate is not an official release and is not admitted to production",
+      "q5 retains substantial waveform error and overshoot; lossy overshoot alone is not a structural failure",
+      "Opposed-channel q10 shifts channel error and slightly lowers total stereo SNR; no universal quality improvement claim",
+      "This frozen short-case batch excludes patched 64-second/600-second runs, patched seek, Windows/ARM runtime and human listening",
+      "FFmpeg/libvorbis are diagnostic references only, not a production fallback; no upstream message or PR sent"
+    ]
   }
 }
