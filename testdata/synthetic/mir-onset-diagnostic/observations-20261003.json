@@ -1,0 +1,1263 @@
+{
+  "date": "2026-10-03",
+  "software_status": "PASS",
+  "overall_quality_status": "FAIL",
+  "scope": "Isolated onset timing diagnosis, five algorithms x 18 case/channels; no production MIR admission",
+  "dependency": {
+    "name": "oximedia-mir",
+    "version": "0.2.1",
+    "license": "Apache-2.0",
+    "repository": "https://github.com/cool-japan/oximedia",
+    "checksum": "30730f01388870c7694b578273396f1c4ec4a331245eabe4ca1ea4d40bf4888e",
+    "new_third_party_versions": 0
+  },
+  "source_findings": [
+    {
+      "file": "src/utils.rs",
+      "lines": [
+        47,
+        79
+      ],
+      "finding": "Only complete left-aligned Hann STFT windows; partial tail ignored; PCM frame zero has zero Hann weight"
+    },
+    {
+      "file": "src/beat/onset.rs",
+      "lines": [
+        32,
+        50
+      ],
+      "finding": "Returns peak index times hop; actual transient can lie later inside that support window"
+    },
+    {
+      "file": "src/utils.rs",
+      "lines": [
+        247,
+        267
+      ],
+      "finding": "Peak picking excludes both endpoint indices"
+    },
+    {
+      "file": "src/beat/onset.rs",
+      "lines": [
+        105,
+        123
+      ],
+      "finding": "Adaptive threshold implementation is dead code, not called by detect"
+    },
+    {
+      "file": "src/onset_peak.rs",
+      "lines": [
+        97,
+        127
+      ],
+      "finding": "Public flux is positive average-square energy difference; full-hop count omits partial tail"
+    },
+    {
+      "file": "src/onset_peak.rs",
+      "lines": [
+        154,
+        175
+      ],
+      "finding": "Energy detector peak picking likewise excludes endpoints"
+    }
+  ],
+  "upstream_source_sha256": {
+    "src/utils.rs": "5446f8bedd0c8d4b0e9dda5d9cb4aa3dd5c294f1730e13d642fe3f72cabce22a",
+    "src/beat/onset.rs": "19a60147087e5fb511215afd8a396abf742460387323282d04e9b67db278e18f",
+    "src/onset_peak.rs": "104f2db6806387474e19bbfc004e605eb275603c1b58e537fff4bb2e2e534d72",
+    "Cargo.toml": "4c17c7b5f558ae1b3c23b41236a2bb7bcfcfbd847cf2feb094bcdf51dae02f7a"
+  },
+  "parameters": {
+    "rate": 48000,
+    "original_window": 1024,
+    "original_hop": 128,
+    "energy_hops": [
+      128,
+      64
+    ],
+    "minimum_peak_distance_pcm_frames": 384,
+    "median_window_blocks": 11,
+    "sensitivity": 1.5,
+    "threshold_context_changes_with_hop": true,
+    "onset_tolerance_frames_inclusive": 480,
+    "median_error_limit_frames": 96,
+    "truth_used_by_algorithm": false,
+    "time_origin": "Original PCM frame zero; energy outputs are block starts; no padding, trimming or output translation"
+  },
+  "baseline_preservation": {
+    "status": "PASS",
+    "all_17_original_artifact_hashes_verified": true,
+    "all_10_original_predictions_and_metrics_identical": true,
+    "baseline_observation": "testdata/synthetic/mir-onset-probe/observations-20261003.json",
+    "baseline_report_sha256": "faf2f98513ccf6eab584d28ef72a7699b2910932b6a61a70da3f285f3eef9a96"
+  },
+  "holdout_provenance": {
+    "license": "CC0-1.0",
+    "generator": "tools/mir-onset-diagnostic/src/main.rs",
+    "source_license": "MPL-2.0",
+    "labels": "Impulse positions and sustained-signal boundary attacks defined by construction; not beat/Anchor/human annotations",
+    "noise_generator": "xorshift32, seed 0x5eed; scaled to [-0.01,0.01]",
+    "tones_hz": [
+      440,
+      9973
+    ],
+    "impulse_phase_formula": "4096 + phase*2048 + phase for phase 0..127",
+    "impulse_gains": [
+      0.5,
+      0.005
+    ]
+  },
+  "summary": {
+    "beat-upstream-1024-128": {
+      "original-five-case-ten-channel": {
+        "PASS": 2,
+        "FAIL": 8
+      },
+      "additional-eight-controls": {
+        "PASS": 0,
+        "FAIL": 8
+      }
+    },
+    "energy-upstream-128": {
+      "original-five-case-ten-channel": {
+        "PASS": 8,
+        "FAIL": 2
+      },
+      "additional-eight-controls": {
+        "PASS": 2,
+        "FAIL": 6
+      }
+    },
+    "energy-bounded-128": {
+      "original-five-case-ten-channel": {
+        "PASS": 10,
+        "FAIL": 0
+      },
+      "additional-eight-controls": {
+        "PASS": 3,
+        "FAIL": 5
+      }
+    },
+    "energy-upstream-64": {
+      "original-five-case-ten-channel": {
+        "PASS": 8,
+        "FAIL": 2
+      },
+      "additional-eight-controls": {
+        "PASS": 2,
+        "FAIL": 6
+      }
+    },
+    "energy-bounded-64": {
+      "original-five-case-ten-channel": {
+        "PASS": 10,
+        "FAIL": 0
+      },
+      "additional-eight-controls": {
+        "PASS": 3,
+        "FAIL": 5
+      }
+    }
+  },
+  "matrix": [
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-0",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-0",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-0",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-0",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-0",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-1",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-1",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-1",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-1",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-120/channel-1",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-0",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-0",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 46.5,
+      "p95_absolute_error_frames": 99
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-0",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 46.5,
+      "p95_absolute_error_frames": 99
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-0",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 20.0,
+      "p95_absolute_error_frames": 52
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-0",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 20.0,
+      "p95_absolute_error_frames": 52
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-1",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-1",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 46.5,
+      "p95_absolute_error_frames": 99
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-1",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 46.5,
+      "p95_absolute_error_frames": 99
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-1",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 20.0,
+      "p95_absolute_error_frames": 52
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "pulse-137.5/channel-1",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 20.0,
+      "p95_absolute_error_frames": 52
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-0",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 1,
+      "fn": 3,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-0",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "median_absolute_error_frames": 64.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-0",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 64.0,
+      "p95_absolute_error_frames": 127
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-0",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-0",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 63
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-1",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 1,
+      "fn": 3,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-1",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "median_absolute_error_frames": 64.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-1",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 64.0,
+      "p95_absolute_error_frames": 127
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-1",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 0,
+      "fn": 2,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "first-last/channel-1",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 3,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 63
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-0",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-0",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-0",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-0",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-0",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-1",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-1",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-1",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-1",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "silence/channel-1",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 0,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-0",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-0",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-0",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-0",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-0",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-1",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 8,
+      "fn": 8,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-1",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-1",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 32.0,
+      "p95_absolute_error_frames": 64
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-1",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "original-five-case-ten-channel",
+      "case": "opposite-polarity/channel-1",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 8,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "impulse-phase-scan",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 128,
+      "fn": 128,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "impulse-phase-scan",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 63.5,
+      "p95_absolute_error_frames": 121
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "impulse-phase-scan",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 63.5,
+      "p95_absolute_error_frames": 121
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "impulse-phase-scan",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 31.5,
+      "p95_absolute_error_frames": 60
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "impulse-phase-scan",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 31.5,
+      "p95_absolute_error_frames": 60
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "quiet-impulse-phase-scan",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 128,
+      "fn": 128,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "quiet-impulse-phase-scan",
+      "algorithm": "energy-upstream-128",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 63.5,
+      "p95_absolute_error_frames": 121
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "quiet-impulse-phase-scan",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 63.5,
+      "p95_absolute_error_frames": 121
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "quiet-impulse-phase-scan",
+      "algorithm": "energy-upstream-64",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 31.5,
+      "p95_absolute_error_frames": 60
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "quiet-impulse-phase-scan",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 128,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 31.5,
+      "p95_absolute_error_frames": 60
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "partial-hop-last-sample",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "partial-hop-last-sample",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "partial-hop-last-sample",
+      "algorithm": "energy-bounded-128",
+      "status": "PASS",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "partial-hop-last-sample",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "partial-hop-last-sample",
+      "algorithm": "energy-bounded-64",
+      "status": "PASS",
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "single-sample-boundary",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "single-sample-boundary",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "single-sample-boundary",
+      "algorithm": "energy-bounded-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "single-sample-boundary",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "single-sample-boundary",
+      "algorithm": "energy-bounded-64",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "constant-level-one-boundary-attack",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "constant-level-one-boundary-attack",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "constant-level-one-boundary-attack",
+      "algorithm": "energy-bounded-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "constant-level-one-boundary-attack",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 0,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "constant-level-one-boundary-attack",
+      "algorithm": "energy-bounded-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 1,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "stationary-noise-no-interior-attack",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 62,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "stationary-noise-no-interior-attack",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 85,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "stationary-noise-no-interior-attack",
+      "algorithm": "energy-bounded-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 86,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "stationary-noise-no-interior-attack",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 101,
+      "fn": 0,
+      "median_absolute_error_frames": 128.0,
+      "p95_absolute_error_frames": 128
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "stationary-noise-no-interior-attack",
+      "algorithm": "energy-bounded-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 102,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "continuous-tone-one-boundary-attack",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 111,
+      "fn": 0,
+      "median_absolute_error_frames": 256.0,
+      "p95_absolute_error_frames": 256
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "continuous-tone-one-boundary-attack",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 113,
+      "fn": 0,
+      "median_absolute_error_frames": 256.0,
+      "p95_absolute_error_frames": 256
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "continuous-tone-one-boundary-attack",
+      "algorithm": "energy-bounded-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 113,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "continuous-tone-one-boundary-attack",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 99,
+      "fn": 0,
+      "median_absolute_error_frames": 256.0,
+      "p95_absolute_error_frames": 256
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "continuous-tone-one-boundary-attack",
+      "algorithm": "energy-bounded-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 100,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "high-tone-one-boundary-attack",
+      "algorithm": "beat-upstream-1024-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 68,
+      "fn": 0,
+      "median_absolute_error_frames": 256.0,
+      "p95_absolute_error_frames": 256
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "high-tone-one-boundary-attack",
+      "algorithm": "energy-upstream-128",
+      "status": "FAIL",
+      "tp": 0,
+      "fp": 70,
+      "fn": 1,
+      "median_absolute_error_frames": null,
+      "p95_absolute_error_frames": null
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "high-tone-one-boundary-attack",
+      "algorithm": "energy-bounded-128",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 70,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "high-tone-one-boundary-attack",
+      "algorithm": "energy-upstream-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 100,
+      "fn": 0,
+      "median_absolute_error_frames": 192.0,
+      "p95_absolute_error_frames": 192
+    },
+    {
+      "scope": "additional-eight-controls",
+      "case": "high-tone-one-boundary-attack",
+      "algorithm": "energy-bounded-64",
+      "status": "FAIL",
+      "tp": 1,
+      "fp": 100,
+      "fn": 0,
+      "median_absolute_error_frames": 0.0,
+      "p95_absolute_error_frames": 0
+    }
+  ],
+  "decision": "Boundary/timing adaptation passes original clean corpus but all energy candidates remain inadmissible for production MIR because sustained tone and stationary noise false positives remain; single-sample median context and partial-tail floating-point false peak preserved",
+  "run": {
+    "command": [
+      "target/mir-onset-probe-build/release/cocobeat-mir-onset-diagnostic",
+      "target/mir-onset-probe-20261003",
+      "target/mir-timing-20261003/results-v2"
+    ],
+    "exit_code": 1,
+    "expected_quality_exit": 1,
+    "elapsed_seconds": 0.4143655799998669,
+    "maximum_rss_kib": 25380
+  },
+  "validation": {
+    "fmt": "PASS",
+    "tests": "PASS: 2 (one inherited matcher/waveform check; one boundary/phase regression preserving short-context failure)",
+    "clippy": "PASS: all-targets -D warnings",
+    "release_build": "PASS",
+    "full_workspace": "NOT RUN",
+    "diagnostic_quality_exit": "expected 1 with report.status=FAIL"
+  },
+  "source_sha256": {
+    "tools/mir-onset-diagnostic/Cargo.toml": "d6d2934ea86d762d4f38249383ebb608896b6ac98e5d969aeda78b5cc50c47e1",
+    "tools/mir-onset-diagnostic/Cargo.lock": "4b4e8202f7ed57ab77592ef9516653e85d788fc55ac525aebf69a705d6d15007",
+    "tools/mir-onset-diagnostic/src/main.rs": "4a0d7d4782f8a1a97aa77071559f42be2519c29f952d7e96219ccfd74c6743c9",
+    "tools/mir-onset-diagnostic/README.md": "70b6a9858e2155e0e6b130d6a96dea6d3a4423cd4c65dd9126bea5b5fc3acfbf",
+    "tools/mir-onset-probe/Cargo.toml": "dc0f37f4e812a1ae024b905bdc36bdcf5052797bed71aa6d6d9e8e7775c87a0e",
+    "tools/mir-onset-probe/Cargo.lock": "db1c8615cf95f7dbd05c685f8a7678f6120ecbf8d96e2074ce4309251d611dfd",
+    "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26"
+  },
+  "artifact_sha256": {
+    "target/mir-timing-20261003/results-v2/impulse-phase-scan.f32le": "49e9116781ef0c5f779b287a1c6a9df137f5a1ae32cb767f7f361b8881a6ac87",
+    "target/mir-timing-20261003/results-v2/quiet-impulse-phase-scan.f32le": "7ce7e9e782ca00c48117f84a06c6fd4d4bbaf097ccd3436e9d011895faf1a96a",
+    "target/mir-timing-20261003/results-v2/partial-hop-last-sample.f32le": "f922ef112c5d1fdee6bbe0dd2961d1d6de2d9abb620189ad445032c5d879a5d2",
+    "target/mir-timing-20261003/results-v2/single-sample-boundary.f32le": "d99e58435243d9fef9c88273b8d553b4fba4d0baf8009d29eae74fa99e0d9f57",
+    "target/mir-timing-20261003/results-v2/constant-level-one-boundary-attack.f32le": "63583802acc92ec4b1c3d532b26f5ba93828aeba1f9b5a187456e092af4f52ed",
+    "target/mir-timing-20261003/results-v2/stationary-noise-no-interior-attack.f32le": "ab527c14e3d020a3313a8bbfcb56ea6f0ca32acea894bf35b33741bca74df894",
+    "target/mir-timing-20261003/results-v2/continuous-tone-one-boundary-attack.f32le": "ccea1ee6f5135d4624aea7efb540d6e0a438e2f556e08cedb50d7ea05300a84c",
+    "target/mir-timing-20261003/results-v2/high-tone-one-boundary-attack.f32le": "2ef81671758ee28a47a7f14ec2ae5ef722b661b6ae3022d36819835eac395395",
+    "target/mir-timing-20261003/results-v2/report.json": "45e60ac9514449db064ae7323a88421f1618f8d19c7ee28ede1355402f125beb",
+    "target/mir-timing-20261003/run-v2.json": "a2d7286325becf0daf478b9fc2d186ec01c48457f828f75af31a0afce12c6135",
+    "target/mir-timing-20261003/run-v2.log": "73223b185d14244bcde11a7db67e232968ea1a76bf1bb303d59335a3c4b2573a",
+    "target/mir-timing-20261003/fmt-final.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/mir-timing-20261003/test-final.log": "1bffaf8480463f924b07229ce7d38d6ff0093668522c487926bde47e5b59d4b6",
+    "target/mir-timing-20261003/clippy-final.log": "a4bed7ff4ca7385c8d193f208cbf2f886e2c726e589bad1a3f4ddb3f97082540",
+    "target/mir-timing-20261003/build-final.log": "276c406f87979bd9b3a8b65a5880e6f38b9cf2f99ffb779985f391664452e4f3",
+    "target/mir-timing-20261003/metadata.json": "71d8b89ea81a5eaceca961a0684ad4ed33275bec7fa43d0caf725baf592a4428",
+    "target/mir-timing-20261003/float.rs": "52e74d8e27cf4919cc642c9ab10c4ef5fce799cab963ca18eecae704ab6998a6",
+    "target/mir-timing-20261003/float.log": "5171ffaa7b40c5d01213afe3c1fb1d0636d5857a0570d147c506fd754376464a",
+    "target/mir-onset-probe-build/release/cocobeat-mir-onset-diagnostic": "622901063002539cb46d94c10ddc2e5cd2b5e67cb94643484a03c09321995fc8"
+  },
+  "not_run": [
+    "canonical Ogg readback",
+    "MusicAnalysis adapter",
+    "AnchorCompiler admission",
+    "real music corpus",
+    "human onset or Anchor labels",
+    "Windows or ARM execution"
+  ],
+  "exploratory_evidence": {
+    "first_test": "target/mir-timing-20261003/test-first.log",
+    "first_report": "target/mir-timing-20261003/results-v1/report.json",
+    "note": "Kept initial short-context test failure and exploratory report; v1 exit 0 meant report completed, v2 uses baseline quality exit semantics"
+  },
+  "peak_window_diagnostics": [
+    {
+      "case": "pulse-120/channel-0",
+      "first_peak_support_window": {
+        "end_exclusive": 24320,
+        "maximum_energy_difference_frame": 24000,
+        "start": 23296
+      },
+      "within_window_energy_attack_offset_frames_min": 640,
+      "within_window_energy_attack_offset_frames_max": 704,
+      "used_to_shift_predictions": false
+    },
+    {
+      "case": "pulse-137.5/channel-0",
+      "first_peak_support_window": {
+        "end_exclusive": 24320,
+        "maximum_energy_difference_frame": 24000,
+        "start": 23296
+      },
+      "within_window_energy_attack_offset_frames_min": 611,
+      "within_window_energy_attack_offset_frames_max": 727,
+      "used_to_shift_predictions": false
+    },
+    {
+      "case": "first-last/channel-0",
+      "first_peak_support_window": {
+        "end_exclusive": 24320,
+        "maximum_energy_difference_frame": 24000,
+        "start": 23296
+      },
+      "within_window_energy_attack_offset_frames_min": 704,
+      "within_window_energy_attack_offset_frames_max": 704,
+      "used_to_shift_predictions": false
+    },
+    {
+      "case": "opposite-polarity/channel-0",
+      "first_peak_support_window": {
+        "end_exclusive": 24320,
+        "maximum_energy_difference_frame": 24000,
+        "start": 23296
+      },
+      "within_window_energy_attack_offset_frames_min": 640,
+      "within_window_energy_attack_offset_frames_max": 704,
+      "used_to_shift_predictions": false
+    }
+  ]
+}

@@ -52,3 +52,9 @@ cargo build --locked --release --manifest-path "$mir_manifest" --target-dir "$mi
 完整 Rust 源码、manifest、锁文件、二进制、17 个产物与验证日志的 SHA-256 均保存在观察清单；原始结果位于 `target/mir-onset-probe-20261003/`，软件检查位于 `target/mir-onset-probe-validation/`，大 PCM、构建缓存及第三方源码不进入 Git
 
 本批仅验证五类 raw PCM；canonical Ogg 回读、MusicAnalysis、AnchorCompiler、真实音乐、人类标注或听感、Windows/ARM 执行均为 NOT RUN；后续时间根因诊断不纳入这份原始基准
+
+## 后续时间诊断
+
+另行交付的 [诊断工具](../tools/mir-onset-diagnostic/README.md) 定位到左对齐窗起点被作为 onset 时间、峰选择排除首尾以及不足窗或 hop 的尾部被丢弃；原基准及上述 FAIL 保持不变
+
+同库公开的能量差检测 API 加入端点和尾块处理后，64/128 帧 hop 两种配置均通过原 10 声道门槛，以及独立相位扫描、低幅度和 partial-hop 尾部控制；但持续正弦与噪声产生大量额外峰，单样本和恒定电平控制也有失败，因此仍未准入生产 MIR。参数、90 项逐例矩阵、软件检查与报告身份见 [固定观察](../testdata/synthetic/mir-onset-diagnostic/observations-20261003.json)，工具最终退出 1 并报告整体质量 FAIL

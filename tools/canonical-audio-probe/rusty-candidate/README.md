@@ -37,3 +37,9 @@ tools/canonical-audio-probe/rusty-candidate/target/release/cocobeat-rusty-candid
 - 项目解码器完整回读后的采样率必须是48 kHz，media计数与回调实际计数必须都等于重采样帧数，全部PCM必须有限；源文件处理前后的 SHA256 必须相同
 
 官方副本、Apache许可、逐文件身份与唯一函数补丁见 [UPSTREAM.md](UPSTREAM.md)、[upstream.json](upstream.json) 和 [patches/max-abs-coupling.patch](patches/max-abs-coupling.patch)；manifest只在本独立工具引用 patched vendor，现有 published probe 及产品编码器未切换
+
+## 有限超范围诊断
+
+`python3 -B tools/canonical-audio-probe/rusty-candidate/domain_probe.py <candidate-binary> <new-output-dir>` 在新目录复制入口，将范围检查仅改为有限性检查，保留原 vendor，并独立构建诊断 binary；正式入口的 `[-1,1]` guard 保持不变
+
+脚本需要 Linux、Rust/Cargo、Python、GNU timeout 和 FFmpeg；FFmpeg 仅作独立解码参照，三个短合成输入不裁幅或归一化，每次编码及解码限 30 秒和 2 GiB，记录完整帧数、有限性、Ogg CRC、双路差、同位置 SNR、首尾 512 帧能量及资源；结果仅为有限案例诊断，不代表任意有限幅度、真实音乐或听感准入

@@ -139,6 +139,36 @@ fn source_errors_and_supported_media_outside_encoder_domain_cannot_pass() {
 }
 
 #[test]
+fn in_range_source_can_resample_outside_encoder_domain_without_becoming_invalid_media() {
+    let scratch = Scratch::new();
+    for rate in [44_100, 96_000] {
+        let source = scratch.0.join(format!("{rate}.wav"));
+        let samples: Vec<_> = (0..rate / 10)
+            .map(|i| if i < rate / 20 { -0.9979248 } else { 0.9979248 })
+            .collect();
+        wav(&source, rate, 1, &samples);
+        let mut peak = 0.0_f32;
+        let result = resample_source(&source, |frames| {
+            for value in frames.iter().flatten() {
+                peak = peak.max(value.abs());
+            }
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(result.output_frames, 4800);
+        assert!(peak > 1.0, "expected finite sinc overshoot, got {peak}");
+        let output = scratch.0.join(format!("{rate}-output"));
+        assert!(
+            run(&source, &output)
+                .unwrap_err()
+                .contains("unsupported input domain")
+        );
+        assert_eq!(report(&output)["result"]["status"], "FAIL");
+        assert!(!output.join("canonical.ogg").exists());
+    }
+}
+
+#[test]
 fn existing_output_is_preserved_and_consumer_readback_errors_propagate() {
     let scratch = Scratch::new();
     let sentinel = scratch.0.join("sentinel");

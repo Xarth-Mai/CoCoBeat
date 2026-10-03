@@ -1,0 +1,370 @@
+{
+  "status": "PASS_LIMITED_DOMAIN_DIAGNOSTIC_NOT_ADMITTED",
+  "date": "2026-10-03",
+  "scope": "Three synthetic Linux x86_64 cases only, no clipping, normalization or gain/time alignment; same upstream max-abs coupling patch; regular candidate guard and product unchanged",
+  "diagnostic_change": "Scratch main.rs changes only amplitude guard to finite-only plus diagnostic identity, status and comments; vendor unchanged",
+  "run_command": "CARGO_TARGET_DIR=/tmp/cocobeat-domain-ignored-target python3 -B tools/canonical-audio-probe/rusty-candidate/domain_probe.py target/rusty-candidate-build/release/cocobeat-rusty-candidate target/media-finite-domain-final-20261003",
+  "evidence_directory": "target/media-finite-domain-final-20261003",
+  "existing_environment_target_created": false,
+  "software_gate": "exact independently calculated resampled and dual-readback frame counts, finite PCM, 48k/stereo, Ogg CRC and EOS, dual-decoder same-position maximum difference <=1e-6; no new quality gate",
+  "quality_boundary": "SNR, overs and head/tail measurements are observations; no real music, listening, arbitrary finite-domain or production admission",
+  "next_step": "Derive an actual High-kernel L1 bound for supported source rates and bounded source amplitude, verify reachable sign-kernel worst cases, then check encoder numerical and quality behavior; the observed 1.16 peak is not a new guard",
+  "cases": [
+    {
+      "name": "step-44100",
+      "source_rate": 44100,
+      "source_peak": 0.9979248046875,
+      "source_frames": 4410,
+      "guarded_exit": 1,
+      "guarded_canonical_ogg_exists": false,
+      "status": "PASS_LIMITED_DOMAIN_DIAGNOSTIC",
+      "resampled": {
+        "frames": 4800,
+        "non_finite": 0,
+        "overs": [
+          68,
+          68
+        ],
+        "peak": [
+          1.1472744941711426,
+          1.1472744941711426
+        ]
+      },
+      "decoded": {
+        "frames": 4800,
+        "non_finite": 0,
+        "overs": [
+          3217,
+          3217
+        ],
+        "peak": [
+          1.1297518014907837,
+          1.1297518014907837
+        ]
+      },
+      "snr_db_same_position": [
+        28.761340803918714,
+        28.761340803918714
+      ],
+      "dual_decoder_max_abs_difference": 4.76837158203125e-07,
+      "head_tail_512_frame_observations": {
+        "head": [
+          {
+            "energy_ratio_db": 0.039901955805691704,
+            "same_position_snr_db": 29.730813996247363,
+            "input_peak": 1.049157738685608,
+            "decoded_peak": 1.0541541576385498
+          },
+          {
+            "energy_ratio_db": 0.039901955805691704,
+            "same_position_snr_db": 29.730813996247363,
+            "input_peak": 1.049157738685608,
+            "decoded_peak": 1.0541541576385498
+          }
+        ],
+        "tail": [
+          {
+            "energy_ratio_db": 0.024468600547272113,
+            "same_position_snr_db": 38.417392770294526,
+            "input_peak": 1.0725996494293213,
+            "decoded_peak": 1.0940239429473877
+          },
+          {
+            "energy_ratio_db": 0.024468600547272113,
+            "same_position_snr_db": 38.417392770294526,
+            "input_peak": 1.0725996494293213,
+            "decoded_peak": 1.0940239429473877
+          }
+        ]
+      },
+      "resources": {
+        "elapsed_seconds": 0.010345501999836415,
+        "max_rss_kib": 14744,
+        "user_seconds": 0.006547,
+        "system_seconds": 0.006017
+      },
+      "limits": {
+        "timeout_seconds": 30,
+        "address_space_limit_bytes": 2147483648
+      },
+      "sha256": {
+        "source.wav": "1b0b039cc79ef3c89be54e40758cddaa12be52dfad952ffe69d647f14d478206",
+        "diagnostic/resampled.f32le": "b12a88e9173ab007c4c4ae9ade27ea57ec3a719560b9489bcae4fe09b01ffc78",
+        "diagnostic/canonical.ogg": "1ed55ba325711ec7a32e1ac81cdc951b78a664ac89046c4ef177602dbfcff9aa",
+        "diagnostic/decoded.f32le": "98974cd1c8a462dce5cd44826fce81421766c18971e35c9d4b3e8a56eb070509",
+        "ffmpeg.f32le": "b1faf66a95da55a377ae1bd7f5a8ebf38ab1a6da9e4a034af2dca2fe2b8a0d5d",
+        "diagnostic/report.json": "d3273b72d29571f6c84a0d98a19fa7cc2736f262ed23271695363e161eaab439"
+      },
+      "detailed_result_sha256": "d5116f87b2af7ced83665322049b8288e4e94f7cf6bc8e205debf31fefa281e7"
+    },
+    {
+      "name": "step-96000",
+      "source_rate": 96000,
+      "source_peak": 0.9979248046875,
+      "source_frames": 9600,
+      "guarded_exit": 1,
+      "guarded_canonical_ogg_exists": false,
+      "status": "PASS_LIMITED_DOMAIN_DIAGNOSTIC",
+      "resampled": {
+        "frames": 4800,
+        "non_finite": 0,
+        "overs": [
+          34,
+          34
+        ],
+        "peak": [
+          1.1585336923599243,
+          1.1585336923599243
+        ]
+      },
+      "decoded": {
+        "frames": 4800,
+        "non_finite": 0,
+        "overs": [
+          3145,
+          3145
+        ],
+        "peak": [
+          1.158966302871704,
+          1.158966302871704
+        ]
+      },
+      "snr_db_same_position": [
+        28.70727845797154,
+        28.70727845797154
+      ],
+      "dual_decoder_max_abs_difference": 4.76837158203125e-07,
+      "head_tail_512_frame_observations": {
+        "head": [
+          {
+            "energy_ratio_db": 0.04177781154731647,
+            "same_position_snr_db": 29.751136709009963,
+            "input_peak": 1.078229308128357,
+            "decoded_peak": 1.0488377809524536
+          },
+          {
+            "energy_ratio_db": 0.04177781154731647,
+            "same_position_snr_db": 29.751136709009963,
+            "input_peak": 1.078229308128357,
+            "decoded_peak": 1.0488377809524536
+          }
+        ],
+        "tail": [
+          {
+            "energy_ratio_db": 0.022435724020774102,
+            "same_position_snr_db": 37.28958280142057,
+            "input_peak": 1.050990343093872,
+            "decoded_peak": 1.0529779195785522
+          },
+          {
+            "energy_ratio_db": 0.022435724020774102,
+            "same_position_snr_db": 37.28958280142057,
+            "input_peak": 1.050990343093872,
+            "decoded_peak": 1.0529779195785522
+          }
+        ]
+      },
+      "resources": {
+        "elapsed_seconds": 0.01032537101127673,
+        "max_rss_kib": 16680,
+        "user_seconds": 0.009995,
+        "system_seconds": 0.002546
+      },
+      "limits": {
+        "timeout_seconds": 30,
+        "address_space_limit_bytes": 2147483648
+      },
+      "sha256": {
+        "source.wav": "3db86b3561e1049d53ad85962274c97a0ef251b42a3b974883623479f81063d3",
+        "diagnostic/resampled.f32le": "f1d6b3887ab5a2ed52600898f9276f97eb4822400e5373b7f0d830f10fb6c07d",
+        "diagnostic/canonical.ogg": "0455569ba5f28278ad05bc25a9cfdb39e1ba60b0fb7f1a9a72c57c9384ef5f75",
+        "diagnostic/decoded.f32le": "53fa479d50e1ad39b685a0e4a7530b7f7725a701debd9c8d6971cb59be75787a",
+        "ffmpeg.f32le": "bc7027950a69ac51b579da881d4eebd3eaf2ee0b886827d8e9a2c848edf9d99f",
+        "diagnostic/report.json": "fd15a2ff13f73aa69f7e4520b0c0392a7222c5cfb140e04bc76bbb4e0622dc49"
+      },
+      "detailed_result_sha256": "5de68f6983c02b9693d266c4fb7a1e61f5e2af7f96c4d97ac0fa1c8c29c5d514"
+    },
+    {
+      "name": "sine-48000",
+      "source_rate": 48000,
+      "source_peak": 1.16,
+      "source_frames": 48000,
+      "guarded_exit": 1,
+      "guarded_canonical_ogg_exists": false,
+      "status": "PASS_LIMITED_DOMAIN_DIAGNOSTIC",
+      "resampled": {
+        "frames": 48000,
+        "non_finite": 0,
+        "overs": [
+          16240,
+          18000
+        ],
+        "peak": [
+          1.159999966621399,
+          1.159999966621399
+        ]
+      },
+      "decoded": {
+        "frames": 48000,
+        "non_finite": 0,
+        "overs": [
+          16106,
+          16862
+        ],
+        "peak": [
+          1.2239768505096436,
+          1.2541964054107666
+        ]
+      },
+      "snr_db_same_position": [
+        28.997544328979473,
+        30.7456061846584
+      ],
+      "dual_decoder_max_abs_difference": 4.76837158203125e-07,
+      "head_tail_512_frame_observations": {
+        "head": [
+          {
+            "energy_ratio_db": 0.11763498898931188,
+            "same_position_snr_db": 28.430901725065727,
+            "input_peak": 1.159999966621399,
+            "decoded_peak": 1.2133452892303467
+          },
+          {
+            "energy_ratio_db": -0.09936039103022078,
+            "same_position_snr_db": 25.216233785116884,
+            "input_peak": 1.159999966621399,
+            "decoded_peak": 1.1970032453536987
+          }
+        ],
+        "tail": [
+          {
+            "energy_ratio_db": 0.04336707856715125,
+            "same_position_snr_db": 29.20059963244389,
+            "input_peak": 1.159999966621399,
+            "decoded_peak": 1.1805243492126465
+          },
+          {
+            "energy_ratio_db": 0.19058488472030008,
+            "same_position_snr_db": 26.87866152316948,
+            "input_peak": 1.159999966621399,
+            "decoded_peak": 1.2541964054107666
+          }
+        ]
+      },
+      "resources": {
+        "elapsed_seconds": 0.010880048997933045,
+        "max_rss_kib": 26292,
+        "user_seconds": 0.018111,
+        "system_seconds": 0.008896
+      },
+      "limits": {
+        "timeout_seconds": 30,
+        "address_space_limit_bytes": 2147483648
+      },
+      "sha256": {
+        "source.wav": "c4688888229177d2a3fa94efbaab666ad7138cc603a03cbd35fd6ace866d8ef8",
+        "diagnostic/resampled.f32le": "b0ec37e68551e53cc5be56f204e19df88a91e91148ce8c6c35ab8979df9d9739",
+        "diagnostic/canonical.ogg": "e945fb41a5f12ae4b7de54a0a317ca5a29f730e0a449330dfac9254f19f84dd4",
+        "diagnostic/decoded.f32le": "dc779d088d54b9abb644a23ae570c78695624682fe650da5cafb0ce468323c6b",
+        "ffmpeg.f32le": "1a204eb3a1bbffd15cb933195a2d6fa91301934f431bfaeced57b85888645ecf",
+        "diagnostic/report.json": "c696c25b8c3d6960bb952970a9852181a7f78615fe7ae9ee7065a9012f7714a9"
+      },
+      "detailed_result_sha256": "12ebe8a51a90713754ea978839abe03a799842eeb2a890229fe32b8fc6451109"
+    }
+  ],
+  "source_sha256": {
+    "tools/canonical-audio-probe/rusty-candidate/domain_probe.py": "3a45ba75d835f24585c8d4bb3d27f2c9672c854d3a81065c27178579a57a36e4",
+    "tools/canonical-audio-probe/oxideav/probe.py": "4efdcca22fd7061cc8c0a7ecbc16e8e1567d682fd46c0938dc33c53b47be5836",
+    "Cargo.toml": "4db2245d9799d231c2bafdfa19096d28588b743dd9789bd4d4d78b1f75452f6b",
+    "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.lock": "b6d6f71571e97be00e90349bd4c2f7006fa47eeeaf03c1d5d8d56319e48fd27f",
+    "tools/canonical-audio-probe/rusty-candidate/upstream.json": "ec3f2a6e9465aa1e58c5a3e1fec8ae6d264fa3a588163880376bc1c8acbc14ef",
+    "crates/cocobeat-media/Cargo.toml": "dd0f37fa717e837532ebe0de2ab52972ceeb2ec50d2cfd1ae048f69108aaed77",
+    "crates/cocobeat-media/src/decode.rs": "f8ed6e5807a5fe83000c0b4e32cd5be630c41f97f3b158aa709c102cf3817cc9",
+    "crates/cocobeat-media/src/lib.rs": "80338537c9c7ed7054b060f9a2e537d70b1fccb75e793805d6280bb66d975bed",
+    "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+    "crates/cocobeat-schema/Cargo.toml": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+    "crates/cocobeat-schema/src/gameplay.rs": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+    "crates/cocobeat-schema/src/lib.rs": "6df96a68d005782efc38ec7aa7a27c4d36ba86ee2ed0bfe352dc5c9792f7abe0",
+    "crates/cocobeat-schema/src/time.rs": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/.cargo_vcs_info.json": "5bc292b581c85905869bf7e4e0bf008a81f55f86436a8a60dc7838a39e991f14",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.lock": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml.orig": "7d91bd6dfec49c19bb3d2229df0fbe3cac7eb5c532bdd28f4bff50d0b03d2881",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/LICENSE": "615853bfaaac274883e826894fa8ac2c441e6ff7d23733822b2992b8ea5bfd1a",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/README.md": "acca07b1ed74777bb83c2950ffef8305fc4d55b28833a6bd248ea52d67c77882",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup_q4_stereo.bin": "8dbb400d1883f8e30fd473a66978e934dfd4029393d187050f82e2069ceef7eb"
+  },
+  "binary_and_patch_identity": {
+    "candidate_binary_sha256": "861e726a755d8e2ca2659cfe3001f0b773bdc31aa2b8429df2cbc763ba1a0af7",
+    "diagnostic_binary_sha256": "4f4915ccf688d55c8e9101e1db78157e0a2898cfb1f520d7506ed8e930dfc42a",
+    "diagnostic_source_sha256": "40478c23d71244a80c11d8ced47c3382992832afb6c832b943479b5ed5075b1e",
+    "patch_sha256": "47137472996af2ee4a7458d0fd2acf541da124024a0925e2de40b3454531f9a3"
+  },
+  "upstream_check": {
+    "checked_at_utc": "2026-10-03T04:40:10.018592+00:00",
+    "registry": {
+      "url": "https://crates.io/api/v1/crates/rusty_vorbis",
+      "response_sha256": "50e28552b02e3679aceb8ebf278c17f475078f01388e10424bd77e63e70085ed",
+      "latest": {
+        "max_version": "0.1.1",
+        "newest_version": "0.1.1",
+        "updated_at": "2026-08-01T00:06:11.011081Z",
+        "repository": "https://github.com/Remade-With-Rust/remade_ffmpeg_rs"
+      }
+    },
+    "history": {
+      "url": "https://api.github.com/repos/Remade-With-Rust/remade_ffmpeg_rs/commits?path=crates/rusty_vorbis&per_page=3",
+      "response_sha256": "401f9350c0989452f548749db999bf27d5d98110d7b96dd3a7e3344a28431fec",
+      "commits": [
+        {
+          "sha": "a6947df53b841957146d15751492d80ce5afa71b",
+          "date": "2026-08-01T19:03:46Z",
+          "subject": "chore(publish): crate metadata, version bumps and rusty_png fork"
+        },
+        {
+          "sha": "fcffef4444f9ecf326a8e6e55b00a60ceffb4ad0",
+          "date": "2026-07-29T16:16:13Z",
+          "subject": "separating vorbis"
+        },
+        {
+          "sha": "c4c9df78d05dc14b7ee47ec01024474a0d44aef7",
+          "date": "2026-07-29T16:16:10Z",
+          "subject": "separating vorbis"
+        }
+      ]
+    },
+    "files": {
+      "src/frame.rs": {
+        "url": "https://raw.githubusercontent.com/Remade-With-Rust/remade_ffmpeg_rs/a6947df53b841957146d15751492d80ce5afa71b/crates/rusty_vorbis/src/frame.rs",
+        "sha256": "5e53c8efbfedda59fc10abbe9b309f1c32c597d1b912eb4ed7ea42b7288b74aa"
+      },
+      "src/lib.rs": {
+        "url": "https://raw.githubusercontent.com/Remade-With-Rust/remade_ffmpeg_rs/a6947df53b841957146d15751492d80ce5afa71b/crates/rusty_vorbis/src/lib.rs",
+        "sha256": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59"
+      }
+    }
+  },
+  "validation": {
+    "tests": {
+      "command": "CARGO_TARGET_DIR=target/rusty-candidate-build cargo test --offline --locked --manifest-path tools/canonical-audio-probe/rusty-candidate/Cargo.toml",
+      "passed": 5,
+      "log_sha256": "926801395e309e96b4ddd43410a897a28db6724830655763d43686ac655f2709"
+    },
+    "clippy": {
+      "command": "CARGO_TARGET_DIR=target/rusty-candidate-build cargo clippy --offline --locked --manifest-path tools/canonical-audio-probe/rusty-candidate/Cargo.toml --all-targets -- -D warnings",
+      "exit_code": 0,
+      "log_sha256": "0a8a48aaabdc2283639250a38bebb688c139992f6385f8d0c13e3ec8d9dc72c5"
+    },
+    "independent_review": "29 source hashes, both binaries and all per-case artifact hashes verified; 3 cases unchanged versus first run; Lean already. Ship."
+  },
+  "result_sha256": "fdd53a987326501ced218ff66607b3ee3f8b72e72c7975e4c8587b251b4c3069"
+}

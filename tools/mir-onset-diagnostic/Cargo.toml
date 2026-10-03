@@ -1,0 +1,11 @@
+[package]
+name = "cocobeat-mir-onset-diagnostic"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+oximedia-mir = { version = "0", default-features = false, features = ["beat"] }
+serde_json = "1"
+
+[workspace]
