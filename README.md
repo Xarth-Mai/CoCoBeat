@@ -107,13 +107,13 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>` 将最终 Ogg 有界复制到全新的目录，按实际复制字节记录 BLAKE3 和长度，关闭写入后严格读回其中的 `song.audio.ogg`；原文件保留，已有目录拒绝覆盖。失败只清理本次音频文件和空目录，成功只表示该音频对象已准备，不创建分析、谱面、manifest 或 Ready；源上限仍为 512 MiB 和十分钟
 
-`build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度、手工 Anchor 与段落提示；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与完整舞台组合继续按路线图推进
+`build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度、手工 Anchor 与段落提示；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与完整自动舞台编排继续按路线图推进
 
 `cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)；波形时间线与 Replay 诊断界面仍待后续
 
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
 
-歌曲包的真实分析段落区间生成基础 StagePlan：区间内道路拓宽后收回，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间与距离，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，缓弯、桥和完整自动组合仍待后续
+歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排和跨版本视觉 Replay 仍待后续
 
 `cocobeat-lab inspect-stage <package-dir> <frame>` 完整验证歌曲包后输出内容身份、编译版本、片段数量和该帧的整数毫米采样，帧范围包含 EOF；同一包与编译版本产生相同计划。现有四对象包和 Replay 格式保持，跨舞台编译版本的视觉重放尚未接入；渲染使用固定网格预算，极密段落的细小轮廓近似与软件验证边界见 [包契约](docs/song-package.md)
 

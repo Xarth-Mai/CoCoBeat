@@ -497,6 +497,8 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 
 本批只交付实际可用的编辑内核与 CLI，波形时间线、候选证据界面、Replay JSONL 诊断和正式菜单接线继续按 09 推进；Windows/ARM 原生导出、真实音频/手柄和真人体验尚未由这些结果验收
 
+编辑提交 `64904ac` 随 MIR 研究提交 `695b3a1` 已推送至 main；后者的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37115851761) 通过 60 项 schema/core/replay/media/stage/editor/xtask 测试并恢复缓存，未编译 runtime/GPU。150 项冻结构建输入与编辑提交逐项吻合，交付记录在 `target/editor-runtime-20261003/delivery.json`，SHA-256 `a8b1fe355f3a25bb4023fd343f37046f594d4ba523980a47878789f295c60ee0`
+
 ## MIR 频带分母下限候选
 
 2026-10-03，在既有六频带和局部选峰上，仅加入固定幅值比例 `beta = 0.01` 的分母下限 `max(D, band_bins × beta × local_peak_magnitude)`，复用原 FFT，不增加 PCM、依赖或绝对音量门槛。运行前审查删除了一处重复声明字段后重新冻结，正式[声明](../testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json)、实际执行器断言及原始落盘副本的 SHA-256 均为 `8cdf238f1428af2f1dd9ebda5f4735d98c6b618fdf60fbf35530f5c9236283c3`，参数与输入未在运行后修改
@@ -506,3 +508,22 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 局部分母改变也会改变极值位置，kick 出现的 21 个新坐标已明确记录，未把新预测伪称旧候选子集；新增两次漏检来自持续音内部假峰不再被容差误配到首帧。三个旧基线的 51,158 窗、四路 Matcher 及输入身份完整复现，独立 f64 FFT 的全部 34 项新预测列表一致；有实际 floor 生效的持续音窄测还核对共同增益缩放与 E 不增性质
 
 正式运行命令见 `target/mir-band-floor-20261003/execution.json`，软件日志为同目录的 `tests-final.log`、`clippy-final.log` 与 `build.log`；实际工具 SHA-256 为 `b20305e200311b88c1351c0adb4763c2b9e0bacd38466b3d09a02a3075a0d9f7`；[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-floor-20261003.json) SHA-256 为 `96f85582b251735927937a763467073da6b67164e8ff48da480b6168a3ebd0e8`。独立复算与 ponytail 复审通过，结论为 `Lean already. Ship.`；后续依据剩余噪声与衰减结构加入时间背景门控，同一完整矩阵继续评分，真实音乐、编码回读、标签与生产 MusicAnalysis 不因这批软件结果获得验收
+
+
+## 缓弯、低桥与同一轨道上的预告
+
+2026-10-03，StageCompiler v2 已将真实手工包接入直道 / 广场 / 缓弯 / 低桥、两个固定装饰拱门与实际终点。长分析区间按时长固定编排，整数位置和切线由 SongTime 决定，镜头朝向保持固定；没有从区间标签推断音乐强度、生成新 Anchor 或改变规则输入
+
+初版冻结源码执行 `cargo test --locked --offline -p cocobeat-stage -p cocobeat-runtime -p cocobeat-lab -p xtask`，121 项通过，包含 runtime 106、stage 5、lab 6、xtask 4；全 workspace Clippy、格式、边界与 game/lab 构建通过。独立 Bernstein 有理数参考的 10,080 组采样、60,480 字段吻合；极值、奇数拆分、十分钟 / 100,000 项混合区间和整数边界均有证据
+
+ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两个拱门实例，257 行截面保留曲首 / EOF 及长特征边界；桥体三角不越出真实 Bridge，负预滚与越 EOF 的显示游标冻结到合法端点。地面、Anchor、cue、终点和背景共享同一中心线，画质 / Resonance 不改变关键几何。反馈环、街标和湿地细节的实际变换顶点与路面三角插值比较，包含管厚和最大反馈半径，18 个桥坡 / 接缝时刻保持至少 2 mm 净空
+
+初版 41 项真实包 CPU 检查通过，其中 39 个独立 Fraction 采样覆盖接缝前后 1 帧、改谱、空 / 短 / gap 包与十分钟 EOF，另两项拒绝歌曲范围外的预览。14 张初版 GPU 图自动检查通过，但目检发现 20 秒装饰拱顶遮住前方 cue 横梁，因此本批没有直接按自动 PASS 交付；初版图和失败目检保留在 `target/stage-v2-runtime-20261003/visual-review-initial.json`
+
+修复仅将既有拱门竖向比例从 4.1 调到 5.2，保留脚柱、横向位置、资源数和音乐时刻；最终源码重新通过 5 项场景窄测、Clippy、格式和构建。最终 16 张 GPU 图通过自动核对及目检，含 14 张原矩阵补验和两张定向图：一张令桥顶、cue 与真实 Anchor 同指 20 秒，另一张在 22 秒同时显示下坡、24 秒 cue 和 26 秒 Anchor，三者均可辨认；Precise / Good 光环完整且强度有别，低 / 中 / 高 / off、小窗与 DPI 样例均保留
+
+两种无参数开发画面与上一版冻结程序逐像素及 PNG 字节相同，旧、新程序加载相同包的 core Replay 输出相同；合计 42 个 CPU 用例、43 条 CPU 产品命令，跨舞台版本视觉 Replay 仍未实现。最后仅拱门高度与注释发生源码变化，原 39 项整数采样和两项拒绝仍明确绑定初版二进制，不将它们冒记为最终二进制重新执行
+
+最终 game SHA-256 为 `457f7d22d1ae94ef9801f16e2507ac2a50d17d950ff44112af9e715cbec07091`，lab 为 `f1e1e93d0fa22bdb96159cb935c603bfab4c471f5b76416c64b3f2f80dfe0a5e`，150 个构建输入前后相同；命令、日志与源码身份在 `target/stage-v2-runtime-20261003/validation.json`，SHA-256 `b41967b0ff2e5ec4dc072a38a774d1dde114b228a5d7c507a7e336878955b23c`。首次测试编译的 Children 迭代及 i64 推断失败也保留；本批没有新增第三方版本、图像或音频素材
+
+上述结果证明这批软件与静态场景行为，尚未验收真实手柄 / 音频、Windows / ARM 运行、设备帧时间、真人动晕 / 音乐预期、自动音乐编排或带版本的视觉 Replay；完整项目与 08 的退出继续保留这些条件

@@ -1,6 +1,6 @@
 # 初始 SongPackage 契约
 
-当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建、校验和 Anchor 编辑导出，lab 入口为 `build-authored-package`、`verify-package` 与 `edit-anchors`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，并从真实分析区间编译直道 / 广场 StagePlan，仍未接入自动 MIR、AnchorCompiler、完整 StageCompiler 或生产编码器
+当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建、校验和 Anchor 编辑导出，lab 入口为 `build-authored-package`、`verify-package` 与 `edit-anchors`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，并从真实分析区间编译直道 / 广场 / 缓弯 / 低桥 StagePlan，仍未接入自动 MIR、AnchorCompiler、完整 StageCompiler 或生产编码器
 
 字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，运行时适配见 [runtime/content.rs](../crates/cocobeat-runtime/src/content.rs)，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
 
@@ -126,27 +126,33 @@ runtime 在创建游戏和音频输出前完成 `media::read_package`，检查�
 
 开发歌曲在代码中保留与现有 authoring 一致的六个固定 cue：0、8、24、40、48、60 秒，生产启动不读取 authoring JSON，且继续使用没有 StagePlan 的原手写场景；歌曲包的分析区间已驱动下述地面计划，`energy` 尚未驱动场景，这不等于完整自动音乐分析与舞台编译管线
 
-指定整数帧的无音频预览入口为 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG`；`FRAME` 接受 `0..=canonical_frames`，EOF 用于观察提示清空和终点，`CODE` 必须是已支持的完整语言代码，`PRESET` 为 `low`、`medium`、`high` 或 `off`，宽高使用物理像素，`SCALE` 为 DPI 缩放；预览复用生产 cue 查询和地面计划并输出 PNG 与 `CONTENT_SAMPLE` 状态，其中 `stage` 子对象包含编译版本、片段数、采样帧、类型、距离、半宽和 `at_end`，完整内容身份保留在外层，不代替音频或物理输入验收
+指定整数帧的无音频预览入口为 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG`；`FRAME` 接受 `0..=canonical_frames`，EOF 用于观察提示清空和终点，`CODE` 必须是已支持的完整语言代码，`PRESET` 为 `low`、`medium`、`high` 或 `off`，宽高使用物理像素，`SCALE` 为 DPI 缩放；预览复用生产 cue 查询和地面计划并输出 PNG 与 `CONTENT_SAMPLE` 状态，其中 `stage` 子对象包含编译版本、片段数、采样帧、类型、距离、半宽、侧向位移、抬升、两个切线分量和 `at_end`，完整内容身份保留在外层，不代替音频或物理输入验收
 
 ```sh
 cargo run --locked -p cocobeat-game -- --package /path/to/song-package --section-smoke 0 en-US high 1280 720 1 /path/to/section.png
 ```
 
+歌曲包的坡面反馈预览使用 `--package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG`，`EFFECT` 沿用 `local/free/anchor/anchor-good/miss/approach`；复用同一包加载、场景和反馈材质，输出 `CONTENT_SAMPLE` 与 `FEEDBACK_SAMPLE`，`approach` 使用包内真实下一 Anchor。此入口是固定状态取帧，不模拟音频或真实玩家输入
+
 ## 内存 StagePlan 与整数采样
 
-[cocobeat-stage](../crates/cocobeat-stage/src/lib.rs) 的 `compile(content_id, end, sections)` 消费真实 `analysis.sections`，每个合法区间生成 Plaza，首尾和区间之间的空隙生成 Straight，空分析列表生成一条全曲 Straight；输出非空、有序、连续覆盖 `[0, end)` 的片段，最多从 N 个区间生成 `2N + 1` 个片段，拒绝超限、倒序、重叠和越界输入，不按 chart cue 补区间，也不使用标签或置信度来选择几何
+[cocobeat-stage](../crates/cocobeat-stage/src/lib.rs) 的 `compile(content_id, end, sections)` 消费真实 `analysis.sections`，短于 16 秒的合法区间生成 Plaza，至少 16 秒的区间以前半段 Curve、后半段 Bridge 编排，奇数帧中点向下取整；首尾和区间之间的空隙生成 Straight，空分析列表生成一条全曲 Straight；输出非空、有序、连续覆盖 `[0, end)` 的片段，最多从 N 个区间生成 `2N + 1 + min(N, floor(end_frames / 768000))` 个片段，拒绝超限、倒序、重叠和越界输入，不按 chart cue 补区间，也不使用标签或置信度来选择几何
 
 计划的 `sample` 接受 `0..=end`，范围外返回无采样；纵向距离为 `floor(frame / 16)` 毫米，对应 48 kHz 下 3 m/s，基础半宽为 3500 mm；Plaza 的名义峰值为 `peak = min(500, floor(duration_frames / 32))` 毫米，额外半宽为 `floor(2 × peak × min(elapsed, duration_frames - elapsed) / duration_frames)`，形成对称三角拓宽，首尾回到基础宽度，奇数帧区间的整数中点不保证达到名义峰值，少于 32 帧的区间保持基础宽度
 
-EOF 采样保留最后片段的类型、返回基础半宽和实际结束距离；包加载在创建游戏及音频输出前编译一次，并以 `Arc<StagePlan>` 共享，重开不重编译，计划身份绑定完整 `package-blake3:<64 个十六进制字符>` 与 `compiler_version = 1`
+Curve 侧向峰值为 600 mm，Bridge 抬升峰值为 300 mm，基础半宽保持 3500 mm；两者使用 `16 × A × u² × (1-u)²`，其中 `u` 是片段内的归一化时间，位置与斜率 ppm 用 i128 有理数计算，最近整数舍入、半值远离零；解析中心线在端点位置和一阶导数均回到零，毫米 / ppm 输出仍是整数台阶，Plaza 路宽仍是分段线性，纵向距离没有替换成弧长
+
+EOF 采样保留最后片段的类型、返回基础半宽、零位移 / 坡度和实际结束距离；包加载在创建游戏及音频输出前编译一次，并以 `Arc<StagePlan>` 共享，重开不重编译，计划身份绑定完整 `package-blake3:<64 个十六进制字符>` 与 `compiler_version = 2`
 
 StagePlan 是由包派生的内存对象，不是第五个包文件，四对象 content v1 与 Replay v1 保持原格式；相同内容和编译版本的计划与整数采样可复现，现有 Replay 没有舞台编译版本选择器，规则回放成功不代表跨版本视觉重放已实现
 
-runtime 固定复用五个动态网格，分别表示路面、两侧地面和两条路缘，终点另用地面标线表示；窗口为当前显示位置前 42 m、后 12 m，最多 257 个横断面，先铺 64 条基础条带，预算足够时补入可见片段的起点 / 中点 / 终点，预算不足则保留基础采样，窗口内的帧 0 与 EOF 始终保留；极密段落的视觉几何是有限采样近似，不能据整数计划确定性声称每个短片段的轮廓完全精确
+runtime 固定复用九个动态网格：路面、两侧地面、两条路缘，以及只在 Bridge 区间绘制的两面桥侧墙和两条低护栏；另有两个固定霓虹拱门实例，终点仍为地面标线。窗口为当前显示位置前 42 m、后 12 m，最多 257 个横断面，64 条基础条带、歌曲首尾和可见 Curve / Bridge 的起点 / 中点 / 终点优先保留，剩余预算才补短 Plaza 截面；极密短段按基础采样近似，完整 StagePlan 保留，实体和网格数量不随段落数增长
+
+地面、标线、Anchor、cue 和拱门按同一当前 / 目标整数采样计算三轴相对位置，镜头保持固定朝向，角色仍位于中心两侧；桥坡上的反馈环随坡面倾斜，共享环在包场景固定抬高 12 cm 以跨过曲率，Precise / Good 保持相同运动时长及各自强度。建筑内侧退到至少 5.7 m，避免弯道路肩穿入近景；拱门是低亮装饰，不产生 Anchor 或判定
 
 窗口在歌曲范围外延伸的地面按基础宽度绘制，只作场景衬底，不增加可演奏帧或 Hit；地面、标线与终点的显示游标夹到 `0..=end`，原始 Session 时间和预告有效性判断保持原样，Anchor / cue 的四秒 / 六秒窗口不变；画质与 Resonance 不修改计划或关键采样，品牌 Ready、手柄组合、输入门控和音频生命周期沿用现有流程
 
-lab 的 `inspect-stage PACKAGE FRAME` 先完整验证包，再输出一行稳定 JSON，字段为 `content_id`、`compiler_version`、`segment_count`、`end_frames`、`frame`、`kind`、`distance_mm`、`half_width_mm`、`at_end`；`FRAME` 是 `0..=canonical_frames` 的整数，`kind` 为 `straight` 或 `plaza`，结果不含机器路径、当前时间或音频字节，入口见 [lab/stage.rs](../tools/cocobeat-lab/src/stage.rs)
+lab 的 `inspect-stage PACKAGE FRAME` 先完整验证包，再输出一行稳定 JSON，字段为 `content_id`、`compiler_version`、`segment_count`、`end_frames`、`frame`、`kind`、`distance_mm`、`half_width_mm`、`lateral_mm`、`elevation_mm`、`slope_x_ppm`、`slope_y_ppm`、`at_end`；`FRAME` 是 `0..=canonical_frames` 的整数，`kind` 为 `straight`、`plaza`、`curve` 或 `bridge`，结果不含机器路径、当前时间或音频字节，入口见 [lab/stage.rs](../tools/cocobeat-lab/src/stage.rs)
 
 ```sh
 cargo run --locked -p cocobeat-lab -- inspect-stage /path/to/song-package 0
@@ -170,4 +176,4 @@ Rust 入口为 `build_package(source_audio, expected_frames, destination, build_
 
 包格式验证成功只证明当前初始契约及最终音频结构通过，不等于编码音质、seek、设备兼容、真人听感或游戏内曲库导入流程已通过；编码候选的独立状态继续见 [canonical 音频实验](canonical-audio-probe.md)
 
-[06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 已有手工区间派生的直道 / 广场与终点，缓弯、桥、完整几何组合和跨版本视觉重放仍待后续，当前包没有持久化舞台对象
+[06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 已有手工区间派生的直道 / 广场 / 缓弯 / 低桥、霓虹拱门和终点，完整自动编排、真人预告可读性和跨版本视觉重放仍待后续，当前包没有持久化舞台对象

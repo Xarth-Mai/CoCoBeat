@@ -32,9 +32,15 @@ pub fn inspect(path: &Path, frame: &str) -> Result<(), String> {
             "kind": match sample.kind {
                 SegmentKind::Straight => "straight",
                 SegmentKind::Plaza => "plaza",
+                SegmentKind::Curve => "curve",
+                SegmentKind::Bridge => "bridge",
             },
             "distance_mm": sample.distance_mm,
             "half_width_mm": sample.half_width_mm,
+            "lateral_mm": sample.lateral_mm,
+            "elevation_mm": sample.elevation_mm,
+            "slope_x_ppm": sample.slope_x_ppm,
+            "slope_y_ppm": sample.slope_y_ppm,
             "at_end": frame == plan.end().frames(),
         })
     );

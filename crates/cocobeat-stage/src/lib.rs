@@ -1,13 +1,17 @@
 //! Deterministic song-time geometry, independent of rendering and music judgement
 
 use cocobeat_schema::{
-    MAX_CANONICAL_FRAMES, MAX_CONTENT_ITEMS, MAX_CONTENT_TEXT_BYTES, SectionFeature, SongTime,
+    CANONICAL_SAMPLE_RATE, MAX_CANONICAL_FRAMES, MAX_CONTENT_ITEMS, MAX_CONTENT_TEXT_BYTES,
+    SectionFeature, SongTime,
 };
 
-pub const COMPILER_VERSION: u32 = 1;
+pub const COMPILER_VERSION: u32 = 2;
 pub const BASE_HALF_WIDTH_MM: i64 = 3_500;
 const MAX_PLAZA_EXPANSION_MM: i64 = 500;
 const FRAMES_PER_MM: i64 = 16;
+const LONG_SECTION_FRAMES: i64 = 16 * CANONICAL_SAMPLE_RATE as i64;
+const CURVE_OFFSET_MM: i64 = 600;
+const BRIDGE_HEIGHT_MM: i64 = 300;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StagePlan {
@@ -27,12 +31,18 @@ pub struct TrackSegment {
 pub enum SegmentKind {
     Straight,
     Plaza,
+    Curve,
+    Bridge,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct TrackSample {
     pub distance_mm: i64,
     pub half_width_mm: i64,
+    pub lateral_mm: i64,
+    pub elevation_mm: i64,
+    pub slope_x_ppm: i64,
+    pub slope_y_ppm: i64,
     pub kind: SegmentKind,
 }
 
@@ -52,7 +62,10 @@ pub fn compile(
         return Err("Stage section count exceeds the content item limit".into());
     }
 
-    let mut segments = Vec::with_capacity(sections.len() * 2 + 1);
+    let max_long_sections = sections
+        .len()
+        .min((end.frames() / LONG_SECTION_FRAMES) as usize);
+    let mut segments = Vec::with_capacity(sections.len() * 2 + 1 + max_long_sections);
     let mut through = SongTime::ZERO;
     for section in sections {
         if section.start < through || section.end <= section.start || section.end > end {
@@ -68,11 +81,26 @@ pub fn compile(
                 kind: SegmentKind::Straight,
             });
         }
-        segments.push(TrackSegment {
-            start: section.start,
-            end: section.end,
-            kind: SegmentKind::Plaza,
-        });
+        let duration = section.end.frames() - section.start.frames();
+        if duration >= LONG_SECTION_FRAMES {
+            let middle = SongTime::from_frames(section.start.frames() + duration / 2);
+            segments.push(TrackSegment {
+                start: section.start,
+                end: middle,
+                kind: SegmentKind::Curve,
+            });
+            segments.push(TrackSegment {
+                start: middle,
+                end: section.end,
+                kind: SegmentKind::Bridge,
+            });
+        } else {
+            segments.push(TrackSegment {
+                start: section.start,
+                end: section.end,
+                kind: SegmentKind::Plaza,
+            });
+        }
         through = section.end;
     }
     if through < end {
@@ -106,30 +134,59 @@ impl StagePlan {
         &self.segments
     }
 
-    /// Sample closed song bounds; the end retains the last kind at base width
-    /// Distances and symmetric linear expansion both round down to millimetres
+    /// Sample closed song bounds; the end retains the last kind at base width and zero offset
+    /// Forward-axis distance and plaza width round down; offsets and slopes round to nearest,
+    /// with exact halves away from zero
     pub fn sample(&self, time: SongTime) -> Option<TrackSample> {
         if time < SongTime::ZERO || time > self.end {
             return None;
         }
         let index = self.segments.partition_point(|segment| segment.end <= time);
         let segment = &self.segments[index.min(self.segments.len() - 1)];
-        let expansion = match segment.kind {
-            SegmentKind::Straight => 0,
+        let duration = segment.end.frames() - segment.start.frames();
+        let elapsed = time.frames() - segment.start.frames();
+        let mut sample = TrackSample {
+            distance_mm: time.frames() / FRAMES_PER_MM,
+            half_width_mm: BASE_HALF_WIDTH_MM,
+            lateral_mm: 0,
+            elevation_mm: 0,
+            slope_x_ppm: 0,
+            slope_y_ppm: 0,
+            kind: segment.kind,
+        };
+        match segment.kind {
+            SegmentKind::Straight => {}
             SegmentKind::Plaza => {
-                let duration = segment.end.frames() - segment.start.frames();
-                let elapsed = time.frames() - segment.start.frames();
                 // Limit short sections to one millimetre of width per millimetre of travel
                 let peak = MAX_PLAZA_EXPANSION_MM.min(duration / (2 * FRAMES_PER_MM));
-                2 * peak * elapsed.min(duration - elapsed) / duration
+                sample.half_width_mm += 2 * peak * elapsed.min(duration - elapsed) / duration;
             }
-        };
-        Some(TrackSample {
-            distance_mm: time.frames() / FRAMES_PER_MM,
-            half_width_mm: BASE_HALF_WIDTH_MM + expansion,
-            kind: segment.kind,
-        })
+            SegmentKind::Curve => {
+                (sample.lateral_mm, sample.slope_x_ppm) = bump(elapsed, duration, CURVE_OFFSET_MM);
+            }
+            SegmentKind::Bridge => {
+                (sample.elevation_mm, sample.slope_y_ppm) =
+                    bump(elapsed, duration, BRIDGE_HEIGHT_MM);
+            }
+        }
+        Some(sample)
     }
+}
+
+// The quartic and its derivative vanish at both ends, joining each centreline without a kink
+fn bump(elapsed: i64, duration: i64, amplitude: i64) -> (i64, i64) {
+    let n = i128::from(elapsed);
+    let d = i128::from(duration);
+    let a = i128::from(amplitude);
+    let denominator = d.pow(4);
+    (
+        round_ratio(16 * a * n.pow(2) * (d - n).pow(2), denominator),
+        round_ratio(512 * a * n * (d - n) * (d - 2 * n) * 1_000_000, denominator),
+    )
+}
+
+fn round_ratio(numerator: i128, denominator: i128) -> i64 {
+    ((numerator + numerator.signum() * (denominator / 2)) / denominator) as i64
 }
 
 #[cfg(test)]
@@ -157,7 +214,7 @@ mod tests {
         assert_eq!(plan, compile("package-a", end, &sections).unwrap());
         assert_eq!(plan.content_id(), "package-a");
         assert_eq!(plan.end(), end);
-        assert_eq!(plan.compiler_version(), 1);
+        assert_eq!(plan.compiler_version(), 2);
         assert_eq!(
             plan.segments()
                 .iter()
@@ -188,6 +245,10 @@ mod tests {
             let expected = Some(TrackSample {
                 distance_mm: distance,
                 half_width_mm: width,
+                lateral_mm: 0,
+                elevation_mm: 0,
+                slope_x_ppm: 0,
+                slope_y_ppm: 0,
                 kind,
             });
             assert_eq!(plan.sample(SongTime::from_frames(frame)), expected);
@@ -237,9 +298,202 @@ mod tests {
             Some(TrackSample {
                 distance_mm: 1_800_000,
                 half_width_mm: 3_500,
+                lateral_mm: 0,
+                elevation_mm: 0,
+                slope_x_ppm: 0,
+                slope_y_ppm: 0,
                 kind: SegmentKind::Straight,
             })
         );
+    }
+
+    #[test]
+    fn curve_and_bridge_match_rational_reference_and_join_flat() {
+        // Exact Bernstein-basis reference: position controls [0, 0, 8A/3, 0, 0],
+        // derivative controls [0, 32A/3, -32A/3, 0] scaled by 16e6 / duration
+        for (duration, frame, x, slope_x, y, slope_y) in [
+            (384_000, 0, 0, 0, 0, 0),
+            (384_000, 1, 0, 2, 0, 1),
+            (384_000, 96_000, 338, 75_000, 169, 37_500),
+            (384_000, 192_000, 600, 0, 300, 0),
+            (384_000, 288_000, 338, -75_000, 169, -37_500),
+            (384_000, 383_999, 0, -2, 0, -1),
+            (384_000, 384_000, 0, 0, 0, 0),
+            (384_001, 96_000, 337, 75_000, 169, 37_500),
+            (384_001, 192_000, 600, 1, 300, 0),
+            (384_001, 192_001, 600, -1, 300, 0),
+            (384_001, 288_001, 337, -75_000, 169, -37_500),
+            (1_024_000, 256_000, 338, 28_125, 169, 14_063),
+            (1_024_000, 768_000, 338, -28_125, 169, -14_063),
+            (2_048_000, 512_000, 338, 14_063, 169, 7_031),
+            (2_048_000, 1_536_000, 338, -14_063, 169, -7_031),
+            (14_400_000, 0, 0, 0, 0, 0),
+            (14_400_000, 1, 0, 0, 0, 0),
+            (14_400_000, 3_600_000, 338, 2_000, 169, 1_000),
+            (14_400_000, 7_200_000, 600, 0, 300, 0),
+            (14_400_000, 10_800_000, 338, -2_000, 169, -1_000),
+            (14_400_000, 14_399_999, 0, 0, 0, 0),
+            (14_400_000, 14_400_000, 0, 0, 0, 0),
+        ] {
+            let end = SongTime::from_frames(2 * duration);
+            let plan = compile("reference", end, &[section(0, 2 * duration)]).unwrap();
+            let curve = plan.sample(SongTime::from_frames(frame)).unwrap();
+            let bridge = plan
+                .sample(SongTime::from_frames(duration + frame))
+                .unwrap();
+            assert_eq!(
+                (
+                    curve.lateral_mm,
+                    curve.elevation_mm,
+                    curve.slope_x_ppm,
+                    curve.slope_y_ppm
+                ),
+                (x, 0, slope_x, 0),
+                "curve d={duration} n={frame}",
+            );
+            assert_eq!(
+                (
+                    bridge.lateral_mm,
+                    bridge.elevation_mm,
+                    bridge.slope_x_ppm,
+                    bridge.slope_y_ppm
+                ),
+                (0, y, 0, slope_y),
+                "bridge d={duration} n={frame}",
+            );
+            assert_eq!(curve.half_width_mm, 3_500);
+            assert_eq!(bridge.half_width_mm, 3_500);
+            assert_eq!(bridge.kind, SegmentKind::Bridge);
+        }
+
+        for (numerator, denominator, expected) in [
+            (-5, 2, -3),
+            (-3, 2, -2),
+            (-1, 2, -1),
+            (-499, 1_000, 0),
+            (0, 1, 0),
+            (499, 1_000, 0),
+            (1, 2, 1),
+            (3, 2, 2),
+            (5, 2, 3),
+            (-1, 3, 0),
+            (-2, 3, -1),
+            (1, 3, 0),
+            (2, 3, 1),
+        ] {
+            assert_eq!(round_ratio(numerator, denominator), expected);
+        }
+
+        // Bound every intermediate product, even without using n(d-n) <= d²/4
+        let d = i128::from(MAX_CANONICAL_FRAMES / 2);
+        let denominator = d.pow(4);
+        let position_bound = (16 * 600_i128).checked_mul(denominator).unwrap();
+        let slope_bound = (512 * 600_i128 * 1_000_000).checked_mul(d.pow(3)).unwrap();
+        assert_eq!(position_bound, 412_782_428_160_000_000_000_000_000_000_000);
+        assert_eq!(slope_bound, 917_294_284_800_000_000_000_000_000_000_000);
+        assert!(position_bound.checked_add(denominator / 2).is_some());
+        assert!(slope_bound.checked_add(denominator / 2).is_some());
+
+        let plan = compile(
+            "shortest-features",
+            SongTime::from_frames(768_000),
+            &[section(0, 768_000)],
+        )
+        .unwrap();
+        let mut previous = plan.sample(SongTime::ZERO).unwrap();
+        let mut maxima = (0, 0);
+        for frame in 1..=768_000 {
+            let sample = plan.sample(SongTime::from_frames(frame)).unwrap();
+            assert!((sample.lateral_mm - previous.lateral_mm).abs() <= 1);
+            assert!((sample.elevation_mm - previous.elevation_mm).abs() <= 1);
+            maxima.0 = maxima.0.max(sample.slope_x_ppm.abs());
+            maxima.1 = maxima.1.max(sample.slope_y_ppm.abs());
+            previous = sample;
+        }
+        assert_eq!(maxima, (76_980, 38_490));
+    }
+
+    #[test]
+    fn thresholds_odd_split_and_dense_mixed_sections_keep_bounded_coverage() {
+        let sections = [
+            section(0, 767_999),
+            section(768_002, 1_536_002),
+            section(1_536_002, 2_304_003),
+            section(2_304_003, 2_304_004),
+        ];
+        let end = SongTime::from_frames(2_304_020);
+        let plan = compile("thresholds", end, &sections).unwrap();
+        assert_eq!(
+            plan.segments()
+                .iter()
+                .map(|s| (s.start.frames(), s.end.frames(), s.kind))
+                .collect::<Vec<_>>(),
+            [
+                (0, 767_999, SegmentKind::Plaza),
+                (767_999, 768_002, SegmentKind::Straight),
+                (768_002, 1_152_002, SegmentKind::Curve),
+                (1_152_002, 1_536_002, SegmentKind::Bridge),
+                (1_536_002, 1_920_002, SegmentKind::Curve),
+                (1_920_002, 2_304_003, SegmentKind::Bridge),
+                (2_304_003, 2_304_004, SegmentKind::Plaza),
+                (2_304_004, 2_304_020, SegmentKind::Straight),
+            ],
+        );
+        let mut relabelled = sections;
+        for section in &mut relabelled {
+            section.label = "no inferred musical meaning".into();
+            section.confidence = Some(0.75);
+        }
+        let relabelled = compile("other-identity", end, &relabelled).unwrap();
+        assert_eq!(plan.segments(), relabelled.segments());
+        for segment in plan.segments() {
+            let midpoint =
+                SongTime::from_frames((segment.start.frames() + segment.end.frames()) / 2);
+            assert_eq!(plan.sample(midpoint), relabelled.sample(midpoint));
+        }
+
+        let short_count = MAX_CONTENT_ITEMS - 37;
+        let mut sections: Vec<_> = (0..short_count)
+            .map(|index| section(2 * index as i64 + 1, 2 * index as i64 + 2))
+            .collect();
+        let mut through = 2 * short_count as i64;
+        for _ in 0..37 {
+            sections.push(section(through + 1, through + 1 + 768_000));
+            through += 1 + 768_000;
+        }
+        let end = SongTime::from_frames(MAX_CANONICAL_FRAMES as i64);
+        let plan = compile("maximum-mixed", end, &sections).unwrap();
+        assert_eq!(plan.segments().len(), 2 * MAX_CONTENT_ITEMS + 1 + 37);
+        assert_eq!(plan.segments()[0].start, SongTime::ZERO);
+        assert_eq!(plan.segments().last().unwrap().end, end);
+        assert_eq!(
+            plan.segments()
+                .iter()
+                .filter(|s| matches!(s.kind, SegmentKind::Curve | SegmentKind::Bridge))
+                .count(),
+            74
+        );
+        assert!(
+            plan.segments()
+                .windows(2)
+                .all(|pair| pair[0].end == pair[1].start)
+        );
+        for segment in plan.segments() {
+            assert!(segment.start < segment.end);
+            for time in [segment.start, segment.end] {
+                let sample = plan.sample(time).unwrap();
+                assert_eq!(
+                    (
+                        sample.lateral_mm,
+                        sample.elevation_mm,
+                        sample.slope_x_ppm,
+                        sample.slope_y_ppm
+                    ),
+                    (0, 0, 0, 0)
+                );
+                assert_eq!(sample.half_width_mm, 3_500);
+            }
+        }
     }
 
     #[test]

@@ -51,7 +51,7 @@ enum Phase {
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Smoke {
     Scene,
-    Section(Locale, SongTime, QualitySettings),
+    Section(Locale, SongTime, QualitySettings, Option<FeedbackSmoke>),
     Feedback(FeedbackSmoke, Option<QualitySettings>),
     FeedbackMotion,
     Startup,
@@ -345,26 +345,42 @@ pub fn run() -> ExitCode {
             height,
             scale,
             path,
-        ] if flag == "--package" && smoke == "--section-smoke" => (|| {
-            let (content, _sound) = content::load_package(Path::new(directory))?;
-            let frame = frame
-                .parse::<i64>()
-                .map_err(|_| "Invalid section preview frame")?;
-            if !(0..=content.end.frames()).contains(&frame) {
-                return Err("Section preview frame must lie within the song timeline".into());
-            }
-            let locale = Locale::ALL
-                .into_iter()
-                .find(|locale| locale.code() == code)
-                .ok_or("Unsupported section preview locale")?;
-            let mode = Smoke::Section(locale, SongTime::from_frames(frame), smoke_quality(preset)?);
-            let mut viewport = SmokeViewport::parse(width, height, scale, "0")?;
-            viewport.selection = None;
-            visual_smoke_for_content(PathBuf::from(path), mode, viewport, content)
-        })(),
+        ] if flag == "--package"
+            && matches!(smoke.as_str(), "--section-smoke" | "--feedback-smoke") =>
+        {
+            (|| {
+                let (content, _sound) = content::load_package(Path::new(directory))?;
+                let frame = frame
+                    .parse::<i64>()
+                    .map_err(|_| "Invalid package preview frame")?;
+                if !(0..=content.end.frames()).contains(&frame) {
+                    return Err("Package preview frame must lie within the song timeline".into());
+                }
+                let (locale, feedback) = if smoke == "--feedback-smoke" {
+                    (Locale::EnUs, Some(smoke_feedback(code)?))
+                } else {
+                    (
+                        Locale::ALL
+                            .into_iter()
+                            .find(|locale| locale.code() == code)
+                            .ok_or("Unsupported section preview locale")?,
+                        None,
+                    )
+                };
+                let mode = Smoke::Section(
+                    locale,
+                    SongTime::from_frames(frame),
+                    smoke_quality(preset)?,
+                    feedback,
+                );
+                let mut viewport = SmokeViewport::parse(width, height, scale, "0")?;
+                viewport.selection = None;
+                visual_smoke_for_content(PathBuf::from(path), mode, viewport, content)
+            })()
+        }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -1202,8 +1218,8 @@ fn smoke_quality(preset: &str) -> Result<QualitySettings, String> {
     Ok(quality)
 }
 
-fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, String> {
-    let effect = match effect {
+fn smoke_feedback(effect: &str) -> Result<FeedbackSmoke, String> {
+    Ok(match effect {
         "local" => FeedbackSmoke::Local,
         "free" => FeedbackSmoke::Free,
         "anchor" => FeedbackSmoke::Anchor,
@@ -1211,17 +1227,22 @@ fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, Stri
         "miss" => FeedbackSmoke::Miss,
         "approach" => FeedbackSmoke::Approach,
         _ => return Err(format!("Unsupported feedback sample: {effect}")),
-    };
+    })
+}
+
+fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, String> {
     Ok(Smoke::Feedback(
-        effect,
+        smoke_feedback(effect)?,
         preset.map(smoke_quality).transpose()?,
     ))
 }
 
 fn apply_smoke_visuals(visual: &mut VisualState, mode: Smoke) {
-    if let Smoke::Feedback(effect, _) = mode {
+    if let Smoke::Feedback(effect, _) | Smoke::Section(_, _, _, Some(effect)) = mode {
         reset_feedback(visual);
+        let authored_anchor = (visual.next_anchor_time, visual.next_anchor_seconds);
         visual.next_anchor_seconds = None;
+        visual.next_anchor_time = None;
         match effect {
             FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
             FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
@@ -1230,7 +1251,14 @@ fn apply_smoke_visuals(visual: &mut VisualState, mode: Smoke) {
                 visual.anchor_sync_precise = effect == FeedbackSmoke::Anchor;
             }
             FeedbackSmoke::Miss => visual.miss_pulses = [0.8, 0.0],
-            FeedbackSmoke::Approach => visual.next_anchor_seconds = Some(34.0),
+            FeedbackSmoke::Approach => {
+                visual.next_anchor_seconds = if matches!(mode, Smoke::Section(..)) {
+                    visual.next_anchor_time = authored_anchor.0;
+                    authored_anchor.1
+                } else {
+                    Some(34.0)
+                };
+            }
         }
     }
     if let Smoke::Quality(quality) | Smoke::Feedback(_, Some(quality)) = mode {
@@ -1683,10 +1711,9 @@ fn visual_smoke_for_content(
             ..default()
         }
     };
-    apply_smoke_visuals(&mut app.world_mut().resource_mut::<VisualState>(), mode);
     if matches!(mode, Smoke::Scene | Smoke::Section(..)) {
         let mut visual = app.world_mut().resource_mut::<VisualState>();
-        let time = if let Smoke::Section(locale, time, quality) = mode {
+        let time = if let Smoke::Section(locale, time, quality, _) = mode {
             visual.locale = locale;
             visual.quality = quality;
             reset_feedback(&mut visual);
@@ -1704,7 +1731,11 @@ fn visual_smoke_for_content(
         visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
         update_section_visuals(&content, time, true, &mut visual);
     }
-    if matches!(mode, Smoke::Quality(_) | Smoke::Feedback(_, Some(_))) {
+    apply_smoke_visuals(&mut app.world_mut().resource_mut::<VisualState>(), mode);
+    if matches!(
+        mode,
+        Smoke::Quality(_) | Smoke::Feedback(_, Some(_)) | Smoke::Section(_, _, _, Some(_))
+    ) {
         app.world_mut()
             .resource_mut::<DisplayState>()
             .request(DisplaySettings {
@@ -1784,16 +1815,22 @@ fn visual_smoke_for_content(
                                     "kind": match sample.kind {
                                         cocobeat_stage::SegmentKind::Straight => "straight",
                                         cocobeat_stage::SegmentKind::Plaza => "plaza",
+                                        cocobeat_stage::SegmentKind::Curve => "curve",
+                                        cocobeat_stage::SegmentKind::Bridge => "bridge",
                                     },
                                     "distance_mm": sample.distance_mm,
                                     "half_width_mm": sample.half_width_mm,
+                                    "lateral_mm": sample.lateral_mm,
+                                    "elevation_mm": sample.elevation_mm,
+                                    "slope_x_ppm": sample.slope_x_ppm,
+                                    "slope_y_ppm": sample.slope_y_ppm,
                                     "at_end": visual.song_time == plan.end(),
                                 }))
                             }),
                         })
                     );
                 }
-                if let Smoke::Feedback(effect, _) = mode {
+                if let Smoke::Feedback(effect, _) | Smoke::Section(_, _, _, Some(effect)) = mode {
                     eprintln!(
                         "FEEDBACK_SAMPLE {}",
                         serde_json::json!({
@@ -2189,6 +2226,51 @@ mod tests {
         assert!(feedback_smoke_mode("unknown", Some("off")).is_err());
         assert!(feedback_smoke_mode("free", Some("unknown")).is_err());
         assert!(smoke_quality("unknown").is_err());
+    }
+
+    #[test]
+    fn package_feedback_retains_song_time_and_real_approach_target() {
+        let time = SongTime::from_frames(22 * 48_000);
+        let target = SongTime::from_frames(26 * 48_000);
+        for effect in [
+            FeedbackSmoke::Anchor,
+            FeedbackSmoke::AnchorGood,
+            FeedbackSmoke::Approach,
+        ] {
+            let mut visual = VisualState {
+                song_time: time,
+                song_seconds: 22.0,
+                next_anchor_time: Some(target),
+                next_anchor_seconds: Some(26.0),
+                next_section_time: Some(SongTime::from_frames(40 * 48_000)),
+                ..default()
+            };
+            apply_smoke_visuals(
+                &mut visual,
+                Smoke::Section(
+                    Locale::EnUs,
+                    time,
+                    smoke_quality("high").unwrap(),
+                    Some(effect),
+                ),
+            );
+            assert_eq!(visual.song_time, time);
+            assert_eq!(visual.song_seconds, 22.0);
+            assert_eq!(
+                visual.next_section_time,
+                Some(SongTime::from_frames(40 * 48_000))
+            );
+            if effect == FeedbackSmoke::Approach {
+                assert_eq!(visual.next_anchor_time, Some(target));
+                assert_eq!(visual.next_anchor_seconds, Some(26.0));
+                assert_eq!(visual.anchor_sync_pulse, 0.0);
+            } else {
+                assert_eq!(visual.next_anchor_time, None);
+                assert_eq!(visual.next_anchor_seconds, None);
+                assert_eq!(visual.anchor_sync_pulse, 0.7);
+                assert_eq!(visual.anchor_sync_precise, effect == FeedbackSmoke::Anchor);
+            }
+        }
     }
 
     #[test]

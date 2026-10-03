@@ -33,13 +33,13 @@ media 的 `read_package` 检查四对象，从同一份有界音频字节快照�
 
 editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最多 1024 步增量撤销历史，成功新变更清空 redo，失败与原地移动保留状态；lab 的 `edit-anchors` 解析有界补丁并核对完整源包身份，操作全部成功后调用 media 的 `export_anchors`。media 保留原音频与分析对象字节，真实变更只重建 chart 和 manifest，无变化导出保留四对象原字节及身份；输出位于源包外的全新目录，来源校验、复制与发布沿用内容事务，具体使用见 [内容编辑](editor.md)
 
-`SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数距离差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
+`SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数三轴位置差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
 
-stage 的 `compile` 把真实分析区间编为 Plaza，把区间空隙编为 Straight，形成覆盖全曲的内存 StagePlan；模型与采样只使用 schema 和标准库，以整数帧与毫米计算距离和三角形宽度变化，不按 cue 补区间、不从 label 或 confidence 推断音乐含义；runtime 在包加载时编译一次并用 `Arc` 共享，lab 的 `inspect-stage PACKAGE FRAME` 复用相同入口，无参数开发歌曲保留原手写场景且没有 StagePlan
+stage 的 `compile` 把短于 16 秒的真实分析区间编为 Plaza，长区间前半为 Curve、后半为 Bridge，把区间空隙编为 Straight，形成覆盖全曲的内存 StagePlan；模型与采样只使用 schema 和标准库，以整数帧与毫米计算距离、三角形路宽、四次曲线侧移 / 抬升及其切线，不按 cue 补区间、不从 label 或 confidence 推断音乐含义；runtime 在包加载时编译一次并用 `Arc` 共享，lab 的 `inspect-stage PACKAGE FRAME` 复用相同入口，无参数开发歌曲保留原手写场景且没有 StagePlan
 
-runtime 将计划适配成五个固定动态地面网格和终点标线，显示窗口为前 42 m、后 12 m，最多 257 个横断面；基础 64 条带之外按预算补片段起点 / 中点 / 终点，极密时回退基础采样并保留窗口内的曲首 / EOF，有限网格不保证每个短片段轮廓都精确；曲外基础宽度地面只作场景衬底，Anchor / cue 的原四秒 / 六秒预告窗口不变，Resonance 与画质不改变计划或关键采样
+runtime 将计划适配成九个固定动态地面 / 桥体网格、两个固定装饰拱门和终点标线，显示窗口为前 42 m、后 12 m，最多 257 个横断面；基础 64 条带、曲首 / EOF 和长特征起点 / 中点 / 终点优先保留，剩余预算补短 Plaza，极密短段按基础采样近似，有限网格不保证每个短片段轮廓都精确；曲外基础宽度地面只作场景衬底，Anchor / cue 的原四秒 / 六秒预告窗口不变，Resonance 与画质不改变计划或关键采样
 
-StagePlan 身份由完整内容身份与 `compiler_version = 1` 组成，计划不写入歌曲包，四对象 content v1 和 Replay v1 保持原格式；相同内容和编译版本的计划 / 整数采样可复现，当前 Replay 仍只校验内容与规则身份，不能据此声称跨舞台编译版本的视觉重放已实现
+StagePlan 身份由完整内容身份与 `compiler_version = 2` 组成，计划不写入歌曲包，四对象 content v1 和 Replay v1 保持原格式；相同内容和编译版本的计划 / 整数采样可复现，当前 Replay 仍只校验内容与规则身份，不能据此声称跨舞台编译版本的视觉重放已实现
 
 `ui_assets` 复用既有六份 Noto Sans 字体，通过 Bevy 的 fontique 字体集合配置原生脚本回退；每个文本仍以 locale 对应的地区字体为首选，回退处理其缺少的拉丁 / 西里尔 / 希腊 / 汉字 / 假名 / 韩文字形，不引入系统字体依赖或任意 Unicode 覆盖承诺，字体类型止于 runtime 表现适配层
 
@@ -48,7 +48,7 @@ StagePlan 身份由完整内容身份与 `compiler_version = 1` 组成，计划�
 | 模块 | 独立责任 | 引入时机 |
 |---|---|---|
 | media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口与构包已有 lab 消费，runtime 加载已构建包；其余按 05–07 的实际契约加入 |
-| stage（已创建） | 真实分析区间 → Straight / Plaza StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；缓弯、桥和完整 StageCompiler 仍按 08 推进 |
+| stage（已创建） | 真实分析区间 → Straight / Plaza / Curve / Bridge StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；完整自动编排与视觉 Replay 仍按 08 / 09 推进 |
 | editor（已创建） | 精确 Anchor 编辑和有界撤销重做；后续由时间线界面消费 | 09 的 lab 修包 CLI 已消费，波形、候选证据与 Replay 诊断界面仍待后续 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |
 
