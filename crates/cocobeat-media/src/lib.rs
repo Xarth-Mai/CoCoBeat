@@ -9,6 +9,7 @@ mod resample;
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use package::{
-    PackageBuildInput, ValidatedPackage, build_package, read_package, validate_package,
+    PackageBuildInput, ValidatedPackage, build_package, export_anchors, read_package,
+    validate_package,
 };
 pub use resample::{ResampledSource, resample_source};

@@ -480,3 +480,19 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 旧基线 51,158 窗逐项完全复现，独立 f64 FFT 进一步复现全部 34 项新预测列表与 665 个额外峰。440 Hz 持续音的高频带和 9973 Hz 持续音的低频带暴露确定性窗旁瓣被小分母放大，不能将问题归结为浮点舍入噪声；真实弱进入的频带幅值与旁瓣证据分别保留。下一步只增加有明确局部频谱尺度的分母下限，保持原完整回归集和门槛，不将这批已用于设计的控制称为未见测试集
 
 执行证据为 `target/mir-band-local-20261003/execution.json`，工具 SHA-256 为 `76ac3ed483985d69c20907b8e4047327b888a6c4b78952154560a6a06c4a2f9a`；[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-local-20261003.json) SHA-256 为 `d986c52e3c6acd952a49016123080f868c2b71a8ee60b3a8de43fd94b6db752f`。独立复算、失败定位和最终审查均在同一证据目录，复审为 `Lean already. Ship.`；没有新增依赖版本或新音频，生产 MusicAnalysis、真实音乐、最终编码回读与人工标签仍未通过本批验收
+
+## 精确 Anchor 编辑与原字节保真导出
+
+2026-10-03，`cocobeat-editor` 和 lab 的 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 已接通已有歌曲包的精确帧增删移动、1024 步增量撤销重做与事务导出。补丁绑定完整源身份，操作全部成功后才写新包；实际修改保留音频、analysis 和原 cue，重新计算 chart/manifest 身份，无变化则四对象原字节与包身份完全保留，具体用法见[内容编辑](editor.md)
+
+`cargo test --locked --offline -p cocobeat-editor -p cocobeat-media -p cocobeat-lab -p xtask` 的 41 项测试通过，另运行 `cargo test --locked --offline -p cocobeat-runtime content::tests` 的 6 项加载/播放内容测试通过，合计 47 项相关测试。全 workspace all-targets Clippy、格式、边界与 game/lab 构建通过，150 个构建输入前后相同；新增本地 editor 未增加第三方版本，仍为 547 项。二进制、输入和命令见 `target/editor-runtime-20261003/validation.json`，game SHA-256 为 `950f52c4d14dcad49ee9989752c6bf0095180ed001d2c2653af8d80fecbe2f1e`，lab 为 `1c79d2720861fae90ca64b99b9964561110232e92c65664c01101f784a18b712`
+
+独立审查修复了源包内部输出目录会引入第五项、破坏原包的问题，现在创建 staging 前按规范化父目录拒绝源内路径，包含符号链接父目录别名。媒体窄测实际覆盖合法非规范 Postcard 字节的无变化导出、首次已验证 manifest 原字节快照、后续读取对象与音频副本的身份绑定、失效源身份、非法 Anchor、失败清理和已有目标保留；初次快照之后外部 manifest 被换掉不要求丢弃已验证快照，导出的所有对象仍必须与所使用快照一致
+
+冻结二进制的 35 项 CPU/CLI 用例通过，共执行 36 条产品命令，包含 0.1 秒、64 秒与 600 秒真实包的编辑、四种无变化结果、重复导出、1024 操作及恰好 1 MiB 边界，错误补丁与七种目标失败均保留原内容。独立 Postcard/BLAKE3 读取器核对实际新 Anchor、原 cue/rules、原字节及新身份；三个源包始终只有原四文件且哈希不变，原包与撤销后包的 Replay 输出相同，真实改谱后的包拒绝旧身份 Replay，StagePlan 除完整身份外的几何采样保持一致
+
+唯一 Vulkan GPU 图将首个 Anchor 从 26 秒移到 27 秒，在 26 秒实际加载新包后显示前方预告；`CONTENT_SAMPLE` 的下一 Anchor 为 27 秒，原下一 cue 仍为 40 秒，整数舞台采样与独立包事实一致，灰色括号不遮挡角色身体。原始命令、对象身份和截图在 `target/editor-runtime-20261003/qa-report.json`；这项静态改谱验证不证明物理按键、音频延迟或真人可玩性
+
+182 项产物的 `qa-sealed.json` SHA-256 为 `22e2cd2dfa91f5c92924199d3e7e4e2e2ed048f3790b29004715cd95b823f1b7`，主线程逐一核验通过；独立正确性及 ponytail 复审为 `Lean already. Ship.`。并行舞台下一版在本次二进制冻结后继续修改，提交前另将全部 150 个构建输入与暂存内容逐一比对，避免把下一批源码混入本次验收
+
+本批只交付实际可用的编辑内核与 CLI，波形时间线、候选证据界面、Replay JSONL 诊断和正式菜单接线继续按 09 推进；Windows/ARM 原生导出、真实音频/手柄和真人体验尚未由这些结果验收

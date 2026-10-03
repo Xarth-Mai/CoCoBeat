@@ -1694,6 +1694,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "cocobeat-editor"
+version = "0.1.0"
+dependencies = [
+ "cocobeat-schema",
+]
+
+[[package]]
 name = "cocobeat-game"
 version = "0.1.0"
 dependencies = [
@@ -1705,6 +1712,7 @@ dependencies = [
 name = "cocobeat-lab"
 version = "0.1.0"
 dependencies = [
+ "cocobeat-editor",
  "cocobeat-media",
  "cocobeat-runtime",
  "cocobeat-schema",

@@ -8,6 +8,7 @@ runtime ────────────→ schema / core / replay / media /
 replay ─────────────→ schema / core
 media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
 stage ──────────────→ schema / std
+editor ─────────────→ schema / std
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -30,6 +31,8 @@ schema 的初始 `MusicAnalysis` / `CompiledChart` / `SongPackage` 由 lab 构�
 
 media 的 `read_package` 检查四对象，从同一份有界音频字节快照验证引用哈希并严格解码，将 PCM 块交给调用方，整次调用成功后才返回 `ValidatedPackage`；失败时调用方丢弃临时 PCM，`validate_package` 复用该路径并丢弃 PCM，完整契约见 [SongPackage](song-package.md)；校验不重新执行 MIR 或证明谱面合理性，runtime 消费音频、实际长度、包身份、Anchor、SectionCue 与分析段落区间，energy 尚未驱动场景，后续 TempoRegion、重复结构和 AnchorEvidence 按实际消费者扩展并升级版本
 
+editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最多 1024 步增量撤销历史，成功新变更清空 redo，失败与原地移动保留状态；lab 的 `edit-anchors` 解析有界补丁并核对完整源包身份，操作全部成功后调用 media 的 `export_anchors`。media 保留原音频与分析对象字节，真实变更只重建 chart 和 manifest，无变化导出保留四对象原字节及身份；输出位于源包外的全新目录，来源校验、复制与发布沿用内容事务，具体使用见 [内容编辑](editor.md)
+
 `SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数距离差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
 
 stage 的 `compile` 把真实分析区间编为 Plaza，把区间空隙编为 Straight，形成覆盖全曲的内存 StagePlan；模型与采样只使用 schema 和标准库，以整数帧与毫米计算距离和三角形宽度变化，不按 cue 补区间、不从 label 或 confidence 推断音乐含义；runtime 在包加载时编译一次并用 `Arc` 共享，lab 的 `inspect-stage PACKAGE FRAME` 复用相同入口，无参数开发歌曲保留原手写场景且没有 StagePlan
@@ -46,10 +49,10 @@ StagePlan 身份由完整内容身份与 `compiler_version = 1` 组成，计划�
 |---|---|---|
 | media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口与构包已有 lab 消费，runtime 加载已构建包；其余按 05–07 的实际契约加入 |
 | stage（已创建） | 真实分析区间 → Straight / Plaza StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；缓弯、桥和完整 StageCompiler 仍按 08 推进 |
-| editor | 波形、Anchor、Replay 的可视化与人工修改 | 09 已有可编辑内容契约 |
+| editor（已创建） | 精确 Anchor 编辑和有界撤销重做；后续由时间线界面消费 | 09 的 lab 修包 CLI 已消费，波形、候选证据与 Replay 诊断界面仍待后续 |
 | net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |
 
-media / stage / net 允许依赖 schema，不能依赖 runtime；media 复用 schema 的唯一标准采样率。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
+media / stage / editor / net 允许依赖 schema，不能依赖 runtime；media 复用 schema 的唯一标准采样率。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
 
 ## 事实流
 

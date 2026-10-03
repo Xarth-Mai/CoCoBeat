@@ -10,8 +10,8 @@ use crate::{
     prepare_canonical_audio,
 };
 use cocobeat_schema::{
-    AssetRef, CANONICAL_SAMPLE_RATE, CONTENT_SCHEMA_VERSION, CompiledChart, MusicAnalysis,
-    SongPackage,
+    Anchor, AssetRef, CANONICAL_SAMPLE_RATE, CONTENT_SCHEMA_VERSION, CompiledChart,
+    MAX_CONTENT_ITEMS, MusicAnalysis, SongPackage,
 };
 use std::{
     fs::{self, File, OpenOptions},
@@ -56,33 +56,7 @@ pub fn build_package(
 ) -> Result<ValidatedPackage, String> {
     let source_audio = source_audio.as_ref();
     let destination = destination.as_ref();
-    require_absent(destination)?;
-    drop(open_object(source_audio, MAX_SOURCE_BYTES)?);
-    let parent = destination
-        .parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    if destination.file_name().is_none() {
-        return Err("Package destination must name a new directory".into());
-    }
-
-    let (staging, audio) = (0..32)
-        .find_map(|_| {
-            let path = parent.join(format!(
-                ".cocobeat-package-{}-{}",
-                std::process::id(),
-                NEXT_STAGING.fetch_add(1, Ordering::Relaxed),
-            ));
-            match fs::symlink_metadata(&path) {
-                Ok(_) => None,
-                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Some(
-                    prepare_canonical_audio(source_audio, expected_frames, &path)
-                        .map(|audio| (path, audio)),
-                ),
-                Err(error) => Some(Err(format!("Cannot inspect staging path: {error}"))),
-            }
-        })
-        .ok_or("Cannot allocate a unique package staging directory after 32 attempts")??;
+    let (staging, audio) = stage_audio(source_audio, expected_frames, destination)?;
     let mut created = vec![staging.join(FILE_NAMES[0])];
     let result = (|| {
         let input = build_content(&staging.join(&audio.asset.file_name), &audio)?;
@@ -124,12 +98,76 @@ pub fn build_package(
             &encode_package(&manifest)?,
             &mut created,
         )?;
-        let validated = validate_package(&staging)?;
-        require_absent(destination)?;
-        // Concurrent builders publish nonempty directories, which rename cannot replace
-        fs::rename(&staging, destination)
-            .map_err(|error| format!("Cannot publish package directory: {error}"))?;
-        Ok(validated)
+        publish_package(&staging, destination)
+    })();
+    result.map_err(|error| cleanup_staging(&staging, &created, error))
+}
+
+/// Replaces only Anchors, preserving the exact audio and analysis objects
+/// No-op edits preserve all four source objects, including noncanonical metadata bytes
+pub fn export_anchors(
+    source: impl AsRef<Path>,
+    expected_package_hash: [u8; 32],
+    anchors: &[Anchor],
+    destination: impl AsRef<Path>,
+) -> Result<ValidatedPackage, String> {
+    let source = source.as_ref();
+    let destination = destination.as_ref();
+    let (package, manifest_bytes) = read_package_snapshot(source, |_| Ok(()))?;
+    if package.manifest.package_hash != expected_package_hash {
+        return Err("Anchor edit source package identity does not match".into());
+    }
+    let parent = destination
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    if fs::canonicalize(parent)
+        .map_err(|error| format!("Cannot resolve package destination parent: {error}"))?
+        .starts_with(fs::canonicalize(source).map_err(|error| error.to_string())?)
+    {
+        return Err("Anchor export destination must be outside the source package".into());
+    }
+    publish_anchors(source, package, manifest_bytes, anchors, destination)
+}
+
+fn publish_anchors(
+    source: &Path,
+    mut package: ValidatedPackage,
+    mut manifest_bytes: Vec<u8>,
+    anchors: &[Anchor],
+    destination: &Path,
+) -> Result<ValidatedPackage, String> {
+    if anchors.len() > MAX_CONTENT_ITEMS {
+        return Err("Content item limit exceeded".into());
+    }
+    let changed = anchors != package.chart.anchors;
+    let chart_bytes = if changed {
+        package.chart.anchors = anchors.to_vec();
+        encode_chart(&package.chart, package.manifest.canonical_frames)?
+    } else {
+        read_referenced(source, &package.manifest.chart, MAX_CHART_BYTES)?
+    };
+    let analysis_bytes = read_referenced(source, &package.manifest.analysis, MAX_ANALYSIS_BYTES)?;
+    let (staging, audio) = stage_audio(
+        &source.join(&package.manifest.audio.file_name),
+        package.manifest.canonical_frames,
+        destination,
+    )?;
+    let mut created = vec![staging.join(FILE_NAMES[0])];
+    let result = (|| {
+        if audio.asset != package.manifest.audio {
+            return Err("Copied audio identity differs from the validated source package".into());
+        }
+        write_object(&staging, FILE_NAMES[1], &analysis_bytes, &mut created)?;
+        let chart = write_object(&staging, FILE_NAMES[2], &chart_bytes, &mut created)?;
+        if changed {
+            package.manifest.chart = chart;
+            package.manifest.chart_version = "manual-editor-v1".into();
+            package.manifest.package_hash = package_hash(&package.manifest)?;
+            manifest_bytes = encode_package(&package.manifest)?;
+        }
+        write_object(&staging, FILE_NAMES[3], &manifest_bytes, &mut created)?;
+        publish_package(&staging, destination)
     })();
     result.map_err(|error| cleanup_staging(&staging, &created, error))
 }
@@ -145,7 +183,13 @@ pub fn read_package(
     root: impl AsRef<Path>,
     consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
 ) -> Result<ValidatedPackage, String> {
-    let root = root.as_ref();
+    read_package_snapshot(root.as_ref(), consume).map(|(package, _)| package)
+}
+
+fn read_package_snapshot(
+    root: &Path,
+    consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+) -> Result<(ValidatedPackage, Vec<u8>), String> {
     if !fs::symlink_metadata(root)
         .map_err(|error| format!("Cannot inspect package directory: {error}"))?
         .is_dir()
@@ -158,7 +202,8 @@ pub fn read_package(
             return Err("Package directory must contain only its four declared objects".into());
         }
     }
-    let manifest = decode_package(&read_object(&root.join(FILE_NAMES[3]), MAX_PACKAGE_BYTES)?)?;
+    let manifest_bytes = read_object(&root.join(FILE_NAMES[3]), MAX_PACKAGE_BYTES)?;
+    let manifest = decode_package(&manifest_bytes)?;
     if package_hash(&manifest)? != manifest.package_hash {
         return Err("Package manifest hash does not match its canonical bytes".into());
     }
@@ -171,11 +216,56 @@ pub fn read_package(
     }
     let audio = read_referenced(root, &manifest.audio, MAX_SOURCE_BYTES as usize)?;
     decode_canonical_bytes(audio, manifest.canonical_frames, consume)?;
-    Ok(ValidatedPackage {
-        manifest,
-        analysis,
-        chart,
-    })
+    Ok((
+        ValidatedPackage {
+            manifest,
+            analysis,
+            chart,
+        },
+        manifest_bytes,
+    ))
+}
+
+fn stage_audio(
+    source_audio: &Path,
+    expected_frames: u64,
+    destination: &Path,
+) -> Result<(PathBuf, PreparedCanonicalAudio), String> {
+    require_absent(destination)?;
+    drop(open_object(source_audio, MAX_SOURCE_BYTES)?);
+    let parent = destination
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    if destination.file_name().is_none() {
+        return Err("Package destination must name a new directory".into());
+    }
+    (0..32)
+        .find_map(|_| {
+            let path = parent.join(format!(
+                ".cocobeat-package-{}-{}",
+                std::process::id(),
+                NEXT_STAGING.fetch_add(1, Ordering::Relaxed),
+            ));
+            match fs::symlink_metadata(&path) {
+                Ok(_) => None,
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Some(
+                    prepare_canonical_audio(source_audio, expected_frames, &path)
+                        .map(|audio| (path, audio)),
+                ),
+                Err(error) => Some(Err(format!("Cannot inspect staging path: {error}"))),
+            }
+        })
+        .ok_or("Cannot allocate a unique package staging directory after 32 attempts")?
+}
+
+fn publish_package(staging: &Path, destination: &Path) -> Result<ValidatedPackage, String> {
+    let validated = validate_package(staging)?;
+    require_absent(destination)?;
+    // Concurrent builders publish nonempty directories, which rename cannot replace
+    fs::rename(staging, destination)
+        .map_err(|error| format!("Cannot publish package directory: {error}"))?;
+    Ok(validated)
 }
 
 fn require_absent(path: &Path) -> Result<(), String> {
@@ -269,7 +359,7 @@ fn cleanup_staging(staging: &Path, created: &[PathBuf], mut error: String) -> St
 mod tests {
     use super::*;
     use crate::decode_canonical;
-    use cocobeat_schema::{Anchor, EnergySample, SongTime};
+    use cocobeat_schema::{EnergySample, SectionCue, SongTime};
     use std::sync::{Arc, Barrier};
 
     const STEREO: &[u8] =
@@ -386,6 +476,313 @@ mod tests {
             refresh_reference(root, reference);
         }
         save_manifest(root, &mut package.manifest);
+    }
+
+    fn object_bytes(root: &Path) -> [Vec<u8>; 4] {
+        FILE_NAMES.map(|name| fs::read(root.join(name)).unwrap())
+    }
+
+    fn noncanonical_version(bytes: &mut Vec<u8>) {
+        assert_eq!(bytes[20], 1);
+        bytes.splice(20..21, [0x81, 0]);
+        let payload_len = (bytes.len() - 20) as u64;
+        bytes[12..20].copy_from_slice(&payload_len.to_le_bytes());
+    }
+
+    #[test]
+    fn anchor_exports_preserve_raw_objects_and_change_only_the_authored_chart() {
+        let root = TestDirectory::new();
+        let (audio, mut input) = root.source_and_input();
+        input.chart.sections.push(SectionCue {
+            id: 17,
+            time: SongTime::from_frames(2_300),
+            label: "Authored cue independent of Anchors".into(),
+        });
+        let source = root.0.join("source-package");
+        let mut package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        for name in &FILE_NAMES[1..3] {
+            let path = source.join(name);
+            let mut bytes = fs::read(&path).unwrap();
+            noncanonical_version(&mut bytes);
+            fs::write(path, bytes).unwrap();
+        }
+        refresh_reference(&source, &mut package.manifest.analysis);
+        refresh_reference(&source, &mut package.manifest.chart);
+        save_manifest(&source, &mut package.manifest);
+        let mut manifest_bytes = fs::read(source.join(FILE_NAMES[3])).unwrap();
+        noncanonical_version(&mut manifest_bytes);
+        fs::write(source.join(FILE_NAMES[3]), &manifest_bytes).unwrap();
+        assert_eq!(validate_package(&source).unwrap(), package);
+        let original = object_bytes(&source);
+        assert_ne!(encode_package(&package.manifest).unwrap(), original[3]);
+        assert_ne!(encode_chart(&package.chart, 4_800).unwrap(), original[2]);
+        assert_ne!(
+            encode_analysis(&package.analysis, 4_800).unwrap(),
+            original[1]
+        );
+
+        let no_op = root.0.join("no-op");
+        assert_eq!(
+            export_anchors(
+                &source,
+                package.manifest.package_hash,
+                &package.chart.anchors,
+                &no_op
+            )
+            .unwrap(),
+            package
+        );
+        assert_eq!(object_bytes(&no_op), original);
+
+        let anchors = [
+            Anchor {
+                id: 9,
+                song_time: SongTime::ZERO,
+            },
+            Anchor {
+                id: 0,
+                song_time: SongTime::from_frames(4_799),
+            },
+            Anchor {
+                id: 1,
+                song_time: SongTime::from_frames(4_799),
+            },
+        ];
+        let mut edited_bytes = None;
+        for name in ["edited", "repeated"] {
+            let destination = root.0.join(name);
+            let edited = export_anchors(
+                &source,
+                package.manifest.package_hash,
+                &anchors,
+                &destination,
+            )
+            .unwrap();
+            assert_eq!(validate_package(&destination).unwrap(), edited);
+            let actual = object_bytes(&destination);
+            assert_eq!(actual[..2], original[..2]);
+            assert_ne!(actual[2], original[2]);
+            assert_ne!(actual[3], original[3]);
+            assert_ne!(edited.manifest.package_hash, package.manifest.package_hash);
+            assert_eq!(edited.manifest.chart_version, "manual-editor-v1");
+            assert_eq!(edited.chart.anchors, anchors);
+            let mut unchanged = edited;
+            unchanged.chart.anchors = package.chart.anchors.clone();
+            unchanged.manifest.chart = package.manifest.chart.clone();
+            unchanged.manifest.chart_version = package.manifest.chart_version.clone();
+            unchanged.manifest.package_hash = package.manifest.package_hash;
+            assert_eq!(unchanged, package);
+            if let Some(previous) = &edited_bytes {
+                assert_eq!(&actual, previous);
+            }
+            edited_bytes = Some(actual);
+        }
+        assert_eq!(object_bytes(&source), original);
+    }
+
+    #[test]
+    fn export_copies_are_bound_to_the_original_validated_snapshot() {
+        let root = TestDirectory::new();
+        let (audio, input) = root.source_and_input();
+        let source = root.0.join("source-package");
+        let original = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        let original_bytes = object_bytes(&source);
+        let destination = root.0.join("copy");
+
+        // The canonical manifest identity does not identify its original wire encoding
+        let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| {
+            let mut bytes = original_bytes[3].clone();
+            noncanonical_version(&mut bytes);
+            fs::write(source.join(FILE_NAMES[3]), bytes).unwrap();
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(validate_package(&source).unwrap(), original);
+        assert_eq!(manifest_bytes, original_bytes[3]);
+        publish_anchors(
+            &source,
+            snapshot,
+            manifest_bytes,
+            &original.chart.anchors,
+            &destination,
+        )
+        .unwrap();
+        assert_eq!(object_bytes(&destination), original_bytes);
+        fs::remove_dir_all(&destination).unwrap();
+        fs::write(source.join(FILE_NAMES[3]), &original_bytes[3]).unwrap();
+
+        for index in [1, 2] {
+            let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| Ok(())).unwrap();
+            let mut changed = original_bytes[index].clone();
+            noncanonical_version(&mut changed);
+            fs::write(source.join(FILE_NAMES[index]), changed).unwrap();
+            let error = publish_anchors(
+                &source,
+                snapshot,
+                manifest_bytes,
+                &original.chart.anchors,
+                &destination,
+            )
+            .unwrap_err();
+            assert!(error.contains("Object identity mismatch"));
+            assert!(!destination.exists());
+            assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
+            fs::write(source.join(FILE_NAMES[index]), &original_bytes[index]).unwrap();
+        }
+
+        // Retag each Ogg page and recompute CRC: valid PCM, different audio object identity
+        let mut changed_audio = original_bytes[0].clone();
+        let mut offset = 0;
+        while offset < changed_audio.len() {
+            let segments = changed_audio[offset + 26] as usize;
+            let payload: usize = changed_audio[offset + 27..offset + 27 + segments]
+                .iter()
+                .map(|size| usize::from(*size))
+                .sum();
+            let end = offset + 27 + segments + payload;
+            let page = &mut changed_audio[offset..end];
+            page[14] ^= 1;
+            page[22..26].fill(0);
+            let mut crc = 0_u32;
+            for byte in page.iter() {
+                crc ^= u32::from(*byte) << 24;
+                for _ in 0..8 {
+                    crc = (crc << 1)
+                        ^ if crc & 0x8000_0000 != 0 {
+                            0x04c1_1db7
+                        } else {
+                            0
+                        };
+                }
+            }
+            page[22..26].copy_from_slice(&crc.to_le_bytes());
+            offset = end;
+        }
+        let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| Ok(())).unwrap();
+        fs::write(source.join(FILE_NAMES[0]), &changed_audio).unwrap();
+        decode_canonical(source.join(FILE_NAMES[0]), 4_800, |_| Ok(())).unwrap();
+        let error = publish_anchors(
+            &source,
+            snapshot,
+            manifest_bytes,
+            &original.chart.anchors,
+            &destination,
+        )
+        .unwrap_err();
+        assert!(error.contains("Copied audio identity differs"));
+        assert!(!destination.exists());
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
+        assert_eq!(fs::read(source.join(FILE_NAMES[0])).unwrap(), changed_audio);
+    }
+
+    #[test]
+    fn export_rejects_stale_identity_invalid_anchors_and_existing_destinations() {
+        let root = TestDirectory::new();
+        let (audio, input) = root.source_and_input();
+        let source = root.0.join("source-package");
+        let package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        let original = object_bytes(&source);
+        let destination = root.0.join("copy");
+        assert!(
+            export_anchors(&source, [0; 32], &[], &destination)
+                .unwrap_err()
+                .contains("identity")
+        );
+        for anchors in [
+            vec![Anchor {
+                id: 3,
+                song_time: SongTime::from_frames(-1),
+            }],
+            vec![Anchor {
+                id: 3,
+                song_time: SongTime::from_frames(4_800),
+            }],
+            vec![Anchor {
+                id: 3,
+                song_time: SongTime::from_frames(i64::MAX),
+            }],
+            vec![package.chart.anchors[1], package.chart.anchors[0]],
+            vec![package.chart.anchors[0]; 2],
+            vec![package.chart.anchors[0]; MAX_CONTENT_ITEMS + 1],
+        ] {
+            assert!(
+                export_anchors(
+                    &source,
+                    package.manifest.package_hash,
+                    &anchors,
+                    &destination
+                )
+                .is_err()
+            );
+            assert!(!destination.exists());
+            assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
+        }
+        for destination in [&source, &root.0.join("source.ogg")] {
+            assert!(
+                export_anchors(&source, package.manifest.package_hash, &[], destination).is_err()
+            );
+        }
+        for destination in [source.join("copy"), source.join("./copy")] {
+            assert!(
+                export_anchors(&source, package.manifest.package_hash, &[], destination)
+                    .unwrap_err()
+                    .contains("outside the source package")
+            );
+        }
+        for parent in [root.0.join("missing"), root.0.join("source.ogg")] {
+            assert!(
+                export_anchors(
+                    &source,
+                    package.manifest.package_hash,
+                    &[],
+                    parent.join("copy")
+                )
+                .is_err()
+            );
+        }
+        fs::create_dir(&destination).unwrap();
+        assert!(export_anchors(&source, package.manifest.package_hash, &[], &destination).is_err());
+        assert_eq!(fs::read_dir(&destination).unwrap().count(), 0);
+        fs::write(destination.join("keep"), b"existing contents").unwrap();
+        assert!(export_anchors(&source, package.manifest.package_hash, &[], &destination).is_err());
+        assert_eq!(
+            fs::read(destination.join("keep")).unwrap(),
+            b"existing contents"
+        );
+        assert_eq!(object_bytes(&source), original);
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 3);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::symlink;
+            let alias = root.0.join("alias");
+            symlink(&source, &alias).unwrap();
+            assert!(
+                export_anchors(
+                    &source,
+                    package.manifest.package_hash,
+                    &[],
+                    alias.join("copy")
+                )
+                .unwrap_err()
+                .contains("outside the source package")
+            );
+            assert!(export_anchors(&source, package.manifest.package_hash, &[], &alias).is_err());
+            assert!(
+                export_anchors(
+                    &alias,
+                    package.manifest.package_hash,
+                    &[],
+                    root.0.join("other")
+                )
+                .is_err()
+            );
+            fs::remove_file(&alias).unwrap();
+            symlink(root.0.join("missing"), &alias).unwrap();
+            assert!(export_anchors(&source, package.manifest.package_hash, &[], &alias).is_err());
+            assert!(fs::symlink_metadata(&alias).unwrap().is_symlink());
+            assert_eq!(object_bytes(&source), original);
+            assert_eq!(validate_package(&source).unwrap(), package);
+        }
     }
 
     #[test]

@@ -1,6 +1,6 @@
 # 初始 SongPackage 契约
 
-当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建和校验，lab 入口为 `build-authored-package` 与 `verify-package`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，并从真实分析区间编译直道 / 广场 StagePlan，仍未接入自动 MIR、AnchorCompiler、完整 StageCompiler 或生产编码器
+当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建、校验和 Anchor 编辑导出，lab 入口为 `build-authored-package`、`verify-package` 与 `edit-anchors`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，并从真实分析区间编译直道 / 广场 StagePlan，仍未接入自动 MIR、AnchorCompiler、完整 StageCompiler 或生产编码器
 
 字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，运行时适配见 [runtime/content.rs](../crates/cocobeat-runtime/src/content.rs)，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
 
@@ -95,6 +95,8 @@ cargo run --locked -p cocobeat-lab -- verify-package target/manual-duet-package
 ```
 
 仅需音频对象时可用 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>`，它只生成 `song.audio.ogg`，不等于完整包；需要导出严格回读 PCM 时可用 `readback-canonical <final.ogg> <expected-frames> <new-output.f32le>`，它不会自动创建分析或谱面
+
+编辑已有包使用 `edit-anchors PACKAGE PATCH NEW_PACKAGE`，对应 Rust 入口为 `export_anchors(source, expected_package_hash, anchors, destination)`；它保留音频和分析原字节，仅在 Anchor 实际改变时重写 chart 与 manifest 身份，无变化时保留四对象及原身份，目标须为源包外的新目录；补丁、撤销重做与原 Replay 的身份边界见 [Anchor 命令行编辑](editor.md)，时间线 UI 仍未实现
 
 ## 运行时加载与会话
 
