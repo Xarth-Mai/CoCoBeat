@@ -19,13 +19,15 @@
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
-独立 canonical 音频研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-02 对 `tools/canonical-audio-probe/` 的四个工具包分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 74 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，发布归档 SHA-256 均匹配锁文件校验和，该研究台账不扩充产品 Cargo.lock 或发行组件清单
+独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的四个工具包与 `tools/mir-onset-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 75 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致。MIR 工具单独解析 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，产品未启用该分析库；该研究台账不扩充产品 Cargo.lock 或发行组件清单
 
 依赖采用最新稳定版本，manifest 使用主版本范围；更新 `Cargo.lock` 后同步 CSV 和直接依赖表，精确版本用于记录实际解析结果
 
 工作流使用 `actions/checkout@v7`、`actions/cache@v6`、`actions/upload-artifact@v7`、`actions/download-artifact@v8`（均 MIT），跟随各主版本的稳定更新，不属于 Cargo 解析图或游戏运行时依赖
 
 原创开发音乐、Anchor、独立事件帧标注、反馈音、探针脉冲与品牌落点合成音的来源见 [ASSET_PROVENANCE.csv](ASSET_PROVENANCE.csv)，这些生成资源使用 CC0-1.0，生成器源代码使用 MPL-2.0。`source_hash` 使用 SHA-256，反馈音、探针脉冲与品牌落点生成器条目记录源码哈希，其他条目记录资源文件哈希；听感人工验收与真实设备音频验收均为 NOT RUN
+
+MIR 原创脉冲、静默和独立字面帧号真值也使用 CC0-1.0，`mir-onset-clean-v1` 记录生成器源码哈希，源码使用 MPL-2.0；这些标签表示首个非零 PCM 帧，不能作为 beat 或人工 Anchor 标签
 
 品牌的 18 条来源记录从 [assets/brand/PROVENANCE.csv](../assets/brand/PROVENANCE.csv) 原样并入资源总台账。用户提供的字标与 Symbol 参考图未附原作者信息及原始再分发授权，相关条目保留 `UNSPECIFIED_REFERENCE` 与 `unverified`；项目代码许可证与这些品牌参考图的权利信息分别记录，本轮未核验其对外再分发许可
 

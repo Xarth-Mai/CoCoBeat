@@ -1,0 +1,443 @@
+{
+  "date": "2026-10-03",
+  "software_status": "PASS_SOFTWARE_CHECKS",
+  "quality_status": "FAIL",
+  "scope": "Five synthetic raw PCM cases, analyzed as ten independent channels; baseline only, no later timing-root-cause experiments",
+  "algorithm": "oximedia_mir::beat::OnsetDetector",
+  "dependency": {
+    "name": "oximedia-mir",
+    "version": "0.2.1",
+    "checksum": "30730f01388870c7694b578273396f1c4ec4a331245eabe4ca1ea4d40bf4888e"
+  },
+  "workspace": "tools/mir-onset-probe is an independent research workspace, not a production dependency",
+  "method": {
+    "sample_rate": 48000,
+    "window_frames": 1024,
+    "hop_frames": 128,
+    "pcm_format": "f32le_interleaved_stereo",
+    "time_origin": "original frame zero; no intro trim, padding, shift compensation or confidence fabrication",
+    "matching": "sorted earliest feasible one-to-one pairs; signed error = predicted - truth; inclusive tolerance",
+    "match_tolerance_frames": 480,
+    "median_absolute_error_limit_frames": 96.0,
+    "gates": "all literal truth matched once, no extra predictions, median <= 96 frames; silence requires zero predictions",
+    "empty_metrics": "zero denominators produce null; silence status is evaluated separately",
+    "confidence": "NOT PROVIDED BY API"
+  },
+  "timestamp_conversion": "round(f64(detector_seconds_f32) * 48000); original seconds retained, no time shift",
+  "truth": {
+    "generator": "tools/mir-onset-probe/src/main.rs::signal and pulse_frames",
+    "license": "CC0-1.0",
+    "definition": "First nonzero PCM frame of each causal pulse; literal onset labels are independent of detector predictions",
+    "pulse": "64-frame linear decay starting at 0.5; final-frame pulse truncated to the single available frame",
+    "regular_120_bpm": "24000 + n * 24000, n = 0..7",
+    "fractional_137_5_bpm": "round(24000 + n * 230400 / 11), n = 0..7; no rounded-period accumulation",
+    "opposite_polarity": "right channel is the negative of left; each channel detected independently, no mono cancellation"
+  },
+  "gate_sources": {
+    "original_research": {
+      "filename": "deep-research-report.md",
+      "attachment_basename": "1-deep-research-report.md",
+      "sha256": "eff373f2b746d9a7832eeae82446bd72408c163ac08922b3146573310fa226fa",
+      "lines": [
+        1854,
+        1866
+      ],
+      "clean_onset_f1_minimum": 0.98,
+      "onset_tolerance_ms": 10,
+      "median_absolute_error_ms_maximum": 2,
+      "scope": "Synthetic clean fixtures; not a human perception claim"
+    },
+    "this_batch": {
+      "strict_all_truth_matched_once": true,
+      "extra_predictions_allowed": 0,
+      "median_absolute_error_frames_maximum": 96,
+      "note": "Full matching is this batch stricter gate, not the research report F1 wording; timing statistics use matched pairs only"
+    }
+  },
+  "cases": [
+    {
+      "case": "pulse-120",
+      "source_frames": 240000,
+      "channels_analyzed_separately": [
+        0,
+        1
+      ],
+      "onset_truth_frames_each_channel": [
+        24000,
+        48000,
+        72000,
+        96000,
+        120000,
+        144000,
+        168000,
+        192000
+      ],
+      "identical_channel_results": true,
+      "predicted_seconds_each_channel": [
+        0.48533332347869873,
+        0.9866666793823242,
+        1.4853333234786987,
+        1.9866666793823242,
+        2.4853334426879883,
+        2.986666679382324,
+        3.4853334426879883,
+        3.986666679382324
+      ],
+      "predicted_frames_each_channel": [
+        23296,
+        47360,
+        71296,
+        95360,
+        119296,
+        143360,
+        167296,
+        191360
+      ],
+      "metrics_each_channel": {
+        "f1": 0.0,
+        "false_negative": 8,
+        "false_positive": 8,
+        "matched_frames": [],
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "signed_error_frames": [],
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "ordinal_diagnostic_only": {
+        "signed_frame_offsets": [
+          -704,
+          -640,
+          -704,
+          -640,
+          -704,
+          -640,
+          -704,
+          -640
+        ],
+        "minimum": -704,
+        "maximum": -640,
+        "not_formal_matches": true,
+        "no_median_computed": true
+      }
+    },
+    {
+      "case": "pulse-137.5",
+      "source_frames": 240000,
+      "channels_analyzed_separately": [
+        0,
+        1
+      ],
+      "onset_truth_frames_each_channel": [
+        24000,
+        44945,
+        65891,
+        86836,
+        107782,
+        128727,
+        149673,
+        170618
+      ],
+      "identical_channel_results": true,
+      "predicted_seconds_each_channel": [
+        0.48533332347869873,
+        0.9226666688919067,
+        1.3600000143051147,
+        1.7946666479110718,
+        2.2320001125335693,
+        2.6666667461395264,
+        3.1040000915527344,
+        3.5413334369659424
+      ],
+      "predicted_frames_each_channel": [
+        23296,
+        44288,
+        65280,
+        86144,
+        107136,
+        128000,
+        148992,
+        169984
+      ],
+      "metrics_each_channel": {
+        "f1": 0.0,
+        "false_negative": 8,
+        "false_positive": 8,
+        "matched_frames": [],
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "signed_error_frames": [],
+        "status": "FAIL",
+        "true_positive": 0
+      },
+      "ordinal_diagnostic_only": {
+        "signed_frame_offsets": [
+          -704,
+          -657,
+          -611,
+          -692,
+          -646,
+          -727,
+          -681,
+          -634
+        ],
+        "minimum": -727,
+        "maximum": -611,
+        "not_formal_matches": true,
+        "no_median_computed": true
+      }
+    },
+    {
+      "case": "first-last",
+      "source_frames": 48000,
+      "channels_analyzed_separately": [
+        0,
+        1
+      ],
+      "onset_truth_frames_each_channel": [
+        0,
+        24000,
+        47999
+      ],
+      "identical_channel_results": true,
+      "predicted_seconds_each_channel": [
+        0.48533332347869873
+      ],
+      "predicted_frames_each_channel": [
+        23296
+      ],
+      "metrics_each_channel": {
+        "f1": 0.0,
+        "false_negative": 3,
+        "false_positive": 1,
+        "matched_frames": [],
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "signed_error_frames": [],
+        "status": "FAIL",
+        "true_positive": 0
+      }
+    },
+    {
+      "case": "silence",
+      "source_frames": 48000,
+      "channels_analyzed_separately": [
+        0,
+        1
+      ],
+      "onset_truth_frames_each_channel": [],
+      "identical_channel_results": true,
+      "predicted_seconds_each_channel": [],
+      "predicted_frames_each_channel": [],
+      "metrics_each_channel": {
+        "f1": null,
+        "false_negative": 0,
+        "false_positive": 0,
+        "matched_frames": [],
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": null,
+        "recall": null,
+        "signed_error_frames": [],
+        "status": "PASS",
+        "true_positive": 0
+      }
+    },
+    {
+      "case": "opposite-polarity",
+      "source_frames": 240000,
+      "channels_analyzed_separately": [
+        0,
+        1
+      ],
+      "onset_truth_frames_each_channel": [
+        24000,
+        48000,
+        72000,
+        96000,
+        120000,
+        144000,
+        168000,
+        192000
+      ],
+      "identical_channel_results": true,
+      "predicted_seconds_each_channel": [
+        0.48533332347869873,
+        0.9866666793823242,
+        1.4853333234786987,
+        1.9866666793823242,
+        2.4853334426879883,
+        2.986666679382324,
+        3.4853334426879883,
+        3.986666679382324
+      ],
+      "predicted_frames_each_channel": [
+        23296,
+        47360,
+        71296,
+        95360,
+        119296,
+        143360,
+        167296,
+        191360
+      ],
+      "metrics_each_channel": {
+        "f1": 0.0,
+        "false_negative": 8,
+        "false_positive": 8,
+        "matched_frames": [],
+        "median_absolute_error_frames": null,
+        "p95_absolute_error_frames": null,
+        "precision": 0.0,
+        "recall": 0.0,
+        "signed_error_frames": [],
+        "status": "FAIL",
+        "true_positive": 0
+      }
+    }
+  ],
+  "totals": {
+    "cases": 5,
+    "channels": 10,
+    "passed_channels": 2,
+    "failed_channels": 8,
+    "true_positive": 0,
+    "false_positive": 50,
+    "false_negative": 54,
+    "formal_timing_metrics": "null because there are no matched pairs; silence denominators also remain null"
+  },
+  "source_sha256": {
+    "tools/mir-onset-probe/Cargo.toml": "dc0f37f4e812a1ae024b905bdc36bdcf5052797bed71aa6d6d9e8e7775c87a0e",
+    "tools/mir-onset-probe/Cargo.lock": "db1c8615cf95f7dbd05c685f8a7678f6120ecbf8d96e2074ce4309251d611dfd",
+    "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26"
+  },
+  "binary": {
+    "path": "target/mir-onset-probe-build/release/cocobeat-mir-onset-probe",
+    "sha256": "d9834fc845c531204a47cebeb11e99757a44824a3fdbbf08eb921dd71468c4ae",
+    "profile": "release",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Arch Linux rust 1:1.98.1-2)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 23.1.1\n"
+  },
+  "run": {
+    "command": [
+      "target/mir-onset-probe-build/release/cocobeat-mir-onset-probe",
+      "target/mir-onset-probe-20261003"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 0.3152230639971094,
+    "max_rss_kib": 22116,
+    "address_space_limit_bytes": 2147483648,
+    "exit_semantics": "Exit 1 with report.status=FAIL is an observed quality failure; the report and PCM are retained. Usage or I/O errors also return 1 and must be read separately"
+  },
+  "software_checks": {
+    "unit_tests_passed": 1,
+    "existing_output_preserved": true,
+    "invalid_usage_rejected": true,
+    "commands": [
+      {
+        "command": [
+          "cargo",
+          "fmt",
+          "--manifest-path",
+          "tools/mir-onset-probe/Cargo.toml"
+        ],
+        "exit": 0,
+        "seconds": 0.04992515000049025,
+        "log": "target/mir-onset-probe-validation/final-0.log"
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "--manifest-path",
+          "tools/mir-onset-probe/Cargo.toml",
+          "--target-dir",
+          "target/mir-onset-probe-build",
+          "-j1"
+        ],
+        "exit": 0,
+        "seconds": 0.3376278240029933,
+        "log": "target/mir-onset-probe-validation/final-1.log"
+      },
+      {
+        "command": [
+          "cargo",
+          "clippy",
+          "--offline",
+          "--locked",
+          "--manifest-path",
+          "tools/mir-onset-probe/Cargo.toml",
+          "--target-dir",
+          "target/mir-onset-probe-build",
+          "--all-targets",
+          "-j1",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit": 0,
+        "seconds": 0.3163660050049657,
+        "log": "target/mir-onset-probe-validation/final-2.log"
+      },
+      {
+        "command": [
+          "cargo",
+          "build",
+          "--offline",
+          "--locked",
+          "--release",
+          "--manifest-path",
+          "tools/mir-onset-probe/Cargo.toml",
+          "--target-dir",
+          "target/mir-onset-probe-build",
+          "-j1"
+        ],
+        "exit": 0,
+        "seconds": 116.09092875898932,
+        "log": "target/mir-onset-probe-validation/final-3.log"
+      }
+    ]
+  },
+  "artifact_sha256": {
+    "target/mir-onset-probe-20261003/Cargo.lock": "db1c8615cf95f7dbd05c685f8a7678f6120ecbf8d96e2074ce4309251d611dfd",
+    "target/mir-onset-probe-20261003/report.json": "faf2f98513ccf6eab584d28ef72a7699b2910932b6a61a70da3f285f3eef9a96",
+    "target/mir-onset-probe-20261003/pulse-120/fixture.f32le": "92a3413cd772ce9770b2a7a9022dddff338ea9c251085e74d220d4a4d85201e4",
+    "target/mir-onset-probe-20261003/pulse-120/truth.json": "203f34f64495888ed453c9c4d12a8a7b7984125f598b6a75b9cbcebe854fb652",
+    "target/mir-onset-probe-20261003/pulse-120/predictions.json": "19cd1524379dc114676fccd8e569ec46687ea29b9ef8918f59734faa7258ed99",
+    "target/mir-onset-probe-20261003/pulse-137.5/fixture.f32le": "210d68c09bc1fd96b315c882cac3046d5e15f92a02e7c8a493ba23c51ee4675e",
+    "target/mir-onset-probe-20261003/pulse-137.5/truth.json": "d70bd8e8f07469c67c2a889c804ae7cd472a24b79aed4ae5940bb11b7dd08b83",
+    "target/mir-onset-probe-20261003/pulse-137.5/predictions.json": "5959140c9f2c636ffdf9c721a57406571be06790db225a8944533d1bf67c00f0",
+    "target/mir-onset-probe-20261003/first-last/fixture.f32le": "5460a49b146aec859216d90c7b6948e091470206b69a34a685236fb251529992",
+    "target/mir-onset-probe-20261003/first-last/truth.json": "5b0767ad47f19f67809418e268889c389a23af568b9fc3593df8b691bf06bd4d",
+    "target/mir-onset-probe-20261003/first-last/predictions.json": "a5b165a9673aa389f2f4b7e1a10b9bbd295a4857694afff82e542eac8ca3f795",
+    "target/mir-onset-probe-20261003/silence/fixture.f32le": "fec9afb531a8e036eba1d81651896e1b2c1f78b0234dbadc8e7549563f09407b",
+    "target/mir-onset-probe-20261003/silence/truth.json": "3fe845bb2f2f28b2bc29a072c2b071bdf6a2b15c317a6609587b8557169ca340",
+    "target/mir-onset-probe-20261003/silence/predictions.json": "4cecb5c64037d6f57cc6df0f54a74a806399d9f7be59eb6983f341efb931e733",
+    "target/mir-onset-probe-20261003/opposite-polarity/fixture.f32le": "f594591c52e4162383786a3ec97a8f31d21cd73dae8175c4b5f6e25cca90af8a",
+    "target/mir-onset-probe-20261003/opposite-polarity/truth.json": "203f34f64495888ed453c9c4d12a8a7b7984125f598b6a75b9cbcebe854fb652",
+    "target/mir-onset-probe-20261003/opposite-polarity/predictions.json": "26b79879588f4a0f50661387bf958798488c8463d186b1036d4f0bcae37f179e"
+  },
+  "validation_sha256": {
+    "target/mir-onset-probe-validation/evidence.json": "6699124181290f20fb92534f4ff7d737d3f8fae99b0b8723d47bed0544dfc30e",
+    "target/mir-onset-probe-validation/final-checks.json": "5915e985f138de042f5d4379a48b38163a3816d399c3569688862f5828d1f639",
+    "target/mir-onset-probe-validation/final-0.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/mir-onset-probe-validation/final-1.log": "2e8d129044312b31266608551221b6fafe847d0893961c15f0bb8a77bf52629e",
+    "target/mir-onset-probe-validation/final-2.log": "eb55f04883b2ffe0a970435dcf1987154491abb81f31eca745ec7f6bed1e948d",
+    "target/mir-onset-probe-validation/final-3.log": "3ebbe02c46a6e1736f714a1d60b728baf83d8c1f33f6f3b250d70b616d2efdd2"
+  },
+  "not_run": [
+    "canonical Ogg encode/readback analysis",
+    "MusicAnalysis integration",
+    "AnchorCompiler or Anchor quality",
+    "real music corpus",
+    "human-labelled or listening evaluation",
+    "Windows/ARM execution"
+  ]
+}
