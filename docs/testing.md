@@ -496,3 +496,13 @@ workspace all-targets Clippy、格式、依赖边界与 game/lab 构建通过，
 182 项产物的 `qa-sealed.json` SHA-256 为 `22e2cd2dfa91f5c92924199d3e7e4e2e2ed048f3790b29004715cd95b823f1b7`，主线程逐一核验通过；独立正确性及 ponytail 复审为 `Lean already. Ship.`。并行舞台下一版在本次二进制冻结后继续修改，提交前另将全部 150 个构建输入与暂存内容逐一比对，避免把下一批源码混入本次验收
 
 本批只交付实际可用的编辑内核与 CLI，波形时间线、候选证据界面、Replay JSONL 诊断和正式菜单接线继续按 09 推进；Windows/ARM 原生导出、真实音频/手柄和真人体验尚未由这些结果验收
+
+## MIR 频带分母下限候选
+
+2026-10-03，在既有六频带和局部选峰上，仅加入固定幅值比例 `beta = 0.01` 的分母下限 `max(D, band_bins × beta × local_peak_magnitude)`，复用原 FFT，不增加 PCM、依赖或绝对音量门槛。运行前审查删除了一处重复声明字段后重新冻结，正式[声明](../testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json)、实际执行器断言及原始落盘副本的 SHA-256 均为 `8cdf238f1428af2f1dd9ebda5f4735d98c6b618fdf60fbf35530f5c9236283c3`，参数与输入未在运行后修改
+
+7 项软件测试、fmt、隔离 Clippy 和 release 构建通过；唯一一次完整 34 项运行因质量 FAIL 退出 1。31 项离散为 21 PASS / 10 FAIL，额外峰 665 → 269、漏检 4 → 6；3 项连续控制仍不评分。两项 384 帧近邻和弱叠加均通过原门槛，持续音内部旁瓣假峰清零；旧分频候选的 6 项退化恢复 3 项，noise burst、kick、snare 仍失败，原 7 项边界失败继续保留，因此目标修复和生产准入仍 FAIL
+
+局部分母改变也会改变极值位置，kick 出现的 21 个新坐标已明确记录，未把新预测伪称旧候选子集；新增两次漏检来自持续音内部假峰不再被容差误配到首帧。三个旧基线的 51,158 窗、四路 Matcher 及输入身份完整复现，独立 f64 FFT 的全部 34 项新预测列表一致；有实际 floor 生效的持续音窄测还核对共同增益缩放与 E 不增性质
+
+正式运行命令见 `target/mir-band-floor-20261003/execution.json`，软件日志为同目录的 `tests-final.log`、`clippy-final.log` 与 `build.log`；实际工具 SHA-256 为 `b20305e200311b88c1351c0adb4763c2b9e0bacd38466b3d09a02a3075a0d9f7`；[持久观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-band-floor-20261003.json) SHA-256 为 `96f85582b251735927937a763467073da6b67164e8ff48da480b6168a3ebd0e8`。独立复算与 ponytail 复审通过，结论为 `Lean already. Ship.`；后续依据剩余噪声与衰减结构加入时间背景门控，同一完整矩阵继续评分，真实音乐、编码回读、标签与生产 MusicAnalysis 不因这批软件结果获得验收

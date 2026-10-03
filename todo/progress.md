@@ -26,7 +26,7 @@
 | 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
 | 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；25 项 media 测试通过；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
 | 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；完整 MIR/Anchor/Stage 输出及游戏曲库仍待后续 |
-| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 新分频候选质量 FAIL：17 PASS / 14 FAIL、665 额外峰、6 旧 PASS 退化；6 项软件测试通过，旧 51,158 窗及新全部预测独立复现；已定位低幅值旁瓣放大，继续修复分母尺度，原全谱 21 PASS / 10 FAIL 与人工标签缺口保留 |
+| 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 固定分母下限候选质量 FAIL：21 PASS / 10 FAIL、269 额外峰、6 漏检；7 项软件测试和旧 51,158 窗/新全部预测独立复现；近邻继续通过、弱叠加恢复，噪声/打击衰减继续修复，旧基线与人工标签缺口保留 |
 | 18 | 精度优先的 AnchorCompiler · 07 | 待分配 | NOT RUN | 17 | 接受/拒绝证据、确定性排序、低置信度留空与人工审阅 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | 已实现真实区间的直道/广场、固定地面网格、实际终点和整数预告；115 项相关测试及 Clippy/构建通过，真实包与 GPU 证据见验证策略；缓弯/桥/完整组合、跨版本视觉 Replay 及设备性能仍待完成 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + editor_export + editor_cli + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 已实现精确 Anchor 编辑、撤销重做、原字节保真导出和实际修包 CLI；47 项相关测试、35 项真实包/CLI 用例和 1 张改谱 GPU 图通过，Replay JSONL、时间线界面和完整退出继续后续 |

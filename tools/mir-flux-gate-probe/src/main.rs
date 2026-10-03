@@ -26,6 +26,10 @@ const BAND_DECLARATION: &str = include_str!(
 );
 const BANDS: [(usize, usize); 6] = [(0, 2), (2, 4), (4, 8), (8, 16), (16, 32), (32, 65)];
 const LOCAL_RADIUS: usize = 2;
+const RELATIVE_PEAK_FLOOR: f64 = 0.01;
+const FLOOR_DECLARATION: &str = include_str!(
+    "../../../testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json"
+);
 
 fn evidence(strength: f64, mass: &[f64], index: usize) -> (f64, f64) {
     let lo = index.saturating_sub(RADIUS);
@@ -305,15 +309,24 @@ fn local_peak(values: &[f64], index: usize) -> bool {
 }
 
 fn analyze_bands(samples: &[f32]) -> Value {
+    let [baseline, _] = analyze_band_variants(samples);
+    baseline
+}
+
+fn analyze_band_variants(samples: &[f32]) -> [Value; 2] {
     let started = Instant::now();
     let windows = frozen::windows(samples.len());
     let mut detectors: [_; 6] =
         std::array::from_fn(|_| OnsetDetector::new(OnsetFunction::SpectralFlux, 48_000.0, 64, 1.5));
     let mut strengths = Vec::new();
     let mut masses = Vec::new();
+    let mut peaks = Vec::new();
+    let mut bin_counts = Vec::new();
     for &(start, end) in &windows {
         let magnitudes = frozen::magnitudes(&samples[start..end]);
         let bins = magnitudes.len() / 2 + 1;
+        peaks.push(magnitudes[..bins].iter().copied().fold(0.0, f32::max));
+        bin_counts.push(BANDS.map(|(lo, hi)| hi.min(bins) - lo.min(bins)));
         let mut strength = [0.0; 6];
         let mut mass = [0.0; 6];
         for (band, &(lo, hi)) in BANDS.iter().enumerate() {
@@ -324,45 +337,64 @@ fn analyze_bands(samples: &[f32]) -> Value {
         strengths.push(strength);
         masses.push(mass);
     }
-    let mut envelope = Vec::new();
-    let mut evidence = Vec::new();
-    for (index, &(start, end)) in windows.iter().enumerate() {
-        let lo = index.saturating_sub(LOCAL_RADIUS);
-        let hi = (index + LOCAL_RADIUS + 1).min(windows.len());
-        let mut denominator = [0.0; 6];
-        let mut ratio = [0.0; 6];
-        let mut winner = 0;
-        for band in 0..BANDS.len() {
-            denominator[band] = masses[lo..hi]
-                .iter()
-                .map(|mass| mass[band])
-                .fold(0.0, f64::max);
-            if denominator[band] > 0.0 {
-                ratio[band] = f64::from(strengths[index][band]) / denominator[band];
+    [false, true].map(|with_floor| {
+        let mut envelope = Vec::new();
+        let mut evidence = Vec::new();
+        for (index, &(start, end)) in windows.iter().enumerate() {
+            let lo = index.saturating_sub(LOCAL_RADIUS);
+            let hi = (index + LOCAL_RADIUS + 1).min(windows.len());
+            let context_peak = f64::from(peaks[lo..hi].iter().copied().fold(0.0, f32::max));
+            let mut denominator = [0.0; 6];
+            let mut floor = [0.0; 6];
+            let mut effective = [0.0; 6];
+            let mut ratio = [0.0; 6];
+            let mut winner = 0;
+            for band in 0..BANDS.len() {
+                denominator[band] = masses[lo..hi]
+                    .iter()
+                    .map(|mass| mass[band])
+                    .fold(0.0, f64::max);
+                floor[band] = bin_counts[index][band] as f64 * RELATIVE_PEAK_FLOOR * context_peak;
+                effective[band] = if with_floor {
+                    denominator[band].max(floor[band])
+                } else {
+                    denominator[band]
+                };
+                if effective[band] > 0.0 {
+                    ratio[band] = f64::from(strengths[index][band]) / effective[band];
+                }
+                if ratio[band] > ratio[winner] {
+                    winner = band;
+                }
             }
-            if ratio[band] > ratio[winner] {
-                winner = band;
+            evidence.push(ratio[winner]);
+            let mut row = json!({"analysis_index": index, "support_start": start,
+                "support_end_exclusive": end, "coordinate_frame": start + (end - start) / 2,
+                "band_strength": strengths[index], "band_mass": masses[index],
+                "band_denominator": denominator, "band_ratio": ratio,
+                "winning_band": winner, "evidence": ratio[winner]});
+            if with_floor {
+                row["window_peak_magnitude"] = json!(peaks[index]);
+                row["context_peak_magnitude"] = json!(context_peak);
+                row["band_bin_count"] = json!(bin_counts[index]);
+                row["band_floor"] = json!(floor);
+                row["band_effective_denominator"] = json!(effective);
+            }
+            envelope.push(row);
+        }
+        let mut predicted = Vec::new();
+        for (index, row) in envelope.iter_mut().enumerate() {
+            let peak = local_peak(&evidence, index);
+            row["peak"] = json!(peak);
+            if peak {
+                predicted.push(row["coordinate_frame"].as_u64().unwrap() as usize);
             }
         }
-        evidence.push(ratio[winner]);
-        envelope.push(json!({"analysis_index": index, "support_start": start,
-            "support_end_exclusive": end, "coordinate_frame": start + (end - start) / 2,
-            "band_strength": strengths[index], "band_mass": masses[index],
-            "band_denominator": denominator, "band_ratio": ratio,
-            "winning_band": winner, "evidence": ratio[winner]}));
-    }
-    let mut predicted = Vec::new();
-    for (index, row) in envelope.iter_mut().enumerate() {
-        let peak = local_peak(&evidence, index);
-        row["peak"] = json!(peak);
-        if peak {
-            predicted.push(row["coordinate_frame"].as_u64().unwrap() as usize);
-        }
-    }
-    assert!(predicted.windows(2).all(|pair| pair[0] < pair[1]));
-    assert!(predicted.iter().all(|&frame| frame < samples.len()));
-    json!({"predicted_frames": predicted, "envelope": envelope,
-        "elapsed_seconds": started.elapsed().as_secs_f64()})
+        assert!(predicted.windows(2).all(|pair| pair[0] < pair[1]));
+        assert!(predicted.iter().all(|&frame| frame < samples.len()));
+        json!({"predicted_frames": predicted, "envelope": envelope,
+            "elapsed_seconds": started.elapsed().as_secs_f64()})
+    })
 }
 
 fn run_bands(
@@ -456,9 +488,98 @@ fn run_bands(
     Ok(passed)
 }
 
+fn run_floor(reference: &Path, output: &Path) -> Result<bool, Box<dyn std::error::Error>> {
+    fs::create_dir(output)?;
+    fs::write(output.join("declaration.json"), FLOOR_DECLARATION)?;
+    let declaration: Value = serde_json::from_str(FLOOR_DECLARATION)?;
+    let old: Value = serde_json::from_slice(&fs::read(reference)?)?;
+    let references = old["cases"].as_array().unwrap();
+    let inputs = declaration["inputs"].as_array().unwrap();
+    assert_eq!(references.len(), 34);
+    assert_eq!(references.len(), inputs.len());
+    let mut cases = Vec::new();
+    for (reference, input) in references.iter().zip(inputs) {
+        assert_eq!(reference["input"], *input, "declared input changed");
+        let samples = frozen::load(
+            Path::new(input["pcm_path"].as_str().unwrap()),
+            input["channels"].as_u64().unwrap() as usize,
+            input["channel"].as_u64().unwrap() as usize,
+            input["sample_frames"].as_u64().unwrap() as usize,
+        )?;
+        let mut native = analyze(&samples);
+        let [mut bands, mut floor] = analyze_band_variants(&samples);
+        // All four analyses finish before labels enter the unchanged matcher
+        let truth: Option<Vec<usize>> = serde_json::from_value(input["truth_frames"].clone())?;
+        for (predictions, metrics) in [
+            ("predicted_frames", "native_metrics"),
+            ("accepted_frames", "metrics"),
+        ] {
+            let frames: Vec<usize> = serde_json::from_value(native[predictions].clone())?;
+            native[metrics] = truth
+                .as_ref()
+                .map_or(Value::Null, |truth| frozen::score(truth, &frames));
+        }
+        for result in [&mut bands, &mut floor] {
+            let frames: Vec<usize> = serde_json::from_value(result["predicted_frames"].clone())?;
+            result["metrics"] = truth
+                .as_ref()
+                .map_or(Value::Null, |truth| frozen::score(truth, &frames));
+        }
+        let parsed: Value = serde_json::from_str(&serde_json::to_string(&native)?)?;
+        for key in [
+            "envelope",
+            "predicted_frames",
+            "accepted_frames",
+            "native_metrics",
+            "metrics",
+        ] {
+            assert_eq!(
+                parsed[key], reference["baseline"][key],
+                "native/full-gate baseline changed: {key}"
+            );
+        }
+        let parsed: Value = serde_json::from_str(&serde_json::to_string(&bands)?)?;
+        for key in ["envelope", "predicted_frames", "metrics"] {
+            assert_eq!(parsed[key], reference[key], "band baseline changed: {key}");
+        }
+        bands["baseline"] = native;
+        bands["input"] = input.clone();
+        floor["baseline"] = bands;
+        floor["input"] = input.clone();
+        cases.push(floor);
+    }
+    assert_eq!(
+        cases
+            .iter()
+            .filter(|case| !case["metrics"].is_null())
+            .count(),
+        31
+    );
+    let passed = cases
+        .iter()
+        .all(|case| case["metrics"].is_null() || case["metrics"]["status"] == "PASS");
+    let report = json!({"status": if passed {"PASS"} else {"FAIL"}, "declaration": declaration,
+        "baseline_reproduction": "PASS: all34 native, full-spectrum-gate and band-local outputs exactly reproduced apart from timings",
+        "independent_picker": true, "confidence": null, "real_music": "NOT RUN",
+        "canonical_ogg": "NOT RUN", "human_labels": "NOT RUN", "cases": cases});
+    fs::write(
+        output.join("report.json"),
+        format!("{}\n", serde_json::to_string_pretty(&report)?),
+    )?;
+    println!(
+        "{}: {}",
+        output.join("report.json").display(),
+        report["status"]
+    );
+    Ok(passed)
+}
+
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
     let result = match args.as_slice() {
+        [mode, reference, output] if mode == "--floor-candidate" => {
+            run_floor(Path::new(reference), Path::new(output))
+        }
         [mode, old, controls, output] if mode == "--band-candidate" => {
             run_bands(Path::new(old), Path::new(controls), Path::new(output))
         }
@@ -466,7 +587,7 @@ fn main() -> ExitCode {
         [reference, output] => run(Path::new(reference), Path::new(output)),
         _ => {
             eprintln!(
-                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>\n       cocobeat-mir-flux-gate-probe --band-candidate <frozen-gate-report.json> <frozen-controls-report.json> <new-output-directory>"
+                "Usage: cocobeat-mir-flux-gate-probe <frozen-flux-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --controls <new-output-directory>\n       cocobeat-mir-flux-gate-probe --band-candidate <frozen-gate-report.json> <frozen-controls-report.json> <new-output-directory>\n       cocobeat-mir-flux-gate-probe --floor-candidate <frozen-band-report.json> <new-output-directory>"
             );
             return ExitCode::FAILURE;
         }
@@ -484,6 +605,103 @@ fn main() -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn relative_floor_retains_real_support_gain_and_only_reduces_evidence() {
+        let declaration: Value = serde_json::from_str(FLOOR_DECLARATION).unwrap();
+        assert_eq!(
+            declaration["parameters"]["relative_peak_floor"],
+            RELATIVE_PEAK_FLOOR
+        );
+        let mut samples = vec![0.0; 2048];
+        samples[512] = 0.25;
+        let [baseline, floor] = analyze_band_variants(&samples);
+        assert_eq!(floor["predicted_frames"], json!([512]));
+        let scaled: Vec<_> = samples.iter().map(|value| value * 0.5).collect();
+        let [_, quieter] = analyze_band_variants(&scaled);
+        assert_eq!(floor["predicted_frames"], quieter["predicted_frames"]);
+        for ((old, new), quiet) in baseline["envelope"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .zip(floor["envelope"].as_array().unwrap())
+            .zip(quieter["envelope"].as_array().unwrap())
+        {
+            assert!(new["evidence"].as_f64().unwrap() <= old["evidence"].as_f64().unwrap());
+            assert_eq!(new["support_start"], old["support_start"]);
+            assert_eq!(new["support_end_exclusive"], old["support_end_exclusive"]);
+            assert_eq!(new["coordinate_frame"], old["coordinate_frame"]);
+            assert_eq!(new["band_bin_count"], json!([2, 2, 4, 8, 16, 33]));
+            for band in 0..6 {
+                assert_eq!(
+                    quiet["band_floor"][band].as_f64().unwrap(),
+                    new["band_floor"][band].as_f64().unwrap() * 0.5
+                );
+                assert!(
+                    new["band_effective_denominator"][band].as_f64().unwrap()
+                        >= old["band_denominator"][band].as_f64().unwrap()
+                );
+            }
+        }
+        let row = floor["envelope"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|row| row["peak"] == true)
+            .unwrap();
+        let peak = row["context_peak_magnitude"].as_f64().unwrap();
+        assert!(peak > 0.0);
+        assert_eq!(
+            row["band_floor"][0],
+            json!(2.0 * RELATIVE_PEAK_FLOOR * peak)
+        );
+        assert_eq!(
+            row["band_floor"][5],
+            json!(33.0 * RELATIVE_PEAK_FLOOR * peak)
+        );
+        let tone: Vec<_> = (0..2048)
+            .map(|i| (0.2 * (std::f64::consts::TAU * 440.0 * i as f64 / 48_000.0).cos()) as f32)
+            .collect();
+        let [old, tone_floor] = analyze_band_variants(&tone);
+        let quieter: Vec<_> = tone.iter().map(|value| value * 0.5).collect();
+        let [_, quiet_floor] = analyze_band_variants(&quieter);
+        let mut active = 0;
+        for (index, row) in tone_floor["envelope"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .enumerate()
+        {
+            assert!(
+                row["evidence"].as_f64().unwrap()
+                    <= old["envelope"][index]["evidence"].as_f64().unwrap()
+            );
+            assert_eq!(row["evidence"], quiet_floor["envelope"][index]["evidence"]);
+            for band in 0..6 {
+                let denominator = row["band_effective_denominator"][band].as_f64().unwrap();
+                assert_eq!(
+                    quiet_floor["envelope"][index]["band_effective_denominator"][band]
+                        .as_f64()
+                        .unwrap(),
+                    denominator * 0.5
+                );
+                active +=
+                    usize::from(denominator > row["band_denominator"][band].as_f64().unwrap());
+            }
+        }
+        assert!(active > 0, "gain test must exercise an active floor");
+        for input in [&[0.0; 128][..], &[1.0][..]] {
+            let [_, result] = analyze_band_variants(input);
+            assert_eq!(result["predicted_frames"], json!([]));
+            if input.len() == 1 {
+                assert_eq!(
+                    result["envelope"][0]["band_bin_count"],
+                    json!([1, 0, 0, 0, 0, 0])
+                );
+                assert_eq!(result["envelope"][0]["band_floor"][1], 0.0);
+            }
+        }
+    }
 
     #[test]
     fn band_evidence_selects_one_earliest_real_support_without_inventing_history() {

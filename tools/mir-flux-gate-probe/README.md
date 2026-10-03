@@ -1,6 +1,6 @@
 # 正向谱变化证据门槛
 
-本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；这两种模式共用原固定过滤器，`--band-candidate` 对同一批固定输入验证独立选峰候选；均不接生产 MIR
+本工具在[冻结的原生 Flux 候选](../mir-flux-probe/README.md)输出处加一个过滤条件，复用其 FFT、真实 PCM 窗、原生峰选择和原始 Matcher；默认模式读取上一批落盘的全部 24 项离散输入与 1 项连续观测，`--controls` 模式生成下述新控制；这两种模式共用原固定过滤器，`--band-candidate` 对同一批固定输入验证独立选峰候选，`--floor-candidate` 验证带分母下限；均不接生产 MIR
 
 ## 根因与固定适配
 
@@ -162,3 +162,54 @@ FN 从 10 降到 4 也不表示可靠恢复了 6 个真实攻击：持续噪声�
 独立核对全部 34 项 PCM 身份、51,158 窗和 306,948 个带窗口，旧原生与全谱过滤逐窗/预测/指标完全复现，新公式与全部 Matcher 字段也复算通过；另对实际 PCM 做 NumPy f64 FFT，34 项预测坐标全部一致，谱质量/Flux/ratio 最大绝对差分别约 1.59e-5 / 1.65e-5 / 2.21e-5，不宣称跨 FFT 的原生 f32 位或近似平局胜出带一致
 
 本候选保留为失败的研究实现，不接入 MusicAnalysis；下一步只针对已有的低质量带放大问题形成有明确幅值尺度的归一化下限约束，再验证同一完整矩阵，不追加标签、缩小范围或降低质量门槛
+
+## 带宽与局部谱峰下限
+
+`--floor-candidate` 实施唯一 `band-peak-floor-v1`，复用同一 34 项实际 PCM、构造真值与 Matcher；[运行前声明](../../testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json) SHA-256 为 `8cdf238f1428af2f1dd9ebda5f4735d98c6b618fdf60fbf35530f5c9236283c3`，在正式运行前经独立审查冻结，不新增质量样本或改写旧结果
+
+令 P 为同一 ±2 窗内所有真实单边 bins 的最大原生 f32 幅值，n 为当前带实际裁剪后的 bin 数；唯一改动是将带分母设为 `max(D, n * 0.01 * P)`，其余 F、六带、128 / 64 Hamming、0.5 门槛、局部最大选择与时间坐标保持原样。完整窗 n 为 `[2,2,4,8,16,33]`；零谱、空带和不可观察的首窗不补候选
+
+0.01 是根据已见开发回归设定的唯一工程常数，对应 -40 dB 幅值比例；带宽补偿使下限与带幅值总和具有相同单位，不宣称来自感知校准或外部最优参数。此下限与 F、S 在共同有限增益下按同一尺度变化，没有固定绝对电平门槛；不宣称任意 f32 增益下位一致
+
+旧 band 与新 floor 共用一次 FFT 特征遍历，报告保留原 D、实际 bin 数、窗口/上下文谱峰、floor 项及最终有效分母；新 E 不大于旧 E，但局部排序可能变化，预测不保证是旧预测子集。每项同时重现旧 band、全谱过滤与原生 Flux 的全部窗、预测和指标，只排除计时字段
+
+以下命令要求声明列出的原冻结报告与 PCM 已在对应路径；前节重新运行的报告包含新计时值，不能直接代替这些哈希固定的参考文件。验证覆盖 4 份参考报告与所有完整 PCM 的运行前后哈希，输出目录须尚不存在
+
+```sh
+python3 - "$mir_build/release/cocobeat-mir-flux-gate-probe" target/mir-band-floor-reproduction <<'PY'
+import hashlib, json, pathlib, subprocess, sys
+p = pathlib.Path('testdata/synthetic/mir-flux-gate-probe/declared-band-floor-20261003.json')
+assert hashlib.sha256(p.read_bytes()).hexdigest() == '8cdf238f1428af2f1dd9ebda5f4735d98c6b618fdf60fbf35530f5c9236283c3'
+d = json.loads(p.read_text())
+files = d['references'] + [
+    {'path': i['pcm_path'], 'sha256': i['pcm_sha256']} for i in d['inputs']]
+def verify():
+    for item in files:
+        assert hashlib.sha256(pathlib.Path(item['path']).read_bytes()).hexdigest() == item['sha256']
+verify()
+result = subprocess.call([sys.argv[1], '--floor-candidate', d['references'][0]['path'], sys.argv[2]])
+verify()
+raise SystemExit(result)
+PY
+```
+
+### 局部谱峰下限首次运行结果
+
+软件验证 PASS，目标修复与整体质量仍 FAIL；[完整观察清单](../../testdata/synthetic/mir-flux-gate-probe/observations-band-floor-20261003.json)保留全部预测、配对、新峰与失败，正式全窗报告在 `target/mir-band-floor-20261003/results-v1/report.json`，仅运行一次固定候选
+
+| 31 项离散控制 | 原生 Flux | 原全谱过滤 | 原 band-local | band-peak-floor |
+| --- | --- | --- | --- | --- |
+| PASS / FAIL | 14 / 17 | 21 / 10 | 17 / 14 | 21 / 10 |
+| TP / FP / FN | 333 / 766 / 7 | 330 / 0 / 10 | 336 / 665 / 4 | 334 / 269 / 6 |
+
+两种 384 帧近邻继续输出 `[11968,12352]`；弱声部叠加输出 `[6016,24000]` 且没有额外峰，三项均通过原门槛。原 band 的 17 项 PASS 全部保留，之前 6 项退化中恢复静默后 440 Hz / 9973 Hz 音和等幅叠加这 3 项；noise burst、kick-like 和 snare-like 仍分别有 70、34、31 个额外峰，目标修复门槛尚未满足
+
+持续 440 Hz / 9973 Hz 的内部假峰全部清除，因而原 Matcher 曾将内部峰误配给 frame-zero 标签的两次 TP 也消失，FN 从 4 增至 6；未补首帧，原 7 项边界工程失败全保留。持续噪声仍有 134 个额外峰，frame 384 仍被 ±480 容差配给 0，不能视为首帧 onset 恢复；3 项连续观测均变为 0 峰，truth 和 metrics 仍为 null
+
+所有新 E 都不大于旧 E，但 kick 的 47 峰变为 37 峰时出现了 21 个旧列表中不存在的坐标，其局部最大次序确有改变，全部新坐标已记录。剩余失败的首个额外峰胜出带中，原 D 已高于本次 floor：noise burst 的幅值占比约 4.82%，snare 约 6.36%，kick 约 94.33%；这些真实带变化不能统一归为低质量旁瓣或 f32 噪声，继续调本轮 beta 没有验收依据
+
+7 项软件测试、fmt、Clippy 和 release 构建通过；新增窄测包含实际触发 floor 的 440 Hz cosine、0.5 倍增益、脉冲坐标、空带和单样本边界。运行前独立审查通过，唯一正式采样约 2.259 秒、最大子进程 RSS 1147812 KiB，包含冻结报告及全量 JSON，仅为研究工具观测
+
+独立复算核对 34 项输入与 29 个 PCM 文件、4 份参考报告、全部 51,158 窗及 306,948 个带窗口，旧三基线和四路 Matcher 完整复现。另从实际 PCM 做 NumPy f64 FFT，34 项预测坐标全部相同，谱幅值和 / Flux / ratio 最大绝对差约 1.59e-5 / 1.65e-5 / 3.37e-6；不宣称原生 f32 位一致或近似平局的胜出带一致
+
+本轮结果冻结为未准入的研究候选；剩余修复须解释噪声统计波动和打击衰减过程，同时保留已恢复的 8 ms 弱近邻。真实音乐、独立人工标注、canonical Ogg、beat/downbeat、confidence 和 Anchor 可玩性尚未验收
