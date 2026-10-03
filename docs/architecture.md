@@ -9,6 +9,7 @@ replay ─────────────→ schema / core
 media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
 stage ──────────────→ schema / std
 editor ─────────────→ schema / std
+net ────────────────→ schema / core / replay / media / Quinn / Tokio / rcgen
 core ───────────────→ schema
 schema ─────────────→ std
 lab ────────────────→ 按实验需要使用上述模块
@@ -33,6 +34,8 @@ media 的 `read_package` 检查四对象，从同一份有界音频字节快照�
 
 editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最多 1024 步增量撤销历史，成功新变更清空 redo，失败与原地移动保留状态；lab 的 `edit-anchors` 解析有界补丁并核对完整源包身份，操作全部成功后调用 media 的 `export_anchors`。media 保留原音频与分析对象字节，真实变更只重建 chart 和 manifest，无变化导出保留四对象原字节及身份；输出位于源包外的全新目录，来源校验、复制与发布沿用内容事务，具体使用见 [内容编辑](editor.md)
 
+net 拥有受邀请的 QUIC 端点、证书与能力校验、可靠历史、会话屏障和应用 FinishAck，lab 的 `net-host` / `net-join` 是当前消费者；双方预装同包，用现有 Replay 模板提供每玩家子序列，经唯一 core 生成权威 Replay，断线只保存已成功 ingest 的前缀。net 不依赖 runtime / Bevy / Kira，资源接收、音频 ClockSync 和正式游戏联网入口继续独立接线，具体状态与限额见 [网络会话](network-sessions.md)
+
 media 的纯 `compile_anchor_proposal` 只消费完整合法 MusicAnalysis、实际帧数和显式策略，以稳定排序选择 onset，返回独立 AnchorProposal 与全部接受 / 拒绝证据；lab 将其保存为有界报告，采用时核对来源并完整重编，再交给原保真导出。现有手工包没有 onset 时返回空提案，报告不代表生产 MIR / 音乐置信度准入，也不取代原 chart 的 SectionCue，详细字段见 [Anchor 提案](anchors.md)
 
 `SongContent` 保留 chart 的点提示，app 在 Session 更新后派生最近 / 下一 cue，再把辅助字幕和下一时刻交给 view / scene；下一时刻严格晚于当前游标，同帧多项选择最高 ID，HUD 优先下一项、没有下一项才用最近项，scene 的固定三个门框实体仅在未来六秒内显示；歌曲包以 StagePlan 的整数三轴位置差定位预告，无参数开发场景沿用 `z = -3 × ahead`，以上表现不进入 core 或 Replay 输入事实，也不修改音频生命周期与输入规则
@@ -52,7 +55,7 @@ StagePlan 身份由完整内容身份与 `compiler_version = 2` 组成，计划�
 | media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口与构包已有 lab 消费，runtime 加载已构建包；其余按 05–07 的实际契约加入 |
 | stage（已创建） | 真实分析区间 → Straight / Plaza / Curve / Bridge StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；完整自动编排与视觉 Replay 仍按 08 / 09 推进 |
 | editor（已创建） | 精确 Anchor 编辑和有界撤销重做；后续由时间线界面消费 | 09 的 lab 修包 CLI 已消费，波形、候选证据与 Replay 诊断界面仍待后续 |
-| net | Quinn 传输、会话、时钟映射、可靠输入历史和资源一致性 | 10 本地闭环与重放通过后 |
+| net（已创建） | 受邀请的 Quinn 会话、可靠输入历史与权威 Replay；后续资源接收和时钟映射 | 10 的预装同包 headless 入口已由 lab 消费，正式游戏接线后续 |
 
 media / stage / editor / net 允许依赖 schema，不能依赖 runtime；media 复用 schema 的唯一标准采样率。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
 
@@ -61,10 +64,10 @@ media / stage / editor / net 允许依赖 schema，不能依赖 runtime；media 
 ```text
 Bevy 输入消息 → ClockBridge → Hit / 水位 → core::DuoEngine → 语义事件
                                    ↑                          ↓
-                          Replay / 未来网络            app 声光反馈 → view
+                          Replay / 网络会话            app 声光反馈 → view
 ```
 
-相同输入历史、规则版本、内容和 epoch 必须得到相同规则结果；Replay 不另写判定算法，未来网络到达时间不能改写原始输入时间，view 不获得规则引擎的可变控制能力
+相同输入历史、规则版本、内容和 epoch 必须得到相同规则结果；Replay 不另写判定算法，网络到达时间不能改写原始输入时间，view 不获得规则引擎的可变控制能力
 
 正常启动接受 `--package DIR`，也可追加 `--replay FILE` 或 `--visual-smoke PNG` 校验该包的 Replay 或生成无音频场景预览；`--section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 用同一 cue 查询生成指定帧的无音频预览，帧范围包含 EOF，完整参数见 [SongPackage](song-package.md)；加载失败或规则不是 `duo-watermark-v1` 时退出，无参数正常启动才选择确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口保留开发内容
 
@@ -78,6 +81,6 @@ lab 的 `inspect-replay` 复用 `Replay::replay` 唯一重放循环，从返回�
 
 `cargo xtask boundaries` 检查 Cargo metadata 中所有直接依赖声明，包括 build/dev、目标平台条件与重命名依赖。
 schema / core 不允许外部依赖，stage 只允许 schema 与标准库并由 runtime / lab 消费，replay 仅允许 serde / serde_json 处理私有持久化格式，且只能沿上图依赖；game 的运行时只允许 runtime，Windows 构建脚本允许 embed-resource 编译 EXE 图标资源，例外不扩展到普通、dev 或其它平台依赖；media、runtime 和 lab 可接入第三方实现依赖，未声明的本地 helper 不得绕过边界
-需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
+net 采用实际本地及第三方依赖的明确白名单，并拒绝 Bevy / Kira；需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
 
 边界检查约束模块图，不能证明所有函数都尊重语义；例如反馈不修改判定，还需要 API 设计、测试和代码审查。

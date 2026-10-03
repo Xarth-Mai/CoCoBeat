@@ -581,3 +581,20 @@ ECS 检查固定 208 个 Mesh3d、14 个 Mesh 资产、9 个动态条带和两�
 [审阅清单](../testdata/synthetic/dev-song-review/README.md)仅从既有原创 64 秒 WAV 及已核对配方生成 438 个声部起点 / 200 条合并来源候选，另含 7 个结构边界和原 7 个创作 Anchor。人工 onset 帧 / 不确定区间 / 审阅者及可玩性字段全部 pending / null；静音内部没有候选，独占 EOF 单列，反相 hat 的立体声与下混边界有明确说明
 
 生成器使用 Python 标准库，实际 WAV、Rust 配方和两个 CSV 的身份均校验；逐字节复现、防覆盖后字节保持、来源漂移拒绝及全部计数 / 人工字段检查通过，独立复审为 `Lean already. Ship.`。验证记录在 `target/dev-song-review-20261003/validation.json`；`review.json` SHA-256 为 `423cb400130a28bb91e46de29eea9124a9656a5d8ddc3c066a24dbe4a64e8404`，来源与许可已登记，没有新音频、外部语料、MIR 运行或人工听感验收
+
+
+## 受邀请的 QUIC 可靠历史软件会话
+
+2026-10-03 的 `net-host` / `net-join` 使用最新稳定 Quinn 0.11.12、quinn-proto 0.11.19、rustls 0.23.45、rcgen 0.14.10 与已有 Tokio 1.53.1，manifest 保持主版本范围；新增 39 个第三方版本，完整台账为 586 项，既有版本未移除或替换，runtime / game 尚未接入网络
+
+`cargo test --locked --offline -p cocobeat-net -p xtask` 的 11 项测试通过；首轮 Clippy 暴露测试对 `usize::MAX` 临时值取可变引用，改为局部变量后重跑 7 项 net 测试及相关 all-targets Clippy 通过，原失败日志保留。net 的依赖白名单进一步明确拒绝 Bevy / Kira，4 项 xtask 测试、Clippy、格式和边界另行通过；测试重复执行不重复计数
+
+lab 实际构建通过，冻结二进制 SHA-256 为 `899447d5777dc198443d1eeaf6970db38307390de835b439df109515fbd58836`，受控 peer 为 `9ce1d80ffe7878eb1900d91a9e30958ad7a86358d27f282364c9386ca63aed4f`；196 项源码输入与命令记录在 `target/net-runtime-20261003/`，lab 构建期间只有不在其依赖链内的 xtask 白名单修改，已在修改后独立检查，工作台改动在 lab 冻结后才接入，不混入本批网络证据
+
+13 个场景 / 30 条真实进程命令通过：两个产品 OS 进程在实际 loopback UDP / QUIC 连接中完成邀请、Ready / Start、可靠历史和 FinishAck；135 条事实的 P1/P2 子序列分别为 68 / 67 项，得到精确 16 个规则事件，双方权威 Replay 字节相同，实时 core 与保存后的 Replay 重放一致。受控 guest 逐条发送及延迟最终水位后得到相同完整结果，所有诊断 JSONL 逐字段与独立字面规则预期比较
+
+终态水位前断线实际保留 68 / 66 项历史，双方 Hit 已到而 P2 仍停在 -1 水位，0 个事件、7 个 Anchor 待确认，不补 Miss；认证后的超终点水位拒绝且不录入错误事实。错误 FinishAck 哈希和只 FIN 未发应用 Ack 都保持 `AUTHORITY_VERIFIED_UNCONFIRMED`，不会报告 COMPLETE
+
+不同合法包和错误 token 在真实 TLS 后的 Hello 阶段拒绝，合法替代 DER 配自洽指纹在实际 TLS 握手拒绝；单改指纹仅算本地邀请校验，缺尾水位、已有输出和源包内输出仅算本地预检，二者均与真实连接案例分开记录。源包、模板、验证脚本及既有输出保持原字节，全部自有进程正常收敛；没有输出 token 或私钥
+
+逐进程耗时含本地包验证、连接和关闭，135 项事实不证明最大容量性能；独立既有 144,004-fact Replay 压力测试也不等于 QUIC 的容量验证。本批没有 GPU、音频、物理输入、两台机器或 LAN/WAN 结果，同信任根下另一 leaf 的独立 pin 分支仅有代码审查；资源传输、ClockSync、未来 ScheduleStart 和正式游戏网络入口继续在 todo/10 推进

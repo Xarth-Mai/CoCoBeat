@@ -1,6 +1,6 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 547 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 586 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
@@ -10,14 +10,17 @@
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
-| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：最终音频、分析、谱面对象及规范 manifest 的字节身份 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
-| [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化；media/lab：私有内容格式和创作输入 | MIT OR Apache-2.0 |
+| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：内容对象身份；net：证书、模板和实际 Replay 的字节哈希 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
+| [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化；media/lab：私有内容格式和创作输入；net：邀请、严格消息与摘要 | MIT OR Apache-2.0 |
 | [postcard](https://github.com/jamesmunns/postcard) | 1.1.3 | media：有界且带独立版本头的内容对象编码，schema 保持标准库类型 | MIT OR Apache-2.0 |
-| [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime/lab：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
+| [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime/lab/net：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
 | [winit](https://github.com/rust-windowing/winit) | 0.30.13 | runtime：窗口图标，复用 Bevy 已启用的平台功能 | Apache-2.0 |
 | [sys-locale](https://github.com/1Password/sys-locale) | 0.3.2 | runtime：Windows/Linux 系统首选语言识别 | MIT OR Apache-2.0 |
 | [winsafe](https://github.com/rodrigocfd/winsafe) | 0.0.29 | runtime：Windows 显示器工作区的安全原生接口 | MIT |
 | [x11rb](https://github.com/psychon/x11rb) | 0.14.0 | runtime：Linux X11 工作区与窗口调整权限读取 | MIT OR Apache-2.0 |
+| [quinn](https://github.com/quinn-rs/quinn) | 0.11.12 | net：可靠 QUIC 会话与标准 TLS 客户端 | MIT OR Apache-2.0 |
+| [rcgen](https://github.com/rustls/rcgen) | 0.14.10 | net：每次会话自签证书 | MIT OR Apache-2.0 |
+| [tokio](https://github.com/tokio-rs/tokio) | 1.53.1 | net：单线程网络 runtime、有界队列与超时 | MIT |
 | [embed-resource](https://github.com/nabijaczleweli/rust-embed-resource) | 3.0.11 | game：仅 Windows 构建时嵌入 EXE 图标 | MIT |
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices

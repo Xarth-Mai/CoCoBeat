@@ -9,6 +9,7 @@ members = [
     "crates/cocobeat-media",
     "crates/cocobeat-stage",
     "crates/cocobeat-editor",
+    "crates/cocobeat-net",
     "tools/cocobeat-lab",
     "xtask",
 ]
@@ -28,6 +29,10 @@ cocobeat-replay = { path = "crates/cocobeat-replay" }
 cocobeat-media = { path = "crates/cocobeat-media" }
 cocobeat-stage = { path = "crates/cocobeat-stage" }
 cocobeat-editor = { path = "crates/cocobeat-editor" }
+cocobeat-net = { path = "crates/cocobeat-net" }
+quinn = { version = "0", default-features = false, features = ["runtime-tokio", "rustls-ring"] }
+rcgen = { version = "0", default-features = false, features = ["ring"] }
+tokio = { version = "1", default-features = false, features = ["rt", "net", "time", "sync", "macros"] }
 symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
 oximedia-audio = { version = "0", default-features = false }
 oximedia-core = "0"

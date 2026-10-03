@@ -116,9 +116,32 @@ fn main() -> ExitCode {
         [command, input, frame] if command == "inspect-stage" => {
             report(stage::inspect(Path::new(input), frame))
         }
+        [command, package, replay, bind, invite, output] if command == "net-host" => report(
+            bind.parse()
+                .map_err(|_| "net-host requires an explicit IP:port socket address".to_string())
+                .and_then(|bind| {
+                    cocobeat_net::host(
+                        Path::new(package),
+                        Path::new(replay),
+                        bind,
+                        Path::new(invite),
+                        Path::new(output),
+                    )
+                })
+                .and_then(print_session),
+        ),
+        [command, package, replay, invite, output] if command == "net-join" => report(
+            cocobeat_net::join(
+                Path::new(package),
+                Path::new(replay),
+                Path::new(invite),
+                Path::new(output),
+            )
+            .and_then(print_session),
+        ),
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir> | inspect-stage <package-dir> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir> | inspect-stage <package-dir> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir>"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS
@@ -134,6 +157,14 @@ fn probe_duration(value: &str) -> Result<u32, &'static str> {
         Ok(seconds @ (30 | 64 | 300 | 600)) => Ok(seconds),
         _ => Err("audio-probe duration must be 30, 64, 300 or 600 seconds"),
     }
+}
+
+fn print_session(summary: cocobeat_net::SessionSummary) -> Result<(), String> {
+    println!(
+        "{}",
+        serde_json::to_string(&summary).map_err(|error| error.to_string())?
+    );
+    Ok(())
 }
 
 fn report<E: std::fmt::Display>(result: Result<(), E>) -> ExitCode {

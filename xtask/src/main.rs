@@ -105,6 +105,21 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                 false,
             ),
             "cocobeat-media" => (&["cocobeat-schema"], true),
+            "cocobeat-net" => (
+                &[
+                    "cocobeat-schema",
+                    "cocobeat-core",
+                    "cocobeat-replay",
+                    "cocobeat-media",
+                    "quinn",
+                    "rcgen",
+                    "tokio",
+                    "serde",
+                    "serde_json",
+                    "blake3",
+                ],
+                false,
+            ),
             "cocobeat-stage" | "cocobeat-editor" => (&["cocobeat-schema"], false),
             "cocobeat-runtime" => (
                 &[
@@ -126,6 +141,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                     "cocobeat-media",
                     "cocobeat-stage",
                     "cocobeat-editor",
+                    "cocobeat-net",
                 ],
                 true,
             ),
@@ -176,18 +192,24 @@ mod tests {
 
     #[test]
     fn blocks_engine_even_as_renamed_target_dev_dependency() {
-        let metadata = graph(
-            "cocobeat-core",
-            json!([
-                {"name": "bevy", "rename": "innocent_name", "kind": "dev",
-                 "target": "cfg(windows)", "source": "registry+https://example.invalid"}
-            ]),
-        );
-        assert!(
-            verify_graph(&metadata)
-                .unwrap_err()
-                .contains("cocobeat-core -> bevy")
-        );
+        for (package, dependency) in [
+            ("cocobeat-core", "bevy"),
+            ("cocobeat-net", "bevy"),
+            ("cocobeat-net", "kira"),
+        ] {
+            let metadata = graph(
+                package,
+                json!([
+                    {"name": dependency, "rename": "innocent_name", "kind": "dev",
+                     "target": "cfg(windows)", "source": "registry+https://example.invalid"}
+                ]),
+            );
+            assert!(
+                verify_graph(&metadata)
+                    .unwrap_err()
+                    .contains(&format!("{package} -> {dependency}"))
+            );
+        }
     }
 
     #[test]
@@ -203,6 +225,8 @@ mod tests {
             ("cocobeat-stage", "cocobeat-runtime"),
             ("cocobeat-editor", "cocobeat-media"),
             ("cocobeat-runtime", "cocobeat-editor"),
+            ("cocobeat-net", "cocobeat-runtime"),
+            ("cocobeat-media", "cocobeat-net"),
         ] {
             assert!(
                 verify_graph(&graph(

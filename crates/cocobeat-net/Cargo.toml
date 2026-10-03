@@ -1,5 +1,5 @@
 [package]
-name = "cocobeat-lab"
+name = "cocobeat-net"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -10,13 +10,13 @@ publish.workspace = true
 cocobeat-schema.workspace = true
 cocobeat-core.workspace = true
 cocobeat-replay.workspace = true
-cocobeat-runtime.workspace = true
 cocobeat-media.workspace = true
-cocobeat-stage.workspace = true
-cocobeat-editor.workspace = true
-cocobeat-net.workspace = true
+quinn.workspace = true
+rcgen.workspace = true
+tokio.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+blake3.workspace = true
 
 [lints]
 workspace = true
