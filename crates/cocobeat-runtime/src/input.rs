@@ -35,6 +35,29 @@ pub enum InputSource {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MenuAccess {
+    Ignored,
+    Claimed,
+    Action,
+}
+
+/// A claim consumes the action; callers retain their own release and transition barriers
+pub fn menu_access(
+    owner: &mut Option<InputSource>,
+    source: InputSource,
+    explicit_claim: bool,
+) -> MenuAccess {
+    if *owner == Some(source) {
+        MenuAccess::Action
+    } else if owner.is_none() || explicit_claim {
+        *owner = Some(source);
+        MenuAccess::Claimed
+    } else {
+        MenuAccess::Ignored
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SettingsAction {
     Open,
     Up,
@@ -364,14 +387,15 @@ impl InputState {
         Message::with("menu.owner", [("device", device)]).render(locale)
     }
 
-    fn menu_control(&mut self, source: InputSource) -> bool {
-        if self.menu_owner == Some(source) {
-            return true;
+    fn menu_control(&mut self, source: InputSource, explicit_claim: bool) -> bool {
+        match menu_access(&mut self.menu_owner, source, explicit_claim) {
+            MenuAccess::Action => true,
+            MenuAccess::Claimed => {
+                self.claim_menu(source);
+                false
+            }
+            MenuAccess::Ignored => false,
         }
-        if self.menu_owner.is_none() {
-            self.claim_menu(source);
-        }
-        false
     }
 
     fn binding_lines(&self, locale: Locale) -> [String; 2] {
@@ -730,8 +754,7 @@ impl InputState {
         }
         if self.menu_open || self.settings_open {
             let source = InputSource::Keyboard;
-            if key == KeyCode::Enter && self.menu_owner != Some(source) {
-                self.claim_menu(source);
+            if key == KeyCode::Enter && !self.menu_control(source, true) {
                 return;
             }
             let binding_response = matches!(self.binding, Some(Binding::Keyboard(_)))
@@ -747,7 +770,7 @@ impl InputState {
                         | KeyCode::ArrowRight
                         | KeyCode::F5
                         | KeyCode::F6
-                ) || !self.menu_control(source))
+                ) || !self.menu_control(source, false))
             {
                 return;
             }
@@ -847,8 +870,7 @@ impl InputState {
         }
         if self.menu_open || self.settings_open {
             let source = InputSource::Pad(pad);
-            if button == GamepadButton::Start && self.menu_owner != Some(source) {
-                self.claim_menu(source);
+            if button == GamepadButton::Start && !self.menu_control(source, true) {
                 return;
             }
             let binding_response = match self.binding {
@@ -877,7 +899,7 @@ impl InputState {
                         | GamepadButton::East
                         | GamepadButton::Start
                         | GamepadButton::Select
-                ) || !self.menu_control(source))
+                ) || !self.menu_control(source, false))
             {
                 return;
             }
@@ -1156,6 +1178,39 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn shared_menu_access_consumes_claims_and_requires_explicit_takeover() {
+        let mut world = World::new();
+        let first = InputSource::Pad(world.spawn_empty().id());
+        let second = InputSource::Pad(world.spawn_empty().id());
+        let mut owner = None;
+        for (source, explicit, expected, expected_owner) in [
+            (first, false, MenuAccess::Claimed, first),
+            (first, false, MenuAccess::Action, first),
+            (second, false, MenuAccess::Ignored, first),
+            (second, true, MenuAccess::Claimed, second),
+            (second, true, MenuAccess::Action, second),
+            (InputSource::Keyboard, false, MenuAccess::Ignored, second),
+            (
+                InputSource::Keyboard,
+                true,
+                MenuAccess::Claimed,
+                InputSource::Keyboard,
+            ),
+            (
+                InputSource::Keyboard,
+                false,
+                MenuAccess::Action,
+                InputSource::Keyboard,
+            ),
+            (first, false, MenuAccess::Ignored, InputSource::Keyboard),
+            (first, true, MenuAccess::Claimed, first),
+        ] {
+            assert_eq!(menu_access(&mut owner, source, explicit), expected);
+            assert_eq!(owner, Some(expected_owner));
+        }
+    }
 
     fn controlled_input() -> InputState {
         InputState {

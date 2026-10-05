@@ -1,8 +1,38 @@
-# Anchor 命令行编辑
+# Anchor 编辑工作台与命令行
 
 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 用整数音频帧修正已有 SongPackage 的 Anchor，并导出可重新加载的新包；当前支持增删、移动、撤销和重做，不修改分析事实、SectionCue 或判定规则，包格式继续使用 [SongPackage v1](song-package.md)
 
-这是可保存补丁、可重复执行的 CLI 编辑入口，时间线 UI、波形 GUI、试听校准、候选证据视图和正式菜单接入仍未实现；候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的 JSONL 查看入口见 [Replay 诊断](replay-diagnostics.md)
+原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，候选证据视图、Replay 图形诊断和试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的 JSONL 查看入口见 [Replay 诊断](replay-diagnostics.md)
+
+## 原生工作台
+
+```sh
+cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/new-package
+cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/new-package --locale zh-CN
+```
+
+源包完整验证后打开独立 Bevy 窗口，最小尺寸 640×480；这是静音内容工具，没有播放按钮。波形来自同一验证过程的真实立体声 PCM，每 64 帧保存左右声道峰值包络，最多 450,000 组；显示随视口聚合，整数帧编辑不受波形栅格分辨率影响
+
+默认读取现有游戏配置中的语言，配置不存在则跟随系统，配置损坏会在 stderr 说明后使用系统语言；显式 `--locale` 使用游戏支持的 13 个完整语言代码并优先于配置。工作台复用 Noto Sans 与脚本回退，始终不保存或修改游戏设置
+
+| 操作 | 输入 |
+|---|---|
+| 取得键鼠主控 | Enter 或鼠标单击，首次只接管 |
+| 切换焦点 | Tab / Shift+Tab |
+| 波形光标微调 | 方向键每次 1 帧，Shift+方向键每次 48 帧 |
+| 缩放 / 平移 | 滚轮或加减键缩放，Shift+滚轮平移 |
+| 选择 / 移动 Anchor | 点击波形标记或列表项，拖动标记；一次拖动只记一次撤销 |
+| 精确输入帧 | 详情中的 Frame 字段输入整数，Enter 或 Apply frame 应用 |
+| 新增 / 删除 | 工具栏在光标新增、删除选中项，Delete 删除选中项 |
+| 撤销 / 重做 | Ctrl+Z / Ctrl+Shift+Z |
+| 导出并关闭 | Ctrl+S 或 Export and close |
+| 取消输入 / 关闭 | Esc；有未保存修改时默认选择 Keep editing |
+
+窗口同时只有一个菜单主控，键鼠与具体手柄身份分开处理；手柄 Start 显式接管，方向键 / 左摇杆浏览、肩键切换焦点、South 查看、East 返回，编辑和导出需切回键鼠。普通副控输入不抢焦点，失焦或主控断开取消拖动，按住的输入须释放后才能再次生效；这些规则复用游戏菜单主控判定，不改变游戏 P1/P2 分配
+
+密集重合标记显示选中像素内的 Anchor 数量，虚拟列表可逐个选中；详情显示作者原有 SectionCue 的 ID、帧和文字，不推断音乐强度或把提示当作判定点。光标可以查看 EOF，Anchor 只能位于结束帧之前；新项使用最小未用 ID，已有最大 u64 ID 不妨碍继续新增
+
+导出在后台调用同一 `export_anchors`，期间保留窗口并暂停编辑和关闭；成功输出源 / 新包身份及路径后退出。验证、源身份变化或目标冲突导致失败时保留草稿及窗口，可修正外部条件后重试；源包和已有目标均保留，输出路径继续遵守下述新目录约束
 
 ## 使用方式
 
@@ -66,4 +96,4 @@ Anchor 实际改变时，重新编码 `chart.bin`，将 `chart_version` 设为 `
 
 ## 实现边界
 
-[cocobeat-editor](../crates/cocobeat-editor/src/lib.rs) 只依赖 schema / std，负责精确编辑与有界历史；[lab/editor.rs](../tools/cocobeat-lab/src/editor.rs) 负责补丁、CLI 与来源身份检查，[media::export_anchors](../crates/cocobeat-media/src/package.rs) 负责四对象保真导出和包身份，core 的判定规则、Replay v1、输入和音频生命周期保持原契约
+[cocobeat-editor](../crates/cocobeat-editor/src/lib.rs) 只依赖 schema / std，负责精确编辑与有界历史；[lab/editor.rs](../tools/cocobeat-lab/src/editor.rs) 负责补丁、CLI 与来源身份检查，[lab/workbench.rs](../tools/cocobeat-lab/src/workbench.rs) 组合窗口、输入、波形与后台保存，[media::export_anchors](../crates/cocobeat-media/src/package.rs) 负责四对象保真导出和包身份，core 的判定规则、Replay v1 和游戏音频生命周期保持原契约

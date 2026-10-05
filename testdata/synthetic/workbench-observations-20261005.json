@@ -1,0 +1,817 @@
+{
+  "kind": "native_workbench_milestone_recheck",
+  "date": "2026-10-05",
+  "base_commit": "d7f325bf512c0b3323e08f9c70a191effc6d8c34",
+  "toolchain": {
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)",
+    "cargo": "cargo 1.99.0 (5f94df478 2026-08-27) (Arch Linux rust 1:1.99.0-1)"
+  },
+  "historical_artifacts": {
+    "path": "target/workbench-runtime-20261003",
+    "available_on_recheck": false,
+    "status": "HISTORICAL_ONLY",
+    "workbench_three_source_sha256_match_prior_frozen_version": true
+  },
+  "source_inputs": {
+    "count": 160,
+    "definition": "Tracked .rs, Cargo.toml, Cargo.lock, rust-toolchain.toml, .cargo/, assets/i18n/, assets/fonts/, assets/flags/; not the entire repository",
+    "before_after_current_equal": true,
+    "sha256": {
+      ".cargo/config.toml": "07e75f80544a833951c1532649fadd0ee21712b40e55b6e74b880b3c11259e36",
+      "Cargo.lock": "96dfbe98ad56745f467c949f1f9f2c53aee7bc3f1baae7a90aa4200e9f770243",
+      "Cargo.toml": "ea686cac5349a642cbb34852d8a77bba4c1b20a76173d360970921ff7ec62901",
+      "apps/cocobeat-game/Cargo.toml": "d58948f5559284dc68f2fb1390e312cce35637d899986bdb8e5ed7ee763e5b0b",
+      "apps/cocobeat-game/build.rs": "81de396f2a1f8a71c68f45770d94f4fcd37df01cacb64fe861a87fc90723c961",
+      "apps/cocobeat-game/src/main.rs": "6857c4b544686ce6bcfa992238c4ca2eb44ebe236336384215d7da809c1e2466",
+      "assets/brand/validation/Cargo.toml": "a2e1e78d21bb8a0aa9312729a6ab19e5fa21377fa28b7d016b31fc85965a023a",
+      "assets/brand/validation/main.rs": "ec3055d55da738329d44f5244684734fc3cf6678bdd79419e9f6ffcd94e275eb",
+      "assets/flags/LICENSE": "8f1195d55a2fd315a07d812328470ca9ba2abb78c8d317ff19619d5125e00cea",
+      "assets/flags/README.md": "0cb8e746f1104a65f4ae30d324f7c9df0b1d06a399a155606c85caf59a8591a8",
+      "assets/flags/SOURCES.json": "78abd78782023fda094a494678513a925aa18c0bd711bbdb983de1be711820c8",
+      "assets/flags/br.png": "957956a9c568826967ba92e9a5f050bcadbf3d876f96143881d08f14d895426a",
+      "assets/flags/br.svg": "b0a912826c3ffd7287435ebed66e18fe058e992309c00dc10b430dd41a29ba91",
+      "assets/flags/cn.png": "2d35012a40b9ce5a234c42e9b512aa9189c35a2d42c23905a48c6d05ae26a400",
+      "assets/flags/cn.svg": "981da9bdf82d48e31691f20578cefcb26cf7d0bd95e4ebd5c0df00bdfe988c1a",
+      "assets/flags/de.png": "aa4e7afa762a381b623d8a725f458eb0db05177b0239111c38ccd5ee7766cd21",
+      "assets/flags/de.svg": "efd480af5a154a7651f29da23ee0d09dbc892410fb4041898ddf8face336c575",
+      "assets/flags/fr.png": "dc85d0201a7ee39ec464966e25edffd0f3e9b030b869599b61724926313cb8d7",
+      "assets/flags/fr.svg": "8cdacc8d79bcf210cdca2777a2c0de1f9e5862526877bd3026c9d59ecdcd4578",
+      "assets/flags/gb.png": "cbfe43561d7f0eb157fc4298992f0723c79ce521b62c236fa1b3fda227e2dc46",
+      "assets/flags/gb.svg": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066",
+      "assets/flags/hk.png": "a510cca9511203e2fa185c6232da4e5fcb351f819931b53b63e9548af6736566",
+      "assets/flags/hk.svg": "d9d142b2b97ec3b8190bff3802072c1b4f15573a679eead89a0ce59986dcad0c",
+      "assets/flags/jp.png": "dc170ada3b8b1644d31c693b07d1d7016d85a3cecafcd87bb6899d36cb5b4eb6",
+      "assets/flags/jp.svg": "bfea80baf9989383dc4bf7ca594ed95be0df0ff125bfc88d0bfa878eb0198022",
+      "assets/flags/kr.png": "d5fa8bdae10cbe3b2e9186bce8b43e2c92b0a6db73b4e83329df318c7a0714ef",
+      "assets/flags/kr.svg": "7a6cd5b51d0e2841ed8b79b1147ad8a66cf3c09f6344d4a63b5e4413ffa5d15b",
+      "assets/flags/mx.png": "84657c6be243983aca339baaca485a6f26aee3f857f2c86c6beae79fe1115cf1",
+      "assets/flags/mx.svg": "9dbc8ad8b35e52ce7cb686d5cd93bd95e4c0dd8505c184186a740148ffd34901",
+      "assets/flags/ru.png": "2d368f770dcbe8602adfd31758df2c231fef9da7eb92def95c763d5c8d182be9",
+      "assets/flags/ru.svg": "7100aaae51ff3b6a2bf0ca932b3bc518bdc760814725e7cca31d821a26c3dd7c",
+      "assets/flags/tw.png": "cebc9dce0f9df68ece5eace0278f1ccee5fec1f8cf74bb2edf3952533a1c4a14",
+      "assets/flags/tw.svg": "931757f06b9ee751fd1a0cc8dd7cf862e21fdcaf894d10ed7bcc68dabcca59ad",
+      "assets/flags/ua.png": "2cf7c93e5152d82a34ee5cf17413f2923210199dcfeb12c041b6ff3c2a40f944",
+      "assets/flags/ua.svg": "2d869c23ebfefb2ae0a633297c11dee06fcb666ce7b3ca75eba09b7a1a3a03ac",
+      "assets/flags/us.png": "69cc1af9a042a3a028de02f28f5863a91416ab7d35ffbd241a1761bcc7692c6c",
+      "assets/flags/us.svg": "e7be4240cf57987926673708f09233be1ab6bdf35acc7b86bd32a263f197a2a7",
+      "assets/fonts/NotoSans-OFL.txt": "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a",
+      "assets/fonts/NotoSansCJK-OFL.txt": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+      "assets/fonts/NotoSansHK-Regular.otf": "8a43afea92bb58dfd9027bd7ac6f5b0b2662e2ffb3e7c1edc02c62b2b21924f1",
+      "assets/fonts/NotoSansJP-Regular.otf": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073",
+      "assets/fonts/NotoSansKR-Regular.otf": "69975a0ac8472717870aefeab0a4d52739308d90856b9955313b2ad5e0148d68",
+      "assets/fonts/NotoSansSC-Regular.otf": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+      "assets/fonts/NotoSansTC-Regular.otf": "5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537",
+      "assets/fonts/NotoSans[wdth,wght].ttf": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+      "assets/fonts/README.md": "8c0d0feed713c5be8884332e6da49d85b70901ffd8a6b8c8c3720433dc6c90b0",
+      "assets/fonts/SOURCES.json": "b9d46e0ab144acdf76895304d5f56487a66eeef78ce166698f244df47e9826b2",
+      "assets/fonts/verify.py": "f6557891570ee1e1e1a182504ec5d0f4c48a114bdb6d28612d21866e6771c5d7",
+      "assets/i18n/README.md": "a9ca0c77def8d1a643b06101819cb64af3e99db08a97aedded279fa0a16a2f85",
+      "assets/i18n/de.json": "9ab4140cfefadde29a23f40c4dad83d6989654c07313b756c8ee9d38e8cc7c48",
+      "assets/i18n/en-GB.json": "393f7b6ce409a5f3a917e406698abaf79828734cafa7ecf19337e5faf9eb9072",
+      "assets/i18n/en-US.json": "393f7b6ce409a5f3a917e406698abaf79828734cafa7ecf19337e5faf9eb9072",
+      "assets/i18n/es-419.json": "f39c3b13c7af28e6b7a62bc6ed185a626a22cabfc03d5c0d35a1c310da202a15",
+      "assets/i18n/fr.json": "8a9ffdb7a2f7a43ed8c46b043f0131e37346077c37fd5a8e833ec732ab392b69",
+      "assets/i18n/ja.json": "ded471a72949d217c13d452bd681e8d954db02da780777ff901a0ffdce38bb65",
+      "assets/i18n/ko.json": "f7111535eef41912c830c88425cc9bc94702e97b9b160c94755fbd617f60411e",
+      "assets/i18n/pt-BR.json": "bb4acaa215b4248b14a3a6ccaa608e5924498f951a6e03cf896095508ad27732",
+      "assets/i18n/ru.json": "1dbaf0d13754c6586145ab6260b9f79fd586497e4c1d7e86355a6fd5d4ab15a4",
+      "assets/i18n/uk.json": "0c5330642bd355ac5bda60f61547de4fda1846aa57589d8749610dea001a58bd",
+      "assets/i18n/zh-CN.json": "5cd74bfca19349e95606ff2ea781dc60859ee2390388bf5f0d5a87f50197e719",
+      "assets/i18n/zh-HK.json": "0940aea3159b58b1daa3b8af13fa89361d7d1035fced6c7fadde28808662e0d6",
+      "assets/i18n/zh-TW.json": "38816645938fedec79952584b20b2b24619d8123dab331e26e482e124ba9ebca",
+      "crates/cocobeat-core/Cargo.toml": "97953d32f3820f005fdefe43a7ff7d8693424be78b9f0c655a83959a026ec8b1",
+      "crates/cocobeat-core/src/lib.rs": "648510208d6382c35a4ddf04a49a67ff368b771ed08b53ed171475252ef04fc7",
+      "crates/cocobeat-editor/Cargo.toml": "83549c0857e31f7d2250b7c944094ab3cf6ea8c437db321b83429465a7ad80bf",
+      "crates/cocobeat-editor/src/lib.rs": "7aa3670d806a23072f338b190dc3a2a8625817c0bf29c6dc5a8dd4fc1874b537",
+      "crates/cocobeat-media/Cargo.toml": "b0d284a3004b552fcf6736b757ee3a286fcb1127ebb08129fd7048c5b010b3ea",
+      "crates/cocobeat-media/src/anchors.rs": "e8fb4f7d9d73e2f8bf77cbc1c1798f024be7026892498a760fd2b56f439de8c4",
+      "crates/cocobeat-media/src/audio_asset.rs": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+      "crates/cocobeat-media/src/content_codec.rs": "a026d0f04b174605c90d535843793b114fdbb5ccf1bf190a42e870cedd57d597",
+      "crates/cocobeat-media/src/decode.rs": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+      "crates/cocobeat-media/src/lib.rs": "2fd7a2738b28b20c71c7a68f593d7e0fec40590fc33f219a889bfdd6beaf0764",
+      "crates/cocobeat-media/src/package.rs": "d20015681ea433d33b7fb803c5d708140f6f0d97a526161009367dc301350181",
+      "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+      "crates/cocobeat-net/Cargo.toml": "e328736eadc27a4fd28cc995c17dbd21f89dae695b3b0204002380be46f58891",
+      "crates/cocobeat-net/src/lib.rs": "35be4f71e7389885225fcba71af77eeb01ef5b216dc8fb41ad2a4803e9c6ef7c",
+      "crates/cocobeat-net/src/session.rs": "e4bbe1b1578f917391363ac19c8180b83c0b40c7a616c5c58be2b22901273562",
+      "crates/cocobeat-net/src/wire.rs": "9ee83561692cdb0c561bedd95ffce3a124c61da669b52f317c2ff19d5793b831",
+      "crates/cocobeat-replay/Cargo.toml": "a9ac6ee44d5f3f5aaade56105c7d175cc390ce34231356fb01e7db797cb65c4a",
+      "crates/cocobeat-replay/src/lib.rs": "240af38c6a4f23711fb9c071cb243e4cffbe215b21c8f74eb04f3cb12651945d",
+      "crates/cocobeat-runtime/Cargo.toml": "08a4673b79f400a64c36e38927a6eb7d0fc2f8435b391e69196eac18fbbf06da",
+      "crates/cocobeat-runtime/build.rs": "6c948a5e384b709de42eee8b5cef80d0a2d53cd9771bea605468c0d52abb5b86",
+      "crates/cocobeat-runtime/src/app.rs": "ea9a7e82d9f523754ab48465a4ffa86a56516e921e6c6687f1c265d89164425b",
+      "crates/cocobeat-runtime/src/audio.rs": "4711189be571c7d8654766b0b1000b91399b05884ec0f26e1ea8d3f21e75010b",
+      "crates/cocobeat-runtime/src/brand_audio.rs": "b69cff85a37aa6c43b477b975cb1704206df679b89272af5b0bedddf8acab590",
+      "crates/cocobeat-runtime/src/brand_intro.rs": "ab4b4c0e8ce63daa7368b8d1e23ed1a4e5dfa445abf788ebeba59191404a87a2",
+      "crates/cocobeat-runtime/src/clock.rs": "57786dea30aea1d663e595d6140f52370b98171a3d1dcf5e727845a67ed314ae",
+      "crates/cocobeat-runtime/src/content.rs": "e7529e5566496199bc2b01cded35bc93e634be9921ab9e0edce5fee6e1d5e05b",
+      "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+      "crates/cocobeat-runtime/src/display.rs": "a7253d51f4b4d95b149f5754d4154d4c31fac1dcef396fd4845f2226f789ee3c",
+      "crates/cocobeat-runtime/src/display_area.rs": "27a85d9d07263b6dbb0cd5788c8f4f8d5dbd80b37dbcd929b63c7d233afe58f4",
+      "crates/cocobeat-runtime/src/i18n.rs": "0a8f6d242b6573050b24314a644173f0c37668b6946c6723fb3950973299cb92",
+      "crates/cocobeat-runtime/src/input.rs": "b3a9b626ce2554b019bcb31e7e3678a1a6da03ab404b26c7f69947fe85b9aa57",
+      "crates/cocobeat-runtime/src/lib.rs": "5253d6ce3525e667ed2e6c960d5b2e041d6ed279713387a3904bea9116fcc086",
+      "crates/cocobeat-runtime/src/probe.rs": "65622a49e316eb27dbe528f2b1d14f426be62db4728df1bd5b14fe03b9f4cc6b",
+      "crates/cocobeat-runtime/src/scene.rs": "75d105e4b61adabf217caffd4fde5764df70cb58312b9bbd54eeb32ededdaf03",
+      "crates/cocobeat-runtime/src/session.rs": "435499994db8b29fb8bc59eaf0d290adab97bbcc923104bc59940b11189d4aff",
+      "crates/cocobeat-runtime/src/settings.rs": "80af1dd0c40ddba44532c21ccc1de41fd7f61e51513505705696044c3c0b8ff3",
+      "crates/cocobeat-runtime/src/settings_menu.rs": "ebc971c6e3936063dfb609e4ff589c0abf5e17409b1f917d3a0a4f008fe8775e",
+      "crates/cocobeat-runtime/src/ui_assets.rs": "f8c5d5cd4ba65d2bcce0d729cb29ad58966c5ee1018c3444df837fdeb47e894e",
+      "crates/cocobeat-runtime/src/view.rs": "03cad39a7410d45fb1680abe10ae76720000f757eb6d36f08ba7f305297d1748",
+      "crates/cocobeat-schema/Cargo.toml": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+      "crates/cocobeat-schema/src/asset.rs": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe",
+      "crates/cocobeat-schema/src/content.rs": "7f0e9984dba5f87c7ab5a0305687613a6e6994ee27ce147b09db98e92087ff44",
+      "crates/cocobeat-schema/src/gameplay.rs": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+      "crates/cocobeat-schema/src/lib.rs": "4ee66bea6fa2d1de66a4a00122f5a6679cdbebdbadf5393f18af61bc9ea049c3",
+      "crates/cocobeat-schema/src/time.rs": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+      "crates/cocobeat-stage/Cargo.toml": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c",
+      "crates/cocobeat-stage/src/lib.rs": "06cff45a0565861f5f5c71f377b60bde9e427479ec03fd1c9ecb0f97730441a8",
+      "rust-toolchain.toml": "7458b2d74495e6fb1c1edeea4d5a793705476431dadb60627187111f91441e13",
+      "tools/canonical-audio-probe/fullband-regression/readback.rs": "d6aa6b06b8b3d6b97dca6b529952718fb60a5e809b1abfa5719a435d0351c477",
+      "tools/canonical-audio-probe/numeric-fullband/codec_numeric.rs": "7344facd24afb2b7888ffa5e307d7808661c25aad504b99162c18e189b8fa5d9",
+      "tools/canonical-audio-probe/numeric-fullband/kernel_bound.rs": "6bf03ef239a383a9aa4963db79f1fcdef5325cf81d890b63e5f97d6d576d2993",
+      "tools/canonical-audio-probe/oxiaudio/Cargo.toml": "b9ed8906fba17aa4ef2c2d7d74e08502436fc5527213e45caa6a00fb2eeabdd0",
+      "tools/canonical-audio-probe/oxiaudio/src/main.rs": "e4e63967c069510ff90c4cac8e3842765a2de58a9b6ab610ecf0c86bc31d4263",
+      "tools/canonical-audio-probe/oxideav/Cargo.toml": "085546c2ff0a0e930433b9432fd22101ffc4ab327fae90495d01fa9e4c017232",
+      "tools/canonical-audio-probe/oxideav/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+      "tools/canonical-audio-probe/oximedia-resample/Cargo.toml": "72c0f20dbd29e6b6724228f73c7c0dbf47560a16946de691fc51196d6675b483",
+      "tools/canonical-audio-probe/oximedia-resample/src/main.rs": "180e92fb72a2e687f7dcbca14296ac91b8644d7f2df2f9799f97f99e63510bc3",
+      "tools/canonical-audio-probe/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+      "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+      "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+      "tools/canonical-audio-probe/rusty-candidate/src/tests.rs": "0bfe7bafeef35b1291c5885a8b234ebee0759020f937981d145cac474ea5e769",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+      "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+      "tools/canonical-audio-probe/rusty-vorbis/Cargo.toml": "b6081c2f8ecf883f2e86bd0fbd95633b2bac8cb35742b777874419df525d11cb",
+      "tools/canonical-audio-probe/rusty-vorbis/src/bin/adapter.rs": "c4e0cc2c394961929d64a3b99add9b8e9a479d084e7fccfc914f20451878c840",
+      "tools/canonical-audio-probe/rusty-vorbis/src/bin/encode.rs": "a6f3140e5225b309407a527d956063950484cc782a82eda9818019cadcb20e7e",
+      "tools/canonical-audio-probe/seek.rs": "b1f88674dc269b9e86dd7d97fcac85abdd559bed8a34c9f2821d7cf448b73cca",
+      "tools/cocobeat-lab/Cargo.toml": "c913f558689789c9298f384330bdb1a98001c9e47690113ad13f154aa0f55b35",
+      "tools/cocobeat-lab/src/anchors.rs": "bb6500a80b39aef17fdc0fc1cd690b44392947bbc8f94f541f67031cb266a095",
+      "tools/cocobeat-lab/src/content.rs": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+      "tools/cocobeat-lab/src/editor.rs": "4301e5d77f30c34c682236024709f9dcd4b708d4d26be8fac655df22151d0093",
+      "tools/cocobeat-lab/src/main.rs": "543e4c34bfdab9a8067e1c38bc808c4f985e1fd92edcd3c086add15c77909950",
+      "tools/cocobeat-lab/src/media.rs": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+      "tools/cocobeat-lab/src/package.rs": "6eb918e9fdea728464a5ed95a5593a6c7d6b4c345458e3d6f915f90f7c78620b",
+      "tools/cocobeat-lab/src/replay.rs": "84b1b50dd01f3652da329e6fa409e63442b20fe85f0dc0c7e8c4d10676ed3679",
+      "tools/cocobeat-lab/src/stage.rs": "6a46f5a85321c93659b8a7ee34d25b7fea88337bc9915ebe3a5971709ae46243",
+      "tools/cocobeat-lab/src/timing.rs": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+      "tools/cocobeat-lab/src/workbench.rs": "61313f1e3a34e66957ad60e1e04474f5aaf1834ca6a39e609d6e4e5839a6260e",
+      "tools/cocobeat-lab/src/workbench/input.rs": "6486b26f7109231366f4d78366fb6ab7e35ff96106b67c0b108e7b00c0b05bad",
+      "tools/cocobeat-lab/src/workbench/ui.rs": "affefff1bb54287e182410a343cb6e09ffcdcefaab018541f8461c2533281bdb",
+      "tools/mir-flux-gate-probe/Cargo.toml": "d1275637a06b1493c0a61eb89662c130e97b1e0ec9db9a1ba41d5ee2df04c511",
+      "tools/mir-flux-gate-probe/src/main.rs": "434d3708ede7f9201a92dac408a6b4eca636538631f5a8544d3067b674387756",
+      "tools/mir-flux-probe/Cargo.toml": "b402ec1153e4dcaf2a3da2d145f43b300a5693d0024f7c5356147da67be31d4c",
+      "tools/mir-flux-probe/src/main.rs": "5343abafc6379100e6766b8d7fc6ea075803f88823a4eb4a149aeac84b8cd6f8",
+      "tools/mir-onset-diagnostic/Cargo.toml": "d6d2934ea86d762d4f38249383ebb608896b6ac98e5d969aeda78b5cc50c47e1",
+      "tools/mir-onset-diagnostic/src/main.rs": "4a0d7d4782f8a1a97aa77071559f42be2519c29f952d7e96219ccfd74c6743c9",
+      "tools/mir-onset-probe/Cargo.toml": "dc0f37f4e812a1ae024b905bdc36bdcf5052797bed71aa6d6d9e8e7775c87a0e",
+      "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26",
+      "tools/mir-spectral-probe/Cargo.toml": "8590385f1e310ab7205d8e4e29d567ce07bdea8a3a47d7cf7c7c6cef5097fb92",
+      "tools/mir-spectral-probe/src/main.rs": "4a29350f2283aff1a2955d4a5e33b487fa05348c65bdaf04550b8307d159932a",
+      "xtask/Cargo.toml": "9311b043c1bb6f23f70db07009ed19f4fdc9dc313cd30ba6c629d3a11c976de3",
+      "xtask/src/main.rs": "536266818bdf668c6d85210c9c954c1b7b502cd635aaf7bf83ed00f35a59983b"
+    }
+  },
+  "production_workbench_sha256": {
+    "tools/cocobeat-lab/src/workbench.rs": "61313f1e3a34e66957ad60e1e04474f5aaf1834ca6a39e609d6e4e5839a6260e",
+    "tools/cocobeat-lab/src/workbench/input.rs": "6486b26f7109231366f4d78366fb6ab7e35ff96106b67c0b108e7b00c0b05bad",
+    "tools/cocobeat-lab/src/workbench/ui.rs": "affefff1bb54287e182410a343cb6e09ffcdcefaab018541f8461c2533281bdb"
+  },
+  "binaries": {
+    "target/debug/cocobeat-lab": "fac36a708291ebce0f27753891229e1c6cdc5df5a1195e62e05a44ade2b660c3",
+    "target/debug/cocobeat-game": "13094fad92776b9779b363837f2d73b266cb69f46554b8a685fab81516c49a1b"
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-lab",
+        "workbench"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/lab-tests.log",
+      "log_sha256": "1a5f30d75f17397c7df0314db7ea796182bb98f7eb2ce5eeaf63e8bef39a7778",
+      "passed_tests": 9
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-runtime",
+        "input::tests"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-1.log",
+      "log_sha256": "54ff6298e55483b97d69c472017d6e4bee9d4c77d3187927dca1a88f7fd1fa77",
+      "passed_tests": 20
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-runtime",
+        "i18n::tests"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-2.log",
+      "log_sha256": "d7c042f8579a9846fe07bec4808cd21d872c08cdfd1c1029aa836ecf195dd13a",
+      "passed_tests": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-runtime",
+        "settings::tests"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-3.log",
+      "log_sha256": "773876de3248f39900994323959473f4e7df17d31eeba7b7cc78885141a52d19",
+      "passed_tests": 3
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-runtime",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-4.log",
+      "log_sha256": "5cfba2e7088fe804201c3a0694c6d3837f19af4603fe6164585abbdbcf49512a"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-5.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "cargo",
+        "xtask",
+        "boundaries"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-6.log",
+      "log_sha256": "4faed6e6a802b1101b9f2336cd4cb55ebc6bcdf19ed4df7d8e9c44cdd240ceb0"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "-p",
+        "cocobeat-lab",
+        "-p",
+        "cocobeat-game",
+        "--message-format=json-render-diagnostics"
+      ],
+      "exit_code": 0,
+      "log": "target/workbench-milestone-20261005/check-7.log",
+      "log_sha256": "ee6e4e5f261ada11664955613649bef8575c9dba8a534bc14fc81e3446e75eaf"
+    }
+  ],
+  "unique_unit_tests": 35,
+  "cli": {
+    "source": "target/workbench-milestone-20261005/package-cjk",
+    "source_unchanged": true,
+    "source_sha256": {
+      "song.package": "f7b48bcb006f6bbc550a7752c7c7070d1da7b990a6ff48b6746f636078d35479",
+      "analysis.bin": "b0c568bc0fcdbce94d16693411ce3804821f0cee39d8a0947c926d9f82b253a2",
+      "chart.bin": "a07be132a57ac6caf90ae48fff7f6aeffed857d4316faa922e5e8012842d5d0a",
+      "song.audio.ogg": "1d66e36fd9351089ea2fe5fa2d7b858e2513795f1fa9fc6fdb5837460204310c"
+    },
+    "checks": [
+      {
+        "name": "verify-source",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "verify-package",
+          "target/workbench-milestone-20261005/package-cjk"
+        ],
+        "exit_code": 0,
+        "expected": "PASS",
+        "status": "PASS",
+        "stdout_sha256": "0905c96402fd9dd34c8c4945c9beb5965198ba7e65923ef70af1fb13fa11cbf4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "invalid-locale",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "workbench",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/unused-output",
+          "--locale",
+          "invalid"
+        ],
+        "exit_code": 1,
+        "expected": "REJECT",
+        "status": "PASS",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "c2ff2c8012e2d2129a4a151483050a8fe14624646d08bffe6a15fbe231adb035"
+      },
+      {
+        "name": "invalid-option",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "workbench",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/unused-output",
+          "--unknown"
+        ],
+        "exit_code": 1,
+        "expected": "REJECT",
+        "status": "PASS",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "54378fe3f8d6b61cfbecb363983ade876f5dfcf6b83a60bf0ff47b3dd16aca0b"
+      },
+      {
+        "name": "missing-source",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "workbench",
+          "target/workbench-milestone-20261005/cli/missing-source",
+          "target/workbench-milestone-20261005/cli/unused-output",
+          "--locale",
+          "en-US"
+        ],
+        "exit_code": 1,
+        "expected": "REJECT",
+        "status": "PASS",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "3cfa5e3ccc891c15f6a4e06df9236e57065f38302eb50c03b881ed778440a1f1"
+      },
+      {
+        "name": "existing-output",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "workbench",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/existing-output",
+          "--locale",
+          "en-US"
+        ],
+        "exit_code": 1,
+        "expected": "REJECT",
+        "status": "PASS",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "072c05cc8cecc4b825764b1ea389d77f7d0da979da93bee83ebe498328c5576c"
+      },
+      {
+        "name": "source-ancestor-alias",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "workbench",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/source-alias/new-output",
+          "--locale",
+          "en-US"
+        ],
+        "exit_code": 1,
+        "expected": "REJECT",
+        "status": "PASS",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0ce8eda057167bfb257943cf5f4f39cef72511af5f81a6a3eec41d1266a760f2"
+      },
+      {
+        "name": "edit",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "edit-anchors",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/edit.json",
+          "target/workbench-milestone-20261005/cli/edit-package"
+        ],
+        "exit_code": 0,
+        "expected": "PASS",
+        "status": "PASS",
+        "stdout_sha256": "aa6ca2e9779d6734596419916d5fab6f7566a4bff636456fb5bc19fb043c6032",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "verify-edit",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "verify-package",
+          "target/workbench-milestone-20261005/cli/edit-package"
+        ],
+        "exit_code": 0,
+        "expected": "PASS",
+        "status": "PASS",
+        "stdout_sha256": "26afd25a578e8f2dfbe530baa6796c3d33493c8a9c59e7ade7e94b376ff9bb5b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "undo",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "edit-anchors",
+          "target/workbench-milestone-20261005/package-cjk",
+          "target/workbench-milestone-20261005/cli/undo.json",
+          "target/workbench-milestone-20261005/cli/undo-package"
+        ],
+        "exit_code": 0,
+        "expected": "PASS",
+        "status": "PASS",
+        "stdout_sha256": "991f2c6a6b3eaec1b8342e118c87ac198670407a3c79e0a49fee3f47783e3912",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "verify-undo",
+        "command": [
+          "target/debug/cocobeat-lab",
+          "verify-package",
+          "target/workbench-milestone-20261005/cli/undo-package"
+        ],
+        "exit_code": 0,
+        "expected": "PASS",
+        "status": "PASS",
+        "stdout_sha256": "0905c96402fd9dd34c8c4945c9beb5965198ba7e65923ef70af1fb13fa11cbf4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "count": 10,
+    "boundary": "Actual CLI exporter and startup rejection checks; GUI export/failure recovery retained only as historical results, not rerun here"
+  },
+  "visual": {
+    "status": "PASS",
+    "image_review": "All eight PNGs inspected by visual agent; root also inspected large waveform, small details top and bottom",
+    "input_basis": "synthetic Bevy KeyboardInput messages through unchanged capture system",
+    "render_basis": "native Bevy Screenshot readback, no X11 backing capture",
+    "helper_binary_sha256": "9bef808bf65243df2f34b2995d945ecae99c366604526096a2ccec1ea3bceee9",
+    "production_source": {
+      "workbench.rs": "61313f1e3a34e66957ad60e1e04474f5aaf1834ca6a39e609d6e4e5839a6260e",
+      "workbench/input.rs": "6486b26f7109231366f4d78366fb6ab7e35ff96106b67c0b108e7b00c0b05bad",
+      "workbench/ui.rs": "affefff1bb54287e182410a343cb6e09ffcdcefaab018541f8461c2533281bdb"
+    },
+    "cases": [
+      {
+        "size": "1280",
+        "exit_code": 0,
+        "png_sha256": {
+          "wave.png": "8e643ce69ddbf9280ad16ead6240afc8a6bb6bdce0536a97eb984123714eb82a",
+          "details-top.png": "773c6e2603f3f9ff623c7a86538c44bdf240ee9dce0557819ee43df47a0be8b4",
+          "details-48.png": "773c6e2603f3f9ff623c7a86538c44bdf240ee9dce0557819ee43df47a0be8b4",
+          "details-bottom.png": "773c6e2603f3f9ff623c7a86538c44bdf240ee9dce0557819ee43df47a0be8b4"
+        },
+        "destination_exists": false,
+        "captures": [
+          {
+            "name": "wave",
+            "focus": "Timeline",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 1,
+            "cursor": 0,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              947.5,
+              581.0
+            ],
+            "text_size": [
+              625.0,
+              320.0
+            ],
+            "layout_size": [
+              625.0,
+              320.0
+            ]
+          },
+          {
+            "name": "details-top",
+            "focus": "Details",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              947.5,
+              581.0
+            ],
+            "text_size": [
+              625.0,
+              320.0
+            ],
+            "layout_size": [
+              625.0,
+              320.0
+            ]
+          },
+          {
+            "name": "details-48",
+            "focus": "Details",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              947.5,
+              581.0
+            ],
+            "text_size": [
+              625.0,
+              320.0
+            ],
+            "layout_size": [
+              625.0,
+              320.0
+            ]
+          },
+          {
+            "name": "details-bottom",
+            "focus": "Details",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              947.5,
+              581.0
+            ],
+            "text_size": [
+              625.0,
+              320.0
+            ],
+            "layout_size": [
+              625.0,
+              320.0
+            ]
+          }
+        ],
+        "finished": {
+          "dirty": false,
+          "event": "finished",
+          "input_count": 46,
+          "seconds": 10.008550842
+        }
+      },
+      {
+        "size": "640",
+        "exit_code": 0,
+        "png_sha256": {
+          "wave.png": "55fb4171a6e6971978460c18d693b1a38043b586fbae755079860550445b977e",
+          "details-top.png": "890f4904fada19035c6df804e9b2dec1769dead9769ad65d21ad7da4e2eb5863",
+          "details-48.png": "5439b9467a5918303f9e5e45dbdfb27e86500bf3b5d3848347d815832fad2fd6",
+          "details-bottom.png": "748e9da01936d0d8b8d7038be9ecd620e9051ecad33b91f523407d20eb44be70"
+        },
+        "destination_exists": false,
+        "captures": [
+          {
+            "name": "wave",
+            "focus": "Timeline",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 1,
+            "cursor": 0,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              0.0,
+              0.0
+            ],
+            "text_size": [
+              0.0,
+              0.0
+            ],
+            "layout_size": [
+              34.0,
+              6670.0
+            ]
+          },
+          {
+            "name": "details-top",
+            "focus": "Details",
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 263.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              320.0,
+              563.0
+            ],
+            "text_size": [
+              600.0,
+              320.0
+            ],
+            "layout_size": [
+              600.0,
+              320.0
+            ]
+          },
+          {
+            "name": "details-48",
+            "focus": "Details",
+            "state_scroll": 48.0,
+            "computed_scroll": 48.0,
+            "maximum_scroll": 263.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              320.0,
+              515.0
+            ],
+            "text_size": [
+              600.0,
+              320.0
+            ],
+            "layout_size": [
+              600.0,
+              320.0
+            ]
+          },
+          {
+            "name": "details-bottom",
+            "focus": "Details",
+            "state_scroll": 263.0,
+            "computed_scroll": 263.0,
+            "maximum_scroll": 263.0,
+            "cue": "共同共鳴 · 日本語 · 한국어 · 长详情滚动核验",
+            "selected": 2,
+            "cursor": 1440000,
+            "frames": 3072000,
+            "wave_bins": 48000,
+            "text_center": [
+              320.0,
+              300.0
+            ],
+            "text_size": [
+              600.0,
+              320.0
+            ],
+            "layout_size": [
+              600.0,
+              320.0
+            ]
+          }
+        ],
+        "finished": {
+          "dirty": false,
+          "event": "finished",
+          "input_count": 46,
+          "seconds": 10.015702721
+        }
+      }
+    ],
+    "review_report_sha256": "75aaf7c9e488b2f21b737e9f670292e45e1af802e7b455f1cd6bf7d966326c40",
+    "sealed_manifest_sha256": "f54d74004e580e27d5df94ec600fac51fbb20994febed2e2a2472833832dba52",
+    "environment_probe": {
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-w",
+        "640",
+        "-h",
+        "480",
+        "--",
+        "/usr/bin/true"
+      ],
+      "exit_code": 1,
+      "gpu_device_dir_present": false,
+      "runtime": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/visual/probe-runtime"
+    },
+    "environment_resolution": "Existing host GPU accessible via approved isolated headless run; no package installed, no global desktop input"
+  },
+  "fixture": {
+    "provenance": "Original deterministic 64-second development PCM; existing development-only FFmpeg libvorbis encoder; all products under target, no production encoder change",
+    "commands": [
+      {
+        "command": [
+          "target/debug/cocobeat-lab",
+          "generate-dev",
+          "target/workbench-milestone-20261005/audio-source"
+        ],
+        "exit_code": 0,
+        "log": "target/workbench-milestone-20261005/fixture-1.log",
+        "log_sha256": "1be833cab32ce6ff98a0a395fd9f856acd5bebcbbb512c5e90a30215e6c02032"
+      },
+      {
+        "command": [
+          "ffmpeg",
+          "-hide_banner",
+          "-loglevel",
+          "error",
+          "-nostdin",
+          "-i",
+          "target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+          "-map_metadata",
+          "-1",
+          "-c:a",
+          "libvorbis",
+          "-q:a",
+          "10",
+          "-fflags",
+          "+bitexact",
+          "-flags:a",
+          "+bitexact",
+          "-serial_offset",
+          "0",
+          "-n",
+          "target/workbench-milestone-20261005/audio.ogg"
+        ],
+        "exit_code": 0,
+        "log": "target/workbench-milestone-20261005/fixture-2.log",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "command": [
+          "target/debug/cocobeat-lab",
+          "build-authored-package",
+          "target/workbench-milestone-20261005/audio.ogg",
+          "3072000",
+          "target/workbench-milestone-20261005/authoring.json",
+          "target/workbench-milestone-20261005/package"
+        ],
+        "exit_code": 0,
+        "log": "target/workbench-milestone-20261005/fixture-3.log",
+        "log_sha256": "41baa1f5ffc925a04b3b27821c319def25a7a7c3a17ccebe9a22aa8d22c1282d"
+      }
+    ],
+    "cjk_package_command": {
+      "command": [
+        "target/debug/cocobeat-lab",
+        "build-authored-package",
+        "target/workbench-milestone-20261005/audio.ogg",
+        "3072000",
+        "target/workbench-milestone-20261005/authoring-cjk.json",
+        "target/workbench-milestone-20261005/package-cjk"
+      ],
+      "exit_code": 0,
+      "log_sha256": "6d4be3b49ebb016349b7cc8a30a8276a4aee2b3fad29f860edf909fbb7c6fb0e"
+    }
+  },
+  "not_run": [
+    "Standalone production GUI export and recovery workflows in this recheck",
+    "Physical keyboard, mouse wheel or controllers",
+    "Windows / ARM native GUI",
+    "Audio audition or hardware timing",
+    "Native speakers review of all 13 locale catalogs",
+    "Whole editor phase exit or V1 acceptance"
+  ],
+  "raw_evidence_directory": "target/workbench-milestone-20261005"
+}

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, sync::LazyLock};
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
-pub(crate) enum Locale {
+pub enum Locale {
     #[serde(rename = "zh-CN")]
     ZhCn,
     #[default]
@@ -179,7 +179,7 @@ static CATALOGS: LazyLock<[HashMap<String, String>; 13]> = LazyLock::new(|| {
 });
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
-pub(crate) struct Message {
+pub struct Message {
     pub key: &'static str,
     pub args: Vec<(&'static str, String)>,
 }

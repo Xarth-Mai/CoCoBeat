@@ -172,6 +172,20 @@ fn validate(display: DisplaySettings, pacing: PacingSettings) -> io::Result<()> 
     Ok(())
 }
 
+/// Reads the game's chosen locale without changing settings
+/// Callers can report errors and fall back to `Locale::system_default`
+pub fn configured_locale() -> Result<Locale, String> {
+    let path = default_path().map_err(|error| error.to_string())?;
+    match load(&path) {
+        Ok(settings) => Ok(settings.locale),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(Locale::system_default()),
+        Err(error) => Err(format!(
+            "Could not read settings {}: {error}",
+            path.display()
+        )),
+    }
+}
+
 pub fn load(path: &Path) -> io::Result<Settings> {
     let mut bytes = Vec::new();
     fs::File::open(path)?

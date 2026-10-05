@@ -10,6 +10,7 @@ mod package;
 mod replay;
 mod stage;
 mod timing;
+mod workbench;
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args().skip(1).collect();
@@ -116,6 +117,10 @@ fn main() -> ExitCode {
         [command, input, frame] if command == "inspect-stage" => {
             report(stage::inspect(Path::new(input), frame))
         }
+        [command, input, output, options @ ..] if command == "workbench" => report(
+            workbench_locale(options)
+                .and_then(|locale| workbench::run(Path::new(input), Path::new(output), locale)),
+        ),
         [command, package, replay, bind, invite, output] if command == "net-host" => report(
             bind.parse()
                 .map_err(|_| "net-host requires an explicit IP:port socket address".to_string())
@@ -141,7 +146,7 @@ fn main() -> ExitCode {
         ),
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir> | inspect-stage <package-dir> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir>"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | verify-package <package-dir> | inspect-stage <package-dir> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir> | workbench <package-dir> <new-package-dir> [--locale CODE]"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS
@@ -165,6 +170,23 @@ fn print_session(summary: cocobeat_net::SessionSummary) -> Result<(), String> {
         serde_json::to_string(&summary).map_err(|error| error.to_string())?
     );
     Ok(())
+}
+
+fn workbench_locale(options: &[String]) -> Result<cocobeat_runtime::Locale, String> {
+    use cocobeat_runtime::Locale;
+    match options {
+        [] => Ok(
+            cocobeat_runtime::configured_locale().unwrap_or_else(|error| {
+                eprintln!("{error}; using the system language");
+                Locale::system_default()
+            }),
+        ),
+        [flag, code] if flag == "--locale" => Locale::ALL
+            .into_iter()
+            .find(|locale| locale.code() == code)
+            .ok_or_else(|| format!("Unsupported locale: {code}")),
+        _ => Err("workbench accepts only an optional --locale CODE".into()),
+    }
 }
 
 fn report<E: std::fmt::Display>(result: Result<(), E>) -> ExitCode {

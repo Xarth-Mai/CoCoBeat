@@ -42,7 +42,7 @@ const FLAG_BYTES: [(&str, &[u8]); 13] = [
 ];
 
 #[derive(Resource)]
-pub(crate) struct UiAssets {
+pub struct UiAssets {
     fonts: [Handle<Font>; 6],
     flags: HashMap<&'static str, Handle<Image>>,
 }

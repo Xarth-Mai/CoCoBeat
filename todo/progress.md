@@ -1,6 +1,6 @@
 # 工作进度
 
-更新：2026-10-03，第一批规则、时钟、Replay、原创内容和 runtime 已通过完整软件检查，GPU 离屏截图已检查；品牌模块已交付、主线程已接线，品牌细节仍持续迭代，共享文件由主线程统一集成，实际证据统一记录在 [验证策略](../docs/testing.md)
+更新：2026-10-05，本轮完成原生波形工作台里程碑并提交后暂停；后续工作待用户恢复。第一批规则、时钟、Replay、原创内容和 runtime 已通过完整软件检查，GPU 离屏截图已检查；品牌模块已交付、主线程已接线，品牌细节仍持续迭代，共享文件由主线程统一集成，实际证据统一记录在 [验证策略](../docs/testing.md)
 
 本表记录分工与证据，阶段范围仍以 [00–12 路线图](README.md) 为准；研究报告提供设计来源，不代表库兼容性、硬件精度或真人体验已验证
 
@@ -29,7 +29,7 @@
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 背景门控质量仍 FAIL（20 PASS / 11 FAIL），停止单分数修补链；原创曲目已准备 438 个声部起点 / 200 条来源候选及原 7 个 Anchor 引用，人工字段全部 pending，来源校验与复现通过，所有旧失败保留 |
 | 18 | 精度优先的 AnchorCompiler · 07 | editor_core + stage_curve_plan + section_qa + root | IN PROGRESS | 现有分析结构可先行；生产策略依赖 17 | 纯 AnchorProposal、逐项证据、完整重编及明确采用 CLI 已交付；41 项相关测试和 32 项真实包 CPU 检查通过，原音频/分析/cue 保真，core 与 Replay 一致；音乐置信度校准、标注与试听继续保留 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | v2 已接直道/广场/缓弯/低桥、固定拱门和同轨道预告；121 项相关测试、5 项场景补验、42 项 CPU 与最终 16 张 GPU 图通过，原拱门遮挡已修并保留失败图；完整自动编排、跨版本视觉 Replay、设备性能与真人可读性仍待完成 |
-| 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + section_qa + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 精确编辑、保真导出和 Replay JSONL 已接通；诊断批次 20 项测试、4 项补验和 20 项真实包 CPU 用例通过，原始输入/水位/已确认事件与整数关联完整；波形时间线、计时关联和完整退出继续后续 |
+| 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + section_qa + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 原生波形工作台、精确编辑、保真导出和 Replay JSONL 已接通；2026-10-05 重跑 35 项测试、10 条 CLI 命令和 8 张原生 GPU 图通过，详情裁切和底部滚动已补验；历史 GUI 编辑 / 恢复独立记录，候选 / Replay 图形诊断、计时、试听和完整退出待恢复 |
 | 21 | QUIC 会话、时钟同步与可靠历史 · 10 | stage_curve_plan + net_wire + net_tls + root | IN PROGRESS | 20 | 预装同包的真实 QUIC 历史会话已接 lab；11 项相关测试、13 项 loopback 场景 / 30 命令通过，断线前缀和应用 Ack 有实际证据；资源接收、音频 ClockSync 和生产接线继续开发 |
 | 22 | 网络模拟与故障验证 · 11 | section_qa + root | IN PROGRESS | 21 | loopback 实际进程及受控 peer 的延迟水位、中途断线、身份/TLS/Ack 拒绝已验证；两机、丢包/非对称路径/漂移与音频同步继续保留 |
 | 23 | 两台真实机器验收 · 11 | 待分配 + 设备测试 | NOT RUN | 11/12/21/22 | 两端 Replay、真实音频偏移、伙伴反馈延迟、重启/断线与双人体验记录 |

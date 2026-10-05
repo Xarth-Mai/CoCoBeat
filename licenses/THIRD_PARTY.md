@@ -4,7 +4,7 @@
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
-| [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI | MIT OR Apache-2.0 |
+| [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI；lab：原生时间线工作台 | MIT OR Apache-2.0 |
 | [kira](https://github.com/tesselode/kira) | 0.12.5 | runtime：音乐与即时反馈音频 | MIT OR Apache-2.0 |
 | [fontique](https://github.com/linebender/parley) | 0.9.0 | runtime：复用 Bevy 已解析的字体集合，为嵌入 Noto 配置原生跨脚本回退 | Apache-2.0 OR MIT |
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |

@@ -20,3 +20,7 @@ mod ui_assets;
 mod view;
 
 pub use app::run;
+pub use i18n::{Locale, Message};
+pub use input::{InputSource, MenuAccess, menu_access};
+pub use settings::configured_locale;
+pub use ui_assets::{UiAssets, install as install_ui_assets};

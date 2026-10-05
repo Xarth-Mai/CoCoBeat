@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已完成预装同包的 QUIC 可靠历史与权威 Replay 软件会话；完整歌曲导入、自动 MIR、时间线编辑界面与正式游戏联网仍在后续路线图
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及预装同包的 QUIC 可靠历史与权威 Replay 软件会话；完整歌曲导入、自动 MIR、候选与 Replay 图形诊断及正式游戏联网仍在后续路线图
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
@@ -110,7 +110,9 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度、手工 Anchor 与段落提示；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与完整自动舞台编排继续按路线图推进
 
-`cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)；波形时间线与 Replay 诊断界面仍待后续
+`cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)
+
+`cocobeat-lab workbench PACKAGE NEW_PACKAGE [--locale CODE]` 打开静音原生工作台，显示双声道峰值波形、精确帧光标、Anchor 列表和作者的 SectionCue；键鼠可拖动或输入整数帧，撤销重做后导出新包，失败保留草稿便于重试。手柄可浏览，编辑需显式切回键鼠主控；工作台只读取游戏语言配置，支持 640×480 起的窗口和现有 13 个语言变体，操作见 [工作台说明](docs/editor.md#原生工作台)
 
 `propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
 
