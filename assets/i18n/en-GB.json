@@ -215,5 +215,7 @@
   "audition.ended": "Ended",
   "audition.failed": "Audio error",
   "audition.cursor": "Audio {state} · ~{frame} frames · cue {target}",
-  "audition.help": "Space / left face button: play/pause · Seek: use selected frame · Audio cursor describes rendered PCM, not speaker or input latency"
+  "audition.help": "Space / left face button: play/pause · Seek: use selected frame · Audio cursor describes rendered PCM, not speaker or input latency",
+  "replay.watching": "Read-only Replay playback",
+  "replay.progress": "Showing {consumed} / {total} recorded facts"
 }

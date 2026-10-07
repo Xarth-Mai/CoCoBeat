@@ -26,7 +26,7 @@ media 的 `decode_canonical` 复用同一顺序解码核心和 Ogg 页校验，�
 
 schema 的 `AssetRef` 仅定义对象文件名、实际字节数和 BLAKE3，不依赖序列化或哈希库。media 的 `prepare_canonical_audio` 由 lab 的 `prepare-audio` 消费，流式复制最终 Ogg 至全新目录中的固定文件名，记录写入字节身份，关闭文件后严格读回该副本；返回 `PreparedCanonicalAudio`，不将它当作完整 `ValidatedPackage`。文件只在成功独占创建后才归本次清理，目录清理仅允许空目录；完整包由独立的 `build_package` 事务持有，先准备同一最终音频副本，再调用内容构建函数，写入分析、谱面和 manifest 并整体复核后重命名发布
 
-源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，生产编码器准入与游戏中的完整导入流程尚未完成
+源文件限 512 MiB、192 kHz 和十分钟，严格读回同样受文件大小和十分钟上限约束；库内 packet/block 上限不等于操作系统内存或 CPU 隔离。回调收到的块在整次操作成功前都是临时结果，失败必须丢弃；lab 只创建新输出并在错误时清理半成品，唯一生产编码器及手工源导入已有软件证据，游戏内曲库和完整自动分析继续推进
 
 schema 的初始 `MusicAnalysis` / `CompiledChart` / `SongPackage` 由 lab 构建手工内容包，再由 runtime 加载；能量从最终 staging Ogg 全量读回计算，Anchor 和段落来自有来源说明的创作 JSON，media 的私有 Postcard DTO 持有版本头、字节/元素限额、语义检查和对象身份，schema 仍仅依赖标准库
 
@@ -71,7 +71,7 @@ Bevy 输入消息 → ClockBridge → Hit / 水位 → core::DuoEngine → 语�
 
 相同输入历史、规则版本、内容和 epoch 必须得到相同规则结果；Replay 不另写判定算法，网络到达时间不能改写原始输入时间，view 不获得规则引擎的可变控制能力
 
-正常启动接受 `--package DIR`，也可追加 `--replay FILE` 或 `--visual-smoke PNG` 校验该包的 Replay 或生成无音频场景预览；`--section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 用同一 cue 查询生成指定帧的无音频预览，帧范围包含 EOF，完整参数见 [SongPackage](song-package.md)；加载失败或规则不是 `duo-watermark-v1` 时退出，无参数正常启动才选择确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口保留开发内容
+正常启动接受 `--package DIR`，也可追加 `--replay FILE`、`--watch-replay FILE` 或 `--visual-smoke PNG` 校验录制、只读观看明确 Stage 版本的历史，或生成无音频场景预览；`--section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 用同一 cue 查询生成指定帧的无音频预览，帧范围包含 EOF，完整参数见 [SongPackage](song-package.md)；加载失败或规则不是 `duo-watermark-v1` 时退出，无参数正常启动才选择确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口保留开发内容
 
 runtime 以完整 manifest 的 `package_hash` 构造 `package-blake3:<64 个十六进制字符>` 内容身份，Session 使用包的实际结束帧与 Anchor；Replay 记录内容/规则/构建身份和原始输入、水位，保存失败明确报错，校验与大小上限由 replay 持有，runtime 另检查 Hit 是否处于歌曲范围内；诊断 CSV 由 session 写入，二者不包含歌曲音频
 
@@ -86,3 +86,5 @@ schema / core 不允许外部依赖，stage 只允许 schema 与标准库并由 
 net 采用实际本地及第三方依赖的明确白名单，并拒绝 Bevy / Kira；需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
 
 边界检查约束模块图，不能证明所有函数都尊重语义；例如反馈不修改判定，还需要 API 设计、测试和代码审查。
+
+原生观看复用 Game / Session / Kira / StageScene，通过有界原事实消费游标送入唯一 DuoEngine；原 Replay 保持不可改记录，播放时间使用 acknowledged source position，重启保持原 epoch。观看与录制 / 保存 / 网络路径隔离，详细语义见 [Replay](replay-diagnostics.md#原生只读-replay-观看)

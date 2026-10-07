@@ -215,5 +215,7 @@
   "audition.ended": "已结束",
   "audition.failed": "音频错误",
   "audition.cursor": "试听 {state} · 约 {frame} 帧 · 定位 {target}",
-  "audition.help": "空格 / 手柄左侧面键：播放暂停 · 定位：使用选中帧 · 试听游标是渲染 PCM 位置，不代表扬声器或输入延迟"
+  "audition.help": "空格 / 手柄左侧面键：播放暂停 · 定位：使用选中帧 · 试听游标是渲染 PCM 位置，不代表扬声器或输入延迟",
+  "replay.watching": "只读 Replay 观看",
+  "replay.progress": "已显示 {consumed} / {total} 条原始事实"
 }

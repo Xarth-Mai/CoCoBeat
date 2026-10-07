@@ -215,5 +215,7 @@
   "audition.ended": "已結束",
   "audition.failed": "音訊錯誤",
   "audition.cursor": "試聽 {state} · 約 {frame} 幀 · 定位 {target}",
-  "audition.help": "空白鍵 / 手掣左側面鍵：播放暫停 · 定位：使用所選幀 · 試聽游標是渲染 PCM 位置，不代表揚聲器或輸入延遲"
+  "audition.help": "空白鍵 / 手掣左側面鍵：播放暫停 · 定位：使用所選幀 · 試聽游標是渲染 PCM 位置，不代表揚聲器或輸入延遲",
+  "replay.watching": "唯讀 Replay 觀看",
+  "replay.progress": "已顯示 {consumed} / {total} 筆原始記錄"
 }

@@ -1,6 +1,6 @@
 # Replay 规则诊断
 
-`inspect-replay` 与 `workbench-replay` 读取真实歌曲包与 Replay v1，共用完整校验和唯一 `Replay::replay` / DuoEngine 重放；前者保存 JSONL，后者在原生波形窗口中只读查看原始输入、水位、已确认判定及配对
+`inspect-replay` 与 `workbench-replay` 读取真实歌曲包与 Replay v1 / v2，共用完整校验和唯一 `Replay::replay` / DuoEngine 重放；前者保存 JSONL，后者在原生波形窗口中只读查看原始输入、水位、已确认判定及配对
 
 ```sh
 cargo run --locked -p cocobeat-lab -- inspect-replay PACKAGE REPLAY.json NEW_REPORT.jsonl
@@ -15,7 +15,7 @@ cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json [--lo
 
 负预滚水位和 EOF 后的水位在行、光标及详情中保持原值，波形视口仍限于实际歌曲；空或单方历史保持待确认状态，不追加水位或补出尚未确认的 Miss。相同帧的多条记录可分别选择，详情按选中记录、header、summary 排列，640×480 使用列表 / 详情页切换和可滚动长文本
 
-该入口只浏览，隐藏编辑、撤销重做和导出控件，并在输入路径阻止修改；原包、Replay 与游戏配置保持不变，没有试听或播放时钟
+该入口只浏览，隐藏编辑、撤销重做和导出控件，并在输入路径阻止修改；原包、Replay 与游戏配置保持不变；后续共用工作台的试听控件，音频源游标与原事实光标分开，设备计时不从歌曲帧推算
 
 ## 可检查的事实
 
@@ -55,9 +55,25 @@ Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未�
 
 `cocobeat-lab inspect-replay-stage PACKAGE REPLAY FRAME` 先沿用同一完整包、身份、整数事实范围与 core 校验，再按明确记录的版本重建 StagePlan 并输出整数采样；v1 缺字段明确失败，不猜测历史版本。v1 图形诊断与 JSONL 的原字节保持，v2 JSONL 使用 `report_version = 2` 并在 header 增加 `stage_compiler_version`
 
-runtime 的 `--replay` 仍是退出式 core 校验，当前图形诊断展示事实与规则结果，没有动画回放、历史 shader 或设备计时复现；整数几何重建不表示复现录制时的画面
+runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接通下面的原生只读观看，几何版本使用明确记录，历史 shader、网络到达时间和设备计时仍没有记录
 
 [Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。试听校准、设备计时关联和真实输入验收继续独立推进
+
+## 原生只读 Replay 观看
+
+```sh
+cargo run --locked -p cocobeat-game -- --package PACKAGE --watch-replay REPLAY.json
+```
+
+观看前完整验证四对象、实际 PCM、完整内容 / 规则身份、Hit 范围和同一 core 的原始历史；只接受明确记录的 Stage 1 / 2，以 analysis 段落区间和实际长度编译该版本。缺失舞台版本的旧录制仍有效用于 core 诊断，观看明确报错，不猜测历史几何
+
+每次进程启动完整播放品牌开场，然后保持 Ready，明确的新确认才启动歌曲；观看复用现有真实 Kira、设置、暂停和菜单主控，键盘与手柄可接管菜单。界面只显示观看标记与原事实进度，隐藏玩家加入 / Hit 绑定和保存录制；实况 Hit 和直接保存快捷键无效，原包 / Replay 和录制目录不写入
+
+事实可见性由已观察到的 Kira source position 决定，不使用重复 callback 的歌曲游标外推揭示更多事实；保留原文件顺序，位于前面的未来水位可阻挡后面的较早另一位玩家 Hit。负水位在零帧可见，超出 EOF 的原合法水位只在自然结束时送入 core，值保持原样
+
+自然 EOF 只消费剩余原事实，没有追加结束水位、假命中或补 Miss；只有单方水位的录制仍保持未确认 Anchor。重新开始恢复原 epoch、空消费游标和新引擎，使用同一 PCM；暂停由 callback acknowledgment 确认，返回菜单停止音乐并等待下一次新确认
+
+一次可见的多个同玩家 Hit 合并为一个呈现音效与角色脉冲，原始事实和 core 事件全部保留；这是一种按歌曲帧观看的表示，不重造录制时的网络接收时刻。舞台版本绑定几何，当前 shader / 字体 / 画质不会被当作历史渲染器
 
 ## 软件验证
 
@@ -66,3 +82,5 @@ runtime 的 `--replay` 仍是退出式 core 校验，当前图形诊断展示事
 受控 GUI 验证使用冻结的五个生产源码文件副本，保持输入、布局与重放逻辑原样，只在副本附加窗口尺寸、合成 `KeyboardInput` 驱动和 Bevy 原生截图系统，再链接正式 Cargo JSON 中的精确 extern；[复现工具](../tools/replay-workbench-check/README.md)记录源 / helper / 依赖 SHA-256、注入差异、命令与退出码
 
 1280×800 和 640×480 各退出 0、逐条核对 76 条记录并保存 5 张 PNG，合计 10 张图已目检；负水位 -1632、Free Sync 双 Hit 与中点 26462、列表末尾和详情顶部 / 底部均有状态断言，原包、Replay 与期望报告字节保持不变。该证据覆盖合成输入和原生 GPU 渲染，物理输入、扬声器、真人体验及历史视觉复现为 NOT RUN
+
+原生观看软件证据：133 项 runtime 测试与最终标题窄测通过，四个实际窗口 case 分别覆盖两个版本 full / partial，最终两尺寸英文及德语标题静态图另行取证；旧尺寸与 GPU 失败保留，实际播放和最终文本不混同，详见[原生观看验证](testing.md#原生只读视觉-replay)与[持久记录](../testdata/synthetic/visual-replay-observations-20261007.json)

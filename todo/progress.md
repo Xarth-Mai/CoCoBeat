@@ -70,3 +70,5 @@
 2026-10-07 · 生产源导入与工作台试听：原始音频经唯一 q10 编码进入手工四对象，10 条成功 CLI、5 条预期拒绝、两张生产 loader 图通过；工作台三模式复用 PCM 并分开显示原始 / 音频 / 请求坐标，17 项最终窄测、Kira MockBackend 和四张构造 UI 图通过。输出设备、计时与听感另验，下一批推进实际视觉 Replay、性能测量及完整曲库 / 内容能力
 
 2026-10-07 · 工作台 CPAL 接线增补：两个尺寸实际 callback 启动 / 暂停 / seek / 恢复 / 失焦 / 停止与一个实际初始化失败共三 case 通过，七张实际图 agent / 主线程逐张检查；只读原始事实保持，物理输入与声学验收独立
+
+2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计

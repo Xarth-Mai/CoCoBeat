@@ -699,3 +699,15 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 首个 helper 编译失败、首次实际音频已推进但 QA 固定导航假设失败均保留，后者来自错误后焦点转到 Details，修正 QA 使用实际焦点和 Shift+Tab 后重新完整执行。三个最终原生 case 通过，源包 / Replay / 草稿状态未改，完整命令、固定源码 / extern、日志和 99 项 receipt 见[独立观察记录](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)，复现复用[既有试听工具](../tools/workbench-audition-check/README.md)
 
 这些结果是本机真实 CPAL callback 和受控输入的软件接线证据，声学输出、输入 / 扬声器延迟、真实手柄、母语使用者和其他平台输出设备仍 NOT RUN
+
+## 原生只读视觉 Replay
+
+2026-10-07，`cargo test --locked -p cocobeat-runtime` 的 133 项测试通过，随后最终固定标题修改的定向测试及 `cargo clippy --locked -p cocobeat-runtime --all-targets -- -D warnings`、`cargo fmt --all -- --check` 通过；13 份 catalog 各 219 key 和占位符一致。两套 wrapper 分别执行 16 条实际 CLI，10 成功与 6 预期拒绝，原 v1 core 校验保留而未知 / 缺失 Stage 的观看明确失败
+
+四个实际原生游戏窗口 case 完成品牌开场、新确认、真实 Kira source cursor、暂停 / 恢复、自然 EOF、原 epoch 重启与返回菜单：Stage 1 / 2 的 1280×800 full 各消费 1003 条事实 / 15 个事件，640×480 partial 各 1002 条事实 / 0 个事件；不为单方未到水位补造 Miss。原始包、Replay 和被冻结二进制保持，共生成 20 张有效 PNG，agent 全部目检；主线程目检四张实际 paused、两张最终英文静态及一张德语 640 静态，共七张范围内检查
+
+完整窗口 case 绑定 `9151f58cee790d20fe7cad9ae50a45dce687f9abfd61674475c206abe45f6d74`，修正真实小窗口请求后的 case 绑定 `f39a067efafc1ab93aece902a249529da63c03994eeb46970a474b56af9ed57d`；最终唯一固定标题和五操作的两尺寸英文 / 德语静态图绑定 `0c2ecb029cab016b4418aaf9ca1c4a6ab1707afb2e908fc2bc223f030e74f476`。三次正式 debug build 各 422 项列明输入前后相同，不把旧截图当最终文案，也不把静态视图当实际播放或 release 性能证据
+
+初次 Xvfb 呈现失败、gamescope 请求 640 却实际 1280 的尺寸失败、德语 sandbox GPU 枚举失败及修正前 marker 问题均保留。最终德语标题两行完整、主控提示与五操作可见，进度详情在底缘之外；640 游戏角色标签重叠已记为共同场景后续修复。完整原始命令、帧游标、哈希、分阶段视图和已知边界见[持久观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)与[复现工具](../tools/visual-replay-check/README.md)
+
+当前软件控制和 callback 证据不证明物理双手柄 / 混合输入、扬声器计时、历史 shader、网络到达时间、四平台运行或真人体验；这些保持 NOT RUN

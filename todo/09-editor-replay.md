@@ -23,7 +23,7 @@
 
 原生 `workbench PACKAGE NEW_PACKAGE [--locale CODE]` 已消费相同编辑与导出路径，支持精确帧输入、拖动、撤销重做、虚拟列表、单一菜单主控及失败保留重试；手柄可浏览，编辑与导出由键鼠完成，现有 13 个语言变体和 Noto 字体共用，配置只读
 
-设备计时关联、试听校准及完整阶段退出继续保留；静音工具的窗口检查不能替代音频、设备或真人验收，软件证据见 [工作台验证](../docs/testing.md#原生波形与-anchor-工作台)
+设备计时关联、试听校准及完整阶段退出继续保留；早期静音工具的窗口检查不能替代音频、设备或真人验收，软件证据见 [工作台验证](../docs/testing.md#原生波形与-anchor-工作台)
 
 2026-10-05 完成原生波形工作台软件里程碑并提交后暂停：本轮 35 项测试、10 条 CLI 命令及 8 张原生 GPU 图通过，旧临时证据缺失的边界与当前补验见 [工作台验证](../docs/testing.md#原生波形与-anchor-工作台)；本阶段未勾选任务和完整退出继续保留
 
@@ -31,7 +31,7 @@
 
 本批相关包共 169 项测试、Clippy / 构建通过，1280×800 和 640×480 的源码副本 helper 各核对 76 条记录并生成 5 张原生 GPU PNG，合计 10 张图目检通过；正式 CLI 的两份报告与 stdout 保持旧版原字节，命令、冻结源码与合成输入边界见 [Replay 诊断验证](../docs/replay-diagnostics.md#软件验证)和[本批观察清单](../testdata/synthetic/session-diagnostics-observations-20261007.json)
 
-该里程碑不包含试听、物理计时或真实设备验收，Replay v1 也没有视觉版本，当前诊断不承诺历史画面复现；v2 几何版本记录与 `inspect-replay-stage` 保留此边界，完整动画回放仍待实施；软件交付完成后等待用户真实验收，长期 V1 的设备计时关联和试听校准范围保留
+该里程碑不包含试听、物理计时或真实设备验收，Replay v1 也没有视觉版本，当前诊断不承诺历史画面复现；v2 几何版本记录与 `inspect-replay-stage` 保留此边界，该批尚未实施动画观看，后续交付见下文；软件交付完成后等待用户真实验收，长期 V1 的设备计时关联和试听校准范围保留
 
 2026-10-07 完成 `workbench-candidates PACKAGE REPORT [--locale CODE]` 只读候选审阅，共用 CLI 的报告版本、完整源包身份、规则与策略校验及候选重编；逐条显示精确帧、原始评分、零起始索引及阻挡关系，beat／section／energy 上下文来自原 analysis，提案与原 chart 分开显示，采用仍由明确选择 CLI 完成
 
@@ -44,3 +44,5 @@
 2026-10-07 · 歌曲试听软件交付：首次播放才创建 Kira 输出，17 项最终工作台窄测覆盖命令合并、原始帧保留、菜单主控、held、失焦和断开；实际 Kira MockBackend 起点与暂停 / 恢复检查通过。两尺寸四张原生 GPU 图目检通过，音频游标是构造显示控制，输出设备和物理输入为 NOT RUN，见[操作契约](../docs/editor.md#歌曲试听)与[观察清单](../testdata/synthetic/workbench-audition-observations-20261007.json)
 
 2026-10-07 · 试听真实 callback 补验：冻结生产模块和旧 extern 的 helper 实际走 Kira CPAL，两个尺寸正常播放 / 暂停 / 暂停跳转 / 恢复 / 失焦 / Stop 与一个实际输出初始化失败共三 case 通过，七张实际图 agent / 主线程目检通过；原选中事实和源包保持，见[独立记录](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)。callback 状态不证明声学输出或物理计时
+
+2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计

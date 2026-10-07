@@ -215,5 +215,7 @@
   "audition.ended": "종료됨",
   "audition.failed": "오디오 오류",
   "audition.cursor": "오디오 {state} · 약 {frame} 프레임 · 시작 {target}",
-  "audition.help": "Space / 패드 전면 버튼 중 왼쪽 버튼: 재생·일시 정지 · 이동: 선택 프레임 사용 · 오디오 커서는 렌더링된 PCM 위치이며 스피커나 입력 지연이 아닙니다"
+  "audition.help": "Space / 패드 전면 버튼 중 왼쪽 버튼: 재생·일시 정지 · 이동: 선택 프레임 사용 · 오디오 커서는 렌더링된 PCM 위치이며 스피커나 입력 지연이 아닙니다",
+  "replay.watching": "읽기 전용 Replay 재생",
+  "replay.progress": "기록된 사실 {consumed} / {total}개 표시"
 }

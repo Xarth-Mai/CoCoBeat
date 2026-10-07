@@ -215,5 +215,7 @@
   "audition.ended": "Encerrado",
   "audition.failed": "Erro de áudio",
   "audition.cursor": "Áudio {state} · ~{frame} quadros · início {target}",
-  "audition.help": "Espaço / botão frontal esquerdo: reproduzir ou pausar · Ir: usar quadro selecionado · O cursor indica PCM renderizado, não latência de saída ou entrada"
+  "audition.help": "Espaço / botão frontal esquerdo: reproduzir ou pausar · Ir: usar quadro selecionado · O cursor indica PCM renderizado, não latência de saída ou entrada",
+  "replay.watching": "Reprodução de Replay somente leitura",
+  "replay.progress": "Exibindo {consumed} / {total} fatos registrados"
 }

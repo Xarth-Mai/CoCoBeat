@@ -53,6 +53,13 @@ pub fn development_sound() -> StaticSoundData {
 }
 
 pub fn load_package(path: &Path) -> Result<(SongContent, StaticSoundData), String> {
+    load_package_version(path, cocobeat_stage::COMPILER_VERSION)
+}
+
+pub(crate) fn load_package_version(
+    path: &Path,
+    version: u32,
+) -> Result<(SongContent, StaticSoundData), String> {
     let mut pcm = Vec::new();
     let package = cocobeat_media::read_package(path, |block| {
         pcm.try_reserve(block.len())
@@ -74,7 +81,8 @@ pub fn load_package(path: &Path) -> Result<(SongContent, StaticSoundData), Strin
         .collect();
     let content_id = format!("package-blake3:{hash}");
     let end = SongTime::from_frames(package.manifest.canonical_frames as i64);
-    let stage = cocobeat_stage::compile(&content_id, end, &package.analysis.sections)?;
+    let stage =
+        cocobeat_stage::compile_version(&content_id, end, &package.analysis.sections, version)?;
     Ok((
         SongContent {
             content_id,
@@ -190,6 +198,23 @@ mod tests {
         fn drop(&mut self) {
             let _ = fs::remove_dir_all(&self.0);
         }
+    }
+
+    #[test]
+    fn recorded_stage_versions_load_the_same_validated_pcm_and_analysis_intervals() {
+        let root = TestDirectory::new();
+        let path = root.package("versioned", RULES_ID, 1_200, vec![]);
+        let (old, old_pcm) = load_package_version(&path, 1).unwrap();
+        let (current, current_pcm) = load_package_version(&path, 2).unwrap();
+        assert_eq!(old.content_id, current.content_id);
+        assert_eq!(old_pcm.frames, current_pcm.frames);
+        for (content, version) in [(old, 1), (current, 2)] {
+            let stage = content.stage.unwrap();
+            assert_eq!(stage.compiler_version(), version);
+            assert_eq!(stage.segments().len(), 3);
+            assert!(content.sections.is_empty());
+        }
+        assert!(load_package_version(&path, 3).is_err());
     }
 
     #[test]

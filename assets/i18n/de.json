@@ -215,5 +215,7 @@
   "audition.ended": "Beendet",
   "audition.failed": "Audiofehler",
   "audition.cursor": "Audio {state} · ~{frame} Frames · Ziel {target}",
-  "audition.help": "Leertaste / linke Fronttaste: Wiedergabe oder Pause · Sprung: gewählter Frame · Der Cursor zeigt gerendertes PCM, keine Ausgabe- oder Eingabelatenz"
+  "audition.help": "Leertaste / linke Fronttaste: Wiedergabe oder Pause · Sprung: gewählter Frame · Der Cursor zeigt gerendertes PCM, keine Ausgabe- oder Eingabelatenz",
+  "replay.watching": "Schreibgeschützte Replay-Wiedergabe",
+  "replay.progress": "{consumed} / {total} aufgezeichnete Fakten angezeigt"
 }

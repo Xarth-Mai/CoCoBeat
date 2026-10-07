@@ -215,5 +215,7 @@
   "audition.ended": "Terminé",
   "audition.failed": "Erreur audio",
   "audition.cursor": "Audio {state} · ~{frame} trames · repère {target}",
-  "audition.help": "Espace / bouton de façade gauche : lecture ou pause · Aller : trame sélectionnée · Le curseur indique le PCM rendu, pas la latence de sortie ou de saisie"
+  "audition.help": "Espace / bouton de façade gauche : lecture ou pause · Aller : trame sélectionnée · Le curseur indique le PCM rendu, pas la latence de sortie ou de saisie",
+  "replay.watching": "Lecture du Replay en lecture seule",
+  "replay.progress": "Affichage de {consumed} / {total} faits enregistrés"
 }

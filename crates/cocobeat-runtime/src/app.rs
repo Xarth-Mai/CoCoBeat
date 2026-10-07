@@ -13,6 +13,7 @@ use crate::{
         MenuScroll, SettingsAction,
     },
     online::{OnlineRound, Update as NetworkUpdate},
+    replay_playback::ReplayPlayback,
     session::{Session, SessionResults},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
@@ -66,6 +67,7 @@ enum Smoke {
     Locale(Locale),
     Languages(Locale),
     Menu(Locale, Phase),
+    WatchMenu(Locale),
     Players(Locale),
     Quality(QualitySettings),
     Graphics(Locale),
@@ -132,6 +134,7 @@ impl SmokeViewport {
 struct Game {
     content: SongContent,
     session: Session,
+    playback: Option<ReplayPlayback>,
     phase: Phase,
     notice: Message,
     saved_facts: usize,
@@ -153,6 +156,7 @@ impl Game {
         Ok(Self {
             session: Session::for_content(SessionEpoch(0), &content)?,
             content,
+            playback: None,
             phase: Phase::Ready,
             notice: Message::new("game.welcome"),
             saved_facts: 0,
@@ -165,11 +169,66 @@ impl Game {
         })
     }
 
+    fn watching(content: SongContent, replay: Replay) -> Result<Self, String> {
+        if replay.identity().stage_compiler_version.is_none() {
+            return Err("Replay watcher requires a recorded Stage version".into());
+        }
+        check_replay(&replay, &content)?;
+        if replay.identity().stage_compiler_version
+            != content.stage.as_ref().map(|s| s.compiler_version())
+        {
+            return Err("Replay stage version differs from loaded StagePlan".into());
+        }
+        let mut game = Self::with_content(content)?;
+        game.session = Session::for_content(replay.epoch(), &game.content)?;
+        game.session.replay = replay;
+        game.playback = Some(ReplayPlayback::new(game.content.end)?);
+        game.notice = Message::new("replay.watching");
+        Ok(game)
+    }
+
+    fn reset_session(&mut self, epoch: SessionEpoch) -> Result<(), String> {
+        let mut session = Session::for_content(epoch, &self.content)?;
+        if let Some(playback) = &mut self.playback {
+            session.replay = self.session.replay.clone();
+            playback.reset();
+        }
+        self.session = session;
+        Ok(())
+    }
+
+    fn summary(&self) -> SessionResults {
+        let mut results = self.session.summary();
+        if let Some(playback) = &self.playback {
+            results.hits = [0; 2];
+            for fact in &self.session.replay.facts()[..playback.consumed()] {
+                if let DuoInput::Hit(hit) = fact {
+                    results.hits[hit.player.index()] += 1;
+                }
+            }
+        }
+        results
+    }
+
+    fn advance_replay(&mut self) -> Result<crate::replay_playback::PlaybackBatch, String> {
+        self.playback
+            .as_mut()
+            .ok_or("Replay watcher is absent")?
+            .advance(
+                self.session.replay.facts(),
+                &mut self.session.engine,
+                self.session.current,
+            )
+    }
+
     fn save(&mut self) -> Result<(), String> {
         self.save_to(Path::new("replays"))
     }
 
     fn save_to(&mut self, directory: &Path) -> Result<(), String> {
+        if self.playback.is_some() {
+            return Ok(());
+        }
         if self.session.replay.facts().is_empty() {
             if self.phase != Phase::Fault {
                 self.notice = Message::new("game.nothing_to_save");
@@ -206,15 +265,19 @@ impl Game {
 
     fn start(&mut self, audio: &mut AudioOutput) -> Result<(), String> {
         self.save()?;
-        let epoch = self
-            .session
-            .epoch()
-            .0
-            .checked_add(1)
-            .ok_or("Session epoch overflow")?;
-        let session = Session::for_content(SessionEpoch(epoch), &self.content)?;
+        let epoch = if self.playback.is_some() {
+            self.session.epoch()
+        } else {
+            SessionEpoch(
+                self.session
+                    .epoch()
+                    .0
+                    .checked_add(1)
+                    .ok_or("Session epoch overflow")?,
+            )
+        };
         audio.start()?;
-        self.session = session;
+        self.reset_session(epoch)?;
         self.saved_facts = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
@@ -228,7 +291,7 @@ impl Game {
     fn main_menu(&mut self) -> Result<(), String> {
         self.save()?;
         // Keep the epoch until the next explicit Start advances it
-        self.session = Session::for_content(self.session.epoch(), &self.content)?;
+        self.reset_session(self.session.epoch())?;
         self.saved_facts = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
@@ -250,7 +313,7 @@ impl Game {
         audio.stop();
         self.phase = Phase::Fault;
         self.fault_details = Some(error.clone());
-        self.results = Some(self.session.summary());
+        self.results = Some(self.summary());
         let saved = self.save();
         eprintln!("Session stopped: {error}");
         self.notice = Message::new(message);
@@ -267,7 +330,7 @@ impl Game {
     ) -> Result<bool, String> {
         if self.phase == Phase::Pausing && state == PlaybackState::Paused {
             self.session.observe_audio(position, observed)?;
-            self.session.update_position(observed)?;
+            self.update_cursor(position, observed)?;
             self.session
                 .clock
                 .pause(observed)
@@ -279,14 +342,27 @@ impl Game {
             && (self.phase == Phase::Running || position > 0.0)
         {
             self.session.observe_audio(position, observed)?;
-            self.session.update_position(observed)?;
+            self.update_cursor(position, observed)?;
             if self.phase == Phase::Starting {
                 self.phase = Phase::Running;
-                self.notice = Message::new("game.listening");
+                self.notice = Message::new(if self.playback.is_some() {
+                    "replay.watching"
+                } else {
+                    "game.listening"
+                });
                 return Ok(true);
             }
         }
         Ok(false)
+    }
+
+    fn update_cursor(&mut self, position: f64, observed: MonotonicTime) -> Result<(), String> {
+        self.session.update_position(observed)?;
+        if self.playback.is_some() {
+            self.session.current = SongTime::try_from_seconds_f64(position)
+                .ok_or("Replay audio cursor is outside the song timeline")?;
+        }
+        Ok(())
     }
 
     fn request_pause(
@@ -327,6 +403,8 @@ impl Game {
 
 #[path = "live_observation.rs"]
 mod live_observation;
+#[path = "watch_observation.rs"]
+mod watch_observation;
 
 struct LiveOptions {
     observation: Option<PathBuf>,
@@ -429,6 +507,9 @@ pub fn run() -> ExitCode {
             options.observation.as_deref(),
             options.next_rounds,
         ),
+        [flag, directory, replay, path] if flag == "--package" && replay == "--watch-replay" => {
+            run_watcher(Path::new(directory), Path::new(path))
+        }
         [flag, directory, replay, path] if flag == "--package" && replay == "--replay" => {
             content::load_package(Path::new(directory))
                 .and_then(|(content, _sound)| validate_replay(path, &content))
@@ -489,7 +570,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -568,6 +649,7 @@ pub fn run() -> ExitCode {
                     "starting" => Smoke::Menu(locale, Phase::Starting),
                     "pausing" => Smoke::Menu(locale, Phase::Pausing),
                     "paused" => Smoke::Menu(locale, Phase::Paused),
+                    "watch-paused" => Smoke::WatchMenu(locale),
                     "finished" => Smoke::Menu(locale, Phase::Finished),
                     "fault" => Smoke::Menu(locale, Phase::Fault),
                     "settings-fault" => Smoke::SettingsFault(locale),
@@ -638,7 +720,37 @@ fn run_game_observed(
             Some(content::development_sound()),
         )
     };
-    let mut game = Game::with_content(content)?;
+    run_loaded_game(
+        Game::with_content(content)?,
+        sound,
+        network,
+        observation,
+        next_rounds,
+    )
+}
+
+fn run_watcher(package: &Path, path: &Path) -> Result<(), String> {
+    let replay = Replay::load(path).map_err(|error| error.to_string())?;
+    let version = replay.identity().stage_compiler_version.ok_or(
+        "Legacy Replay has no recorded Stage version; core validation is available with --replay",
+    )?;
+    let (content, sound) = content::load_package_version(package, version)?;
+    run_loaded_game(
+        Game::watching(content, replay)?,
+        Some(sound),
+        None,
+        None,
+        Vec::new(),
+    )
+}
+
+fn run_loaded_game(
+    mut game: Game,
+    sound: Option<kira::sound::static_sound::StaticSoundData>,
+    network: Option<LiveConfig>,
+    observation: Option<&Path>,
+    next_rounds: Vec<(PathBuf, PathBuf)>,
+) -> Result<(), String> {
     let network_player = network.as_ref().map(|config| match &config.role {
         LiveRole::Host { .. } => PlayerId::P1,
         _ => PlayerId::P2,
@@ -660,6 +772,10 @@ fn run_game_observed(
     app.world_mut()
         .resource_mut::<InputState>()
         .set_network_player(network_player);
+    let watching = game.playback.is_some();
+    app.world_mut()
+        .resource_mut::<InputState>()
+        .set_watch_replay(watching);
     brand_intro::install(&mut app);
     app.world_mut()
         .resource_mut::<InputState>()
@@ -676,6 +792,7 @@ fn run_game_observed(
                 .after(DisplaySystems::Sync),
         )
         .add_systems(Update, reconcile_audio.after(update_game));
+    watch_observation::install_if_requested(&mut app)?;
     if let Some(path) = observation {
         live_observation::install(&mut app, path)?;
     }
@@ -761,6 +878,17 @@ fn close_game(game: &mut Game, audio: &mut AudioOutput, exit: &mut MessageWriter
 
 fn validate_replay(path: &str, content: &SongContent) -> Result<(), String> {
     let replay = Replay::load(path).map_err(|error| error.to_string())?;
+    let events = check_replay(&replay, content)?;
+    println!(
+        "Replay OK: {} facts, {} rule events, epoch {}",
+        replay.facts().len(),
+        events,
+        replay.epoch().0
+    );
+    Ok(())
+}
+
+fn check_replay(replay: &Replay, content: &SongContent) -> Result<usize, String> {
     if replay.facts().iter().any(|fact| {
         matches!(fact, DuoInput::Hit(hit) if hit.song_time < SongTime::ZERO || hit.song_time >= content.end)
     }) {
@@ -774,13 +902,33 @@ fn validate_replay(path: &str, content: &SongContent) -> Result<(), String> {
             DuoRules::default(),
         )
         .map_err(|error| error.to_string())?;
-    println!(
-        "Replay OK: {} facts, {} rule events, epoch {}",
-        replay.facts().len(),
-        engine.events().len(),
-        replay.epoch().0
-    );
-    Ok(())
+    Ok(engine.events().len())
+}
+
+fn replay_feedback(
+    batch: crate::replay_playback::PlaybackBatch,
+    audio: &mut AudioOutput,
+    visual: &mut VisualState,
+) -> Result<Vec<DuoEvent>, String> {
+    if batch.facts.is_empty() {
+        return Ok(batch.events);
+    }
+    for player in [PlayerId::P1, PlayerId::P2] {
+        if batch.hits[player.index()] != 0 {
+            audio.hit(player)?;
+            visual.hit_pulses[player.index()] = 1.0;
+        }
+    }
+    // A recorded prefix may release thousands of past facts together
+    // Preserve every core event while coalescing simultaneous presentation sounds
+    let mut sync = false;
+    for event in batch.events {
+        sync |= visual_feedback(event, visual);
+    }
+    if sync {
+        audio.sync()?;
+    }
+    Ok(Vec::new())
 }
 
 fn feedback(
@@ -1137,7 +1285,7 @@ fn update_game(
                 break;
             }
             match event.control {
-                Control::Hit(player) if game.phase == Phase::Running => {
+                Control::Hit(player) if game.phase == Phase::Running && game.playback.is_none() => {
                     let consumed_ns =
                         u64::try_from(input.origin.elapsed().as_nanos()).unwrap_or(u64::MAX);
                     let events = if online.enabled() {
@@ -1262,7 +1410,11 @@ fn update_game(
             Phase::Starting | Phase::Running | Phase::Pausing | Phase::Paused
         ) {
             if audio.state() == Some(PlaybackState::Stopped) {
-                let events = if let Some(player) = online.player {
+                let events = if game.playback.is_some() {
+                    game.session.current = game.content.end;
+                    let batch = game.advance_replay()?;
+                    replay_feedback(batch, &mut audio, &mut visual)?
+                } else if let Some(player) = online.player {
                     let (facts, events) = game.session.finish_player(player)?;
                     for fact in facts {
                         online.send(LiveCommand::Fact(fact))?;
@@ -1289,8 +1441,13 @@ fn update_game(
                     eprintln!("Replay save failed after song end: {error}");
                     game.notice = Message::new("game.replay_failed");
                 }
-            } else if game.phase == Phase::Running {
-                let events = if let Some(player) = online.player {
+            } else if game.phase == Phase::Running
+                || (game.playback.is_some() && game.phase == Phase::Paused)
+            {
+                let events = if game.playback.is_some() {
+                    let batch = game.advance_replay()?;
+                    replay_feedback(batch, &mut audio, &mut visual)?
+                } else if let Some(player) = online.player {
                     let (facts, events) = game.session.advance_player(player)?;
                     for fact in facts {
                         online.send(LiveCommand::Fact(fact))?;
@@ -1342,7 +1499,7 @@ fn update_game(
     visual.locale = locale;
     input.set_menu_phase(
         menu_phase(game.phase),
-        game.saved_facts != game.session.replay.facts().len(),
+        game.playback.is_none() && game.saved_facts != game.session.replay.facts().len(),
     );
     visual.menu = runtime_menu(&game, &mut input, &settings, settings_now, &display);
     update_section_visuals(
@@ -1432,7 +1589,22 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
         title.push('\n');
         title.push_str(&game.notice.render(locale));
     }
+    if game.playback.is_some() {
+        title = format!("{} · {title}", locale.text("replay.watching"));
+    }
     let mut details = Vec::new();
+    if let Some(playback) = &game.playback {
+        details.push(
+            Message::with(
+                "replay.progress",
+                [
+                    ("consumed", playback.consumed().to_string()),
+                    ("total", game.session.replay.facts().len().to_string()),
+                ],
+            )
+            .render(locale),
+        );
+    }
     if let Some(results) = &game.results {
         let pair = |key, counts: [u64; 2]| {
             Message::with(
@@ -1470,22 +1642,24 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
         if game.phase == Phase::Finished {
             title.push('\n');
             title.push_str(&together);
-            title.push('\n');
-            title.push_str(
-                locale.text(if game.replay_status.key == "results.replay_failed" {
-                    "results.replay_failed_short"
-                } else if game.saved_facts == game.session.replay.facts().len() {
-                    "results.replay_saved_short"
-                } else {
-                    "results.replay_pending"
-                }),
-            );
+            if game.playback.is_none() {
+                title.push('\n');
+                title.push_str(
+                    locale.text(if game.replay_status.key == "results.replay_failed" {
+                        "results.replay_failed_short"
+                    } else if game.saved_facts == game.session.replay.facts().len() {
+                        "results.replay_saved_short"
+                    } else {
+                        "results.replay_pending"
+                    }),
+                );
+            }
         }
         details.push(together);
     } else {
         details.push(next_anchor_label(game, locale));
     }
-    if !game.session.replay.facts().is_empty() {
+    if game.playback.is_none() && !game.session.replay.facts().is_empty() {
         details.push(
             if game.replay_status.key == "results.replay_failed"
                 || game.saved_facts == game.session.replay.facts().len()
@@ -1502,7 +1676,10 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
     }
     details.extend(
         [
-            if game.results.is_some() && game.notice.key == "game.saved" {
+            if (game.results.is_some() && game.notice.key == "game.saved")
+                || (game.playback.is_some()
+                    && matches!(game.notice.key, "replay.watching" | "game.ready"))
+            {
                 String::new()
             } else {
                 game.notice.render(locale)
@@ -1587,7 +1764,7 @@ fn game_menu(
     }
     input.set_menu_phase(
         menu_phase(game.phase),
-        game.saved_facts != game.session.replay.facts().len(),
+        game.playback.is_none() && game.saved_facts != game.session.replay.facts().len(),
     );
     let (title, information) = game_text(game, settings);
     input.menu_presentation(settings.values.locale, title, information)
@@ -1600,6 +1777,19 @@ fn game_status(game: &Game, input: &InputState, settings: &SettingsMenu) -> Stri
         return game.notice.render(locale);
     }
     let mut lines = vec![next_anchor_label(game, locale)];
+    if let Some(playback) = &game.playback {
+        lines.push(locale.text("replay.watching").into());
+        lines.push(
+            Message::with(
+                "replay.progress",
+                [
+                    ("consumed", playback.consumed().to_string()),
+                    ("total", game.session.replay.facts().len().to_string()),
+                ],
+            )
+            .render(locale),
+        );
+    }
     if input.status.key == "input.controller_disconnected" {
         lines.push(input.status.render(locale));
     }
@@ -1869,6 +2059,7 @@ fn visual_smoke_for_content(
                 Smoke::Locale(_)
                     | Smoke::Languages(_)
                     | Smoke::Menu(_, _)
+                    | Smoke::WatchMenu(_)
                     | Smoke::Players(_)
                     | Smoke::Graphics(_)
                     | Smoke::Pacing(_)
@@ -1999,7 +2190,11 @@ fn visual_smoke_for_content(
                 )],
             );
         }
-        if let Smoke::Menu(_, phase) = mode {
+        if let Some(phase) = match mode {
+            Smoke::Menu(_, phase) => Some(phase),
+            Smoke::WatchMenu(_) => Some(Phase::Paused),
+            _ => None,
+        } {
             game.phase = phase;
             game.notice = Message::new(match phase {
                 Phase::Starting => "game.waiting_audio",
@@ -2021,14 +2216,20 @@ fn visual_smoke_for_content(
                 _ => 0,
             });
         }
+        if matches!(mode, Smoke::WatchMenu(_)) {
+            // A renderer fixture only; no audio cursor or historical playback claim
+            game.playback = Some(ReplayPlayback::new(content.end)?);
+            game.notice = Message::new("replay.watching");
+        }
         app.init_resource::<InputState>()
             .insert_resource(game)
             .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance));
     }
-    if let Smoke::Menu(locale, _) | Smoke::Players(locale) = mode {
+    if let Smoke::Menu(locale, _) | Smoke::Players(locale) | Smoke::WatchMenu(locale) = mode {
         let mut settings = SettingsMenu::default();
         settings.values.locale = locale;
         let mut input = InputState::default();
+        input.set_watch_replay(matches!(mode, Smoke::WatchMenu(_)));
         let mut scroll = MenuScroll::default();
         if matches!(mode, Smoke::Players(_)) {
             input.claim_menu(InputSource::Keyboard);
@@ -2188,6 +2389,7 @@ fn visual_smoke_for_content(
                 }
                 if matches!(mode, Smoke::SettingsFault(_))
                     || matches!(mode, Smoke::Menu(_, phase) if phase != Phase::Ready)
+                    || matches!(mode, Smoke::WatchMenu(_))
                 {
                     *completed_frames >= 3
                 } else {
@@ -2400,6 +2602,136 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn watcher_text_has_one_authoritative_marker_and_keeps_phase_and_fault_reason() {
+        use std::sync::Arc;
+        let mut content = SongContent::development();
+        content.stage = Some(Arc::new(
+            cocobeat_stage::compile(&content.content_id, content.end, &[]).unwrap(),
+        ));
+        let replay = Session::for_content(SessionEpoch(71), &content)
+            .unwrap()
+            .replay;
+        let mut game = Game::watching(content, replay).unwrap();
+        let mut input = InputState::default();
+        input.set_watch_replay(true);
+        let mut settings = SettingsMenu::default();
+        settings.values.locale = Locale::EnUs;
+        let marker = Locale::EnUs.text("replay.watching");
+        for phase in [Phase::Ready, Phase::Paused, Phase::Finished, Phase::Fault] {
+            game.phase = phase;
+            game.notice = Message::new(if phase == Phase::Ready {
+                "game.ready"
+            } else {
+                "replay.watching"
+            });
+            game.results = (phase == Phase::Finished).then(SessionResults::default);
+            if phase == Phase::Fault {
+                game.notice = Message::new("game.audio_failed");
+                game.fault_details = Some("original backend reason".into());
+            }
+            let menu = game_menu(&game, &mut input, &settings).unwrap();
+            let text = std::iter::once(menu.title.as_str())
+                .chain(menu.rows.iter().map(|row| row.text.as_str()))
+                .collect::<Vec<_>>()
+                .join("\n");
+            assert_eq!(text.matches(marker).count(), 1, "{phase:?}: {text}");
+            assert!(text.contains(Locale::EnUs.text(match phase {
+                Phase::Ready => "phase.ready",
+                Phase::Paused => "phase.paused",
+                Phase::Finished => "phase.finished",
+                Phase::Fault => "phase.fault",
+                _ => unreachable!(),
+            })));
+            if phase == Phase::Fault {
+                assert!(text.contains("original backend reason"));
+                assert!(text.contains(Locale::EnUs.text("game.audio_failed")));
+            }
+        }
+        game.phase = Phase::Running;
+        assert_eq!(
+            game_status(&game, &input, &settings)
+                .matches(marker)
+                .count(),
+            1
+        );
+    }
+
+    #[test]
+    fn watcher_preserves_history_epoch_partial_eof_and_has_no_storage_or_game_actions() {
+        use cocobeat_replay::ReplayIdentity;
+        use cocobeat_schema::Hit;
+        use std::sync::Arc;
+        for version in [1, 2] {
+            let mut content = SongContent::development();
+            content.stage = Some(Arc::new(
+                cocobeat_stage::compile_version(&content.content_id, content.end, &[], version)
+                    .unwrap(),
+            ));
+            let epoch = SessionEpoch(71);
+            let mut replay = Replay::new(
+                ReplayIdentity {
+                    content_id: content.content_id.clone(),
+                    rules_id: RULES_ID.into(),
+                    build_id: "original-recording".into(),
+                    stage_compiler_version: Some(version),
+                },
+                epoch,
+            )
+            .unwrap();
+            replay
+                .record(DuoInput::Hit(Hit {
+                    epoch,
+                    player: PlayerId::P1,
+                    seq: 0,
+                    song_time: SongTime::from_frames(48_000),
+                }))
+                .unwrap();
+            let original = replay.encode().unwrap();
+            let mut game = Game::watching(content.clone(), replay.clone()).unwrap();
+            game.phase = Phase::Running;
+            let at = MonotonicTime::from_nanos(1_000_000_000);
+            assert!(
+                game.observe_playback(1.0, PlaybackState::Playing, at)
+                    .is_ok()
+            );
+            game.advance_replay().unwrap();
+            game.observe_playback(
+                1.0,
+                PlaybackState::Playing,
+                MonotonicTime::from_nanos(1_010_000_000),
+            )
+            .unwrap();
+            assert_eq!(game.session.current, SongTime::from_frames(48_000));
+            game.session.current = game.content.end;
+            game.advance_replay().unwrap();
+            assert!(game.session.engine.events().is_empty());
+            assert_eq!(game.summary().hits, [1, 0]);
+            assert_eq!(game.session.replay.encode().unwrap(), original);
+            let forbidden = std::env::temp_dir().join(format!(
+                "cocobeat-watch-no-write-{}-{version}",
+                std::process::id()
+            ));
+            assert!(!forbidden.exists());
+            game.save_to(&forbidden).unwrap();
+            assert!(!forbidden.exists());
+            game.main_menu().unwrap();
+            assert_eq!(game.session.epoch(), epoch);
+            assert_eq!(game.playback.as_ref().unwrap().consumed(), 0);
+            assert_eq!(game.session.replay.encode().unwrap(), original);
+            assert_eq!(game.summary().hits, [0, 0]);
+            let mut wrong = replay.identity().clone();
+            wrong.rules_id = "other-rules".into();
+            assert!(Game::watching(content.clone(), Replay::new(wrong, epoch).unwrap()).is_err());
+            let mut wrong = replay.identity().clone();
+            wrong.content_id = "other-content".into();
+            assert!(Game::watching(content.clone(), Replay::new(wrong, epoch).unwrap()).is_err());
+            let mut wrong = replay.identity().clone();
+            wrong.stage_compiler_version = Some(3 - version);
+            assert!(Game::watching(content, Replay::new(wrong, epoch).unwrap()).is_err());
+        }
+    }
 
     #[test]
     fn live_cli_keeps_ordered_next_rounds_and_optional_observation_separate() {

@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及支持预装或原字节接收同包的 QUIC 可靠历史与权威 Replay 软件会话；游戏也已接实时 QUIC 演奏、原字节曲包接收、Kira 预约与伙伴反馈，正常完成后可在同一进程使用新邀请开始下一局；lab 已提供只读 Replay 波形与配对诊断。完整歌曲导入、自动 MIR、候选审阅、试听、网络故障重入及实际设备验收仍在后续路线图
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘 / 手柄菜单、Free Sync、Anchor Sync、Resonance 和 Replay；`--package` 播放完整校验的手工内容包，`--watch-replay` 按明确记录的舞台版本只读观看原录制。lab 已提供唯一生产 Vorbis 编码的源导入、四对象事务、波形编辑、候选证据、歌曲试听和 Replay 诊断；实时 QUIC 已接资源接收、预约音频、伙伴反馈及完成或故障后用新邀请开启下一局。游戏曲库、完整自动 MIR / Anchor / 编排、性能与实际设备验收继续按 [todo](todo/README.md) 推进
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
@@ -78,6 +78,7 @@ Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo
 ```sh
 cargo run --locked -p cocobeat-game -- --package path/to/song-package
 cargo run --locked -p cocobeat-game -- --package path/to/song-package --replay path/to/session.json
+cargo run --locked -p cocobeat-game -- --package path/to/song-package --watch-replay path/to/session.json
 cargo run --locked -p cocobeat-game -- --package path/to/song-package --visual-smoke target/package-preview.png
 cargo run --locked -p cocobeat-game -- --replay path/to/session.json
 cargo run --locked -p cocobeat-game -- --visual-smoke target/cocobeat-preview.png
@@ -93,6 +94,8 @@ cargo run --locked -p cocobeat-game -- --viewport-smoke languages en-GB 1280 800
 cargo run --locked -p cocobeat-lab -- workbench-replay path/to/song-package path/to/session.json --locale zh-CN
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
+cargo run --locked -p cocobeat-lab -- import-authored-package input.wav authoring.json new-song-package
+cargo run --locked -p cocobeat-lab -- workbench-candidates path/to/song-package path/to/proposal.json --locale zh-CN
 cargo run --locked -p cocobeat-lab -- decode-audio input.wav new-output.f32le
 cargo run --locked -p cocobeat-lab -- resample-audio input.wav new-output-48k.f32le
 cargo run --locked -p cocobeat-lab -- readback-canonical testdata/synthetic/media-import/stereo-canonical.ogg 4800 new-canonical.f32le
@@ -105,15 +108,19 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `decode-audio` 支持 WAV/PCM、FLAC、MP3 和 Ogg Vorbis，输出原采样率的立体声 F32LE，单声道复制为双声道；保留静默与原始幅度，源文件限 512 MiB、192 kHz、十分钟。`resample-audio` 复用该入口，以 OxiMedia High 转为 48 kHz，48 kHz 原件直接保留样本；实际输出帧数为 `ceil(源帧数 × 48000 / 源采样率)`，不裁静默或归一化
 
-`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，[原生 Vorbis 编码入口](docs/native-vorbis.md)已完成本机有界编码、完整双回读、质量控制与 Sanitizer，四目标准入和游戏中的完整导入流程继续推进
+`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，[原生 Vorbis 编码入口](docs/native-vorbis.md)已完成本机有界编码、完整双回读、质量控制与 Sanitizer，四目标所列原生编码 / 双回读软件检查已通过，完整游戏曲库与听感继续推进
 
 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>` 将最终 Ogg 有界复制到全新的目录，按实际复制字节记录 BLAKE3 和长度，关闭写入后严格读回其中的 `song.audio.ogg`；原文件保留，已有目录拒绝覆盖。失败只清理本次音频文件和空目录，成功只表示该音频对象已准备，不创建分析、谱面、manifest 或 Ready；源上限仍为 512 MiB 和十分钟
 
 `build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir>` 从自有的最终音频副本计算能量，组合手工 Anchor 和段落，校验全部对象后原子发布新目录；`verify-package <package-dir>` 完整复核已有包。格式、版本、限额及 64 秒开发歌曲的创作样例见 [SongPackage](docs/song-package.md)，`--package DIR` 会校验完整包并播放其中的音频，使用实际长度、手工 Anchor 与段落提示；同一包支持上述 Replay 校验和离屏预览。无参数仍使用内置开发内容，自动 MIR、AnchorCompiler 与完整自动舞台编排继续按路线图推进
 
+`import-authored-package SOURCE_AUDIO AUTHORING_JSON NEW_PACKAGE` 从有界源快照经唯一 q10 编码器创建手工内容四对象，记录真实源 / 最终帧数、来源和能量；已有目标拒绝覆盖，完整自动 MIR 与曲库另行推进，操作见 [源导入](docs/source-import.md)
+
+`--package DIR --watch-replay FILE` 在完整身份与原规则通过后，按录制的 Stage 1 / 2 用当前渲染器观看；完整开场后等待明确开始，可以暂停、重启原 epoch 或返回菜单。此模式不接受实况 Hit，也不写 Replay，原事实顺序和未完成历史保留；没有 Stage 版本的旧录制仍可用 `--replay` 做 core 校验，详细边界见 [Replay 观看](docs/replay-diagnostics.md#原生只读-replay-观看)
+
 `cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)
 
-`cocobeat-lab workbench PACKAGE NEW_PACKAGE [--locale CODE]` 打开静音原生工作台，显示双声道峰值波形、精确帧光标、Anchor 列表和作者的 SectionCue；键鼠可拖动或输入整数帧，撤销重做后导出新包，失败保留草稿便于重试。手柄可浏览，编辑需显式切回键鼠主控；工作台只读取游戏语言配置，支持 640×480 起的窗口和现有 13 个语言变体，操作见 [工作台说明](docs/editor.md#原生工作台)
+`cocobeat-lab workbench PACKAGE NEW_PACKAGE [--locale CODE]` 打开可试听的原生工作台，显示双声道峰值波形、精确帧光标、Anchor 列表和作者的 SectionCue；键鼠可拖动或输入整数帧，撤销重做后导出新包，失败保留草稿便于重试。手柄可浏览，编辑需显式切回键鼠主控；工作台只读取游戏语言配置，支持 640×480 起的窗口和现有 13 个语言变体，操作见 [工作台说明](docs/editor.md#原生工作台)
 
 `propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
 
@@ -121,9 +128,9 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
 
-歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排和跨版本视觉 Replay 仍待后续
+歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排继续按内容分析证据推进，明确版本的只读观看见 [Replay 说明](docs/replay-diagnostics.md#原生只读-replay-观看)
 
-`cocobeat-lab inspect-stage <package-dir> <frame>` 完整验证歌曲包后输出内容身份、编译版本、片段数量和该帧的整数毫米采样，帧范围包含 EOF；同一包与编译版本产生相同计划。现有四对象包和 Replay 格式保持，跨舞台编译版本的视觉重放尚未接入；渲染使用固定网格预算，极密段落的细小轮廓近似与软件验证边界见 [包契约](docs/song-package.md)
+`cocobeat-lab inspect-stage <package-dir> <frame>` 完整验证歌曲包后输出内容身份、编译版本、片段数量和该帧的整数毫米采样，帧范围包含 EOF；同一包与编译版本产生相同计划。四对象包保持，Replay v2 记录实际 Stage 版本，`inspect-replay-stage` 与 `--watch-replay` 按明确版本重建几何；渲染使用固定网格预算，极密段落的细小轮廓近似与软件验证边界见 [包契约](docs/song-package.md)
 
 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 可在指定整数音频帧预览轨道与段落提示，`FRAME` 为 `0..=总帧数`，`CODE` 使用语言代码，`PRESET` 为 `low|medium|high|off`；画面没有音频或真实输入，不能代替设备验收。包内标签保持作者原文，换行和控制空白只在显示时折成单行，过长标签限制在字幕区域内；Noto 使用现有嵌入字体的跨脚本回退，英文界面可显示中日韩标签，CJK 界面可显示乌克兰字母，各地区首选字体保留
 

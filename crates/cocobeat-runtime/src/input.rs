@@ -225,6 +225,7 @@ pub struct InputState {
     settings_open: bool,
     menu_phase: MenuPhase,
     replay_unsaved: bool,
+    watch_replay: bool,
     menu_transitioning: bool,
     players_open: bool,
     network_player: Option<PlayerId>,
@@ -256,6 +257,7 @@ impl Default for InputState {
             settings_open: false,
             menu_phase: MenuPhase::Ready,
             replay_unsaved: false,
+            watch_replay: false,
             menu_transitioning: false,
             players_open: false,
             network_player: None,
@@ -378,6 +380,13 @@ impl InputState {
         self.selection = 0;
         self.queued.clear();
         self.reset_edges();
+    }
+
+    pub(crate) fn set_watch_replay(&mut self, watching: bool) {
+        self.watch_replay = watching;
+        if watching {
+            self.status = Message::new("replay.watching");
+        }
     }
 
     pub(crate) fn set_menu_phase(&mut self, phase: MenuPhase, replay_unsaved: bool) {
@@ -535,7 +544,7 @@ impl InputState {
             };
             return Some(MenuPresentation {
                 kind: MenuKind::Game,
-                players: Some(self.binding_lines(locale)),
+                players: (!self.watch_replay).then(|| self.binding_lines(locale)),
                 owner_hint: Some(self.menu_owner_hint(locale)),
                 title,
                 rows: vec![MenuRow {
@@ -577,9 +586,20 @@ impl InputState {
             .collect::<Vec<_>>();
         for text in information
             .into_iter()
-            .chain([locale.text("menu.controls").into()])
-            .chain(self.binding_lines(locale))
-            .chain([self.status.render(locale)])
+            .chain((!self.watch_replay).then(|| locale.text("menu.controls").into()))
+            .chain(
+                (!self.watch_replay)
+                    .then(|| self.binding_lines(locale))
+                    .into_iter()
+                    .flatten(),
+            )
+            .chain([
+                if self.watch_replay && self.status.key == "replay.watching" {
+                    String::new()
+                } else {
+                    self.status.render(locale)
+                },
+            ])
         {
             rows.extend(
                 text.lines()
@@ -598,7 +618,7 @@ impl InputState {
             title,
             rows,
             kind: MenuKind::Game,
-            players: Some(self.binding_lines(locale)),
+            players: (!self.watch_replay).then(|| self.binding_lines(locale)),
             owner_hint: Some(self.menu_owner_hint(locale)),
         })
     }
@@ -790,6 +810,10 @@ impl InputState {
                                 | Binding::PadButton(PlayerId::P2)
                         ) | MenuAction::UnassignPad(PlayerId::P2)
                     )
+            })
+            .filter(|action| {
+                !self.watch_replay
+                    || !matches!(action, MenuAction::Players | MenuAction::SaveReplay)
             })
             .filter(|action| *action != MenuAction::SaveReplay || self.replay_unsaved)
             .filter(|action| match action {
@@ -1116,7 +1140,10 @@ impl InputState {
         match button {
             GamepadButton::Start
                 if !self.players_open
-                    && ((!self.menu_open && self.pads.contains(&Some(pad)))
+                    && ((!self.menu_open
+                        && (self.pads.contains(&Some(pad))
+                            || (self.watch_replay
+                                && self.menu_owner == Some(InputSource::Pad(pad)))))
                         || (self.menu_open
                             && self.menu_actions().iter().any(|action| {
                                 matches!(action, MenuAction::Start | MenuAction::Resume)
@@ -1324,6 +1351,59 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn watcher_owner_pad_can_pause_without_player_binding_and_second_pad_cannot() {
+        let mut world = World::new();
+        let first = world.spawn_empty().id();
+        let second = world.spawn_empty().id();
+        let mut input = InputState::default();
+        let mut scroll = MenuScroll::default();
+        input.set_watch_replay(true);
+        input.claim_menu(InputSource::Pad(first));
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.pad_button(second, GamepadButton::Start, true, 0, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.pad_button(first, GamepadButton::Start, true, 1, &mut scroll);
+        assert_eq!(input.queued.len(), 1);
+        assert_eq!(
+            input.queued[0].control,
+            Control::TogglePause(InputSource::Pad(first))
+        );
+        input.pad_button(first, GamepadButton::Start, true, 2, &mut scroll);
+        assert_eq!(input.queued.len(), 1);
+        input.pad_button(first, GamepadButton::Start, false, 3, &mut scroll);
+        next_frame(&mut input);
+        input.pad_button(first, GamepadButton::Start, true, 4, &mut scroll);
+        assert_eq!(input.queued.len(), 2);
+        input.queued.clear();
+        input.disconnect_pad(first);
+        assert_eq!(input.queued[0].control, Control::FocusLost);
+    }
+
+    #[test]
+    fn watcher_menu_retains_device_ownership_controls_without_binding_or_save_actions() {
+        let mut input = InputState::default();
+        input.set_watch_replay(true);
+        for phase in [
+            MenuPhase::Ready,
+            MenuPhase::Paused,
+            MenuPhase::Finished,
+            MenuPhase::Fault,
+        ] {
+            input.set_menu_phase(phase, true);
+            let actions = input.menu_actions();
+            assert!(!actions.contains(&MenuAction::Players));
+            assert!(!actions.contains(&MenuAction::SaveReplay));
+            assert!(actions.contains(&MenuAction::Settings));
+            assert!(actions.contains(&MenuAction::Quit));
+            let menu = input
+                .menu_presentation(Locale::EnUs, "Watch".into(), vec![])
+                .unwrap();
+            assert!(menu.players.is_none());
+        }
+    }
 
     #[test]
     fn network_identity_maps_only_the_local_slot_and_keeps_release_and_menu_ownership() {

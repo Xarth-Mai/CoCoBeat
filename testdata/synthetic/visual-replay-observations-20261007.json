@@ -1,0 +1,1172 @@
+{
+  "status": "PASS",
+  "date": "2026-10-07",
+  "milestone": "Native read-only Replay software integration",
+  "scope": "Four validated native production --watch-replay cases across two recorded Stage versions; final presentation correction separately verified with two production view static fixtures",
+  "package": {
+    "path": "target/source-import-20261007/cli-gpu-native/original-64s-package",
+    "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+    "canonical_frames": 3072000,
+    "input_sha256": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+    }
+  },
+  "builds": [
+    {
+      "receipt": {
+        "path": "target/visual-replay-20261007/game-build-frozen/build-result.json",
+        "sha256": "857191b2b5f41e6f44a87404dab0aeb062dc5978cfbb0abcc67be31dccfc9e58"
+      },
+      "cargo_json": {
+        "path": "target/visual-replay-20261007/game-build-frozen/build.jsonl",
+        "sha256": "8e4c6d30ad23863c4b7d4d9b57904271b82fa3b2fbab7e2b4e0c239a1ddf66a5"
+      },
+      "inputs_before": {
+        "path": "target/visual-replay-20261007/game-build-frozen/inputs-before.json",
+        "sha256": "666ce9881de3808128a127f7f25fe93205651fb16c112be0f032ed239208a9ef"
+      },
+      "inputs_after": {
+        "path": "target/visual-replay-20261007/game-build-frozen/inputs-after.json",
+        "sha256": "666ce9881de3808128a127f7f25fe93205651fb16c112be0f032ed239208a9ef"
+      },
+      "binary": {
+        "path": "target/visual-replay-20261007/game-build-frozen/bin/cocobeat-game",
+        "sha256": "9151f58cee790d20fe7cad9ae50a45dce687f9abfd61674475c206abe45f6d74"
+      },
+      "head": "4bd95b4daa012262fe51853d1c8b6e1fbed6adcf",
+      "scope": "Current main 4bd95b4 plus recorded uncommitted visual Replay watcher and 219-key catalogs; native debug production app, not final committed or shipping release. Unreferenced performance_probe.rs conservatively included but not installed/compiled",
+      "source_input_count": 422,
+      "inputs_unchanged_during_build": true
+    },
+    {
+      "receipt": {
+        "path": "target/visual-replay-20261007/game-build-small-final/build-result.json",
+        "sha256": "ee8750ba77117dc6e06598fa742c0d47b465076b2f12d0d1e50fa30603c6e3b5"
+      },
+      "cargo_json": {
+        "path": "target/visual-replay-20261007/game-build-small-final/build.jsonl",
+        "sha256": "eba8a61e157e1edb6b9aa35b948f49b7f58dd336fb1b3f07ae91e355c2ae43cb"
+      },
+      "inputs_before": {
+        "path": "target/visual-replay-20261007/game-build-small-final/inputs-before.json",
+        "sha256": "56027f8f61ca8c2201a389252eb1c4f33cdecbd04e21e59f2925ddd500261568"
+      },
+      "inputs_after": {
+        "path": "target/visual-replay-20261007/game-build-small-final/inputs-after.json",
+        "sha256": "56027f8f61ca8c2201a389252eb1c4f33cdecbd04e21e59f2925ddd500261568"
+      },
+      "binary": {
+        "path": "target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+        "sha256": "f39a067efafc1ab93aece902a249529da63c03994eeb46970a474b56af9ed57d"
+      },
+      "head": "93bd1aa501b4241d7c81bd66fe5824b2d3e00228",
+      "scope": "Current main 93bd1aa plus recorded uncommitted visual Replay watcher, final deduplicated marker, corrected QA DisplayState request and 219-key catalogs; native debug production app, not final committed or shipping release. Unreferenced performance_probe.rs conservatively included but not installed/compiled",
+      "source_input_count": 422,
+      "inputs_unchanged_during_build": true
+    },
+    {
+      "receipt": {
+        "path": "target/visual-replay-20261007/game-build-presentation-final/build-result.json",
+        "sha256": "92528ec85735f767c394c914d5311188d42dc170070fc8914e1cd05b1a6d301c"
+      },
+      "cargo_json": {
+        "path": "target/visual-replay-20261007/game-build-presentation-final/build.jsonl",
+        "sha256": "8a6368e50801ffc4b24067368a4aeb0af03b59aa2cd6cab0663c9017db66dca2"
+      },
+      "inputs_before": {
+        "path": "target/visual-replay-20261007/game-build-presentation-final/inputs-before.json",
+        "sha256": "197f291a5c610d1539de5a6dddc76807d7503a51e8bd4a516db1b7188a6d0e13"
+      },
+      "inputs_after": {
+        "path": "target/visual-replay-20261007/game-build-presentation-final/inputs-after.json",
+        "sha256": "197f291a5c610d1539de5a6dddc76807d7503a51e8bd4a516db1b7188a6d0e13"
+      },
+      "binary": {
+        "path": "target/visual-replay-20261007/game-build-presentation-final/bin/cocobeat-game",
+        "sha256": "0c2ecb029cab016b4418aaf9ca1c4a6ab1707afb2e908fc2bc223f030e74f476"
+      },
+      "head": "93bd1aa501b4241d7c81bd66fe5824b2d3e00228",
+      "scope": "Current main 93bd1aa plus recorded uncommitted visual Replay watcher, final title marker and watch-paused presentation smoke, corrected QA DisplayState request and 219-key catalogs; native debug production app, not final committed or shipping release. Unreferenced performance_probe.rs conservatively included but not installed/compiled",
+      "source_input_count": 422,
+      "inputs_unchanged_during_build": true
+    }
+  ],
+  "independent_lab": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+    "sha256": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42",
+    "scope": "Existing inspect-stage/inspect-replay-stage source graph; separate integer-frame reconstruction, not native callback timing"
+  },
+  "cases": [
+    {
+      "name": "stage-1-full-1280x800",
+      "status": "PASS",
+      "source_attempt_status": "FAIL",
+      "binary_sha256": "9151f58cee790d20fe7cad9ae50a45dce687f9abfd61674475c206abe45f6d74",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-r",
+        "60",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-frozen/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "--watch-replay",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-gamescope/stage-1-full.json"
+      ],
+      "result": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/result.json",
+        "sha256": "6c13bdd8d06aff616b3ffa917b297caefa92aad7981eec5f696a4563700a5bed"
+      },
+      "metadata": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/metadata.json",
+        "sha256": "77844ccdc4e312c72169b3f46236e7b06200262decf8479e142f2dcd4d1c0d46"
+      },
+      "frames": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/frames.csv",
+        "sha256": "498cc7e23699c422957602024e884ea01775e6d2b4f779c62301570b3795483c"
+      },
+      "frame_rows": 2230,
+      "cursor_equality_rows": 1891,
+      "phases": [
+        "Finished",
+        "Paused",
+        "Pausing",
+        "Ready",
+        "Running",
+        "Starting"
+      ],
+      "intro_completed_and_controls_enabled": true,
+      "paused": {
+        "acknowledged_frame": 1539072,
+        "consumed": 1,
+        "song_frame": 1539072,
+        "stage_sample": "Some(TrackSample { distance_mm: 96192, half_width_mm: 3996, lateral_mm: 0, elevation_mm: 0, slope_x_ppm: 0, slope_y_ppm: 0, kind: Plaza })"
+      },
+      "finished": {
+        "compiler_version": 1,
+        "consumed": 1003,
+        "events": 15,
+        "source_end": 3072000,
+        "summary": "SessionResults { hits: [1, 1000], anchors: [[0, 0, 0, 7], [0, 0, 0, 7]], free_sync: 1, anchor_sync: 0 }",
+        "total": 1003
+      },
+      "epoch": 91,
+      "original_epoch": 91,
+      "steps": 13,
+      "facts_unchanged": true,
+      "no_replays_directory": true,
+      "screenshots": [
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/ready.png",
+          "sha256": "5e50d28feb63fcc3d6a9664110fda016716d12dcff4a078fcea02967581fe5a0"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/paused.png",
+          "sha256": "3c551aab46129dde90fe5bc46a7ce35752d63b130b3ea68b3056dc868672c610"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/finished.png",
+          "sha256": "4c1939a39118c83ec524cb6c93874828bf48fa1ac303c20a968b0208cd6d513a"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/restarted.png",
+          "sha256": "3fd7b8d07e664e3b785da81f46b8311b57ba397c3e33fc779039784d3d71edf7"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/returned.png",
+          "sha256": "89b6880b9e14b5a147f61dec1526e059466d6c45aad5185fe4087d37b9fa49ec"
+        }
+      ]
+    },
+    {
+      "name": "stage-2-full-1280x800",
+      "status": "PASS",
+      "source_attempt_status": "FAIL",
+      "binary_sha256": "9151f58cee790d20fe7cad9ae50a45dce687f9abfd61674475c206abe45f6d74",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-r",
+        "60",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-frozen/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "--watch-replay",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-gamescope/stage-2-full.json"
+      ],
+      "result": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/result.json",
+        "sha256": "0ab26efb82f59cb94cb6cd6c5a69fb94bcf4781e7ee2c3af863d1db27ce30f9e"
+      },
+      "metadata": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/metadata.json",
+        "sha256": "9db87bed26ff1d47a68b697a21a9ab7d6da3b7abf726f353b6333ce0860673d8"
+      },
+      "frames": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/frames.csv",
+        "sha256": "258ef0df12c56b5de2b72e54a97194a822d97abeef712817404bb007f799acfd"
+      },
+      "frame_rows": 2237,
+      "cursor_equality_rows": 1891,
+      "phases": [
+        "Finished",
+        "Paused",
+        "Pausing",
+        "Ready",
+        "Running",
+        "Starting"
+      ],
+      "intro_completed_and_controls_enabled": true,
+      "paused": {
+        "acknowledged_frame": 1538560,
+        "consumed": 1,
+        "song_frame": 1538560,
+        "stage_sample": "Some(TrackSample { distance_mm: 96160, half_width_mm: 3500, lateral_mm: 0, elevation_mm: 0, slope_x_ppm: 0, slope_y_ppm: 2614, kind: Bridge })"
+      },
+      "finished": {
+        "compiler_version": 2,
+        "consumed": 1003,
+        "events": 15,
+        "source_end": 3072000,
+        "summary": "SessionResults { hits: [1, 1000], anchors: [[0, 0, 0, 7], [0, 0, 0, 7]], free_sync: 1, anchor_sync: 0 }",
+        "total": 1003
+      },
+      "epoch": 91,
+      "original_epoch": 91,
+      "steps": 13,
+      "facts_unchanged": true,
+      "no_replays_directory": true,
+      "screenshots": [
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/ready.png",
+          "sha256": "5d41e5bc17d7fc9ebb0f97cd8f20ed3dddca247fac7bd28fa381312408d485a3"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/paused.png",
+          "sha256": "d697c42e1ad9d75536c5bca746724fb948484d6e03c9deac3b35ca5701e9ee14"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/finished.png",
+          "sha256": "552486edcbd72e54fc9c8f10681dae8823d9da47aecff51d8b3950d844f7f745"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/restarted.png",
+          "sha256": "669b5c3fad02d92c152dd583deb4faad23d90922bb1e79073838bde0a847d452"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/returned.png",
+          "sha256": "36dbae752e5ed172cb9be56023721826da3e49a929c41c25ead41d3d55bacf3f"
+        }
+      ]
+    },
+    {
+      "name": "stage-1-partial-640x480",
+      "status": "PASS",
+      "source_attempt_status": "PASS",
+      "binary_sha256": "f39a067efafc1ab93aece902a249529da63c03994eeb46970a474b56af9ed57d",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-r",
+        "60",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "--watch-replay",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-partial.json"
+      ],
+      "result": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/result.json",
+        "sha256": "d0849ba7a583b831a9ed9c982533f9bde17a406a8ff88f1f0cf0c0c43894ae70"
+      },
+      "metadata": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/metadata.json",
+        "sha256": "9fd5e9aee33d6a8d807cb450d128ea0d991678e8979ba8a570ef9a349f55b071"
+      },
+      "frames": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/frames.csv",
+        "sha256": "1c5024f69867a30f19539499501b1dfea7df6972b976048fb2c3b129c71653b4"
+      },
+      "frame_rows": 2208,
+      "cursor_equality_rows": 1869,
+      "phases": [
+        "Finished",
+        "Paused",
+        "Pausing",
+        "Ready",
+        "Running",
+        "Starting"
+      ],
+      "intro_completed_and_controls_enabled": true,
+      "paused": {
+        "acknowledged_frame": 1538560,
+        "consumed": 1,
+        "song_frame": 1538560,
+        "stage_sample": "Some(TrackSample { distance_mm: 96160, half_width_mm: 3996, lateral_mm: 0, elevation_mm: 0, slope_x_ppm: 0, slope_y_ppm: 0, kind: Plaza })"
+      },
+      "finished": {
+        "compiler_version": 1,
+        "consumed": 1002,
+        "events": 0,
+        "source_end": 3072000,
+        "summary": "SessionResults { hits: [1, 1000], anchors: [[0, 0, 0, 0], [0, 0, 0, 0]], free_sync: 0, anchor_sync: 0 }",
+        "total": 1002
+      },
+      "epoch": 91,
+      "original_epoch": 91,
+      "steps": 13,
+      "facts_unchanged": true,
+      "no_replays_directory": true,
+      "screenshots": [
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/ready.png",
+          "sha256": "2432ff9f7c4d0f40856453b246907b63bee589816b66aa9e949d7e277e6fe4c9"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/paused.png",
+          "sha256": "01b0add12b7e40367fe016b007daa6fc0bfd98270642cb2086b0c30ee1a6dbf6"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/finished.png",
+          "sha256": "7ffdbb0f6a61dcc334975c3022af4c72c9b14839013295aba8a55a375f42edb0"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/restarted.png",
+          "sha256": "c51ec5f403dfe3d0f4be48167dcb364e620052a9c0fa55a8e4c32672c660f50d"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/returned.png",
+          "sha256": "f8a4d371f6727af21a8fb30f41444f726dde9cef5a77b1cdad81ae939308b694"
+        }
+      ]
+    },
+    {
+      "name": "stage-2-partial-640x480",
+      "status": "PASS",
+      "source_attempt_status": "PASS",
+      "binary_sha256": "f39a067efafc1ab93aece902a249529da63c03994eeb46970a474b56af9ed57d",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-r",
+        "60",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "--watch-replay",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-2-partial.json"
+      ],
+      "result": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/result.json",
+        "sha256": "a86003460a2ee54512edf8b4896d73c3dfec4abfa44ab82923c787306bbc5135"
+      },
+      "metadata": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/metadata.json",
+        "sha256": "adddb5e38cb1dc049f68513f500a4dcb4d23bebc78418997af32e65c77a7d51a"
+      },
+      "frames": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/frames.csv",
+        "sha256": "2d65ba6049d02df4d771ddeffa502f7be9e1bc05494dbd7fb49ea89794f4bbcc"
+      },
+      "frame_rows": 2168,
+      "cursor_equality_rows": 1839,
+      "phases": [
+        "Finished",
+        "Paused",
+        "Pausing",
+        "Ready",
+        "Running",
+        "Starting"
+      ],
+      "intro_completed_and_controls_enabled": true,
+      "paused": {
+        "acknowledged_frame": 1538560,
+        "consumed": 1,
+        "song_frame": 1538560,
+        "stage_sample": "Some(TrackSample { distance_mm: 96160, half_width_mm: 3500, lateral_mm: 0, elevation_mm: 0, slope_x_ppm: 0, slope_y_ppm: 2614, kind: Bridge })"
+      },
+      "finished": {
+        "compiler_version": 2,
+        "consumed": 1002,
+        "events": 0,
+        "source_end": 3072000,
+        "summary": "SessionResults { hits: [1, 1000], anchors: [[0, 0, 0, 0], [0, 0, 0, 0]], free_sync: 0, anchor_sync: 0 }",
+        "total": 1002
+      },
+      "epoch": 91,
+      "original_epoch": 91,
+      "steps": 13,
+      "facts_unchanged": true,
+      "no_replays_directory": true,
+      "screenshots": [
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/ready.png",
+          "sha256": "48ecbe26518c2b46892232a5972cefcdc271545dd940e3cd40b3d2a56d115602"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/paused.png",
+          "sha256": "2dec639b6d02795a37cb6c5038f3f0f5159351e867c7b13247a921150b69d093"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/finished.png",
+          "sha256": "72cdaa1a16619197182942eabc34ece78342fb81a80963c3cef915b69fcbd8f3"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/restarted.png",
+          "sha256": "58e2cb05405ba12fa92f45dcffd574666c065047cd13a4699e4c9b246e14618a"
+        },
+        {
+          "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/returned.png",
+          "sha256": "af4fa55170ed91b0e56689958944fff46f436efb9b049b064cae145b1d051648"
+        }
+      ]
+    }
+  ],
+  "cli": {
+    "summary": {
+      "path": "target/visual-replay-20261007/native-small-final/summary.json",
+      "sha256": "d647107a10d90241d2459674d6487199f54dcf660292fd1e3102fd89bfa047c3"
+    },
+    "success_count": 10,
+    "expected_rejection_count": 6,
+    "commands": [
+      {
+        "name": "package-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "0"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "19bc0116beb4613d3d0d0d1f0fbd78bd7410cc5e1bd58cb6e071b1fa5a3a7563",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-1-partial-core",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-partial.json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "743dbbae986c647cb139f0ad4ad80481872f0cc4096189b33b25a7d6f0865386",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-1-partial-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+          "inspect-replay-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-partial.json",
+          "1536000"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "5bdf6ffd85d6e3a6018e2889872fc3936aa6e2617da9653e3cab39d98ece56bc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-1-full-core",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-full.json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "6162621b1f5a60a9cc91e277243023ecb180765a2b30d63a51a2afded4b5cc38",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-1-full-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+          "inspect-replay-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-full.json",
+          "1536000"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "5bdf6ffd85d6e3a6018e2889872fc3936aa6e2617da9653e3cab39d98ece56bc",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-2-partial-core",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-2-partial.json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "743dbbae986c647cb139f0ad4ad80481872f0cc4096189b33b25a7d6f0865386",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-2-partial-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+          "inspect-replay-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-2-partial.json",
+          "1536000"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "aced2aedf22a727bbef94109281b05599ce8ff1f456477f7d71256023dabc208",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-2-full-core",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-2-full.json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "6162621b1f5a60a9cc91e277243023ecb180765a2b30d63a51a2afded4b5cc38",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "stage-2-full-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+          "inspect-replay-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-2-full.json",
+          "1536000"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "aced2aedf22a727bbef94109281b05599ce8ff1f456477f7d71256023dabc208",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "legacy-core",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/legacy.json"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "743dbbae986c647cb139f0ad4ad80481872f0cc4096189b33b25a7d6f0865386",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "expected_error": null
+      },
+      {
+        "name": "legacy-watch",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/legacy.json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "476cd11326daaa60880d3b0db472d6ac6ec2d79597077045014b17575e211240",
+        "expected_error": "Legacy Replay has no recorded Stage version"
+      },
+      {
+        "name": "wrong-content",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/wrong-content.json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "971d7d91308af723a054fc904c15e2f1f69e09fd7ac1b03c4f44f59494bc0b30",
+        "expected_error": "content"
+      },
+      {
+        "name": "wrong-rules",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/wrong-rules.json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "971d7d91308af723a054fc904c15e2f1f69e09fd7ac1b03c4f44f59494bc0b30",
+        "expected_error": "rules"
+      },
+      {
+        "name": "invalid-hit",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/invalid-hit.json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "ce119e5bd5d6c2fefd1c56c35492b6b901cc3a8c7659f4dd35237c222c16f6b5",
+        "expected_error": "outside the song timeline"
+      },
+      {
+        "name": "unknown-stage",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/unknown-stage.json"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "5b8f4b1794188c016c530019eab293ee5025ad54d37d935b8a45f93a1af92b42",
+        "expected_error": "Invalid Replay version or Stage compiler identity"
+      },
+      {
+        "name": "watch-next-round",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-small-final/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--watch-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/native-small-final/stage-1-partial.json",
+          "--next-round",
+          "unused-invite",
+          "unused-output"
+        ],
+        "exit_code": 1,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1cfbbeb8d677da24dbaaa73d4a65e16e1ae99ef5defb0902c97daa99d3bec852",
+        "expected_error": "require an invited live round"
+      }
+    ],
+    "same_integer_frame": 1536000,
+    "same_frame_stage_v1_stdout_sha256": "5bdf6ffd85d6e3a6018e2889872fc3936aa6e2617da9653e3cab39d98ece56bc",
+    "same_frame_stage_v2_stdout_sha256": "aced2aedf22a727bbef94109281b05599ce8ff1f456477f7d71256023dabc208"
+  },
+  "final_presentation": {
+    "summary": {
+      "path": "target/visual-replay-20261007/presentation-static/summary.json",
+      "sha256": "668cb2ec55fbdde70e5c8c66c49bbb75aa8bc22d84d7575bd9db15b4edaf7d18"
+    },
+    "binary_sha256": "0c2ecb029cab016b4418aaf9ca1c4a6ab1707afb2e908fc2bc223f030e74f476",
+    "status": "PASS",
+    "scope": "Production game_menu/view static Paused fixture on explicit render targets; no audio, native window, input or Replay playback acceptance",
+    "cases": [
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-presentation-final/bin/cocobeat-game",
+          "--viewport-smoke",
+          "watch-paused",
+          "en-US",
+          "640",
+          "480",
+          "1",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/presentation-static/watch-paused-640x480.png"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "2e7e953694a19ce0eb9eca7648de1b901c7168a0965eda08d806e61c38a9655a",
+        "png_sha256": "ed31a8f2614e63a8de42204a78416dac0eaa03901316ecaffa590862744b0b39",
+        "dimensions": [
+          640,
+          480
+        ],
+        "metrics": {
+          "logical_size": [
+            640.0,
+            480.0
+          ],
+          "menu_row_count": 8,
+          "menu_rows": [
+            "Resume song",
+            "Settings",
+            "Restart song",
+            "Main menu",
+            "Quit",
+            "Showing 0 / 0 recorded facts",
+            "next Anchor in 2.0s",
+            "Software cursor estimate +/- 50.0ms; hardware latency NOT MEASURED"
+          ],
+          "menu_title": "Read-only Replay playback \u00b7 Paused",
+          "oversized_row": false,
+          "panel_inside_viewport": true,
+          "panel_physical": [
+            34.0,
+            93.0,
+            390.0,
+            446.0
+          ],
+          "physical_size": [
+            640,
+            480
+          ],
+          "row_physical": [
+            34.0,
+            174.0,
+            390.0,
+            229.0
+          ],
+          "scale_factor": 1.0,
+          "selected_row": 0
+        },
+        "visual_review": "PASS",
+        "visual_reviewer": "visual_replay_delivery",
+        "visual_scope": "Unique mode marker and Paused phase visible in fixed title; five operations visible; constructed production view fixture only"
+      },
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-presentation-final/bin/cocobeat-game",
+          "--viewport-smoke",
+          "watch-paused",
+          "en-US",
+          "1280",
+          "800",
+          "1",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/presentation-static/watch-paused-1280x800.png"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "7dbdb0be78ec114ba8dde195573a3fbf584d02fa7c73b1f7a594c765eb8150d1",
+        "png_sha256": "37ae5a2ad6035d33a08faea3ddef66a3a332d8d333a3b0d5242e767276197354",
+        "dimensions": [
+          1280,
+          800
+        ],
+        "metrics": {
+          "logical_size": [
+            1280.0,
+            800.0
+          ],
+          "menu_row_count": 8,
+          "menu_rows": [
+            "Resume song",
+            "Settings",
+            "Restart song",
+            "Main menu",
+            "Quit",
+            "Showing 0 / 0 recorded facts",
+            "next Anchor in 2.0s",
+            "Software cursor estimate +/- 50.0ms; hardware latency NOT MEASURED"
+          ],
+          "menu_title": "Read-only Replay playback \u00b7 Paused",
+          "oversized_row": false,
+          "panel_inside_viewport": true,
+          "panel_physical": [
+            45.0,
+            136.0,
+            401.0,
+            610.0
+          ],
+          "physical_size": [
+            1280,
+            800
+          ],
+          "row_physical": [
+            45.0,
+            217.0,
+            401.0,
+            272.0
+          ],
+          "scale_factor": 1.0,
+          "selected_row": 0
+        },
+        "visual_review": "PASS",
+        "visual_reviewer": "visual_replay_delivery",
+        "visual_scope": "Unique mode marker and Paused phase visible in fixed title; five operations visible; constructed production view fixture only"
+      }
+    ],
+    "does_not_repeat_native_callback_acceptance": true,
+    "german_small": {
+      "summary": {
+        "path": "target/visual-replay-20261007/presentation-german-native/summary.json",
+        "sha256": "46cda35f921491da413f07552e764a12ddfe9ce59bbd79e0d34e9bd169d07e3c"
+      },
+      "screenshot": {
+        "path": "target/visual-replay-20261007/presentation-german-native/watch-paused-de-640x480.png",
+        "sha256": "998a5d6b4f95cc997ada72485527bcd9c1fe3943ed0269eea63d0e89c6eac370"
+      },
+      "binary_sha256": "0c2ecb029cab016b4418aaf9ca1c4a6ab1707afb2e908fc2bc223f030e74f476",
+      "status": "PASS",
+      "metrics": {
+        "logical_size": [
+          640.0,
+          480.0
+        ],
+        "menu_row_count": 8,
+        "menu_rows": [
+          "St\u00fcck fortsetzen",
+          "Einstellungen",
+          "St\u00fcck neu starten",
+          "Hauptmen\u00fc",
+          "Beenden",
+          "0 / 0 aufgezeichnete Fakten angezeigt",
+          "n\u00e4chster Anchor in 2.0s",
+          "Software-Cursor-Sch\u00e4tzung +/- 50.0ms; Hardwarelatenz NICHT GEMESSEN"
+        ],
+        "menu_title": "Schreibgesch\u00fctzte Replay-Wiedergabe \u00b7 Pausiert",
+        "oversized_row": false,
+        "panel_inside_viewport": true,
+        "panel_physical": [
+          34.0,
+          93.0,
+          390.0,
+          446.0
+        ],
+        "physical_size": [
+          640,
+          480
+        ],
+        "row_physical": [
+          34.0,
+          198.0,
+          390.0,
+          253.0
+        ],
+        "scale_factor": 1.0,
+        "selected_row": 0
+      },
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/game-build-presentation-final/bin/cocobeat-game",
+        "--viewport-smoke",
+        "watch-paused",
+        "de",
+        "640",
+        "480",
+        "1",
+        "0",
+        "/home/lzzz/MyProjects/CoCoBeat/target/visual-replay-20261007/presentation-german-native/watch-paused-de-640x480.png"
+      ],
+      "child_visual_review": "PASS",
+      "root_visual_review": "PASS",
+      "scope": "Production game_menu/view constructed Paused fixture; native GPU render target only, no replay callback acceptance",
+      "root_visual_scope": "Only this German640x480 static image: two-line complete mode/Paused title, menu owner hint, five operations and selection highlight visible; progress details remain below bottom edge"
+    }
+  },
+  "software_checks": {
+    "runtime_tests_passed": 133,
+    "runtime_tests_failed": 0,
+    "latest_title_narrow_test_passed": 1,
+    "latest_runtime_all_targets_clippy": "PASS",
+    "logs": [
+      {
+        "name": "runtime-tests-pass",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-pass.stdout",
+          "sha256": "b71b73c31a4b810d793a28ef744f882458f84f131c9b5b5b0b7a893565252fba"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-pass.stderr",
+          "sha256": "0cbf745def3274f089cc7ea1432dd37f61be479247df578540ab61efbaec1f9d"
+        }
+      },
+      {
+        "name": "clippy-retry",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/clippy-retry.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/clippy-retry.stderr",
+          "sha256": "45da4f0fab634a693feed412683617ea57f5f5bace257c84a90cc21d7a339f47"
+        }
+      },
+      {
+        "name": "presentation-tests",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/presentation-tests.stdout",
+          "sha256": "5b20d68a3e58d3f3ff89f3857bb5c348aa4b462960a687a32b38992f7e31a837"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/presentation-tests.stderr",
+          "sha256": "52ac78399bbcc1932014ca686bdd581ccddfbc54bd95d357bef9d0b66636babe"
+        }
+      },
+      {
+        "name": "presentation-clippy",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/presentation-clippy.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/presentation-clippy.stderr",
+          "sha256": "3f12ce64d5a8aef344b7b385fc845b267e544ab797a43df9fe4118ed552bce16"
+        }
+      },
+      {
+        "name": "title-tests",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/title-tests.stdout",
+          "sha256": "5b20d68a3e58d3f3ff89f3857bb5c348aa4b462960a687a32b38992f7e31a837"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/title-tests.stderr",
+          "sha256": "f11fb9b67f90d0b58d8426009620892d7e7fd23af43a11a4dc25caddd172ebee"
+        }
+      },
+      {
+        "name": "title-clippy",
+        "status": "PASS",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/title-clippy.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/title-clippy.stderr",
+          "sha256": "970fb805f7840b656eefc59d061475089e66dc09346666b8473ba29f4875305c"
+        }
+      },
+      {
+        "name": "runtime-tests",
+        "status": "FAIL",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests.stdout",
+          "sha256": "80e45d0b26f2305d3b8f2ab82a21afb48adacf4d56217825dce53e430711bc0a"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests.stderr",
+          "sha256": "f11510079ad7ad87dd1b49b7a3d3aaceb406c04d04b13217a1f5570ff3429864"
+        }
+      },
+      {
+        "name": "runtime-tests-retry",
+        "status": "FAIL",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-retry.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-retry.stderr",
+          "sha256": "15c8af2e4da9378b0a61ed20b439f70baa02d60740bd35db2b2699bec586e2b6"
+        }
+      },
+      {
+        "name": "runtime-tests-final",
+        "status": "FAIL",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-final.stdout",
+          "sha256": "e5772288bde70e7d9a97454c288658911ac56ba391a19a8c0aaa7729de7de94c"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/runtime-tests-final.stderr",
+          "sha256": "9cafb3455552c6d0e1bd3253dff0184819486f536e3282a40411e87cf0e39eb7"
+        }
+      },
+      {
+        "name": "clippy",
+        "status": "FAIL",
+        "stdout": {
+          "path": "target/visual-replay-20261007/integration/clippy.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/visual-replay-20261007/integration/clippy.stderr",
+          "sha256": "f733da221721e45e0a536f38881404bcb151833fe7b77bb2a92632dbfe315d3f"
+        }
+      }
+    ],
+    "source_review": "Independent correctness and ponytail-review: Lean already. Ship."
+  },
+  "retained_failures": [
+    {
+      "summary": {
+        "path": "target/visual-replay-20261007/native-final/summary.json",
+        "sha256": "580411ce3343147eb9b9cf419fb724099e60598df2d922fa94aa637db4203c68"
+      },
+      "status": "FAIL",
+      "reason": "Xvfb had no Vulkan DRI3 presentation modes; failed before completed intro; not a watcher logic acceptance"
+    },
+    {
+      "summary": {
+        "path": "target/visual-replay-20261007/native-gamescope/summary.json",
+        "sha256": "9d3873d3bf522378328f5d6405e5a2baa9b84aa654cf450a36a4b6dd40f76c32"
+      },
+      "status": "FAIL",
+      "reason": "Two full 1280 native cases passed; Stage1 partial requested640 captured1280, failing size assertion; Stage2 partial not run in this attempt",
+      "failed_size_result": {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-partial-640x480/result.json",
+        "sha256": "6a704e3b49837d7006f0c86ee17b426c36fc2833c1a0dd61d0679b0bc2fd704b"
+      },
+      "old_source_snapshot": {
+        "path": "target/visual-replay-20261007/native-gamescope/runtime-source.json",
+        "sha256": "820451f6165a42706fadbd3e07efc1bdfec8bc09aadc39eefc58e7be39b19f7b"
+      }
+    },
+    {
+      "scope": "Early runtime test and Clippy iterations",
+      "status": "FAIL",
+      "reason": "Missing newly added locale before root catalog integration, capture frame-gating assertions, intermediate observation initializer and grouped-system-parameter fixes; original logs retained above"
+    },
+    {
+      "summary": {
+        "path": "target/visual-replay-20261007/presentation-german/summary.json",
+        "sha256": "5d34ef2f5c603f7734b03581678f5a100b741e705009e3db390b1af897a338fc"
+      },
+      "status": "FAIL",
+      "reason": "First German static attempt used sandbox without GPU access and failed adapter enumeration; original stdout/stderr kept; same fixed binary succeeded with native GPU access in separate directory"
+    }
+  ],
+  "interpretation": {
+    "native": "Actual DefaultPlugins native window + AMD RADV Vulkan and actual Kira/CPAL acknowledged source cursor; synthetic KeyboardInput/WindowFocused through existing input capture",
+    "full_vs_partial": "Full1280 cases preserve1003 facts and15 events; small640 partial cases preserve1002 facts and0 events. Partial EOF is not evidence of full15-event EOF behavior",
+    "ordering": "Original P1 future watermark holds1000 later old-time P2 Hits until actual source EOF; paused prefix is1. Presentation tones coalesce only; every original core event remains exact",
+    "restarts": "Original epoch91 preserved; restart and main-menu return create fresh core/prefix; menu requires fresh Ready confirmation after complete brand intro",
+    "no_writes": "Original package/Replay/binary protected inputs unchanged; no replays directory, live Hit capture or invited network worker",
+    "presentation_versions": "Old9151 native images contain historical repeated mode marker; f39 small native images have body marker that can fall belowfold. Final0c2 static images verify fixed-title unique marker; no claim that old screenshots display final text",
+    "immutability": "422 build inputs equal before/after each build. Unreferenced performance_probe.rs changed after old9151 build; not installed or compiled in watch binary; no continuous whole-worktree immutability claim"
+  },
+  "visual_review": {
+    "child_inspected": [
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/paused.png",
+        "sha256": "3c551aab46129dde90fe5bc46a7ce35752d63b130b3ea68b3056dc868672c610"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/finished.png",
+        "sha256": "4c1939a39118c83ec524cb6c93874828bf48fa1ac303c20a968b0208cd6d513a"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/restarted.png",
+        "sha256": "3fd7b8d07e664e3b785da81f46b8311b57ba397c3e33fc779039784d3d71edf7"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/returned.png",
+        "sha256": "89b6880b9e14b5a147f61dec1526e059466d6c45aad5185fe4087d37b9fa49ec"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/paused.png",
+        "sha256": "d697c42e1ad9d75536c5bca746724fb948484d6e03c9deac3b35ca5701e9ee14"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/paused.png",
+        "sha256": "01b0add12b7e40367fe016b007daa6fc0bfd98270642cb2086b0c30ee1a6dbf6"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/finished.png",
+        "sha256": "7ffdbb0f6a61dcc334975c3022af4c72c9b14839013295aba8a55a375f42edb0"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/restarted.png",
+        "sha256": "c51ec5f403dfe3d0f4be48167dcb364e620052a9c0fa55a8e4c32672c660f50d"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/returned.png",
+        "sha256": "f8a4d371f6727af21a8fb30f41444f726dde9cef5a77b1cdad81ae939308b694"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/paused.png",
+        "sha256": "2dec639b6d02795a37cb6c5038f3f0f5159351e867c7b13247a921150b69d093"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-static/watch-paused-640x480.png",
+        "sha256": "ed31a8f2614e63a8de42204a78416dac0eaa03901316ecaffa590862744b0b39"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-static/watch-paused-1280x800.png",
+        "sha256": "37ae5a2ad6035d33a08faea3ddef66a3a332d8d333a3b0d5242e767276197354"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-german-native/watch-paused-de-640x480.png",
+        "sha256": "998a5d6b4f95cc997ada72485527bcd9c1fe3943ed0269eea63d0e89c6eac370"
+      }
+    ],
+    "final_static_title_and_operations": "PASS",
+    "root_review": "PASS",
+    "known_general_scene_limit": "Existing 640 running/restarted character labels P1 TWO EARS / P2 ONE CROWN overlap; outside watcher mode-marker correction",
+    "root_review_scope": "Exactly four actual native paused images, two final English static images and one final German640x480 static image; not all20native phases or13localized visual layouts; German title/owner/fiveactions/highlight visible, progress details below bottom edge",
+    "root_inspected": [
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-1-full-1280x800/paused.png",
+        "sha256": "3c551aab46129dde90fe5bc46a7ce35752d63b130b3ea68b3056dc868672c610"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-gamescope/stage-2-full-1280x800/paused.png",
+        "sha256": "d697c42e1ad9d75536c5bca746724fb948484d6e03c9deac3b35ca5701e9ee14"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-1-partial-640x480/paused.png",
+        "sha256": "01b0add12b7e40367fe016b007daa6fc0bfd98270642cb2086b0c30ee1a6dbf6"
+      },
+      {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/paused.png",
+        "sha256": "2dec639b6d02795a37cb6c5038f3f0f5159351e867c7b13247a921150b69d093"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-static/watch-paused-640x480.png",
+        "sha256": "ed31a8f2614e63a8de42204a78416dac0eaa03901316ecaffa590862744b0b39"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-static/watch-paused-1280x800.png",
+        "sha256": "37ae5a2ad6035d33a08faea3ddef66a3a332d8d333a3b0d5242e767276197354"
+      },
+      {
+        "path": "target/visual-replay-20261007/presentation-german-native/watch-paused-de-640x480.png",
+        "sha256": "998a5d6b4f95cc997ada72485527bcd9c1fe3943ed0269eea63d0e89c6eac370"
+      }
+    ]
+  },
+  "not_run": [
+    "Physical keyboard or controller operation",
+    "Speaker latency and listening acceptance",
+    "Historical network arrival timing reproduction",
+    "Human gameplay experience",
+    "Four-platform executable runtime acceptance",
+    "Full native callback replay rerun after pure title-text correction",
+    "Visual review of all13localized layouts"
+  ]
+}

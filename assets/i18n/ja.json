@@ -215,5 +215,7 @@
   "audition.ended": "終了",
   "audition.failed": "音声エラー",
   "audition.cursor": "試聴 {state} · 約 {frame} フレーム · 開始 {target}",
-  "audition.help": "Space / パッド左側フェイスボタン：再生・一時停止 · 移動：選択フレームへ · 音声カーソルは描画済み PCM の位置で、出力や入力の遅延ではありません"
+  "audition.help": "Space / パッド左側フェイスボタン：再生・一時停止 · 移動：選択フレームへ · 音声カーソルは描画済み PCM の位置で、出力や入力の遅延ではありません",
+  "replay.watching": "読み取り専用 Replay 再生",
+  "replay.progress": "記録された事実 {consumed} / {total} 件を表示"
 }

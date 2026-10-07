@@ -13,6 +13,7 @@ mod i18n;
 mod input;
 mod online;
 pub mod probe;
+mod replay_playback;
 mod scene;
 mod session;
 mod settings;
