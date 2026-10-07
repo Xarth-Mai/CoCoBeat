@@ -1,0 +1,1115 @@
+{
+  "date": "2026-10-07",
+  "base_commit": "544afb40cb6c0046dcff2fc5d2a9917c72e371a3",
+  "milestone": "process-monotonic ClockSync and future headless start",
+  "protocol_version": 3,
+  "checks": {
+    "net_tests": 13,
+    "clippy": "PASS",
+    "fmt": "PASS",
+    "boundaries": "PASS",
+    "lab_build": "PASS"
+  },
+  "log_sha256": {
+    "net-tests.log": "30837ed08f19d12daab2e2c6ec1b137295c6925be797e4e21e55986190682f49",
+    "clippy.log": "e6d6c7c0c227c4324a02dba27531c663a56b0fb6336e5bc0e5d8ae003a4fd563",
+    "fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "boundaries.log": "22bd155e5320dd5a7b4b71463a0a3f7c868bba73d309df1adf739e56461ff4e3",
+    "build.log": "02381891c2192df2d2ab2d0d081af86dd6994ac16fd39dd9b49a3fa34690356d",
+    "build.jsonl": "ffc29412218e3ee7fd1b3c73c18981d97d3cf9095cd30d391c32909561c0d61f"
+  },
+  "lab_sha256": "10b4b8efbd690c3ead104e73747b592b09098f993be69c0dd58e09860ceaa370",
+  "source_sha256": {
+    ".cargo/config.toml": "07e75f80544a833951c1532649fadd0ee21712b40e55b6e74b880b3c11259e36",
+    "Cargo.lock": "96dfbe98ad56745f467c949f1f9f2c53aee7bc3f1baae7a90aa4200e9f770243",
+    "Cargo.toml": "ea686cac5349a642cbb34852d8a77bba4c1b20a76173d360970921ff7ec62901",
+    "apps/cocobeat-game/Cargo.toml": "d58948f5559284dc68f2fb1390e312cce35637d899986bdb8e5ed7ee763e5b0b",
+    "apps/cocobeat-game/build.rs": "81de396f2a1f8a71c68f45770d94f4fcd37df01cacb64fe861a87fc90723c961",
+    "apps/cocobeat-game/src/main.rs": "6857c4b544686ce6bcfa992238c4ca2eb44ebe236336384215d7da809c1e2466",
+    "assets/brand/validation/Cargo.lock": "e9d6937210e8e1d08425465ad702fe97555f02d823df77a4ab5126516e5e26f5",
+    "assets/brand/validation/Cargo.toml": "a2e1e78d21bb8a0aa9312729a6ab19e5fa21377fa28b7d016b31fc85965a023a",
+    "assets/brand/validation/main.rs": "ec3055d55da738329d44f5244684734fc3cf6678bdd79419e9f6ffcd94e275eb",
+    "assets/i18n/README.md": "a9ca0c77def8d1a643b06101819cb64af3e99db08a97aedded279fa0a16a2f85",
+    "assets/i18n/de.json": "9ab4140cfefadde29a23f40c4dad83d6989654c07313b756c8ee9d38e8cc7c48",
+    "assets/i18n/en-GB.json": "393f7b6ce409a5f3a917e406698abaf79828734cafa7ecf19337e5faf9eb9072",
+    "assets/i18n/en-US.json": "393f7b6ce409a5f3a917e406698abaf79828734cafa7ecf19337e5faf9eb9072",
+    "assets/i18n/es-419.json": "f39c3b13c7af28e6b7a62bc6ed185a626a22cabfc03d5c0d35a1c310da202a15",
+    "assets/i18n/fr.json": "8a9ffdb7a2f7a43ed8c46b043f0131e37346077c37fd5a8e833ec732ab392b69",
+    "assets/i18n/ja.json": "ded471a72949d217c13d452bd681e8d954db02da780777ff901a0ffdce38bb65",
+    "assets/i18n/ko.json": "f7111535eef41912c830c88425cc9bc94702e97b9b160c94755fbd617f60411e",
+    "assets/i18n/pt-BR.json": "bb4acaa215b4248b14a3a6ccaa608e5924498f951a6e03cf896095508ad27732",
+    "assets/i18n/ru.json": "1dbaf0d13754c6586145ab6260b9f79fd586497e4c1d7e86355a6fd5d4ab15a4",
+    "assets/i18n/uk.json": "0c5330642bd355ac5bda60f61547de4fda1846aa57589d8749610dea001a58bd",
+    "assets/i18n/zh-CN.json": "5cd74bfca19349e95606ff2ea781dc60859ee2390388bf5f0d5a87f50197e719",
+    "assets/i18n/zh-HK.json": "0940aea3159b58b1daa3b8af13fa89361d7d1035fced6c7fadde28808662e0d6",
+    "assets/i18n/zh-TW.json": "38816645938fedec79952584b20b2b24619d8123dab331e26e482e124ba9ebca",
+    "crates/cocobeat-core/Cargo.toml": "97953d32f3820f005fdefe43a7ff7d8693424be78b9f0c655a83959a026ec8b1",
+    "crates/cocobeat-core/src/lib.rs": "648510208d6382c35a4ddf04a49a67ff368b771ed08b53ed171475252ef04fc7",
+    "crates/cocobeat-editor/Cargo.toml": "83549c0857e31f7d2250b7c944094ab3cf6ea8c437db321b83429465a7ad80bf",
+    "crates/cocobeat-editor/src/lib.rs": "7aa3670d806a23072f338b190dc3a2a8625817c0bf29c6dc5a8dd4fc1874b537",
+    "crates/cocobeat-media/Cargo.toml": "b0d284a3004b552fcf6736b757ee3a286fcb1127ebb08129fd7048c5b010b3ea",
+    "crates/cocobeat-media/src/anchors.rs": "e8fb4f7d9d73e2f8bf77cbc1c1798f024be7026892498a760fd2b56f439de8c4",
+    "crates/cocobeat-media/src/audio_asset.rs": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+    "crates/cocobeat-media/src/content_codec.rs": "a026d0f04b174605c90d535843793b114fdbb5ccf1bf190a42e870cedd57d597",
+    "crates/cocobeat-media/src/decode.rs": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+    "crates/cocobeat-media/src/lib.rs": "a1191c0d1372a2e95bf13fc17e6e35bbb9062335c83781fdffdd41404fddd82b",
+    "crates/cocobeat-media/src/package.rs": "3021987cccf72ba346155dbae5eccce9959ac658891d8e8032e7b3003926fb77",
+    "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+    "crates/cocobeat-net/Cargo.toml": "e328736eadc27a4fd28cc995c17dbd21f89dae695b3b0204002380be46f58891",
+    "crates/cocobeat-net/src/clock.rs": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+    "crates/cocobeat-net/src/lib.rs": "8b1406d21be8accc440e235b1986e697f5b46ba55dd56fc2cb12e8a05f9bb88a",
+    "crates/cocobeat-net/src/resource.rs": "035dd3edc796d2729de800c7185c3a575be55e4c162cf988c861830a4af2160d",
+    "crates/cocobeat-net/src/session.rs": "5e54ec0c9f77f1a3a5df1fa98507761cece79cc2f14d81a62959a07e1de9d515",
+    "crates/cocobeat-net/src/sync.rs": "afcae6038b0aac6a19e7dbc6fedb7169896af5a356b0617c339bc572a6909689",
+    "crates/cocobeat-net/src/wire.rs": "469ac3b05f6e765770faab9f85536464f31e5ba1fcd8663bc8937518d2854319",
+    "crates/cocobeat-replay/Cargo.toml": "a9ac6ee44d5f3f5aaade56105c7d175cc390ce34231356fb01e7db797cb65c4a",
+    "crates/cocobeat-replay/src/lib.rs": "240af38c6a4f23711fb9c071cb243e4cffbe215b21c8f74eb04f3cb12651945d",
+    "crates/cocobeat-runtime/Cargo.toml": "08a4673b79f400a64c36e38927a6eb7d0fc2f8435b391e69196eac18fbbf06da",
+    "crates/cocobeat-runtime/build.rs": "6c948a5e384b709de42eee8b5cef80d0a2d53cd9771bea605468c0d52abb5b86",
+    "crates/cocobeat-runtime/src/app.rs": "ea9a7e82d9f523754ab48465a4ffa86a56516e921e6c6687f1c265d89164425b",
+    "crates/cocobeat-runtime/src/audio.rs": "4711189be571c7d8654766b0b1000b91399b05884ec0f26e1ea8d3f21e75010b",
+    "crates/cocobeat-runtime/src/brand_audio.rs": "b69cff85a37aa6c43b477b975cb1704206df679b89272af5b0bedddf8acab590",
+    "crates/cocobeat-runtime/src/brand_intro.rs": "ab4b4c0e8ce63daa7368b8d1e23ed1a4e5dfa445abf788ebeba59191404a87a2",
+    "crates/cocobeat-runtime/src/clock.rs": "57786dea30aea1d663e595d6140f52370b98171a3d1dcf5e727845a67ed314ae",
+    "crates/cocobeat-runtime/src/content.rs": "e7529e5566496199bc2b01cded35bc93e634be9921ab9e0edce5fee6e1d5e05b",
+    "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+    "crates/cocobeat-runtime/src/display.rs": "a7253d51f4b4d95b149f5754d4154d4c31fac1dcef396fd4845f2226f789ee3c",
+    "crates/cocobeat-runtime/src/display_area.rs": "27a85d9d07263b6dbb0cd5788c8f4f8d5dbd80b37dbcd929b63c7d233afe58f4",
+    "crates/cocobeat-runtime/src/i18n.rs": "0a8f6d242b6573050b24314a644173f0c37668b6946c6723fb3950973299cb92",
+    "crates/cocobeat-runtime/src/input.rs": "b3a9b626ce2554b019bcb31e7e3678a1a6da03ab404b26c7f69947fe85b9aa57",
+    "crates/cocobeat-runtime/src/lib.rs": "5253d6ce3525e667ed2e6c960d5b2e041d6ed279713387a3904bea9116fcc086",
+    "crates/cocobeat-runtime/src/probe.rs": "65622a49e316eb27dbe528f2b1d14f426be62db4728df1bd5b14fe03b9f4cc6b",
+    "crates/cocobeat-runtime/src/scene.rs": "75d105e4b61adabf217caffd4fde5764df70cb58312b9bbd54eeb32ededdaf03",
+    "crates/cocobeat-runtime/src/session.rs": "435499994db8b29fb8bc59eaf0d290adab97bbcc923104bc59940b11189d4aff",
+    "crates/cocobeat-runtime/src/settings.rs": "80af1dd0c40ddba44532c21ccc1de41fd7f61e51513505705696044c3c0b8ff3",
+    "crates/cocobeat-runtime/src/settings_menu.rs": "ebc971c6e3936063dfb609e4ff589c0abf5e17409b1f917d3a0a4f008fe8775e",
+    "crates/cocobeat-runtime/src/ui_assets.rs": "f8c5d5cd4ba65d2bcce0d729cb29ad58966c5ee1018c3444df837fdeb47e894e",
+    "crates/cocobeat-runtime/src/view.rs": "03cad39a7410d45fb1680abe10ae76720000f757eb6d36f08ba7f305297d1748",
+    "crates/cocobeat-schema/Cargo.toml": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+    "crates/cocobeat-schema/src/asset.rs": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe",
+    "crates/cocobeat-schema/src/content.rs": "7f0e9984dba5f87c7ab5a0305687613a6e6994ee27ce147b09db98e92087ff44",
+    "crates/cocobeat-schema/src/gameplay.rs": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+    "crates/cocobeat-schema/src/lib.rs": "4ee66bea6fa2d1de66a4a00122f5a6679cdbebdbadf5393f18af61bc9ea049c3",
+    "crates/cocobeat-schema/src/time.rs": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+    "crates/cocobeat-stage/Cargo.toml": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c",
+    "crates/cocobeat-stage/src/lib.rs": "06cff45a0565861f5f5c71f377b60bde9e427479ec03fd1c9ecb0f97730441a8",
+    "rust-toolchain.toml": "7458b2d74495e6fb1c1edeea4d5a793705476431dadb60627187111f91441e13",
+    "testdata/synthetic/media-import/README.md": "6d32830ab9f745ab61c34854092c398d668578b4bd2cdf12f877a05b8d9eec48",
+    "testdata/synthetic/media-import/mono.mp3": "d923f64fa8d33576b85608ac20f13a1cf512f8dfd0e94e9c0e1342d652ca6085",
+    "testdata/synthetic/media-import/mono.ogg": "2e98fad0c74320af0e9a98ec6e3e3ddc9b219afdc90826abc78aa9bd625fe33a",
+    "testdata/synthetic/media-import/stereo-canonical.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+    "tools/canonical-audio-probe/fullband-regression/readback.rs": "d6aa6b06b8b3d6b97dca6b529952718fb60a5e809b1abfa5719a435d0351c477",
+    "tools/canonical-audio-probe/numeric-fullband/codec_numeric.rs": "7344facd24afb2b7888ffa5e307d7808661c25aad504b99162c18e189b8fa5d9",
+    "tools/canonical-audio-probe/numeric-fullband/kernel_bound.rs": "6bf03ef239a383a9aa4963db79f1fcdef5325cf81d890b63e5f97d6d576d2993",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.lock": "fcafced8e9af315432862883aed114808367a4a08fe79154ac4ae620a90a3301",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.toml": "b9ed8906fba17aa4ef2c2d7d74e08502436fc5527213e45caa6a00fb2eeabdd0",
+    "tools/canonical-audio-probe/oxiaudio/src/main.rs": "e4e63967c069510ff90c4cac8e3842765a2de58a9b6ab610ecf0c86bc31d4263",
+    "tools/canonical-audio-probe/oxideav/Cargo.lock": "3b06972c2b34bae71a95b9c65bf784f1a5bf1b35bfe3a31676cbac034a3abd16",
+    "tools/canonical-audio-probe/oxideav/Cargo.toml": "085546c2ff0a0e930433b9432fd22101ffc4ab327fae90495d01fa9e4c017232",
+    "tools/canonical-audio-probe/oxideav/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.lock": "a0f9fe8bfb03b52975d51d58c93e30559caedab617ef8790eb4e628aaaf94e95",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.toml": "72c0f20dbd29e6b6724228f73c7c0dbf47560a16946de691fc51196d6675b483",
+    "tools/canonical-audio-probe/oximedia-resample/src/main.rs": "180e92fb72a2e687f7dcbca14296ac91b8644d7f2df2f9799f97f99e63510bc3",
+    "tools/canonical-audio-probe/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.lock": "b6d6f71571e97be00e90349bd4c2f7006fa47eeeaf03c1d5d8d56319e48fd27f",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+    "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+    "tools/canonical-audio-probe/rusty-candidate/src/tests.rs": "0bfe7bafeef35b1291c5885a8b234ebee0759020f937981d145cac474ea5e769",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.lock": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.lock": "82877e0932e9121f01e1c99a3906072244c6b03011a8958c92820f003f328303",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.toml": "b6081c2f8ecf883f2e86bd0fbd95633b2bac8cb35742b777874419df525d11cb",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/adapter.rs": "c4e0cc2c394961929d64a3b99add9b8e9a479d084e7fccfc914f20451878c840",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/encode.rs": "a6f3140e5225b309407a527d956063950484cc782a82eda9818019cadcb20e7e",
+    "tools/canonical-audio-probe/seek.rs": "b1f88674dc269b9e86dd7d97fcac85abdd559bed8a34c9f2821d7cf448b73cca",
+    "tools/cocobeat-lab/Cargo.toml": "c913f558689789c9298f384330bdb1a98001c9e47690113ad13f154aa0f55b35",
+    "tools/cocobeat-lab/src/anchors.rs": "bb6500a80b39aef17fdc0fc1cd690b44392947bbc8f94f541f67031cb266a095",
+    "tools/cocobeat-lab/src/content.rs": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+    "tools/cocobeat-lab/src/editor.rs": "4301e5d77f30c34c682236024709f9dcd4b708d4d26be8fac655df22151d0093",
+    "tools/cocobeat-lab/src/main.rs": "08819b274a339bf1481302c589d12e509ca637eb7a841076d285336b2d71e536",
+    "tools/cocobeat-lab/src/media.rs": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+    "tools/cocobeat-lab/src/package.rs": "6eb918e9fdea728464a5ed95a5593a6c7d6b4c345458e3d6f915f90f7c78620b",
+    "tools/cocobeat-lab/src/replay.rs": "84b1b50dd01f3652da329e6fa409e63442b20fe85f0dc0c7e8c4d10676ed3679",
+    "tools/cocobeat-lab/src/stage.rs": "6a46f5a85321c93659b8a7ee34d25b7fea88337bc9915ebe3a5971709ae46243",
+    "tools/cocobeat-lab/src/timing.rs": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+    "tools/cocobeat-lab/src/workbench.rs": "61313f1e3a34e66957ad60e1e04474f5aaf1834ca6a39e609d6e4e5839a6260e",
+    "tools/cocobeat-lab/src/workbench/input.rs": "6486b26f7109231366f4d78366fb6ab7e35ff96106b67c0b108e7b00c0b05bad",
+    "tools/cocobeat-lab/src/workbench/ui.rs": "affefff1bb54287e182410a343cb6e09ffcdcefaab018541f8461c2533281bdb",
+    "tools/mir-flux-gate-probe/Cargo.lock": "40afc1dc0d6b9919a335a20a4313c5228409638ba028bb926df578d6a6f3e10f",
+    "tools/mir-flux-gate-probe/Cargo.toml": "d1275637a06b1493c0a61eb89662c130e97b1e0ec9db9a1ba41d5ee2df04c511",
+    "tools/mir-flux-gate-probe/src/main.rs": "434d3708ede7f9201a92dac408a6b4eca636538631f5a8544d3067b674387756",
+    "tools/mir-flux-probe/Cargo.lock": "bf7275e578c1c560fc9dbb13b1ee5382beb4cfa79d65b17a740732d82562ac44",
+    "tools/mir-flux-probe/Cargo.toml": "b402ec1153e4dcaf2a3da2d145f43b300a5693d0024f7c5356147da67be31d4c",
+    "tools/mir-flux-probe/src/main.rs": "5343abafc6379100e6766b8d7fc6ea075803f88823a4eb4a149aeac84b8cd6f8",
+    "tools/mir-onset-diagnostic/Cargo.lock": "4b4e8202f7ed57ab77592ef9516653e85d788fc55ac525aebf69a705d6d15007",
+    "tools/mir-onset-diagnostic/Cargo.toml": "d6d2934ea86d762d4f38249383ebb608896b6ac98e5d969aeda78b5cc50c47e1",
+    "tools/mir-onset-diagnostic/src/main.rs": "4a0d7d4782f8a1a97aa77071559f42be2519c29f952d7e96219ccfd74c6743c9",
+    "tools/mir-onset-probe/Cargo.lock": "db1c8615cf95f7dbd05c685f8a7678f6120ecbf8d96e2074ce4309251d611dfd",
+    "tools/mir-onset-probe/Cargo.toml": "dc0f37f4e812a1ae024b905bdc36bdcf5052797bed71aa6d6d9e8e7775c87a0e",
+    "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26",
+    "tools/mir-spectral-probe/Cargo.lock": "ba9b8f8a9f43230d8d7608d1fc7ebe555fda95a4410c1953637f2c220d2827d0",
+    "tools/mir-spectral-probe/Cargo.toml": "8590385f1e310ab7205d8e4e29d567ce07bdea8a3a47d7cf7c7c6cef5097fb92",
+    "tools/mir-spectral-probe/src/main.rs": "4a29350f2283aff1a2955d4a5e33b487fa05348c65bdaf04550b8307d159932a",
+    "xtask/Cargo.toml": "9311b043c1bb6f23f70db07009ed19f4fdc9dc313cd30ba6c629d3a11c976de3",
+    "xtask/src/main.rs": "536266818bdf668c6d85210c9c954c1b7b502cd635aaf7bf83ed00f35a59983b"
+  },
+  "loopback": {
+    "status": "PASS",
+    "transport": "real QUIC over loopback",
+    "production_binary": "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+    "binary_sha256": "10b4b8efbd690c3ead104e73747b592b09098f993be69c0dd58e09860ceaa370",
+    "commands": [
+      {
+        "name": "build-fixture",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "receive-guest",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "receive-host",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "receive-verify",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "receive-replay",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "installed-guest",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "installed-host",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "installed-replay",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "wrong-template-guest",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "wrong-template-host",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "wrong-template-verify",
+        "exit_code": 0,
+        "expected_success": true
+      },
+      {
+        "name": "existing-package",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "existing-file",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "existing-output",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "existing-alias",
+        "exit_code": 1,
+        "expected_success": false
+      },
+      {
+        "name": "old-protocol",
+        "exit_code": 1,
+        "expected_success": false
+      }
+    ],
+    "source_objects_sha256": {
+      "song.audio.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+      "analysis.bin": "659d6544c9e595d688c46a057a2e59b92939e21d4338a5e076b24d5e3e81f5df",
+      "chart.bin": "586b58de43086640f1e18bfbff5cf267ba3aa39887c857d8a917beeb2278a82a",
+      "song.package": "f9ec42472903bcea778c28d9b738d09421cd08dd2a4293bdf6eb70a4f37ae0f6"
+    },
+    "scope": "headless resources and reliable history; no game window, physical devices or two-machine acceptance"
+  },
+  "clock_faults": {
+    "status": "PASS",
+    "transport": "real private loopback QUIC",
+    "production_lab_sha256": "10b4b8efbd690c3ead104e73747b592b09098f993be69c0dd58e09860ceaa370",
+    "qa_helper_sha256": "984479f20bf1989355674c04dc6bfa79799fc9e404359f1afd9760541fdaef19",
+    "source_objects_sha256": {
+      "song.audio.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+      "analysis.bin": "659d6544c9e595d688c46a057a2e59b92939e21d4338a5e076b24d5e3e81f5df",
+      "chart.bin": "586b58de43086640f1e18bfbff5cf267ba3aa39887c857d8a917beeb2278a82a",
+      "song.package": "f9ec42472903bcea778c28d9b738d09421cd08dd2a4293bdf6eb70a4f37ae0f6"
+    },
+    "cases": [
+      {
+        "case": "recover-replies",
+        "qa_role": "host",
+        "expected_success": true,
+        "commands": {
+          "host": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+            "clock-peer",
+            "recover-replies",
+            "host",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/recover-replies/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/recover-replies/host"
+          ],
+          "join": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+            "net-join",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/recover-replies/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/recover-replies/join"
+          ]
+        },
+        "exit_codes": {
+          "host": 0,
+          "join": 0
+        },
+        "statuses": {
+          "host": {
+            "status": "COMPLETE",
+            "protocol_version": 3,
+            "epoch": 2787086231046316988,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 2,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 1,
+                "guest_sample_ns": 258264197,
+                "offset_ns": 26667789,
+                "uncertainty_ns": 345212,
+                "round_trip_min_ns": 688339,
+                "round_trip_max_ns": 689729
+              },
+              "host_start_ns": 2285287243,
+              "local_start_ns": 2285287243,
+              "start_uncertainty_ns": 0,
+              "software_start_observed_ns": 2286496814,
+              "software_start_lateness_ns": 1209571
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:46933",
+            "cert_blake3": "3295d23986251201501af92e7ffa3afecb3fe46b7045caba8bdf322a46e71642",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              71,
+              71
+            ],
+            "event_count": 72,
+            "live_replay_blake3": "7b45134eed791533490db991e0d409946c7053d6abbc47f706acc6abd7b86850",
+            "authority_replay_blake3": "7b45134eed791533490db991e0d409946c7053d6abbc47f706acc6abd7b86850",
+            "error": null
+          },
+          "join": {
+            "status": "COMPLETE",
+            "protocol_version": 3,
+            "epoch": 2787086231046316988,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 2,
+              "received_datagrams": 5,
+              "ignored_datagrams": 4,
+              "clock": {
+                "probe_id": 1,
+                "guest_sample_ns": 258264197,
+                "offset_ns": 26667789,
+                "uncertainty_ns": 345212,
+                "round_trip_min_ns": 688339,
+                "round_trip_max_ns": 689729
+              },
+              "host_start_ns": 2285287243,
+              "local_start_ns": 2258619454,
+              "start_uncertainty_ns": 2347916,
+              "software_start_observed_ns": 2259070071,
+              "software_start_lateness_ns": 450617
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:46933",
+            "cert_blake3": "3295d23986251201501af92e7ffa3afecb3fe46b7045caba8bdf322a46e71642",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              71,
+              71
+            ],
+            "event_count": 72,
+            "live_replay_blake3": "962be420215774a9833e099d5f84f47032ce405c670e59f74d68170c7f50a6e6",
+            "authority_replay_blake3": "7b45134eed791533490db991e0d409946c7053d6abbc47f706acc6abd7b86850",
+            "error": null
+          }
+        },
+        "qa_trace": [
+          "drop_reply 0",
+          "send_ignored_reply epoch=2787086231046316989 id=1 guest_send=257569983",
+          "send_ignored_reply epoch=2787086231046316988 id=0 guest_send=257569983",
+          "send_ignored_reply epoch=2787086231046316988 id=1 guest_send=257569984",
+          "send_ignored_reply epoch=2787086231046316988 id=0 guest_send=5809414",
+          "send_valid_retry_reply 1"
+        ]
+      },
+      {
+        "case": "lost-replies",
+        "qa_role": "host",
+        "expected_success": false,
+        "commands": {
+          "host": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+            "clock-peer",
+            "lost-replies",
+            "host",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/lost-replies/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/lost-replies/host"
+          ],
+          "join": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+            "net-join",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/lost-replies/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/lost-replies/join"
+          ]
+        },
+        "exit_codes": {
+          "host": 1,
+          "join": 1
+        },
+        "statuses": {
+          "host": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 15381276148369187629,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 8,
+              "ignored_datagrams": 0,
+              "clock": null,
+              "host_start_ns": null,
+              "local_start_ns": null,
+              "start_uncertainty_ns": null,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:35444",
+            "cert_blake3": "eaa0f64820e0b8be6fe4e5dc026b10676b6a45804393cecee3c16d7435bf8388",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "b6c03ee9cae2a5c1db5e5ee88ea060aff1bd2efd2bfc7ed711b6f82f6820a855",
+            "authority_replay_blake3": null,
+            "error": "read frame length: connection lost"
+          },
+          "join": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 15381276148369187629,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 8,
+              "received_datagrams": 0,
+              "ignored_datagrams": 0,
+              "clock": null,
+              "host_start_ns": null,
+              "local_start_ns": null,
+              "start_uncertainty_ns": null,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:35444",
+            "cert_blake3": "eaa0f64820e0b8be6fe4e5dc026b10676b6a45804393cecee3c16d7435bf8388",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "b6c03ee9cae2a5c1db5e5ee88ea060aff1bd2efd2bfc7ed711b6f82f6820a855",
+            "authority_replay_blake3": null,
+            "error": "no valid clock sample after eight probes"
+          }
+        },
+        "qa_trace": [
+          "drop_reply 0",
+          "drop_reply 1",
+          "drop_reply 2",
+          "drop_reply 3",
+          "drop_reply 4",
+          "drop_reply 5",
+          "drop_reply 6",
+          "drop_reply 7"
+        ]
+      },
+      {
+        "case": "wrong-synced",
+        "qa_role": "join",
+        "expected_success": false,
+        "commands": {
+          "host": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+            "net-host",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "127.0.0.1:0",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/wrong-synced/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/wrong-synced/host"
+          ],
+          "join": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+            "clock-peer",
+            "wrong-synced",
+            "join",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/wrong-synced/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/wrong-synced/join"
+          ]
+        },
+        "exit_codes": {
+          "host": 1,
+          "join": 1
+        },
+        "statuses": {
+          "host": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 67702303907419069,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": null,
+              "host_start_ns": null,
+              "local_start_ns": null,
+              "start_uncertainty_ns": null,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:49459",
+            "cert_blake3": "9a2f33a3f6259ce3a23975d4229eab15e1ecb91a95fb084af416437aeed98f18",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "73a98aa03d6fe02e19d52a90ff5169fb82d64967a44b86b09097c67323ac3f65",
+            "authority_replay_blake3": null,
+            "error": "ClockSynced does not match an actual clock reply"
+          },
+          "join": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 67702303907419069,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 1,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 6378409,
+                "offset_ns": 22865019,
+                "uncertainty_ns": 166544,
+                "round_trip_min_ns": 332082,
+                "round_trip_max_ns": 332752
+              },
+              "host_start_ns": null,
+              "local_start_ns": null,
+              "start_uncertainty_ns": null,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:49459",
+            "cert_blake3": "9a2f33a3f6259ce3a23975d4229eab15e1ecb91a95fb084af416437aeed98f18",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "73a98aa03d6fe02e19d52a90ff5169fb82d64967a44b86b09097c67323ac3f65",
+            "authority_replay_blake3": null,
+            "error": "read frame length: connection lost"
+          }
+        },
+        "qa_trace": [
+          "send_wrong_synced_transcript"
+        ]
+      },
+      {
+        "case": "late-schedule",
+        "qa_role": "host",
+        "expected_success": false,
+        "commands": {
+          "host": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+            "clock-peer",
+            "late-schedule",
+            "host",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/late-schedule/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/late-schedule/host"
+          ],
+          "join": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+            "net-join",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/late-schedule/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/late-schedule/join"
+          ]
+        },
+        "exit_codes": {
+          "host": 1,
+          "join": 1
+        },
+        "statuses": {
+          "host": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 10398754897979726835,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 6101772,
+                "offset_ns": 26590539,
+                "uncertainty_ns": 163229,
+                "round_trip_min_ns": 325468,
+                "round_trip_max_ns": 326128
+              },
+              "host_start_ns": 2032922959,
+              "local_start_ns": 2032922959,
+              "start_uncertainty_ns": 0,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:34239",
+            "cert_blake3": "a61f2bbae8bfcc878fcee4321b81e36b7cda71e356986df38471b801538df8b0",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "8f8b690e6b25f09a3d16c0739df0d69f21b38e81675279f269aab243697b7963",
+            "authority_replay_blake3": null,
+            "error": "read frame length: connection lost"
+          },
+          "join": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 10398754897979726835,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 1,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 6101772,
+                "offset_ns": 26590539,
+                "uncertainty_ns": 163229,
+                "round_trip_min_ns": 325468,
+                "round_trip_max_ns": 326128
+              },
+              "host_start_ns": 32945839,
+              "local_start_ns": null,
+              "start_uncertainty_ns": null,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:34239",
+            "cert_blake3": "a61f2bbae8bfcc878fcee4321b81e36b7cda71e356986df38471b801538df8b0",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "8f8b690e6b25f09a3d16c0739df0d69f21b38e81675279f269aab243697b7963",
+            "authority_replay_blake3": null,
+            "error": "network clock: StartTooSoon"
+          }
+        },
+        "qa_trace": [
+          "send_past_schedule_now"
+        ]
+      },
+      {
+        "case": "missing-ack",
+        "qa_role": "join",
+        "expected_success": false,
+        "commands": {
+          "host": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+            "net-host",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "127.0.0.1:0",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/missing-ack/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/missing-ack/host"
+          ],
+          "join": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+            "clock-peer",
+            "missing-ack",
+            "join",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/source",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/loopback/replay.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/missing-ack/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/clock-faults/missing-ack/join"
+          ]
+        },
+        "exit_codes": {
+          "host": 1,
+          "join": 1
+        },
+        "statuses": {
+          "host": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 14874472494435297282,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 6052862,
+                "offset_ns": 23065422,
+                "uncertainty_ns": 203403,
+                "round_trip_min_ns": 405578,
+                "round_trip_max_ns": 406396
+              },
+              "host_start_ns": 2029394017,
+              "local_start_ns": 2029394017,
+              "start_uncertainty_ns": 0,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:55028",
+            "cert_blake3": "38b29ac17e83412e79288b7a02197f39dd19b3185eec1f510b7b420393c31152",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "946c4cb1b3910b117e264404283e3a6954b4274776e63b26a54529c29ff1408e",
+            "authority_replay_blake3": null,
+            "error": "ScheduleStartAck missed the arm deadline"
+          },
+          "join": {
+            "status": "FAILED",
+            "protocol_version": 3,
+            "epoch": 14874472494435297282,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 1,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 6052862,
+                "offset_ns": 23065422,
+                "uncertainty_ns": 203403,
+                "round_trip_min_ns": 405578,
+                "round_trip_max_ns": 406396
+              },
+              "host_start_ns": 2029394017,
+              "local_start_ns": 2006328595,
+              "start_uncertainty_ns": 2205886,
+              "software_start_observed_ns": null,
+              "software_start_lateness_ns": null
+            },
+            "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+            "endpoint": "127.0.0.1:55028",
+            "cert_blake3": "38b29ac17e83412e79288b7a02197f39dd19b3185eec1f510b7b420393c31152",
+            "template_blake3": "aee438beb6389f6ce0cd5fa60f78f8c96eedb4cdc2285d4bc3539b2822a7d2dc",
+            "template_epoch": 1,
+            "facts": [
+              0,
+              0
+            ],
+            "event_count": 0,
+            "live_replay_blake3": "946c4cb1b3910b117e264404283e3a6954b4274776e63b26a54529c29ff1408e",
+            "authority_replay_blake3": null,
+            "error": "QA withheld ScheduleStartAck until host closed"
+          }
+        },
+        "qa_trace": [
+          "withhold_schedule_ack"
+        ]
+      }
+    ],
+    "scope": "network clock retry and start barrier only; no audio clock, physical devices or two-machine acceptance"
+  },
+  "resource_regressions": {
+    "cases": [
+      {
+        "case": "oversized-length",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "7d0a35bb1156e3df94929c621a18f4a3cb09777ab5949cac27220c75e2047242",
+          "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+          "endpoint": "127.0.0.1:59003",
+          "epoch": 10628111367203490198,
+          "error": "resource descriptor exceeds its object size limit",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 0,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      },
+      {
+        "case": "wrong-hash",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "955a4da357919dee47c33beb21b401e0ea4bdcab13285379a1a73a55cb52f774",
+          "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+          "endpoint": "127.0.0.1:37654",
+          "epoch": 17868744297267263443,
+          "error": "received resource object BLAKE3 differs",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 5925,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      },
+      {
+        "case": "truncated",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "c3b75b6418a11da647cf90eed651f9c1539803f41dbe119a40f6ba7d8c134d24",
+          "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+          "endpoint": "127.0.0.1:46935",
+          "epoch": 9928264086508371280,
+          "error": "resource object is truncated",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 5925,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      },
+      {
+        "case": "trailing-bytes",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "2df1e795d2af94a1f4c84b064dd13c0d3dac6f3f11b5c7396cc01530f7c74662",
+          "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+          "endpoint": "127.0.0.1:37171",
+          "epoch": 232807435825747289,
+          "error": "unexpected bytes after stream end message",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 5925,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      },
+      {
+        "case": "wrong-identity",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "1298fbc0044b16bc587f784fb1c18fc6895f920663ca4b64309e360386b75d9a",
+          "content_id": "package-blake3:0000000000000000000000000000000000000000000000000000000000000000",
+          "endpoint": "127.0.0.1:41331",
+          "epoch": 5452976993035117611,
+          "error": "Received package identity does not match the authenticated peer",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 5925,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      },
+      {
+        "case": "unexpected-uni",
+        "host": {
+          "finish_error": null,
+          "observed_after_fetch": [],
+          "write_error": null
+        },
+        "published_package": false,
+        "receiver": {
+          "authority_replay_blake3": null,
+          "cert_blake3": "afb980d65aeb08b1ea87aca6969fa5900669b04628697b79ff2772ed36b4d1f3",
+          "content_id": "package-blake3:fe45411b799944d5e31a869a29fcc507917e8b2003dce209740cae3f540f638c",
+          "endpoint": "127.0.0.1:59624",
+          "epoch": 5232401633088454016,
+          "error": "unexpected additional unidirectional stream",
+          "event_count": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "live_replay_blake3": null,
+          "network_timing": null,
+          "package_received": false,
+          "peer_authenticated": true,
+          "player": 2,
+          "protocol_version": 3,
+          "resource_bytes": 5925,
+          "status": "FAILED"
+        },
+        "receiver_exit_code": 1,
+        "staging_leak": false
+      }
+    ],
+    "production_receiver": "target/debug/cocobeat-lab",
+    "scope": "malicious raw resource host; no game window, devices or two-machine acceptance",
+    "source_objects_unchanged": true,
+    "status": "PASS",
+    "transport": "real private loopback QUIC"
+  },
+  "helper_build": {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "--crate-name",
+      "quic_clock_fault_probe",
+      "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/lib.rs",
+      "-L",
+      "dependency=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps",
+      "-o",
+      "/home/lzzz/MyProjects/CoCoBeat/target/quic-clock-20261007/fault-probe/fault-probe",
+      "--extern",
+      "cocobeat_schema=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+      "--extern",
+      "cocobeat_core=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+      "--extern",
+      "cocobeat_replay=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+      "--extern",
+      "cocobeat_media=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_media-9484885f53e17e62.rlib",
+      "--extern",
+      "quinn=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libquinn-1a6cbc788904fe7a.rlib",
+      "--extern",
+      "rcgen=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/librcgen-d1ada3cfcdfe8ade.rlib",
+      "--extern",
+      "tokio=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libtokio-90608ef877df679a.rlib",
+      "--extern",
+      "serde=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+      "--extern",
+      "serde_json=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+      "--extern",
+      "blake3=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libblake3-ac112f361d87a498.rlib"
+    ],
+    "exit_code": 0,
+    "cargo_pkg_version": "0.1.0",
+    "production_source_sha256": {
+      "crates/cocobeat-net/src/lib.rs": "8b1406d21be8accc440e235b1986e697f5b46ba55dd56fc2cb12e8a05f9bb88a",
+      "crates/cocobeat-net/src/session.rs": "5e54ec0c9f77f1a3a5df1fa98507761cece79cc2f14d81a62959a07e1de9d515",
+      "crates/cocobeat-net/src/wire.rs": "469ac3b05f6e765770faab9f85536464f31e5ba1fcd8663bc8937518d2854319",
+      "crates/cocobeat-net/src/resource.rs": "035dd3edc796d2729de800c7185c3a575be55e4c162cf988c861830a4af2160d",
+      "crates/cocobeat-net/src/clock.rs": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+      "crates/cocobeat-net/src/sync.rs": "afcae6038b0aac6a19e7dbc6fedb7169896af5a356b0617c339bc572a6909689"
+    },
+    "extern_sha256": {
+      "serde": "a87d41a23125766ef9e47f11b258e8ee1f682089da03febeb83390ec1052472f",
+      "blake3": "76c2062d5272ee19db177ac7036149c91b4f836dffbe32b234dbc1b9d30371f8",
+      "cocobeat_schema": "062e23738bce99ad8808dcc3813cb8ddd10cb80c1c441d55426934aff7874383",
+      "serde_json": "bfd95f5bb2620a8373955c4205a6e3a431e774f6c4c8009ec89c58ec3d52325a",
+      "cocobeat_core": "69ab0a15074b0ef48cceda0b8cc07e8b9800a04dbd1160b8f8164102b9213dbb",
+      "tokio": "298e9a4abbe3a3e9dedba403880f8717c49720a5fe40a64d0bc127ac11278ffb",
+      "cocobeat_media": "201cfdf2826c6133e188b9af645f883b38b7b9ab7757df8f6fbb3b47003fe641",
+      "cocobeat_replay": "e8c0fd1bc94b16399d06f2266dfb35c049df0221a70984fdbcecfce4cdff724c",
+      "rcgen": "0e4490450fd6cd011925e93c8abc3c157180952126dbfb1f40ddde74496187d0",
+      "quinn": "c633c3bd92d4715e99eabf50578c92b79810faec4dffaf36bc42b3ba100c79c3"
+    },
+    "qa_files_sha256": {
+      "build.py": "f664d6cfd0883f34dcd7b2419b6d11edcd7675a4a3dc95cc373d9051226a2dc4",
+      "inject.py": "ed1fe1e356464f28d97eb2051c81edf0ec9bd8b37f8f6131adfdaa362f464799",
+      "main-tail.rs": "1c44c5b621feec9da8aa040882459f4aa64516a749ce8579f567cc7a84c3b181",
+      "resource-tail.rs": "c4c72364a326ba1f0bb13f96b4ccfed8a5ad6c556236a2bab0f071d53b2f8cad",
+      "instrumentation.patch": "faa94871d5b0b927a7a49a16d8ffdd5cc598eadbe12e16195fcff42de2e67b81"
+    },
+    "helper_binary_sha256": "984479f20bf1989355674c04dc6bfa79799fc9e404359f1afd9760541fdaef19"
+  },
+  "helper_instrumentation_patch": "--- production/sync.rs\n+++ qa/sync.rs\n@@ -187,13 +187,14 @@\n                 };\n                 if let Ok(estimate) = clock.observe(exchange) {\n                     timing.record_clock(id, estimate);\n+                    if crate::qa_mode() == \"wrong-synced\" { crate::qa_note(\"send_wrong_synced_transcript\"); }\n                     control\n                         .send(Control::ClockSynced {\n                             epoch: epoch.0,\n                             id,\n                             guest_send_ns,\n                             host_receive_ns: reply.host_receive_ns,\n-                            host_send_ns: reply.host_send_ns,\n+                            host_send_ns: if crate::qa_mode() == \"wrong-synced\" { reply.host_send_ns.wrapping_add(1) } else { reply.host_send_ns },\n                             guest_receive_ns,\n                         })\n                         .await?;\n@@ -231,7 +232,23 @@\n                         && replies[probe.id as usize].is_none()\n                     {\n                         let reply = ClockPacket { kind: 2, host_receive_ns, host_send_ns: now_ns(origin)?, ..probe };\n-                        connection.send_datagram(reply.encode().to_vec().into()).map_err(|_| \"send clock reply failed\")?;\n+                        if crate::qa_mode() == \"lost-replies\" || (crate::qa_mode() == \"recover-replies\" && probe.id == 0) {\n+                            crate::qa_note(&format!(\"drop_reply {}\", probe.id));\n+                        } else {\n+                            if crate::qa_mode() == \"recover-replies\" && probe.id == 1 {\n+                                for junk in [\n+                                    ClockPacket { epoch: reply.epoch.wrapping_add(1), ..reply },\n+                                    ClockPacket { id: 0, ..reply },\n+                                    ClockPacket { guest_send_ns: reply.guest_send_ns.wrapping_add(1), ..reply },\n+                                    replies[0].expect(\"first reply transcript was saved\"),\n+                                ] {\n+                                    connection.send_datagram(junk.encode().to_vec().into()).map_err(|_| \"QA invalid reply send failed\")?;\n+                                    crate::qa_note(&format!(\"send_ignored_reply epoch={} id={} guest_send={}\", junk.epoch, junk.id, junk.guest_send_ns));\n+                                }\n+                                crate::qa_note(\"send_valid_retry_reply 1\");\n+                            }\n+                            connection.send_datagram(reply.encode().to_vec().into()).map_err(|_| \"send clock reply failed\")?;\n+                        }\n                         replies[probe.id as usize] = Some(reply);\n                     } else {\n                         timing.ignored_datagrams += 1;\n@@ -311,10 +328,11 @@\n         timing.host_start_ns = Some(host_start_ns);\n         timing.local_start_ns = Some(host_start_ns);\n         timing.start_uncertainty_ns = Some(0);\n+        if crate::qa_mode() == \"late-schedule\" { crate::qa_note(\"send_past_schedule_now\"); }\n         control\n             .send(Control::ScheduleStart {\n                 epoch: epoch.0,\n-                host_start_ns,\n+                host_start_ns: if crate::qa_mode() == \"late-schedule\" { now_ns(origin)? } else { host_start_ns },\n             })\n             .await?;\n         let deadline = local_instant(origin, host_start_ns - MINIMUM_LEAD_NS)?;\n@@ -355,6 +373,11 @@\n             .map_err(|error| error.to_string())?;\n         timing.local_start_ns = Some(start.guest_start_ns);\n         timing.start_uncertainty_ns = Some(start.uncertainty_ns);\n+        if crate::qa_mode() == \"missing-ack\" {\n+            crate::qa_note(\"withhold_schedule_ack\");\n+            connection.closed().await;\n+            return Err(\"QA withheld ScheduleStartAck until host closed\".into());\n+        }\n         control\n             .send(Control::ScheduleStartAck {\n                 epoch: epoch.0,\n",
+  "not_run": [
+    "physical audio synchronization",
+    "game window/live input networking",
+    "two physical machines",
+    "measured monotonic drift assumption",
+    "scheduler stalls exceeding 100ms",
+    "maximum-capacity datagram flood"
+  ],
+  "limits": [
+    "Default 1000ppm relative monotonic drift is an assumed model bound, not a hardware measurement",
+    "Host start uncertainty zero only describes the identity coordinate mapping",
+    "Software wake timestamps/lateness do not represent device output or acoustic onset",
+    "Schedule barriers cannot promise atomic simultaneous start if communication or processes fail"
+  ]
+}

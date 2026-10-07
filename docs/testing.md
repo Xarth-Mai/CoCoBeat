@@ -626,3 +626,15 @@ lab 的 `workbench PACKAGE NEW_PACKAGE [--locale CODE]` 接入独立静音 Bevy 
 恶意 host helper 通过准确 Cargo JSON 的 10 个现有 rlib 用 rustc 构建，在私有 loopback 与实际生产 lab 接收程序通信，6 类输入分别为超长 descriptor、坏对象 hash、截断、尾随数据、错误预期包哈希及额外 uni stream；每端均 exit 1 / FAILED、事实 `[0,0]`、未观察到 Installed / Ready、无发布目录和 staging 泄漏。helper 复制冻结 net 实现后附加测试入口，原始源码、构建参数和摘要 hash 留在本批 target 记录，不替代生产游戏接线验收
 
 sandbox 首次绑定 UDP 返回 `Operation not permitted`，记录保留；获批后在实际主机只使用 loopback 重跑成功，未连接远端、操作设备或修改系统配置。最大容量性能、进展超时实际到期、真实双机、游戏窗口联网、音频设备同步和真人体验为 NOT RUN；异步期限不能抢占同步校验，已有本地空目录发布竞态边界见网络会话文档
+
+## QUIC 网络时钟与预约软件起点
+
+2026-10-07 在资源接收提交 `544afb4` 后的冻结源码验证 protocol / ALPN v3；[持久化观察](../testdata/synthetic/quic-clock-observations-20261007.json) 保存源码 / 二进制 / 日志摘要、实际状态与 QA 注入差异，原始记录位于 `target/quic-clock-20261007/`，可随构建缓存清理。net 的 13 项单元测试、lab 实际构建、net / lab 全目标 Clippy、格式与依赖边界通过；原媒体接收代码未修改，上一里程碑证据独立保留
+
+`python3 tools/quic-session-check/check.py target/debug/cocobeat-lab target/quic-clock-20261007/loopback` 的 16 条实际命令通过，接收 / 预装两组均完成真实 QUIC 与相同权威 Replay，并核对同一个 host 起点、软件唤醒不早于本端预约、迟到量等于两者差值且不超过 100ms，资源、错误模板及目标路径检查继续通过
+
+QA helper 由准确 Cargo JSON 的 10 个既有 rlib 构建，复制冻结 net 六源文件，只在副本 sync.rs 的四个发送触点注入故障，完整 host / join 协议及实际生产 lab 另一端保持原路径；5 组实际 loopback 分别为首次 reply 丢失并夹错 epoch / id / send timestamp / 旧重复回复、全部八次 reply 丢失、错误 ClockSynced transcript、过晚 ScheduleStart 和缺 ScheduleStartAck。恢复组 production guest 两次探测、至少四个忽略包后双方 COMPLETE，权威 Replay 原字节相同；其余两端均 FAILED、事实 `[0,0]`、无权威文件及软件开始观测，错误原因匹配对应门控，QA trace 证明注入触点实际执行
+
+升级后另外重跑 6 类恶意资源传输均通过，坏 descriptor / hash、截断、尾随数据、错误包身份和额外 uni stream 仍无法发布或进入 Installed / Ready。三组 suite 使用生产二进制，QA host / peer 的复制和注入边界见持久化观察，不将该 helper 当作未经修改的另一端生产二进制
+
+默认 1000ppm 相对单调时钟漂移是模型假设，host start uncertainty 为 0 只代表坐标恒等，网络不对称 / 样本老化 / 未来起点误差另有区间；软件唤醒迟到另记，不能当作 Audio ClockBridge、Kira callback、设备或声学同步精度。真实双机、实测漂移假设、游戏窗口实时输入 / 音频接线、超过 100ms 的调度卡顿故障和最大 datagram flood 为 NOT RUN，完整阶段退出继续保留

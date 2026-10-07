@@ -56,11 +56,24 @@ pub(crate) enum Control {
     Ready {
         epoch: u64,
     },
-    Start {
+    ClockSynced {
         epoch: u64,
+        id: u64,
+        guest_send_ns: u64,
+        host_receive_ns: u64,
+        host_send_ns: u64,
+        guest_receive_ns: u64,
     },
-    StartAck {
+    ScheduleStart {
         epoch: u64,
+        host_start_ns: u64,
+    },
+    ScheduleStartAck {
+        epoch: u64,
+        host_start_ns: u64,
+        guest_now_ns: u64,
+        guest_start_ns: u64,
+        uncertainty_ns: u64,
     },
     Finish {
         epoch: u64,

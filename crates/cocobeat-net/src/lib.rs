@@ -1,10 +1,13 @@
 //! Invited QUIC sessions over validated local or received song packages
 
+pub mod clock;
 mod resource;
 mod session;
+mod sync;
 mod wire;
 
 pub use session::{SessionSummary, host, join, join_receive};
+pub use sync::{ClockSample, NetworkTiming};
 
 use std::{
     fs::{File, OpenOptions},
@@ -22,9 +25,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 2;
+pub(crate) const PROTOCOL_VERSION: u32 = 3;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/2";
+const ALPN: &[u8] = b"cocobeat-session/3";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 
@@ -139,8 +142,8 @@ fn transport(host: bool) -> Arc<TransportConfig> {
         .receive_window((512_u32 * 1024).into())
         .send_window(1024 * 1024)
         .max_idle_timeout(Some(quinn::VarInt::from_u32(30_000).into()))
-        .datagram_receive_buffer_size(None)
-        .datagram_send_buffer_size(0);
+        .datagram_receive_buffer_size(Some(4 * 1024))
+        .datagram_send_buffer_size(4 * 1024);
     Arc::new(transport)
 }
 
@@ -292,7 +295,9 @@ mod tests {
         }
         for (field, invalid) in [
             ("invite_version", serde_json::json!(2)),
-            ("protocol_version", serde_json::json!(3)),
+            ("protocol_version", serde_json::json!(1)),
+            ("protocol_version", serde_json::json!(2)),
+            ("protocol_version", serde_json::json!(4)),
             ("endpoint", serde_json::json!("0.0.0.0:12345")),
             ("endpoint", serde_json::json!("[::]:12345")),
             ("endpoint", serde_json::json!("[::ffff:0.0.0.0]:12345")),

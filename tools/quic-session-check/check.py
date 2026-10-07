@@ -78,6 +78,18 @@ def check(lab, output):
             assert host_status["status"] == guest_status["status"] == "COMPLETE"
             assert host_status["facts"] == guest_status["facts"] == [71, 71]
             assert host_status["event_count"] == guest_status["event_count"]
+            if host_status["protocol_version"] >= 3:
+                host_timing = host_status["network_timing"]
+                guest_timing = guest_status["network_timing"]
+                assert host_timing["host_start_ns"] == guest_timing["host_start_ns"]
+                assert host_timing["local_start_ns"] == host_timing["host_start_ns"]
+                assert host_timing["start_uncertainty_ns"] == 0
+                for timing in (host_timing, guest_timing):
+                    assert timing["clock"] is not None
+                    assert timing["software_start_observed_ns"] >= timing["local_start_ns"]
+                    assert timing["software_start_lateness_ns"] == timing["software_start_observed_ns"] - timing["local_start_ns"]
+                    assert timing["software_start_lateness_ns"] <= 100_000_000
+                assert 1 <= guest_timing["probes_sent"] <= 8
             assert (host_output / "authority.replay.json").read_bytes() == (guest_output / "authority.replay.json").read_bytes()
             assert hashes(source) == original
             command(f"{name}-replay", "inspect-replay", destination, guest_output / "authority.replay.json", output / f"{name}-diagnostics.jsonl")

@@ -17,7 +17,7 @@ use serde::Serialize;
 use tokio::{sync::mpsc, task::JoinSet, time::Instant};
 
 use crate::{
-    Invitation, PROTOCOL_VERSION, connect, listen, read_invite, resource, wire, write_invite,
+    Invitation, PROTOCOL_VERSION, connect, listen, read_invite, resource, sync, wire, write_invite,
 };
 use wire::{Control, Fact, Identity, Input};
 
@@ -35,6 +35,7 @@ pub struct SessionSummary {
     pub peer_authenticated: bool,
     pub package_received: bool,
     pub resource_bytes: u64,
+    pub network_timing: Option<sync::NetworkTiming>,
     pub content_id: String,
     pub endpoint: String,
     pub cert_blake3: String,
@@ -212,6 +213,7 @@ struct Session {
     ended: [bool; 2],
     output: PathBuf,
     summary: SessionSummary,
+    origin: Instant,
 }
 
 impl Session {
@@ -241,6 +243,7 @@ impl Session {
             peer_authenticated: false,
             package_received: false,
             resource_bytes: 0,
+            network_timing: None,
             content_id: prepared.identity.content_id.clone(),
             endpoint: invitation.endpoint.clone(),
             cert_blake3: blake3::Hash::from_bytes(invitation.cert_blake3)
@@ -268,6 +271,7 @@ impl Session {
             ended: [false; 2],
             output,
             summary,
+            origin: Instant::now(),
         })
     }
 
@@ -400,7 +404,7 @@ fn same_player_histories(left: &Replay, right: &Replay) -> bool {
     })
 }
 
-struct ControlIo {
+pub(crate) struct ControlIo {
     send: SendStream,
     recv: RecvStream,
     sent: usize,
@@ -415,10 +419,10 @@ impl ControlIo {
             received: 0,
         }
     }
-    async fn send(&mut self, message: Control) -> Result<(), String> {
+    pub(crate) async fn send(&mut self, message: Control) -> Result<(), String> {
         wire::send_control(&mut self.send, &mut self.sent, &message).await
     }
-    async fn recv(&mut self) -> Result<Control, String> {
+    pub(crate) async fn recv(&mut self) -> Result<Control, String> {
         wire::recv_control(&mut self.recv, &mut self.received).await
     }
 }
@@ -483,36 +487,27 @@ async fn open_inputs(
 async fn ready(
     connection: &Connection,
     control: &mut ControlIo,
-    session: &Session,
+    session: &mut Session,
 ) -> Result<(InputIo, Instant), String> {
     tokio::time::timeout(IDLE, async {
-        let epoch = session.epoch.0;
-        let inputs = open_inputs(connection, session.player, epoch).await?;
-        if session.player == PlayerId::P2 {
-            control.send(Control::Ready { epoch }).await?;
-        }
-        if control.recv().await? != (Control::Ready { epoch }) {
-            return Err("expected the peer Ready for this epoch".into());
-        }
-        let start;
-        if session.player == PlayerId::P1 {
-            control.send(Control::Ready { epoch }).await?;
-            start = Instant::now();
-            control.send(Control::Start { epoch }).await?;
-            if control.recv().await? != (Control::StartAck { epoch }) {
-                return Err("expected StartAck for this epoch".into());
-            }
-        } else {
-            if control.recv().await? != (Control::Start { epoch }) {
-                return Err("expected Start for this epoch".into());
-            }
-            start = Instant::now();
-            control.send(Control::StartAck { epoch }).await?;
-        }
+        let inputs = open_inputs(connection, session.player, session.epoch.0).await?;
+        let timing = session
+            .summary
+            .network_timing
+            .insert(sync::NetworkTiming::default());
+        let start = sync::ready_start(
+            connection,
+            control,
+            session.epoch,
+            session.player,
+            session.origin,
+            timing,
+        )
+        .await?;
         Ok((inputs, start))
     })
     .await
-    .map_err(|_| "Ready/Start barrier timed out")?
+    .map_err(|_| "clock/Ready/ScheduleStart barrier timed out")?
 }
 
 enum History {
@@ -838,7 +833,7 @@ pub fn host(
                 }).await.map_err(|_| "package transfer and validation exceeded 5 minutes")??;
                 control.send(Control::InstalledAck { epoch: invitation.epoch }).await?;
             }
-            let (inputs, start) = ready(&connection, &mut control, &session).await?;
+            let (inputs, start) = ready(&connection, &mut control, &mut session).await?;
             let run = async {
                 exchange(&mut session, inputs).await?;
                 host_finish(&mut session, &connection, &mut control).await
@@ -1037,6 +1032,7 @@ pub fn join_receive(
         "status": "FAILED", "protocol_version": PROTOCOL_VERSION,
         "epoch": invitation.epoch, "player": 2, "peer_authenticated": authenticated,
         "package_received": received, "resource_bytes": resource_bytes,
+        "network_timing": null,
         "content_id": content_id, "endpoint": invitation.endpoint,
         "cert_blake3": blake3::Hash::from_bytes(invitation.cert_blake3).to_hex().to_string(),
         "facts": [0,0], "event_count": 0, "live_replay_blake3": null,
