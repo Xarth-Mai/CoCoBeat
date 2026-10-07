@@ -1,0 +1,872 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "status": "PASS",
+  "production_binary": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+    "sha256": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42"
+  },
+  "helper_binary": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/workbench-audition-check",
+    "sha256": "ffe1b0c7714efa84dceb15235300b9fe18e1e4543e0ef93d81b45e189e2b1914"
+  },
+  "production_source": {
+    "anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "workbench.rs": "71ce7ad2b9647b45c8e7f08a9c6e99b671c27930ddd43dfafec783c4722e7f0b",
+    "workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+  },
+  "dependency_copy_count": 415,
+  "native_archive_copy_count": 6,
+  "freeze_sha256": "0792481b66a28a6e27074539bb9a4b2c47b350288c5436632a3be98b52cedc59",
+  "cases": [
+    {
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-w",
+        "1280",
+        "-h",
+        "800",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/workbench-audition-check",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/readonly-negative-selection.json"
+      ],
+      "size": [
+        1280,
+        800
+      ],
+      "output_unavailable_control": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_pid": 407121,
+      "cleanup": [],
+      "events": [
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 1
+        },
+        {
+          "document_cursor": -123,
+          "event": "selection_error_preserved",
+          "focus": "Details",
+          "notice": "操作失败：Audition selection must be inside the canonical song (0 <= frame < N)",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Home",
+          "step": 2
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 3
+        },
+        {
+          "document_cursor": 0,
+          "event": "callback_advancing",
+          "focus": "Details",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 5120,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 4
+        },
+        {
+          "document_cursor": 0,
+          "event": "pause_acknowledged",
+          "focus": "Details",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "from_focus": "Details",
+          "key": "Shift+Tab",
+          "step": 6
+        },
+        {
+          "event": "keyboard_message",
+          "from_focus": "List",
+          "key": "Shift+Tab",
+          "step": 6
+        },
+        {
+          "document_cursor": 0,
+          "event": "paused_cursor_stable",
+          "focus": "Timeline",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 6
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 7
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 8
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 9
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 10
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 11
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 12
+        },
+        {
+          "document_cursor": 1,
+          "event": "paused-seek-no-playback",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "paused_seek_no_playback",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 13
+        },
+        {
+          "document_cursor": 1,
+          "event": "resumed-new-source-start",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 4609,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "resumed_new_source_start",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 4609,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "focus_loss_pause_acknowledged",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 29696,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "focus_loss_cursor_stable",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 29696,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowLeft",
+          "step": 17
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 18
+        },
+        {
+          "document_cursor": 1,
+          "event": "stopped-selection-preserved",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 1,
+          "event": "stopped_selection_preserved",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 1,
+          "event": "finished",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        }
+      ],
+      "run_log_sha256": "bcaae137058de36dce5ca069b91aadb2d2dd43791bf18d86d6ca768649c0a5e4",
+      "png_sha256": {
+        "paused-seek-no-playback.png": "abc7d314a7b12eebd6c3f57d54b4cb93fb007c3f1044a4ebf941fe5b1a04b1f1",
+        "resumed-new-source-start.png": "996364073e28b02fbb1c295186fd08722f0553ee104a17a06fe94941165ec0b6",
+        "stopped-selection-preserved.png": "cd0a5e198c7ca9835060dce246e041f6575e7a1ef94bb8a10b7402b6e493ebec"
+      }
+    },
+    {
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-w",
+        "640",
+        "-h",
+        "480",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/workbench-audition-check",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/readonly-negative-selection.json"
+      ],
+      "size": [
+        640,
+        480
+      ],
+      "output_unavailable_control": false,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_pid": 407205,
+      "cleanup": [],
+      "events": [
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 1
+        },
+        {
+          "document_cursor": -123,
+          "event": "selection_error_preserved",
+          "focus": "Details",
+          "notice": "操作失败：Audition selection must be inside the canonical song (0 <= frame < N)",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Home",
+          "step": 2
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 3
+        },
+        {
+          "document_cursor": 0,
+          "event": "callback_advancing",
+          "focus": "Details",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 5120,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 4
+        },
+        {
+          "document_cursor": 0,
+          "event": "pause_acknowledged",
+          "focus": "Details",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "from_focus": "Details",
+          "key": "Shift+Tab",
+          "step": 6
+        },
+        {
+          "event": "keyboard_message",
+          "from_focus": "List",
+          "key": "Shift+Tab",
+          "step": 6
+        },
+        {
+          "document_cursor": 0,
+          "event": "paused_cursor_stable",
+          "focus": "Timeline",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 6
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 7
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 8
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Tab",
+          "step": 9
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 10
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowRight",
+          "step": 11
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 12
+        },
+        {
+          "document_cursor": 1,
+          "event": "paused-seek-no-playback",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "paused_seek_no_playback",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 6656,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 13
+        },
+        {
+          "document_cursor": 1,
+          "event": "resumed-new-source-start",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 3073,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "resumed_new_source_start",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": true,
+          "position_frames": 3073,
+          "replay_selected": 0,
+          "status": "audition.playing",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "focus_loss_pause_acknowledged",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 11265,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "document_cursor": 1,
+          "event": "focus_loss_cursor_stable",
+          "focus": "Toolbar(2)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": 11265,
+          "replay_selected": 0,
+          "status": "audition.paused",
+          "target_frames": 1
+        },
+        {
+          "event": "keyboard_message",
+          "key": "ArrowLeft",
+          "step": 17
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 18
+        },
+        {
+          "document_cursor": 1,
+          "event": "stopped-selection-preserved",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 1,
+          "event": "stopped_selection_preserved",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 1,
+          "event": "finished",
+          "focus": "Toolbar(1)",
+          "notice": "",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        }
+      ],
+      "run_log_sha256": "4f1db49329e4333f8d27377c4f4903b40714a8b563b909e39eb5aad894f7124c",
+      "png_sha256": {
+        "paused-seek-no-playback.png": "ff79f5a356bb21a5493cce95c2150898f42648b0903c75e557ddcd0ab94b1bcd",
+        "resumed-new-source-start.png": "6da849b59be6d5ffefad27f8552663a585db8c0967d0688e6d568c4f497b960d",
+        "stopped-selection-preserved.png": "4c3991a8e49bfafce6130db71ce09b596c0792bd9abb757e07257e6a625ce142"
+      }
+    },
+    {
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-w",
+        "640",
+        "-h",
+        "480",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/workbench-audition-check",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-callback-20261007/build-final/readonly-negative-selection.json"
+      ],
+      "size": [
+        640,
+        480
+      ],
+      "output_unavailable_control": true,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_pid": 407284,
+      "cleanup": [],
+      "events": [
+        {
+          "event": "keyboard_message",
+          "key": "Enter",
+          "step": 0
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 1
+        },
+        {
+          "document_cursor": -123,
+          "event": "selection_error_preserved",
+          "focus": "Details",
+          "notice": "操作失败：Audition selection must be inside the canonical song (0 <= frame < N)",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.stopped",
+          "target_frames": null
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Home",
+          "step": 2
+        },
+        {
+          "event": "keyboard_message",
+          "key": "Space",
+          "step": 3
+        },
+        {
+          "document_cursor": 0,
+          "event": "output-error-preserved",
+          "focus": "Details",
+          "notice": "操作失败：Cannot query audio output configuration: The requested audio device is not available. It may have been disconnected.",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.failed",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 0,
+          "event": "output_error_preserved",
+          "focus": "Details",
+          "notice": "操作失败：Cannot query audio output configuration: The requested audio device is not available. It may have been disconnected.",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.failed",
+          "target_frames": null
+        },
+        {
+          "document_cursor": 0,
+          "event": "finished",
+          "focus": "Details",
+          "notice": "操作失败：Cannot query audio output configuration: The requested audio device is not available. It may have been disconnected.",
+          "playing_intent": false,
+          "position_frames": null,
+          "replay_selected": 0,
+          "status": "audition.failed",
+          "target_frames": null
+        }
+      ],
+      "run_log_sha256": "237231d2e041767d8c7f74af0f35d37ab85df516d40b3723e971f0d388db8ada",
+      "png_sha256": {
+        "output-error-preserved.png": "2cb3592f666605db6edd9520c0a830b5e2420c7217f65732f8a4504d44d55023"
+      }
+    }
+  ],
+  "package": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+    "sha256": {
+      "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+    }
+  },
+  "recording_sha256": "d9371020559949a038d9d2a40fe5fe58860425c886a85485e7232be5431950da",
+  "visual_review": {
+    "status": "PASS",
+    "reviewer": "workbench_audio_delivery",
+    "images": {
+      "build-final/audio-1280/paused-seek-no-playback.png": {
+        "sha256": "abc7d314a7b12eebd6c3f57d54b4cb93fb007c3f1044a4ebf941fe5b1a04b1f1",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/audio-1280/resumed-new-source-start.png": {
+        "sha256": "996364073e28b02fbb1c295186fd08722f0553ee104a17a06fe94941165ec0b6",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/audio-1280/stopped-selection-preserved.png": {
+        "sha256": "cd0a5e198c7ca9835060dce246e041f6575e7a1ef94bb8a10b7402b6e493ebec",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/audio-640/paused-seek-no-playback.png": {
+        "sha256": "ff79f5a356bb21a5493cce95c2150898f42648b0903c75e557ddcd0ab94b1bcd",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/audio-640/resumed-new-source-start.png": {
+        "sha256": "6da849b59be6d5ffefad27f8552663a585db8c0967d0688e6d568c4f497b960d",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/audio-640/stopped-selection-preserved.png": {
+        "sha256": "4c3991a8e49bfafce6130db71ce09b596c0792bd9abb757e07257e6a625ce142",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; actual paused/resumed/stopped labels match the captured UI state"
+      },
+      "build-final/unavailable-output/output-error-preserved.png": {
+        "sha256": "2cb3592f666605db6edd9520c0a830b5e2420c7217f65732f8a4504d44d55023",
+        "status": "PASS",
+        "notes": "Text readable; toolbar contained; original Replay watermark selection retained; real CPAL output initialization failure reason visible"
+      }
+    },
+    "scope": "Seven actual production state native PNGs individually viewed; transport source cursor/state assertions separate from asynchronous screenshot UI values; details panel viewport may intentionally scroll"
+  },
+  "historical_display_and_mock_evidence": "Existing workbench-audition-observations-20261007.json is unchanged and remains distinct",
+  "scope": "Synthetic KeyboardInput -> unchanged workbench capture -> audition Output -> native Kira CPAL source cursor/state; no injected playback state or position",
+  "post_build_source_note": "Successful original lab retry compiler manifest precedes locale help-label edits and main CLI formatting; eight copied workbench modules match that manifest. This helper links exact frozen deps, not rebuilt current HEAD; release/platform proof is separate",
+  "not_run": [
+    "Physical keyboard/gamepad",
+    "Acoustic speaker output or subjective audition",
+    "Input/audio device latency calibration",
+    "Callback buffer-size measurement",
+    "Cross-platform real audio",
+    "Human acceptance"
+  ],
+  "retained_failed_attempts": [
+    {
+      "path": "build-attempt-1",
+      "kind": "QA compile failure: package hash array lacks Display; fixed content-id hex/prefix formatting"
+    },
+    {
+      "path": "build-attempt-3",
+      "kind": "Actual callback advance/pause passed; QA fixed-focus assumption failed after real selection error moved focus to Details; fixed via actual Shift+Tab messages"
+    }
+  ],
+  "raw_receipts": {
+    "build-attempt-1/build.json": "f2968f227baea0a05d7cc2e1315464489388f441aaf0449d950b96ac7c5a2b22",
+    "build-attempt-1/build.log": "f49f0ac3850d6271fc0bf43f35f3e2e5d55bf36c5ce68904a6a94c6928c86d05",
+    "build-attempt-1/instrumentation.patch": "e47a11e6f49d46499e8d09dd4ad639087102e4beaba6811c42cd16b710a98a38",
+    "build-attempt-1/prepared.json": "8f851b447f7feee04968978062fa455d99f51094b0628a1b6ba8dd9c40f1c171",
+    "build-attempt-1/source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "build-attempt-1/source/main.rs": "82f3585a7809aec5159b96c83e5ed6da445bbe93abeb2cbca1ad15593c537cba",
+    "build-attempt-1/source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "build-attempt-1/source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "build-attempt-1/source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "build-attempt-1/source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "build-attempt-1/source/workbench/qa.rs": "aa29a94abb2be31fce7cd944b578a2f19127b02c2977095fe0195aa2d8e8c5ba",
+    "build-attempt-1/source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "build-attempt-1/source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "build-attempt-1/source/workbench.rs": "ce34b56209b3168a4716ddcb96ed59ed752ba9e9ad27921e7e4db0c4eebb68ec",
+    "build-attempt-2/build.json": "f16b499903751b686665c3aecb90ba830b14ef3f13cf53ce7fa700f415633487",
+    "build-attempt-2/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-attempt-2/instrumentation.patch": "e47a11e6f49d46499e8d09dd4ad639087102e4beaba6811c42cd16b710a98a38",
+    "build-attempt-2/prepared.json": "fb2cf36f4fe7a68014a99cbd541a23643425b7e82dfa88ed744d328c295fc897",
+    "build-attempt-2/source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "build-attempt-2/source/main.rs": "5b6161bc8f33618b62fd66899b8807d7c896d8a6f6179a593999e32e1542e314",
+    "build-attempt-2/source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "build-attempt-2/source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "build-attempt-2/source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "build-attempt-2/source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "build-attempt-2/source/workbench/qa.rs": "aa29a94abb2be31fce7cd944b578a2f19127b02c2977095fe0195aa2d8e8c5ba",
+    "build-attempt-2/source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "build-attempt-2/source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "build-attempt-2/source/workbench.rs": "ce34b56209b3168a4716ddcb96ed59ed752ba9e9ad27921e7e4db0c4eebb68ec",
+    "build-attempt-3/audio-1280/run.log": "cde23270b317eb08e07b3039ba6584778ece03cb7a35765b28590ff6511b6caf",
+    "build-attempt-3/build.json": "e4613d4c5c1114e1bea48430a93ff5c3bc5b716e1aaa83325dfe8e1bf863f544",
+    "build-attempt-3/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-attempt-3/instrumentation.patch": "e47a11e6f49d46499e8d09dd4ad639087102e4beaba6811c42cd16b710a98a38",
+    "build-attempt-3/make-replay.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-attempt-3/prepared.json": "4c561c9ef6be5dc31e7b1ea97d8326fb86ea38873e57bf53d343365e1c7a6114",
+    "build-attempt-3/readonly-negative-selection.json": "d9371020559949a038d9d2a40fe5fe58860425c886a85485e7232be5431950da",
+    "build-attempt-3/run-audio.json": "3d57826ff672b511b3bc4955ed93e77d8c239f472fa846b6655f96f5d0506b58",
+    "build-attempt-3/source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "build-attempt-3/source/main.rs": "5b6161bc8f33618b62fd66899b8807d7c896d8a6f6179a593999e32e1542e314",
+    "build-attempt-3/source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "build-attempt-3/source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "build-attempt-3/source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "build-attempt-3/source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "build-attempt-3/source/workbench/qa.rs": "1a7ccb21f6ef1d43255457ee961cb4dd1f8f9c758a92e73fc9c6a4c3d35f700b",
+    "build-attempt-3/source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "build-attempt-3/source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "build-attempt-3/source/workbench.rs": "ce34b56209b3168a4716ddcb96ed59ed752ba9e9ad27921e7e4db0c4eebb68ec",
+    "build-attempt-4/build.json": "4aa668598b114e2a502d7202b5461aa6acec8c5f52ecd0a61aa21f2515275d77",
+    "build-attempt-4/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-attempt-4/instrumentation.patch": "e47a11e6f49d46499e8d09dd4ad639087102e4beaba6811c42cd16b710a98a38",
+    "build-attempt-4/prepared.json": "333cfddefbc968e6d5d5569979e1041104d7c4f285dead1180936dcb23f60a4e",
+    "build-attempt-4/source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "build-attempt-4/source/main.rs": "5b6161bc8f33618b62fd66899b8807d7c896d8a6f6179a593999e32e1542e314",
+    "build-attempt-4/source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "build-attempt-4/source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "build-attempt-4/source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "build-attempt-4/source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "build-attempt-4/source/workbench/qa.rs": "fee0f43c9b536d94d1d0d107fc5c74eda2fdb53e421fda72d77603239820e646",
+    "build-attempt-4/source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "build-attempt-4/source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "build-attempt-4/source/workbench.rs": "ce34b56209b3168a4716ddcb96ed59ed752ba9e9ad27921e7e4db0c4eebb68ec",
+    "build-final/audio-1280/paused-seek-no-playback.png": "abc7d314a7b12eebd6c3f57d54b4cb93fb007c3f1044a4ebf941fe5b1a04b1f1",
+    "build-final/audio-1280/resumed-new-source-start.png": "996364073e28b02fbb1c295186fd08722f0553ee104a17a06fe94941165ec0b6",
+    "build-final/audio-1280/run.log": "bcaae137058de36dce5ca069b91aadb2d2dd43791bf18d86d6ca768649c0a5e4",
+    "build-final/audio-1280/stopped-selection-preserved.png": "cd0a5e198c7ca9835060dce246e041f6575e7a1ef94bb8a10b7402b6e493ebec",
+    "build-final/audio-640/paused-seek-no-playback.png": "ff79f5a356bb21a5493cce95c2150898f42648b0903c75e557ddcd0ab94b1bcd",
+    "build-final/audio-640/resumed-new-source-start.png": "6da849b59be6d5ffefad27f8552663a585db8c0967d0688e6d568c4f497b960d",
+    "build-final/audio-640/run.log": "4f1db49329e4333f8d27377c4f4903b40714a8b563b909e39eb5aad894f7124c",
+    "build-final/audio-640/stopped-selection-preserved.png": "4c3991a8e49bfafce6130db71ce09b596c0792bd9abb757e07257e6a625ce142",
+    "build-final/build.json": "0f5b9a4f7137e689dc2649820749d60e9257961a9d07b940a2619be95ef2ec96",
+    "build-final/build.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-final/instrumentation.patch": "e47a11e6f49d46499e8d09dd4ad639087102e4beaba6811c42cd16b710a98a38",
+    "build-final/make-replay.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-final/prepared.json": "1ccf174de8af19aaee2c1c39747a225dd44684770a06c03259b203f28d3f58ff",
+    "build-final/readonly-negative-selection.json": "d9371020559949a038d9d2a40fe5fe58860425c886a85485e7232be5431950da",
+    "build-final/run-audio.json": "c04f5861212ba9720bdf17312c9b8d3a31fd265af5016f01b3b02032b6f2d247",
+    "build-final/source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "build-final/source/main.rs": "80c8ab66cbacad7648385192f3083dc2d18d950a1efb9d90c085b240f1cbe869",
+    "build-final/source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "build-final/source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "build-final/source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "build-final/source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "build-final/source/workbench/qa.rs": "fee0f43c9b536d94d1d0d107fc5c74eda2fdb53e421fda72d77603239820e646",
+    "build-final/source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "build-final/source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "build-final/source/workbench.rs": "ce34b56209b3168a4716ddcb96ed59ed752ba9e9ad27921e7e4db0c4eebb68ec",
+    "build-final/unavailable-output/empty-alsa.conf": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build-final/unavailable-output/output-error-preserved.png": "2cb3592f666605db6edd9520c0a830b5e2420c7217f65732f8a4504d44d55023",
+    "build-final/unavailable-output/run.log": "237231d2e041767d8c7f74af0f35d37ab85df516d40b3723e971f0d388db8ada",
+    "freeze.json": "0792481b66a28a6e27074539bb9a4b2c47b350288c5436632a3be98b52cedc59",
+    "source/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "source/replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+    "source/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "source/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "source/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "source/workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+    "source/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "source/workbench.rs": "71ce7ad2b9647b45c8e7f08a9c6e99b671c27930ddd43dfafec783c4722e7f0b",
+    "visual-review.json": "efb430b9ff57c41105d902c726e1e0db7c3f2a1535c95e86bc4347b12b7b9395",
+    "review.json": "35d91ebbfe1919222442cd626dab1127bf6bebe884b6f91d316039b6ec8bcd72"
+  },
+  "checks": {
+    "native_cases": 3,
+    "native_pngs": 7,
+    "position_state_injection": false,
+    "package_recording_unchanged": true,
+    "owned_process_cleanup": true
+  },
+  "rustc": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+  "review": {
+    "reviewer": "/root/workbench_audio_delivery/review_audition_callback",
+    "correctness": "PASS no blocking finding",
+    "ponytail": "Lean already. Ship.",
+    "verified": {
+      "production_modules": 8,
+      "dependency_artifacts": 415,
+      "native_archives": 6,
+      "extern_mappings": 365,
+      "prior_raw_receipts": 98,
+      "native_cases": 3
+    },
+    "resolved": "Visual notes only claim actual failure reason for unavailable-output image, normal screenshots describe actual paused/resumed/stopped UI",
+    "scope": "Read-only independent source/receipt review; reviewer did not run Cargo/GPU/audio; acoustic/physical/platform acceptance not claimed"
+  },
+  "root_visual_status": "PASS",
+  "root_visual_review": {
+    "reviewer": "/root",
+    "status": "PASS",
+    "reviewed_images": 7,
+    "exact_png_sha256": {
+      "build-final/audio-1280/paused-seek-no-playback.png": "abc7d314a7b12eebd6c3f57d54b4cb93fb007c3f1044a4ebf941fe5b1a04b1f1",
+      "build-final/audio-1280/resumed-new-source-start.png": "996364073e28b02fbb1c295186fd08722f0553ee104a17a06fe94941165ec0b6",
+      "build-final/audio-1280/stopped-selection-preserved.png": "cd0a5e198c7ca9835060dce246e041f6575e7a1ef94bb8a10b7402b6e493ebec",
+      "build-final/audio-640/paused-seek-no-playback.png": "ff79f5a356bb21a5493cce95c2150898f42648b0903c75e557ddcd0ab94b1bcd",
+      "build-final/audio-640/resumed-new-source-start.png": "6da849b59be6d5ffefad27f8552663a585db8c0967d0688e6d568c4f497b960d",
+      "build-final/audio-640/stopped-selection-preserved.png": "4c3991a8e49bfafce6130db71ce09b596c0792bd9abb757e07257e6a625ce142",
+      "build-final/unavailable-output/output-error-preserved.png": "2cb3592f666605db6edd9520c0a830b5e2420c7217f65732f8a4504d44d55023"
+    },
+    "observations": "All seven actual PNGs individually viewed: paused callback 6656 and target 1 separate from white document cursor 1; resumed audio advances; Stop clears audio position; output initialization reason readable and scrollable at 640; selected original watermark -123 detail retained",
+    "scope": "Actual root visual inspection relayed by root; screenshot UI values are asynchronous native frames and distinct from callback transition records; no acoustic, physical input or device-latency conclusion"
+  }
+}

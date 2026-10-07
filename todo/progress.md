@@ -68,3 +68,5 @@
 2026-10-07 · 08 / 10 舞台身份与故障新局：明确 Stage 1 / 2 编译、Replay v2 实际版本及 protocol v5 的完整身份已接线；184 项 Stage 相关测试、12 个真实 wire 拒绝及 3 个完整 PCM 控制通过。故障后新邀请恢复另取得 127 项 runtime、9 组 worker 和 3 组原生双轮证据，固定构建 / 文案范围见[Stage 观察](../testdata/synthetic/stage-version-observations-20261007.json)与[网络观察](../testdata/synthetic/network-reentry-observations-20261007.json)。旧前缀不补齐，旧 Replay 保留，完整视觉观看、同 epoch 续演及真实双机另推进
 
 2026-10-07 · 生产源导入与工作台试听：原始音频经唯一 q10 编码进入手工四对象，10 条成功 CLI、5 条预期拒绝、两张生产 loader 图通过；工作台三模式复用 PCM 并分开显示原始 / 音频 / 请求坐标，17 项最终窄测、Kira MockBackend 和四张构造 UI 图通过。输出设备、计时与听感另验，下一批推进实际视觉 Replay、性能测量及完整曲库 / 内容能力
+
+2026-10-07 · 工作台 CPAL 接线增补：两个尺寸实际 callback 启动 / 暂停 / seek / 恢复 / 失焦 / 停止与一个实际初始化失败共三 case 通过，七张实际图 agent / 主线程逐张检查；只读原始事实保持，物理输入与声学验收独立

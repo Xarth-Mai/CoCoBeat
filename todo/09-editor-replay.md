@@ -42,3 +42,5 @@
 构造 onset／beat／section 是未校准机制控制，不能作为 MIR 质量准入；本批不包含试听、设备计时关联、物理手柄或母语使用者验收，完整阶段退出继续保留
 
 2026-10-07 · 歌曲试听软件交付：首次播放才创建 Kira 输出，17 项最终工作台窄测覆盖命令合并、原始帧保留、菜单主控、held、失焦和断开；实际 Kira MockBackend 起点与暂停 / 恢复检查通过。两尺寸四张原生 GPU 图目检通过，音频游标是构造显示控制，输出设备和物理输入为 NOT RUN，见[操作契约](../docs/editor.md#歌曲试听)与[观察清单](../testdata/synthetic/workbench-audition-observations-20261007.json)
+
+2026-10-07 · 试听真实 callback 补验：冻结生产模块和旧 extern 的 helper 实际走 Kira CPAL，两个尺寸正常播放 / 暂停 / 暂停跳转 / 恢复 / 失焦 / Stop 与一个实际输出初始化失败共三 case 通过，七张实际图 agent / 主线程目检通过；原选中事实和源包保持，见[独立记录](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)。callback 状态不证明声学输出或物理计时

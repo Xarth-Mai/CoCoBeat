@@ -689,3 +689,13 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 最后代码检查的 `cargo clippy --locked -p cocobeat-runtime -p cocobeat-lab --all-targets -- -D warnings`、`cargo run --locked -p xtask -- boundaries` 和 `cargo fmt --all -- --check` 通过，作用域为后续视觉 Replay 开发前的源导入 / 试听 / Stage / 网络工作区。初次 lab 构建发生两个必要源码调整，记 FAIL_INPUT_DRIFT 后重试；初次 fmt 只发现新增 CLI arm 格式，修正后通过，旧失败保留。完整记录见[试听观察](../testdata/synthetic/workbench-audition-observations-20261007.json)，原始日志位于 `target/software-integration-20261007/`
 
 本批软件结果不替代真实工作台输出设备、扬声器听感、物理双手柄 / 混合输入、输入 / 音频延迟、四目标源导入或完整编辑器退出，计时与真人任务继续保留
+
+## 工作台真实音频 callback 增补
+
+2026-10-07，冻结八个生产工作台模块及与正式 lab 构建匹配的 415 个 rlib / proc-macro 副本，实际 `rustc` helper 只追加 KeyboardInput / WindowFocused 控制与状态观测，调用原工作台 capture → audition → AudioOutput → Kira CPAL。两个尺寸 1280×800 / 640×480 的实际 source cursor 均从零推进至 5120 帧，暂停 acknowledgment 为 6656 帧并稳定至少 300ms；暂停跳转的 target 为 1，原 callback 位置保持 6656，明确恢复才创建新实例并观察到其位置推进
+
+失焦暂停、停止与只读 Replay 原始选中项保持通过；第三个子进程使用隔离的空 ALSA 配置，真实输出初始化错误保留于界面，选择和包保持。七张实际 PNG 经 agent 与主线程逐张目检通过，截图与 callback 日志是异步观测，图中文字帧可相差数次 callback，不将二者冒充同一时刻
+
+首个 helper 编译失败、首次实际音频已推进但 QA 固定导航假设失败均保留，后者来自错误后焦点转到 Details，修正 QA 使用实际焦点和 Shift+Tab 后重新完整执行。三个最终原生 case 通过，源包 / Replay / 草稿状态未改，完整命令、固定源码 / extern、日志和 99 项 receipt 见[独立观察记录](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)，复现复用[既有试听工具](../tools/workbench-audition-check/README.md)
+
+这些结果是本机真实 CPAL callback 和受控输入的软件接线证据，声学输出、输入 / 扬声器延迟、真实手柄、母语使用者和其他平台输出设备仍 NOT RUN

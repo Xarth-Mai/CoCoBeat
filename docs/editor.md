@@ -43,7 +43,7 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 
 失焦、主控接管或断开暂停试听，关闭停止声音，导出开始也暂停声音；设备初始化或运行错误保留草稿、选中证据和失败原因。13 个语言变体共用相同键与占位符，左侧面按钮说明不绑定 Xbox 字母
 
-[观察记录](../testdata/synthetic/workbench-audition-observations-20261007.json)记录实际 Kira MockBackend 起点、17 项最终工作台窄测及四张构造 UI 原生 GPU 图；图中的音频线是明确注入的显示控制，没有打开试听设备，真实输出设备、听感、物理手柄和计时校准另验
+[初批观察](../testdata/synthetic/workbench-audition-observations-20261007.json)记录实际 Kira MockBackend 起点、17 项最终工作台窄测及四张构造 UI 原生 GPU 图；该批音频线是明确注入的显示控制。随后[真实 callback 增补](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)在本机 CPAL 验证播放、暂停、暂停跳转、恢复、失焦、停止及输出初始化失败，两个尺寸和失败窗口共七张实际 UI 图通过；合成键盘输入与 callback 观测不等于扬声器听感、物理手柄或计时校准
 
 ## 只读 Replay 工作台
 
