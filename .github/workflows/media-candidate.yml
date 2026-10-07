@@ -19,25 +19,20 @@ jobs:
         include:
           - runner: windows-latest
             target: x86_64-pc-windows-msvc
-            executable: cocobeat-rusty-candidate.exe
           - runner: windows-11-arm
             target: aarch64-pc-windows-msvc
-            executable: cocobeat-rusty-candidate.exe
           - runner: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
-            executable: cocobeat-rusty-candidate
           - runner: ubuntu-24.04-arm
             target: aarch64-unknown-linux-gnu
-            executable: cocobeat-rusty-candidate
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 20
+    timeout-minutes: 40
     defaults:
       run:
         shell: bash
     env:
       RUSTUP_TOOLCHAIN: stable-${{ matrix.target }}
       CARGO_TARGET_DIR: target/media-candidate
-      CANDIDATE_MANIFEST: tools/canonical-audio-probe/rusty-candidate/Cargo.toml
     steps:
       - uses: actions/checkout@v7
         with:
@@ -54,19 +49,27 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target/media-candidate
-          key: media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          key: media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h') }}
           restore-keys: |
             media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', '**/Cargo.lock') }}-
             media-candidate-${{ runner.os }}-${{ matrix.target }}-${{ steps.rust.outputs.version }}-
-      - name: Test source decoding and resampling
-        run: cargo test --locked --package cocobeat-media
-      - name: Test complete candidate encode and readback
-        run: cargo test --locked --manifest-path "$CANDIDATE_MANIFEST"
-      - name: Build optimized candidate CLI
-        run: cargo build --locked --release --manifest-path "$CANDIDATE_MANIFEST"
+      - name: Test native media adapter
+        run: |
+          mkdir -p target/native-vorbis-logs
+          cargo test --locked --release -p cocobeat-media 2>&1 | tee target/native-vorbis-logs/test.log
+      - name: Build optimized media QA examples
+        run: cargo build --release --locked -p cocobeat-media --examples 2>&1 | tee target/native-vorbis-logs/build.log
+      - name: Verify complete native encode and readback
+        timeout-minutes: 20
+        run: python tools/native-vorbis-check/native.py "$CARGO_TARGET_DIR/release/examples" target/native-vorbis-evidence
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: media-candidate-${{ matrix.target }}-${{ github.sha }}
-          path: target/media-candidate/release/${{ matrix.executable }}
+          path: |
+            target/native-vorbis-logs
+            target/native-vorbis-evidence
+            !target/native-vorbis-evidence/**/*.wav
+            !target/native-vorbis-evidence/**/*.f32le
           if-no-files-found: error
           retention-days: 14

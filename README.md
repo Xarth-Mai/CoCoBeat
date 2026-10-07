@@ -105,7 +105,7 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `decode-audio` 支持 WAV/PCM、FLAC、MP3 和 Ogg Vorbis，输出原采样率的立体声 F32LE，单声道复制为双声道；保留静默与原始幅度，源文件限 512 MiB、192 kHz、十分钟。`resample-audio` 复用该入口，以 OxiMedia High 转为 48 kHz，48 kHz 原件直接保留样本；实际输出帧数为 `ceil(源帧数 × 48000 / 源采样率)`，不裁静默或归一化
 
-`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，生产编码器准入与游戏中的完整导入流程仍待完成
+`readback-canonical <input.ogg> <expected-frames> <new-output.f32le>` 完整读回最终文件，严格要求 Ogg Vorbis、48 kHz、恰好双声道、有限样本和从帧 0 开始的连续时间轴；同时检查 Ogg 页 CRC、EOS 与实际帧数，`expected-frames` 来自编码器输入帧数，不能直接取待验证文件的时长声明。上面的 [原创样本](testdata/synthetic/media-import/README.md) 为 4,800 帧；三个命令均只创建新输出并在失败时清理半成品，[原生 Vorbis 编码入口](docs/native-vorbis.md)已完成本机有界编码、完整双回读、质量控制与 Sanitizer，四目标准入和游戏中的完整导入流程继续推进
 
 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>` 将最终 Ogg 有界复制到全新的目录，按实际复制字节记录 BLAKE3 和长度，关闭写入后严格读回其中的 `song.audio.ogg`；原文件保留，已有目录拒绝覆盖。失败只清理本次音频文件和空目录，成功只表示该音频对象已准备，不创建分析、谱面、manifest 或 Ready；源上限仍为 512 MiB 和十分钟
 

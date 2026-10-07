@@ -11,9 +11,18 @@ cocobeat-schema.workspace = true
 symphonia.workspace = true
 oximedia-audio.workspace = true
 oximedia-core.workspace = true
+vorbis_rs.workspace = true
 blake3.workspace = true
 serde.workspace = true
 postcard.workspace = true
+
+[[example]]
+name = "native-vorbis-check"
+path = "../../tools/native-vorbis-check/driver.rs"
+
+[[example]]
+name = "native-vorbis-fixture"
+path = "../../tools/native-vorbis-check/fixture.rs"
 
 [lints]
 workspace = true

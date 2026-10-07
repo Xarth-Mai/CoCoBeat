@@ -669,3 +669,11 @@ QA 的 2 秒音频由原创 fixture 严格完整解码后重复 PCM，再用外�
 Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助程序加入初始尺寸、合成 KeyboardInput 驱动和 Screenshot 系统；准确 Cargo JSON 的 8 个现有 rlib 用于 rustc 构建辅助程序，改动补丁和源码哈希保留。1280×800 与 640×480 两个独立 Gamescope 窗口正常退出，分别发送 107 / 113 次合成按下与释放对，逐项浏览全部 76 个原事实 / 确认事件，验证 -1632 帧原负水位、配对的两位玩家 Hit 标记、列表尾部和详情底部滚动；实际详情偏移分别达到 912 / 1182 px，状态与 Computed ScrollPosition 一致
 
 两尺寸共 10 张图由主线程逐张检查，文字与配对标记可读，小窗口能到达完整帮助文本；源包、Replay 和旧 JSONL 报告保持原字节，没有新导出目录。最终 lab 对完整录制和中断前缀生成的两个 JSONL / stdout 与旧冻结程序逐字节相同。QA 副本的原生呈现与软件按键不替代未修改 lab 程序的物理键鼠 / 手柄验收，Replay v1 没有设备时间或舞台版本，试听、物理延迟和跨版本视觉 Replay 未运行
+
+## 原生 Vorbis 编码软件验证
+
+2026-10-07 本机 Linux x86-64 的 39 项 media 测试、release all-target Clippy、fmt 与依赖边界通过；固定源码及不可变可执行文件的 14 项便携完整回读、38 项普通质量 / 拒绝控制和修补后 11 项 C Sanitizer 通过，完整方法见 [原生编码路径](native-vorbis.md)，来源与原始结果摘要见 [观察记录](../testdata/synthetic/native-vorbis-observations-20261007.json)
+
+普通矩阵的完整读回主判定与 FFmpeg 互操作分开：两独立 reader 完整 N / EOS / finite 和同位置容差通过，FFmpeg 保留 17 项 FAIL_COMPLETE；8 个历史来源缺失仍 NOT RUN。四轮旧 Sanitizer 错误、验证工具初次 Clippy 失败及 Cargo test 重建例子产生的二进制身份变化均保留，最终普通矩阵使用显式 release 构建的固定副本，不混用旧构建证据
+
+这些控制未覆盖所有整数采样率或所有音乐，LSan、seek、三项其他原生目标、曲库及真人听感分别待验，不以本机结果宣称完整生产导入或跨平台准入完成

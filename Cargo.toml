@@ -1,5 +1,6 @@
 [workspace]
 resolver = "3"
+exclude = ["vendor/aotuv_lancer_vorbis_sys", "vendor/ogg_next_sys"]
 members = [
     "apps/cocobeat-game",
     "crates/cocobeat-schema",
@@ -36,6 +37,7 @@ tokio = { version = "1", default-features = false, features = ["rt", "net", "tim
 symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
 oximedia-audio = { version = "0", default-features = false }
 oximedia-core = "0"
+vorbis_rs = { version = "0", default-features = false }
 blake3 = "1"
 postcard = { version = "1", default-features = false, features = ["alloc"] }
 serde_json = "1"
@@ -48,6 +50,10 @@ winit = { version = "0", default-features = false }
 sys-locale = "0"
 winsafe = { version = "0", default-features = false, features = ["user"] }
 x11rb = { version = "0", default-features = false }
+
+[patch.crates-io]
+aotuv_lancer_vorbis_sys = { path = "vendor/aotuv_lancer_vorbis_sys" }
+ogg_next_sys = { path = "vendor/ogg_next_sys" }
 
 [workspace.lints.rust]
 unsafe_code = "forbid"

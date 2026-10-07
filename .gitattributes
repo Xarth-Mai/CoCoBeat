@@ -2,3 +2,6 @@
 # Preserve source and fixture hashes on every checkout
 assets/** -text
 testdata/** -text
+
+# Keep upstream archives and literal backport context byte-identical
+vendor/** -text -whitespace

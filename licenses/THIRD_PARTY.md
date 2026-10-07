@@ -1,6 +1,6 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-03 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 586 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-07 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 589 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
@@ -10,6 +10,7 @@
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
+| [vorbis_rs](https://github.com/ComunidadAylas/vorbis-rs) | 0.5.6 | media：静态内嵌 aoTuV/Lancer Vorbis 编码候选，关闭默认 RNG feature，sys 回移三项官方修补并恢复 libogg 位打包，软件准入独立验证 | BSD-3-Clause |
 | [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：内容对象身份；net：证书、模板和实际 Replay 的字节哈希 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
 | [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化；media/lab：私有内容格式和创作输入；net：邀请、严格消息与摘要 | MIT OR Apache-2.0 |
 | [postcard](https://github.com/jamesmunns/postcard) | 1.1.3 | media：有界且带独立版本头的内容对象编码，schema 保持标准库类型 | MIT OR Apache-2.0 |
@@ -22,6 +23,8 @@
 | [rcgen](https://github.com/rustls/rcgen) | 0.14.10 | net：每次会话自签证书 | MIT OR Apache-2.0 |
 | [tokio](https://github.com/tokio-rs/tokio) | 1.53.1 | net：单线程网络 runtime、有界队列与超时 | MIT |
 | [embed-resource](https://github.com/nabijaczleweli/rust-embed-resource) | 3.0.11 | game：仅 Windows 构建时嵌入 EXE 图标 | MIT |
+
+Vorbis 路径的 Rust binding BSD、Vorbis / libogg COPYING 以及编译路径中的 LPC 独立 notice 原文与实际归档身份保留在 [vorbis-rs 来源目录](vorbis-rs/README.md)，随现有 licenses 目录进入发行包；Vorbis sys 四文件修补和 libogg sys 两文件官方修补及原归档身份分别见 [Vorbis UPSTREAM](../vendor/aotuv_lancer_vorbis_sys/UPSTREAM.md) 与 [libogg UPSTREAM](../vendor/ogg_next_sys/UPSTREAM.md)；完整文本收录不替代编码器及四目标发行验证
 
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
