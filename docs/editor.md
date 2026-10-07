@@ -2,7 +2,7 @@
 
 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 用整数音频帧修正已有 SongPackage 的 Anchor，并导出可重新加载的新包；当前支持增删、移动、撤销和重做，不修改分析事实、SectionCue 或判定规则，包格式继续使用 [SongPackage v1](song-package.md)
 
-原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，并提供只读 Replay 诊断入口，候选证据视图和试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的查看契约见 [Replay 诊断](replay-diagnostics.md)
+原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，并提供只读 Replay 与 Anchor 候选证据入口，试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的查看契约见 [Replay 诊断](replay-diagnostics.md)
 
 ## 原生工作台
 
@@ -47,6 +47,16 @@ P1 青色、P2 橙色标记显示原始 Hit，Anchor 位于波形下方；列表
 Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表内方向键或滚轮逐条浏览，Enter / South 查看详情；640×480 窗口通过列表 / 详情页切换保留空间，详情支持换行和方向键 / 滚轮滚动到底。选中水位时保留负预滚或 EOF 后的原始帧值，手动光标导航仍限于歌曲范围
 
 本入口没有试听或物理计时测量；Replay v1 没有设备时间戳和视觉版本，界面不推算物理输入延迟，也不承诺复现录制时的视觉效果。本批软件与受控 GPU 证据见 [Replay 诊断验证](replay-diagnostics.md#软件验证)
+
+## 只读候选证据
+
+`workbench-candidates PACKAGE REPORT [--locale CODE]` 打开已验证包的 Anchor 提案报告，复用明确采用入口的完整版本、来源、策略与重新编译核对；篡改、错误来源或不支持的报告均拒绝
+
+候选以原始零基 onset index 逐项浏览，波形分开显示候选和原谱面；详情首先显示选中证据、提案和阻挡候选，再列相邻 beat、所在 section、energy 与来源信息。未知置信度保持 `null`，实验策略选择不等于生产准入
+
+密集同像素候选仍可逐项选择；列表与详情使用现有主控、焦点和滚动规则，640×480 窗口可查看详情到底。此模式只提供缩放和返回，不修改 Anchor、历史、报告或包，明确采用继续使用 `adopt-anchor-proposal`
+
+[观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)保留 28 项软件测试、三组原生 GPU 窗口与 11 张目检 PNG，以及修正前的实际失败；构造候选仅验证证据查看和只读行为，不证明 MIR 质量、试听或物理输入
 
 ## 使用方式
 

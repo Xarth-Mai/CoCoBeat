@@ -60,3 +60,7 @@
 2026-10-07 · 10 进程时钟与预约起点：默认假定漂移范围内的四时间戳 / 不对称路径区间已由协议消费，有限重试、可靠确认、准备期限与软件迟到分别记录；实际 5 组时钟故障和升级后的 6 类资源拒绝回归通过。下一批接生产单玩家输入 / 水位、音频与伙伴反馈，真实设备 / 双机 / 真人证据继续保留
 
 2026-10-07 · 10 实时生产接线：protocol v4 worker 连接完整资源校验、后台 PCM 装载、显式 Ready、双方 Armed、未来 Kira 播放、单玩家水位、即时本地 / 已确认共享反馈与 FinishAck。取消前 Ready 关闭未刷出的实际失败已修复并回归，窗口退出等待 worker 清理；两个原生进程完成并正常退出，受控输入是软件注入，物理设备与双机未验收。固定源码 / 产物 / 原始日志身份与历史失败见 [验证策略](../docs/testing.md#quic-实时游戏与原生软件接线)，完整 10 保持 IN PROGRESS
+
+2026-10-07 · 09 候选工作台：`workbench-candidates` 共用 Anchor 报告来源与重新编译校验，逐项显示原始 index、未知评分、拒绝原因和阻挡关系；正式 lab 28 项测试、Clippy / 格式 / 依赖边界通过，三组源码副本原生窗口 11 PNG 目检通过，修正前失败和精确证据范围见[观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)。只读查看已完成，试听与设备计时关联继续保留
+
+2026-10-07 · 06 模型研究：Beat This! small0 与 BSD DBN 已完成源 / 严格 canonical 回读各 120 行 CPU 数值对照，官方与 ORT 数值通过；变速、6/8 和摇摆质量继续 FAIL，`production_admission=false`，完整前处理、原生加载、分析能力与独立人工标签待后续，见[研究摘要](../tools/beat-model-probe/results-2026-10-07.json)

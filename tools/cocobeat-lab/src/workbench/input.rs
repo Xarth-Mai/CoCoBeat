@@ -111,7 +111,7 @@ pub(super) fn capture(
     let Ok((window_id, window)) = windows.single() else {
         return;
     };
-    if state.replay.is_some() {
+    if state.is_read_only() {
         state.document.cancel();
     }
     let canvas = targets
@@ -397,7 +397,7 @@ fn digit(key: KeyCode) -> Option<char> {
 
 fn cycle_focus(state: &mut Workbench, backwards: bool) {
     let toolbar = state.toolbar().len();
-    let panels: &[Focus] = if state.replay.is_some() {
+    let panels: &[Focus] = if state.is_read_only() {
         &[Focus::Timeline, Focus::List, Focus::Details]
     } else {
         &[Focus::Timeline, Focus::List, Focus::Frame, Focus::Details]
@@ -482,7 +482,7 @@ fn key(
         }
         return true;
     }
-    if state.focus == Focus::Frame && state.replay.is_none() {
+    if state.focus == Focus::Frame && !state.is_read_only() {
         if !state.document.editing_frame {
             state.document.begin_frame();
         }
@@ -709,7 +709,14 @@ fn click(
             state.document.cursor = state
                 .document
                 .at_pixel(cursor.x, bounds.min.x, bounds.width());
-            if state.replay.is_some() {
+            if state.is_read_only() {
+                if let Some(candidates) = &state.candidates {
+                    let tolerance = (state.document.span as f64 * 7.0 / f64::from(bounds.width()))
+                        .ceil() as i64;
+                    if let Some(index) = candidates.nearest(state.document.cursor, tolerance) {
+                        state.select(index);
+                    }
+                }
                 return;
             }
             if cursor.y >= bounds.min.y + bounds.height() * 0.7
@@ -1176,95 +1183,104 @@ mod tests {
     }
 
     #[test]
-    fn replay_shortcuts_frame_input_and_drag_preserve_anchors_and_history() {
-        let (mut app, window, _, _) = app();
-        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
-        {
+    fn read_only_shortcuts_frame_input_and_drag_preserve_anchors_and_history() {
+        for candidates_mode in [false, true] {
+            let (mut app, window, _, _) = app();
+            app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+            {
+                let mut state = app.world_mut().resource_mut::<Workbench>();
+                if candidates_mode {
+                    state.candidates = Some(candidates::fixture());
+                } else {
+                    state.replay = Some(replay::fixture());
+                }
+                state.document.move_selected(600).unwrap();
+                state.document.move_selected(700).unwrap();
+                state.document.editor.undo().unwrap();
+                state.document.changed();
+            }
+            let revision = app.world().resource::<Workbench>().document.revision;
+            key(&mut app, window, KeyCode::ControlLeft, true);
+            for (shift, code) in [
+                (false, KeyCode::KeyZ),
+                (true, KeyCode::KeyZ),
+                (false, KeyCode::KeyS),
+            ] {
+                key(&mut app, window, KeyCode::ShiftLeft, shift);
+                tap(&mut app, window, code);
+                let state = app.world().resource::<Workbench>();
+                assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 600);
+                assert_eq!(state.document.revision, revision);
+                assert!(state.saving.is_none());
+            }
+            key(&mut app, window, KeyCode::ControlLeft, false);
+            app.world_mut().resource_mut::<Workbench>().focus = Focus::List;
+            for code in [
+                KeyCode::Digit9,
+                KeyCode::Backspace,
+                KeyCode::Delete,
+                KeyCode::Enter,
+            ] {
+                tap(&mut app, window, code);
+            }
+            assert!(
+                app.world()
+                    .resource::<Workbench>()
+                    .document
+                    .frame
+                    .is_empty()
+            );
+            assert!(!app.world().resource::<Workbench>().document.editing_frame);
+            app.world_mut().spawn((
+                ui::Hit::Timeline,
+                ComputedNode {
+                    size: Vec2::new(600.0, 200.0),
+                    ..default()
+                },
+                UiGlobalTransform::from(bevy::math::Affine2::from_translation(Vec2::new(
+                    300.0, 100.0,
+                ))),
+            ));
+            app.world_mut()
+                .get_mut::<Window>(window)
+                .unwrap()
+                .set_cursor_position(Some(Vec2::new(7.5, 160.0)));
+            app.world_mut().write_message(MouseButtonInput {
+                button: MouseButton::Left,
+                state: ButtonState::Pressed,
+                window,
+            });
+            app.update();
+            assert_eq!(
+                app.world().resource::<Workbench>().document.cursor,
+                if candidates_mode { 500 } else { 600 }
+            );
+            assert!(app.world().resource::<Workbench>().document.drag.is_none());
+            app.world_mut()
+                .get_mut::<Window>(window)
+                .unwrap()
+                .set_cursor_position(Some(Vec2::new(300.0, 160.0)));
+            app.update();
+            app.world_mut().write_message(MouseButtonInput {
+                button: MouseButton::Left,
+                state: ButtonState::Released,
+                window,
+            });
+            app.update();
             let mut state = app.world_mut().resource_mut::<Workbench>();
-            state.replay = Some(replay::fixture());
-            state.document.move_selected(600).unwrap();
-            state.document.move_selected(700).unwrap();
-            state.document.editor.undo().unwrap();
-            state.document.changed();
-        }
-        let revision = app.world().resource::<Workbench>().document.revision;
-        key(&mut app, window, KeyCode::ControlLeft, true);
-        for (shift, code) in [
-            (false, KeyCode::KeyZ),
-            (true, KeyCode::KeyZ),
-            (false, KeyCode::KeyS),
-        ] {
-            key(&mut app, window, KeyCode::ShiftLeft, shift);
-            tap(&mut app, window, code);
-            let state = app.world().resource::<Workbench>();
-            assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
+            assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 600);
             assert_eq!(state.document.revision, revision);
             assert!(state.saving.is_none());
+            assert!(state.document.drag.is_none());
+            state.document.editor.undo().unwrap();
+            assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 500);
+            assert!(state.document.editor.undo().is_err());
+            state.document.editor.redo().unwrap();
+            assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 600);
+            state.document.editor.redo().unwrap();
+            assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 700);
+            assert!(state.document.editor.redo().is_err());
         }
-        key(&mut app, window, KeyCode::ControlLeft, false);
-        app.world_mut().resource_mut::<Workbench>().focus = Focus::List;
-        for code in [
-            KeyCode::Digit9,
-            KeyCode::Backspace,
-            KeyCode::Delete,
-            KeyCode::Enter,
-        ] {
-            tap(&mut app, window, code);
-        }
-        assert!(
-            app.world()
-                .resource::<Workbench>()
-                .document
-                .frame
-                .is_empty()
-        );
-        assert!(!app.world().resource::<Workbench>().document.editing_frame);
-        app.world_mut().spawn((
-            ui::Hit::Timeline,
-            ComputedNode {
-                size: Vec2::new(600.0, 200.0),
-                ..default()
-            },
-            UiGlobalTransform::from(bevy::math::Affine2::from_translation(Vec2::new(
-                300.0, 100.0,
-            ))),
-        ));
-        app.world_mut()
-            .get_mut::<Window>(window)
-            .unwrap()
-            .set_cursor_position(Some(Vec2::new(7.5, 160.0)));
-        app.world_mut().write_message(MouseButtonInput {
-            button: MouseButton::Left,
-            state: ButtonState::Pressed,
-            window,
-        });
-        app.update();
-        assert_eq!(app.world().resource::<Workbench>().document.cursor, 600);
-        assert!(app.world().resource::<Workbench>().document.drag.is_none());
-        app.world_mut()
-            .get_mut::<Window>(window)
-            .unwrap()
-            .set_cursor_position(Some(Vec2::new(300.0, 160.0)));
-        app.update();
-        app.world_mut().write_message(MouseButtonInput {
-            button: MouseButton::Left,
-            state: ButtonState::Released,
-            window,
-        });
-        app.update();
-        let mut state = app.world_mut().resource_mut::<Workbench>();
-        assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
-        assert_eq!(state.document.revision, revision);
-        assert!(state.saving.is_none());
-        assert!(state.document.drag.is_none());
-        state.document.editor.undo().unwrap();
-        assert_eq!(state.document.selected().unwrap().song_time.frames(), 500);
-        assert!(state.document.editor.undo().is_err());
-        state.document.editor.redo().unwrap();
-        assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
-        state.document.editor.redo().unwrap();
-        assert_eq!(state.document.selected().unwrap().song_time.frames(), 700);
-        assert!(state.document.editor.redo().is_err());
     }
 
     #[test]

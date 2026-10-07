@@ -198,5 +198,11 @@
   "workbench.replay.event": "事件 {index} · {kind} · {frame} 帧",
   "workbench.replay.fields": "事实保留录制顺序，事件保留规则确认顺序。fact_index 和 input_fact_index 引用事实；event_index 是事件编号，不是触发事件的事实索引。所有 *_frames 字段均使用以 48 kHz 音频帧为单位的精确整数，负值及 EOF 之后的进度水位均保持原样。null 表示信息不可用。Replay v1 不记录设备时间戳，因此无法提供物理输入延迟。",
   "network.next_round": "开始下一轮联网演奏",
-  "network.waiting_next_invite": "等待房主的下一次邀请"
+  "network.waiting_next_invite": "等待房主的下一次邀请",
+  "candidates.title": "CoCoBeat · Anchor 候选",
+  "candidates.records": "候选（{count}）",
+  "candidates.row": "候选 {index} · {kind} · {frame} 帧",
+  "candidates.legend": "候选标记显示提案决策，源谱面的 Anchor 保留在波形下方",
+  "candidates.help": "只读 · 浏览证据及阻挡项 · 采用须通过 CLI 明确选择",
+  "candidates.fields": "confidence 保留来源数值，null 表示未知，未声明已校准；selected_by_experimental_policy 仅表示实验策略选择，not_assessed 表示尚未评估生产准入；onset_index 与 blocking_onset_index 均从 0 开始；beat、section、energy 上下文均为原分析事实"
 }

@@ -1,4 +1,4 @@
-//! A silent package workbench for Anchor editing and read-only Replay diagnostics
+//! A silent package workbench for Anchor editing and read-only evidence diagnostics
 
 use bevy::{prelude::*, window::WindowResizeConstraints};
 use cocobeat_editor::AnchorEditor;
@@ -11,6 +11,7 @@ use std::{
     sync::{Mutex, mpsc},
 };
 
+mod candidates;
 mod input;
 mod replay;
 mod ui;
@@ -20,6 +21,7 @@ const BIN_FRAMES: i64 = 64;
 pub enum Mode<'a> {
     Edit(&'a Path),
     Replay(&'a Path),
+    Candidates(&'a Path),
 }
 
 pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> {
@@ -54,6 +56,14 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
     } else {
         None
     };
+    let candidates = if let Mode::Candidates(path) = mode {
+        let mut candidates = candidates::CandidateView::load(&package, path)?;
+        document.cursor = candidates.select(0).unwrap_or(0);
+        document.selected = None;
+        Some(candidates)
+    } else {
+        None
+    };
     let mut app = App::new();
     app.add_plugins(
         DefaultPlugins.set(WindowPlugin {
@@ -62,6 +72,8 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
                 title: locale
                     .text(if replay.is_some() {
                         "replay.title"
+                    } else if candidates.is_some() {
+                        "candidates.title"
                     } else {
                         "workbench.title"
                     })
@@ -83,6 +95,7 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         source: source.to_owned(),
         destination,
         replay,
+        candidates,
         source_hash: package.manifest.package_hash,
         locale,
         document,
@@ -365,6 +378,7 @@ struct Workbench {
     source: PathBuf,
     destination: Option<PathBuf>,
     replay: Option<replay::ReplayView>,
+    candidates: Option<candidates::CandidateView>,
     source_hash: [u8; 32],
     locale: Locale,
     document: Document,
@@ -379,8 +393,37 @@ struct Workbench {
 }
 
 impl Workbench {
+    fn is_read_only(&self) -> bool {
+        self.replay.is_some() || self.candidates.is_some()
+    }
+
+    fn record_count(&self) -> usize {
+        if let Some(replay) = &self.replay {
+            replay.len()
+        } else if let Some(candidates) = &self.candidates {
+            candidates.len()
+        } else {
+            self.document.editor.anchors().len()
+        }
+    }
+
+    fn selected_index(&self) -> usize {
+        if let Some(replay) = &self.replay {
+            replay.selected
+        } else if let Some(candidates) = &self.candidates {
+            candidates.selected
+        } else {
+            self.document
+                .editor
+                .anchors()
+                .iter()
+                .position(|anchor| Some(anchor.id) == self.document.selected)
+                .unwrap_or(0)
+        }
+    }
+
     fn toolbar(&self) -> &[Action] {
-        if self.replay.is_some() {
+        if self.is_read_only() {
             &[Action::ZoomIn, Action::ZoomOut, Action::Back]
         } else {
             &TOOLBAR
@@ -395,16 +438,24 @@ impl Workbench {
             }
             self.document.selected = replay.selected_anchor();
             self.detail_scroll = 0.0;
+        } else if let Some(candidates) = &mut self.candidates {
+            if let Some(frame) = candidates.select(index) {
+                self.document.cursor = frame;
+                self.document.keep_cursor_visible();
+            }
+            self.document.selected = None;
+            self.detail_scroll = 0.0;
         } else {
             self.document.select(index);
         }
     }
 
     fn browse(&mut self, step: i32) {
-        if let Some(replay) = &self.replay {
+        if self.is_read_only() {
             self.select(
-                (replay.selected as i64 + i64::from(step))
-                    .clamp(0, replay.len().saturating_sub(1) as i64) as usize,
+                (self.selected_index() as i64 + i64::from(step))
+                    .clamp(0, self.record_count().saturating_sub(1) as i64)
+                    as usize,
             );
         } else {
             self.document.browse(step);
@@ -449,7 +500,7 @@ impl Workbench {
         if self.saving.is_some() {
             return;
         }
-        if (self.replay.is_some() || !keyboard)
+        if (self.is_read_only() || !keyboard)
             && matches!(
                 action,
                 Action::Undo
@@ -461,7 +512,7 @@ impl Workbench {
                     | Action::Apply
             )
         {
-            if self.replay.is_none() {
+            if !self.is_read_only() {
                 self.notice = self.locale.text("workbench.keyboard_required").into();
                 self.details = true;
                 self.detail_scroll = 0.0;
@@ -639,6 +690,7 @@ mod tests {
             source: PathBuf::from("source"),
             destination: Some(PathBuf::from("new-package")),
             replay: None,
+            candidates: None,
             source_hash: [7; 32],
             locale: Locale::EnUs,
             document: Document::from_anchors(

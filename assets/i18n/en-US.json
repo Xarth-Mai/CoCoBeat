@@ -198,5 +198,11 @@
   "workbench.replay.event": "Event {index} · {kind} · {frame} frames",
   "workbench.replay.fields": "Facts preserve recording order; events preserve rule confirmation order. fact_index and input_fact_index reference facts; event_index numbers events and is not a triggering fact index. All *_frames fields use exact integers in 48 kHz frame units; negative and post-EOF watermarks remain unchanged. null means unavailable. Replay v1 records no device timestamps; physical input latency is unavailable.",
   "network.next_round": "Start next online round",
-  "network.waiting_next_invite": "Waiting for the host's next invitation"
+  "network.waiting_next_invite": "Waiting for the host's next invitation",
+  "candidates.title": "CoCoBeat · Anchor candidates",
+  "candidates.records": "Candidates ({count})",
+  "candidates.row": "Candidate {index} · {kind} · {frame} frames",
+  "candidates.legend": "Candidate marks show proposal decisions; source chart Anchors remain below the waveform",
+  "candidates.help": "Read only · Browse evidence and blockers · Adoption requires an explicit CLI selection",
+  "candidates.fields": "confidence retains the source value; null means unknown, and no calibration is claimed. selected_by_experimental_policy is an experimental selection; not_assessed means production admission has not been assessed. onset_index and blocking_onset_index are zero-based. Beat, section and energy context are original analysis facts"
 }

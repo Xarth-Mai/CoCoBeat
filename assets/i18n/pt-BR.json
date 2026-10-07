@@ -198,5 +198,11 @@
   "workbench.replay.event": "Evento {index} · {kind} · {frame} quadros",
   "workbench.replay.fields": "Os fatos preservam a ordem de gravação; os eventos preservam a ordem de confirmação pelas regras. fact_index e input_fact_index fazem referência a fatos; event_index numera os eventos e não é o índice do fato que os desencadeou. Todos os campos *_frames usam inteiros exatos em unidades de quadros a 48 kHz; os marcos de progresso negativos e posteriores a EOF permanecem inalterados. null significa indisponível. Replay v1 não registra marcas de tempo dos dispositivos; a latência de entrada física não está disponível.",
   "network.next_round": "Iniciar a próxima rodada online",
-  "network.waiting_next_invite": "Aguardando o próximo convite do anfitrião"
+  "network.waiting_next_invite": "Aguardando o próximo convite do anfitrião",
+  "candidates.title": "CoCoBeat · Candidatos a Anchor",
+  "candidates.records": "Candidatos ({count})",
+  "candidates.row": "Candidato {index} · {kind} · {frame} quadros",
+  "candidates.legend": "As marcas mostram as decisões da proposta; os Anchor do mapa original permanecem abaixo da forma de onda",
+  "candidates.help": "Somente leitura · Examine evidências e bloqueios · A adoção requer seleção explícita pela CLI",
+  "candidates.fields": "confidence preserva o valor de origem; null significa desconhecido, sem afirmar calibração. selected_by_experimental_policy indica seleção experimental; not_assessed indica que o uso em produção não foi avaliado. onset_index e blocking_onset_index começam em 0. beat, section e energy são dados da análise original"
 }

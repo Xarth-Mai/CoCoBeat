@@ -17,19 +17,19 @@ const MAX_SELECTION_BYTES: usize = 1024 * 1024;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Report {
-    report_version: u32,
-    compiler_version: u32,
-    source: Source,
-    policy: Policy,
-    production_admission: String,
-    anchors: Vec<ProposedAnchor>,
-    evidence: Vec<Evidence>,
+pub(crate) struct Report {
+    pub(crate) report_version: u32,
+    pub(crate) compiler_version: u32,
+    pub(crate) source: Source,
+    pub(crate) policy: Policy,
+    pub(crate) production_admission: String,
+    pub(crate) anchors: Vec<ProposedAnchor>,
+    pub(crate) evidence: Vec<Evidence>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Source {
+pub(crate) struct Source {
     content_id: String,
     analysis_blake3: String,
     audio_blake3: String,
@@ -41,31 +41,31 @@ struct Source {
 
 #[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Policy {
+pub(crate) struct Policy {
     min_confidence: f32,
     min_gap_frames: i64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct ProposedAnchor {
+pub(crate) struct ProposedAnchor {
     id: u64,
     frame: i64,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Evidence {
-    onset_index: usize,
-    frame: i64,
+pub(crate) struct Evidence {
+    pub(crate) onset_index: usize,
+    pub(crate) frame: i64,
     strength: f32,
     confidence: Option<f32>,
-    decision: Decision,
+    pub(crate) decision: Decision,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
-enum Decision {
+pub(crate) enum Decision {
     SelectedByExperimentalPolicy {
         anchor_id: u64,
     },
@@ -149,40 +149,21 @@ pub fn adopt(
     selection_path: &Path,
     destination: &Path,
 ) -> Result<(), String> {
-    let report: Report = read_document(report_path, MAX_REPORT_BYTES)?;
     let selection: Selection = read_document(selection_path, MAX_SELECTION_BYTES)?;
-    if report.report_version != REPORT_VERSION || report.compiler_version != ANCHOR_COMPILER_VERSION
-    {
-        return Err("Unsupported Anchor proposal report or compiler version".into());
-    }
     if selection.schema_version != 1 {
         return Err("Unsupported Anchor selection schema".into());
     }
-    if report.anchors.len() > MAX_CONTENT_ITEMS
-        || report.evidence.len() > MAX_CONTENT_ITEMS
-        || selection.onset_indices.len() > MAX_CONTENT_ITEMS
-    {
-        return Err("Anchor proposal or selection exceeds the content item limit".into());
+    if selection.onset_indices.len() > MAX_CONTENT_ITEMS {
+        return Err("Anchor selection exceeds the content item limit".into());
     }
     let package = cocobeat_media::validate_package(source)?;
-    if report.source != source_identity(&package)
-        || selection.source_content_id != report.source.content_id
-    {
-        return Err(
-            "Anchor proposal or selection source identity does not match the package".into(),
-        );
-    }
-    let expected = make_report(&package, report.policy)?;
-    // Numeric equality rejects non-finite report floats; canonical serialization also preserves -0
-    if report != expected
-        || serde_json::to_vec(&report).map_err(|error| error.to_string())?
-            != serde_json::to_vec(&expected).map_err(|error| error.to_string())?
-    {
-        return Err("Anchor proposal differs from recompilation of its source and policy".into());
+    let report = load_report(&package, report_path)?;
+    if selection.source_content_id != report.source.content_id {
+        return Err("Anchor selection source identity does not match the package".into());
     }
     let mut chosen_ids = BTreeSet::new();
     for index in selection.onset_indices {
-        let evidence = expected
+        let evidence = report
             .evidence
             .get(index)
             .ok_or_else(|| format!("Selected onset index is out of range: {index}"))?;
@@ -195,7 +176,7 @@ pub fn adopt(
             return Err(format!("Duplicate selected onset index: {index}"));
         }
     }
-    let anchors: Vec<_> = expected
+    let anchors: Vec<_> = report
         .anchors
         .iter()
         .filter(|anchor| chosen_ids.contains(&anchor.id))
@@ -222,6 +203,29 @@ pub fn adopt(
         })
     );
     Ok(())
+}
+
+pub(crate) fn load_report(package: &ValidatedPackage, path: &Path) -> Result<Report, String> {
+    let report: Report = read_document(path, MAX_REPORT_BYTES)?;
+    if report.report_version != REPORT_VERSION || report.compiler_version != ANCHOR_COMPILER_VERSION
+    {
+        return Err("Unsupported Anchor proposal report or compiler version".into());
+    }
+    if report.anchors.len() > MAX_CONTENT_ITEMS || report.evidence.len() > MAX_CONTENT_ITEMS {
+        return Err("Anchor proposal exceeds the content item limit".into());
+    }
+    if report.source != source_identity(package) {
+        return Err("Anchor proposal source identity does not match the package".into());
+    }
+    let expected = make_report(package, report.policy)?;
+    // Numeric equality rejects non-finite report floats; canonical serialization also preserves -0
+    if report != expected
+        || serde_json::to_vec(&report).map_err(|error| error.to_string())?
+            != serde_json::to_vec(&expected).map_err(|error| error.to_string())?
+    {
+        return Err("Anchor proposal differs from recompilation of its source and policy".into());
+    }
+    Ok(report)
 }
 
 fn make_report(package: &ValidatedPackage, policy: Policy) -> Result<Report, String> {
@@ -316,13 +320,13 @@ fn read_document<T: DeserializeOwned>(path: &Path, limit: usize) -> Result<T, St
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use super::*;
     use cocobeat_media::PackageBuildInput;
     use cocobeat_schema::{CompiledChart, EnergySample, MusicAnalysis, OnsetFeature, SectionCue};
     use std::{path::PathBuf, time::SystemTime};
 
-    fn fixture(name: &str) -> (PathBuf, ValidatedPackage) {
+    pub(crate) fn fixture(name: &str) -> (PathBuf, ValidatedPackage) {
         let suffix = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
             .unwrap()
@@ -531,6 +535,7 @@ mod tests {
                 adopt(&source, &report_path, &selection_path, &destination).is_err(),
                 "{pointer}"
             );
+            assert!(load_report(&package, &report_path).is_err(), "{pointer}");
             assert!(!destination.exists());
         }
         for invalid in [

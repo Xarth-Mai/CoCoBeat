@@ -198,5 +198,11 @@
   "workbench.replay.event": "イベント {index} · {kind} · {frame} フレーム",
   "workbench.replay.fields": "事実は記録順、イベントはルールによる確定順を保持します。fact_index と input_fact_index は事実を参照します。event_index はイベントの番号であり、発生元の事実のインデックスではありません。すべての *_frames フィールドは 48 kHz のフレーム単位で正確な整数値を使用します。負の進行ウォーターマークと EOF 後の進行ウォーターマークもそのまま保持します。null は情報がないことを示します。Replay v1 はデバイスのタイムスタンプを記録しないため、物理入力の遅延は取得できません。",
   "network.next_round": "次のオンラインラウンドを開始",
-  "network.waiting_next_invite": "ホストからの次の招待を待っています"
+  "network.waiting_next_invite": "ホストからの次の招待を待っています",
+  "candidates.title": "CoCoBeat · Anchor 候補",
+  "candidates.records": "候補（{count}）",
+  "candidates.row": "候補 {index} · {kind} · {frame} フレーム",
+  "candidates.legend": "候補マーカーは提案の判定を示し、元の譜面の Anchor は波形の下に残ります",
+  "candidates.help": "読み取り専用 · 根拠と競合項目を確認 · 採用には CLI での明示的な選択が必要です",
+  "candidates.fields": "confidence は元の値を保持し、null は不明を示します。校正済みとはみなしません。selected_by_experimental_policy は実験的な選択、not_assessed は本番採用の未評価を示します。onset_index と blocking_onset_index は 0 始まりです。beat、section、energy は元の解析結果です"
 }

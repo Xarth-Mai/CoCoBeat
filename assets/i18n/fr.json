@@ -198,5 +198,11 @@
   "workbench.replay.event": "Événement {index} · {kind} · {frame} trames",
   "workbench.replay.fields": "Les faits conservent l’ordre d’enregistrement ; les événements conservent l’ordre de confirmation par les règles. fact_index et input_fact_index renvoient aux faits ; event_index numérote les événements et ne désigne pas le fait déclencheur. Tous les champs *_frames utilisent des entiers exacts en unités de trames à 48 kHz ; les repères de progression négatifs et ceux après EOF restent inchangés. null signifie indisponible. Replay v1 n’enregistre aucun horodatage des périphériques ; la latence des entrées physiques est indisponible.",
   "network.next_round": "Démarrer la prochaine session en ligne",
-  "network.waiting_next_invite": "En attente de la prochaine invitation de l’hôte"
+  "network.waiting_next_invite": "En attente de la prochaine invitation de l’hôte",
+  "candidates.title": "CoCoBeat · Candidats Anchor",
+  "candidates.records": "Candidats ({count})",
+  "candidates.row": "Candidat {index} · {kind} · {frame} trames",
+  "candidates.legend": "Les repères montrent les décisions de la proposition ; les Anchor de la partition d’origine restent sous la forme d’onde",
+  "candidates.help": "Lecture seule · Examiner les preuves et les blocages · L’adoption exige une sélection explicite par CLI",
+  "candidates.fields": "confidence conserve la valeur source ; null signifie inconnu, sans prétendre à un étalonnage. selected_by_experimental_policy indique une sélection expérimentale ; not_assessed signifie que l’usage en production n’a pas été évalué. onset_index et blocking_onset_index commencent à 0. beat, section et energy sont les données de l’analyse d’origine"
 }

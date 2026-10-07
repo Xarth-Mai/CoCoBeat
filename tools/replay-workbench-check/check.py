@@ -12,8 +12,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "tools/cocobeat-lab/src"
-COPIES = ("replay.rs", "workbench.rs", "workbench/input.rs", "workbench/ui.rs", "workbench/replay.rs")
-EXTERNS = {"bevy", "serde_json", "cocobeat_schema", "cocobeat_media", "cocobeat_editor", "cocobeat_runtime", "cocobeat_core", "cocobeat_replay"}
+COPIES = ("anchors.rs", "replay.rs", "workbench.rs", "workbench/input.rs", "workbench/ui.rs", "workbench/replay.rs", "workbench/candidates.rs")
+EXTERNS = {"bevy", "serde", "serde_json", "cocobeat_schema", "cocobeat_media", "cocobeat_editor", "cocobeat_runtime", "cocobeat_core", "cocobeat_replay"}
 PNGS = {"negative-watermark-details.png", "wave-list-tail.png", "pair-wave-list.png", "pair-details-top.png", "pair-details-bottom.png"}
 
 

@@ -1,0 +1,1638 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-07",
+  "milestone": "Read-only Anchor candidate workbench software observations",
+  "entry_point": "workbench-candidates PACKAGE REPORT [--locale CODE]",
+  "status": {
+    "lab_unit_tests": "PASS",
+    "controlled_native_gpu": "PASS",
+    "agent_visual_review": "PASS",
+    "whole_current_repository_cargo_build": "NOT RUN",
+    "physical_input_audio_native_language_human_acceptance": "NOT RUN",
+    "current_workspace_lab_cargo_checks": "PASS"
+  },
+  "scope": [
+    "Full bounded report version/source identity/rules/strategy validation and candidate recompilation are shared with the CLI; candidate coordinates and zero-based blocker relationships preserve source facts",
+    "Seven frozen production modules copied to a QA helper; only workbench.rs window sizing and QA systems are instrumented; synthetic Bevy KeyboardInput traverses production capture",
+    "Onset/beat/section fixture features are constructed uncalibrated mechanism controls, not model output or MIR quality admission; RMS and peak are measured from canonical PCM",
+    "Exact prior debug externs and project native archives are recorded; subsequent codec C changes were not rebuilt into these dependencies; this GUI does not call the encoder",
+    "The debug dependency basis includes the then-uncommitted cocobeat-stage compile_version/version API; Candidates uses the existing default compile behavior and never calls those added APIs; no immutable whole-commit Cargo build is claimed",
+    "System native libraries and real device/human behavior are outside this check; raw stdout/logs and full capture texts stay in target evidence referenced by SHA-256",
+    "run.json visual_review remained NOT RUN because it records automated execution; separate visual-review.json and root review establish agent visual PASS afterward",
+    "Dedicated harness README was amended after the final run to explain these results and correct the example basis path; input_sha256 preserves the exact historical README, not the amended document"
+  ],
+  "prepared_head": "f4259f828f97e1758f5ab35c98d899df400dc5d1",
+  "input_sha256": {
+    "tools/cocobeat-lab/src/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "tools/cocobeat-lab/src/replay.rs": "b95968a7a1f3581431e22dfb0a487581040bf9e0f467c34d218bad60035d86f7",
+    "tools/cocobeat-lab/src/workbench.rs": "fe04ba618d424f59ac31a3303bd49afc42e074bebc7f76ddd3fd13cb9fd45da7",
+    "tools/cocobeat-lab/src/workbench/input.rs": "4ea2faa0f7de68cdbaa0a1e3d3cc7e19b7270727cda7715848da0095e07508dd",
+    "tools/cocobeat-lab/src/workbench/ui.rs": "5297751df4ee7e74634008d4a3987149268f37cffe5fe86966bc10236844a8db",
+    "tools/cocobeat-lab/src/workbench/replay.rs": "5ada5e3919eebee7ec1f73563845a778e9b7b8cf9fcfd58b3ade4c5a3f4b66fe",
+    "tools/cocobeat-lab/src/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "tools/replay-workbench-check/check.py": "d72a0ba86f345f8f6d3d60af828d449e5e93f1020ef4e0492fdeac3fa285c821",
+    "testdata/synthetic/media-import/stereo-canonical.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+    "tools/candidates-workbench-check/check.py": "fab1c7e42a266a7df684c779c746d2101bfc869d42fda6be9e5b24f9a6bac30f",
+    "tools/candidates-workbench-check/main.rs": "8a54bd92fcd1cd789bcf6e06ec3160890289fabe04556629e633ef14bd5f16e8",
+    "tools/candidates-workbench-check/fixture.rs": "edd8557e10abff6e94f5ae4390cf1874085fae4be32b6c24dd74767d296424e9",
+    "tools/candidates-workbench-check/qa.rs": "0f4a57774da634403d4bd5b75b1c4288a2ea3557ec2b21755d6680360578fb5f",
+    "tools/candidates-workbench-check/README.md": "115a4c9ff692ba28e33e2ffa304c61fc310edbcfc1ff013119f6c1e46355c70d",
+    "assets/i18n/de.json": "8b91f9b0d82754a94a7535abfa4d43669cb2e0829aefa9db9ab8d16b4ecc3577",
+    "assets/i18n/en-GB.json": "ea741945cb52a50e024549c258868d5e244d82c169033295767ec15da826ebfc",
+    "assets/i18n/en-US.json": "ea741945cb52a50e024549c258868d5e244d82c169033295767ec15da826ebfc",
+    "assets/i18n/es-419.json": "faf37420e6c41580354337c47f343ef6e96433e1477d164038301c8334f2b005",
+    "assets/i18n/fr.json": "e8915cb6af0ff710f57e3fb8cbdbf027b8eceb9043c4e5b70596e0797b2a2193",
+    "assets/i18n/ja.json": "d7f5b72cd39ffc1e39d582814b1afdc036d78980155347e2a0cd82188df887cd",
+    "assets/i18n/ko.json": "94ab4b796f7cc5ca5ef67501ac89059bd9f079c794022678517362e40ef1b24a",
+    "assets/i18n/pt-BR.json": "a4abcb33cd4c6fa9aef2c522a142d69f589662ea75ec721d061a76fbcdb4d732",
+    "assets/i18n/ru.json": "130404ec29aa3af0961b38b44d5563f1409845c16b76f7e8bfeacdb476ea351f",
+    "assets/i18n/uk.json": "8bdc3cc0924c26e24532ccde309929707515eeff70a7a597b1cee1ded54e4510",
+    "assets/i18n/zh-CN.json": "47716bb2da011b4cab37803d76e39fe48a3dfdb770eb48b6b13586334efeea5c",
+    "assets/i18n/zh-HK.json": "5738d87cf6d580334818c3c871d8f574eaf10e13cc6bc849f59cac3b8074e534",
+    "assets/i18n/zh-TW.json": "8ee9b598bade166ab7a956c1e724eabf378432078595eedf125a2438b5df5d77"
+  },
+  "helper_source_sha256": {
+    "anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+    "fixture.rs": "edd8557e10abff6e94f5ae4390cf1874085fae4be32b6c24dd74767d296424e9",
+    "main.rs": "8a54bd92fcd1cd789bcf6e06ec3160890289fabe04556629e633ef14bd5f16e8",
+    "replay.rs": "b95968a7a1f3581431e22dfb0a487581040bf9e0f467c34d218bad60035d86f7",
+    "workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+    "workbench/input.rs": "4ea2faa0f7de68cdbaa0a1e3d3cc7e19b7270727cda7715848da0095e07508dd",
+    "workbench/qa.rs": "0f4a57774da634403d4bd5b75b1c4288a2ea3557ec2b21755d6680360578fb5f",
+    "workbench/replay.rs": "5ada5e3919eebee7ec1f73563845a778e9b7b8cf9fcfd58b3ade4c5a3f4b66fe",
+    "workbench/ui.rs": "5297751df4ee7e74634008d4a3987149268f37cffe5fe86966bc10236844a8db",
+    "workbench.rs": "fa8942efb0aef6e920c1b31a91dfe7f2aa759434aefd0f1cebe22f995195356f"
+  },
+  "instrumentation": {
+    "path": "target/candidates-workbench-20261007/gui-readable/instrumentation.patch",
+    "sha256": "66c6545ea768ddc83aada8407d8eadc238c0ab7d0d2a54518a03713041a03510"
+  },
+  "build": {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "--crate-name=candidates_workbench_check",
+      "-D",
+      "warnings",
+      "target/candidates-workbench-20261007/gui-readable/source/main.rs",
+      "-o",
+      "target/candidates-workbench-20261007/gui-readable/candidates-workbench-check",
+      "-L",
+      "dependency=target/debug/deps",
+      "-L",
+      "native=target/debug/build/aotuv_lancer_vorbis_sys-dd96dac3e7cdeed0/out",
+      "-L",
+      "native=target/debug/build/blake3-47cc1414ccdd39bc/out",
+      "-L",
+      "native=target/debug/build/ogg_next_sys-3d2bd792d5b32dcb/out",
+      "-L",
+      "native=target/debug/build/ring-875ac3c34a550a12/out",
+      "-L",
+      "native=/usr/lib",
+      "--extern",
+      "bevy=target/debug/deps/libbevy-e506c02d1615e70c.rlib",
+      "--extern",
+      "cocobeat_core=target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+      "--extern",
+      "cocobeat_editor=target/debug/deps/libcocobeat_editor-0e83ddfff950cc43.rlib",
+      "--extern",
+      "cocobeat_media=target/debug/deps/libcocobeat_media-2f01a43a78ecdb62.rlib",
+      "--extern",
+      "cocobeat_replay=target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+      "--extern",
+      "cocobeat_runtime=target/debug/deps/libcocobeat_runtime-e17f2f06067d9c6b.rlib",
+      "--extern",
+      "cocobeat_schema=target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+      "--extern",
+      "serde=target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+      "--extern",
+      "serde_json=target/debug/deps/libserde_json-87d0501a13f9b79f.rlib"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 11.887239660994965,
+    "dependency_input_sha256": {
+      "target/candidates-workbench-20261007/current-build.jsonl": "9096f19192e4a0f8d1f54a8884e592edb769979be3ea999c68b2820aa6716159",
+      "target/candidates-workbench-20261007/readable-tests/build-result.json": "4a4bc702947e650797c493b6d8e5ffd5ba9ef11eea3e9e577829fedef6f7401d",
+      "target/debug/cocobeat-lab": "7fc0f7b3dd0e93070d604f979857cf93264f2b743ddbf59c87a33e0d16be0563",
+      "target/debug/deps/libserde-1aad0b6b7405f01f.rlib": "a87d41a23125766ef9e47f11b258e8ee1f682089da03febeb83390ec1052472f",
+      "target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib": "062e23738bce99ad8808dcc3813cb8ddd10cb80c1c441d55426934aff7874383",
+      "target/debug/deps/libserde_json-87d0501a13f9b79f.rlib": "bfd95f5bb2620a8373955c4205a6e3a431e774f6c4c8009ec89c58ec3d52325a",
+      "target/debug/deps/libcocobeat_core-b662446071f896ed.rlib": "69ab0a15074b0ef48cceda0b8cc07e8b9800a04dbd1160b8f8164102b9213dbb",
+      "target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib": "e8c0fd1bc94b16399d06f2266dfb35c049df0221a70984fdbcecfce4cdff724c",
+      "target/debug/deps/libcocobeat_editor-0e83ddfff950cc43.rlib": "acb940dbde0d3d20330cbefe883a5b5e90b58d2dd2eaac266af9795c4de2ee0f",
+      "target/debug/deps/libbevy-e506c02d1615e70c.rlib": "e704d2818df209dcacf0889f6fe77b927aff717fed490bc7a76392f3bb56d0a1",
+      "target/debug/deps/libcocobeat_media-2f01a43a78ecdb62.rlib": "311845c9ff514ca648a93bcb709ab293d22540e9ce7f98ee07220401fe0eac4d",
+      "target/debug/deps/libcocobeat_runtime-e17f2f06067d9c6b.rlib": "01e6a49a8fb323cda660fa2b10211cd423e97354b46e657567d9924cb1f39e3a",
+      "target/debug/build/blake3-47cc1414ccdd39bc/out/libblake3_avx512_assembly.a": "8781ec926909b4460ee1b8762df05fd1c70ebd3d534a0c277eb3c73a0126f287",
+      "target/debug/build/blake3-47cc1414ccdd39bc/out/libblake3_sse2_sse41_avx2_assembly.a": "16601e7570657a8beca0b84ca36b3ce8027112722cba53680732fbc8240ee49e",
+      "target/debug/build/ogg_next_sys-3d2bd792d5b32dcb/out/libogg.a": "1fb51e3cd3d49fe33f126602fbe3b085296b9b69b1e302c51f52eccfc1856772",
+      "target/debug/build/ring-875ac3c34a550a12/out/libring_core_0_17_14_.a": "5c0d689bf3b1bf5e1b2997a6e87855f05924ecde91018af2dd19002e5e6fe6d1",
+      "target/debug/build/ring-875ac3c34a550a12/out/libring_core_0_17_14__test.a": "4457c767a5c896742507f6ed62936ad1c4d5ce337bdd1fc72de691dfd55de913",
+      "target/debug/build/aotuv_lancer_vorbis_sys-dd96dac3e7cdeed0/out/libvorbis.a": "ee34c857583a7d51ecb63255f453045c975facfee4d2418473f8eb7edd037697"
+    },
+    "binary_sha256": "ac0b9d0d1cb1313c8b06fdf4ea667de2e8ec8c23aef1dc9bf34179bde37e3a8d",
+    "dependency_basis": "Exact approved debug externs and current lab/catalog hashes from supplied successful rustc test record; subsequent C source edits and the current whole repository are not asserted to have been compiled into these artifacts",
+    "native_link_paths": [
+      "native=target/debug/build/aotuv_lancer_vorbis_sys-dd96dac3e7cdeed0/out",
+      "native=target/debug/build/blake3-47cc1414ccdd39bc/out",
+      "native=target/debug/build/ogg_next_sys-3d2bd792d5b32dcb/out",
+      "native=target/debug/build/ring-875ac3c34a550a12/out",
+      "native=/usr/lib"
+    ],
+    "system_native_libraries": "Environment-provided; not independently hashed or accepted by this check"
+  },
+  "lab_unit_tests": {
+    "command": [
+      "rustc",
+      "--edition=2024",
+      "--crate-name=cocobeat_lab",
+      "--test",
+      "tools/cocobeat-lab/src/main.rs",
+      "-D",
+      "warnings",
+      "-o",
+      "target/candidates-workbench-20261007/readable-tests/lab-tests",
+      "-L",
+      "dependency=target/debug/deps",
+      "-L",
+      "native=target/debug/build/aotuv_lancer_vorbis_sys-dd96dac3e7cdeed0/out",
+      "-L",
+      "native=target/debug/build/blake3-47cc1414ccdd39bc/out",
+      "-L",
+      "native=target/debug/build/ogg_next_sys-3d2bd792d5b32dcb/out",
+      "-L",
+      "native=target/debug/build/ring-875ac3c34a550a12/out",
+      "-L",
+      "native=/usr/lib",
+      "--extern",
+      "bevy=target/debug/deps/libbevy-e506c02d1615e70c.rlib",
+      "--extern",
+      "cocobeat_core=target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+      "--extern",
+      "cocobeat_editor=target/debug/deps/libcocobeat_editor-0e83ddfff950cc43.rlib",
+      "--extern",
+      "cocobeat_media=target/debug/deps/libcocobeat_media-2f01a43a78ecdb62.rlib",
+      "--extern",
+      "cocobeat_net=target/debug/deps/libcocobeat_net-95ad044c8b972e05.rlib",
+      "--extern",
+      "cocobeat_replay=target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+      "--extern",
+      "cocobeat_runtime=target/debug/deps/libcocobeat_runtime-e17f2f06067d9c6b.rlib",
+      "--extern",
+      "cocobeat_schema=target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+      "--extern",
+      "cocobeat_stage=target/debug/deps/libcocobeat_stage-414fab68ab8e7288.rlib",
+      "--extern",
+      "serde=target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+      "--extern",
+      "serde_json=target/debug/deps/libserde_json-87d0501a13f9b79f.rlib"
+    ],
+    "build_record": {
+      "path": "target/candidates-workbench-20261007/readable-tests/build-result.json",
+      "sha256": "4a4bc702947e650797c493b6d8e5ffd5ba9ef11eea3e9e577829fedef6f7401d"
+    },
+    "source_sha256": {
+      "tools/cocobeat-lab/src/main.rs": "93243d2fcccf70cfc378966ae2efbb028a2ca80287fac09752da82d1f5b5a09b",
+      "tools/cocobeat-lab/src/content.rs": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+      "tools/cocobeat-lab/src/timing.rs": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+      "tools/cocobeat-lab/src/media.rs": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+      "tools/cocobeat-lab/src/package.rs": "6eb918e9fdea728464a5ed95a5593a6c7d6b4c345458e3d6f915f90f7c78620b",
+      "tools/cocobeat-lab/src/stage.rs": "6a46f5a85321c93659b8a7ee34d25b7fea88337bc9915ebe3a5971709ae46243",
+      "tools/cocobeat-lab/src/editor.rs": "4301e5d77f30c34c682236024709f9dcd4b708d4d26be8fac655df22151d0093",
+      "tools/cocobeat-lab/src/anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+      "tools/cocobeat-lab/src/replay.rs": "b95968a7a1f3581431e22dfb0a487581040bf9e0f467c34d218bad60035d86f7",
+      "tools/cocobeat-lab/src/workbench.rs": "fe04ba618d424f59ac31a3303bd49afc42e074bebc7f76ddd3fd13cb9fd45da7",
+      "tools/cocobeat-lab/src/workbench/ui.rs": "5297751df4ee7e74634008d4a3987149268f37cffe5fe86966bc10236844a8db",
+      "tools/cocobeat-lab/src/workbench/input.rs": "4ea2faa0f7de68cdbaa0a1e3d3cc7e19b7270727cda7715848da0095e07508dd",
+      "tools/cocobeat-lab/src/workbench/replay.rs": "5ada5e3919eebee7ec1f73563845a778e9b7b8cf9fcfd58b3ade4c5a3f4b66fe",
+      "tools/cocobeat-lab/src/workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b"
+    },
+    "externs": {
+      "serde": {
+        "path": "target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+        "sha256": "a87d41a23125766ef9e47f11b258e8ee1f682089da03febeb83390ec1052472f"
+      },
+      "cocobeat_schema": {
+        "path": "target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+        "sha256": "062e23738bce99ad8808dcc3813cb8ddd10cb80c1c441d55426934aff7874383"
+      },
+      "serde_json": {
+        "path": "target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+        "sha256": "bfd95f5bb2620a8373955c4205a6e3a431e774f6c4c8009ec89c58ec3d52325a"
+      },
+      "cocobeat_core": {
+        "path": "target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+        "sha256": "69ab0a15074b0ef48cceda0b8cc07e8b9800a04dbd1160b8f8164102b9213dbb"
+      },
+      "cocobeat_replay": {
+        "path": "target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+        "sha256": "e8c0fd1bc94b16399d06f2266dfb35c049df0221a70984fdbcecfce4cdff724c"
+      },
+      "cocobeat_editor": {
+        "path": "target/debug/deps/libcocobeat_editor-0e83ddfff950cc43.rlib",
+        "sha256": "acb940dbde0d3d20330cbefe883a5b5e90b58d2dd2eaac266af9795c4de2ee0f"
+      },
+      "bevy": {
+        "path": "target/debug/deps/libbevy-e506c02d1615e70c.rlib",
+        "sha256": "e704d2818df209dcacf0889f6fe77b927aff717fed490bc7a76392f3bb56d0a1"
+      },
+      "cocobeat_stage": {
+        "path": "target/debug/deps/libcocobeat_stage-414fab68ab8e7288.rlib",
+        "sha256": "22542e914ca97e4006a3b838ebab16bb86dfd81c8c6b18541ae96bfcee38071b"
+      },
+      "cocobeat_media": {
+        "path": "target/debug/deps/libcocobeat_media-2f01a43a78ecdb62.rlib",
+        "sha256": "311845c9ff514ca648a93bcb709ab293d22540e9ce7f98ee07220401fe0eac4d"
+      },
+      "cocobeat_net": {
+        "path": "target/debug/deps/libcocobeat_net-95ad044c8b972e05.rlib",
+        "sha256": "9e97aaac7dfd5c72a941883f9553d2777290e73d57129d9b82275d3dbe687afb"
+      },
+      "cocobeat_runtime": {
+        "path": "target/debug/deps/libcocobeat_runtime-e17f2f06067d9c6b.rlib",
+        "sha256": "01e6a49a8fb323cda660fa2b10211cd423e97354b46e657567d9924cb1f39e3a"
+      }
+    },
+    "result": {
+      "command": [
+        "target/candidates-workbench-20261007/readable-tests/lab-tests",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "binary_sha256": "789506b5d78c9d05bb20e8da48f9f91ec0119abc21fd8a8bdd3d44012181bb11",
+      "log_sha256": "402d35db29b643759eb2e8013072116bc279858a11b8a9e720b6d7543c79d67d",
+      "scope": "All 28 actual current lab tests with approved prior debug dependency artifacts; no Cargo/GPU"
+    },
+    "test_count": 28
+  },
+  "fixture": {
+    "command": [
+      "target/candidates-workbench-20261007/gui-readable/candidates-workbench-check",
+      "--fixture",
+      "target/candidates-workbench-20261007/gui-readable/fixtures"
+    ],
+    "cwd": "target/candidates-workbench-20261007/gui-readable",
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 0.2142064209911041,
+    "cwd_memory_session": {
+      "existed_before": false,
+      "created_by_fixture": false,
+      "sha256": null
+    },
+    "log_sha256": "4b3eaa20a1fc4bca600380f486fd94e1a7fefd49a1a0ea98bea3ca04de457f4d",
+    "generated_sha256": {
+      "empty/package/analysis.bin": "1cfa82d96a6b3ebf6454d9046be2891da882ef311eda8438df742e5bb1992deb",
+      "empty/package/chart.bin": "5847a0a8ca564b7e3f1584bfa1e974881ce8d39fca6066ba21b427c32be3a75d",
+      "empty/package/song.audio.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+      "empty/package/song.package": "49bed1dcec78eb5efeabdaf25d5450bb60e42e6e369b1efc1d4926b53865bdee",
+      "empty/report.json": "c294b6079c1898e09bab463fab246be440f67a11c0754aa913c074fd6ae5a329",
+      "rich/package/analysis.bin": "39c2ee7d6167fb40d59e2496cdeafa1a01135659d58a5f58293b593d76525b55",
+      "rich/package/chart.bin": "5847a0a8ca564b7e3f1584bfa1e974881ce8d39fca6066ba21b427c32be3a75d",
+      "rich/package/song.audio.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+      "rich/package/song.package": "47b53e55ec70067d53c09693339ee5a095478f118ae15e689d9f20858502a924",
+      "rich/report.json": "5c8c82f2d544280e28e1545c57987571df9142f2d6215a1737702c3c58c16e19"
+    }
+  },
+  "cases": [
+    {
+      "kind": "rich",
+      "size": [
+        1280,
+        800
+      ],
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-w",
+        "1280",
+        "-h",
+        "800",
+        "--",
+        "target/candidates-workbench-20261007/gui-readable/candidates-workbench-check",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/rich/package",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/rich/report.json"
+      ],
+      "cwd": "target/candidates-workbench-20261007/gui-readable/case-rich-1280",
+      "owned_process_group": 200350,
+      "temporary_runtime_dir": "/tmp/cocobeat-candidates-eb1ui4w1",
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 8.080565181007842,
+      "cleanup_signals": [],
+      "run_log_sha256": "51ec4da6b547aba3bc1203088d3142c8f5cc8a82fb60345015c6ba4e211e31bc",
+      "png_sha256": {
+        "accepted-wave-list.png": "abcce3e859f203d4ed946b46be46d3d8a24b55647c1a2e438eb548e012b2e10c",
+        "dense-blocker-details.png": "efdd3b6fdc3a9bab8377a3e185b03f67cf5785e56967c112e2ae83361ee90bde",
+        "details-bottom.png": "90c5374fc205864f7ac856d6138ce524f4ffaf436ba74ed0c04a083d01acbd0e",
+        "list-tail.png": "5beac76f709934dd1c96636ceb59a7cc52a0051335aa0b373afd1a6b9607d705",
+        "unknown-details.png": "43ba23a269d04a0ab8468b4ca2bcb44bcb9e242bdf2afef74425e24710ac6a12"
+      },
+      "input_unchanged": true,
+      "finished": {
+        "dirty": false,
+        "drag": false,
+        "editing": false,
+        "event": "finished",
+        "message_count": 240,
+        "production_admission": "not_assessed",
+        "readonly": true,
+        "records_checked": 40,
+        "saving": false,
+        "screenshots": [
+          "unknown-details",
+          "list-tail",
+          "dense-blocker-details",
+          "accepted-wave-list",
+          "details-bottom"
+        ],
+        "source_chart_anchors": 1
+      },
+      "selected_records": [
+        {
+          "cursor": 0,
+          "event": "record_checked",
+          "index": 0
+        },
+        {
+          "cursor": 500,
+          "event": "record_checked",
+          "index": 1
+        },
+        {
+          "cursor": 1000,
+          "event": "record_checked",
+          "index": 2
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        },
+        {
+          "cursor": 1201,
+          "event": "record_checked",
+          "index": 4
+        },
+        {
+          "cursor": 1300,
+          "event": "record_checked",
+          "index": 5
+        },
+        {
+          "cursor": 1390,
+          "event": "record_checked",
+          "index": 6
+        },
+        {
+          "cursor": 1480,
+          "event": "record_checked",
+          "index": 7
+        },
+        {
+          "cursor": 1570,
+          "event": "record_checked",
+          "index": 8
+        },
+        {
+          "cursor": 1660,
+          "event": "record_checked",
+          "index": 9
+        },
+        {
+          "cursor": 1750,
+          "event": "record_checked",
+          "index": 10
+        },
+        {
+          "cursor": 1840,
+          "event": "record_checked",
+          "index": 11
+        },
+        {
+          "cursor": 1930,
+          "event": "record_checked",
+          "index": 12
+        },
+        {
+          "cursor": 2020,
+          "event": "record_checked",
+          "index": 13
+        },
+        {
+          "cursor": 2110,
+          "event": "record_checked",
+          "index": 14
+        },
+        {
+          "cursor": 2200,
+          "event": "record_checked",
+          "index": 15
+        },
+        {
+          "cursor": 2290,
+          "event": "record_checked",
+          "index": 16
+        },
+        {
+          "cursor": 2380,
+          "event": "record_checked",
+          "index": 17
+        },
+        {
+          "cursor": 2470,
+          "event": "record_checked",
+          "index": 18
+        },
+        {
+          "cursor": 2560,
+          "event": "record_checked",
+          "index": 19
+        },
+        {
+          "cursor": 2650,
+          "event": "record_checked",
+          "index": 20
+        },
+        {
+          "cursor": 2740,
+          "event": "record_checked",
+          "index": 21
+        },
+        {
+          "cursor": 2830,
+          "event": "record_checked",
+          "index": 22
+        },
+        {
+          "cursor": 2920,
+          "event": "record_checked",
+          "index": 23
+        },
+        {
+          "cursor": 3010,
+          "event": "record_checked",
+          "index": 24
+        },
+        {
+          "cursor": 3100,
+          "event": "record_checked",
+          "index": 25
+        },
+        {
+          "cursor": 3190,
+          "event": "record_checked",
+          "index": 26
+        },
+        {
+          "cursor": 3280,
+          "event": "record_checked",
+          "index": 27
+        },
+        {
+          "cursor": 3370,
+          "event": "record_checked",
+          "index": 28
+        },
+        {
+          "cursor": 3460,
+          "event": "record_checked",
+          "index": 29
+        },
+        {
+          "cursor": 3550,
+          "event": "record_checked",
+          "index": 30
+        },
+        {
+          "cursor": 3640,
+          "event": "record_checked",
+          "index": 31
+        },
+        {
+          "cursor": 3730,
+          "event": "record_checked",
+          "index": 32
+        },
+        {
+          "cursor": 3820,
+          "event": "record_checked",
+          "index": 33
+        },
+        {
+          "cursor": 3910,
+          "event": "record_checked",
+          "index": 34
+        },
+        {
+          "cursor": 4000,
+          "event": "record_checked",
+          "index": 35
+        },
+        {
+          "cursor": 4090,
+          "event": "record_checked",
+          "index": 36
+        },
+        {
+          "cursor": 4180,
+          "event": "record_checked",
+          "index": 37
+        },
+        {
+          "cursor": 4270,
+          "event": "record_checked",
+          "index": 38
+        },
+        {
+          "cursor": 4360,
+          "event": "record_checked",
+          "index": 39
+        },
+        {
+          "cursor": 4270,
+          "event": "record_checked",
+          "index": 38
+        },
+        {
+          "cursor": 4180,
+          "event": "record_checked",
+          "index": 37
+        },
+        {
+          "cursor": 4090,
+          "event": "record_checked",
+          "index": 36
+        },
+        {
+          "cursor": 4000,
+          "event": "record_checked",
+          "index": 35
+        },
+        {
+          "cursor": 3910,
+          "event": "record_checked",
+          "index": 34
+        },
+        {
+          "cursor": 3820,
+          "event": "record_checked",
+          "index": 33
+        },
+        {
+          "cursor": 3730,
+          "event": "record_checked",
+          "index": 32
+        },
+        {
+          "cursor": 3640,
+          "event": "record_checked",
+          "index": 31
+        },
+        {
+          "cursor": 3550,
+          "event": "record_checked",
+          "index": 30
+        },
+        {
+          "cursor": 3460,
+          "event": "record_checked",
+          "index": 29
+        },
+        {
+          "cursor": 3370,
+          "event": "record_checked",
+          "index": 28
+        },
+        {
+          "cursor": 3280,
+          "event": "record_checked",
+          "index": 27
+        },
+        {
+          "cursor": 3190,
+          "event": "record_checked",
+          "index": 26
+        },
+        {
+          "cursor": 3100,
+          "event": "record_checked",
+          "index": 25
+        },
+        {
+          "cursor": 3010,
+          "event": "record_checked",
+          "index": 24
+        },
+        {
+          "cursor": 2920,
+          "event": "record_checked",
+          "index": 23
+        },
+        {
+          "cursor": 2830,
+          "event": "record_checked",
+          "index": 22
+        },
+        {
+          "cursor": 2740,
+          "event": "record_checked",
+          "index": 21
+        },
+        {
+          "cursor": 2650,
+          "event": "record_checked",
+          "index": 20
+        },
+        {
+          "cursor": 2560,
+          "event": "record_checked",
+          "index": 19
+        },
+        {
+          "cursor": 2470,
+          "event": "record_checked",
+          "index": 18
+        },
+        {
+          "cursor": 2380,
+          "event": "record_checked",
+          "index": 17
+        },
+        {
+          "cursor": 2290,
+          "event": "record_checked",
+          "index": 16
+        },
+        {
+          "cursor": 2200,
+          "event": "record_checked",
+          "index": 15
+        },
+        {
+          "cursor": 2110,
+          "event": "record_checked",
+          "index": 14
+        },
+        {
+          "cursor": 2020,
+          "event": "record_checked",
+          "index": 13
+        },
+        {
+          "cursor": 1930,
+          "event": "record_checked",
+          "index": 12
+        },
+        {
+          "cursor": 1840,
+          "event": "record_checked",
+          "index": 11
+        },
+        {
+          "cursor": 1750,
+          "event": "record_checked",
+          "index": 10
+        },
+        {
+          "cursor": 1660,
+          "event": "record_checked",
+          "index": 9
+        },
+        {
+          "cursor": 1570,
+          "event": "record_checked",
+          "index": 8
+        },
+        {
+          "cursor": 1480,
+          "event": "record_checked",
+          "index": 7
+        },
+        {
+          "cursor": 1390,
+          "event": "record_checked",
+          "index": 6
+        },
+        {
+          "cursor": 1300,
+          "event": "record_checked",
+          "index": 5
+        },
+        {
+          "cursor": 1201,
+          "event": "record_checked",
+          "index": 4
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        },
+        {
+          "cursor": 1000,
+          "event": "record_checked",
+          "index": 2
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        }
+      ],
+      "capture_state": [
+        {
+          "computed_scroll": 0.0,
+          "cursor": 0,
+          "event": "screenshot_request",
+          "first_row": 0,
+          "focus": "Details",
+          "maximum_scroll": 778.0,
+          "name": "unknown-details",
+          "row_count": 13,
+          "selected": 0,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 4360,
+          "event": "screenshot_request",
+          "first_row": 27,
+          "focus": "List",
+          "maximum_scroll": 962.0,
+          "name": "list-tail",
+          "row_count": 13,
+          "selected": 39,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 1000,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "Details",
+          "maximum_scroll": 1147.0,
+          "name": "dense-blocker-details",
+          "row_count": 13,
+          "selected": 2,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 1200,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "List",
+          "maximum_scroll": 1030.0,
+          "name": "accepted-wave-list",
+          "row_count": 13,
+          "selected": 3,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 1030.0,
+          "cursor": 1200,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "Details",
+          "maximum_scroll": 1030.0,
+          "name": "details-bottom",
+          "row_count": 13,
+          "selected": 3,
+          "state_scroll": 1030.0
+        }
+      ],
+      "log_diagnostic": "ICU4X complex-script segmentation diagnostic retained in original logs"
+    },
+    {
+      "kind": "rich",
+      "size": [
+        640,
+        480
+      ],
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-w",
+        "640",
+        "-h",
+        "480",
+        "--",
+        "target/candidates-workbench-20261007/gui-readable/candidates-workbench-check",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/rich/package",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/rich/report.json"
+      ],
+      "cwd": "target/candidates-workbench-20261007/gui-readable/case-rich-640",
+      "owned_process_group": 200490,
+      "temporary_runtime_dir": "/tmp/cocobeat-candidates-r36990ft",
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 6.675677487000939,
+      "cleanup_signals": [],
+      "run_log_sha256": "4bb8af0822dae733e0ed8506ed8d227c2826a368ab0300b4479d38c003b13f94",
+      "png_sha256": {
+        "accepted-wave-list.png": "aa9597e273c034402d094aa6e7735b66bd61c64183b33165101d2a80a40dde0b",
+        "dense-blocker-details.png": "266386eb843b65d9d75612d3ed8e526627b9bde9be990be5fd19190b538e7a62",
+        "details-bottom.png": "303d7b7630aae5fd02fb03935abc81672dc95ad2f5b95c27b6add2cbd5866b9c",
+        "list-tail.png": "6a25f3a27ba7d4256f17f2747021012be1ef3cb79943d875bceb484c467e6360",
+        "unknown-details.png": "47f045e4f175da811d149c019a9191280d1fffaccafcaff57e0c1e5e86735ab8"
+      },
+      "input_unchanged": true,
+      "finished": {
+        "dirty": false,
+        "drag": false,
+        "editing": false,
+        "event": "finished",
+        "message_count": 252,
+        "production_admission": "not_assessed",
+        "readonly": true,
+        "records_checked": 40,
+        "saving": false,
+        "screenshots": [
+          "unknown-details",
+          "list-tail",
+          "dense-blocker-details",
+          "accepted-wave-list",
+          "details-bottom"
+        ],
+        "source_chart_anchors": 1
+      },
+      "selected_records": [
+        {
+          "cursor": 0,
+          "event": "record_checked",
+          "index": 0
+        },
+        {
+          "cursor": 500,
+          "event": "record_checked",
+          "index": 1
+        },
+        {
+          "cursor": 1000,
+          "event": "record_checked",
+          "index": 2
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        },
+        {
+          "cursor": 1201,
+          "event": "record_checked",
+          "index": 4
+        },
+        {
+          "cursor": 1300,
+          "event": "record_checked",
+          "index": 5
+        },
+        {
+          "cursor": 1390,
+          "event": "record_checked",
+          "index": 6
+        },
+        {
+          "cursor": 1480,
+          "event": "record_checked",
+          "index": 7
+        },
+        {
+          "cursor": 1570,
+          "event": "record_checked",
+          "index": 8
+        },
+        {
+          "cursor": 1660,
+          "event": "record_checked",
+          "index": 9
+        },
+        {
+          "cursor": 1750,
+          "event": "record_checked",
+          "index": 10
+        },
+        {
+          "cursor": 1840,
+          "event": "record_checked",
+          "index": 11
+        },
+        {
+          "cursor": 1930,
+          "event": "record_checked",
+          "index": 12
+        },
+        {
+          "cursor": 2020,
+          "event": "record_checked",
+          "index": 13
+        },
+        {
+          "cursor": 2110,
+          "event": "record_checked",
+          "index": 14
+        },
+        {
+          "cursor": 2200,
+          "event": "record_checked",
+          "index": 15
+        },
+        {
+          "cursor": 2290,
+          "event": "record_checked",
+          "index": 16
+        },
+        {
+          "cursor": 2380,
+          "event": "record_checked",
+          "index": 17
+        },
+        {
+          "cursor": 2470,
+          "event": "record_checked",
+          "index": 18
+        },
+        {
+          "cursor": 2560,
+          "event": "record_checked",
+          "index": 19
+        },
+        {
+          "cursor": 2650,
+          "event": "record_checked",
+          "index": 20
+        },
+        {
+          "cursor": 2740,
+          "event": "record_checked",
+          "index": 21
+        },
+        {
+          "cursor": 2830,
+          "event": "record_checked",
+          "index": 22
+        },
+        {
+          "cursor": 2920,
+          "event": "record_checked",
+          "index": 23
+        },
+        {
+          "cursor": 3010,
+          "event": "record_checked",
+          "index": 24
+        },
+        {
+          "cursor": 3100,
+          "event": "record_checked",
+          "index": 25
+        },
+        {
+          "cursor": 3190,
+          "event": "record_checked",
+          "index": 26
+        },
+        {
+          "cursor": 3280,
+          "event": "record_checked",
+          "index": 27
+        },
+        {
+          "cursor": 3370,
+          "event": "record_checked",
+          "index": 28
+        },
+        {
+          "cursor": 3460,
+          "event": "record_checked",
+          "index": 29
+        },
+        {
+          "cursor": 3550,
+          "event": "record_checked",
+          "index": 30
+        },
+        {
+          "cursor": 3640,
+          "event": "record_checked",
+          "index": 31
+        },
+        {
+          "cursor": 3730,
+          "event": "record_checked",
+          "index": 32
+        },
+        {
+          "cursor": 3820,
+          "event": "record_checked",
+          "index": 33
+        },
+        {
+          "cursor": 3910,
+          "event": "record_checked",
+          "index": 34
+        },
+        {
+          "cursor": 4000,
+          "event": "record_checked",
+          "index": 35
+        },
+        {
+          "cursor": 4090,
+          "event": "record_checked",
+          "index": 36
+        },
+        {
+          "cursor": 4180,
+          "event": "record_checked",
+          "index": 37
+        },
+        {
+          "cursor": 4270,
+          "event": "record_checked",
+          "index": 38
+        },
+        {
+          "cursor": 4360,
+          "event": "record_checked",
+          "index": 39
+        },
+        {
+          "cursor": 4270,
+          "event": "record_checked",
+          "index": 38
+        },
+        {
+          "cursor": 4180,
+          "event": "record_checked",
+          "index": 37
+        },
+        {
+          "cursor": 4090,
+          "event": "record_checked",
+          "index": 36
+        },
+        {
+          "cursor": 4000,
+          "event": "record_checked",
+          "index": 35
+        },
+        {
+          "cursor": 3910,
+          "event": "record_checked",
+          "index": 34
+        },
+        {
+          "cursor": 3820,
+          "event": "record_checked",
+          "index": 33
+        },
+        {
+          "cursor": 3730,
+          "event": "record_checked",
+          "index": 32
+        },
+        {
+          "cursor": 3640,
+          "event": "record_checked",
+          "index": 31
+        },
+        {
+          "cursor": 3550,
+          "event": "record_checked",
+          "index": 30
+        },
+        {
+          "cursor": 3460,
+          "event": "record_checked",
+          "index": 29
+        },
+        {
+          "cursor": 3370,
+          "event": "record_checked",
+          "index": 28
+        },
+        {
+          "cursor": 3280,
+          "event": "record_checked",
+          "index": 27
+        },
+        {
+          "cursor": 3190,
+          "event": "record_checked",
+          "index": 26
+        },
+        {
+          "cursor": 3100,
+          "event": "record_checked",
+          "index": 25
+        },
+        {
+          "cursor": 3010,
+          "event": "record_checked",
+          "index": 24
+        },
+        {
+          "cursor": 2920,
+          "event": "record_checked",
+          "index": 23
+        },
+        {
+          "cursor": 2830,
+          "event": "record_checked",
+          "index": 22
+        },
+        {
+          "cursor": 2740,
+          "event": "record_checked",
+          "index": 21
+        },
+        {
+          "cursor": 2650,
+          "event": "record_checked",
+          "index": 20
+        },
+        {
+          "cursor": 2560,
+          "event": "record_checked",
+          "index": 19
+        },
+        {
+          "cursor": 2470,
+          "event": "record_checked",
+          "index": 18
+        },
+        {
+          "cursor": 2380,
+          "event": "record_checked",
+          "index": 17
+        },
+        {
+          "cursor": 2290,
+          "event": "record_checked",
+          "index": 16
+        },
+        {
+          "cursor": 2200,
+          "event": "record_checked",
+          "index": 15
+        },
+        {
+          "cursor": 2110,
+          "event": "record_checked",
+          "index": 14
+        },
+        {
+          "cursor": 2020,
+          "event": "record_checked",
+          "index": 13
+        },
+        {
+          "cursor": 1930,
+          "event": "record_checked",
+          "index": 12
+        },
+        {
+          "cursor": 1840,
+          "event": "record_checked",
+          "index": 11
+        },
+        {
+          "cursor": 1750,
+          "event": "record_checked",
+          "index": 10
+        },
+        {
+          "cursor": 1660,
+          "event": "record_checked",
+          "index": 9
+        },
+        {
+          "cursor": 1570,
+          "event": "record_checked",
+          "index": 8
+        },
+        {
+          "cursor": 1480,
+          "event": "record_checked",
+          "index": 7
+        },
+        {
+          "cursor": 1390,
+          "event": "record_checked",
+          "index": 6
+        },
+        {
+          "cursor": 1300,
+          "event": "record_checked",
+          "index": 5
+        },
+        {
+          "cursor": 1201,
+          "event": "record_checked",
+          "index": 4
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        },
+        {
+          "cursor": 1000,
+          "event": "record_checked",
+          "index": 2
+        },
+        {
+          "cursor": 1200,
+          "event": "record_checked",
+          "index": 3
+        }
+      ],
+      "capture_state": [
+        {
+          "computed_scroll": 0.0,
+          "cursor": 0,
+          "event": "screenshot_request",
+          "first_row": 0,
+          "focus": "Details",
+          "maximum_scroll": 1081.0,
+          "name": "unknown-details",
+          "row_count": 5,
+          "selected": 0,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 4360,
+          "event": "screenshot_request",
+          "first_row": 35,
+          "focus": "List",
+          "maximum_scroll": 0.0,
+          "name": "list-tail",
+          "row_count": 5,
+          "selected": 39,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 1000,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "Details",
+          "maximum_scroll": 1451.0,
+          "name": "dense-blocker-details",
+          "row_count": 5,
+          "selected": 2,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 0.0,
+          "cursor": 1200,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "List",
+          "maximum_scroll": 0.0,
+          "name": "accepted-wave-list",
+          "row_count": 5,
+          "selected": 3,
+          "state_scroll": 0.0
+        },
+        {
+          "computed_scroll": 1333.0,
+          "cursor": 1200,
+          "event": "screenshot_request",
+          "first_row": 2,
+          "focus": "Details",
+          "maximum_scroll": 1333.0,
+          "name": "details-bottom",
+          "row_count": 5,
+          "selected": 3,
+          "state_scroll": 1333.0
+        }
+      ],
+      "log_diagnostic": "ICU4X complex-script segmentation diagnostic retained in original logs"
+    },
+    {
+      "kind": "empty",
+      "size": [
+        640,
+        480
+      ],
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "640",
+        "-H",
+        "480",
+        "-w",
+        "640",
+        "-h",
+        "480",
+        "--",
+        "target/candidates-workbench-20261007/gui-readable/candidates-workbench-check",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/empty/package",
+        "target/candidates-workbench-20261007/gui-readable/fixtures/empty/report.json"
+      ],
+      "cwd": "target/candidates-workbench-20261007/gui-readable/case-empty-640",
+      "owned_process_group": 200596,
+      "temporary_runtime_dir": "/tmp/cocobeat-candidates-rgij2rol",
+      "exit_code": 0,
+      "timed_out": false,
+      "wall_seconds": 2.5681653850042494,
+      "cleanup_signals": [],
+      "run_log_sha256": "354036ac6f3d84aa8fe03364f69823e40bfb5a8df77e0378aa0a85d5fba28d5e",
+      "png_sha256": {
+        "zero-candidates.png": "09195d14fcac002b35c0ab590701127ac515b7fd0b1dfce846ad2fee9b285c66"
+      },
+      "input_unchanged": true,
+      "finished": {
+        "dirty": false,
+        "drag": false,
+        "editing": false,
+        "event": "finished",
+        "message_count": 18,
+        "production_admission": "not_assessed",
+        "readonly": true,
+        "records_checked": 0,
+        "saving": false,
+        "screenshots": [
+          "zero-candidates"
+        ],
+        "source_chart_anchors": 1
+      },
+      "selected_records": [],
+      "capture_state": [
+        {
+          "computed_scroll": 0.0,
+          "cursor": 0,
+          "event": "screenshot_request",
+          "first_row": 0,
+          "focus": "Details",
+          "maximum_scroll": 577.0,
+          "name": "zero-candidates",
+          "row_count": 5,
+          "selected": 0,
+          "state_scroll": 0.0
+        }
+      ],
+      "log_diagnostic": "ICU4X complex-script segmentation diagnostic retained in original logs"
+    }
+  ],
+  "native_gpu": {
+    "adapter": "AMD Radeon RX 6650 XT (RADV NAVI23)",
+    "driver": "radv / Mesa 26.2.4-arch3.1",
+    "backend": "Vulkan",
+    "evidence": {
+      "path": "target/candidates-workbench-20261007/gui-readable/case-rich-1280/run.log",
+      "sha256": "51ec4da6b547aba3bc1203088d3142c8f5cc8a82fb60345015c6ba4e211e31bc"
+    }
+  },
+  "visual_review": {
+    "status": "PASS",
+    "scope": "Agent visual inspection of all 11 actual native PNGs in the controlled zh-CN software fixture; no claim of physical/native-language/human acceptance",
+    "reviewed_png_sha256": {
+      "case-rich-1280/unknown-details.png": "43ba23a269d04a0ab8468b4ca2bcb44bcb9e242bdf2afef74425e24710ac6a12",
+      "case-rich-1280/list-tail.png": "5beac76f709934dd1c96636ceb59a7cc52a0051335aa0b373afd1a6b9607d705",
+      "case-rich-1280/dense-blocker-details.png": "efdd3b6fdc3a9bab8377a3e185b03f67cf5785e56967c112e2ae83361ee90bde",
+      "case-rich-1280/accepted-wave-list.png": "abcce3e859f203d4ed946b46be46d3d8a24b55647c1a2e438eb548e012b2e10c",
+      "case-rich-1280/details-bottom.png": "90c5374fc205864f7ac856d6138ce524f4ffaf436ba74ed0c04a083d01acbd0e",
+      "case-rich-640/unknown-details.png": "47f045e4f175da811d149c019a9191280d1fffaccafcaff57e0c1e5e86735ab8",
+      "case-rich-640/list-tail.png": "6a25f3a27ba7d4256f17f2747021012be1ef3cb79943d875bceb484c467e6360",
+      "case-rich-640/dense-blocker-details.png": "266386eb843b65d9d75612d3ed8e526627b9bde9be990be5fd19190b538e7a62",
+      "case-rich-640/accepted-wave-list.png": "aa9597e273c034402d094aa6e7735b66bd61c64183b33165101d2a80a40dde0b",
+      "case-rich-640/details-bottom.png": "303d7b7630aae5fd02fb03935abc81672dc95ad2f5b95c27b6add2cbd5866b9c",
+      "case-empty-640/zero-candidates.png": "09195d14fcac002b35c0ab590701127ac515b7fd0b1dfce846ad2fee9b285c66"
+    },
+    "observed": [
+      "Selected onset index, exact frame, original confidence and decision now appear at the top of the details viewport in both sizes",
+      "Dense rejection has separate exact cursor/blocker markers and accessible raw relationship fields",
+      "Source chart marker remains distinct from proposal points",
+      "List selection remains visible at tail and details can scroll to original source, admission warning and help",
+      "Zero-candidate mode retains zero count and original source chart; raw null denotes no selected evidence"
+    ],
+    "physical_audio_human_acceptance": "NOT RUN",
+    "prior_visual_problem_record": "../gui-final/visual-review.json",
+    "run_sha256": "386261c3759f38a5298880e6deb5c48a57723c512009344d821f19de825ebe2c",
+    "root_review": "PASS; parent agent independently viewed all 11 exact PNGs before this record"
+  },
+  "catalog_check": {
+    "status": "PASS",
+    "locale_count": 13,
+    "keys_per_locale": 206,
+    "placeholder_rule": "Matching nonempty lowercase/underscore placeholder sets for every matching key; same syntax rules as runtime i18n tests",
+    "candidate_keys": {
+      "candidates.title": [],
+      "candidates.records": [
+        "count"
+      ],
+      "candidates.row": [
+        "frame",
+        "index",
+        "kind"
+      ],
+      "candidates.legend": [],
+      "candidates.help": [],
+      "candidates.fields": []
+    },
+    "catalog_sha256": {
+      "assets/i18n/de.json": "8b91f9b0d82754a94a7535abfa4d43669cb2e0829aefa9db9ab8d16b4ecc3577",
+      "assets/i18n/en-GB.json": "ea741945cb52a50e024549c258868d5e244d82c169033295767ec15da826ebfc",
+      "assets/i18n/en-US.json": "ea741945cb52a50e024549c258868d5e244d82c169033295767ec15da826ebfc",
+      "assets/i18n/es-419.json": "faf37420e6c41580354337c47f343ef6e96433e1477d164038301c8334f2b005",
+      "assets/i18n/fr.json": "e8915cb6af0ff710f57e3fb8cbdbf027b8eceb9043c4e5b70596e0797b2a2193",
+      "assets/i18n/ja.json": "d7f5b72cd39ffc1e39d582814b1afdc036d78980155347e2a0cd82188df887cd",
+      "assets/i18n/ko.json": "94ab4b796f7cc5ca5ef67501ac89059bd9f079c794022678517362e40ef1b24a",
+      "assets/i18n/pt-BR.json": "a4abcb33cd4c6fa9aef2c522a142d69f589662ea75ec721d061a76fbcdb4d732",
+      "assets/i18n/ru.json": "130404ec29aa3af0961b38b44d5563f1409845c16b76f7e8bfeacdb476ea351f",
+      "assets/i18n/uk.json": "8bdc3cc0924c26e24532ccde309929707515eeff70a7a597b1cee1ded54e4510",
+      "assets/i18n/zh-CN.json": "47716bb2da011b4cab37803d76e39fe48a3dfdb770eb48b6b13586334efeea5c",
+      "assets/i18n/zh-HK.json": "5738d87cf6d580334818c3c871d8f574eaf10e13cc6bc849f59cac3b8074e534",
+      "assets/i18n/zh-TW.json": "8ee9b598bade166ab7a956c1e724eabf378432078595eedf125a2438b5df5d77"
+    }
+  },
+  "raw_evidence": [
+    {
+      "path": "target/candidates-workbench-20261007/gui-readable/prepared.json",
+      "sha256": "d8351510ab64954e91947433cb09759c40e83d82ba7888fd1086c9b801d3cf35"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/gui-readable/build.json",
+      "sha256": "b4265dcd6e565f796033364ee97874efe57b3500b90bb790851c7d2adaec933c"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/gui-readable/fixture.json",
+      "sha256": "2df127cf67bc4953fce811516945e554b5b2af10e279dabe5a16cf3eb66d3658"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/gui-readable/run.json",
+      "sha256": "386261c3759f38a5298880e6deb5c48a57723c512009344d821f19de825ebe2c"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/gui-readable/visual-review.json",
+      "sha256": "b3077ff70c154e06150ad3e9e41672b6c1af47f1c76cad0bdde7f09bd1c50d7a"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/readable-tests/build-command.json",
+      "sha256": "b001f348cb77ff8ad59aa0c277bf92de9d4789bf736c4ead5f9b6cc8270bd22b"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/readable-tests/build-result.json",
+      "sha256": "4a4bc702947e650797c493b6d8e5ffd5ba9ef11eea3e9e577829fedef6f7401d"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/readable-tests/build.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/readable-tests/tests-result.json",
+      "sha256": "138d633dd5e092ee60bd90847d29d080d1b66833f1ca32e2f22448c337738568"
+    },
+    {
+      "path": "target/candidates-workbench-20261007/readable-tests/tests.log",
+      "sha256": "402d35db29b643759eb2e8013072116bc279858a11b8a9e720b6d7543c79d67d"
+    }
+  ],
+  "prior_failures_preserved": [
+    {
+      "status": "FAIL",
+      "record": {
+        "path": "target/candidates-workbench-20261007/tests-result.json",
+        "sha256": "1f6eb43a0f622577c7a700243972ad238c950905f0fdd04065969d429e01ecee"
+      },
+      "log": {
+        "path": "target/candidates-workbench-20261007/tests.log",
+        "sha256": "fe5dd89d1567278190d85d3cab69e8f262ce32fd42486ab4f5434a8010293b76"
+      },
+      "observed": "26 passed and 2 failed because previously compiled runtime lacked candidate message keys",
+      "correction": "Rebuild runtime catalogs with all 206 keys and recompile actual lab tests against recorded exact externs"
+    },
+    {
+      "status": "FAIL",
+      "record": {
+        "path": "target/candidates-workbench-20261007/gui/run.json",
+        "sha256": "9edbf23c65f48e375f4dcfbd3ba0e822c3d30349f9c45cbb805709f28872629c"
+      },
+      "log": {
+        "path": "target/candidates-workbench-20261007/gui/case-rich-1280/run.log",
+        "sha256": "078974e0b01963c1b48edae3e68e3a467a710c0d13a63c8a9c2fdc45fa7e1051"
+      },
+      "observed": "QA expected f64 0.7 while typed report retained f32 0.699999988079071; panic before screenshots",
+      "correction": "Derive expected JSON from the same formal typed report without rounding production evidence"
+    },
+    {
+      "status": "FAIL",
+      "record": {
+        "path": "target/candidates-workbench-20261007/gui-typed/run-error-1791365538175783879.json",
+        "sha256": "d6dd088347c27bc25430c887b8a32f337bc60b6aa217dffa12813057a1d05645"
+      },
+      "log": {
+        "path": "target/candidates-workbench-20261007/gui-typed/case-rich-1280/run.log",
+        "sha256": "b88033944a6f63e52396f57dbb793957fa849809dc8c50c2b5b264efdc14c6a4"
+      },
+      "observed": "Wayland UNIX socket path exceeded 108 bytes before native app rendering",
+      "correction": "Use short owned TemporaryDirectory runtime path and existing process-group cleanup"
+    },
+    {
+      "status": "NEEDS_CORRECTION",
+      "record": {
+        "path": "target/candidates-workbench-20261007/gui-final/visual-review.json",
+        "sha256": "451f643e44e49a6e36abf5d0cdcbde23f7b7ed0ee479b57a6a71ab4ef1498942"
+      },
+      "automated_record": {
+        "path": "target/candidates-workbench-20261007/gui-final/run.json",
+        "sha256": "ef210fd808cd19a73e6a468de99c3b536dd4682d83cb7552a037a748e595e520"
+      },
+      "observed": "Automated assertions passed but alphabetic JSON ordering put selected evidence below default details viewport at both sizes",
+      "correction": "Display typed selected evidence first, then exact blocker/proposal, original context and source metadata; new final run and all 11 PNG reviewed"
+    }
+  ],
+  "pending": [
+    "Device timing associations",
+    "Listening and calibration",
+    "Physical controllers and mixed input acceptance",
+    "Native-language and human usability acceptance",
+    "Full editor and V1 exit criteria"
+  ],
+  "supplemental_current_workspace_checks": {
+    "basis": "Root executed fresh Cargo checks after the frozen source-copy GPU run; current workspace contains the uncommitted Stage compile_version/version API; this proves the listed workspace checks, not immutable whole-commit/native GPU rebuild identity",
+    "lab_tests": {
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "cocobeat-lab",
+        "--locked"
+      ],
+      "exit_code": 0,
+      "test_count": 28,
+      "log": {
+        "path": "target/candidates-workbench-20261007/cargo-tests.log",
+        "sha256": "66ee04e988c6015c3915ca64a50503948b6c94355cf0482dc2b995c4c6cdc43c"
+      }
+    },
+    "clippy": {
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "target/candidates-workbench-20261007/cargo-clippy.log",
+        "sha256": "fdbbef61df3a90c6961c75a785ecc0f3cb78eec4076e5b8224e284b4d1eabe3f"
+      },
+      "exit_code_basis": "Root actual command completion receipt"
+    },
+    "fmt": {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "target/candidates-workbench-20261007/cargo-fmt.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "exit_code_basis": "Root actual command completion receipt"
+    },
+    "boundaries": {
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "-p",
+        "xtask",
+        "--",
+        "boundaries"
+      ],
+      "exit_code": 0,
+      "log": {
+        "path": "target/candidates-workbench-20261007/cargo-boundaries.log",
+        "sha256": "99107dad9edfd2bf3cfa7349f8fffea2a91e4defebb9b804a5a978c7a4ac3efe"
+      },
+      "exit_code_basis": "Root actual command completion receipt"
+    }
+  }
+}

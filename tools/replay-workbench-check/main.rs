@@ -1,3 +1,4 @@
+mod anchors;
 mod replay;
 mod workbench;
 

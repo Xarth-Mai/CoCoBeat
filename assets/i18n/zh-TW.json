@@ -198,5 +198,11 @@
   "workbench.replay.event": "事件 {index} · {kind} · {frame} 幀",
   "workbench.replay.fields": "事實保留錄製順序，事件保留規則確認順序。fact_index 和 input_fact_index 引用事實；event_index 是事件編號，並非觸發事件的事實索引。所有 *_frames 欄位均使用以 48 kHz 音訊幀為單位的精確整數，負值及 EOF 之後的進度水位均保持原樣。null 表示資訊不可用。Replay v1 不記錄裝置時間戳記，因此無法提供實體輸入延遲。",
   "network.next_round": "開始下一輪連線演奏",
-  "network.waiting_next_invite": "等待房主的下一次邀請"
+  "network.waiting_next_invite": "等待房主的下一次邀請",
+  "candidates.title": "CoCoBeat · Anchor 候選",
+  "candidates.records": "候選（{count}）",
+  "candidates.row": "候選 {index} · {kind} · {frame} 影格",
+  "candidates.legend": "候選標記顯示提案決策，來源譜面的 Anchor 保留在波形下方",
+  "candidates.help": "唯讀 · 瀏覽證據與阻擋項 · 採用須透過 CLI 明確選擇",
+  "candidates.fields": "confidence 保留來源數值，null 表示未知，未聲明已校準；selected_by_experimental_policy 僅表示實驗策略選擇，not_assessed 表示尚未評估正式使用資格；onset_index 與 blocking_onset_index 均從 0 開始；beat、section、energy 上下文均為原分析事實"
 }

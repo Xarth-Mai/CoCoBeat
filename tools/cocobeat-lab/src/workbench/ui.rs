@@ -66,7 +66,7 @@ struct PaintKey {
     selected: Option<u64>,
     drag: Option<(u64, i64)>,
     revision: u64,
-    replay_selection: Option<usize>,
+    record_selection: Option<usize>,
 }
 
 fn key(action: Action) -> &'static str {
@@ -379,22 +379,8 @@ pub(super) fn update(
     let list_visible = !compact || !state.details;
     view.canvas = rect(12.0, wave_y, full_width, wave_height);
     view.row_count = (((bottom_height - 36.0) / ROW_HEIGHT).floor().max(1.0) as usize).min(ROWS);
-    let selected_index = state.replay.as_ref().map_or_else(
-        || {
-            state
-                .document
-                .editor
-                .anchors()
-                .iter()
-                .position(|a| Some(a.id) == state.document.selected)
-                .unwrap_or(0)
-        },
-        |replay| replay.selected,
-    );
-    let length = state.replay.as_ref().map_or(
-        state.document.editor.anchors().len(),
-        replay::ReplayView::len,
-    );
+    let selected_index = state.selected_index();
+    let length = state.record_count();
     view.first_row = view.first_row.min(length.saturating_sub(view.row_count));
     if selected_index < view.first_row {
         view.first_row = selected_index;
@@ -443,7 +429,7 @@ pub(super) fn update(
                     detail_width * 0.65 - 6.0,
                     32.0,
                 ),
-                detail_visible && state.replay.is_none(),
+                detail_visible && !state.is_read_only(),
                 state.focus == Focus::Frame,
             ),
             BoxPart::Apply => (
@@ -453,11 +439,11 @@ pub(super) fn update(
                     detail_width * 0.35,
                     32.0,
                 ),
-                detail_visible && state.replay.is_none(),
+                detail_visible && !state.is_read_only(),
                 false,
             ),
             BoxPart::Detail => {
-                let offset = if state.replay.is_some() {
+                let offset = if state.is_read_only() {
                     if compact { 36.0 } else { 0.0 }
                 } else if compact {
                     74.0
@@ -507,6 +493,8 @@ pub(super) fn update(
                 place(&mut node, rect(12.0, 8.0, full_width, 26.0), true);
                 if state.replay.is_some() {
                     state.locale.text("replay.title").into()
+                } else if state.candidates.is_some() {
+                    state.locale.text("candidates.title").into()
                 } else {
                     format!(
                         "{} · {}",
@@ -554,6 +542,13 @@ pub(super) fn update(
                         doc.start + doc.span,
                         state.locale.text("replay.legend")
                     )
+                } else if state.candidates.is_some() {
+                    format!(
+                        "{}–{} · {}",
+                        doc.start,
+                        doc.start + doc.span,
+                        state.locale.text("candidates.legend")
+                    )
                 } else {
                     state.text(
                         "workbench.range",
@@ -582,6 +577,8 @@ pub(super) fn update(
             Part::Row(i) => {
                 if let Some(replay) = &state.replay {
                     replay.row(view.first_row + i, state.locale)
+                } else if let Some(candidates) = &state.candidates {
+                    candidates.row(view.first_row + i, state.locale)
                 } else {
                     doc.editor
                         .anchors()
@@ -594,6 +591,8 @@ pub(super) fn update(
             Part::ListTab => state.text(
                 if state.replay.is_some() {
                     "replay.records"
+                } else if state.candidates.is_some() {
+                    "candidates.records"
                 } else {
                     "workbench.anchors"
                 },
@@ -619,6 +618,17 @@ pub(super) fn update(
                 [
                     replay.details(state.locale),
                     state.locale.text("replay.help").to_owned(),
+                ]
+                .join("\n\n")
+            }
+            Part::DetailText if state.candidates.is_some() => {
+                let candidates = state
+                    .candidates
+                    .as_ref()
+                    .expect("Candidate details require a proposal");
+                [
+                    candidates.details(state.locale),
+                    state.locale.text("candidates.help").to_owned(),
                 ]
                 .join("\n\n")
             }
@@ -738,7 +748,7 @@ pub(super) fn update(
         selected: doc.selected,
         drag: doc.drag,
         revision: doc.revision,
-        replay_selection: state.replay.as_ref().map(|replay| replay.selected),
+        record_selection: state.is_read_only().then_some(state.selected_index()),
     };
     if view
         .raster
@@ -760,6 +770,7 @@ pub(super) fn update(
                     .pixels,
                 doc,
                 state.replay.as_ref(),
+                state.candidates.as_ref(),
                 width,
                 height,
             );
@@ -802,6 +813,7 @@ fn paint_wave(
     pixels: &[u8],
     doc: &Document,
     replay: Option<&replay::ReplayView>,
+    candidates: Option<&candidates::CandidateView>,
     width: u32,
     height: u32,
 ) -> Image {
@@ -875,6 +887,42 @@ fn paint_wave(
             let bottom = height * (33 + player.index() as u32 * 34) / 100;
             for x in column(frame).saturating_sub(1)..=(column(frame) + 1).min(width - 1) {
                 line(x, top, bottom, [250, 244, 210, 255]);
+            }
+        }
+    }
+    if let Some(candidates) = candidates {
+        for (frame, accepted) in candidates
+            .points()
+            .filter(|(frame, _)| (doc.start..=doc.start + doc.span).contains(frame))
+        {
+            line(
+                column(frame),
+                height * 4 / 100,
+                height * 67 / 100,
+                if accepted {
+                    [90, 229, 241, 255]
+                } else {
+                    [193, 140, 120, 255]
+                },
+            );
+        }
+        for (frame, blocker) in candidates
+            .selected_points()
+            .into_iter()
+            .rev()
+            .filter(|(frame, _)| (doc.start..=doc.start + doc.span).contains(frame))
+        {
+            for x in column(frame).saturating_sub(1)..=(column(frame) + 1).min(width - 1) {
+                line(
+                    x,
+                    height * 4 / 100,
+                    height * 67 / 100,
+                    if blocker {
+                        [230, 187, 112, 255]
+                    } else {
+                        [250, 244, 210, 255]
+                    },
+                );
             }
         }
     }
@@ -959,7 +1007,7 @@ mod tests {
             assert_eq!(hit, displayed);
             let raster_width = logical_width.min(4096.0) as u32;
             let pixels = waveform_pixels(&state.wave, &state.document, raster_width, 216);
-            let raster = paint_wave(&pixels, &state.document, None, raster_width, 216);
+            let raster = paint_wave(&pixels, &state.document, None, None, raster_width, 216);
             let column = raster_width / 4;
             let bytes = raster.data.as_ref().unwrap();
             assert_eq!(
@@ -1003,14 +1051,28 @@ mod tests {
         .unwrap();
         state.select(2);
         let pixels = waveform_pixels(&state.wave, &state.document, 480, 100);
-        let raster = paint_wave(&pixels, &state.document, state.replay.as_ref(), 480, 100);
+        let raster = paint_wave(
+            &pixels,
+            &state.document,
+            state.replay.as_ref(),
+            None,
+            480,
+            100,
+        );
         let bytes = raster.data.as_ref().unwrap();
         let pixel = |x: usize, y: usize| &bytes[(y * 480 + x) * 4..(y * 480 + x) * 4 + 4];
         assert_eq!(pixel(120, 10), &[90, 229, 241, 255]);
         assert_eq!(pixel(120, 40), &[244, 169, 91, 255]);
         assert_eq!(pixel(120, 75), &[211, 222, 236, 255]);
         state.select(9);
-        let raster = paint_wave(&pixels, &state.document, state.replay.as_ref(), 480, 100);
+        let raster = paint_wave(
+            &pixels,
+            &state.document,
+            state.replay.as_ref(),
+            None,
+            480,
+            100,
+        );
         let bytes = raster.data.as_ref().unwrap();
         for y in [10, 40] {
             assert_eq!(
@@ -1082,6 +1144,82 @@ mod tests {
             state.document.zoom(true, 10.0);
             assert_eq!(state.document.cursor, cursor);
             assert!((0..=state.document.end - state.document.span).contains(&state.document.start));
+        }
+    }
+
+    #[test]
+    fn candidate_rows_and_same_pixel_points_remain_distinct_and_read_only() {
+        let mut state = super::super::tests::state();
+        state.destination = None;
+        state.candidates = Some(candidates::fixture());
+        state.document = Document::from_anchors(
+            4800,
+            vec![Anchor {
+                id: 99,
+                song_time: SongTime::from_frames(333),
+            }],
+            Vec::new(),
+        )
+        .unwrap();
+        state.select(2);
+        let pixels = waveform_pixels(&state.wave, &state.document, 4, 100);
+        let image = paint_wave(
+            &pixels,
+            &state.document,
+            None,
+            state.candidates.as_ref(),
+            4,
+            100,
+        );
+        assert_eq!(
+            &image.data.as_ref().unwrap()[(10 * 4) * 4..(10 * 4) * 4 + 4],
+            &[250, 244, 210, 255]
+        );
+        assert_eq!(state.document.cursor, 1000);
+        state.select(3);
+        assert_eq!(state.document.cursor, 1200);
+        assert_eq!(state.selected_index(), 3);
+        assert_eq!(state.document.selected, None);
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        app.world_mut().spawn(Window {
+            resolution: (640, 480).into(),
+            ..default()
+        });
+        app.world_mut().run_system_once(setup).unwrap();
+        for details in [false, true] {
+            app.world_mut().resource_mut::<Workbench>().details = details;
+            app.world_mut().run_system_once(update).unwrap();
+            let view = app.world().resource::<View>();
+            assert!(view.first_row <= 3 && view.first_row + view.row_count > 3);
+            let mut toolbars = 0;
+            for (part, node) in app
+                .world_mut()
+                .query::<(&BoxPart, &Node)>()
+                .iter(app.world())
+            {
+                match part {
+                    BoxPart::Toolbar(_) => toolbars += 1,
+                    BoxPart::Frame | BoxPart::Apply => assert_eq!(node.display, Display::None),
+                    BoxPart::Detail => assert_eq!(node.display == Display::Flex, details),
+                    _ => {}
+                }
+            }
+            assert_eq!(toolbars, 3);
+            let detail = app
+                .world_mut()
+                .query::<(&Part, &Text)>()
+                .iter(app.world())
+                .find_map(|(part, text)| matches!(part, Part::DetailText).then_some(&text.0))
+                .unwrap();
+            assert!(detail.contains("\"onset_index\": 3"));
+            assert!(detail.contains("\"id\": 4"));
+            assert!(detail.contains("not_assessed"));
         }
     }
 

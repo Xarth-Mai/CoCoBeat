@@ -198,5 +198,11 @@
   "workbench.replay.event": "이벤트 {index} · {kind} · {frame}프레임",
   "workbench.replay.fields": "사실은 기록 순서를 유지하고 이벤트는 규칙에 따른 확정 순서를 유지합니다. fact_index와 input_fact_index는 사실을 참조하며, event_index는 이벤트 번호로 해당 이벤트를 발생시킨 사실의 인덱스가 아닙니다. 모든 *_frames 필드는 48 kHz 프레임 단위의 정확한 정수 값을 사용합니다. 음수 및 EOF 이후의 진행 워터마크도 그대로 유지됩니다. null은 정보를 사용할 수 없음을 뜻합니다. Replay v1은 장치 타임스탬프를 기록하지 않으므로 물리 입력 지연은 확인할 수 없습니다.",
   "network.next_round": "다음 온라인 라운드 시작",
-  "network.waiting_next_invite": "호스트의 다음 초대를 기다리는 중"
+  "network.waiting_next_invite": "호스트의 다음 초대를 기다리는 중",
+  "candidates.title": "CoCoBeat · Anchor 후보",
+  "candidates.records": "후보 ({count})",
+  "candidates.row": "후보 {index} · {kind} · {frame} 프레임",
+  "candidates.legend": "후보 표시는 제안의 판단을 나타내며 원본 차트의 Anchor는 파형 아래에 유지됩니다",
+  "candidates.help": "읽기 전용 · 근거와 차단 항목 확인 · 채택하려면 CLI에서 명시적으로 선택해야 합니다",
+  "candidates.fields": "confidence는 원본 값을 유지하며 null은 알 수 없음을 뜻합니다. 보정된 값으로 간주하지 않습니다. selected_by_experimental_policy는 실험적 선택이고 not_assessed는 정식 사용 평가가 없음을 뜻합니다. onset_index와 blocking_onset_index는 0부터 시작합니다. beat, section, energy는 원본 분석 정보입니다"
 }
