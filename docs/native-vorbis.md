@@ -31,3 +31,11 @@ FFmpeg 仅作第三路开发期互操作检查，按其完整输出长度记录 
 四目标 [Native media candidate](../.github/workflows/media-candidate.yml) 在 Windows / Linux × x86-64 / ARM64 原生执行 media 测试和优化后的 14 项便携完整编码 / 双回读控制，保留日志、输出身份与失败；实际运行以对应源码 revision 和 Actions 记录为准，工作流定义本身不是跨平台 PASS
 
 真实性能、seek、曲库音乐、loopback 和真人听感按各自观察记录验收；本机矩阵、Sanitizer、原生 CI 与设备 / 真人结论分别记录
+
+## 本机定位窗口
+
+[Seek 工具](../tools/native-media-seek-check/README.md)对 8 个固定 canonical q10 对象执行完整回读与随机窗口比较；原始 Accurate 的 695 次控制中保留 127 次短文件 / 尾部 API 失败，明确 1024 帧前滚的 695 个窗口均与 Symphonia 完整 PCM 逐样本一致，对 libvorbisfile 的最大差为 1.1920928955078125e-7，另有 32 个越界目标拒绝通过
+
+本矩阵实际 delay 均为 128，1024 是针对实际最大块 2048 的前滚长度，不能把两者等同；该 QA 策略复用历史 seek 工具并保留原始失败，不修复 Symphonia 原始接口。来源、固定 shipping driver、准确 rlib 与逐窗口身份见[持久观察](../testdata/synthetic/native-vorbis-seek-20261007.json)
+
+游戏当前完整加载已校验 PCM，此实验不改变播放路径；本机定位控制不代表四平台 seek、生产流式解码或设备计时通过

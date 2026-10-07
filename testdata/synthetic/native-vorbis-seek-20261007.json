@@ -1,0 +1,2226 @@
+{
+  "version": 1,
+  "observed_date": "2026-10-07",
+  "status": "PASS_WORKAROUND",
+  "baseline_commit": "8a31a1d291608b0c1558dc37ea05568ed095a632",
+  "scope": "Local software seek controls of eight fixed shipping q10 Ogg; raw Accurate failures retained",
+  "provenance": {
+    "inputs_before": {
+      "/home/lzzz/MyProjects/CoCoBeat/tools/canonical-audio-probe/seek.rs": "5c755838ad37fbee3fe08491e58834ad9094bc02302a0516620be5fc6c3f7f54",
+      "/home/lzzz/MyProjects/CoCoBeat/tools/native-media-seek-check/check.py": "6a3dc94cd1320a017f9af30ed3155399125a69d39ca2c68599a2607f0d87009e",
+      "/home/lzzz/MyProjects/CoCoBeat/target/vorbis-admission-20261007/shipping-build/build.jsonl": "0ba387e154d39717778594d6c9e4688edd802bdd3fc4a0bc92feabfd27aecb5b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia-a880e84f1747a315.rlib": "872dedc8fa559cd6891f642a7c512ba6560571377a204134b4c606b04a1a999d",
+      "/home/lzzz/MyProjects/CoCoBeat/target/vorbis-admission-20261007/shipping-build/bin/native-vorbis-check": "199953f3115af196bc2262c72a4fc1928341192608cbe726838e569f7c92449a"
+    },
+    "dependency_rlibs_before": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liballocator_api2-9ba3c306031f065e.rlib": "ae962beb5b76ce45982a05c0347ed5b0404ba33daf349b2f37562f98e9935b35",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libaotuv_lancer_vorbis_sys-584849af93f65ee6.rlib": "523c3754e06b1de7dc30731b2cddc5f4597ed1a98af707b903c09d4fd252316f",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libarrayvec-98bf9a61e4b0bc99.rlib": "805dc64603564bdda509d8bc1aac7ac0ca158441d09c55ac8df3ea4b255142a2",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libautocfg-8584916fa9c1a821.rlib": "9147aa74f4813fba272099e9beca2ca5739ecf00eb9949b7a19a183b65d970d0",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libbitflags-130b831cb5444214.rlib": "2f84249062a6c0be4d58d8ae235fcb43370c5e12def66a473594cabff089854d",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libblake3-dc16159fc7d9ce45.rlib": "44ca270793f9d96e58e2bf4418d7e77ba557dfa3e61b5be406f2539dbdf74987",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libbytemuck-311a1221b7ed2459.rlib": "02df7f6944f6da0531d3904ad62b83a08785852649afa78e3f060d597b07e8ee",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libbytes-33aa9907e2ecda9a.rlib": "8f490763a74097e5e719b489fa6e32a666901aa2bc4447d163c67a72168f5311",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcc-403b401ae952ad1e.rlib": "b53a90cbfbc3cc5cf7f0a9fe65006c0436e619c2e44586f2abaa77d3044b3c71",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcfg_if-e2a11040cedca1cf.rlib": "6285e7a20d9946f774030a0807a4b7ba8be063f9874f3cb376fb84779a95be58",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcobs-4e9e96460d203207.rlib": "930bc6057738329c74015b6971ed1250411070789c59cc2368fd8b30b7620dec",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcocobeat_media-aeb204306b03fddf.rlib": "10ad97c0715f3140ae8cb01207b2ab62f73455eea01d6196534c6f87181bd1d1",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcocobeat_schema-0038211fdceeceac.rlib": "44b089b0ab4891883a5f9760f11c143e31fcd87ab40561bd026dc2ede0a35039",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libconstant_time_eq-b2ed71052eeb07e9.rlib": "cb089f255f5980e37d740259c1a354bc49dfcfe67df6badf1b9df41a70701614",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcpufeatures-e730998a84fd24cb.rlib": "870f8b533e4de5d7d9d89ac8d1802ec80087546b80233ad1524e201756959dcc",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcrossbeam_deque-1c45c704509efbdb.rlib": "9089e4304e6230779728d347c9258f2e64753aaa226fc9d2c051b706293199d0",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcrossbeam_epoch-5b0d9555d938c6ce.rlib": "039282e47ccddbe03555e857703e5a1dd48485e6087931ef4f764954212f5257",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libcrossbeam_utils-85bd80a2e219465f.rlib": "42201ee09ad8fdee473ee2f488499471697dded0350cc0a03a67f7f9a555b621",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libeither-dd027a1a882a2a9f.rlib": "4c83247993bf8cec9de79a41e3b92b5358243ac446fe5f1e201d7b895f6d9a62",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libequivalent-05e61e19d1fee033.rlib": "72d7e014fdc2bb8073db2eaf3160c73404d2b3e1f16d6c52f58ce8fc89583f99",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liberrno-a5b4fcf59486c037.rlib": "60e9efb6c429e883e63c430fc47875f20b6415c311ecf735c1a6f0848cf75e49",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libextended-5e59abf79508c9c8.rlib": "333b331670eddd0a4005538f7dc489295fdd4092ab57f72e06c8f8babf786ad0",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libfind_msvc_tools-1725e52c83b5c40e.rlib": "f100e628900b564fb2d3ae74247e238980f2bb092daebf57e8bbcb170d721810",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libfoldhash-cb533a3ca3cad015.rlib": "a79b0fc4bb633f77ce3191c93fc46a2ada8c5b82f1d81eb45495bb7593180ee8",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libhashbrown-1e0536d51ec9addf.rlib": "899f5af5bd75d5934d9577cebae98e4b852fa70708dc6dafdf3e82048e3f88b0",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libitoa-9f71334fa18927b8.rlib": "d6bc01719ab121f2642d5ee4855140917516c38db0330b188c6f9a2ef3fb5711",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liblazy_static-7c4b3c8da2d0257c.rlib": "28a68a384e28a3da1ba0c4cd1f70d65146eb00060a3ff68f3c13f86b040cdafb",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liblibc-d78892efdea8bf6a.rlib": "c25958326404f4e26529c7aea45ba8cc4009e14d1d7ca2ec3f89898d499e5e7c",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liblibm-3a9ad0b0eb47d066.rlib": "6f227341a68595ed25d5f6a27b11a91e5f7fbad60e483d4a01308f1b80422d76",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liblog-a95c2520436d8c74.rlib": "4cfe224502a270d21c23f760cfbace993dab8b5f2af4aa94024e62e4e0469866",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libmemchr-35f7331a6401be42.rlib": "114c4a45f2982b86965f6903f64dbcf3ae9ccc330ab40b9198f770d1c663337c",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libnum_complex-63e9c052d48c0d31.rlib": "e6da1554e30727c862c22fcbff0b63706bb4b9f236dae7909dd832fc3f1f2d3b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libnum_traits-c445cccc07246fba.rlib": "91f1ebd68c3101f4d93f9fa4278403e2434dacf0c5e5afb48fb202af503fd4c5",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libogg_next_sys-ec7a5cc8ce6a21eb.rlib": "25ff39ebe657cb58f65fc1e2c2ed74a6a8c96bb9799325562df3ac912b3317ab",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liboxifft-6d52388fc3b8010d.rlib": "f8ce5e59c7c904a200d32da8455176fbb2098f067b88620f13fcbaf5420f1bfb",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liboxifft_codegen_impl-84defb74ecebc60a.rlib": "2cc0f84e57bf0bc2a1124c776a367fc8c4d0d92c781d38e842f7f970f11749cd",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liboximedia_audio-d11a9d5295f67b5f.rlib": "65c4029c015766ee608e05c106bd3596d621a5baebc41b848103b0b851b62df3",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/liboximedia_core-c8af9aafc13e2e47.rlib": "7cdbac3ae5a6caea2749e540df6039e877c67f75bd788d18d3a6508f40d7d4fc",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libpostcard-35fe6b1ed7ce2c69.rlib": "7c7ea930968fffd1a3a8915eeb3470b12755b8aaf4369da30698c028fce9395b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libproc_macro2-ad5c1ad7a24b253c.rlib": "1c78024eb8ad503872ce4ba0e6b11b1f708c0e419d9cdd2d1ca792adffc6b7b6",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libquote-f5cec2c2b8961b6b.rlib": "e16a0bb235741b67a631ed44d3e691d89998725197c38c8d4bd8efeada652dac",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/librayon-cbb8bd4de1085ceb.rlib": "0ec4b4c20d55b510062b6028a02548e8a25095476418c4ce29b5d67ca3f3f94a",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/librayon_core-ab23efa5136febc1.rlib": "fb68eb806bee8190b776fca2e3a78241b062188fa1d260bfa6d8d64880c441ac",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libregex_lite-cb96428c8dce83f9.rlib": "e4f0509f9e9ea39081db7e490abdaf70e88c9422af239148f3efea6d6dda0cb6",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libserde-ccbf2f1100492ede.rlib": "445e682a78df35abe8a4b64e466f3b6bfd4287ddd7602df77e5afe33fb16ab11",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libserde_core-5fc5761ad8a412cf.rlib": "3b8c1135477f0b95ceb93f6c5e13ae11e3a6b13e1289aa72e5cf31ec1475753e",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libserde_json-bdfbd243ceebbc33.rlib": "e906a4821b074a368d93406f1c530b6d05ada69ef278203ff826ba65d29e9c83",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libshlex-8a8dcbe6d9832fd1.rlib": "475bd8dffac8dbaf71c841397d006a615d19b18e8955b60cc6339106a7ce37fa",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsmallvec-37018178723ca81c.rlib": "deca2265ca2dc02b4799a9529d8e2003f4a5a92c16aa15dde4e2a23aac3c1d8a",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libspin-6b89a6b52b6c28c5.rlib": "810816545f24ebefa188bb787128dce04deb10bc90ae2ab05caf41146a822f68",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia-a880e84f1747a315.rlib": "872dedc8fa559cd6891f642a7c512ba6560571377a204134b4c606b04a1a999d",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_bundle_flac-76b2ea99db134688.rlib": "3e8242b36ca7f75aa6c7051969459c3bed8d3085ea09c5ca3275a45e6692185b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_bundle_mp3-eb2a20710f79e220.rlib": "4eab90aea9bf84f36646056f10ed76d4756d7f1a9c1632e53e169942d7b31c78",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_codec_pcm-f834b55e75edace3.rlib": "b8a1eadc45d4c3ef68a7945e8c4f65377d88a1e504ffb0285d3d1982c8887cbd",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_codec_vorbis-5ef710442a7a1321.rlib": "e46aa13c89a7592af2e26326767c4d332989c035beab8d7a2ab0a360ea2ba359",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_common-40bc2f21d33a1f00.rlib": "714613dbfd15d9f2f8cff56643bcf1c320f28b337cef8b00fc0c19f1dbedb10d",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_core-ddfcb6a8ac24b2e3.rlib": "3c4225cffb7f171262203ce4b69064b2d8a36024daf9a23606b32a9f86eceee0",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_format_ogg-95fbb2038bd456e2.rlib": "f8c760238ef9ea958667fe79b5d743ab046f1b6fd2fb849b711743bf5b6a3acc",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_format_riff-22d2a98fd754dd37.rlib": "7e8ca4a872cb25db26cb90b3d0b4cf0096d10172232b757617ce125bb0befa57",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia_metadata-0f7543b497f69dbe.rlib": "c22943c47d7a6b84d45d7cec63746783bced80a210cd363ef056775e1c423886",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsyn-612cb04e90ecf2db.rlib": "1b27deeeb0afe3030cba759c958ef3609318de94b8241529521478a147e7125e",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsyn-fb4cb3647e2cefc7.rlib": "d75e1ac5d7d0e6f7239a356142ee793a3228a322f45a111637b2e7439013d6a4",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libthiserror-f2dd76bc254f2b3f.rlib": "2749e11960ae4cd186c49471c7b6f1e7b6e456bd9a39c6245273dec32b9e3e46",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libtinyvec-2a92bf8f889f727b.rlib": "8ae6a15f87aafc5d9df4800dc305fd3cc9f24483dd6a66d7dd3353c0a1711a54",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libunicode_ident-c72e9431ba8ca9d2.rlib": "ffecdf979f541f4b9867348314ebf6ebb099243ead1969e6404c35d045a97c76",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libvorbis_rs-bf42cf3df0a68aed.rlib": "a8daa319e7d85f7bd70fe2c861c5afb7ea2879c93c7fc174a274a6f16ddb6d6f",
+      "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libzmij-088a53a1851cd22e.rlib": "a4b1bbd0402d264cd999fa15a6a54e40c551df684ff4f4fb22faa476f9842a8a"
+    },
+    "symphonia_artifact": {
+      "reason": "compiler-artifact",
+      "package_id": "registry+https://github.com/rust-lang/crates.io-index#symphonia@0.6.1",
+      "manifest_path": "/home/lzzz/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/symphonia-0.6.1/Cargo.toml",
+      "target": {
+        "kind": [
+          "lib"
+        ],
+        "crate_types": [
+          "lib"
+        ],
+        "name": "symphonia",
+        "src_path": "/home/lzzz/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/symphonia-0.6.1/src/lib.rs",
+        "edition": "2024",
+        "doc": true,
+        "doctest": true,
+        "test": true
+      },
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "features": [
+        "all-meta",
+        "ape",
+        "flac",
+        "id3v1",
+        "id3v2",
+        "mp3",
+        "ogg",
+        "pcm",
+        "vorbis",
+        "wav"
+      ],
+      "filenames": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia-a880e84f1747a315.rlib",
+        "/home/lzzz/MyProjects/CoCoBeat/target/release/deps/libsymphonia-a880e84f1747a315.rmeta"
+      ],
+      "executable": null,
+      "fresh": true
+    },
+    "seek_binary_sha256": "773b317b147edf5ceff25355df737094215b2cbe2494f1700b87cde5756f625e",
+    "rustc": "rustc 1.99.0 (b940084d7 2026-09-28) (Arch Linux rust 1:1.99.0-1)\nbinary: rustc\ncommit-hash: b940084d7eb6a299eb4bfeb8e34901bc051e7ac4\ncommit-date: 2026-09-28\nhost: x86_64-unknown-linux-gnu\nrelease: 1.99.0\nLLVM version: 23.1.1\n",
+    "comparison": "Exact absolute frame slice, finite, exact count, <=1e-6; no padding, alignment or gain fit",
+    "coverage": "Observed canonical q10 max block=2048, eight synthetic inputs, same reader reused across targets",
+    "not_run": [
+      "seek in native four-platform CI",
+      "runtime/editor seek wiring",
+      "listening/hardware"
+    ]
+  },
+  "raw_artifacts_sha256": {
+    "target/vorbis-admission-20261007/seek/matrix-identity/build.json": "c6c4dca8269ccc88956000bf26afce809570e6b6147c1445d515eceaa20b4ab3",
+    "target/vorbis-admission-20261007/seek/matrix-identity/build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid--1.json": "7857e971429c97fb652ec216f23276d498aaf0fb8497fa81dcf746f5fdbe728e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid-48001.json": "5caa780cea9820de60ded75c52c5a5b56e6eaef26aa7bc3d83449e1bed0a33bc",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/seek.json": "3e2ad54bde72879bd1244434062875c05bd7f0d87e688924163ac4a7b554f3eb",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/seek.stderr": "e3975645ec9b3612b1cff049bf99c5584b6803a9a1466430cf9be249150bef0c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-0/seek.stdout": "5aa028dc28cdd914186480f6891a01f8d99be964cd67de6d6aaaba971dd54c71",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid--1.json": "d6795323425ca769c1b3214111cf65ff0a32b985284e3a6e7cac104b08af445d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid-48001.json": "1561921cee6829fad765af5acc2c962207abdda4360755036a3e1f203715a66e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/seek.json": "f48f174948a93eb7f2a601bb5c6023fae1582ff147e515eab5aef690cb9a7b8c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/preroll-1024/seek.stdout": "d3930dc34f4578145d1d65f159cc3138fc72e820627e6b58f61d8d547e5cf0e3",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/reference.json": "e8af774f2312fa3a8d05fc337f9090c80574d272dd8921ea3b99e9fb0ed5ca52",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/reference.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/result.json": "66051d99989ce70c7db068f469e451eef6046e4af4a7aa72c76746c1e430064d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/strict.json": "c36a3d722fdf8e66c6c82fdab84bad69de5e514516bcac288c1b25058391f447",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/head-tail-impulses/strict.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid--1.json": "5fe7b649fcb55e9ba1e337f45b7c6103c3d96591b111c64fa9204e011a17a0c2",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid-48001.json": "4be7abf2d21a68983a83d10db431f5d64f999498be9f64e7d22d4392c4e64b15",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/seek.json": "ee7b74382a4636328ab5bd87ffb1cbb08a54efa42d23f65a54f7966a1b5e6e39",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/seek.stderr": "e3975645ec9b3612b1cff049bf99c5584b6803a9a1466430cf9be249150bef0c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-0/seek.stdout": "0b9167ff088554eb70cbe92211f5af8c6eb96bcaa2136c68a78765a77203e19e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid--1.json": "031b09ca9f165075ef6471493cce287e47a29173f8ffdeb6c0ee528347e4bcea",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid-48001.json": "b793c515b783e800ed9d0123c24ad44e155d4c557aa90e18b1181c3a8cd7467d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/seek.json": "618c3eeaae52f9b0e3ef02d6bedc08f8a2ae09b80cf204d83ac7971e6f6c69f3",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/preroll-1024/seek.stdout": "a657b94dbe156d58c0c8a6edf9879c94f7cecf8585c79fa1228d37b7bca24235",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/reference.json": "2ad20c75cdc129f92917b91a238a6edc51784131a8d837ae1adcc113a518950a",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/reference.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/result.json": "c37f134a8eb8ffb2c663d9c7f2fbfd8bcc4dd9c5ef9f19c3ab97477c29753ff9",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/strict.json": "9cc3ca24b309b4d0b9b8610294edffa9e5881ff0a5c8251fbdd99d990cb556f0",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-48000/strict.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid--1.json": "bf56577be1ce9dc2f7cc82408b74362a5149306fa984dde2f8822959e57c94dc",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid-28800001.json": "45383a7e736773406b2760e847ce63e45f05cf051b3ea200dc35e648790eee78",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid-28800001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/invalid-28800001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/seek.json": "c80f992a4626089d3abaf1114f7cc75bec11731c94a3225a3f729ebb9bad5f88",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/seek.stderr": "bd5a25df55cb935513959a384a0e7c1573f218ea44cac91a9f4c22349218959f",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-0/seek.stdout": "5f9637fab8fa8bca0736604fab1324652ec0f7f494ea484c6eea630d7241343b",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid--1.json": "a3a647a50129d21484a25cc410c62f2d45f2711fb917af96a5d2cd6d651947bf",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid-28800001.json": "fff74dfb1d812f51ee36ddb58f9f0e23e7def9aaaac6366b9747b4acac839199",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid-28800001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/invalid-28800001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/seek.json": "01e2ff06602221751089c861ac27543188e35477a9383e0b2b27bd1abbb4ea0b",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/preroll-1024/seek.stdout": "c42f26b884b1fe638593344829d78c2fe5d43c67837a010d8470f033fbf29372",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/reference.json": "2080b65bc314b0aac101c926286a81d2290301b1b9fd5a629590d0c7a83f2955",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/reference.stdout": "3b28d0734b0bba0492b96eccba407e3665cd6ed1dbef625c844fab0c253cd0bb",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/result.json": "4466ff0fcc175287a10ae95e2accd42cd6b9d4898abbbd0c7941ec27c688b3e6",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/strict.json": "cf1e6fe65ea53502cc8c21a214c96f5b1ee6275c12aad2d3b788c3dac220f5be",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-600s/strict.stdout": "3b28d0734b0bba0492b96eccba407e3665cd6ed1dbef625c844fab0c253cd0bb",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid--1.json": "2c3fdc5d641a19174383863c89ee64963ad4469eca8d60218d785c36a5d3c0c3",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid-3072001.json": "6a047aa7ce794c0d531b426d847ddda883f8e65659f3b8ce98d3e76e0fb27378",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid-3072001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/invalid-3072001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/seek.json": "28461d7350f44d7d63d66133923119ecf1542098fa9190dcdd30f938dd4481c0",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/seek.stderr": "9979caba6fba79a7778b2345115028539174ed7e742df82dd35d6450d91860fc",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-0/seek.stdout": "8fcb18aedbb7302deb12971b20339122191a7a24f715b0bc612601c4afcf7f12",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid--1.json": "721d38f82781729eb35d3605c722aa298988248e5884a59198fc9c6e3629ba51",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid-3072001.json": "e4a7d966ea608b9b69d50b67de6dea871c322f32fe13335747514ce3c0128b17",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid-3072001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/invalid-3072001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/seek.json": "aae1bc4ba1026cc5fa467f15793b2ddcc0082e8a6fa81426f72f49f4c9dbb6d2",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/preroll-1024/seek.stdout": "991d6dfa80857c8c41146810969622478ed2b3c108ec65d754862de0ef118665",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/reference.json": "4c7c47a60b93c3e3326a421ebc7b17b04921e1dba2d0e9a635ae7657f55f664f",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/reference.stdout": "3e45e9880413c03309f10568ef1583a13ab3ddcc0e0c6038a42a579bfeef2c0d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/result.json": "6fff4a2dbab95d2007c7b436519f7425c774dbe8d5765956d5b67a98f07edabd",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/strict.json": "225762deb1f331d9caf4564182ab4e44dd8ec1a7c2a97017d5fe201d8eaa8854",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/original-64s/strict.stdout": "3e45e9880413c03309f10568ef1583a13ab3ddcc0e0c6038a42a579bfeef2c0d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/provenance.json": "ae60152694643fd0161b7c2afdf24522904f1a5854fed98d58b6f5146ed83a8b",
+    "target/vorbis-admission-20261007/seek/matrix-identity/seek-bin": "773b317b147edf5ceff25355df737094215b2cbe2494f1700b87cde5756f625e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid--1.json": "8b903c32f383808b2cae3756b26da883390d6f197d01f393fe82fc5aadbce4dc",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid-2.json": "78afdc081116924057e41d3eb53a58decdcb1a456b3f9a9f951d84388e4bb54e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid-2.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/invalid-2.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/seek.json": "830e7aa392b14b20c582743fc48c6118c23bfba4ddb8ab6240b1990b12ba50d2",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/seek.stderr": "805b99877fd703f5df793d14840431204f22da5f797f0fc5c5431ccb4ef027d0",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-0/seek.stdout": "6833270ef0ca1f534a7b8b9828adbe62edc58c54a37d4dcabf4f6248119d815b",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid--1.json": "09112c8e583faaa2f27280f713251e4786c14ad8b37a76406c44273efc31893c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid-2.json": "024b08e59a7086de2db3d7d3abc1f5d3213dc76fc940f2bfd4e7d44977d87f90",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid-2.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/invalid-2.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/seek.json": "8dd99093ead798f11c2b5468e8d74ef690b549f63a02d1e9df8759add30b391f",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/preroll-1024/seek.stdout": "31e86e01be70811bdcddd0a98250fa4e0af9fdd3ff225ec16c4931dce1aa3e5e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/reference.json": "86fb9d04bde0e0fa31f81d8b6566f6cddf237629ea87b0d37c3584a66917197e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/reference.stdout": "65d96df6dfd30a6b39f3ce23c7cbf5b225e671b33e4dc23576f4d228c6fb7d0e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/result.json": "c4f7e0470fd6e883d98872b5b5dfdc4f9f39c3251d88247c58f9b61c4810d6f3",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/strict.json": "77fe879d720be3c65c114c63b378d45e5184526fa69fea66a0acc69071980741",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1/strict.stdout": "65d96df6dfd30a6b39f3ce23c7cbf5b225e671b33e4dc23576f4d228c6fb7d0e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid--1.json": "cb4da8d7517b550dc48249f7e86193b11a5530a0d31715c3aa1470c9deb7cca4",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid-1025.json": "dce56eda28702f46bf27fa43572ee1c0a9438b618648b3a7e9f7b345952a648e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid-1025.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/invalid-1025.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/seek.json": "73f51df4debf4d84f144ccfbf08c80ef063fee4a0cc148435c925ccecf3e72d9",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/seek.stderr": "2388d3a5b9d6af63cef301d94f144cd700e4f888110c75f5d72001a372757641",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-0/seek.stdout": "0bda5edec513488142d08e2881f6e81d14dc3914a1687c01a0657bb22f8166c1",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid--1.json": "8a1efa368af2e92d1e5eea22f7ccbf6f2e8f38f952fd8f5d0d3af909aaabb24b",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid-1025.json": "e8c5bf14b125f2f72c6a51dcba72ce7b6b1d37cf8d482ebce266f033d2f7328d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid-1025.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/invalid-1025.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/seek.json": "1f7a0de8a9815e35bddd7b8099b895828534f369e2b3b28ce6c92e64970c62ff",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/preroll-1024/seek.stdout": "75aa07e2022087802ead74a60dec0fc446f3b4a43c6ebf6a73e64a7b256b8cde",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/reference.json": "b1a3aa4ce480b9f4928a5d89781b7d35e0d422b7ddea3ac4e93f10e5ffc584eb",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/reference.stdout": "108f4df844e3034cf61bd77450a2acd54106f125cf17b166182c43aebe85fbd9",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/result.json": "25e18c0a87d9fb393ea8258592fa459901148c59dd600987b6b9e4fdf1d9c5cb",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/strict.json": "ec790e2646fcdd490a32d2f4833f183f0ee341d2339449ae97508e2b7b1acb43",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1024/strict.stdout": "108f4df844e3034cf61bd77450a2acd54106f125cf17b166182c43aebe85fbd9",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid--1.json": "7b4bc0bdb2c786d464239fbc7bd4f360e0927f921e7f76823597c7c5906f2e60",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid-1026.json": "0decf14e3c73eff61472afc5c8f271575d36328d671d36929df95a6e040e81ab",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid-1026.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/invalid-1026.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/seek.json": "50d924221ab7e76527c59e7c1de81ea14b14e536feb64a53a2eedecd42b4c51d",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/seek.stderr": "c165e3641026ec24ca2d41b5f787b987f173e81500af90a5101ee030ba044eb5",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-0/seek.stdout": "f4837fa033c4685542249692861ef1a58fcc455ae803f3f0f2138b6eee1d8472",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid--1.json": "053b32931e93a14fa103b52095b177254bed1cacfaef753b798851c3b20a09f8",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid-1026.json": "6c0ca8d98790598d0ebd5d8a43b1a87c02d07eb59d4071fb9bd18890f8e38708",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid-1026.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/invalid-1026.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/seek.json": "d3a547ac880281d5beac6c2f86ecc8154967835a1965d9f2c07bf4c3c97b94f0",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/preroll-1024/seek.stdout": "bedf86f129cf8abcfd6154df87591b3cd901f8edf0bc224e3d736195f64ba8ec",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/reference.json": "5d3063dbce6102653fde1c484b418fd1f72456d65af7a8ef17eaa5e48cff0844",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/reference.stdout": "08503347273e50a67d09a845ae0348910109d837c38da7a091df3c5f5296ef8c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/result.json": "5f979dd1ff0a5fae02d840da26cadbe807e6f4ee64cf98d8f37cb85870d1b531",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/strict.json": "82ed417b415e0d3edd47f67a887c163db3405acf0610e1689e0979b6dce731f5",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/short-1025/strict.stdout": "08503347273e50a67d09a845ae0348910109d837c38da7a091df3c5f5296ef8c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid--1.json": "a7c59be5c573040ac512379ae7c00e9c2a641ea2e8a854ae35c0dd1250824956",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid-48001.json": "8fdc1af1880604e9b538541030903cc3b0efca9517fb6038abf5bd3af143afca",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/seek.json": "d0fae0aa549e742803a4048572a98d198afc67ebfd949ae6182f1472c05fc6c8",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/seek.stderr": "e3975645ec9b3612b1cff049bf99c5584b6803a9a1466430cf9be249150bef0c",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-0/seek.stdout": "1cc626f6445a00d559f7851bc87e2c1925e0fcded382422139db4f7bc289422a",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid--1.json": "f9a36cfec94d4d7e9b871984aa7c6cf60b92700fb762b0e05b78e1cde1c9ee2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid--1.stderr": "5b75e87ea06e3ce638065d30d0d34d5d3988dbf0fd2b63874d8578d7688d2d2e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid--1.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid-48001.json": "b854443a1809cd015d3a05b819f0d32e9f6a6c1f9fe065f5299d88e91d785be1",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid-48001.stderr": "2916bf2ec04770404a1e781e7cca0a437963f5773ae2479cc78404568999fbda",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/invalid-48001.stdout": "6b2ccd3d9860c14c10260480769eabc97b8d82cac1c314ab037877387030a5ce",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/seek.json": "d859c156bd35081c3cd3b41222e6603e34f4c266fe012dd8cf5bf91726a946bd",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/seek.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/preroll-1024/seek.stdout": "feb0f5961debaf2ffc734072c7538b7cc62da85092d9a305796a2f67b1c7becf",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/reference.json": "9e90acf306bc571a4c451072ff99ea4a31be11b6591e4db003f45447d63fbbb0",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/reference.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/reference.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/result.json": "e07e2df66a844561b4d1cbaad9561f765bc1f72124f00b2919a648581d4c9f0e",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/strict.json": "d58fe2424862c8e81db9a2724f63fa65b9aac2fdc3790243ed2d4d288abeb2f8",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/strict.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/vorbis-admission-20261007/seek/matrix-identity/silence-48000/strict.stdout": "aa2bef11f97dd71afb236c373f59f97f7d44776b63b885a4fd7d7525f677f323",
+    "target/vorbis-admission-20261007/seek/matrix-identity/summary.json": "82faf2184a2701572caaa8b82bc68b19447d644e2f6686f003f9a3bfb35678c0"
+  },
+  "integrity": {
+    "all_recorded_inputs_rechecked": true,
+    "all_recorded_dependency_rlibs_rechecked": true,
+    "helper_and_driver_identity_fixed": true
+  },
+  "cases": [
+    {
+      "name": "short-1",
+      "frames": 1,
+      "ogg_sha256": "92bf166ec3efd61d186afd179b201bc16a20a1c2b61c86dc67078cc8607ae9ab",
+      "shipping_case_record_sha256": "a0f8f1fe982e33fa6ed2108d0829e6720e4dd6c5ad9223e1f85b2817cf6450b8",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 2.9802322387695312e-08,
+      "baselines_sha256": {
+        "strict": "804b610550a4f6193031c7e64f82af80ca250a505a0284d5b329f68c5f463b0a",
+        "reference": "27bc0ccfea093d01a79f27bc23d65263f41a3fe928c06c97233bf53d1aec3e94"
+      },
+      "targets": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        1,
+        1,
+        0,
+        0
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "FAIL_API": 74
+          },
+          "failures": [
+            {
+              "index": 0,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 1,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 2,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 3,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 4,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 5,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 6,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 7,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 8,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 9,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 10,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 11,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 12,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 13,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 14,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 15,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 16,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 17,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 20,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 21,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 22,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 24,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 25,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 26,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 27,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 28,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 29,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 30,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 31,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 32,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 33,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 34,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 35,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 36,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 37,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 38,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 39,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 40,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 41,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 42,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 43,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 44,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 45,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 46,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 47,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 48,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 49,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 50,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 51,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 52,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 53,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 54,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 55,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 56,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 57,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 58,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 59,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 60,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 61,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 62,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 63,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 64,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 65,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 66,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 67,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 68,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 69,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 70,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 71,
+              "target": 1,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 72,
+              "target": 0,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 73,
+              "target": 0,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": null,
+            "reference": null
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 2,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 74
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 2.9802322387695312e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 2,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "short-1024",
+      "frames": 1024,
+      "ogg_sha256": "ae48164161a8ffac349498f237b72e16ff2786ff03be4dc3434fcf14c881420e",
+      "shipping_case_record_sha256": "eb8e698f7e6ab93f512121e2310b120171208d1697f2c2d250933bb768f143db",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 1.1920928955078125e-07,
+      "baselines_sha256": {
+        "strict": "06d2d29f2886f3e4100d263ccf81c9c8855774d923cbca9fab0dd14df49bcd23",
+        "reference": "61ee47baea90496a913cbcfcf582257d9ec83c549085cc7f9c1517a77df0d60c"
+      },
+      "targets": [
+        0,
+        1023,
+        1,
+        1023,
+        1024,
+        512,
+        0,
+        1,
+        767,
+        768,
+        769,
+        255,
+        256,
+        257,
+        895,
+        896,
+        897,
+        1024,
+        0,
+        512,
+        1,
+        1023,
+        0,
+        552,
+        685,
+        547,
+        102,
+        610,
+        917,
+        619,
+        720,
+        738,
+        892,
+        495,
+        862,
+        142,
+        101,
+        953,
+        549,
+        830,
+        120,
+        660,
+        190,
+        142,
+        320,
+        542,
+        624,
+        499,
+        571,
+        1018,
+        862,
+        827,
+        941,
+        526,
+        363,
+        698,
+        542,
+        348,
+        532,
+        898,
+        980,
+        893,
+        778,
+        677,
+        228,
+        786,
+        903,
+        189,
+        213,
+        811,
+        306,
+        242,
+        427,
+        390,
+        10,
+        46,
+        673,
+        28,
+        774,
+        469,
+        40,
+        980,
+        335,
+        656,
+        972,
+        28,
+        250
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 72,
+            "FAIL_API": 15
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 1023,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 3,
+              "target": 1023,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 4,
+              "target": 1024,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 16,
+              "target": 897,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 17,
+              "target": 1024,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 21,
+              "target": 1023,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 28,
+              "target": 917,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 37,
+              "target": 953,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 49,
+              "target": 1018,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 52,
+              "target": 941,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 59,
+              "target": 898,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 60,
+              "target": 980,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 66,
+              "target": 903,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 81,
+              "target": 980,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 84,
+              "target": 972,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 1.1920928955078125e-07
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 1025,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 87
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 1.1920928955078125e-07
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 1025,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "short-1025",
+      "frames": 1025,
+      "ogg_sha256": "c45424c3c98a0352c6d44fcbb92db762b5c08f9f9f88ccb9b66e32b158f20d90",
+      "shipping_case_record_sha256": "568a792f1b09d1afa0fd1752c4655765e6cb3acdb4274fc0535392a2676e2b5b",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 1.1920928955078125e-07,
+      "baselines_sha256": {
+        "strict": "dbbfadf391619b7a508d7521aa57aad267019f4ad38369a1454819ada153f037",
+        "reference": "6065efc58de48f542237a98cbcd2fff2fb84298c24db48cb4c71dd1fb241f2ba"
+      },
+      "targets": [
+        0,
+        1024,
+        1,
+        0,
+        1023,
+        1024,
+        1025,
+        512,
+        1,
+        2,
+        768,
+        769,
+        770,
+        255,
+        256,
+        257,
+        896,
+        897,
+        898,
+        1025,
+        0,
+        512,
+        1,
+        1024,
+        0,
+        552,
+        685,
+        547,
+        102,
+        610,
+        917,
+        619,
+        720,
+        738,
+        892,
+        495,
+        862,
+        142,
+        101,
+        953,
+        549,
+        830,
+        120,
+        660,
+        190,
+        142,
+        320,
+        542,
+        624,
+        499,
+        571,
+        1018,
+        862,
+        827,
+        941,
+        526,
+        363,
+        698,
+        542,
+        348,
+        532,
+        898,
+        980,
+        893,
+        778,
+        677,
+        228,
+        786,
+        903,
+        189,
+        213,
+        811,
+        306,
+        242,
+        427,
+        390,
+        10,
+        46,
+        673,
+        28,
+        774,
+        469,
+        40,
+        980,
+        335,
+        656,
+        972,
+        28,
+        250
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 73,
+            "FAIL_API": 16
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 1024,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 4,
+              "target": 1023,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 5,
+              "target": 1024,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 6,
+              "target": 1025,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 898,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 1025,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 1024,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 30,
+              "target": 917,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 39,
+              "target": 953,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 51,
+              "target": 1018,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 54,
+              "target": 941,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 61,
+              "target": 898,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 62,
+              "target": 980,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 68,
+              "target": 903,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 83,
+              "target": 980,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 86,
+              "target": 972,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 1.1920928955078125e-07
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 1026,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 1.1920928955078125e-07
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 1026,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "original-48000",
+      "frames": 48000,
+      "ogg_sha256": "ea46ec63d6367f129eab712926ef0e9b4f63c7ddcc9ef552f952742a6f5bb8c5",
+      "shipping_case_record_sha256": "6a1b402f3b64d32cf74b20672cc9454a4f96df48142976ac1c5a18d5559bffca",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 5.960464477539063e-08,
+      "baselines_sha256": {
+        "strict": "5ba39157e06d4ddd5c065d1ba8f0d4d70085042c8e0414619c3353b35ec20f88",
+        "reference": "a5eec397014d192226e06c99884fdd1c5650b2801eb9ca76c2ad437bf8c52aca"
+      },
+      "targets": [
+        0,
+        47999,
+        1,
+        46975,
+        1023,
+        1024,
+        1025,
+        24000,
+        46976,
+        46977,
+        47743,
+        47744,
+        47745,
+        255,
+        256,
+        257,
+        47871,
+        47872,
+        47873,
+        48000,
+        0,
+        24000,
+        1,
+        47999,
+        0,
+        17665,
+        42029,
+        17518,
+        3277,
+        35034,
+        29356,
+        34958,
+        47768,
+        23640,
+        38377,
+        15842,
+        27584,
+        4570,
+        3246,
+        30523,
+        17577,
+        26583,
+        3861,
+        21137,
+        6092,
+        4552,
+        10269,
+        17374,
+        19977,
+        41348,
+        18290,
+        32582,
+        34239,
+        45603,
+        30137,
+        16860,
+        11616,
+        22357,
+        43355,
+        39290,
+        17026,
+        36362,
+        33795,
+        28590,
+        38527,
+        21671,
+        7316,
+        40073,
+        28898,
+        38872,
+        6844,
+        25970,
+        9809,
+        45410,
+        13681,
+        12480,
+        325,
+        1472,
+        21538,
+        35844,
+        44531,
+        34029,
+        1302,
+        31367,
+        10737,
+        41369,
+        31134,
+        917,
+        44816
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 85,
+            "FAIL_API": 4
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 47999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 47873,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 48000,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 47999,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 5.960464477539063e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 5.960464477539063e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "original-64s",
+      "frames": 3072000,
+      "ogg_sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "shipping_case_record_sha256": "141c2c62ca7b53091477faf850b40be8489575c3fc4116d1c5430dac8e040ad7",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 8.940696716308594e-08,
+      "baselines_sha256": {
+        "strict": "e37d46df20f926fe216a5a1c8686efe19b22580a21822e6b9995ed61b2524985",
+        "reference": "9e5a046eecfc66af0f84a7233f797162991f2bd079aeb6c5dca425d5e9ce4b6b"
+      },
+      "targets": [
+        0,
+        3071999,
+        1,
+        3070975,
+        1023,
+        1024,
+        1025,
+        1536000,
+        3070976,
+        3070977,
+        3071743,
+        3071744,
+        3071745,
+        255,
+        256,
+        257,
+        3071871,
+        3071872,
+        3071873,
+        3072000,
+        0,
+        1536000,
+        1,
+        3071999,
+        0,
+        1130561,
+        2689918,
+        1121170,
+        209737,
+        2242230,
+        1878845,
+        2237372,
+        3057182,
+        1512969,
+        2456171,
+        1013931,
+        1765431,
+        292517,
+        207804,
+        1953529,
+        1124933,
+        1701347,
+        247150,
+        1352775,
+        389945,
+        291342,
+        657271,
+        1111977,
+        1278578,
+        2646295,
+        1170613,
+        2085267,
+        2191331,
+        2918606,
+        1928806,
+        1079075,
+        743442,
+        1430866,
+        2774778,
+        2514573,
+        1089690,
+        2327181,
+        2162939,
+        1829779,
+        2465782,
+        1386970,
+        468242,
+        2564728,
+        1849511,
+        2487845,
+        438071,
+        1662139,
+        627789,
+        2906292,
+        875605,
+        798779,
+        20829,
+        94212,
+        1378468,
+        2294062,
+        2850004,
+        2177917,
+        83333,
+        2007516,
+        687224,
+        2647656,
+        1992584,
+        58702,
+        2868277
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 84,
+            "FAIL_API": 5
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 3071999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 3071873,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 3072000,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 3071999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 43,
+              "target": 1352775,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 7.450580596923828e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 3072001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 7.450580596923828e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 3072001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "original-600s",
+      "frames": 28800000,
+      "ogg_sha256": "d5f94637d5a52ae4484fe52e0b36b0f6efe7e5542dc4418c6132aa8169e8a859",
+      "shipping_case_record_sha256": "e9d7b9676c58395f705e163bb40059024fd25cb3517ca5492f01b4d5bb702369",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 8.940696716308594e-08,
+      "baselines_sha256": {
+        "strict": "1d3ac8b14e75c45c00609cec815c942ba9028d3537ccf90309c47e1ad9a87e84",
+        "reference": "617af1d027b0d2a2a6491dbf7174ace6109f28720c9c52c9d9844a02c5e3367a"
+      },
+      "targets": [
+        0,
+        28799999,
+        1,
+        28798975,
+        1023,
+        1024,
+        1025,
+        14400000,
+        28798976,
+        28798977,
+        28799743,
+        28799744,
+        28799745,
+        255,
+        256,
+        257,
+        28799871,
+        28799872,
+        28799873,
+        28800000,
+        0,
+        14400000,
+        1,
+        28799999,
+        0,
+        9044489,
+        21519347,
+        8969363,
+        1677901,
+        17937840,
+        15030762,
+        17898983,
+        24457459,
+        25168668,
+        24690529,
+        8111451,
+        27475404,
+        28769986,
+        27674675,
+        26877139,
+        26763854,
+        13610778,
+        1977200,
+        10822206,
+        3119561,
+        2330738,
+        27798723,
+        8895821,
+        10228628,
+        21170362,
+        9364911,
+        27339228,
+        17530650,
+        23348855,
+        15430454,
+        8632606,
+        5947541,
+        25428266,
+        22198230,
+        20116585,
+        8717523,
+        18617454,
+        17303517,
+        14638234,
+        19726257,
+        27383295,
+        3745941,
+        20517829,
+        14796088,
+        19902763,
+        3504571,
+        13297116,
+        5022317,
+        28020417,
+        7004842,
+        25452105,
+        26977248,
+        753702,
+        11027751,
+        18352503,
+        22800033,
+        17423338,
+        666671,
+        16060128,
+        5497792,
+        21181255,
+        15940677,
+        469622,
+        22946217
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 84,
+            "FAIL_API": 5
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 28799999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 28799873,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 28800000,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 28799999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 29,
+              "target": 17937840,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 8.940696716308594e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 28800001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 8.940696716308594e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 28800001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "head-tail-impulses",
+      "frames": 48000,
+      "ogg_sha256": "975f1bbae42eae2f79926f06eb07a9e5771d07b27e793f17ffee1330f0f7c413",
+      "shipping_case_record_sha256": "a0e6057b15695a0da94588ec12ad7495e0cff5d302df716cb559b8fdacac7a34",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 5.960464477539063e-08,
+      "baselines_sha256": {
+        "strict": "8cf2513fb840b9b660784f811fbb76aba3e3f4d40dfef66270e3b2c29ffdb9c8",
+        "reference": "55f729570c2e617a0538093e35f81af0056e319d3e50b3a9a251f895f3820cb9"
+      },
+      "targets": [
+        0,
+        47999,
+        1,
+        46975,
+        1023,
+        1024,
+        1025,
+        24000,
+        46976,
+        46977,
+        47743,
+        47744,
+        47745,
+        255,
+        256,
+        257,
+        47871,
+        47872,
+        47873,
+        48000,
+        0,
+        24000,
+        1,
+        47999,
+        0,
+        17665,
+        42029,
+        17518,
+        3277,
+        35034,
+        29356,
+        34958,
+        47768,
+        23640,
+        38377,
+        15842,
+        27584,
+        4570,
+        3246,
+        30523,
+        17577,
+        26583,
+        3861,
+        21137,
+        6092,
+        4552,
+        10269,
+        17374,
+        19977,
+        41348,
+        18290,
+        32582,
+        34239,
+        45603,
+        30137,
+        16860,
+        11616,
+        22357,
+        43355,
+        39290,
+        17026,
+        36362,
+        33795,
+        28590,
+        38527,
+        21671,
+        7316,
+        40073,
+        28898,
+        38872,
+        6844,
+        25970,
+        9809,
+        45410,
+        13681,
+        12480,
+        325,
+        1472,
+        21538,
+        35844,
+        44531,
+        34029,
+        1302,
+        31367,
+        10737,
+        41369,
+        31134,
+        917,
+        44816
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 85,
+            "FAIL_API": 4
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 47999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 47873,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 48000,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 47999,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 5.960464477539063e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 5.960464477539063e-08
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "silence-48000",
+      "frames": 48000,
+      "ogg_sha256": "f6c03dbb610537862f64808ff1d592290d4b1442fb4de15753dad07cb44091d9",
+      "shipping_case_record_sha256": "15748d788f240e3c741f42b29c463101acc14259cf8b7decf853f4a634aede47",
+      "max_block_frames": 2048,
+      "full_readback_max_abs_difference": 0.0,
+      "baselines_sha256": {
+        "strict": "2a2959b3b48740505a8d7042b77330498676e9c1198fcf4ee578535ec5e779db",
+        "reference": "20ec81d704bd3dbbf302ec56aa28547db4ea8b1fc53fe4d454eb950198e11ddd"
+      },
+      "targets": [
+        0,
+        47999,
+        1,
+        46975,
+        1023,
+        1024,
+        1025,
+        24000,
+        46976,
+        46977,
+        47743,
+        47744,
+        47745,
+        255,
+        256,
+        257,
+        47871,
+        47872,
+        47873,
+        48000,
+        0,
+        24000,
+        1,
+        47999,
+        0,
+        17665,
+        42029,
+        17518,
+        3277,
+        35034,
+        29356,
+        34958,
+        47768,
+        23640,
+        38377,
+        15842,
+        27584,
+        4570,
+        3246,
+        30523,
+        17577,
+        26583,
+        3861,
+        21137,
+        6092,
+        4552,
+        10269,
+        17374,
+        19977,
+        41348,
+        18290,
+        32582,
+        34239,
+        45603,
+        30137,
+        16860,
+        11616,
+        22357,
+        43355,
+        39290,
+        17026,
+        36362,
+        33795,
+        28590,
+        38527,
+        21671,
+        7316,
+        40073,
+        28898,
+        38872,
+        6844,
+        25970,
+        9809,
+        45410,
+        13681,
+        12480,
+        325,
+        1472,
+        21538,
+        35844,
+        44531,
+        34029,
+        1302,
+        31367,
+        10737,
+        41369,
+        31134,
+        917,
+        44816
+      ],
+      "status": "PASS_WORKAROUND",
+      "attempts": [
+        {
+          "preroll_frames": 0,
+          "status": "FAIL",
+          "exit_code": 1,
+          "counts": {
+            "PASS": 85,
+            "FAIL_API": 4
+          },
+          "failures": [
+            {
+              "index": 1,
+              "target": 47999,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 18,
+              "target": 47873,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 19,
+              "target": 48000,
+              "status": "FAIL_API"
+            },
+            {
+              "index": 23,
+              "target": 47999,
+              "status": "FAIL_API"
+            }
+          ],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 0.0
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        },
+        {
+          "preroll_frames": 1024,
+          "status": "PASS",
+          "exit_code": 0,
+          "counts": {
+            "PASS": 89
+          },
+          "failures": [],
+          "max_abs_difference": {
+            "strict": 0.0,
+            "reference": 0.0
+          },
+          "invalid_targets": [
+            {
+              "target": -1,
+              "status": "PASS_REJECTED"
+            },
+            {
+              "target": 48001,
+              "status": "PASS_REJECTED"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "raw_accurate_windows": 695,
+    "raw_accurate_fail_api": 127,
+    "preroll_windows_pass": 695,
+    "invalid_targets_rejected": 32
+  },
+  "comparison": "Exact absolute frame slices against independently complete Symphonia/libvorbisfile PCM; no padding, alignment, gain fit or concealment",
+  "production_constraints": [
+    "Only observed q10 maximum block 2048 is covered; fixed preroll 1024 is not decoder delay",
+    "Observed delay was 128 for every case",
+    "target=N returns no frames; negative and N+1 rejected",
+    "Runtime fully decoded PCM does not use this demux seek workaround"
+  ],
+  "not_run": [
+    "Native four-platform seek controls",
+    "Runtime/editor streaming-seek wiring",
+    "Listening, physical hardware and audio timing"
+  ],
+  "prior_observation": {
+    "path": "target/vorbis-admission-20261007/seek/matrix/summary.json",
+    "sha256": "73454d55735fc937806872f6f5a37ccb6c5038274c1e9a33ffd235ab5e068096",
+    "status": "PASS_WORKAROUND",
+    "note": "Same matrix before adding shipping case-record identity checks; preserved separately"
+  }
+}

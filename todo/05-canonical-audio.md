@@ -14,6 +14,7 @@
 - [x] 最终音频对象准备：`prepare_canonical_audio` 与 lab 的 `prepare-audio` 有界复制最终 Ogg 至新 staging 目录，记录实际对象 BLAKE3/长度并严格读回副本；3 项新增行为测试覆盖身份、已有目录保护、上限和失败清理，11 项 media 测试通过；只准备音频对象，不创建虚构分析、谱面或 Ready
 - [x] 固定全频带实验：冻结提交 `e1b3a26`，只比较长块 residue 扩带；19 例的 34 次编码与双路完整回读、4 次原 guard 拒绝及原 10 例字节复现通过；逐例保留全长和局部音质退步，见 [观察清单](../testdata/synthetic/canonical-audio-probe/fullband-observations-20261003.json)，正式 vendor/profile 与生产准入保持未变
 - [x] 固定数值域与全频带组合：四个既有源各编码一次并双路完整回读，通过实际核系数与阶段预算核对；保留残余失真、局部退步及条件范围，见 [诊断](../tools/canonical-audio-probe/numeric-fullband/README.md)，正式 guard/profile 未改
+- [x] 本机 canonical q10 定位窗口软件控制：8 个固定对象的 695 次明确前滚窗口与完整回读匹配，32 次越界拒绝通过；原始 Accurate 的 127 次 API 失败保留，实际 delay 128 与前滚 1024 分别记录，[观察清单](../testdata/synthetic/native-vorbis-seek-20261007.json)。游戏完整 PCM 路径未改，四平台 seek 与生产流式解码另验
 - [ ] 最终编码闭环继续验收首尾瞬态、静默、clipping、seek、长曲和曲库听感，并在 Windows/Linux 各目标验证；严格读回入口通过不等于编码器准入或 SongPackage Ready
 - [ ] 完整 MIR 的输入以最终回读音频为准；lab 的实际能量测量已从本次 staging 最终副本按帧 0 读取，自动 MIR 的编码回读对照仍待完成
 - [x] 初始 SongPackage 四对象事务、BLAKE3、版本头和原子目录发布已由 lab 实际消费；staging 严格读回后从同一副本测量能量，组合带来源的手工 Anchor / 段落，完整复核后才发布，损坏与失败保留覆盖见 [契约](../docs/song-package.md)

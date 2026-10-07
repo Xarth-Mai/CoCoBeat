@@ -50,8 +50,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let track_start = track.start_ts.get();
         let delay = track.delay.unwrap_or(0);
         let total = track.num_frames.ok_or("missing valid frame count")?;
-        if preroll != 0 && delay != 1024 {
-            return Err("extra preroll experiment requires observed delay=1024".into());
+        if preroll != 0 && delay > 1024 {
+            return Err("extra preroll experiment requires observed delay<=1024".into());
         }
         if params.sample_rate != Some(48_000)
             || params.channels.as_ref().map(|c| c.count()) != Some(2)
