@@ -176,5 +176,18 @@
   "workbench.scroll": "Scroll details: ↑ / ↓ or wheel",
   "workbench.zoom_in": "Zoom in",
   "workbench.zoom_out": "Zoom out",
-  "workbench.cluster": "Selected marker: {count} Anchors in this pixel; use the list to select each"
+  "workbench.cluster": "Selected marker: {count} Anchors in this pixel; use the list to select each",
+  "network.ready": "You are {player} · Waiting for both players to confirm the start",
+  "network.connecting": "Connecting to your partner…",
+  "network.loading": "Loading the song…",
+  "network.waiting_peer": "Waiting for your partner to get ready…",
+  "network.scheduled": "Both players are ready · Music starts shortly",
+  "network.listening": "Invitation saved to {path} · Waiting for your partner",
+  "network.running": "Playing together online",
+  "network.finishing": "Waiting for both players to confirm the finish…",
+  "network.complete": "Online performance complete",
+  "network.failed": "Online performance interrupted",
+  "network.round_closed": "This invitation has ended · Launch a new online performance",
+  "network.local_binding": "Local {player}: {binding}",
+  "network.remote_player": "Partner {player}: remote controls"
 }

@@ -638,3 +638,19 @@ QA helper 由准确 Cargo JSON 的 10 个既有 rlib 构建，复制冻结 net �
 升级后另外重跑 6 类恶意资源传输均通过，坏 descriptor / hash、截断、尾随数据、错误包身份和额外 uni stream 仍无法发布或进入 Installed / Ready。三组 suite 使用生产二进制，QA host / peer 的复制和注入边界见持久化观察，不将该 helper 当作未经修改的另一端生产二进制
 
 默认 1000ppm 相对单调时钟漂移是模型假设，host start uncertainty 为 0 只代表坐标恒等，网络不对称 / 样本老化 / 未来起点误差另有区间；软件唤醒迟到另记，不能当作 Audio ClockBridge、Kira callback、设备或声学同步精度。真实双机、实测漂移假设、游戏窗口实时输入 / 音频接线、超过 100ms 的调度卡顿故障和最大 datagram flood 为 NOT RUN，完整阶段退出继续保留
+
+## QUIC 实时游戏与原生软件接线
+
+2026-10-07，在 `8b54a5e` 后的固定输入验证 protocol / ALPN v4；[持久化观察](../testdata/synthetic/quic-live-observations-20261007.json) 保存 146 项源码 / 配置 / QA 输入、准确二进制、rlib、命令、日志与 suite 摘要，原始证据位于 `target/quic-live-20261007/`。`cargo test --locked -p cocobeat-runtime -p cocobeat-net -p xtask` 通过 net 16 / runtime 114 / xtask 4 共 134 项测试；相关五包全目标 Clippy、格式、依赖边界及 game / lab 构建通过，新增依赖仅为既有 runtime → net 的内部边
+
+`tools/quic-live-check/check.py` 用准确 Cargo JSON 的六个既有 rlib 构建公开 API driver，不复制或修改生产 net；7 组实际 loopback 覆盖预装、四对象接收、Ready 前取消、Hit 后取消、缺 Armed、错误玩家与错误 epoch。成功组实际输入历史不同，双方事实 `[93,27]`，得到逐字节相同的权威 Replay 和相同 core 事件；失败组保存真实前缀，Hit 后取消为 `[1,0]`，其余为 `[0,0]`，没有伪造 COMPLETE 或权威文件。升级后的 lab 另外通过 16 条实际 headless 命令，保留资源原字节、模板错配、旧协议和目标路径保护
+
+`tools/quic-live-check/native.py --compositor gamescope` 在本机 Linux / AMD RADV Vulkan 的两个独立 headless compositor 中启动未经修改的生产 game，使用实际 DefaultPlugins、完整品牌、Kira / CPAL Alsa Default 48 kHz 双声道 F32、网络 worker 与 update_game。两端经过 Ready / Connecting / Starting / Running / Finishing / Finished 后正常退出 0，各有 3 个受控 Hit，实际事实 `[36,35]`、5 个 core 事件及权威 Replay 原字节一致；未预装端四对象与 host 相同。原生 `running.png` 与 `screenshot.png` 共 4 张 1280×800 图已逐张检查 Logo、接收的舞台、双方角色、完成结果与菜单文本
+
+原生探针通过受控 CapturedControl 注入 Start / Hit / Quit，命中阈值由实际音频源游标触发，截图读回可能推迟后续捕获；不将它当作物理键盘 / 手柄输入或真人体验。预约使用进程单调时钟，Kira 的延迟从音频 callback 消费时计起，原始记录保留实际游标与捕获时间；软件唤醒迟到不能证明扬声器同步、callback 尺寸、输入 / 音频设备延迟或双机时钟漂移
+
+QA 的 2 秒音频由原创 fixture 严格完整解码后重复 PCM，再用外部 FFmpeg / libvorbis 编码，生产严格读回为 96000 帧；该编码器仅构造联网测试内容，不代表生产编码准入、MIR 或人工音乐标注。fixture 创建时的早期 driver 身份与最终 live / native 的产物身份分别保留
+
+首轮 Ready 前取消因 executor 在 QUIC close 刷出前退出，伙伴超过原 15 秒探针期限；修复为从创建起保留 Endpoint，在同一活跃 executor 内 close 和有界 wait_idle，未放宽探针期限。首轮 Xvfb 原生运行因缺 DRI3 / Vulkan present modes 失败，随后显式使用已安装的 Gamescope headless compositor；没有增加渲染后端或 fallback。失败日志和最终成功记录均保留；已有 ICU4X CJK 分词诊断和 Gamescope 关闭 surface 诊断仍在原始 stderr 中，不据退出 0 宣称完整平台窗口或母语验收
+
+当前生产入口每个邀请连接一局，结束后屏蔽旧邀请的 Start / Restart；重开 / 重入尚未实现。真实双机与 LAN / WAN、防火墙、长曲时钟、最大容量、真实双手柄 / 混合输入、物理音频、真人可读性与四平台发行运行均保持 NOT RUN，完整工作包 10 和 V1 目标继续推进

@@ -128,6 +128,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                     "cocobeat-replay",
                     "cocobeat-media",
                     "cocobeat-stage",
+                    "cocobeat-net",
                 ],
                 true,
             ),

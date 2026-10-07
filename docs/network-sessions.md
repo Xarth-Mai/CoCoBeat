@@ -1,10 +1,33 @@
-# QUIC 可靠历史会话
+# QUIC 游戏与可靠历史会话
 
-`cocobeat-net` 提供受邀请的双进程软件会话，lab 消费其同步 `host` / `join` / `join_receive` 入口；双方使用完整验证的同一个 [SongPackage](song-package.md)，客机可以预装，也可以接收主机的四个原始对象，用已有 Replay 模板提供各自玩家历史，经真实 QUIC 连接运行唯一 DuoEngine 并保存实际录制结果
+`cocobeat-net` 提供受邀请的双端会话，游戏通过有界 `LiveSession` worker 使用实时输入与实际 Kira 音频，lab 的 `host` / `join` / `join_receive` 继续验证加速历史；双方使用完整验证的同一个 [SongPackage](song-package.md)，客机可以预装，也可以接收主机的四个原始对象，运行同一 DuoEngine 并保存实际录制结果
 
-这一步验证可靠历史、身份和结算协议；游戏窗口尚未接入网络，真实音频时钟、游戏输入采集和重连分别继续在 [10](../todo/10-quic-network.md) 推进，双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
+本轮支持可直达端点的一次邀请、一局演奏；重连、重新开局和声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
 
-## 运行
+## 实时游戏
+
+```sh
+cargo run --locked -p cocobeat-game -- --package PACKAGE --net-host 127.0.0.1:0 INVITE.json HOST_OUTPUT
+cargo run --locked -p cocobeat-game -- --package PACKAGE --net-join INVITE.json GUEST_OUTPUT
+# 客机没有内容包时
+cargo run --locked -p cocobeat-game -- --net-receive INVITE.json NEW_PACKAGE GUEST_OUTPUT
+```
+
+每端仍完整播放品牌开场，在 Ready 菜单由用户确认开始后才启动 worker；主机写出新邀请并等待客机。网络 Prepared 要求四对象与完整包已验证，窗口在后台完整解码 PCM，重新核对包身份、长度和最终规则边界后才发送本端 Ready
+
+主机固定 P1、客机固定 P2；每端的本地第一套键盘 / 手柄绑定控制自己的网络角色，默认均为 F，第二个本地演奏槽不能提交伙伴 Hit。菜单主控仍独立于角色编号，可以显式接管；等待与预约阶段保持释放屏障，音乐实际游标前进后才能演奏
+
+Scheduled 在未来 deadline 之前交给窗口，Kira 用原生 `start_time(Duration)` 预约，成功入队后才发送 Armed；双方可靠 Armed / StartConfirmed 屏障必须仍留至少 100ms。Kira 延迟从音频回调消费 sound 开始，存在回调和排队偏差；歌曲 SongTime 继续来自实际 Kira 游标和 AudioClockBridge，网络 offset 不替换音频计时，也不证明扬声器同步
+
+本地 Hit 立即反馈，并可靠发送已经接受的整数事实；每端只关闭自己玩家的历史，伙伴 Hit 与水位收到后才进入同一 core / Replay 入口，共享确认可以延迟。输入数量无需预声明，End 必须匹配实际接收计数及本玩家最终水位，随后沿用权威 Replay 校验和 FinishAck
+
+窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待线程完成保存后退出。完成或失败后可以保存、调整设置和退出，本次邀请不能重开；新一局重新启动并使用新的邀请与输出路径
+
+实时命令 / 事件队列各最多 256 项，入队与轮询不阻塞界面，满队列明确失败而不丢事实；每条线上 Facts 可以容纳 1–64 项，当前窗口按已经捕获的事实逐项提交。真实输入交换从预约起点起最多歌曲长度加 60 秒，Prepared 后本机 Ready 最多等待 120 秒
+
+可在联网命令末尾加 `--live-observation NEW_DIR` 取得原生窗口、实际 Kira 游标、逐帧 CSV、输入计时诊断及 Running / 终态 PNG。此入口在完整品牌动画后注入明确标记的合成 Start / Hit，并自动关闭；它验证软件生产接线，不提供物理键盘、手柄、扬声器同步、双机或真人证据
+
+## 加速历史运行
 
 在两个终端运行，替换为已有的包与模板路径，邀请文件和输出目录必须是源包外的新路径，其父目录必须已存在
 
@@ -37,11 +60,11 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 双方 Ready 后，host 可靠发送自己单调 origin 上未来 2 秒的 ScheduleStart；guest 必须使用新鲜样本把整个可能起点区间映射至本端，仍留至少 100ms 的准备时间，再可靠回复 ScheduleStartAck。host 重算并核对映射、epoch 和同一 deadline，Ack 未在准备期限前到达则失败；双方等待预约的 Instant，断连阻止开始，实际唤醒迟到超过 100ms 则记录并失败，不发送输入历史
 
-`status.json.network_timing` 保留探测计数、样本、host / local deadline、映射 uncertainty、实际软件唤醒与迟到；未达到的步骤用 null，host 映射 uncertainty 为 0 只表示本端坐标恒等。输入时间仍来自原 Replay 的整数 SongTime，本入口是等待预约后发送加速历史，游戏输入 / 音频尚未接线，也不保证通信崩溃时的分布式原子开始
+`status.json.network_timing` 保留探测计数、样本、host / local deadline、映射 uncertainty、实际软件唤醒与迟到；未达到的步骤用 null，host 映射 uncertainty 为 0 只表示本端坐标恒等。加速历史入口的输入时间来自原 Replay；实时入口来自本端 AudioClockBridge。两个入口都保留整数 SongTime，也不保证通信崩溃或确认后分区时的分布式原子开始
 
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/3`，旧 v1 / v2 邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/4`，旧 v1 / v2 / v3 邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
 邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，每次 host 只接受一次连接尝试，失败后重新运行会生成新邀请
 
@@ -53,10 +76,10 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 ## 限额与边界
 
-消息使用 4 字节大端长度和严格 JSON，单条最多 16 KiB，每批 1–64 个事实，单玩家输入累计最多 32 MiB；有界队列最多 4 批，可靠流采用背压，不丢输入。资源流采用固定 16 字节类型 / epoch 头和固定顺序的四个原始对象，不接受对端文件名；单对象上限依次为 512 MiB、16 MiB、4 MiB、64 KiB，总量最多 532 MiB + 64 KiB，传输缓冲为 64 KiB。权威 Replay 沿用现有 20 MiB 上限，收发窗口与固定 stream 数另有限制，datagram 只承载时钟探测，收发缓冲各 4 KiB
+消息使用 4 字节大端长度和严格 JSON，单条最多 16 KiB，每批 1–64 个事实，单玩家输入累计最多 32 MiB；加速历史队列最多 4 批，实时命令 / 事件队列各最多 256 项，可靠流采用背压，队列压力不能静默丢输入。资源流采用固定 16 字节类型 / epoch 头和固定顺序的四个原始对象，不接受对端文件名；单对象上限依次为 512 MiB、16 MiB、4 MiB、64 KiB，总量最多 532 MiB + 64 KiB，传输缓冲为 64 KiB。权威 Replay 沿用现有 20 MiB 上限，收发窗口与固定 stream 数另有限制，datagram 只承载时钟探测，收发缓冲各 4 KiB
 
 首次等待 guest 最多 120 秒，TLS / capability 阶段绝对限时 10 秒，资源传输异步等待最多 5 分钟，单次读写进展各 30 秒；ClockSync / Ready / ScheduleStart 屏障合计最多 30 秒、无输入进展各 30 秒，从预约起点开始的加速会话最多 15 分钟，最终 Replay 传输校验 60 秒、Ack 30 秒、端点关闭最多再等 5 秒。超时终止当前会话，不续用取消读取后的半条消息
 
 这些限制约束协议字节、事实与异步等待，不能抢占同步文件访问、哈希、音频解码或 core 运算，也不代表达到最大事实量时仍有合理帧时；网络压力、平台设备和人体体验须按各自证据评估。包发布复用同文件系统 staging → 校验 → rename，已有目标包括符号链接拒绝，失败只清理当前调用创建的对象；本地其他进程在最终存在性检查后创建空目录的竞态仍沿用现有发布实现，rename 不提供平台专用的排他替换保证
 
-net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识 Quinn，runtime 尚不依赖 net
+net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识 Quinn；runtime 依赖 net 的同步有界 worker 入口，Tokio 和 QUIC I/O 留在其拥有的线程

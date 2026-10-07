@@ -176,5 +176,18 @@
   "workbench.scroll": "Desplazar detalles: ↑ / ↓ o rueda",
   "workbench.zoom_in": "Acercar",
   "workbench.zoom_out": "Alejar",
-  "workbench.cluster": "Marcador seleccionado: {count} Anchors en este píxel; usa la lista para seleccionar cada uno"
+  "workbench.cluster": "Marcador seleccionado: {count} Anchors en este píxel; usa la lista para seleccionar cada uno",
+  "network.ready": "Eres {player} · Esperando que ambos confirmen el inicio",
+  "network.connecting": "Conectando con tu compañero…",
+  "network.loading": "Cargando la canción…",
+  "network.waiting_peer": "Esperando a que tu compañero esté listo…",
+  "network.scheduled": "Ambos están listos · La música comienza pronto",
+  "network.listening": "Invitación guardada en {path} · Esperando a tu compañero",
+  "network.running": "Tocando juntos en línea",
+  "network.finishing": "Esperando que ambos confirmen el final…",
+  "network.complete": "Interpretación en línea completada",
+  "network.failed": "Interpretación en línea interrumpida",
+  "network.round_closed": "Esta invitación terminó · Inicia una nueva interpretación en línea",
+  "network.local_binding": "{player} local: {binding}",
+  "network.remote_player": "Compañero {player}: controles remotos"
 }

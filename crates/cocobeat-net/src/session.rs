@@ -21,14 +21,15 @@ use crate::{
 };
 use wire::{Control, Fact, Identity, Input};
 
-const RULESET: &str = "duo-watermark-v1";
+pub(crate) const RULESET: &str = "duo-watermark-v1";
 const COMPLETE_CODE: u32 = 0x4342;
 const COMPLETE_REASON: &[u8] = b"session complete";
-const IDLE: Duration = Duration::from_secs(30);
+pub(crate) const IDLE: Duration = Duration::from_secs(30);
 
 #[derive(Debug, Serialize)]
 pub struct SessionSummary {
     pub status: &'static str,
+    pub mode: &'static str,
     pub protocol_version: u32,
     pub epoch: u64,
     pub player: u8,
@@ -48,17 +49,17 @@ pub struct SessionSummary {
     pub error: Option<String>,
 }
 
-struct Prepared {
-    identity: Identity,
-    anchors: Vec<Anchor>,
-    local: Vec<Fact>,
-    template_blake3: String,
-    template_epoch: u64,
-    end: i64,
-    final_through: i64,
+pub(crate) struct Prepared {
+    pub(crate) identity: Identity,
+    pub(crate) anchors: Vec<Anchor>,
+    pub(crate) local: Vec<Fact>,
+    pub(crate) template_blake3: String,
+    pub(crate) template_epoch: u64,
+    pub(crate) end: i64,
+    pub(crate) final_through: i64,
 }
 
-fn seat(input: DuoInput) -> PlayerId {
+pub(crate) fn seat(input: DuoInput) -> PlayerId {
     match input {
         DuoInput::Hit(hit) => hit.player,
         DuoInput::Watermark { player, .. } => player,
@@ -69,7 +70,7 @@ fn number(player: PlayerId) -> u8 {
     player.index() as u8 + 1
 }
 
-fn other(player: PlayerId) -> PlayerId {
+pub(crate) fn other(player: PlayerId) -> PlayerId {
     match player {
         PlayerId::P1 => PlayerId::P2,
         PlayerId::P2 => PlayerId::P1,
@@ -93,10 +94,8 @@ fn prepare(package: &Path, template: &Path, player: PlayerId) -> Result<Prepared
     prepare_validated(package, template, player)
 }
 
-fn prepare_validated(
+pub(crate) fn prepare_package(
     package: cocobeat_media::ValidatedPackage,
-    template: &Path,
-    player: PlayerId,
 ) -> Result<Prepared, String> {
     if package.chart.ruleset_id != RULESET {
         return Err("network sessions support only duo-watermark-v1".into());
@@ -116,6 +115,23 @@ fn prepare_validated(
         .and_then(|delay| end.checked_add(delay))
         .and_then(|through| through.checked_add(1))
         .ok_or("song final watermark overflow")?;
+    Ok(Prepared {
+        identity,
+        anchors: package.chart.anchors,
+        local: Vec::new(),
+        template_blake3: String::new(),
+        template_epoch: 0,
+        end,
+        final_through,
+    })
+}
+
+fn prepare_validated(
+    package: cocobeat_media::ValidatedPackage,
+    template: &Path,
+    player: PlayerId,
+) -> Result<Prepared, String> {
+    let mut prepared = prepare_package(package)?;
     let metadata = fs::metadata(template).map_err(|error| format!("read template: {error}"))?;
     if !metadata.is_file() || metadata.len() > MAX_FILE_BYTES {
         return Err("template must be a regular Replay file of at most 20 MiB".into());
@@ -134,14 +150,18 @@ fn prepare_validated(
     let replay = Replay::decode(bytes.as_slice()).map_err(|_| "invalid Replay template")?;
     replay
         .replay(
-            &identity.content_id,
+            &prepared.identity.content_id,
             RULESET,
-            package.chart.anchors.clone(),
+            prepared.anchors.clone(),
             DuoRules::default(),
         )
         .map_err(|_| "template content, rules, epoch or history is invalid")?;
     for input in replay.facts() {
-        validate_fact(Fact::from_input(*input), end, final_through)?;
+        validate_fact(
+            Fact::from_input(*input),
+            prepared.end,
+            prepared.final_through,
+        )?;
     }
     let local: Vec<_> = replay
         .facts()
@@ -151,23 +171,21 @@ fn prepare_validated(
         .collect();
     if local.last()
         != Some(&Fact::Watermark {
-            through: final_through,
+            through: prepared.final_through,
         })
     {
         return Err("local template must end with the explicit song final watermark".into());
     }
-    Ok(Prepared {
-        identity,
-        anchors: package.chart.anchors,
-        local,
-        template_blake3: blake3::hash(&bytes).to_hex().to_string(),
-        template_epoch: replay.epoch().0,
-        end,
-        final_through,
-    })
+    prepared.local = local;
+    prepared.template_blake3 = blake3::hash(&bytes).to_hex().to_string();
+    prepared.template_epoch = replay.epoch().0;
+    Ok(prepared)
 }
 
-fn destination_outside_package(package: &Path, destination: &Path) -> Result<PathBuf, String> {
+pub(crate) fn destination_outside_package(
+    package: &Path,
+    destination: &Path,
+) -> Result<PathBuf, String> {
     let root = fs::canonicalize(package).map_err(|_| "resolve source package path failed")?;
     let name = destination
         .file_name()
@@ -184,7 +202,7 @@ fn destination_outside_package(package: &Path, destination: &Path) -> Result<Pat
     Ok(resolved)
 }
 
-fn write_new(path: &Path, bytes: &[u8]) -> Result<(), String> {
+pub(crate) fn write_new(path: &Path, bytes: &[u8]) -> Result<(), String> {
     let mut file = OpenOptions::new()
         .write(true)
         .create_new(true)
@@ -201,23 +219,24 @@ fn write_new(path: &Path, bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 
-struct Session {
-    prepared: Prepared,
-    player: PlayerId,
-    epoch: SessionEpoch,
-    engine: DuoEngine,
-    replay: Replay,
-    declared: [usize; 2],
-    counts: [usize; 2],
-    last: [Option<Fact>; 2],
-    ended: [bool; 2],
+pub(crate) struct Session {
+    pub(crate) prepared: Prepared,
+    pub(crate) player: PlayerId,
+    pub(crate) epoch: SessionEpoch,
+    pub(crate) engine: DuoEngine,
+    pub(crate) replay: Replay,
+    pub(crate) declared: [Option<usize>; 2],
+    pub(crate) counts: [usize; 2],
+    pub(crate) next_seq: [u64; 2],
+    pub(crate) last: [Option<Fact>; 2],
+    pub(crate) ended: [bool; 2],
     output: PathBuf,
-    summary: SessionSummary,
-    origin: Instant,
+    pub(crate) summary: SessionSummary,
+    pub(crate) origin: Instant,
 }
 
 impl Session {
-    fn new(
+    pub(crate) fn new(
         prepared: Prepared,
         player: PlayerId,
         invitation: &Invitation,
@@ -237,6 +256,7 @@ impl Session {
         .map_err(|_| "initialize session recorder failed")?;
         let summary = SessionSummary {
             status: "FAILED",
+            mode: "headless",
             protocol_version: PROTOCOL_VERSION,
             epoch: epoch.0,
             player: number(player),
@@ -257,8 +277,8 @@ impl Session {
             authority_replay_blake3: None,
             error: None,
         };
-        let mut declared = [0; 2];
-        declared[player.index()] = prepared.local.len();
+        let mut declared = [None; 2];
+        declared[player.index()] = Some(prepared.local.len());
         Ok(Self {
             prepared,
             player,
@@ -267,6 +287,7 @@ impl Session {
             replay,
             declared,
             counts: [0; 2],
+            next_seq: [0; 2],
             last: [None; 2],
             ended: [false; 2],
             output,
@@ -290,19 +311,29 @@ impl Session {
         {
             return Err("combined declared history exceeds Replay capacity or is empty".into());
         }
-        self.declared[other(self.player).index()] = count;
+        self.declared[other(self.player).index()] = Some(count);
         self.summary.peer_authenticated = true;
         Ok(())
     }
 
-    fn ingest(&mut self, player: PlayerId, fact: Fact) -> Result<(), String> {
+    pub(crate) fn ingest(&mut self, player: PlayerId, fact: Fact) -> Result<(), String> {
         let index = player.index();
         if self.ended[index]
-            || self.counts[index] >= self.declared[index]
+            || self.declared[index].is_some_and(|declared| self.counts[index] >= declared)
             || self.replay.facts().len() >= MAX_FACTS
         {
             return Err("history exceeds its declared or recorder capacity".into());
         }
+        let next_seq = if self.summary.mode == "live"
+            && let Fact::Hit { seq, .. } = fact
+        {
+            if seq != self.next_seq[index] {
+                return Err("live Hit sequence must be continuous from zero".into());
+            }
+            Some(seq.checked_add(1).ok_or("live Hit sequence overflow")?)
+        } else {
+            None
+        };
         validate_fact(fact, self.prepared.end, self.prepared.final_through)?;
         let input = fact.into_input(self.epoch, player);
         self.engine
@@ -312,14 +343,33 @@ impl Session {
             .record(input)
             .map_err(|_| "record accepted input failed")?;
         self.counts[index] += 1;
+        if let Some(next_seq) = next_seq {
+            self.next_seq[index] = next_seq;
+        }
         self.last[index] = Some(fact);
         Ok(())
+    }
+
+    pub(crate) fn end_live(
+        &mut self,
+        player: PlayerId,
+        count: u64,
+        through: i64,
+    ) -> Result<(), String> {
+        if self.declared[player.index()].is_some()
+            || count != self.counts[player.index()] as u64
+            || through != self.prepared.final_through
+            || count == 0
+        {
+            return Err("live End differs from the actual accepted history".into());
+        }
+        self.end(player)
     }
 
     fn end(&mut self, player: PlayerId) -> Result<(), String> {
         let index = player.index();
         if self.ended[index]
-            || self.counts[index] != self.declared[index]
+            || self.declared[index].is_some_and(|declared| self.counts[index] != declared)
             || self.last[index]
                 != Some(Fact::Watermark {
                     through: self.prepared.final_through,
@@ -331,7 +381,7 @@ impl Session {
         Ok(())
     }
 
-    fn verify_replay(&self, replay: &Replay) -> Result<(), String> {
+    pub(crate) fn verify_replay(&self, replay: &Replay) -> Result<(), String> {
         if replay.epoch() != self.epoch || !same_player_histories(replay, &self.replay) {
             return Err(
                 "authority Replay does not contain the complete actual player histories".into(),
@@ -364,7 +414,7 @@ impl Session {
         Ok(())
     }
 
-    fn finish(mut self, result: Result<(), String>) -> Result<SessionSummary, String> {
+    pub(crate) fn finish(mut self, result: Result<(), String>) -> Result<SessionSummary, String> {
         let mut error = result.err();
         if let Err(save_error) = self.save_live() {
             error = Some(match error {
@@ -411,7 +461,7 @@ pub(crate) struct ControlIo {
     received: usize,
 }
 impl ControlIo {
-    fn new((send, recv): (SendStream, RecvStream)) -> Self {
+    pub(crate) fn new((send, recv): (SendStream, RecvStream)) -> Self {
         Self {
             send,
             recv,
@@ -427,14 +477,14 @@ impl ControlIo {
     }
 }
 
-struct InputIo {
-    send: SendStream,
-    recv: RecvStream,
-    written: u64,
-    read: u64,
+pub(crate) struct InputIo {
+    pub(crate) send: SendStream,
+    pub(crate) recv: RecvStream,
+    pub(crate) written: u64,
+    pub(crate) read: u64,
 }
 
-async fn open_inputs(
+pub(crate) async fn open_inputs(
     connection: &Connection,
     player: PlayerId,
     epoch: u64,
@@ -526,7 +576,7 @@ async fn exchange(session: &mut Session, inputs: InputIo) -> Result<(), String> 
     let peer = other(player);
     let epoch = session.epoch.0;
     let final_through = session.prepared.final_through;
-    let expected = session.declared[peer.index()];
+    let expected = session.declared[peer.index()].ok_or("headless peer count was not declared")?;
     let local = std::mem::take(&mut session.prepared.local);
     let (tx, mut rx) = mpsc::channel(4);
     let sender_tx = tx.clone();
@@ -623,7 +673,7 @@ async fn exchange(session: &mut Session, inputs: InputIo) -> Result<(), String> 
     Ok(())
 }
 
-async fn host_finish(
+pub(crate) async fn host_finish(
     session: &mut Session,
     connection: &Connection,
     control: &mut ControlIo,
@@ -684,7 +734,7 @@ async fn host_finish(
     Ok(())
 }
 
-async fn guest_finish(
+pub(crate) async fn guest_finish(
     session: &mut Session,
     connection: &Connection,
     control: &mut ControlIo,
@@ -750,28 +800,28 @@ async fn guest_finish(
 }
 
 // Connection closure is handled by the active protocol operation, not as an extra stream
-async fn extra_uni(connection: &Connection) -> String {
+pub(crate) async fn extra_uni(connection: &Connection) -> String {
     if connection.accept_uni().await.is_ok() {
         return "unexpected additional unidirectional stream".into();
     }
     std::future::pending().await
 }
 
-async fn extra_bidi(connection: &Connection) -> String {
+pub(crate) async fn extra_bidi(connection: &Connection) -> String {
     if connection.accept_bi().await.is_ok() {
         return "unexpected additional player stream".into();
     }
     std::future::pending().await
 }
 
-async fn close_endpoint(endpoint: &Endpoint, failed: bool) {
+pub(crate) async fn close_endpoint(endpoint: &Endpoint, failed: bool) {
     if failed {
         endpoint.close(1_u8.into(), b"session failed");
     }
     let _ = tokio::time::timeout(Duration::from_secs(5), endpoint.wait_idle()).await;
 }
 
-fn runtime() -> Result<tokio::runtime::Runtime, String> {
+pub(crate) fn runtime() -> Result<tokio::runtime::Runtime, String> {
     tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
@@ -926,7 +976,7 @@ async fn guest_run(
     .map_err(|_| "accelerated session exceeded 15 minutes")?
 }
 
-fn new_destination(destination: &Path) -> Result<PathBuf, String> {
+pub(crate) fn new_destination(destination: &Path) -> Result<PathBuf, String> {
     let name = destination
         .file_name()
         .ok_or("destination requires a file name")?;
@@ -1029,7 +1079,7 @@ pub fn join_receive(
         .err()
         .unwrap_or_else(|| "received session was not initialized".into());
     let summary = serde_json::json!({
-        "status": "FAILED", "protocol_version": PROTOCOL_VERSION,
+        "status": "FAILED", "mode": "headless", "protocol_version": PROTOCOL_VERSION,
         "epoch": invitation.epoch, "player": 2, "peer_authenticated": authenticated,
         "package_received": received, "resource_bytes": resource_bytes,
         "network_timing": null,
@@ -1153,7 +1203,7 @@ mod tests {
     #[test]
     fn authority_comparison_requires_equal_complete_player_subsequences() {
         let mut session = fixture();
-        session.declared = [3, 2];
+        session.declared = [Some(3), Some(2)];
         let inputs = [
             (PlayerId::P1, Fact::Hit { seq: 5, frame: 10 }),
             (PlayerId::P2, Fact::Hit { seq: 1, frame: 12 }),

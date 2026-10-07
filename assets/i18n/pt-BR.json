@@ -176,5 +176,18 @@
   "workbench.scroll": "Rolar detalhes: ↑ / ↓ ou roda",
   "workbench.zoom_in": "Ampliar",
   "workbench.zoom_out": "Reduzir",
-  "workbench.cluster": "Marcador selecionado: {count} Anchors neste pixel; use a lista para selecionar cada um"
+  "workbench.cluster": "Marcador selecionado: {count} Anchors neste pixel; use a lista para selecionar cada um",
+  "network.ready": "Você é {player} · Aguardando a confirmação de início dos dois",
+  "network.connecting": "Conectando ao seu parceiro…",
+  "network.loading": "Carregando a música…",
+  "network.waiting_peer": "Aguardando seu parceiro ficar pronto…",
+  "network.scheduled": "Os dois estão prontos · A música começa em breve",
+  "network.listening": "Convite salvo em {path} · Aguardando seu parceiro",
+  "network.running": "Tocando juntos online",
+  "network.finishing": "Aguardando a confirmação de término dos dois…",
+  "network.complete": "Apresentação online concluída",
+  "network.failed": "Apresentação online interrompida",
+  "network.round_closed": "Este convite terminou · Inicie uma nova apresentação online",
+  "network.local_binding": "{player} local: {binding}",
+  "network.remote_player": "Parceiro {player}: controles remotos"
 }

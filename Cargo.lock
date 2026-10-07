@@ -1824,6 +1824,7 @@ dependencies = [
  "bevy",
  "cocobeat-core",
  "cocobeat-media",
+ "cocobeat-net",
  "cocobeat-replay",
  "cocobeat-schema",
  "cocobeat-stage",

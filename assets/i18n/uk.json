@@ -176,5 +176,18 @@
   "workbench.scroll": "Прокручування подробиць: ↑ / ↓ або коліщатко",
   "workbench.zoom_in": "Збільшити",
   "workbench.zoom_out": "Зменшити",
-  "workbench.cluster": "Вибрана позначка: {count} Anchors у цьому пікселі; вибирайте кожен окремо в списку"
+  "workbench.cluster": "Вибрана позначка: {count} Anchors у цьому пікселі; вибирайте кожен окремо в списку",
+  "network.ready": "На цьому пристрої — {player} · Очікуємо підтвердження початку від обох гравців",
+  "network.connecting": "З’єднання з партнером…",
+  "network.loading": "Завантаження пісні…",
+  "network.waiting_peer": "Очікуємо готовності партнера…",
+  "network.scheduled": "Обидва гравці готові · Музика скоро почнеться",
+  "network.listening": "Запрошення збережено в {path} · Очікуємо партнера",
+  "network.running": "Спільне виконання через мережу",
+  "network.finishing": "Очікуємо підтвердження завершення від обох гравців…",
+  "network.complete": "Мережеве виконання завершено",
+  "network.failed": "Мережеве виконання перервано",
+  "network.round_closed": "Це запрошення закрито · Почніть нове мережеве виконання",
+  "network.local_binding": "На цьому пристрої {player}: {binding}",
+  "network.remote_player": "Партнер {player}: керування з іншого пристрою"
 }

@@ -22,7 +22,7 @@ const START_LEAD_NS: u64 = 2_000_000_000;
 const MINIMUM_LEAD_NS: u64 = 100_000_000;
 const PACKET_BYTES: usize = 48;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct ClockSample {
     pub probe_id: u64,
     pub guest_sample_ns: u64,
@@ -33,7 +33,7 @@ pub struct ClockSample {
 }
 
 /// Only observed software coordinates; no device-output or acoustic uncertainty
-#[derive(Debug, Default, Serialize)]
+#[derive(Clone, Debug, Default, Serialize)]
 pub struct NetworkTiming {
     pub probes_sent: u8,
     pub received_datagrams: u8,
@@ -280,7 +280,7 @@ async fn host_clock(
 }
 
 /// Both clocks are process-local software clocks; no input/audio mapping occurs
-pub(crate) async fn ready_start(
+pub(crate) async fn arm_start(
     connection: &Connection,
     control: &mut ControlIo,
     epoch: SessionEpoch,
@@ -380,7 +380,18 @@ pub(crate) async fn ready_start(
     {
         return Err("scheduled start no longer leaves the minimum arm lead".into());
     }
-    let start = local_instant(origin, local_start_ns)?;
+    local_instant(origin, local_start_ns)
+}
+
+pub(crate) async fn wait_start(
+    connection: &Connection,
+    start: Instant,
+    origin: Instant,
+    timing: &mut NetworkTiming,
+) -> Result<Instant, String> {
+    let local_start_ns = timing
+        .local_start_ns
+        .ok_or("local start was not scheduled")?;
     tokio::select! {
         biased;
         _ = connection.closed() => return Err("connection closed before scheduled software start".into()),
@@ -396,6 +407,18 @@ pub(crate) async fn ready_start(
         return Err("software start missed its deadline by more than 100 milliseconds".into());
     }
     Ok(start)
+}
+
+pub(crate) async fn ready_start(
+    connection: &Connection,
+    control: &mut ControlIo,
+    epoch: SessionEpoch,
+    player: PlayerId,
+    origin: Instant,
+    timing: &mut NetworkTiming,
+) -> Result<Instant, String> {
+    let start = arm_start(connection, control, epoch, player, origin, timing).await?;
+    wait_start(connection, start, origin, timing).await
 }
 
 #[cfg(test)]

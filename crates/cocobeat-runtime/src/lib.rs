@@ -11,6 +11,7 @@ mod display;
 mod display_area;
 mod i18n;
 mod input;
+mod online;
 pub mod probe;
 mod scene;
 mod session;

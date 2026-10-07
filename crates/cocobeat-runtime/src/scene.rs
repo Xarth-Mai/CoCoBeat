@@ -27,6 +27,12 @@ const GROUND_ROWS: usize = 257;
 pub(crate) struct StageScene(pub Arc<StagePlan>);
 
 #[derive(Resource)]
+pub(crate) struct AppliedStage(Option<Arc<StagePlan>>);
+
+#[derive(Component)]
+pub(crate) struct SceneEntity;
+
+#[derive(Resource)]
 pub(crate) struct StageGround {
     meshes: [Handle<Mesh>; 9],
     features: Vec<usize>,
@@ -315,6 +321,7 @@ fn part(
     scale: Vec3,
 ) -> impl Bundle {
     (
+        SceneEntity,
         Mesh3d(mesh.clone()),
         MeshMaterial3d(material.clone()),
         Transform::from_translation(position).with_scale(scale),
@@ -345,6 +352,39 @@ pub(crate) fn setup(
         },
     ));
 
+    spawn_scene(&mut commands, &mut meshes, &mut materials, stage.as_deref());
+}
+
+pub(crate) fn refresh(
+    mut commands: Commands,
+    mut meshes: ResMut<Assets<Mesh>>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    stage: Option<Res<StageScene>>,
+    applied: Res<AppliedStage>,
+    roots: Query<Entity, (With<SceneEntity>, Without<ChildOf>)>,
+) {
+    match (&applied.0, stage.as_ref()) {
+        (None, None) => return,
+        (Some(old), Some(new))
+            if !new.is_changed() || Arc::ptr_eq(old, &new.0) || **old == *new.0 =>
+        {
+            return;
+        }
+        _ => {}
+    }
+    for entity in &roots {
+        commands.entity(entity).despawn();
+    }
+    commands.remove_resource::<StageGround>();
+    spawn_scene(&mut commands, &mut meshes, &mut materials, stage.as_deref());
+}
+
+fn spawn_scene(
+    commands: &mut Commands,
+    meshes: &mut Assets<Mesh>,
+    materials: &mut Assets<StandardMaterial>,
+    stage: Option<&StageScene>,
+) {
     let cube = meshes.add(Cuboid::default());
     let sphere = meshes.add(Sphere::new(1.0).mesh().uv(24, 16));
     let cone = meshes.add(Cone::new(0.28, 0.65));
@@ -467,6 +507,7 @@ pub(crate) fn setup(
         for index in 0..2 {
             commands
                 .spawn((
+                    SceneEntity,
                     Transform::default(),
                     Visibility::Hidden,
                     Motion::BridgeArch(index),
@@ -503,6 +544,7 @@ pub(crate) fn setup(
     let side_offset = if stage.is_some() { 2.0 } else { 0.0 };
     let mut backdrop = Vec::new();
     commands.spawn((
+        SceneEntity,
         PointLight {
             color: Color::srgb(1.0, 0.94, 0.86),
             intensity: 350_000.0,
@@ -529,6 +571,7 @@ pub(crate) fn setup(
             ));
         }
         commands.spawn((
+            SceneEntity,
             PointLight {
                 color: colors[player],
                 intensity: 16_000.0,
@@ -641,6 +684,7 @@ pub(crate) fn setup(
         let x = side * 1.35;
         commands
             .spawn((
+                SceneEntity,
                 Transform::from_xyz(x, 0.85, 0.0),
                 Visibility::default(),
                 Motion::Spirit(player),
@@ -747,6 +791,7 @@ pub(crate) fn setup(
     if stage.is_some() {
         commands
             .spawn((
+                SceneEntity,
                 Transform::default(),
                 Visibility::default(),
                 Motion::StageBackground,
@@ -780,6 +825,7 @@ pub(crate) fn setup(
     let preview_group = stage.as_ref().map(|_| {
         commands
             .spawn((
+                SceneEntity,
                 Transform::default(),
                 Visibility::Hidden,
                 Motion::AnchorPreview,
@@ -811,6 +857,7 @@ pub(crate) fn setup(
     let gate_group = stage.as_ref().map(|_| {
         commands
             .spawn((
+                SceneEntity,
                 Transform::default(),
                 Visibility::Hidden,
                 Motion::SectionGate,
@@ -851,6 +898,7 @@ pub(crate) fn setup(
         ));
     }
     commands.insert_resource(SignMaterials(signs));
+    commands.insert_resource(AppliedStage(stage.map(|stage| stage.0.clone())));
 }
 
 pub(crate) fn update_signs(
@@ -865,7 +913,7 @@ pub(crate) fn update_signs(
         0.0
     };
     let strength = 0.35 + resonance * 2.15;
-    if *applied == Some(strength) {
+    if *applied == Some(strength) && !signs.is_changed() {
         return;
     }
     for handle in &signs.0 {
@@ -879,13 +927,14 @@ pub(crate) fn update_signs(
 pub(crate) fn apply_quality(
     mut commands: Commands,
     state: Res<VisualState>,
+    signs: Res<SignMaterials>,
     mut applied: Local<Option<QualitySettings>>,
     cameras: Query<Entity, With<GameCamera>>,
     mut lights: Query<&mut PointLight, With<KeyLight>>,
     mut objects: Query<(&Motion, &mut Visibility)>,
 ) {
     let quality = state.quality;
-    if *applied == Some(quality) || cameras.is_empty() {
+    if (*applied == Some(quality) && !signs.is_changed()) || cameras.is_empty() {
         return;
     }
     for camera in &cameras {
@@ -1143,6 +1192,122 @@ pub(crate) fn animate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn dynamic_stage_replaces_only_owned_scene_and_reapplies_quality() {
+        use cocobeat_schema::SectionFeature;
+
+        let mut app = App::new();
+        let state = VisualState {
+            quality: QualitySettings {
+                rain: RainAmount::Off,
+                shadows: false,
+                ..default()
+            },
+            resonance: 0.8,
+            ..default()
+        };
+        app.register_required_components::<Mesh3d, Visibility>()
+            .add_plugins(TransformPlugin)
+            .insert_resource(state)
+            .init_resource::<Time>()
+            .init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .add_systems(Startup, setup)
+            .add_systems(
+                PostUpdate,
+                (refresh, apply_quality, animate, update_signs).chain(),
+            );
+        let retained_ui_or_brand = app.world_mut().spawn_empty().id();
+        app.update();
+        let camera = app
+            .world_mut()
+            .query_filtered::<Entity, With<GameCamera>>()
+            .single(app.world())
+            .unwrap();
+        let owned = |world: &mut World| {
+            let mut query = world.query_filtered::<Entity, With<SceneEntity>>();
+            query.iter(world).collect::<Vec<_>>()
+        };
+        let initial = owned(app.world_mut());
+        assert!(!app.world().contains_resource::<StageGround>());
+        let plan = Arc::new(
+            cocobeat_stage::compile(
+                "received-song",
+                SongTime::from_frames(3_072_000),
+                &[SectionFeature {
+                    start: SongTime::from_frames(768_000),
+                    end: SongTime::from_frames(2_304_000),
+                    confidence: None,
+                    label: "bridge".into(),
+                }],
+            )
+            .unwrap(),
+        );
+        app.insert_resource(StageScene(plan.clone()));
+        app.update();
+        assert!(
+            initial
+                .iter()
+                .all(|id| app.world().get_entity(*id).is_err())
+        );
+        assert!(app.world().get_entity(camera).is_ok());
+        assert!(app.world().get_entity(retained_ui_or_brand).is_ok());
+        let stage_entities = owned(app.world_mut());
+        let handles = app.world().resource::<StageGround>().meshes.clone();
+        assert_eq!(
+            app.world().resource::<StageGround>().last_time,
+            Some(SongTime::from_frames(0))
+        );
+        for _ in 0..2 {
+            app.update();
+            assert_eq!(owned(app.world_mut()), stage_entities);
+        }
+        for same_plan in [plan.clone(), Arc::new((*plan).clone())] {
+            app.insert_resource(StageScene(same_plan));
+            app.update();
+            assert_eq!(owned(app.world_mut()), stage_entities);
+            assert_eq!(app.world().resource::<StageGround>().meshes, handles);
+        }
+        app.insert_resource(StageScene(Arc::new(
+            cocobeat_stage::compile("another-song", SongTime::from_frames(3_072_000), &[]).unwrap(),
+        )));
+        app.update();
+        assert!(
+            stage_entities
+                .iter()
+                .all(|id| app.world().get_entity(*id).is_err())
+        );
+        assert_ne!(app.world().resource::<StageGround>().meshes, handles);
+        let mut lights = app.world_mut().query::<&PointLight>();
+        assert_eq!(lights.iter(app.world()).count(), 3);
+        let mut keys = app
+            .world_mut()
+            .query_filtered::<&PointLight, With<KeyLight>>();
+        assert!(!keys.single(app.world()).unwrap().shadow_maps_enabled);
+        let mut motions = app.world_mut().query::<(&Motion, &Visibility)>();
+        assert!(motions.iter(app.world()).all(|(motion, visible)| {
+            !matches!(motion, Motion::Rain(_)) || *visible == Visibility::Hidden
+        }));
+        for sign in &app.world().resource::<SignMaterials>().0 {
+            let material = app
+                .world()
+                .resource::<Assets<StandardMaterial>>()
+                .get(sign)
+                .unwrap();
+            assert_eq!(
+                material.emissive,
+                LinearRgba::from(material.base_color) * (0.35 + 0.8 * 2.15)
+            );
+        }
+        app.world_mut().remove_resource::<StageScene>();
+        app.update();
+        assert!(!app.world().contains_resource::<StageGround>());
+        assert_eq!(owned(app.world_mut()).len(), initial.len());
+        let mut cameras = app.world_mut().query_filtered::<Entity, With<GameCamera>>();
+        assert_eq!(cameras.single(app.world()).unwrap(), camera);
+        assert!(app.world().get_entity(retained_ui_or_brand).is_ok());
+    }
 
     #[test]
     fn stage_ground_joins_sampled_edges_and_stays_bounded() {

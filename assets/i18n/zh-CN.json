@@ -176,5 +176,18 @@
   "workbench.scroll": "详情可用 ↑ / ↓ 或滚轮滚动",
   "workbench.zoom_in": "放大",
   "workbench.zoom_out": "缩小",
-  "workbench.cluster": "所选标记：该像素内有 {count} 个 Anchor，可在列表逐个选择"
+  "workbench.cluster": "所选标记：该像素内有 {count} 个 Anchor，可在列表逐个选择",
+  "network.ready": "本机为 {player} · 等待双方确认开始",
+  "network.connecting": "正在连接伙伴…",
+  "network.loading": "正在载入歌曲…",
+  "network.waiting_peer": "等待伙伴准备就绪…",
+  "network.scheduled": "双方已准备 · 音乐即将开始",
+  "network.listening": "邀请已写入 {path} · 等待伙伴加入",
+  "network.running": "联网演奏中",
+  "network.finishing": "等待双方确认演奏结束…",
+  "network.complete": "联网演奏已完成",
+  "network.failed": "联网演奏已中断",
+  "network.round_closed": "本次邀请已结束 · 请重新启动一场联网演奏",
+  "network.local_binding": "本机 {player}：{binding}",
+  "network.remote_player": "伙伴 {player}：远端操作"
 }

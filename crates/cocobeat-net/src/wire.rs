@@ -20,6 +20,35 @@ pub(crate) struct Identity {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Control {
+    LiveFetch {
+        protocol_version: u32,
+        epoch: u64,
+        player: u8,
+        token: [u8; 32],
+    },
+    LiveHello {
+        protocol_version: u32,
+        epoch: u64,
+        player: u8,
+        token: [u8; 32],
+        identity: Identity,
+    },
+    LiveWelcome {
+        protocol_version: u32,
+        epoch: u64,
+        player: u8,
+        identity: Identity,
+    },
+    LiveInstalled {
+        epoch: u64,
+        identity: Identity,
+    },
+    Armed {
+        epoch: u64,
+    },
+    StartConfirmed {
+        epoch: u64,
+    },
     Fetch {
         protocol_version: u32,
         epoch: u64,

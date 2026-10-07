@@ -12,6 +12,7 @@ use crate::{
         self, Control, InputSource, InputState, MenuPhase, MenuPresentation, MenuRowRole,
         MenuScroll, SettingsAction,
     },
+    online::{OnlineRound, Update as NetworkUpdate},
     session::{Session, SessionResults},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
     settings_menu::SettingsMenu,
@@ -29,8 +30,11 @@ use bevy::{
     window::{ExitCondition, WindowCloseRequested},
     winit::WinitPlugin,
 };
+use cocobeat_net::{LiveCommand, LiveConfig, LiveEvent, LiveRole};
 use cocobeat_replay::Replay;
-use cocobeat_schema::{AnchorGrade, DuoEvent, DuoInput, DuoRules, SessionEpoch, SongTime};
+use cocobeat_schema::{
+    AnchorGrade, DuoEvent, DuoInput, DuoRules, PlayerId, SessionEpoch, SongTime,
+};
 use kira::sound::PlaybackState;
 use std::{
     path::{Path, PathBuf},
@@ -40,11 +44,13 @@ use std::{
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Phase {
     Ready,
+    Connecting,
     Starting,
     Running,
     Pausing,
     Paused,
     Finished,
+    Finishing,
     Fault,
 }
 
@@ -133,6 +139,8 @@ struct Game {
     fault_details: Option<String>,
     results: Option<SessionResults>,
     transition_started: std::time::Instant,
+    closing: bool,
+    closing_error: bool,
 }
 
 impl Game {
@@ -152,6 +160,8 @@ impl Game {
             fault_details: None,
             results: None,
             transition_started: std::time::Instant::now(),
+            closing: false,
+            closing_error: false,
         })
     }
 
@@ -315,11 +325,73 @@ impl Game {
     }
 }
 
+#[path = "live_observation.rs"]
+mod live_observation;
+
 pub fn run() -> ExitCode {
-    let args: Vec<_> = std::env::args().skip(1).collect();
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
+    let observation = if args.len() >= 2 && args[args.len() - 2] == "--live-observation" {
+        let path = PathBuf::from(args.pop().unwrap());
+        args.pop();
+        Some(path)
+    } else {
+        None
+    };
+    if observation.is_some()
+        && !args
+            .iter()
+            .any(|arg| matches!(arg.as_str(), "--net-host" | "--net-join" | "--net-receive"))
+    {
+        eprintln!("--live-observation requires an invited live round");
+        return ExitCode::FAILURE;
+    }
     let result = match args.as_slice() {
-        [] => run_game(None),
-        [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory))),
+        [] => run_game(None, None),
+        [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory)), None),
+        [flag, directory, net, bind, invite, output]
+            if flag == "--package" && net == "--net-host" =>
+        {
+            bind.parse()
+                .map_err(|_| "Network bind must be IP:port".into())
+                .and_then(|bind| {
+                    run_game_observed(
+                        Some(Path::new(directory)),
+                        Some(LiveConfig {
+                            role: LiveRole::Host {
+                                package: directory.into(),
+                                bind,
+                                invite: invite.into(),
+                            },
+                            output: output.into(),
+                        }),
+                        observation.as_deref(),
+                    )
+                })
+        }
+        [flag, directory, net, invite, output] if flag == "--package" && net == "--net-join" => {
+            run_game_observed(
+                Some(Path::new(directory)),
+                Some(LiveConfig {
+                    role: LiveRole::Join {
+                        package: directory.into(),
+                        invite: invite.into(),
+                    },
+                    output: output.into(),
+                }),
+                observation.as_deref(),
+            )
+        }
+        [net, invite, package, output] if net == "--net-receive" => run_game_observed(
+            None,
+            Some(LiveConfig {
+                role: LiveRole::Receive {
+                    package_destination: package.into(),
+                    invite: invite.into(),
+                },
+                output: output.into(),
+            }),
+            observation.as_deref(),
+        ),
         [flag, directory, replay, path] if flag == "--package" && replay == "--replay" => {
             content::load_package(Path::new(directory))
                 .and_then(|(content, _sound)| validate_replay(path, &content))
@@ -380,7 +452,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local duet\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -504,14 +576,40 @@ fn base_app() -> Result<App, String> {
     Ok(app)
 }
 
-fn run_game(package: Option<&Path>) -> Result<(), String> {
+fn run_game(package: Option<&Path>, network: Option<LiveConfig>) -> Result<(), String> {
+    run_game_observed(package, network, None)
+}
+
+fn run_game_observed(
+    package: Option<&Path>,
+    network: Option<LiveConfig>,
+    observation: Option<&Path>,
+) -> Result<(), String> {
+    let receiving = matches!(
+        network.as_ref().map(|config| &config.role),
+        Some(LiveRole::Receive { .. })
+    );
     let (content, sound) = if let Some(path) = package {
-        content::load_package(path)?
+        let (content, sound) = content::load_package(path)?;
+        (content, Some(sound))
+    } else if receiving {
+        (SongContent::development(), None)
     } else {
-        (SongContent::development(), content::development_sound())
+        (
+            SongContent::development(),
+            Some(content::development_sound()),
+        )
     };
-    let game = Game::with_content(content)?;
-    let audio = AudioOutput::new(Some(sound))?;
+    let mut game = Game::with_content(content)?;
+    let network_player = network.as_ref().map(|config| match &config.role {
+        LiveRole::Host { .. } => PlayerId::P1,
+        _ => PlayerId::P2,
+    });
+    if let Some(player) = network_player {
+        game.notice = Message::with("network.ready", [("player", format!("{player:?}"))]);
+    }
+    let online = network.map_or_else(OnlineRound::default, OnlineRound::new);
+    let audio = AudioOutput::new(sound)?;
     let mut app = base_app()?;
     if let Some(stage) = &game.content.stage {
         app.insert_resource(crate::scene::StageScene(stage.clone()));
@@ -519,12 +617,16 @@ fn run_game(package: Option<&Path>) -> Result<(), String> {
     let pacing = app.world().resource::<SettingsMenu>().values.pacing;
     display::install_frame_pacing(&mut app, pacing);
     input::install(&mut app);
+    app.world_mut()
+        .resource_mut::<InputState>()
+        .set_network_player(network_player);
     brand_intro::install(&mut app);
     app.world_mut()
         .resource_mut::<InputState>()
         .set_controls_enabled(false);
     install_window_icon(&mut app)?;
     app.insert_non_send(audio)
+        .insert_non_send(online)
         .insert_resource(game)
         .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance))
         .add_systems(
@@ -534,6 +636,9 @@ fn run_game(package: Option<&Path>) -> Result<(), String> {
                 .after(DisplaySystems::Sync),
         )
         .add_systems(Update, reconcile_audio.after(update_game));
+    if let Some(path) = observation {
+        live_observation::install(&mut app, path)?;
+    }
     match app.run() {
         AppExit::Success => Ok(()),
         error => Err(format!("Application exited: {error:?}")),
@@ -601,7 +706,11 @@ fn close_game(game: &mut Game, audio: &mut AudioOutput, exit: &mut MessageWriter
     audio.stop();
     match saved {
         Ok(()) => {
-            exit.write(AppExit::Success);
+            exit.write(if game.closing_error {
+                AppExit::Error(std::num::NonZeroU8::new(1).unwrap())
+            } else {
+                AppExit::Success
+            });
         }
         Err(error) => {
             eprintln!("Replay save failed during exit: {error}");
@@ -674,6 +783,143 @@ fn reset_feedback(visual: &mut VisualState) {
     visual.miss_pulses = [0.0; 2];
 }
 
+fn poll_network(
+    online: &mut OnlineRound,
+    game: &mut Game,
+    audio: &mut AudioOutput,
+    input: &mut InputState,
+    visual: &mut VisualState,
+    commands: &mut Commands,
+) -> Result<(), String> {
+    // The bounded worker queues must not turn a stalled frame into an unbounded drain
+    for _ in 0..256 {
+        let Some(update) = online.poll()? else { break };
+        match update {
+            NetworkUpdate::Song(song) => {
+                let session = Session::for_content(song.epoch, &song.content)?;
+                if session.final_through()?.frames() != song.final_through {
+                    return Err("Network final boundary differs from the runtime rules".into());
+                }
+                audio.replace_song(song.sound);
+                game.content = song.content;
+                game.session = session;
+                game.saved_facts = 0;
+                game.replay_status = Message::default();
+                game.results = None;
+                game.fault_details = None;
+                if let Some(stage) = &game.content.stage {
+                    commands.insert_resource(crate::scene::StageScene(stage.clone()));
+                }
+                online.player = Some(song.player);
+                input.set_network_player(Some(song.player));
+                online.send(LiveCommand::Ready)?;
+                game.notice = Message::new("network.waiting_peer");
+            }
+            NetworkUpdate::Network(event) => match event {
+                LiveEvent::Listening { invite, .. } => {
+                    game.notice = Message::with(
+                        "network.listening",
+                        [("path", invite.display().to_string())],
+                    );
+                }
+                LiveEvent::Prepared {
+                    epoch,
+                    player,
+                    package_path,
+                    content_id,
+                    canonical_frames,
+                    final_through,
+                } => {
+                    online.load(
+                        epoch,
+                        player,
+                        package_path,
+                        content_id,
+                        canonical_frames,
+                        final_through,
+                    )?;
+                    game.notice = Message::new("network.loading");
+                }
+                LiveEvent::Scheduled {
+                    epoch, deadline, ..
+                } => {
+                    if online.player.is_none()
+                        || epoch != game.session.epoch()
+                        || online.deadline.is_some()
+                    {
+                        return Err("Unexpected network start schedule".into());
+                    }
+                    audio.schedule(deadline)?;
+                    online.send(LiveCommand::Armed)?;
+                    online.deadline = Some(deadline);
+                    game.phase = Phase::Starting;
+                    game.transition_started = deadline;
+                    game.notice = Message::new("network.scheduled");
+                    input.reset_edges();
+                }
+                LiveEvent::Started { epoch } => {
+                    if epoch != game.session.epoch() || online.deadline.is_none() || online.started
+                    {
+                        return Err("Unexpected network start acknowledgment".into());
+                    }
+                    online.started = true;
+                }
+                LiveEvent::PeerFacts(facts) => {
+                    let local = online
+                        .player
+                        .ok_or("Peer input before package preparation")?;
+                    if !online.started {
+                        return Err("Peer input before scheduled start".into());
+                    }
+                    let peer = other_player(local);
+                    let events = game.session.ingest_peer(peer, &facts)?;
+                    for fact in &facts {
+                        if matches!(fact, DuoInput::Hit(_)) {
+                            audio.hit(peer)?;
+                            visual.hit_pulses[peer.index()] = 1.0;
+                        }
+                    }
+                    feedback(events, audio, visual)?;
+                }
+                LiveEvent::Complete(summary) => {
+                    let mut counts = [0; 2];
+                    for fact in game.session.replay.facts() {
+                        let player = match fact {
+                            DuoInput::Hit(hit) => hit.player,
+                            DuoInput::Watermark { player, .. } => *player,
+                        };
+                        counts[player.index()] += 1;
+                    }
+                    if !online.local_ended
+                        || summary.status != "COMPLETE"
+                        || summary.epoch != game.session.epoch().0
+                        || summary.content_id != game.content.content_id
+                        || summary.facts != counts
+                        || summary.event_count != game.session.engine.events().len()
+                    {
+                        return Err("Network completion differs from the presented round".into());
+                    }
+                    game.phase = Phase::Finished;
+                    game.results = Some(game.session.summary());
+                    game.notice = Message::new("network.complete");
+                    game.save()?;
+                    input.set_menu_open(true);
+                    online.stop();
+                }
+                LiveEvent::Failed(error) => return Err(error),
+            },
+        }
+    }
+    Ok(())
+}
+
+fn other_player(player: PlayerId) -> PlayerId {
+    match player {
+        PlayerId::P1 => PlayerId::P2,
+        PlayerId::P2 => PlayerId::P1,
+    }
+}
+
 fn decay_feedback(visual: &mut VisualState, delta: f32) {
     for pulse in &mut visual.hit_pulses {
         *pulse = (*pulse - delta * 4.0).max(0.0);
@@ -688,7 +934,7 @@ fn decay_feedback(visual: &mut VisualState, delta: f32) {
 fn update_game(
     mut game: ResMut<Game>,
     mut input: ResMut<InputState>,
-    mut audio: NonSendMut<AudioOutput>,
+    (mut audio, mut online): (NonSendMut<AudioOutput>, NonSendMut<OnlineRound>),
     mut visual: ResMut<VisualState>,
     (time, mut settings, mut display, mut menu_scroll): (
         Res<Time>,
@@ -696,7 +942,11 @@ fn update_game(
         ResMut<DisplayState>,
         ResMut<MenuScroll>,
     ),
-    (mut exit, mut close_requests): (MessageWriter<AppExit>, MessageReader<WindowCloseRequested>),
+    (mut commands, mut exit, mut close_requests): (
+        Commands,
+        MessageWriter<AppExit>,
+        MessageReader<WindowCloseRequested>,
+    ),
     (mut brand, mut impacts): (ResMut<BrandIntroStatus>, MessageReader<BrandImpact>),
 ) {
     let at = || {
@@ -706,7 +956,14 @@ fn update_game(
     };
     let observed = at();
     if close_requests.read().next().is_some() {
-        close_game(&mut game, &mut audio, &mut exit);
+        game.closing = true;
+    }
+    if game.closing {
+        online.stop();
+        audio.stop();
+        if online.is_finished() {
+            close_game(&mut game, &mut audio, &mut exit);
+        }
         input.queued.clear();
         return;
     }
@@ -772,17 +1029,32 @@ fn update_game(
             fault_message = "game.audio_failed";
             return Err(error);
         }
+        if online.enabled() {
+            fault_message = "network.failed";
+            poll_network(
+                &mut online,
+                &mut game,
+                &mut audio,
+                &mut input,
+                &mut visual,
+                &mut commands,
+            )?;
+        }
         game.filter_transition_controls(&mut input);
         if matches!(
             game.phase,
             Phase::Starting | Phase::Running | Phase::Pausing
-        ) && let (Some(position), Some(state)) = (audio.position(), audio.state())
+        ) && (!online.enabled() || online.started)
+            && let (Some(position), Some(state)) = (audio.position(), audio.state())
             && game
                 .observe_playback(position, state, observed)
                 .inspect_err(|_| {
                     fault_message = "game.clock_failed";
                 })?
         {
+            if online.enabled() {
+                game.notice = Message::new("network.running");
+            }
             input.set_menu_open(false);
             menu_scroll.reset();
         }
@@ -805,7 +1077,12 @@ fn update_game(
             if let Control::Settings(action) = event.control {
                 if action == SettingsAction::Open {
                     menu_scroll.reset();
-                    if input.menu_open && !matches!(game.phase, Phase::Running | Phase::Starting) {
+                    if input.menu_open
+                        && !matches!(
+                            game.phase,
+                            Phase::Running | Phase::Starting | Phase::Connecting | Phase::Finishing
+                        )
+                    {
                         if !settings.is_open() {
                             settings.begin(&display);
                         }
@@ -835,7 +1112,19 @@ fn update_game(
                 Control::Hit(player) if game.phase == Phase::Running => {
                     let consumed_ns =
                         u64::try_from(input.origin.elapsed().as_nanos()).unwrap_or(u64::MAX);
-                    let events = game.session.hit(player, event.monotonic_ns, consumed_ns)?;
+                    let events = if online.enabled() {
+                        if online.player != Some(player) {
+                            continue;
+                        }
+                        let (fact, events) =
+                            game.session
+                                .capture_hit(player, event.monotonic_ns, consumed_ns)?;
+                        let Some(fact) = fact else { continue };
+                        online.send(LiveCommand::Fact(fact))?;
+                        events
+                    } else {
+                        game.session.hit(player, event.monotonic_ns, consumed_ns)?
+                    };
                     audio.hit(player)?;
                     visual.hit_pulses[player.index()] = 1.0;
                     feedback(events, &mut audio, &mut visual)?;
@@ -851,18 +1140,34 @@ fn update_game(
                     menu_scroll.reset();
                 }
                 Control::Start if game.phase == Phase::Ready => {
-                    game.start(&mut audio)?;
+                    if online.enabled() {
+                        game.save()?;
+                        input.set_network_spent(true);
+                        online.start()?;
+                        game.phase = Phase::Connecting;
+                        game.notice = Message::new("network.connecting");
+                        input.reset_edges();
+                    } else {
+                        game.start(&mut audio)?;
+                    }
                     reset_feedback(&mut visual);
                     menu_scroll.reset();
                 }
                 Control::Restart => {
+                    if online.enabled() {
+                        continue;
+                    }
                     game.start(&mut audio)?;
                     reset_feedback(&mut visual);
                     input.set_menu_open(true);
                     menu_scroll.reset();
                 }
                 Control::MainMenu => {
+                    online.stop();
                     game.main_menu()?;
+                    if online.enabled() {
+                        game.notice = Message::new("network.round_closed");
+                    }
                     audio.stop();
                     input.open_main_menu();
                     menu_scroll.reset();
@@ -871,6 +1176,14 @@ fn update_game(
                     break;
                 }
                 Control::TogglePause(_) | Control::FocusLost => {
+                    if online.enabled()
+                        && matches!(
+                            game.phase,
+                            Phase::Connecting | Phase::Starting | Phase::Running | Phase::Finishing
+                        )
+                    {
+                        return Err("Online round stopped by focus loss or pause request".into());
+                    }
                     let source = match event.control {
                         Control::TogglePause(source) => Some(source),
                         _ => None,
@@ -892,7 +1205,12 @@ fn update_game(
                     }
                 }
                 Control::Quit => {
-                    close_game(&mut game, &mut audio, &mut exit);
+                    game.closing = true;
+                    online.stop();
+                    audio.stop();
+                    if online.is_finished() {
+                        close_game(&mut game, &mut audio, &mut exit);
+                    }
                     return Ok(());
                 }
                 _ => {}
@@ -903,10 +1221,27 @@ fn update_game(
             Phase::Starting | Phase::Running | Phase::Pausing | Phase::Paused
         ) {
             if audio.state() == Some(PlaybackState::Stopped) {
-                let events = game.session.finish()?;
+                let events = if let Some(player) = online.player {
+                    let (facts, events) = game.session.finish_player(player)?;
+                    for fact in facts {
+                        online.send(LiveCommand::Fact(fact))?;
+                    }
+                    online.send(LiveCommand::End)?;
+                    online.local_ended = true;
+                    events
+                } else {
+                    game.session.finish()?
+                };
                 game.results = Some(game.session.summary());
                 feedback(events, &mut audio, &mut visual)?;
-                game.phase = Phase::Finished;
+                game.phase = if online.enabled() {
+                    Phase::Finishing
+                } else {
+                    Phase::Finished
+                };
+                if online.enabled() {
+                    game.notice = Message::new("network.finishing");
+                }
                 input.set_menu_open(true);
                 menu_scroll.reset();
                 if let Err(error) = game.save() {
@@ -914,18 +1249,31 @@ fn update_game(
                     game.notice = Message::new("game.replay_failed");
                 }
             } else if game.phase == Phase::Running {
-                feedback(game.session.advance()?, &mut audio, &mut visual)?;
+                let events = if let Some(player) = online.player {
+                    let (facts, events) = game.session.advance_player(player)?;
+                    for fact in facts {
+                        online.send(LiveCommand::Fact(fact))?;
+                    }
+                    events
+                } else {
+                    game.session.advance()?
+                };
+                feedback(events, &mut audio, &mut visual)?;
             }
         }
         Ok(())
     })();
     if let Err(error) = result {
         let _ = game.session.clock.invalidate_calibration(observed);
+        online.stop();
         game.fault(&mut audio, error, fault_message);
         input.set_menu_open(true);
         menu_scroll.reset();
     }
-    visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
+    visual.transitioning = matches!(
+        game.phase,
+        Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing
+    );
     input.set_menu_transitioning(visual.transitioning);
     visual.song_time = game.session.current;
     visual.song_seconds = visual.song_time.as_seconds_f64();
@@ -1014,10 +1362,12 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
     let mut title = locale
         .text(match game.phase {
             Phase::Ready => "phase.ready",
+            Phase::Connecting => "network.connecting",
             Phase::Starting => "phase.starting",
             Phase::Running => "phase.running",
             Phase::Pausing => "phase.pausing",
             Phase::Paused => "phase.paused",
+            Phase::Finishing => "network.finishing",
             Phase::Finished => "phase.finished",
             Phase::Fault => "phase.fault",
         })
@@ -1123,7 +1473,9 @@ fn menu_phase(phase: Phase) -> MenuPhase {
         Phase::Running | Phase::Paused => MenuPhase::Paused,
         Phase::Finished => MenuPhase::Finished,
         Phase::Fault => MenuPhase::Fault,
-        Phase::Starting | Phase::Pausing => MenuPhase::Transition,
+        Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing => {
+            MenuPhase::Transition
+        }
     }
 }
 

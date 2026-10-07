@@ -4,7 +4,7 @@
 
 ```text
 game ───────────────→ runtime
-runtime ────────────→ schema / core / replay / media / stage
+runtime ────────────→ schema / core / replay / media / stage / net
 replay ─────────────→ schema / core
 media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
 stage ──────────────→ schema / std
@@ -36,7 +36,7 @@ editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最�
 
 lab 的 `workbench` 直接组合 Bevy 窗口与 AnchorEditor，通过 media 验证回调生成有界双声道峰值包络，UI 和鼠标都使用实际节点的同一逻辑矩形映射整数帧；后台线程只执行既有保真导出，主线程保留草稿并处理结果。runtime 只向工具暴露现有语言、内嵌字体安装与纯菜单主控判定，不启动游戏 Session、品牌动画或音频；工具读取已有语言配置但不写回，手柄浏览与键鼠编辑共用单一主控
 
-net 拥有受邀请的 QUIC 端点、证书与能力校验、可靠历史、进程单调 ClockSync / 未来开始屏障和应用 FinishAck，lab 的 `net-host` / `net-join` / `net-receive` 是当前消费者；客机预装或有界接收并完整验证四对象后进入 Ready，用现有 Replay 模板提供每玩家子序列，经唯一 core 生成权威 Replay，断线只保存已成功 ingest 的前缀。net 不依赖 runtime / Bevy / Kira，网络 clock 只映射进程单调坐标及不对称路径区间，未接入 Audio ClockBridge；音频与正式游戏联网入口继续独立接线，具体状态与限额见 [网络会话](network-sessions.md)
+net 拥有受邀请的 QUIC 端点、证书与能力校验、可靠历史、进程单调 ClockSync / 未来开始屏障和应用 FinishAck，游戏通过有界 LiveSession worker 接实时事实，lab 继续消费加速 Replay 历史入口；客机预装或有界接收并完整验证四对象，游戏还要完整解码 PCM 并核对身份后才能 Ready。窗口预约 Kira 并成功 Armed，双方确认后到预约时间开始；每端只关闭自己的历史，双方经唯一 core 生成及验证权威 Replay，断线只保存实际接受的前缀。net 不依赖 runtime / Bevy / Kira，网络 clock 映射进程单调坐标，AudioClockBridge 仍独立映射实际源游标；具体状态与限额见 [网络会话](network-sessions.md)
 
 media 的纯 `compile_anchor_proposal` 只消费完整合法 MusicAnalysis、实际帧数和显式策略，以稳定排序选择 onset，返回独立 AnchorProposal 与全部接受 / 拒绝证据；lab 将其保存为有界报告，采用时核对来源并完整重编，再交给原保真导出。现有手工包没有 onset 时返回空提案，报告不代表生产 MIR / 音乐置信度准入，也不取代原 chart 的 SectionCue，详细字段见 [Anchor 提案](anchors.md)
 
@@ -57,7 +57,7 @@ StagePlan 身份由完整内容身份与 `compiler_version = 2` 组成，计划�
 | media（已创建） | 源解码、重采样、严格最终读回与内容包事务；后续标准编码、完整 MusicAnalysis 与 AnchorCompiler | 05 的音频入口与构包已有 lab 消费，runtime 加载已构建包；其余按 05–07 的实际契约加入 |
 | stage（已创建） | 真实分析区间 → Straight / Plaza / Curve / Bridge StagePlan 与整数轨道采样 | runtime 与 lab 已消费手工包；完整自动编排与视觉 Replay 仍按 08 / 09 推进 |
 | editor（已创建） | 精确 Anchor 编辑和有界撤销重做 | 09 的 lab 修包 CLI 与原生波形时间线已消费，候选证据与 Replay 图形诊断仍待后续 |
-| net（已创建） | 受邀请的 Quinn 会话、可靠输入历史与权威 Replay；后续资源接收和时钟映射 | 10 的预装同包 headless 入口已由 lab 消费，正式游戏接线后续 |
+| net（已创建） | 受邀请的 Quinn 会话、资源接收、ClockSync、可靠事实与权威 Replay | lab 加速历史与 game 实时输入 / Kira 预约已接线，重开 / 重入和实际双机继续验收 |
 
 media / stage / editor / net 允许依赖 schema，不能依赖 runtime；media 复用 schema 的唯一标准采样率。算法以项目自有类型为输入输出，第三方库类型止于适配器。runtime 组合实现；game 只保留配置和启动，不承载算法。未来增加 crate 时必须说明责任、依赖和失败方式，并更新边界检查。
 

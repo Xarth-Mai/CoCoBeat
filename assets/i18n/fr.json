@@ -176,5 +176,18 @@
   "workbench.scroll": "Faire défiler les détails : ↑ / ↓ ou molette",
   "workbench.zoom_in": "Agrandir",
   "workbench.zoom_out": "Réduire",
-  "workbench.cluster": "Repère sélectionné : {count} Anchors dans ce pixel ; utilisez la liste pour les sélectionner un par un"
+  "workbench.cluster": "Repère sélectionné : {count} Anchors dans ce pixel ; utilisez la liste pour les sélectionner un par un",
+  "network.ready": "Vous êtes {player} · En attente de la confirmation de départ des deux joueurs",
+  "network.connecting": "Connexion à votre partenaire…",
+  "network.loading": "Chargement du morceau…",
+  "network.waiting_peer": "En attente de votre partenaire…",
+  "network.scheduled": "Les deux joueurs sont prêts · La musique va commencer",
+  "network.listening": "Invitation enregistrée dans {path} · En attente de votre partenaire",
+  "network.running": "Vous jouez ensemble en ligne",
+  "network.finishing": "En attente de la confirmation de fin des deux joueurs…",
+  "network.complete": "Interprétation en ligne terminée",
+  "network.failed": "Interprétation en ligne interrompue",
+  "network.round_closed": "Cette invitation a pris fin · Lancez une nouvelle interprétation en ligne",
+  "network.local_binding": "{player} local : {binding}",
+  "network.remote_player": "Partenaire {player} : commandes à distance"
 }

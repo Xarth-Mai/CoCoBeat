@@ -1,11 +1,13 @@
 //! Invited QUIC sessions over validated local or received song packages
 
 pub mod clock;
+mod live;
 mod resource;
 mod session;
 mod sync;
 mod wire;
 
+pub use live::{LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSendError, LiveSession};
 pub use session::{SessionSummary, host, join, join_receive};
 pub use sync::{ClockSample, NetworkTiming};
 
@@ -25,9 +27,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 3;
+pub(crate) const PROTOCOL_VERSION: u32 = 4;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/3";
+const ALPN: &[u8] = b"cocobeat-session/4";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 
@@ -202,6 +204,13 @@ pub(crate) fn listen(bind: SocketAddr) -> Result<(Endpoint, Invitation), String>
 }
 
 pub(crate) async fn connect(invitation: &Invitation) -> Result<(Endpoint, Connection), String> {
+    connect_owned(invitation, &mut None).await
+}
+
+pub(crate) async fn connect_owned(
+    invitation: &Invitation,
+    owned_endpoint: &mut Option<Endpoint>,
+) -> Result<(Endpoint, Connection), String> {
     let peer = invitation.validate()?;
     let mut roots = rustls::RootCertStore::empty();
     roots
@@ -227,6 +236,7 @@ pub(crate) async fn connect(invitation: &Invitation) -> Result<(Endpoint, Connec
     let mut endpoint = Endpoint::client(SocketAddr::new(bind, 0))
         .map_err(|error| format!("bind guest endpoint: {error}"))?;
     endpoint.set_default_client_config(config);
+    *owned_endpoint = Some(endpoint.clone());
     let connecting = endpoint
         .connect(peer, SERVER_NAME)
         .map_err(|_| "connect to host failed")?;
@@ -297,7 +307,7 @@ mod tests {
             ("invite_version", serde_json::json!(2)),
             ("protocol_version", serde_json::json!(1)),
             ("protocol_version", serde_json::json!(2)),
-            ("protocol_version", serde_json::json!(4)),
+            ("protocol_version", serde_json::json!(3)),
             ("endpoint", serde_json::json!("0.0.0.0:12345")),
             ("endpoint", serde_json::json!("[::]:12345")),
             ("endpoint", serde_json::json!("[::ffff:0.0.0.0]:12345")),

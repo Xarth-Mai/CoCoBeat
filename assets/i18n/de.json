@@ -176,5 +176,18 @@
   "workbench.scroll": "Details scrollen: ↑ / ↓ oder Mausrad",
   "workbench.zoom_in": "Vergrößern",
   "workbench.zoom_out": "Verkleinern",
-  "workbench.cluster": "Ausgewählte Markierung: {count} Anchors in diesem Pixel; einzeln über die Liste auswählen"
+  "workbench.cluster": "Ausgewählte Markierung: {count} Anchors in diesem Pixel; einzeln über die Liste auswählen",
+  "network.ready": "Du bist {player} · Warten auf die Startbestätigung von euch beiden",
+  "network.connecting": "Verbindung zu deinem Partner wird hergestellt…",
+  "network.loading": "Lied wird geladen…",
+  "network.waiting_peer": "Warten, bis dein Partner bereit ist…",
+  "network.scheduled": "Ihr seid beide bereit · Die Musik beginnt gleich",
+  "network.listening": "Einladung unter {path} gespeichert · Warten auf deinen Partner",
+  "network.running": "Gemeinsam online spielen",
+  "network.finishing": "Warten auf die Abschlussbestätigung von euch beiden…",
+  "network.complete": "Online-Auftritt abgeschlossen",
+  "network.failed": "Online-Auftritt unterbrochen",
+  "network.round_closed": "Diese Einladung ist beendet · Starte einen neuen Online-Auftritt",
+  "network.local_binding": "Lokal {player}: {binding}",
+  "network.remote_player": "Partner {player}: Steuerung auf dem anderen Gerät"
 }

@@ -101,7 +101,13 @@ pub fn install(app: &mut App) {
         .add_systems(
             PostUpdate,
             (
-                (scene::apply_quality, scene::animate, scene::update_signs).chain(),
+                (
+                    scene::refresh,
+                    scene::apply_quality,
+                    scene::animate,
+                    scene::update_signs,
+                )
+                    .chain(),
                 (ensure_menu_rows, update_hud, layout_hud).chain(),
             )
                 .before(TransformSystems::Propagate)

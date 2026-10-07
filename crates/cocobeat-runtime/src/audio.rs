@@ -87,6 +87,25 @@ impl AudioOutput {
         Ok(())
     }
 
+    /// Kira starts this delay when its callback consumes the sound, not at a measured device time
+    pub fn schedule(&mut self, deadline: Instant) -> Result<(), String> {
+        let song = self.song.as_ref().ok_or("No song has been loaded")?.clone();
+        schedule_delay(deadline, Instant::now())?;
+        self.stop();
+        let song = song.start_time(schedule_delay(deadline, Instant::now())?);
+        self.music =
+            Some(ControlledSound::new(self.manager.play(song).map_err(
+                |error| format!("Cannot schedule music: {error}"),
+            )?));
+        Ok(())
+    }
+
+    /// Replacing decoded content cancels pending playback before changing the song
+    pub fn replace_song(&mut self, song: StaticSoundData) {
+        self.stop();
+        self.song = Some(song);
+    }
+
     pub(crate) fn output_info(&self) -> &str {
         &self.output_info
     }
@@ -222,6 +241,13 @@ impl AudioOutput {
         }
         None
     }
+}
+
+fn schedule_delay(deadline: Instant, now: Instant) -> Result<Duration, String> {
+    deadline
+        .checked_duration_since(now)
+        .filter(|delay| *delay >= Duration::from_millis(100))
+        .ok_or_else(|| "Music scheduling needs at least 100 ms before the deadline".into())
 }
 
 struct ControlledSound {
@@ -363,6 +389,52 @@ mod tests {
     fn callback(audio: &mut AudioManager<MockBackend>) {
         audio.backend_mut().on_start_processing();
         audio.backend_mut().process();
+    }
+
+    #[test]
+    fn scheduled_native_sound_waits_and_can_be_cancelled_before_replacement() {
+        let now = Instant::now();
+        for deadline in [
+            now - Duration::from_secs(1),
+            now,
+            now + Duration::from_millis(99),
+        ] {
+            assert!(schedule_delay(deadline, now).is_err());
+        }
+        let delay = schedule_delay(now + Duration::from_millis(100), now).unwrap();
+        assert_eq!(delay, Duration::from_millis(100));
+
+        let mut audio = mock_audio();
+        let data = sound_data(vec![Frame::from_mono(0.1); 48_000]);
+        let mut scheduled = ControlledSound::new(audio.play(data.start_time(delay)).unwrap());
+        // The mock callback renders 128 frames at 48 kHz per invocation
+        for _ in 0..20 {
+            callback(&mut audio);
+            assert_eq!(scheduled.handle.position(), 0.0);
+        }
+        scheduled.handle.stop(immediate());
+        callback(&mut audio);
+        assert_eq!(scheduled.state(), PlaybackState::Stopped);
+        assert_eq!(scheduled.handle.position(), 0.0);
+
+        let replacement = sound_data(vec![Frame::from_mono(-0.1); 24_000]);
+        let immediate = ControlledSound::new(audio.play(replacement).unwrap());
+        for _ in 0..2 {
+            callback(&mut audio);
+        }
+        assert!(immediate.handle.position() > 0.0);
+        assert_eq!(scheduled.handle.position(), 0.0);
+
+        let scheduled = ControlledSound::new(audio.play(data.start_time(delay)).unwrap());
+        for _ in 0..20 {
+            callback(&mut audio);
+            assert_eq!(scheduled.handle.position(), 0.0);
+        }
+        for _ in 0..30 {
+            callback(&mut audio);
+        }
+        assert!(scheduled.handle.position() > 0.0);
+        assert_eq!(scheduled.state(), PlaybackState::Playing);
     }
 
     #[test]

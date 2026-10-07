@@ -155,7 +155,7 @@ enum MenuAction {
 }
 
 impl MenuAction {
-    fn label(self, locale: Locale) -> String {
+    fn label(self, locale: Locale, network_player: Option<PlayerId>) -> String {
         let (key, player) = match self {
             Self::Start => ("menu.start", None),
             Self::Resume => ("menu.resume", None),
@@ -171,7 +171,11 @@ impl MenuAction {
             Self::Bind(Binding::PadButton(player)) => ("menu.bind_controller", Some(player)),
             Self::UnassignPad(player) => ("menu.unassign_controller", Some(player)),
         };
-        Message::with(key, player.map(|player| ("player", format!("{player:?}")))).render(locale)
+        Message::with(
+            key,
+            player.map(|player| ("player", format!("{:?}", network_player.unwrap_or(player)))),
+        )
+        .render(locale)
     }
 }
 
@@ -215,6 +219,8 @@ pub struct InputState {
     replay_unsaved: bool,
     menu_transitioning: bool,
     players_open: bool,
+    network_player: Option<PlayerId>,
+    network_spent: bool,
     menu_owner: Option<InputSource>,
     controller_order: Vec<Entity>,
     keys: [KeyCode; 2],
@@ -243,6 +249,8 @@ impl Default for InputState {
             replay_unsaved: false,
             menu_transitioning: false,
             players_open: false,
+            network_player: None,
+            network_spent: false,
             menu_owner: None,
             controller_order: Vec::new(),
             keys: [KeyCode::KeyF, KeyCode::KeyJ],
@@ -262,6 +270,45 @@ impl Default for InputState {
 }
 
 impl InputState {
+    /// 网络身份只映射本地 P1 槽，菜单所有权与玩家身份独立
+    pub fn set_network_player(&mut self, player: Option<PlayerId>) {
+        if self.network_player != player {
+            self.network_player = player;
+            self.queued
+                .retain(|event| event.control == Control::FocusLost);
+            self.selection = 0;
+            self.menu_row_count = self.menu_actions().len().max(1);
+            self.reset_edges();
+        }
+    }
+
+    pub fn set_network_spent(&mut self, spent: bool) {
+        if self.network_spent != spent {
+            self.network_spent = spent;
+            self.queued
+                .retain(|event| event.control == Control::FocusLost);
+            self.selection = 0;
+            self.menu_row_count = self.menu_actions().len().max(1);
+            self.reset_edges();
+        }
+    }
+
+    fn displayed_player(&self, player: PlayerId) -> PlayerId {
+        if player == PlayerId::P1 {
+            self.network_player.unwrap_or(player)
+        } else {
+            player
+        }
+    }
+
+    fn hit_player(&self, slot: PlayerId) -> Option<PlayerId> {
+        match self.network_player {
+            Some(player) if slot == PlayerId::P1 => Some(player),
+            Some(_) => None,
+            None => Some(slot),
+        }
+    }
+
     /// 切换门控时清理逻辑操作，保留焦点事件与释放前的 held 屏障
     pub fn set_controls_enabled(&mut self, enabled: bool) {
         if self.controls_enabled != enabled {
@@ -363,13 +410,13 @@ impl InputState {
             None => return locale.text("menu.claim_control").into(),
             Some(InputSource::Keyboard) => locale.text("menu.keyboard").into(),
             Some(InputSource::Pad(pad)) => {
-                if let Some(player) = [PlayerId::P1, PlayerId::P2]
-                    .into_iter()
-                    .find(|player| self.pads[player.index()] == Some(pad))
-                {
+                if let Some(player) = [PlayerId::P1, PlayerId::P2].into_iter().find(|player| {
+                    self.pads[player.index()] == Some(pad)
+                        && (self.network_player.is_none() || *player == PlayerId::P1)
+                }) {
                     Message::with(
                         "menu.player_controller",
-                        [("player", format!("{player:?}"))],
+                        [("player", format!("{:?}", self.displayed_player(player)))],
                     )
                     .render(locale)
                 } else {
@@ -399,10 +446,32 @@ impl InputState {
     }
 
     fn binding_lines(&self, locale: Locale) -> [String; 2] {
+        if let Some(player) = self.network_player {
+            let binding = if self.pads[0].is_some() {
+                format!("{:?} / {:?}", self.keys[0], self.pad_buttons[0])
+            } else {
+                format!("{:?}", self.keys[0])
+            };
+            let remote = if player == PlayerId::P1 {
+                PlayerId::P2
+            } else {
+                PlayerId::P1
+            };
+            let mut lines = [String::new(), String::new()];
+            lines[player.index()] = Message::with(
+                "network.local_binding",
+                [("player", format!("{player:?}")), ("binding", binding)],
+            )
+            .render(locale);
+            lines[remote.index()] =
+                Message::with("network.remote_player", [("player", format!("{remote:?}"))])
+                    .render(locale);
+            return lines;
+        }
         [PlayerId::P1, PlayerId::P2].map(|player| {
             let index = player.index();
             let mut args = vec![
-                ("player", format!("{player:?}")),
+                ("player", format!("{:?}", self.displayed_player(player))),
                 ("key", format!("{:?}", self.keys[index])),
             ];
             let key = if self.pads[index].is_some() {
@@ -441,14 +510,18 @@ impl InputState {
                 owner_hint: Some(self.menu_owner_hint(locale)),
                 title,
                 rows: vec![MenuRow {
-                    text: [Message::with(key, [("player", format!("{player:?}"))]).render(locale)]
-                        .into_iter()
-                        .chain(self.binding_lines(locale))
-                        .chain([self.status.render(locale)])
-                        .chain(information)
-                        .filter(|text| !text.is_empty())
-                        .collect::<Vec<_>>()
-                        .join("\n"),
+                    text: [Message::with(
+                        key,
+                        [("player", format!("{:?}", self.displayed_player(player)))],
+                    )
+                    .render(locale)]
+                    .into_iter()
+                    .chain(self.binding_lines(locale))
+                    .chain([self.status.render(locale)])
+                    .chain(information)
+                    .filter(|text| !text.is_empty())
+                    .collect::<Vec<_>>()
+                    .join("\n"),
                     role: MenuRowRole::Information,
                     language: None,
                     selected: true,
@@ -460,7 +533,7 @@ impl InputState {
             .iter()
             .enumerate()
             .map(|(index, action)| MenuRow {
-                text: action.label(locale),
+                text: action.label(locale, self.network_player),
                 role: if index == 0
                     && matches!(
                         action,
@@ -548,7 +621,8 @@ impl InputState {
         ) {
             return Err("input.key_reserved");
         }
-        if self.keys[1 - player.index()] == key {
+        // ponytail: 单场联网进程保持此绑定，支持切回本地双人时先消除两槽键位重叠
+        if self.network_player.is_none() && self.keys[1 - player.index()] == key {
             return Err("input.key_assigned");
         }
         self.keys[player.index()] = key;
@@ -561,6 +635,9 @@ impl InputState {
         } else {
             PlayerId::P1
         };
+        if self.pads[other.index()] == Some(pad) && self.network_player.is_some() {
+            self.pads[other.index()] = None;
+        }
         if self.pads[other.index()] == Some(pad) {
             self.status = Message::with(
                 "input.controller_assigned",
@@ -572,7 +649,7 @@ impl InputState {
         self.status = Message::with(
             "input.controller_joined",
             [
-                ("player", format!("{player:?}")),
+                ("player", format!("{:?}", self.displayed_player(player))),
                 ("button", format!("{:?}", self.pad_buttons[player.index()])),
             ],
         );
@@ -605,7 +682,7 @@ impl InputState {
                 self.pads[player.index()] = None;
                 self.status = Message::with(
                     "input.controller_disconnected",
-                    [("player", format!("{player:?}"))],
+                    [("player", format!("{:?}", self.displayed_player(player)))],
                 );
                 if self.binding == Some(Binding::PadButton(player)) {
                     self.reset_edges();
@@ -656,6 +733,24 @@ impl InputState {
         };
         actions
             .into_iter()
+            .filter(|action| {
+                !self.network_spent
+                    || !matches!(
+                        action,
+                        MenuAction::Start | MenuAction::Resume | MenuAction::Restart
+                    )
+            })
+            .filter(|action| {
+                self.network_player.is_none()
+                    || !matches!(
+                        action,
+                        MenuAction::Bind(
+                            Binding::Keyboard(PlayerId::P2)
+                                | Binding::JoinPad(PlayerId::P2)
+                                | Binding::PadButton(PlayerId::P2)
+                        ) | MenuAction::UnassignPad(PlayerId::P2)
+                    )
+            })
             .filter(|action| *action != MenuAction::SaveReplay || self.replay_unsaved)
             .filter(|action| match action {
                 MenuAction::UnassignPad(player) => self.pads[player.index()].is_some(),
@@ -703,7 +798,7 @@ impl InputState {
                 self.pads[player.index()] = None;
                 self.status = Message::with(
                     "input.controller_unassigned",
-                    [("player", format!("{player:?}"))],
+                    [("player", format!("{:?}", self.displayed_player(player)))],
                 );
                 self.players_page(true, scroll);
                 self.selection = self
@@ -716,8 +811,10 @@ impl InputState {
                 if let Binding::PadButton(player) = binding
                     && self.pads[player.index()].is_none()
                 {
-                    self.status =
-                        Message::with("input.join_first", [("player", format!("{player:?}"))]);
+                    self.status = Message::with(
+                        "input.join_first",
+                        [("player", format!("{:?}", self.displayed_player(player)))],
+                    );
                     return;
                 }
                 self.reset_edges();
@@ -811,7 +908,7 @@ impl InputState {
                         self.status = Message::with(
                             "input.keyboard_bound",
                             [
-                                ("player", format!("{player:?}")),
+                                ("player", format!("{:?}", self.displayed_player(player))),
                                 ("key", format!("{key:?}")),
                             ],
                         );
@@ -828,7 +925,8 @@ impl InputState {
             }
             KeyCode::Escape => self.emit(Control::TogglePause(InputSource::Keyboard), now),
             KeyCode::F5
-                if !self.players_open
+                if !self.network_spent
+                    && !self.players_open
                     && (!self.menu_open || self.menu_actions().contains(&MenuAction::Restart)) =>
             {
                 self.emit(Control::Restart, now)
@@ -839,7 +937,9 @@ impl InputState {
             KeyCode::Enter if self.menu_open => self.activate(None, now, scroll),
             _ if !self.menu_open => {
                 for player in [PlayerId::P1, PlayerId::P2] {
-                    if self.keys[player.index()] == key {
+                    if self.keys[player.index()] == key
+                        && let Some(player) = self.hit_player(player)
+                    {
                         self.emit(Control::Hit(player), now);
                     }
                 }
@@ -943,7 +1043,7 @@ impl InputState {
                         if self.pads[player.index()] != Some(pad) {
                             self.status = Message::with(
                                 "input.use_assigned",
-                                [("player", format!("{player:?}"))],
+                                [("player", format!("{:?}", self.displayed_player(player)))],
                             );
                         } else if matches!(
                             button,
@@ -958,7 +1058,7 @@ impl InputState {
                             self.status = Message::with(
                                 "input.controller_bound",
                                 [
-                                    ("player", format!("{player:?}")),
+                                    ("player", format!("{:?}", self.displayed_player(player))),
                                     ("button", format!("{button:?}")),
                                 ],
                             );
@@ -1005,7 +1105,10 @@ impl InputState {
             _ if !self.menu_open => {
                 for player in [PlayerId::P1, PlayerId::P2] {
                     let index = player.index();
-                    if self.pads[index] == Some(pad) && self.pad_buttons[index] == button {
+                    if self.pads[index] == Some(pad)
+                        && self.pad_buttons[index] == button
+                        && let Some(player) = self.hit_player(player)
+                    {
                         self.emit(Control::Hit(player), now);
                     }
                 }
@@ -1178,6 +1281,154 @@ fn capture_gamepad(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn network_identity_maps_only_the_local_slot_and_keeps_release_and_menu_ownership() {
+        let mut world = World::new();
+        let local_pad = world.spawn_empty().id();
+        let other_pad = world.spawn_empty().id();
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        input.register_controller(local_pad);
+        input.register_controller(other_pad);
+        input.join_pad(PlayerId::P1, local_pad);
+        input.join_pad(PlayerId::P2, other_pad);
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.key(KeyCode::KeyF, true, false, 0, &mut scroll);
+        input.pad_button(local_pad, GamepadButton::South, true, 1, &mut scroll);
+        assert_eq!(input.queued.len(), 2);
+        input.set_network_player(Some(PlayerId::P2));
+        assert!(input.queued.is_empty());
+        assert_eq!(input.menu_owner, Some(InputSource::Keyboard));
+        next_frame(&mut input);
+        input.key(KeyCode::KeyF, true, false, 2, &mut scroll);
+        input.pad_button(local_pad, GamepadButton::South, true, 3, &mut scroll);
+        input.key(KeyCode::KeyJ, true, false, 4, &mut scroll);
+        input.pad_button(other_pad, GamepadButton::South, true, 5, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.key(KeyCode::KeyF, false, false, 6, &mut scroll);
+        input.pad_button(local_pad, GamepadButton::South, false, 7, &mut scroll);
+        input.key(KeyCode::KeyF, true, false, 8, &mut scroll);
+        input.pad_button(local_pad, GamepadButton::South, true, 9, &mut scroll);
+        assert!(
+            input
+                .queued
+                .iter()
+                .all(|event| event.control == Control::Hit(PlayerId::P2))
+        );
+        assert_eq!(input.queued.len(), 2);
+        input.set_menu_open(true);
+        next_frame(&mut input);
+        input.pad_button(other_pad, GamepadButton::Start, true, 10, &mut scroll);
+        assert_eq!(input.menu_owner, Some(InputSource::Pad(other_pad)));
+        assert!(input.queued.is_empty());
+        assert_eq!(input.pads, [Some(local_pad), Some(other_pad)]);
+        assert!(input.menu_owner_hint(Locale::EnUs).contains("Controller 2"));
+        let lines = input.binding_lines(Locale::EnUs);
+        assert!(lines[0].contains("P1") && !lines[0].contains("KeyJ"));
+        assert!(lines[1].contains("P2") && lines[1].contains("KeyF"));
+        input.players_page(true, &mut scroll);
+        assert!(input.menu_actions().iter().all(|action| !matches!(
+            action,
+            MenuAction::Bind(
+                Binding::Keyboard(PlayerId::P2)
+                    | Binding::JoinPad(PlayerId::P2)
+                    | Binding::PadButton(PlayerId::P2)
+            ) | MenuAction::UnassignPad(PlayerId::P2)
+        )));
+        let menu = input
+            .menu_presentation(Locale::EnUs, String::new(), vec![])
+            .unwrap();
+        assert!(
+            menu.rows
+                .iter()
+                .find(|row| row.role == MenuRowRole::Action)
+                .unwrap()
+                .text
+                .contains("P2")
+        );
+        input.set_network_player(None);
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.key(KeyCode::KeyJ, false, false, 11, &mut scroll);
+        input.pad_button(other_pad, GamepadButton::South, false, 12, &mut scroll);
+        input.key(KeyCode::KeyJ, true, false, 13, &mut scroll);
+        input.pad_button(other_pad, GamepadButton::South, true, 14, &mut scroll);
+        assert_eq!(input.queued.len(), 2);
+        assert!(
+            input
+                .queued
+                .iter()
+                .all(|event| event.control == Control::Hit(PlayerId::P2))
+        );
+    }
+
+    #[test]
+    fn network_local_key_can_use_the_dormant_slot_without_creating_a_remote_hit() {
+        for role in [PlayerId::P1, PlayerId::P2] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            assert_eq!(
+                input.bind_key(PlayerId::P1, KeyCode::KeyJ),
+                Err("input.key_assigned")
+            );
+            input.set_network_player(Some(role));
+            input.bind_key(PlayerId::P1, KeyCode::KeyJ).unwrap();
+            input.set_menu_open(false);
+            next_frame(&mut input);
+            input.key(KeyCode::KeyJ, true, false, 1, &mut scroll);
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::Hit(role));
+            assert_eq!(input.hit_player(PlayerId::P2), None);
+            assert_eq!(
+                input.bind_key(PlayerId::P1, KeyCode::Enter),
+                Err("input.key_reserved")
+            );
+        }
+    }
+
+    #[test]
+    fn spent_network_invitation_keeps_settings_save_and_quit_without_start_shortcuts() {
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        input.set_network_player(Some(PlayerId::P1));
+        input.set_network_spent(true);
+        for phase in [
+            MenuPhase::Ready,
+            MenuPhase::Paused,
+            MenuPhase::Finished,
+            MenuPhase::Fault,
+        ] {
+            input.set_menu_phase(phase, true);
+            let actions = input.menu_actions();
+            assert!(!actions.iter().any(|action| matches!(
+                action,
+                MenuAction::Start | MenuAction::Resume | MenuAction::Restart
+            )));
+            assert!(actions.contains(&MenuAction::Settings));
+            assert!(actions.contains(&MenuAction::Quit));
+            if phase != MenuPhase::Ready {
+                assert!(actions.contains(&MenuAction::SaveReplay));
+            }
+            next_frame(&mut input);
+            input.key(KeyCode::F5, false, false, 0, &mut scroll);
+            input.key(KeyCode::F5, true, false, 1, &mut scroll);
+            assert!(input.queued.is_empty());
+        }
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.key(KeyCode::F5, false, false, 2, &mut scroll);
+        input.key(KeyCode::F5, true, false, 3, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.open_main_menu();
+        assert!(!input.menu_actions().contains(&MenuAction::Start));
+        input.set_network_spent(false);
+        assert!(input.menu_actions().contains(&MenuAction::Start));
+        next_frame(&mut input);
+        input.key(KeyCode::Enter, true, false, 5, &mut scroll);
+        assert_eq!(input.queued[0].control, Control::Start);
+    }
 
     #[test]
     fn shared_menu_access_consumes_claims_and_requires_explicit_takeover() {
@@ -2076,7 +2327,7 @@ mod tests {
             assert_eq!(input.menu_actions()[input.selection], after);
             assert_eq!(
                 presentation.rows[input.selection].text,
-                after.label(Locale::EnUs)
+                after.label(Locale::EnUs, None)
             );
             assert_eq!(
                 presentation.rows.iter().filter(|row| row.selected).count(),

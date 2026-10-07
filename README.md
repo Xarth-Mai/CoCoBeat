@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及支持预装或原字节接收同包的 QUIC 可靠历史与权威 Replay 软件会话；完整歌曲导入、自动 MIR、候选与 Replay 图形诊断及正式游戏联网仍在后续路线图
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及支持预装或原字节接收同包的 QUIC 可靠历史与权威 Replay 软件会话；游戏也已接单局实时 QUIC 演奏、原字节曲包接收、Kira 预约与伙伴反馈；完整歌曲导入、自动 MIR、候选与 Replay 图形诊断、网络重开 / 重入及实际设备验收仍在后续路线图
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
@@ -21,7 +21,7 @@ crates/cocobeat-replay   有界 JSON 持久化与同一 core 重放
 crates/cocobeat-media    有界音频处理、严格读回与四对象内容包事务
 crates/cocobeat-stage    手工段落区间驱动的确定性轨道与整数几何采样
 crates/cocobeat-editor   精确 Anchor 编辑与有界撤销重做
-crates/cocobeat-net      受邀请的 QUIC 可靠历史与权威 Replay 软件会话
+crates/cocobeat-net      受邀请的 QUIC 资源、实时 / 加速事实、ClockSync 与权威 Replay
 tools/cocobeat-lab       研究实验，不进入正式游戏 UX
 xtask                   开发检查命令
 assets/dev              开发资源约定
@@ -149,7 +149,7 @@ Windows EXE 内嵌多尺寸静态图标，Linux 包使用 `bin/` 与标准 `shar
 ## 不变的边界
 
 - schema 定义事实；core 定义规则，两者不认识引擎、音频后端或网络传输
-- Replay 和未来网络输入经过同一个 DuoEngine
+- Replay 和网络输入经过同一个 DuoEngine
 - 未来 AnchorCompiler 消费 MusicAnalysis，输出自有内容，不认识 Bevy
 - 判定输出语义事件，表现只能表达事实，不能修改判定
 - 自由输入不按隐藏谱面评分；沉默不是 Miss，也不是 Sync

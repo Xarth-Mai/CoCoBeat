@@ -176,5 +176,18 @@
   "workbench.scroll": "詳細のスクロール：↑ / ↓ またはホイール",
   "workbench.zoom_in": "拡大",
   "workbench.zoom_out": "縮小",
-  "workbench.cluster": "選択したマーカー：このピクセルに {count} 個の Anchor があります。リストで個別に選択できます"
+  "workbench.cluster": "選択したマーカー：このピクセルに {count} 個の Anchor があります。リストで個別に選択できます",
+  "network.ready": "この端末は {player} · 両者の開始確認を待っています",
+  "network.connecting": "パートナーに接続中…",
+  "network.loading": "楽曲を読み込み中…",
+  "network.waiting_peer": "パートナーの準備を待っています…",
+  "network.scheduled": "両者の準備が完了 · まもなく音楽が始まります",
+  "network.listening": "招待を {path} に保存しました · パートナーの参加を待っています",
+  "network.running": "オンラインで演奏中",
+  "network.finishing": "両者の演奏終了確認を待っています…",
+  "network.complete": "オンライン演奏が完了しました",
+  "network.failed": "オンライン演奏が中断されました",
+  "network.round_closed": "この招待は終了しました · 新しいオンライン演奏を起動してください",
+  "network.local_binding": "この端末の {player}：{binding}",
+  "network.remote_player": "パートナーの {player}：相手の端末で操作"
 }

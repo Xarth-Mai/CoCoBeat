@@ -42,7 +42,7 @@ pub struct Session {
     pub uncertainty_frames: u64,
     end: SongTime,
     sequence: [u64; 2],
-    watermark: Option<SongTime>,
+    watermarks: [Option<SongTime>; 2],
 }
 
 impl Session {
@@ -81,7 +81,7 @@ impl Session {
             uncertainty_frames: CURSOR_UNCERTAINTY_FRAMES,
             end: content.end,
             sequence: [0, 0],
-            watermark: None,
+            watermarks: [None, None],
         })
     }
 
@@ -140,22 +140,31 @@ impl Session {
         observed_ns: u64,
         consumed_ns: u64,
     ) -> Result<Vec<DuoEvent>, String> {
+        self.capture_hit(player, observed_ns, consumed_ns)
+            .map(|(_, events)| events)
+    }
+
+    pub fn capture_hit(
+        &mut self,
+        player: PlayerId,
+        observed_ns: u64,
+        consumed_ns: u64,
+    ) -> Result<(Option<DuoInput>, Vec<DuoEvent>), String> {
         let estimate = self
             .clock
             .estimate_song_time(MonotonicTime::from_nanos(observed_ns))
             .map_err(|error| format!("Captured input clock: {error:?}"))?;
         if estimate.song_time < SongTime::ZERO || estimate.song_time >= self.end {
-            return Ok(Vec::new());
+            return Ok((None, Vec::new()));
         }
         let seq = self.sequence[player.index()];
-        let next = seq.checked_add(1).ok_or("Input sequence overflow")?;
-        let events = self.ingest(DuoInput::Hit(Hit {
+        let fact = DuoInput::Hit(Hit {
             epoch: self.epoch(),
             player,
             seq,
             song_time: estimate.song_time,
-        }))?;
-        self.sequence[player.index()] = next;
+        });
+        let events = self.ingest(fact)?;
         self.diagnostics.push(CaptureDiagnostic {
             player,
             seq,
@@ -164,14 +173,57 @@ impl Session {
             song_frames: estimate.song_time.frames(),
             uncertainty_frames: estimate.uncertainty_frames,
         });
-        Ok(events)
+        Ok((Some(fact), events))
+    }
+
+    fn validate_inputs(&self, facts: &[DuoInput], peer: Option<PlayerId>) -> Result<(), String> {
+        if facts.len() > MAX_FACTS - self.replay.facts().len() {
+            return Err("Replay capacity reached; session stopped without dropping input".into());
+        }
+        let mut sequence = self.sequence;
+        let mut watermarks = self.watermarks;
+        let final_through = self.final_through()?;
+        // Preflight the whole batch before core or the recorder changes
+        // Contiguous sequences and bounded times exclude core's remaining duplicate/overflow errors
+        for &fact in facts {
+            let (epoch, player) = match fact {
+                DuoInput::Hit(hit) => (hit.epoch, hit.player),
+                DuoInput::Watermark { epoch, player, .. } => (epoch, player),
+            };
+            if epoch != self.epoch() || peer.is_some_and(|expected| player != expected) {
+                return Err("Input epoch or player does not match this session".into());
+            }
+            match fact {
+                DuoInput::Hit(hit) => {
+                    if hit.seq != sequence[player.index()] {
+                        return Err("Input sequence must be contiguous and unique".into());
+                    }
+                    if hit.song_time < SongTime::ZERO || hit.song_time >= self.end {
+                        return Err("Hit must be inside the song timeline".into());
+                    }
+                    if watermarks[player.index()].is_some_and(|through| hit.song_time <= through) {
+                        return Err("Hit cannot reopen closed player history".into());
+                    }
+                    sequence[player.index()] =
+                        hit.seq.checked_add(1).ok_or("Input sequence overflow")?;
+                }
+                DuoInput::Watermark { through, .. } => {
+                    if through > final_through
+                        || watermarks[player.index()].is_some_and(|previous| through < previous)
+                    {
+                        return Err(
+                            "Watermark must be monotonic and within the final song boundary".into(),
+                        );
+                    }
+                    watermarks[player.index()] = Some(through);
+                }
+            }
+        }
+        Ok(())
     }
 
     fn ingest(&mut self, fact: DuoInput) -> Result<Vec<DuoEvent>, String> {
-        // Reserve recorder capacity before mutating the rule engine
-        if self.replay.facts().len() >= MAX_FACTS {
-            return Err("Replay capacity reached; session stopped without dropping input".into());
-        }
+        self.validate_inputs(&[fact], None)?;
         let events = self
             .engine
             .ingest(fact)
@@ -179,55 +231,131 @@ impl Session {
         self.replay
             .record(fact)
             .map_err(|error| error.to_string())?;
+        match fact {
+            DuoInput::Hit(hit) => self.sequence[hit.player.index()] = hit.seq + 1,
+            DuoInput::Watermark {
+                player, through, ..
+            } => {
+                self.watermarks[player.index()] = Some(through);
+            }
+        }
         Ok(events)
+    }
+
+    pub fn ingest_peer(
+        &mut self,
+        expected_player: PlayerId,
+        facts: &[DuoInput],
+    ) -> Result<Vec<DuoEvent>, String> {
+        self.validate_inputs(facts, Some(expected_player))?;
+        let mut events = Vec::new();
+        for &fact in facts {
+            events.extend(self.ingest(fact)?);
+        }
+        Ok(events)
+    }
+
+    fn checkpoint(&self) -> Result<Option<SongTime>, String> {
+        self.clock
+            .last_observation()
+            .map(|observation| {
+                observation
+                    .song_time
+                    .checked_add_frames(-(CURSOR_UNCERTAINTY_FRAMES as i64))
+                    .ok_or_else(|| "Watermark overflow".into())
+            })
+            .transpose()
+    }
+
+    fn checkpoint_due(&self, player: PlayerId, through: SongTime) -> bool {
+        // Ten-millisecond checkpoints keep files bounded independently of render rate
+        self.watermarks[player.index()].is_none_or(|previous| {
+            i128::from(through.frames()) - i128::from(previous.frames()) >= 480
+        })
     }
 
     /// Close history only after this frame's captured input queue has been drained
     pub fn advance(&mut self) -> Result<Vec<DuoEvent>, String> {
-        let Some(observation) = self.clock.last_observation() else {
+        let Some(through) = self.checkpoint()? else {
             return Ok(Vec::new());
         };
-        let through = observation
-            .song_time
-            .checked_add_frames(-(CURSOR_UNCERTAINTY_FRAMES as i64))
-            .ok_or("Watermark overflow")?;
-        // Ten-millisecond checkpoints keep files bounded independently of render rate
-        if self
-            .watermark
-            .is_some_and(|previous| through.frames() - previous.frames() < 480)
+        if [PlayerId::P1, PlayerId::P2]
+            .into_iter()
+            .all(|player| !self.checkpoint_due(player, through))
         {
             return Ok(Vec::new());
         }
         self.close_history(through)
     }
 
+    pub fn advance_player(
+        &mut self,
+        player: PlayerId,
+    ) -> Result<(Vec<DuoInput>, Vec<DuoEvent>), String> {
+        let Some(through) = self.checkpoint()? else {
+            return Ok((Vec::new(), Vec::new()));
+        };
+        if !self.checkpoint_due(player, through) {
+            return Ok((Vec::new(), Vec::new()));
+        }
+        self.close_player(player, through)
+    }
+
+    fn close_player(
+        &mut self,
+        player: PlayerId,
+        through: SongTime,
+    ) -> Result<(Vec<DuoInput>, Vec<DuoEvent>), String> {
+        let fact = DuoInput::Watermark {
+            epoch: self.epoch(),
+            player,
+            through,
+        };
+        let events = self.ingest(fact)?;
+        Ok((vec![fact], events))
+    }
+
     fn close_history(&mut self, through: SongTime) -> Result<Vec<DuoEvent>, String> {
-        if self.replay.facts().len() > MAX_FACTS - 2 {
-            return Err("Replay capacity reached before history checkpoint".into());
-        }
+        let facts = [PlayerId::P1, PlayerId::P2].map(|player| DuoInput::Watermark {
+            epoch: self.epoch(),
+            player,
+            through,
+        });
+        self.validate_inputs(&facts, None)?;
         let mut events = Vec::new();
-        for player in [PlayerId::P1, PlayerId::P2] {
-            events.extend(self.ingest(DuoInput::Watermark {
-                epoch: self.epoch(),
-                player,
-                through,
-            })?);
+        for fact in facts {
+            events.extend(self.ingest(fact)?);
         }
-        self.watermark = Some(through);
         Ok(events)
     }
 
-    /// The known content end closes the remaining history, without inventing an audio observation
-    pub fn finish(&mut self) -> Result<Vec<DuoEvent>, String> {
-        let tail = self.engine.confirmation_delay_frames();
-        let through = self
-            .end
-            .checked_add_frames(tail)
+    pub fn final_through(&self) -> Result<SongTime, String> {
+        self.end
+            .checked_add_frames(self.engine.confirmation_delay_frames())
             .and_then(|time| time.checked_add_frames(1))
-            .ok_or("Final history watermark overflow")?;
-        let events = self.close_history(through)?;
+            .ok_or_else(|| "Final history watermark overflow".into())
+    }
+
+    /// The known content end closes history without inventing an audio observation
+    pub fn finish(&mut self) -> Result<Vec<DuoEvent>, String> {
+        let events = self.close_history(self.final_through()?)?;
         self.current = self.end;
         Ok(events)
+    }
+
+    /// Finish only the local seat; peer history remains open until its own facts arrive
+    pub fn finish_player(
+        &mut self,
+        player: PlayerId,
+    ) -> Result<(Vec<DuoInput>, Vec<DuoEvent>), String> {
+        let through = self.final_through()?;
+        let output = if self.watermarks[player.index()] == Some(through) {
+            (Vec::new(), Vec::new())
+        } else {
+            self.close_player(player, through)?
+        };
+        self.current = self.end;
+        Ok(output)
     }
 
     pub fn summary(&self) -> SessionResults {
@@ -550,6 +678,146 @@ mod tests {
     }
 
     #[test]
+    fn independent_player_histories_wait_for_real_peer_facts_and_replay_identically() {
+        let content = fixture_content(48_001);
+        let mut host = Session::for_content(SessionEpoch(19), &content).unwrap();
+        let mut guest = Session::for_content(SessionEpoch(19), &content).unwrap();
+        for session in [&mut host, &mut guest] {
+            session
+                .observe_audio(1.0, MonotonicTime::from_nanos(1_000_000_000))
+                .unwrap();
+        }
+        let (host_hit, _) = host
+            .capture_hit(PlayerId::P1, 1_000_000_000, 1_010_000_000)
+            .unwrap();
+        let (guest_hit, _) = guest
+            .capture_hit(PlayerId::P2, 1_000_000_000, 1_020_000_000)
+            .unwrap();
+        let (host_checkpoints, events) = host.advance_player(PlayerId::P1).unwrap();
+        assert!(events.is_empty());
+        assert_eq!(host.watermarks[1], None);
+        let (host_end, events) = host.finish_player(PlayerId::P1).unwrap();
+        assert!(events.is_empty());
+        assert_eq!(host.summary().anchors, [[0; 4]; 2]);
+        assert_eq!(host.watermarks[1], None);
+        assert_eq!(host.diagnostics.len(), 1);
+        let host_history: Vec<_> = host_hit
+            .into_iter()
+            .chain(host_checkpoints)
+            .chain(host_end)
+            .collect();
+        assert!(
+            guest
+                .ingest_peer(PlayerId::P1, &host_history)
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(guest.summary().anchors, [[0; 4]; 2]);
+        let (guest_end, events) = guest.finish_player(PlayerId::P2).unwrap();
+        assert!(
+            events
+                .iter()
+                .any(|event| matches!(event, DuoEvent::AnchorSync(_)))
+        );
+        let guest_history: Vec<_> = guest_hit.into_iter().chain(guest_end).collect();
+        host.ingest_peer(PlayerId::P2, &guest_history).unwrap();
+        assert_eq!(host.summary().anchors, [[1, 0, 0, 0]; 2]);
+        assert_eq!(host.summary(), guest.summary());
+        assert_eq!(host.engine.events(), guest.engine.events());
+        assert_eq!(host.engine.resonance(), guest.engine.resonance());
+        assert_eq!(host.diagnostics.len(), 1);
+        assert!(host.finish_player(PlayerId::P1).unwrap().0.is_empty());
+        for session in [&host, &guest] {
+            let restored = session
+                .replay
+                .replay(
+                    &content.content_id,
+                    RULES_ID,
+                    content.anchors.clone(),
+                    DuoRules::default(),
+                )
+                .unwrap();
+            assert_eq!(session.engine.events(), restored.events());
+        }
+    }
+
+    #[test]
+    fn invalid_peer_batches_preserve_the_entire_history_and_rule_state() {
+        let content = fixture_content(48_001);
+        let mut session = Session::for_content(SessionEpoch(19), &content).unwrap();
+        let valid = DuoInput::Hit(Hit {
+            epoch: session.epoch(),
+            player: PlayerId::P2,
+            seq: 0,
+            song_time: SongTime::from_frames(48_000),
+        });
+        let final_through = session.final_through().unwrap();
+        for invalid in [
+            DuoInput::Hit(Hit {
+                epoch: SessionEpoch(18),
+                player: PlayerId::P2,
+                seq: 1,
+                song_time: SongTime::ZERO,
+            }),
+            DuoInput::Hit(Hit {
+                epoch: session.epoch(),
+                player: PlayerId::P1,
+                seq: 0,
+                song_time: SongTime::ZERO,
+            }),
+            DuoInput::Hit(Hit {
+                epoch: session.epoch(),
+                player: PlayerId::P2,
+                seq: 2,
+                song_time: SongTime::ZERO,
+            }),
+            valid,
+            DuoInput::Hit(Hit {
+                epoch: session.epoch(),
+                player: PlayerId::P2,
+                seq: 1,
+                song_time: content.end,
+            }),
+            DuoInput::Watermark {
+                epoch: session.epoch(),
+                player: PlayerId::P2,
+                through: final_through.checked_add_frames(1).unwrap(),
+            },
+        ] {
+            let before = session.replay.clone();
+            let engine = format!("{:?}", session.engine);
+            assert!(
+                session
+                    .ingest_peer(PlayerId::P2, &[valid, invalid])
+                    .is_err()
+            );
+            assert_eq!(session.replay, before);
+            assert_eq!(format!("{:?}", session.engine), engine);
+            assert_eq!(session.sequence, [0, 0]);
+            assert_eq!(session.watermarks, [None, None]);
+        }
+        let close = DuoInput::Watermark {
+            epoch: session.epoch(),
+            player: PlayerId::P2,
+            through: SongTime::from_frames(48_000),
+        };
+        assert!(session.ingest_peer(PlayerId::P2, &[close, valid]).is_err());
+        assert!(session.replay.facts().is_empty());
+        session.ingest_peer(PlayerId::P2, &[valid, close]).unwrap();
+        let before = session.replay.clone();
+        let engine = format!("{:?}", session.engine);
+        let regression = DuoInput::Watermark {
+            epoch: session.epoch(),
+            player: PlayerId::P2,
+            through: SongTime::ZERO,
+        };
+        assert!(session.ingest_peer(PlayerId::P2, &[regression]).is_err());
+        assert_eq!(session.replay, before);
+        assert_eq!(format!("{:?}", session.engine), engine);
+        assert_eq!(session.diagnostics.len(), 0);
+    }
+
+    #[test]
     fn recorder_capacity_failure_keeps_rules_and_capture_state_unchanged() {
         let mut session = Session::new(SessionEpoch(1)).unwrap();
         session
@@ -570,7 +838,7 @@ mod tests {
         let before = format!("{:?}", session.engine);
         assert!(session.finish().unwrap_err().contains("capacity"));
         assert_eq!(format!("{:?}", session.engine), before);
-        assert_eq!(session.watermark, None);
+        assert_eq!(session.watermarks, [None, None]);
         assert_eq!(session.current, SongTime::ZERO);
         assert_eq!(session.replay.facts().len(), MAX_FACTS - 1);
 

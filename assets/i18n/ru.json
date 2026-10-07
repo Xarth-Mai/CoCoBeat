@@ -176,5 +176,18 @@
   "workbench.scroll": "Прокрутка подробностей: ↑ / ↓ или колесо",
   "workbench.zoom_in": "Увеличить",
   "workbench.zoom_out": "Уменьшить",
-  "workbench.cluster": "Выбранная метка: {count} Anchors в этом пикселе; выбирайте каждый отдельно в списке"
+  "workbench.cluster": "Выбранная метка: {count} Anchors в этом пикселе; выбирайте каждый отдельно в списке",
+  "network.ready": "На этом устройстве — {player} · Ожидается подтверждение старта от обоих игроков",
+  "network.connecting": "Подключение к партнёру…",
+  "network.loading": "Загрузка песни…",
+  "network.waiting_peer": "Ожидание готовности партнёра…",
+  "network.scheduled": "Оба игрока готовы · Музыка скоро начнётся",
+  "network.listening": "Приглашение сохранено в {path} · Ожидание партнёра",
+  "network.running": "Совместное исполнение по сети",
+  "network.finishing": "Ожидается подтверждение завершения от обоих игроков…",
+  "network.complete": "Сетевое исполнение завершено",
+  "network.failed": "Сетевое исполнение прервано",
+  "network.round_closed": "Это приглашение закрыто · Запустите новое сетевое исполнение",
+  "network.local_binding": "На этом устройстве {player}: {binding}",
+  "network.remote_player": "Партнёр {player}: управление с другого устройства"
 }
