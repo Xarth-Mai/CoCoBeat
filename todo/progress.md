@@ -84,3 +84,5 @@
 2026-10-08 · 10 同 epoch 原音源软件续演：27 项 net、另 2 项实际 host loopback、160 项 runtime、3 项 sampler、Clippy / 格式和冻结 game 构建通过；实际 UDP 黑洞 / reliable deadline 的整数源模型与实际 Kira 双进程主动维护分别 PASS，原 epoch / source generation / source_id / 完整历史保持，恢复期负向 Hit 被过滤。最终双方各 3393 条事实 / 17 个 core 事件及权威 Replay 一致，完整命令 / PID / exit 清单和四 PID / 进程组退出已核对，见[恢复观察](../testdata/synthetic/same-epoch-recovery-observations-20261008.json)
 
 原 50ms guard FAIL、QA 开场 flag 误断言和首次 sampler 运行的命令清单 INCOMPLETE 保留，最终 manifest 修正后重新实际运行才计 PASS；四张 Running / Finished 图的角色、状态、时钟和标签由 agent / 主线程逐张指定范围检查，长 CID 溢出仍归 02b，Recovering 图未取得。工作包 21 / 22 保持 IN PROGRESS，下一批继续共享生产源导入、优化 release 性能矩阵和原生许可宽松分析；无 GPL 或 Python 产品后端，实体输入 / DAC / 长期漂移 / 双机 / 真人验收保持 NOT RUN
+
+2026-10-08 · 共享源导入与游戏 CLI 已验证：3 项 authored、30 项 lab、19 条 lab CLI 和 6 项 game 拒绝通过；445 项真实冻结输入与源码副本一致，新 `--import-authored` 从原创源实际创建包、完整开场后停 Ready 并等新确认，原 Kira 播放和 13 次双人软件输入完成，game / wrapper exit 0。观察见[导入记录](../testdata/synthetic/authored-game-import-observations-20261008.json)，完整自动 MIR 与 Ready 文件选择仍继续推进，下一批为新优化 release 的性能矩阵；恢复提交 `2a5fe59` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37655665012)已通过，设备 / 声学 / 真人验收仍 NOT RUN

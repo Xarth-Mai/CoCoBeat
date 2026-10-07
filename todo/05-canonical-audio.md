@@ -22,6 +22,7 @@
 - [x] 手工段落运行时表现：包内 SectionCue 驱动下一提示字幕和六秒预告门，实际歌曲游标控制暂停、重启与结束，字体回退覆盖现有 Noto 支持的混合脚本；103 项 runtime 测试、13 项 CLI 和 10 张静态 GPU 图通过，不代表自动舞台编译完成
 - [x] 有界原始音频经唯一生产编码器和手工 authoring 导入四对象，真实 N / 能量 / 来源写入包并由生产游戏加载；10 条成功 CLI、5 条预期拒绝及两组原生 loader 图通过，见[源导入](../docs/source-import.md)
 - [x] Ready 生产曲库选择已制作的四对象歌曲包，后台完整验证后才替换歌曲与 PCM；取消和三类拒绝保留旧包 / Replay，六项原生软件检查与 42 张指定范围截图通过，旧小窗口视觉失败保留，见[曲库验证](../docs/testing.md#生产曲库选择与小窗口反馈)
+- [x] 游戏手工源导入 CLI：`--import-authored SOURCE AUTHORING NEW_PACKAGE` 复用 media 与 lab 的共享包事务，完成校验后进入完整开场与 Ready；独立开始确认和运行验证见[源导入](../docs/source-import.md)
 - [ ] 将完整 MIR / Anchor 输出和包事务接入游戏曲库 Ready；手工 authoring 入口不替代自动分析和游戏内曲库导入
 
 退出条件：Windows/Linux 编码回读与独立互操作证据通过。失败时阻止导入，在开发期替换实现，不引入 FFmpeg 或运行时备用编码路径。

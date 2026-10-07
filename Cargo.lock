@@ -1798,6 +1798,7 @@ dependencies = [
  "oximedia-core",
  "postcard",
  "serde",
+ "serde_json",
  "symphonia",
  "vorbis_rs",
 ]

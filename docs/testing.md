@@ -765,3 +765,21 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 历史结果保持原状态：全局开场 flag 被误用为恢复输入门控的 QA 断言为 FAIL，旧 frame-driven 稀疏采样触发实际 50ms guard 为 FAIL，首次 sampler 原生运行虽完成实际游戏恢复但启动记录变量被 stage 数据遮蔽，命令清单证据为 INCOMPLETE；修复 wrapper 后重新运行所得 `recovery-native-manifest-final` 才是最终 PASS。缺少 host loopback QA 环境的首次运行、先前 test-only Clippy 失败和 sampler 窗口修正前的审阅记录也保留，未放宽门槛或覆盖旧记录
 
 本批 PASS 是原音源主动维护的原生软件恢复与独立真实 UDP deadline 软件模型两组证据；尚未合并为实际 Kira 的 UDP 黑洞场景。两台机器、LAN / WAN / 非对称路径完整矩阵、实体键盘 / 双手柄 / 混合输入、DAC / 扬声器偏移、长期声卡漂移、最大容量、其他三目标原生图形、优化 release 性能与真人验收均 NOT RUN，软件目标继续推进
+
+## 共享手工源导入与游戏入口
+
+2026-10-08，`cocobeat_media::build_authored_package` / `import_authored_package` 迁入原 lab 的解析、来源快照、最终 PCM 能量与四对象事务，lab 保留薄适配，游戏新增 `--import-authored SOURCE AUTHORING NEW_PACKAGE`；两个调用方分别记录实际工具身份，继续使用唯一 q10 编码路径，未引入新版本、GPL 或产品 Python
+
+`cargo test --locked -p cocobeat-media authored::tests` 的 3 项通过，`cargo test --locked -p cocobeat-lab` 的 30 项通过；原两项 lab 测试随职责迁到 media，另增加一项共享身份与事务行为检查。media / lab / runtime / game 全目标 Clippy `-D warnings`、workspace 格式与实际 debug build 通过，445 项输入前后相同且完整源码副本 SHA 一致
+
+固定 lab `76a28e858f6c18ac033ebcba7932816c5e376b9d55c8e5b844ffe42354b57c10` 的 19 条实际 CLI 包含 12 条成功与 7 条预期拒绝；44.1kHz 短源和 64 秒原创源的真实最终 N、来源、有限 PCM 读回、Stage / 终点与已有目标保护通过，各自四对象与原 lab 产物逐字节一致
+
+固定 game `57ba7660457f0813d32ebb2a7b70c8ddb057652b61ddd1093fce861f3f2b218a` 实际执行新的 `--import-authored`，源 SHA 为 `3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8`；新包实际 importer 为 `cocobeat-game/0.1.0/aotuv-lancer-vorbis-q10-v1`，audio / analysis / chart 与 lab 一致，manifest 因真实调用方而不同
+
+实际 Linux / AMD Vulkan / CPAL ALSA 游戏完整开场后有 813 行 Ready 无歌曲 cursor 或 Hit，新确认等待至少 14.9 秒才开始；原 Kira 播放至 3,072,000 帧，13 次双人 CapturedControl 保留独立 worker 的真实 OriginalMoment，经 Session 接收 P1 / P2 7 / 6 Hit，FreeSync 1、AnchorSync 5，两人原 Anchor 计数均为 `[2,3,0,2]`。实际 game PID 750903 与 wrapper 750879 均 exit 0，已核自有 PID 与进程组全部退出
+
+另 6 项实际 game 拒绝控制通过：已有目录 / 文件 / 链接保持，坏源和越界 authoring 未发布；未知 ruleset 的四对象合法发布后被 loader 拒绝，已发布包保留。raw 的 published 字段仅记录目标是否为目录，预存目录的 true 不代表新发布，实际状态与原字节另核
+
+首次选到另一份历史 WAV 被固定源 SHA guard 拒绝，未启动游戏或 GPU；首次清理核查混用了已回收的 sandbox 负控 PID 和宿主原生 PID，未发送信号，随后实际 host PID / group 核查通过，原始记录保留。完整构建、命令、包、输入和进程证据见[持久导入观察](../testdata/synthetic/authored-game-import-observations-20261008.json)
+
+这套冻结 debug 图包含 dormant 性能 QA producer 和两个 app 注册，仅用于本轮实际导入 / 播放软件检查；不计优化 release 性能准入，也没有 PNG 视觉验收。Ready 文件选择导入、完整自动 MIR、其他三平台新入口运行、物理输入、DAC / 扬声器、听感与真人体验保持 NOT RUN

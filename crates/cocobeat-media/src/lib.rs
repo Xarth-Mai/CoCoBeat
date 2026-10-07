@@ -2,6 +2,7 @@
 
 mod anchors;
 mod audio_asset;
+mod authored;
 mod content_codec;
 mod decode;
 mod encode;
@@ -13,6 +14,7 @@ pub use anchors::{
     compile_anchor_proposal,
 };
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
+pub use authored::{build_authored_package, import_authored_package};
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use encode::{CANONICAL_ENCODER_PROFILE, MAX_ENCODER_PCM_PEAK, encode_canonical_audio};
 pub use package::{
