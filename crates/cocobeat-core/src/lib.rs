@@ -6,6 +6,12 @@ use cocobeat_schema::{
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
+use std::ops::{
+    Bound::{Excluded, Included, Unbounded},
+    RangeInclusive,
+};
+
+type TimeKey = (SongTime, PlayerId, u64);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DuoError {
@@ -47,7 +53,6 @@ impl std::error::Error for DuoError {}
 struct InputState {
     hit: Hit,
     judged: bool,
-    shared: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -61,9 +66,11 @@ pub struct DuoEngine {
     anchors: Vec<Anchor>,
     next_anchor: usize,
     inputs: BTreeMap<(PlayerId, u64), InputState>,
+    by_time: BTreeSet<TimeKey>,
+    unshared: BTreeSet<TimeKey>,
     watermarks: [Option<SongTime>; 2],
     events: Vec<DuoEvent>,
-    pairs: Vec<(Hit, Hit)>,
+    pairs: BTreeMap<(SongTime, SongTime), u64>,
 }
 
 impl DuoEngine {
@@ -105,9 +112,11 @@ impl DuoEngine {
             anchors,
             next_anchor: 0,
             inputs: BTreeMap::new(),
+            by_time: BTreeSet::new(),
+            unshared: BTreeSet::new(),
             watermarks: [None, None],
             events: Vec::new(),
-            pairs: Vec::new(),
+            pairs: BTreeMap::new(),
         })
     }
 
@@ -152,14 +161,10 @@ impl DuoEngine {
                 hit.song_time
                     .checked_add_frames(self.delay)
                     .ok_or(DuoError::TimeOverflow)?;
-                self.inputs.insert(
-                    identity,
-                    InputState {
-                        hit,
-                        judged: false,
-                        shared: false,
-                    },
-                );
+                self.inputs
+                    .insert(identity, InputState { hit, judged: false });
+                self.by_time.insert(time_key(hit));
+                self.unshared.insert(time_key(hit));
             }
             DuoInput::Watermark {
                 player, through, ..
@@ -194,27 +199,31 @@ impl DuoEngine {
         else {
             return ResonanceState::default();
         };
-        let in_window = |time: SongTime| {
-            time <= through
-                && i128::from(time.frames())
-                    > i128::from(through.frames()) - i128::from(self.rules.resonance_window_frames)
-        };
+        // A lower edge below i64::MIN includes every representable timestamp
+        let lower = through
+            .frames()
+            .checked_sub(self.rules.resonance_window_frames)
+            .map(SongTime::from_frames);
         let mut state = ResonanceState {
             through: Some(through),
             ..ResonanceState::default()
         };
-        for input in self
-            .inputs
-            .values()
-            .filter(|input| in_window(input.hit.song_time))
-        {
-            state.inputs[input.hit.player.index()] += 1;
+        for &(_, player, _) in self.by_time.range((
+            lower.map_or(Unbounded, |time| Excluded((time, PlayerId::P2, u64::MAX))),
+            Included((through, PlayerId::P2, u64::MAX)),
+        )) {
+            state.inputs[player.index()] += 1;
         }
+        let last_time = SongTime::from_frames(i64::MAX);
         state.matched_pairs = self
             .pairs
-            .iter()
-            .filter(|(p1, p2)| in_window(p1.song_time) && in_window(p2.song_time))
-            .count() as u64;
+            .range((
+                lower.map_or(Unbounded, |time| Excluded((time, last_time))),
+                Included((through, last_time)),
+            ))
+            .filter(|((_, latest), _)| *latest <= through)
+            .map(|(_, count)| *count)
+            .sum();
         let total = u128::from(state.inputs[0]) + u128::from(state.inputs[1]);
         state.mutual_match_per_mille = (u128::from(state.matched_pairs) * 2_000)
             .checked_div(total)
@@ -241,13 +250,10 @@ impl DuoEngine {
             return;
         };
         loop {
-            // ponytail: 64 秒原型保留输入并线性扫描，长会话实测瓶颈后改为时间索引和历史回收
             let first = self
-                .inputs
-                .values()
-                .filter(|input| !input.shared)
-                .map(|input| input.hit)
-                .min_by_key(|hit| (hit.song_time, hit.player, hit.seq));
+                .unshared
+                .first()
+                .map(|&(_, player, seq)| self.inputs[&(player, seq)].hit);
             let free_at = first.map(|hit| hit.song_time.frames() + self.delay);
             let anchor_at = self
                 .anchors
@@ -280,13 +286,13 @@ impl DuoEngine {
         let mut selected = [None; 2];
         for player in [PlayerId::P1, PlayerId::P2] {
             let candidate = self
-                .inputs
-                .values()
+                .by_time
+                .range(time_range(
+                    anchor.song_time,
+                    self.rules.anchor_window_frames,
+                ))
+                .map(|&(_, player, seq)| &self.inputs[&(player, seq)])
                 .filter(|input| input.hit.player == player && !input.judged)
-                .filter(|input| {
-                    distance(input.hit.song_time, anchor.song_time)
-                        <= self.rules.anchor_window_frames as u64
-                })
                 .min_by_key(|input| {
                     (
                         distance(input.hit.song_time, anchor.song_time),
@@ -335,13 +341,13 @@ impl DuoEngine {
 
     fn resolve_free(&mut self, first: Hit) {
         let candidate = self
-            .inputs
-            .values()
-            .filter(|input| !input.shared && input.hit.player != first.player)
-            .filter(|input| {
-                distance(input.hit.song_time, first.song_time)
-                    <= self.rules.free_sync_window_frames as u64
-            })
+            .unshared
+            .range(time_range(
+                first.song_time,
+                self.rules.free_sync_window_frames,
+            ))
+            .map(|&(_, player, seq)| &self.inputs[&(player, seq)])
+            .filter(|input| input.hit.player != first.player)
             .min_by_key(|input| {
                 (
                     distance(input.hit.song_time, first.song_time),
@@ -350,10 +356,6 @@ impl DuoEngine {
                 )
             })
             .map(|input| input.hit);
-        self.inputs
-            .get_mut(&(first.player, first.seq))
-            .expect("首输入已存在")
-            .shared = true;
         if let Some(other) = candidate {
             let (p1, p2) = if first.player == PlayerId::P1 {
                 (first, other)
@@ -370,18 +372,40 @@ impl DuoEngine {
                         .div_euclid(2) as i64,
                 ),
             }));
+        } else {
+            self.unshared.remove(&time_key(first));
         }
     }
 
     fn share(&mut self, p1: Hit, p2: Hit) {
         for hit in [p1, p2] {
-            self.inputs
-                .get_mut(&(hit.player, hit.seq))
-                .expect("配对输入已存在")
-                .shared = true;
+            self.unshared.remove(&time_key(hit));
         }
-        self.pairs.push((p1, p2));
+        *self
+            .pairs
+            .entry((
+                p1.song_time.min(p2.song_time),
+                p1.song_time.max(p2.song_time),
+            ))
+            .or_default() += 1;
     }
+}
+
+fn time_key(hit: Hit) -> TimeKey {
+    (hit.song_time, hit.player, hit.seq)
+}
+
+fn time_range(time: SongTime, window: i64) -> RangeInclusive<TimeKey> {
+    (
+        SongTime::from_frames(time.frames().saturating_sub(window)),
+        PlayerId::P1,
+        0,
+    )
+        ..=(
+            SongTime::from_frames(time.frames().saturating_add(window)),
+            PlayerId::P2,
+            u64::MAX,
+        )
 }
 
 fn distance(left: SongTime, right: SongTime) -> u64 {

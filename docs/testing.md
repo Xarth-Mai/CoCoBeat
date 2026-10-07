@@ -819,3 +819,11 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 源导入共 22 张、旧曲库回归共 42 张实际 PNG callback 与尺寸检查通过，主线程只目检五张 1280×800 zh-CN 的确认、新包 Ready、坏 JSON、后台错误和短 Running 图，在路径 / 错误 / 状态可读性范围 PASS；其余图目检、动画观看和母语检查 NOT RUN。正式 `tools/library-runtime-check/source.py` 仅把记录的 target runner 根路径查找改为永久位置，通过 AST / `--help` 静态检查，实际 native 证据继续绑定原 runner SHA，不算正式文件又跑过一轮
 
 物理键盘 / 双手柄 / 混合设备菜单主次、DAC / 扬声器计时、完整新曲播放、真人体验、其他三目标新 UI 和本批优化 release 性能仍 NOT RUN；手工 source / authoring 入口消费 analysis v2 的已知能力状态，不代表完整 MIR 质量、自动 Anchor 或自动舞台编排已准入
+
+## 长曲 core 时间索引
+
+2026-10-08，core 用标准 BTreeSet 按时间查询未配对 Hit、Anchor 窗口和 Resonance，用 pair 最早 / 最晚时间及 multiplicity 保留同时间的重复配对计数；完整输入身份仍用于原去重和错误语义，规则、公开 API 与原测试保持，见[持久观察](../testdata/synthetic/core-long-song-observations-20261008.json)
+
+`cargo test --locked -j 2 -p cocobeat-core -p cocobeat-replay -p cocobeat-runtime --lib` 通过 9 / 11 / 174 项，另有 lab 32 项和四包全目标 Clippy 通过；这些当前工作区检查同时包含待提交的可选计时接线，不能称为未修改 HEAD 的全项目构建。固定旧 core `64851020…` 与新 core `b40e2cc3…` 的离线对照为 21 项通过，其中旧 / 新原测试各 9 项、逐事实事件 / 错误 / Resonance 差分 3 项，涵盖 720 排列、96 密集到达序列、同时间计数和整数端点；原始命令、日志和源码身份见观察索引
+
+原十分钟密集测试仍含 144,004 条事实、24,000 Hit 和 12,000 事件，live 与保存后重放结果一致；两次 Replay 11 项开发测试组分别用时 192.11 秒和 3.24 秒，编译时间不计入这两个数值。这是测试运行记录，未做独占性能 benchmark、长曲原生窗口、呈现 FPS 或 GPU 测量，设备与真人验收另行记录
