@@ -783,3 +783,9 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 首次选到另一份历史 WAV 被固定源 SHA guard 拒绝，未启动游戏或 GPU；首次清理核查混用了已回收的 sandbox 负控 PID 和宿主原生 PID，未发送信号，随后实际 host PID / group 核查通过，原始记录保留。完整构建、命令、包、输入和进程证据见[持久导入观察](../testdata/synthetic/authored-game-import-observations-20261008.json)
 
 这套冻结 debug 图包含 dormant 性能 QA producer 和两个 app 注册，仅用于本轮实际导入 / 播放软件检查；不计优化 release 性能准入，也没有 PNG 视觉验收。Ready 文件选择导入、完整自动 MIR、其他三平台新入口运行、物理输入、DAC / 扬声器、听感与真人体验保持 NOT RUN
+
+## 优化 release 原生性能观察
+
+2026-10-08，生产窗口、Kira、StagePlan 与 Session/core 的真实软件运行取得描述性性能观察，复现方法与数值见[性能记录](runtime-performance.md)，源码 / 构建 / 17 次实际命令 / 原始捕获 / PID 退出与失败身份见[持久观察](../testdata/synthetic/runtime-performance-observations-20261008.json)
+
+原环境 14 项矩阵为 13 VALID、1 Wayland VSync 超时，原最慢有效 limited60 两次复跑 VALID；独立 X11 VSync 补测 VALID，保留后端环境差异及原超时，未归并为统一 14 项 PASS。实际独立 Instant 输入与原 core 判定完整覆盖，性能数值是 main-update 间隔与进程 RSS；GPU / 呈现帧 / 真实输入 / DAC / 四平台图形 / 真人验收另行取证

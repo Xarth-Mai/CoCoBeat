@@ -115,3 +115,5 @@
 - 各任务落实适合其行为的自动检查，真实平台与设备验收单独记录证据；需求确认不代表实现完成
 
 退出条件：上述设置可用键盘和手柄完整操作，保存和恢复行为有证据，13 个语言变体与 Windows/Linux 显示场景分别通过验收，画质和显示设置不改变同一输入历史的规则结果
+
+2026-10-08 · 本机优化 release 实际应用请求的 AutoNoVsync / AutoVsync 与 limited60 已记录，原 Wayland VSync 超时和独立 X11 完整运行分别保留；后端环境差异不视为统一矩阵全通过，实际 surface present mode / 显示器帧仍未测量，见[性能记录](../docs/runtime-performance.md)

@@ -578,6 +578,8 @@ fn current_song_label(game: &Game, locale: Locale) -> String {
 mod library_observation;
 #[path = "live_observation.rs"]
 mod live_observation;
+#[path = "performance_probe.rs"]
+mod performance_probe;
 #[path = "watch_observation.rs"]
 mod watch_observation;
 
@@ -1017,6 +1019,7 @@ fn run_loaded_game(
         .add_systems(Update, reconcile_audio.after(update_game));
     library_observation::install_if_requested(&mut app)?;
     watch_observation::install_if_requested(&mut app)?;
+    performance_probe::install_if_requested(&mut app)?;
     if let Some(path) = observation {
         live_observation::install(&mut app, path)?;
     }
