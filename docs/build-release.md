@@ -41,9 +41,9 @@ Windows 本地需要对应的 Visual Studio C++ Build Tools 与 Windows SDK；Li
 2. 全 workspace 的 rustfmt 与依赖图检查。
 3. schema/core/replay/media/xtask 的 Clippy 和测试
 
-无图形/音频运行层编译、无平台矩阵、无自动 release 打包；新提交取消旧检查，单次限制 10 分钟。只改文档或未列入触发路径的资源不会触发当前自动 CI；嵌入运行时的 `assets/i18n/`、`assets/fonts/` 和 `assets/flags/` 变更会触发轻量检查，国际化运行时行为仍由完整检查与 GPU 验证覆盖。完整检查仍用 `cargo xtask check`，新增非 Rust 源码或构建输入时同步更新触发路径。
+无图形/音频运行层编译、无平台矩阵、无自动 release 打包；新提交取消旧检查，单次限制 10 分钟。只改文档或未列入触发路径的资源不会触发当前自动 CI；嵌入运行时的 `assets/i18n/`、`assets/fonts/` 和 `assets/flags/` 变更以及 `vendor/**/*.c` / `vendor/**/*.h` 变更会触发轻量检查，国际化运行时行为仍由完整检查与 GPU 验证覆盖。完整检查仍用 `cargo xtask check`，新增非 Rust 源码或构建输入时同步更新触发路径。
 
-CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/git 和对应 debug/release 编译目录；发行缓存按 OS、target 和 Rust 版本隔离。先匹配 manifest/lockfile 与源码，未命中再尝试同依赖版本，最后回退到同平台和工具链的旧缓存，Cargo 仍执行原有 `--locked` 检查与构建，重新编译受影响的内容。tag 发布复用同一构建工作流，可读取默认分支的缓存；不同 tag 之间的可见性遵循 [GitHub 缓存作用域](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching#restrictions-for-accessing-a-cache)
+CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/git 和对应 debug/release 编译目录；发行缓存按 OS、target 和 Rust 版本隔离。先匹配 manifest/lockfile、Rust 源码与 vendored C / header，未命中再尝试同依赖版本，最后回退到同平台和工具链的旧缓存，Cargo 仍执行原有 `--locked` 检查与构建，重新编译受影响的内容。tag 发布复用同一构建工作流，可读取默认分支的缓存；不同 tag 之间的可见性遵循 [GitHub 缓存作用域](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching#restrictions-for-accessing-a-cache)
 
 2026-10-03 的只读远端核查确认当时已保存 9 条缓存，共 4,498,931,681 字节，包含四个发行目标；既有六次发行 run 都是未命中后成功保存，核查记录见 `target/github-readiness/cache-audit-20261003.json`
 

@@ -60,7 +60,7 @@ jobs:
             ~/.cargo/git
             target/${{ inputs.target }}/release
             target/release
-          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h') }}
           restore-keys: |
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-

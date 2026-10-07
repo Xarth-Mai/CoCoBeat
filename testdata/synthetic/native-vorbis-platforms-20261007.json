@@ -1,0 +1,371 @@
+{
+  "record_version": 1,
+  "date": "2026-10-07",
+  "status": "PASS_NATIVE_FOUR_TARGETS",
+  "head_commit": "8a31a1d291608b0c1558dc37ea05568ed095a632",
+  "scope": "Actual native media release tests and complete portable controls at this exact commit; later working-tree changes are outside these runs",
+  "profile": "aotuv-lancer-vorbis-q10-v1",
+  "rustc": "1.99.0 (b940084d7 2026-09-28)",
+  "binary_hash_evidence": "Recorded on each native runner by native.py; executables are not included in the downloaded artifacts",
+  "media_workflow": {
+    "run_id": 37604570297,
+    "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297",
+    "event": "workflow_dispatch",
+    "conclusion": "success"
+  },
+  "source_identity": {
+    "commit": "8a31a1d291608b0c1558dc37ea05568ed095a632",
+    "provenance_git_blob_hashes_match": true,
+    "path_comparison": "Windows separators normalized for Git lookup; source bytes unchanged",
+    "common_source_sha256": {
+      "Cargo.toml": "5bd1728ac1272a80c5041e476c375f237f10c40b78471a3336b1158d7cbefb89",
+      "Cargo.lock": "90915cc9d7b0b8a6aa4f2f25e9c230e248c056eb59585f353878e7e5bae4b718",
+      "crates/cocobeat-media/Cargo.toml": "6a7e0a6005681b31d056761416c0dc39fcd77e0d8c75bd501a660ebfad20f6c1",
+      "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+      ".github/workflows/media-candidate.yml": "01ec111fdace7b9e60b238e0094054b117648176c8c84912b5fdea633c2db9ed",
+      "tools/native-vorbis-check/driver.rs": "73e997ace4a67b326598c93e01033d0a275f0b8515f291b0c619896ea6d68d66",
+      "tools/native-vorbis-check/fixture.rs": "50474e69cb6f093f04006b658492b8e64f7ce64e22cd83ef8977fcd5738fa620",
+      "tools/native-vorbis-check/native.py": "4b3f0923658d3a2ab1dbf155c58eb200d60b67cd6789a44595e79bcfddc39322",
+      "crates/cocobeat-media/src/anchors.rs": "e8fb4f7d9d73e2f8bf77cbc1c1798f024be7026892498a760fd2b56f439de8c4",
+      "crates/cocobeat-media/src/audio_asset.rs": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+      "crates/cocobeat-media/src/content_codec.rs": "a026d0f04b174605c90d535843793b114fdbb5ccf1bf190a42e870cedd57d597",
+      "crates/cocobeat-media/src/decode.rs": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+      "crates/cocobeat-media/src/encode.rs": "d287697d1c5292bddd5d1541c0c88f60b0a9dee567b5a11be8e41522c6e05093",
+      "crates/cocobeat-media/src/lib.rs": "60d15390a096819a60fba2f7ff507c3df9b7681d0b23862a0b340a0b9900adce",
+      "crates/cocobeat-media/src/package.rs": "3021987cccf72ba346155dbae5eccce9959ac658891d8e8032e7b3003926fb77",
+      "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78"
+    }
+  },
+  "common_controls": {
+    "encoded_and_dual_readback": 10,
+    "expected_rejections": 4,
+    "case_timeout_seconds": 600,
+    "same_position_tolerance": "1e-6 * max(1, strict_peak, reference_peak)",
+    "source_unchanged": true,
+    "existing_output_unchanged": true,
+    "large_pcm_removed_after_recorded_hashes": true
+  },
+  "windows_test_count_reason": "Two #[cfg(unix)] symlink tests are absent on Windows; Linux 39 and Windows 37 are actual passing counts",
+  "platforms": [
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "job_id": 112736812717,
+      "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297/job/112736812717",
+      "status": "PASS",
+      "environment": {
+        "platform": "Windows-11-10.0.26200-SP0",
+        "machine": "ARM64",
+        "python": "3.13.15 (tags/v3.13.15:4061bc4, Aug  5 2026, 13:51:22) [MSC v.1944 64 bit (ARM64)]",
+        "rustc_host": "aarch64-pc-windows-msvc"
+      },
+      "unit_tests_passed": 37,
+      "portable_controls_passed": 14,
+      "binaries_sha256": {
+        "native-vorbis-fixture.exe": "82b307c3ce13534dec89e2ab7d6d84174f5073f9a30c031f4b6cb7c7ba5a38a9",
+        "native-vorbis-check.exe": "e336d362705316fe265aad85ec77c7e11f11edfe4097dcd115f28c13e85e942d"
+      },
+      "source_files_matching_commit": 16,
+      "checked_command_records": 68,
+      "checked_command_log_hashes": 136,
+      "checked_ogg_hashes": 10,
+      "original_600s": {
+        "source_wav_sha256": "ecc4ac8495d6bf5bb17258097b86912fcbd3195a86956b9d79a649577da4c8af",
+        "frames": 28800000,
+        "eos_granule": 28800000,
+        "source_peak": 0.299163818359375,
+        "decoded_finite": true,
+        "dual_max_abs_difference": 1.1920928955078125e-07,
+        "dual_absolute_tolerance": 1e-06,
+        "ogg_sha256": "1967c81246c3d9f4ceea070f95cee96a371039e705aba27812372bb33e29ab4d",
+        "pcm_sha256": {
+          "resampled.f32le": "86f4f985ae824ab545cf64bceade8ee2aafa55d0115a80bc545d59d71c136a47",
+          "strict.f32le": "0c2fc89f6929e5116089cc00b4f80edfb7f7fae52ef2b5c2a2eed7b0db28c625",
+          "reference.f32le": "aeb58809b2e7982838dfd8bcf1cc9377008a123319a7ea666af1e2f3c41d5ba4"
+        }
+      },
+      "artifact": {
+        "id": 11474233276,
+        "name": "media-candidate-aarch64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632",
+        "bytes": 23773686,
+        "archive_sha256": "50aef6edcb1b32ad9bccf2ff9de07a53a279636f08c3f90c5b767347fa60ef2e",
+        "github_digest_matches": true
+      },
+      "evidence": {
+        "summary": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/summary.json",
+          "sha256": "fccbb5d3c412c72fb1cd0de3592662917cd80483351592329f02037884a063c0"
+        },
+        "provenance": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/provenance.json",
+          "sha256": "74e39f2344978a986f5742a6c3ada6f00deb08434c8cdbf8be25289b34fd8061"
+        },
+        "test_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/test.log",
+          "sha256": "72057493a9da6da3404faf3ff3624ef52689517d83dca2f4840df95c1f47261c"
+        },
+        "build_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/build.log",
+          "sha256": "38122c3345fea5d597da4c8be34a481fca04f8181527165fc024e6cebfb60e11"
+        }
+      }
+    },
+    {
+      "target": "aarch64-unknown-linux-gnu",
+      "job_id": 112736812587,
+      "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297/job/112736812587",
+      "status": "PASS",
+      "environment": {
+        "platform": "Linux-6.17.0-1022-azure-aarch64-with-glibc2.39",
+        "machine": "aarch64",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "rustc_host": "aarch64-unknown-linux-gnu"
+      },
+      "unit_tests_passed": 39,
+      "portable_controls_passed": 14,
+      "binaries_sha256": {
+        "native-vorbis-fixture": "e79d811787accd96a1591822dfa29861e79ed64143c6203efc7bbcf6f93fcff5",
+        "native-vorbis-check": "832177efe056733fb106296b8ef4fff4b1bcffcc04f243e5658f8339e4e89960"
+      },
+      "source_files_matching_commit": 16,
+      "checked_command_records": 68,
+      "checked_command_log_hashes": 136,
+      "checked_ogg_hashes": 10,
+      "original_600s": {
+        "source_wav_sha256": "ecc4ac8495d6bf5bb17258097b86912fcbd3195a86956b9d79a649577da4c8af",
+        "frames": 28800000,
+        "eos_granule": 28800000,
+        "source_peak": 0.299163818359375,
+        "decoded_finite": true,
+        "dual_max_abs_difference": 8.940696716308594e-08,
+        "dual_absolute_tolerance": 1e-06,
+        "ogg_sha256": "a631220356982217847b14d4678d2fa65ef92ffcad316e5f2ede25ddcfb04183",
+        "pcm_sha256": {
+          "resampled.f32le": "86f4f985ae824ab545cf64bceade8ee2aafa55d0115a80bc545d59d71c136a47",
+          "strict.f32le": "d01a85079a10fac7e746b64604b3e8bd9cf28c4c77a861f404073ed43f6e027e",
+          "reference.f32le": "b5353c3014fdcb870683abc817214c88a9dc70883e35203020bc4ced4290133c"
+        }
+      },
+      "artifact": {
+        "id": 11474640909,
+        "name": "media-candidate-aarch64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632",
+        "bytes": 23773382,
+        "archive_sha256": "5cd26ef0d686784f35cbb8b6284346fb7af27b593509cadf7dc888f69308b86c",
+        "github_digest_matches": true
+      },
+      "evidence": {
+        "summary": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/summary.json",
+          "sha256": "4f549981354dc3422dc1f9a9f752ec0af7dfb9cb6427f10645d7d92a09a6e756"
+        },
+        "provenance": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/provenance.json",
+          "sha256": "a8079b8348f5c876a50be81eb0fd31a10a878c36a1cb80b8ffeb285204f94dab"
+        },
+        "test_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/test.log",
+          "sha256": "08a5a3a3084a3e3607220d7db265a1d5dde465672d7c704fe5673f6416c97e38"
+        },
+        "build_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-aarch64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/build.log",
+          "sha256": "745c6e77fee241822c18d4fbf7e9599f846c4dfab3720f04b5f0a8fc77d43011"
+        }
+      }
+    },
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "job_id": 112736812584,
+      "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297/job/112736812584",
+      "status": "PASS",
+      "environment": {
+        "platform": "Windows-2025Server-10.0.26100-SP0",
+        "machine": "AMD64",
+        "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+        "rustc_host": "x86_64-pc-windows-msvc"
+      },
+      "unit_tests_passed": 37,
+      "portable_controls_passed": 14,
+      "binaries_sha256": {
+        "native-vorbis-fixture.exe": "c017ff79bba326a6d506178e82e1b6a0a6777ad98d413075580e4b44d12c8240",
+        "native-vorbis-check.exe": "ae1f8c5a7c823b269af5eacc8d4072c3f2ad00dfca390c8563210adf8bf83a5a"
+      },
+      "source_files_matching_commit": 16,
+      "checked_command_records": 68,
+      "checked_command_log_hashes": 136,
+      "checked_ogg_hashes": 10,
+      "original_600s": {
+        "source_wav_sha256": "ecc4ac8495d6bf5bb17258097b86912fcbd3195a86956b9d79a649577da4c8af",
+        "frames": 28800000,
+        "eos_granule": 28800000,
+        "source_peak": 0.299163818359375,
+        "decoded_finite": true,
+        "dual_max_abs_difference": 1.1920928955078125e-07,
+        "dual_absolute_tolerance": 1e-06,
+        "ogg_sha256": "1967c81246c3d9f4ceea070f95cee96a371039e705aba27812372bb33e29ab4d",
+        "pcm_sha256": {
+          "resampled.f32le": "86f4f985ae824ab545cf64bceade8ee2aafa55d0115a80bc545d59d71c136a47",
+          "strict.f32le": "0c2fc89f6929e5116089cc00b4f80edfb7f7fae52ef2b5c2a2eed7b0db28c625",
+          "reference.f32le": "aeb58809b2e7982838dfd8bcf1cc9377008a123319a7ea666af1e2f3c41d5ba4"
+        }
+      },
+      "artifact": {
+        "id": 11475000101,
+        "name": "media-candidate-x86_64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632",
+        "bytes": 23773333,
+        "archive_sha256": "0240eaf4d25f9bcac2e3c5965dabb099368b9716d5130f52a360282fe90b5367",
+        "github_digest_matches": true
+      },
+      "evidence": {
+        "summary": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/summary.json",
+          "sha256": "9dc2f98585b0df964dcf1b86f513883e043722fd97125b659109151c98dcbf84"
+        },
+        "provenance": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/provenance.json",
+          "sha256": "9ce34ee66e65b653e9396db2beecc088854b2e15d6ead23f18966f87321d668f"
+        },
+        "test_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/test.log",
+          "sha256": "494609e7e4485a3455c946987da8ce8a97704c80e9ac9c0c4e9c42970339bcb5"
+        },
+        "build_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-pc-windows-msvc-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/build.log",
+          "sha256": "09e1363fbc6a8f632f750fdbee276f3eb7378f34c92078d5268fe1b289cf480f"
+        }
+      }
+    },
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "job_id": 112736812511,
+      "job_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297/job/112736812511",
+      "status": "PASS",
+      "environment": {
+        "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+        "machine": "x86_64",
+        "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+        "rustc_host": "x86_64-unknown-linux-gnu"
+      },
+      "unit_tests_passed": 39,
+      "portable_controls_passed": 14,
+      "binaries_sha256": {
+        "native-vorbis-fixture": "fa9c5f3e0bf1685fc5aa0baa6edc3aa7337dc48a88e03e70f8f16fe7227019ff",
+        "native-vorbis-check": "113acfdd605b7e0564e8b4d4110dff66556fa985ebe5a18337d8388583b5a557"
+      },
+      "source_files_matching_commit": 16,
+      "checked_command_records": 68,
+      "checked_command_log_hashes": 136,
+      "checked_ogg_hashes": 10,
+      "original_600s": {
+        "source_wav_sha256": "ecc4ac8495d6bf5bb17258097b86912fcbd3195a86956b9d79a649577da4c8af",
+        "frames": 28800000,
+        "eos_granule": 28800000,
+        "source_peak": 0.299163818359375,
+        "decoded_finite": true,
+        "dual_max_abs_difference": 8.940696716308594e-08,
+        "dual_absolute_tolerance": 1e-06,
+        "ogg_sha256": "d5f94637d5a52ae4484fe52e0b36b0f6efe7e5542dc4418c6132aa8169e8a859",
+        "pcm_sha256": {
+          "resampled.f32le": "86f4f985ae824ab545cf64bceade8ee2aafa55d0115a80bc545d59d71c136a47",
+          "strict.f32le": "1d3ac8b14e75c45c00609cec815c942ba9028d3537ccf90309c47e1ad9a87e84",
+          "reference.f32le": "617af1d027b0d2a2a6491dbf7174ace6109f28720c9c52c9d9844a02c5e3367a"
+        }
+      },
+      "artifact": {
+        "id": 11474560987,
+        "name": "media-candidate-x86_64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632",
+        "bytes": 23773083,
+        "archive_sha256": "38fd1e8425db10fa28e0bd94d576bd1871142ef9651c9d6ff5e56483aa672cad",
+        "github_digest_matches": true
+      },
+      "evidence": {
+        "summary": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/summary.json",
+          "sha256": "32fade91469ccec4e3cf710e99d202ba0ec4a0e0ad97e7788164c896ce6585f7"
+        },
+        "provenance": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-evidence/provenance.json",
+          "sha256": "cbb9390df43cb93b07ff3b895a77f09e1cf03730e2663f3998f14ad861ed57da"
+        },
+        "test_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/test.log",
+          "sha256": "a831951ba72bb0bd96843eed7073578ca161df4f839aa39afb4e384b1e6f42f8"
+        },
+        "build_log": {
+          "path": "target/vorbis-admission-20261007/github-37604570297/artifacts/media-candidate-x86_64-unknown-linux-gnu-8a31a1d291608b0c1558dc37ea05568ed095a632/native-vorbis-logs/build.log",
+          "sha256": "6a20b09c879aa08b6f91ef48f2cc8bbc8b165d456b707b4a83071ee47223ae96"
+        }
+      }
+    }
+  ],
+  "lightweight_ci": {
+    "run_id": 37604506733,
+    "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604506733",
+    "head_commit": "8a31a1d291608b0c1558dc37ea05568ed095a632",
+    "conclusion": "success",
+    "unit_tests_passed": 90,
+    "failed": 0,
+    "ignored": 0,
+    "packages": [
+      "cocobeat-schema",
+      "cocobeat-core",
+      "cocobeat-replay",
+      "cocobeat-media",
+      "cocobeat-stage",
+      "cocobeat-editor",
+      "cocobeat-net",
+      "xtask"
+    ],
+    "checks": [
+      "cargo fmt --all -- --check",
+      "cargo xtask boundaries",
+      "selected packages all-targets Clippy -D warnings",
+      "selected packages tests and doc-tests"
+    ]
+  },
+  "download_verification": {
+    "status": "PASS",
+    "archives_downloaded": 4,
+    "official_archive_digests_matched": 4,
+    "initial_serial_download": "Intentionally interrupted after slow partial progress; retained separately, then independent archives downloaded in parallel"
+  },
+  "complete_evidence": {
+    "media-run.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/media-run.json",
+      "sha256": "7ee71d7078af42482eeaf84a82c30381ddbb1c22261594d2c45054af667bbbca"
+    },
+    "media-run.log": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/media-run.log",
+      "sha256": "17c533df89d8dd7c5d6a2083f21ec5920a9c0c9de9a6aa55d5c4ad796495edc1"
+    },
+    "ci-run.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/ci-run.json",
+      "sha256": "a492791ad43a9bab6422178bccf33b2c182cf4ea0d5a8ac7ca51f52be790945e"
+    },
+    "ci-run.log": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/ci-run.log",
+      "sha256": "ce8d2896b76668fc76f059c8e53f2d87a2853306b89a5a208a482db70e0c3a0b"
+    },
+    "artifact-metadata.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/artifact-metadata.json",
+      "sha256": "f5006b6ee5110a534e7e80c22e21871b99d44ca01a1ce2d5ba56097917f37037"
+    },
+    "parallel-downloads.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/parallel-downloads.json",
+      "sha256": "ca0ac871b1e4f82578490cdb9678450620ab314cfc7e812d2119f094e6ed4a6d"
+    },
+    "collection.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/collection.json",
+      "sha256": "adc989280195b3b671ef894191f6f98024001d01920026a044005e88371402e2"
+    },
+    "parallel-download-reason.json": {
+      "path": "target/vorbis-admission-20261007/github-37604570297/parallel-download-reason.json",
+      "sha256": "a930a9b2eaa1c546c2b0ac3c84016f628aa83cd396402125dbc60175032c0eae"
+    }
+  },
+  "not_run": [
+    "Four-platform full game build/package",
+    "Cross-platform 38-case quality/SNR matrix",
+    "Hardware playback and human listening",
+    "All integer source sample rates",
+    "Changes after the recorded head commit"
+  ]
+}

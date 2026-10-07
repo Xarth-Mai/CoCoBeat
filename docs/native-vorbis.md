@@ -39,3 +39,11 @@ FFmpeg 仅作第三路开发期互操作检查，按其完整输出长度记录 
 本矩阵实际 delay 均为 128，1024 是针对实际最大块 2048 的前滚长度，不能把两者等同；该 QA 策略复用历史 seek 工具并保留原始失败，不修复 Symphonia 原始接口。来源、固定 shipping driver、准确 rlib 与逐窗口身份见[持久观察](../testdata/synthetic/native-vorbis-seek-20261007.json)
 
 游戏当前完整加载已校验 PCM，此实验不改变播放路径；本机定位控制不代表四平台 seek、生产流式解码或设备计时通过
+
+## 四目标原生结果
+
+源码 `8a31a1d291608b0c1558dc37ea05568ed095a632` 的 [Native media candidate](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604570297) 已在 Windows / Linux × x86-64 / ARM64 全部成功：Linux 各 39 项、Windows 各 37 项 media 测试通过，差异来自两项 Unix 专用检查；每个平台的 14 项控制均通过，包含 10 项完整编码 / 双回读和 4 项明确拒绝
+
+四份官方 artifact 的 ZIP 摘要、全部解压文件、实际 Ogg、日志和源码身份已独立核对；四份十分钟原创输入都完整得到 28,800,000 帧，双读回最大差在 Linux 为 8.9407e-8、Windows 为 1.1921e-7。同提交[轻量 CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37604506733)的 90 项测试、格式、Clippy 和依赖边界也通过，完整身份见[平台观察清单](../testdata/synthetic/native-vorbis-platforms-20261007.json)
+
+这些结果给出所列编码路径的四目标软件证据，不覆盖随后提交的源导入 / 工作台 / 网络变化，亦不代替四目标游戏发行包、平台 seek、真实音乐和真人听感验收
