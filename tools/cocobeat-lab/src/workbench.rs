@@ -1,4 +1,4 @@
-//! A local, silent Anchor editor consuming the same validated package and export path
+//! A silent package workbench for Anchor editing and read-only Replay diagnostics
 
 use bevy::{prelude::*, window::WindowResizeConstraints};
 use cocobeat_editor::AnchorEditor;
@@ -12,49 +12,77 @@ use std::{
 };
 
 mod input;
+mod replay;
 mod ui;
 
 const BIN_FRAMES: i64 = 64;
 
-pub fn run(source: &Path, destination: &Path, locale: Locale) -> Result<(), String> {
-    let parent = destination
-        .parent()
-        .filter(|path| !path.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    if std::fs::canonicalize(parent)
-        .map_err(|error| error.to_string())?
-        .starts_with(std::fs::canonicalize(source).map_err(|error| error.to_string())?)
-    {
-        return Err("Workbench destination must be outside the source package".into());
-    }
-    match std::fs::symlink_metadata(destination) {
-        Ok(_) => return Err("Workbench destination must be a new package path".into()),
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
-        Err(error) => return Err(error.to_string()),
-    }
+pub enum Mode<'a> {
+    Edit(&'a Path),
+    Replay(&'a Path),
+}
+
+pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> {
+    let destination = if let Mode::Edit(destination) = mode {
+        let parent = destination
+            .parent()
+            .filter(|path| !path.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        if std::fs::canonicalize(parent)
+            .map_err(|error| error.to_string())?
+            .starts_with(std::fs::canonicalize(source).map_err(|error| error.to_string())?)
+        {
+            return Err("Workbench destination must be outside the source package".into());
+        }
+        match std::fs::symlink_metadata(destination) {
+            Ok(_) => return Err("Workbench destination must be a new package path".into()),
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error.to_string()),
+        }
+        Some(destination.to_owned())
+    } else {
+        None
+    };
     let mut wave = Waveform::default();
     let package = cocobeat_media::read_package(source, |frames| wave.push(frames))?;
-    let document = Document::new(&package)?;
+    let mut document = Document::new(&package)?;
+    let replay = if let Mode::Replay(path) = mode {
+        let mut replay = replay::ReplayView::load(&package, path)?;
+        document.cursor = replay.select(0).unwrap_or(0);
+        document.selected = replay.selected_anchor();
+        Some(replay)
+    } else {
+        None
+    };
     let mut app = App::new();
-    app.add_plugins(DefaultPlugins.set(WindowPlugin {
-        close_when_requested: false,
-        primary_window: Some(Window {
-            title: locale.text("workbench.title").into(),
-            name: Some("cocobeat-workbench".into()),
-            resolution: (1280, 800).into(),
-            resize_constraints: WindowResizeConstraints {
-                min_width: 640.0,
-                min_height: 480.0,
+    app.add_plugins(
+        DefaultPlugins.set(WindowPlugin {
+            close_when_requested: false,
+            primary_window: Some(Window {
+                title: locale
+                    .text(if replay.is_some() {
+                        "replay.title"
+                    } else {
+                        "workbench.title"
+                    })
+                    .into(),
+                name: Some("cocobeat-workbench".into()),
+                resolution: (1280, 800).into(),
+                resize_constraints: WindowResizeConstraints {
+                    min_width: 640.0,
+                    min_height: 480.0,
+                    ..default()
+                },
                 ..default()
-            },
+            }),
             ..default()
         }),
-        ..default()
-    }));
+    );
     install_ui_assets(&mut app)?;
     app.insert_resource(Workbench {
         source: source.to_owned(),
-        destination: destination.to_owned(),
+        destination,
+        replay,
         source_hash: package.manifest.package_hash,
         locale,
         document,
@@ -260,7 +288,10 @@ impl Document {
 
     fn keep_cursor_visible(&mut self) {
         if self.cursor < self.start || self.cursor > self.start + self.span {
-            self.start = (self.cursor - self.span / 2).clamp(0, self.end - self.span);
+            self.start = self
+                .cursor
+                .saturating_sub(self.span / 2)
+                .clamp(0, self.end - self.span);
         }
     }
 
@@ -272,7 +303,10 @@ impl Document {
             self.span.saturating_mul(2)
         };
         self.span = span.clamp(minimum, self.end);
-        self.start = (self.cursor - self.span / 2).clamp(0, self.end - self.span);
+        self.start = self
+            .cursor
+            .saturating_sub(self.span / 2)
+            .clamp(0, self.end - self.span);
     }
 
     fn pan(&mut self, direction: i64) {
@@ -329,7 +363,8 @@ const TOOLBAR: [Action; 8] = [
 #[derive(Resource)]
 struct Workbench {
     source: PathBuf,
-    destination: PathBuf,
+    destination: Option<PathBuf>,
+    replay: Option<replay::ReplayView>,
     source_hash: [u8; 32],
     locale: Locale,
     document: Document,
@@ -344,6 +379,38 @@ struct Workbench {
 }
 
 impl Workbench {
+    fn toolbar(&self) -> &[Action] {
+        if self.replay.is_some() {
+            &[Action::ZoomIn, Action::ZoomOut, Action::Back]
+        } else {
+            &TOOLBAR
+        }
+    }
+
+    fn select(&mut self, index: usize) {
+        if let Some(replay) = &mut self.replay {
+            if let Some(frame) = replay.select(index) {
+                self.document.cursor = frame;
+                self.document.keep_cursor_visible();
+            }
+            self.document.selected = replay.selected_anchor();
+            self.detail_scroll = 0.0;
+        } else {
+            self.document.select(index);
+        }
+    }
+
+    fn browse(&mut self, step: i32) {
+        if let Some(replay) = &self.replay {
+            self.select(
+                (replay.selected as i64 + i64::from(step))
+                    .clamp(0, replay.len().saturating_sub(1) as i64) as usize,
+            );
+        } else {
+            self.document.browse(step);
+        }
+    }
+
     fn text(
         &self,
         key: &'static str,
@@ -382,7 +449,7 @@ impl Workbench {
         if self.saving.is_some() {
             return;
         }
-        if !keyboard
+        if (self.replay.is_some() || !keyboard)
             && matches!(
                 action,
                 Action::Undo
@@ -394,9 +461,11 @@ impl Workbench {
                     | Action::Apply
             )
         {
-            self.notice = self.locale.text("workbench.keyboard_required").into();
-            self.details = true;
-            self.detail_scroll = 0.0;
+            if self.replay.is_none() {
+                self.notice = self.locale.text("workbench.keyboard_required").into();
+                self.details = true;
+                self.detail_scroll = 0.0;
+            }
             return;
         }
         let result = match action {
@@ -451,8 +520,7 @@ impl Workbench {
                 Ok(())
             }
             Action::Previous | Action::Next => {
-                self.document
-                    .browse(if action == Action::Previous { -1 } else { 1 });
+                self.browse(if action == Action::Previous { -1 } else { 1 });
                 Ok(())
             }
             Action::List => {
@@ -493,9 +561,11 @@ impl Workbench {
     }
 
     fn save(&mut self) {
+        let Some(destination) = self.destination.clone() else {
+            return;
+        };
         self.document.cancel();
         let source = self.source.clone();
-        let destination = self.destination.clone();
         let hash = self.source_hash;
         let anchors = self.document.editor.anchors().to_vec();
         let (send, receive) = mpsc::channel();
@@ -567,7 +637,8 @@ mod tests {
     pub(super) fn state() -> Workbench {
         Workbench {
             source: PathBuf::from("source"),
-            destination: PathBuf::from("new-package"),
+            destination: Some(PathBuf::from("new-package")),
+            replay: None,
             source_hash: [7; 32],
             locale: Locale::EnUs,
             document: Document::from_anchors(

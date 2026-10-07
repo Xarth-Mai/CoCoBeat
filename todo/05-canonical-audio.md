@@ -8,7 +8,7 @@
 
 - [x] Symphonia 源导入；有上限的源解码与 lab 入口已完成，3 项窄测和正式 CLI 的 22 项格式/损坏/失败清理检查通过，64 秒原创音乐输出与独立 PCM16 转换逐字节一致；标准音频输出仍待后续接线
 - [ ] 评估 OxiMedia audio 重采样：High 已接入 media/lab，合成质量、3 项行为测试、正式 CLI 19 项及独立 API 7 项通过，包含原创音乐位精确透传、十分钟流式摘要与 1 Hz 完整 flush 资源检查；跨平台执行与听感继续取证，见 [软件验证](../docs/testing.md#固定-48-khz-源重采样)
-- [ ] 验证最新纯 Rust Ogg Vorbis 编码器；OxideAV 十分钟在 2 GiB 内存上限下失败；patched rusty q10 已完成四平台原生短样本测试与构建、原始 64 秒歌曲回归、Linux 十分钟静默及显式前滚 seek；后续三例有限超范围诊断通过，但原范围 guard 会拒绝合法重采样输出，继续确定编码数值域、曲库和听感准入；尚无生产准入编码器
+- [ ] 验证唯一生产 Ogg Vorbis 编码器；用户于 2026-10-07 批准静态内嵌成熟 C 库，当前准备 vorbis_rs 软件准入。旧纯 Rust 候选的 OxideAV 十分钟在 2 GiB 限制下失败，patched rusty q10 数值域 / 全频带仍有残余失真和局部退步，既有四平台及诊断证据保留；新路径完成软件验证后再接生产导入，听感交用户真实验收
 - [x] 严格最终读回软件入口：`decode_canonical` 与 lab 的 `readback-canonical` 全量检查 Ogg Vorbis、48 kHz、恰好双声道、有限值、CRC、帧 0 连续性及调用方期望帧数；2 项新增行为测试与 21 项正式 CLI 检查通过，包含错误后半成品清理和已有输出保留，[原创样本](../testdata/synthetic/media-import/README.md) 与本地 `target/canonical-readback-20261003/validation-summary.json` 保留复现及证据
 - [x] 最终音频对象准备：`prepare_canonical_audio` 与 lab 的 `prepare-audio` 有界复制最终 Ogg 至新 staging 目录，记录实际对象 BLAKE3/长度并严格读回副本；3 项新增行为测试覆盖身份、已有目录保护、上限和失败清理，11 项 media 测试通过；只准备音频对象，不创建虚构分析、谱面或 Ready
 - [x] 固定全频带实验：冻结提交 `e1b3a26`，只比较长块 residue 扩带；19 例的 34 次编码与双路完整回读、4 次原 guard 拒绝及原 10 例字节复现通过；逐例保留全长和局部音质退步，见 [观察清单](../testdata/synthetic/canonical-audio-probe/fullband-observations-20261003.json)，正式 vendor/profile 与生产准入保持未变

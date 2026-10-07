@@ -654,3 +654,18 @@ QA 的 2 秒音频由原创 fixture 严格完整解码后重复 PCM，再用外�
 首轮 Ready 前取消因 executor 在 QUIC close 刷出前退出，伙伴超过原 15 秒探针期限；修复为从创建起保留 Endpoint，在同一活跃 executor 内 close 和有界 wait_idle，未放宽探针期限。首轮 Xvfb 原生运行因缺 DRI3 / Vulkan present modes 失败，随后显式使用已安装的 Gamescope headless compositor；没有增加渲染后端或 fallback。失败日志和最终成功记录均保留；已有 ICU4X CJK 分词诊断和 Gamescope 关闭 surface 诊断仍在原始 stderr 中，不据退出 0 宣称完整平台窗口或母语验收
 
 当前生产入口每个邀请连接一局，结束后屏蔽旧邀请的 Start / Restart；重开 / 重入尚未实现。真实双机与 LAN / WAN、防火墙、长曲时钟、最大容量、真实双手柄 / 混合输入、物理音频、真人可读性与四平台发行运行均保持 NOT RUN，完整工作包 10 和 V1 目标继续推进
+
+
+## 同进程新局与只读 Replay 图形诊断
+
+2026-10-07，以 `500dca5` 后冻结的 147 项 Rust / Cargo / 语言及探针输入验证，持久化记录见 [本批观察](../testdata/synthetic/session-diagnostics-observations-20261007.json)；生产 game / lab 使用准确 Cargo JSON 绑定实际二进制，未注册的下一批编码器候选不属于本次构建输入
+
+`cargo test --offline --locked -p cocobeat-runtime -p cocobeat-lab -p cocobeat-net -p xtask` 通过 169 项测试，runtime 123、lab 26、net 16、xtask 4；对应 game / lab / runtime / net / xtask all-targets Clippy、格式、依赖边界与实际构建通过。首次 Clippy 的 `chunks_exact_to_as_chunks` 失败保留，改用标准库 `as_chunks` 后重新测试和构建；最终构建后仅非编译输入 `native.py` 的断言发生变化
+
+`python3 tools/quic-live-check/native.py target/debug/cocobeat-game target/quic-live-20261007/fixture/package target/next-round-20261007/native-final --compositor gamescope --rounds 2` 通过：同两个 Linux 原生游戏进程连续完成两局，epoch 分别为 3124893908200008438 与 1601151596960184129，双方事实分布 `[35,36]` / `[36,36]`、每局 5 个规则事件，权威 Replay 字节相同。实际 Kira source cursor 驱动玩法时间，每位玩家每局的三个捕获序号均重新从 0 开始，首局的原始记录在第二局后保持字节相同，首局收到的四对象也保持原字节
+
+首个原生探针错误地要求序号 `[1,2,3]`，虽然两个生产进程与两局均 COMPLETE，探针返回 1；原脚本、原因与产物保留。修正为接口实际的 `[0,1,2]` 后重新完整执行两局，记录最终 PASS，没有以修正断言替代实际重跑。8 张原生 GPU 图的尺寸自动核对通过，四张结算图由主线程检查，下一局只在首局正常结束且新 worker 可启动时提供；故障重入、长曲漂移、真实双机和物理输入另验
+
+Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助程序加入初始尺寸、合成 KeyboardInput 驱动和 Screenshot 系统；准确 Cargo JSON 的 8 个现有 rlib 用于 rustc 构建辅助程序，改动补丁和源码哈希保留。1280×800 与 640×480 两个独立 Gamescope 窗口正常退出，分别发送 107 / 113 次合成按下与释放对，逐项浏览全部 76 个原事实 / 确认事件，验证 -1632 帧原负水位、配对的两位玩家 Hit 标记、列表尾部和详情底部滚动；实际详情偏移分别达到 912 / 1182 px，状态与 Computed ScrollPosition 一致
+
+两尺寸共 10 张图由主线程逐张检查，文字与配对标记可读，小窗口能到达完整帮助文本；源包、Replay 和旧 JSONL 报告保持原字节，没有新导出目录。最终 lab 对完整录制和中断前缀生成的两个 JSONL / stdout 与旧冻结程序逐字节相同。QA 副本的原生呈现与软件按键不替代未修改 lab 程序的物理键鼠 / 手柄验收，Replay v1 没有设备时间或舞台版本，试听、物理延迟和跨版本视觉 Replay 未运行

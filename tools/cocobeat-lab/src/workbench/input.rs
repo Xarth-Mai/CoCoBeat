@@ -111,6 +111,9 @@ pub(super) fn capture(
     let Ok((window_id, window)) = windows.single() else {
         return;
     };
+    if state.replay.is_some() {
+        state.document.cancel();
+    }
     let canvas = targets
         .iter()
         .find(|(hit, node, _)| matches!(hit, ui::Hit::Timeline) && node.size.min_element() > 0.0)
@@ -338,7 +341,7 @@ pub(super) fn capture(
         } else if matches!(target, ui::Hit::Details) {
             state.detail_scroll = (state.detail_scroll - event.y.signum() * 48.0).max(0.0);
         } else {
-            state.document.browse(if event.y > 0.0 { -1 } else { 1 });
+            state.browse(if event.y > 0.0 { -1 } else { 1 });
         }
         used = true;
     }
@@ -393,25 +396,27 @@ fn digit(key: KeyCode) -> Option<char> {
 }
 
 fn cycle_focus(state: &mut Workbench, backwards: bool) {
+    let toolbar = state.toolbar().len();
+    let panels: &[Focus] = if state.replay.is_some() {
+        &[Focus::Timeline, Focus::List, Focus::Details]
+    } else {
+        &[Focus::Timeline, Focus::List, Focus::Frame, Focus::Details]
+    };
     let index = match state.focus {
         Focus::Toolbar(i) => i,
-        Focus::Timeline => 8,
-        Focus::List => 9,
-        Focus::Frame => 10,
-        Focus::Details => 11,
+        focus => toolbar + panels.iter().position(|panel| *panel == focus).unwrap_or(0),
     };
+    let count = toolbar + panels.len();
     let index = if backwards {
-        (index + 11) % 12
+        (index + count - 1) % count
     } else {
-        (index + 1) % 12
+        (index + 1) % count
     };
     state.document.cancel();
-    state.focus = match index {
-        0..=7 => Focus::Toolbar(index),
-        8 => Focus::Timeline,
-        9 => Focus::List,
-        10 => Focus::Frame,
-        _ => Focus::Details,
+    state.focus = if index < toolbar {
+        Focus::Toolbar(index)
+    } else {
+        panels[index - toolbar]
     };
     if matches!(state.focus, Focus::Frame | Focus::Details) {
         state.details = true;
@@ -477,7 +482,7 @@ fn key(
         }
         return true;
     }
-    if state.focus == Focus::Frame {
+    if state.focus == Focus::Frame && state.replay.is_none() {
         if !state.document.editing_frame {
             state.document.begin_frame();
         }
@@ -511,7 +516,7 @@ fn key(
         KeyCode::Minus | KeyCode::NumpadSubtract => state.document.zoom(false, width),
         KeyCode::Delete => state.action(Action::Remove, true, width, exit),
         KeyCode::Enter => match state.focus {
-            Focus::Toolbar(i) => state.action(TOOLBAR[i], true, width, exit),
+            Focus::Toolbar(i) => state.action(state.toolbar()[i], true, width, exit),
             Focus::List => state.action(Action::Details, true, width, exit),
             _ => {}
         },
@@ -539,15 +544,19 @@ fn key(
 fn navigate(state: &mut Workbench, direction: i32, fast: bool) {
     match state.focus {
         Focus::Toolbar(i) => {
-            state.focus = Focus::Toolbar((i as i32 + direction).rem_euclid(8) as usize)
+            state.focus = Focus::Toolbar(
+                (i as i32 + direction).rem_euclid(state.toolbar().len() as i32) as usize,
+            )
         }
         Focus::Timeline => {
-            state.document.cursor = (state.document.cursor
-                + i64::from(direction) * if fast { 48 } else { 1 })
-            .clamp(0, state.document.end);
+            state.document.cursor = state
+                .document
+                .cursor
+                .saturating_add(i64::from(direction) * if fast { 48 } else { 1 })
+                .clamp(0, state.document.end);
             state.document.keep_cursor_visible();
         }
-        Focus::List => state.document.browse(direction),
+        Focus::List => state.browse(direction),
         Focus::Details => {
             state.detail_scroll = (state.detail_scroll + direction as f32 * 48.0).max(0.0)
         }
@@ -633,7 +642,7 @@ fn pad_command(
         }
         GamepadButton::East | GamepadButton::Start => state.close(exit),
         GamepadButton::South => match state.focus {
-            Focus::Toolbar(i) => state.action(TOOLBAR[i], false, width, exit),
+            Focus::Toolbar(i) => state.action(state.toolbar()[i], false, width, exit),
             Focus::List => state.action(Action::Details, false, width, exit),
             Focus::Frame => state.action(Action::Frame, false, width, exit),
             _ => {}
@@ -677,13 +686,17 @@ fn click(
 ) {
     match hit {
         ui::Hit::Action(action) => {
-            if let Some(index) = TOOLBAR.iter().position(|candidate| *candidate == action) {
+            if let Some(index) = state
+                .toolbar()
+                .iter()
+                .position(|candidate| *candidate == action)
+            {
                 state.focus = Focus::Toolbar(index);
             }
             state.action(action, true, canvas_width, exit);
         }
         ui::Hit::Row(row) => {
-            state.document.select(view.first_row + row);
+            state.select(view.first_row + row);
             state.focus = Focus::List;
         }
         ui::Hit::Details => {
@@ -696,6 +709,9 @@ fn click(
             state.document.cursor = state
                 .document
                 .at_pixel(cursor.x, bounds.min.x, bounds.width());
+            if state.replay.is_some() {
+                return;
+            }
             if cursor.y >= bounds.min.y + bounds.height() * 0.7
                 && cursor.y < bounds.min.y + bounds.height() * 0.9
             {
@@ -773,6 +789,13 @@ mod tests {
             repeat: false,
             window,
         });
+    }
+
+    fn tap(app: &mut App, window: Entity, code: KeyCode) {
+        key(app, window, code, true);
+        app.update();
+        key(app, window, code, false);
+        app.update();
     }
 
     fn pad(app: &mut App, pad: Entity, button: GamepadButton, pressed: bool) {
@@ -1150,5 +1173,213 @@ mod tests {
             app.world().resource::<Workbench>().document.selected,
             Some(1)
         );
+    }
+
+    #[test]
+    fn replay_shortcuts_frame_input_and_drag_preserve_anchors_and_history() {
+        let (mut app, window, _, _) = app();
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.replay = Some(replay::fixture());
+            state.document.move_selected(600).unwrap();
+            state.document.move_selected(700).unwrap();
+            state.document.editor.undo().unwrap();
+            state.document.changed();
+        }
+        let revision = app.world().resource::<Workbench>().document.revision;
+        key(&mut app, window, KeyCode::ControlLeft, true);
+        for (shift, code) in [
+            (false, KeyCode::KeyZ),
+            (true, KeyCode::KeyZ),
+            (false, KeyCode::KeyS),
+        ] {
+            key(&mut app, window, KeyCode::ShiftLeft, shift);
+            tap(&mut app, window, code);
+            let state = app.world().resource::<Workbench>();
+            assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
+            assert_eq!(state.document.revision, revision);
+            assert!(state.saving.is_none());
+        }
+        key(&mut app, window, KeyCode::ControlLeft, false);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::List;
+        for code in [
+            KeyCode::Digit9,
+            KeyCode::Backspace,
+            KeyCode::Delete,
+            KeyCode::Enter,
+        ] {
+            tap(&mut app, window, code);
+        }
+        assert!(
+            app.world()
+                .resource::<Workbench>()
+                .document
+                .frame
+                .is_empty()
+        );
+        assert!(!app.world().resource::<Workbench>().document.editing_frame);
+        app.world_mut().spawn((
+            ui::Hit::Timeline,
+            ComputedNode {
+                size: Vec2::new(600.0, 200.0),
+                ..default()
+            },
+            UiGlobalTransform::from(bevy::math::Affine2::from_translation(Vec2::new(
+                300.0, 100.0,
+            ))),
+        ));
+        app.world_mut()
+            .get_mut::<Window>(window)
+            .unwrap()
+            .set_cursor_position(Some(Vec2::new(7.5, 160.0)));
+        app.world_mut().write_message(MouseButtonInput {
+            button: MouseButton::Left,
+            state: ButtonState::Pressed,
+            window,
+        });
+        app.update();
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 600);
+        assert!(app.world().resource::<Workbench>().document.drag.is_none());
+        app.world_mut()
+            .get_mut::<Window>(window)
+            .unwrap()
+            .set_cursor_position(Some(Vec2::new(300.0, 160.0)));
+        app.update();
+        app.world_mut().write_message(MouseButtonInput {
+            button: MouseButton::Left,
+            state: ButtonState::Released,
+            window,
+        });
+        app.update();
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
+        assert_eq!(state.document.revision, revision);
+        assert!(state.saving.is_none());
+        assert!(state.document.drag.is_none());
+        state.document.editor.undo().unwrap();
+        assert_eq!(state.document.selected().unwrap().song_time.frames(), 500);
+        assert!(state.document.editor.undo().is_err());
+        state.document.editor.redo().unwrap();
+        assert_eq!(state.document.selected().unwrap().song_time.frames(), 600);
+        state.document.editor.redo().unwrap();
+        assert_eq!(state.document.selected().unwrap().song_time.frames(), 700);
+        assert!(state.document.editor.redo().is_err());
+    }
+
+    #[test]
+    fn replay_focus_toolbar_and_dense_rows_follow_the_read_only_controls() {
+        let (mut app, window, first, _) = app();
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.replay = Some(replay::fixture());
+            state.select(0);
+            state.focus = Focus::Toolbar(0);
+        }
+        for expected in [
+            Focus::Toolbar(1),
+            Focus::Toolbar(2),
+            Focus::Timeline,
+            Focus::List,
+            Focus::Details,
+            Focus::Toolbar(0),
+        ] {
+            tap(&mut app, window, KeyCode::Tab);
+            assert_eq!(app.world().resource::<Workbench>().focus, expected);
+        }
+        key(&mut app, window, KeyCode::ShiftLeft, true);
+        tap(&mut app, window, KeyCode::Tab);
+        assert_eq!(app.world().resource::<Workbench>().focus, Focus::Details);
+        tap(&mut app, window, KeyCode::Tab);
+        assert_eq!(app.world().resource::<Workbench>().focus, Focus::List);
+        key(&mut app, window, KeyCode::ShiftLeft, false);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(0);
+        tap(&mut app, window, KeyCode::Enter);
+        assert!(app.world().resource::<Workbench>().document.span < 48_000);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(1);
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Pad(first));
+        pad(&mut app, first, GamepadButton::South, true);
+        app.update();
+        assert_eq!(app.world().resource::<Workbench>().document.span, 48_000);
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        app.world_mut().spawn((
+            ui::Hit::Row(1),
+            ComputedNode {
+                size: Vec2::new(300.0, 30.0),
+                ..default()
+            },
+            UiGlobalTransform::from(bevy::math::Affine2::from_translation(Vec2::new(
+                150.0, 315.0,
+            ))),
+        ));
+        app.world_mut()
+            .get_mut::<Window>(window)
+            .unwrap()
+            .set_cursor_position(Some(Vec2::new(100.0, 315.0)));
+        app.world_mut().write_message(MouseButtonInput {
+            button: MouseButton::Left,
+            state: ButtonState::Pressed,
+            window,
+        });
+        app.update();
+        assert_eq!(
+            app.world()
+                .resource::<Workbench>()
+                .replay
+                .as_ref()
+                .unwrap()
+                .selected,
+            1
+        );
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 1200);
+        app.world_mut().write_message(MouseButtonInput {
+            button: MouseButton::Left,
+            state: ButtonState::Released,
+            window,
+        });
+        app.update();
+        tap(&mut app, window, KeyCode::ArrowUp);
+        assert_eq!(
+            app.world()
+                .resource::<Workbench>()
+                .replay
+                .as_ref()
+                .unwrap()
+                .selected,
+            0
+        );
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 1200);
+        tap(&mut app, window, KeyCode::ArrowDown);
+        app.world_mut().write_message(MouseWheel {
+            unit: bevy::input::mouse::MouseScrollUnit::Line,
+            phase: bevy::input::touch::TouchPhase::Moved,
+            x: 0.0,
+            y: -1.0,
+            window,
+        });
+        app.update();
+        assert_eq!(
+            app.world()
+                .resource::<Workbench>()
+                .replay
+                .as_ref()
+                .unwrap()
+                .selected,
+            2
+        );
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, -1);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Timeline;
+        tap(&mut app, window, KeyCode::ArrowLeft);
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 0);
+        tap(&mut app, window, KeyCode::End);
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 48_000);
+        tap(&mut app, window, KeyCode::Home);
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, 0);
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.document.editor.undo().is_err());
+        assert!(state.document.editor.redo().is_err());
+        assert!(state.saving.is_none());
     }
 }

@@ -189,5 +189,14 @@
   "network.failed": "Apresentação online interrompida",
   "network.round_closed": "Este convite terminou · Inicie uma nova apresentação online",
   "network.local_binding": "{player} local: {binding}",
-  "network.remote_player": "Parceiro {player}: controles remotos"
+  "network.remote_player": "Parceiro {player}: controles remotos",
+  "replay.title": "CoCoBeat · Diagnóstico de Replay",
+  "replay.records": "Registros ({count})",
+  "replay.legend": "P1 ciano · P2 laranja · Anchors abaixo da forma de onda",
+  "replay.help": "Somente leitura · Tab / botões de ombro: foco · setas / direcional: navegar · Enter / South: detalhes · roda: zoom · Shift+roda: deslocar · Esc / East: fechar",
+  "workbench.replay.fact": "Fato {index} · {kind} · {frame} quadros",
+  "workbench.replay.event": "Evento {index} · {kind} · {frame} quadros",
+  "workbench.replay.fields": "Os fatos preservam a ordem de gravação; os eventos preservam a ordem de confirmação pelas regras. fact_index e input_fact_index fazem referência a fatos; event_index numera os eventos e não é o índice do fato que os desencadeou. Todos os campos *_frames usam inteiros exatos em unidades de quadros a 48 kHz; os marcos de progresso negativos e posteriores a EOF permanecem inalterados. null significa indisponível. Replay v1 não registra marcas de tempo dos dispositivos; a latência de entrada física não está disponível.",
+  "network.next_round": "Iniciar a próxima rodada online",
+  "network.waiting_next_invite": "Aguardando o próximo convite do anfitrião"
 }

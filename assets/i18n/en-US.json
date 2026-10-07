@@ -189,5 +189,14 @@
   "network.failed": "Online performance interrupted",
   "network.round_closed": "This invitation has ended · Launch a new online performance",
   "network.local_binding": "Local {player}: {binding}",
-  "network.remote_player": "Partner {player}: remote controls"
+  "network.remote_player": "Partner {player}: remote controls",
+  "replay.title": "CoCoBeat · Replay diagnostics",
+  "replay.records": "Records ({count})",
+  "replay.legend": "P1 cyan · P2 orange · Anchors below the waveform",
+  "replay.help": "Read-only · Tab / shoulders: focus · arrows / D-pad: browse · Enter / South: details · wheel: zoom · Shift+wheel: pan · Esc / East: close",
+  "workbench.replay.fact": "Fact {index} · {kind} · {frame} frames",
+  "workbench.replay.event": "Event {index} · {kind} · {frame} frames",
+  "workbench.replay.fields": "Facts preserve recording order; events preserve rule confirmation order. fact_index and input_fact_index reference facts; event_index numbers events and is not a triggering fact index. All *_frames fields use exact integers in 48 kHz frame units; negative and post-EOF watermarks remain unchanged. null means unavailable. Replay v1 records no device timestamps; physical input latency is unavailable.",
+  "network.next_round": "Start next online round",
+  "network.waiting_next_invite": "Waiting for the host's next invitation"
 }

@@ -66,6 +66,7 @@ struct PaintKey {
     selected: Option<u64>,
     drag: Option<(u64, i64)>,
     revision: u64,
+    replay_selection: Option<usize>,
 }
 
 fn key(action: Action) -> &'static str {
@@ -112,7 +113,7 @@ pub(super) fn setup(
     ] {
         commands.spawn((Text::default(), font(size), TextColor(INK), node(), part));
     }
-    for (index, action) in TOOLBAR.into_iter().enumerate() {
+    for (index, &action) in state.toolbar().iter().enumerate() {
         commands
             .spawn((
                 Node {
@@ -168,10 +169,7 @@ pub(super) fn setup(
     .enumerate()
     {
         let text = if action == Action::List {
-            state.text(
-                key(action),
-                [("count", state.document.editor.anchors().len().to_string())],
-            )
+            String::new()
         } else {
             state.locale.text(key(action)).into()
         };
@@ -354,9 +352,13 @@ pub(super) fn update(
     let w = window.width().max(1.0);
     let h = window.height().max(1.0);
     let compact = w < 1000.0;
-    let columns = if compact { 4 } else { 8 };
+    let columns = state.toolbar().len().min(if compact { 4 } else { 8 });
     let toolbar_y = 65.0;
-    let toolbar_height = if compact { 72.0 } else { 38.0 };
+    let toolbar_height = if state.toolbar().len() > columns {
+        72.0
+    } else {
+        38.0
+    };
     let wave_y = toolbar_y + toolbar_height + 10.0;
     let wave_height = (h * 0.27).clamp(80.0, 240.0);
     let bottom_y = wave_y + wave_height + 44.0;
@@ -377,14 +379,22 @@ pub(super) fn update(
     let list_visible = !compact || !state.details;
     view.canvas = rect(12.0, wave_y, full_width, wave_height);
     view.row_count = (((bottom_height - 36.0) / ROW_HEIGHT).floor().max(1.0) as usize).min(ROWS);
-    let selected_index = state
-        .document
-        .editor
-        .anchors()
-        .iter()
-        .position(|a| Some(a.id) == state.document.selected)
-        .unwrap_or(0);
-    let length = state.document.editor.anchors().len();
+    let selected_index = state.replay.as_ref().map_or_else(
+        || {
+            state
+                .document
+                .editor
+                .anchors()
+                .iter()
+                .position(|a| Some(a.id) == state.document.selected)
+                .unwrap_or(0)
+        },
+        |replay| replay.selected,
+    );
+    let length = state.replay.as_ref().map_or(
+        state.document.editor.anchors().len(),
+        replay::ReplayView::len,
+    );
     view.first_row = view.first_row.min(length.saturating_sub(view.row_count));
     if selected_index < view.first_row {
         view.first_row = selected_index;
@@ -433,7 +443,7 @@ pub(super) fn update(
                     detail_width * 0.65 - 6.0,
                     32.0,
                 ),
-                detail_visible,
+                detail_visible && state.replay.is_none(),
                 state.focus == Focus::Frame,
             ),
             BoxPart::Apply => (
@@ -443,11 +453,17 @@ pub(super) fn update(
                     detail_width * 0.35,
                     32.0,
                 ),
-                detail_visible,
+                detail_visible && state.replay.is_none(),
                 false,
             ),
             BoxPart::Detail => {
-                let offset = if compact { 74.0 } else { 40.0 };
+                let offset = if state.replay.is_some() {
+                    if compact { 36.0 } else { 0.0 }
+                } else if compact {
+                    74.0
+                } else {
+                    40.0
+                };
                 (
                     rect(
                         detail_x,
@@ -489,15 +505,19 @@ pub(super) fn update(
         let value = match *part {
             Part::Title => {
                 place(&mut node, rect(12.0, 8.0, full_width, 26.0), true);
-                format!(
-                    "{} · {}",
-                    state.locale.text("workbench.title"),
-                    state.locale.text(if doc.dirty {
-                        "workbench.dirty"
-                    } else {
-                        "workbench.clean"
-                    })
-                )
+                if state.replay.is_some() {
+                    state.locale.text("replay.title").into()
+                } else {
+                    format!(
+                        "{} · {}",
+                        state.locale.text("workbench.title"),
+                        state.locale.text(if doc.dirty {
+                            "workbench.dirty"
+                        } else {
+                            "workbench.clean"
+                        })
+                    )
+                }
             }
             Part::Owner => {
                 place(&mut node, rect(12.0, 36.0, full_width, 28.0), true);
@@ -527,13 +547,22 @@ pub(super) fn update(
                     rect(12.0, wave_y + wave_height + 2.0, full_width, 18.0),
                     true,
                 );
-                state.text(
-                    "workbench.range",
-                    [
-                        ("start", doc.start.to_string()),
-                        ("end", (doc.start + doc.span).to_string()),
-                    ],
-                )
+                if state.replay.is_some() {
+                    format!(
+                        "{}–{} · {}",
+                        doc.start,
+                        doc.start + doc.span,
+                        state.locale.text("replay.legend")
+                    )
+                } else {
+                    state.text(
+                        "workbench.range",
+                        [
+                            ("start", doc.start.to_string()),
+                            ("end", (doc.start + doc.span).to_string()),
+                        ],
+                    )
+                }
             }
             Part::Cursor => {
                 place(
@@ -550,14 +579,26 @@ pub(super) fn update(
                     ],
                 )
             }
-            Part::Row(i) => doc
-                .editor
-                .anchors()
-                .get(view.first_row + i)
-                .map_or_else(String::new, |a| {
-                    format!("{}  ·  {}", a.id, a.song_time.frames())
-                }),
-            Part::ListTab => state.text("workbench.anchors", [("count", length.to_string())]),
+            Part::Row(i) => {
+                if let Some(replay) = &state.replay {
+                    replay.row(view.first_row + i, state.locale)
+                } else {
+                    doc.editor
+                        .anchors()
+                        .get(view.first_row + i)
+                        .map_or_else(String::new, |a| {
+                            format!("{}  ·  {}", a.id, a.song_time.frames())
+                        })
+                }
+            }
+            Part::ListTab => state.text(
+                if state.replay.is_some() {
+                    "replay.records"
+                } else {
+                    "workbench.anchors"
+                },
+                [("count", length.to_string())],
+            ),
             Part::FrameText => {
                 let mut value = if doc.editing_frame {
                     doc.frame.clone()
@@ -569,6 +610,17 @@ pub(super) fn update(
                     value.insert(doc.caret, '|');
                 }
                 format!("{}: {value}", state.locale.text("workbench.frame"))
+            }
+            Part::DetailText if state.replay.is_some() => {
+                let replay = state
+                    .replay
+                    .as_ref()
+                    .expect("Replay details require a recording");
+                [
+                    replay.details(state.locale),
+                    state.locale.text("replay.help").to_owned(),
+                ]
+                .join("\n\n")
             }
             Part::DetailText => {
                 let selection = doc.selected().map_or_else(
@@ -641,7 +693,15 @@ pub(super) fn update(
                     ),
                     state.text(
                         "workbench.destination",
-                        [("path", state.destination.display().to_string())],
+                        [(
+                            "path",
+                            state
+                                .destination
+                                .as_ref()
+                                .expect("Editor has an export destination")
+                                .display()
+                                .to_string(),
+                        )],
                     ),
                     state.locale.text("workbench.silent").into(),
                     state.locale.text("workbench.help").into(),
@@ -678,6 +738,7 @@ pub(super) fn update(
         selected: doc.selected,
         drag: doc.drag,
         revision: doc.revision,
+        replay_selection: state.replay.as_ref().map(|replay| replay.selected),
     };
     if view
         .raster
@@ -698,6 +759,7 @@ pub(super) fn update(
                     .expect("Waveform raster is initialized")
                     .pixels,
                 doc,
+                state.replay.as_ref(),
                 width,
                 height,
             );
@@ -736,7 +798,13 @@ fn waveform_pixels(wave: &Waveform, doc: &Document, width: u32, height: u32) -> 
     data
 }
 
-fn paint_wave(pixels: &[u8], doc: &Document, width: u32, height: u32) -> Image {
+fn paint_wave(
+    pixels: &[u8],
+    doc: &Document,
+    replay: Option<&replay::ReplayView>,
+    width: u32,
+    height: u32,
+) -> Image {
     let mut data = pixels.to_vec();
     let mut line = |x: u32, top: u32, bottom: u32, color: [u8; 4]| {
         for y in top.min(height)..bottom.min(height) {
@@ -780,6 +848,35 @@ fn paint_wave(pixels: &[u8], doc: &Document, width: u32, height: u32) -> Image {
             height,
             [149, 167, 226, 255],
         );
+    }
+    if let Some(replay) = replay {
+        for hit in replay
+            .hits()
+            .filter(|hit| (doc.start..=doc.start + doc.span).contains(&hit.song_time.frames()))
+        {
+            let player = hit.player.index() as u32;
+            line(
+                column(hit.song_time.frames()),
+                height * (4 + player * 34) / 100,
+                height * (33 + player * 34) / 100,
+                if player == 0 {
+                    [90, 229, 241, 255]
+                } else {
+                    [244, 169, 91, 255]
+                },
+            );
+        }
+        for (player, frame) in replay
+            .selected_hits()
+            .into_iter()
+            .filter(|(_, frame)| (doc.start..=doc.start + doc.span).contains(frame))
+        {
+            let top = height * (4 + player.index() as u32 * 34) / 100;
+            let bottom = height * (33 + player.index() as u32 * 34) / 100;
+            for x in column(frame).saturating_sub(1)..=(column(frame) + 1).min(width - 1) {
+                line(x, top, bottom, [250, 244, 210, 255]);
+            }
+        }
     }
     if let Some(anchor) = doc.selected() {
         let frame = doc
@@ -862,7 +959,7 @@ mod tests {
             assert_eq!(hit, displayed);
             let raster_width = logical_width.min(4096.0) as u32;
             let pixels = waveform_pixels(&state.wave, &state.document, raster_width, 216);
-            let raster = paint_wave(&pixels, &state.document, raster_width, 216);
+            let raster = paint_wave(&pixels, &state.document, None, raster_width, 216);
             let column = raster_width / 4;
             let bytes = raster.data.as_ref().unwrap();
             assert_eq!(
@@ -887,6 +984,104 @@ mod tests {
                     .at_pixel(displayed.max.x, hit.min.x, hit.width()),
                 48_000
             );
+        }
+    }
+
+    #[test]
+    fn replay_markers_virtual_rows_and_small_window_details_remain_read_only() {
+        let mut state = super::super::tests::state();
+        state.destination = None;
+        state.replay = Some(replay::fixture());
+        state.document = Document::from_anchors(
+            4_800,
+            vec![Anchor {
+                id: 7,
+                song_time: SongTime::from_frames(1_200),
+            }],
+            Vec::new(),
+        )
+        .unwrap();
+        state.select(2);
+        let pixels = waveform_pixels(&state.wave, &state.document, 480, 100);
+        let raster = paint_wave(&pixels, &state.document, state.replay.as_ref(), 480, 100);
+        let bytes = raster.data.as_ref().unwrap();
+        let pixel = |x: usize, y: usize| &bytes[(y * 480 + x) * 4..(y * 480 + x) * 4 + 4];
+        assert_eq!(pixel(120, 10), &[90, 229, 241, 255]);
+        assert_eq!(pixel(120, 40), &[244, 169, 91, 255]);
+        assert_eq!(pixel(120, 75), &[211, 222, 236, 255]);
+        state.select(9);
+        let raster = paint_wave(&pixels, &state.document, state.replay.as_ref(), 480, 100);
+        let bytes = raster.data.as_ref().unwrap();
+        for y in [10, 40] {
+            assert_eq!(
+                &bytes[(y * 480 + 119) * 4..(y * 480 + 119) * 4 + 4],
+                &[250, 244, 210, 255]
+            );
+        }
+        state.select(10);
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        let window = app
+            .world_mut()
+            .spawn(Window {
+                resolution: (640, 480).into(),
+                ..default()
+            })
+            .id();
+        app.world_mut().run_system_once(setup).unwrap();
+        for scale in [1.0, 1.25, 2.0] {
+            app.world_mut()
+                .get_mut::<Window>(window)
+                .unwrap()
+                .resolution
+                .set_scale_factor_override(Some(scale));
+            for details in [false, true] {
+                app.world_mut().resource_mut::<Workbench>().details = details;
+                app.world_mut().run_system_once(update).unwrap();
+                let view = app.world().resource::<View>();
+                assert!(view.first_row <= 10 && view.first_row + view.row_count > 10);
+                let mut toolbars = 0;
+                for (part, node) in app
+                    .world_mut()
+                    .query::<(&BoxPart, &Node)>()
+                    .iter(app.world())
+                {
+                    match part {
+                        BoxPart::Toolbar(_) => {
+                            toolbars += 1;
+                            assert_eq!(node.display, Display::Flex);
+                        }
+                        BoxPart::Frame | BoxPart::Apply => assert_eq!(node.display, Display::None),
+                        BoxPart::Detail => {
+                            assert_eq!(node.display == Display::Flex, details);
+                            assert_eq!(node.overflow, Overflow::scroll_y());
+                        }
+                        _ => {}
+                    }
+                }
+                assert_eq!(toolbars, 3);
+                let detail = app
+                    .world_mut()
+                    .query::<(&Part, &Text)>()
+                    .iter(app.world())
+                    .find_map(|(part, text)| matches!(part, Part::DetailText).then_some(&text.0))
+                    .unwrap();
+                assert!(detail.contains("\"input_fact_index\": 4"));
+                assert!(detail.contains("\"pending_anchor_count\": 0"));
+                assert!(detail.contains("no device timestamps"));
+            }
+        }
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        for cursor in [i64::MIN, i64::MAX] {
+            state.document.cursor = cursor;
+            state.document.keep_cursor_visible();
+            state.document.zoom(true, 10.0);
+            assert_eq!(state.document.cursor, cursor);
+            assert!((0..=state.document.end - state.document.span).contains(&state.document.start));
         }
     }
 

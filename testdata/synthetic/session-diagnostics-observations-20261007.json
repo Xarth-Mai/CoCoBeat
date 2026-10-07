@@ -1,0 +1,1530 @@
+{
+  "record_version": 1,
+  "date": "2026-10-07",
+  "base_commit": "500dca52cab690ed6c8f3b0fffa1b4d04eb65fb5",
+  "milestone": "fresh invited rounds in the same process and read-only Replay graphical inspection",
+  "status": "PASS",
+  "scope": "Linux x86-64 software; synthetic controls, actual QUIC loopback, native GPU readback and Kira source cursor; physical, two-machine and human acceptance NOT RUN",
+  "selected_build_and_probe_inputs_sha256": {
+    ".cargo/config.toml": "07e75f80544a833951c1532649fadd0ee21712b40e55b6e74b880b3c11259e36",
+    "Cargo.lock": "009e63c0de99d00500544f90814e205fbc127ad8d500306a15c3b400fd698135",
+    "Cargo.toml": "ea686cac5349a642cbb34852d8a77bba4c1b20a76173d360970921ff7ec62901",
+    "apps/cocobeat-game/Cargo.toml": "d58948f5559284dc68f2fb1390e312cce35637d899986bdb8e5ed7ee763e5b0b",
+    "apps/cocobeat-game/build.rs": "81de396f2a1f8a71c68f45770d94f4fcd37df01cacb64fe861a87fc90723c961",
+    "apps/cocobeat-game/src/main.rs": "6857c4b544686ce6bcfa992238c4ca2eb44ebe236336384215d7da809c1e2466",
+    "assets/brand/validation/Cargo.lock": "e9d6937210e8e1d08425465ad702fe97555f02d823df77a4ab5126516e5e26f5",
+    "assets/brand/validation/Cargo.toml": "a2e1e78d21bb8a0aa9312729a6ab19e5fa21377fa28b7d016b31fc85965a023a",
+    "assets/brand/validation/main.rs": "ec3055d55da738329d44f5244684734fc3cf6678bdd79419e9f6ffcd94e275eb",
+    "assets/i18n/README.md": "a9ca0c77def8d1a643b06101819cb64af3e99db08a97aedded279fa0a16a2f85",
+    "assets/i18n/de.json": "591fe0fbde299adf3017ca700413e9ced8cc52294dc65423c04c21d29b5cebcf",
+    "assets/i18n/en-GB.json": "e14002d826af3183a5db2e9ad1cee633d039b5a685063a75e01e1a6452dde381",
+    "assets/i18n/en-US.json": "e14002d826af3183a5db2e9ad1cee633d039b5a685063a75e01e1a6452dde381",
+    "assets/i18n/es-419.json": "d0ca5865eebf8c2726e950b00556009b45139a2be05d4817ef8800e22829e5d8",
+    "assets/i18n/fr.json": "587113a33707a6412f7dd1cc30dd599ddcbef2e5ddd3bc6e11f793ea4405b405",
+    "assets/i18n/ja.json": "12fd764d56f3912064e062454a6085e5dc3da92ba35a2d4f899c7829eae176e1",
+    "assets/i18n/ko.json": "b70fe58f964cf738ba76b5c06bdb630df1c595211dd7bbe9639cdb1e684d2489",
+    "assets/i18n/pt-BR.json": "44ca8d186ecbd95be9b53ca094527798b7a7c0fc90442aa9ea6c9aaa996ced0f",
+    "assets/i18n/ru.json": "4310469456f7e4176c5d06eaee5db1c3db86c1c33f61d3346ed4a053042eaf2b",
+    "assets/i18n/uk.json": "82468833726b27d78eac759660a2933a0fdc5dd64698148de0c0d2aa3da38643",
+    "assets/i18n/zh-CN.json": "6e877fbb22f8cc5ee99c61d00b6a38b6884b9b078227c31c5253bb77a9e5dad8",
+    "assets/i18n/zh-HK.json": "d6513c64714c8db862c0c5e93bba97e65089141fd455805675d291f282750803",
+    "assets/i18n/zh-TW.json": "77bbfbcc8e6fb7a47eb43ad43b50d4cad881764448c644e14921fced92ba3ff9",
+    "crates/cocobeat-core/Cargo.toml": "97953d32f3820f005fdefe43a7ff7d8693424be78b9f0c655a83959a026ec8b1",
+    "crates/cocobeat-core/src/lib.rs": "648510208d6382c35a4ddf04a49a67ff368b771ed08b53ed171475252ef04fc7",
+    "crates/cocobeat-editor/Cargo.toml": "83549c0857e31f7d2250b7c944094ab3cf6ea8c437db321b83429465a7ad80bf",
+    "crates/cocobeat-editor/src/lib.rs": "7aa3670d806a23072f338b190dc3a2a8625817c0bf29c6dc5a8dd4fc1874b537",
+    "crates/cocobeat-media/Cargo.toml": "b0d284a3004b552fcf6736b757ee3a286fcb1127ebb08129fd7048c5b010b3ea",
+    "crates/cocobeat-media/src/anchors.rs": "e8fb4f7d9d73e2f8bf77cbc1c1798f024be7026892498a760fd2b56f439de8c4",
+    "crates/cocobeat-media/src/audio_asset.rs": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+    "crates/cocobeat-media/src/content_codec.rs": "a026d0f04b174605c90d535843793b114fdbb5ccf1bf190a42e870cedd57d597",
+    "crates/cocobeat-media/src/decode.rs": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+    "crates/cocobeat-media/src/lib.rs": "a1191c0d1372a2e95bf13fc17e6e35bbb9062335c83781fdffdd41404fddd82b",
+    "crates/cocobeat-media/src/package.rs": "3021987cccf72ba346155dbae5eccce9959ac658891d8e8032e7b3003926fb77",
+    "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+    "crates/cocobeat-net/Cargo.toml": "e328736eadc27a4fd28cc995c17dbd21f89dae695b3b0204002380be46f58891",
+    "crates/cocobeat-net/src/clock.rs": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+    "crates/cocobeat-net/src/lib.rs": "abe069d888c8caff94b340c4959bb38ada0be3bc24305a8a10ba9bfed287ca95",
+    "crates/cocobeat-net/src/live.rs": "2730dab44c4b54d179bdc71676f3089abe861c8550eb8907e482220c3f894928",
+    "crates/cocobeat-net/src/resource.rs": "035dd3edc796d2729de800c7185c3a575be55e4c162cf988c861830a4af2160d",
+    "crates/cocobeat-net/src/session.rs": "9d7bd160e0ec6f471ecf6d081ab7a60859b73359296a530cafb01916d3e4d4c5",
+    "crates/cocobeat-net/src/sync.rs": "3d4e56a809ed81b5ce7270951380d9ca02597ff6075adf90f3b69de9e2836918",
+    "crates/cocobeat-net/src/wire.rs": "59396ee24d72b8fa836353719c7ad6173c477cddc33ab32de7c2dfeb0f906d20",
+    "crates/cocobeat-replay/Cargo.toml": "a9ac6ee44d5f3f5aaade56105c7d175cc390ce34231356fb01e7db797cb65c4a",
+    "crates/cocobeat-replay/src/lib.rs": "240af38c6a4f23711fb9c071cb243e4cffbe215b21c8f74eb04f3cb12651945d",
+    "crates/cocobeat-runtime/Cargo.toml": "40654b858ecc13d3e1a5ff857153928228086a06a50d17c9d51bb4738a1cb59b",
+    "crates/cocobeat-runtime/build.rs": "6c948a5e384b709de42eee8b5cef80d0a2d53cd9771bea605468c0d52abb5b86",
+    "crates/cocobeat-runtime/src/app.rs": "11386ce9fadf620e9701a1ba34e5af90e33ee760733506febdba79d800728c37",
+    "crates/cocobeat-runtime/src/audio.rs": "983bf93b99cfb7fb535b89f18e6848b6d496f19b77d9de301d336ef79f32d731",
+    "crates/cocobeat-runtime/src/brand_audio.rs": "b69cff85a37aa6c43b477b975cb1704206df679b89272af5b0bedddf8acab590",
+    "crates/cocobeat-runtime/src/brand_intro.rs": "ab4b4c0e8ce63daa7368b8d1e23ed1a4e5dfa445abf788ebeba59191404a87a2",
+    "crates/cocobeat-runtime/src/clock.rs": "57786dea30aea1d663e595d6140f52370b98171a3d1dcf5e727845a67ed314ae",
+    "crates/cocobeat-runtime/src/content.rs": "e7529e5566496199bc2b01cded35bc93e634be9921ab9e0edce5fee6e1d5e05b",
+    "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+    "crates/cocobeat-runtime/src/display.rs": "a7253d51f4b4d95b149f5754d4154d4c31fac1dcef396fd4845f2226f789ee3c",
+    "crates/cocobeat-runtime/src/display_area.rs": "27a85d9d07263b6dbb0cd5788c8f4f8d5dbd80b37dbcd929b63c7d233afe58f4",
+    "crates/cocobeat-runtime/src/i18n.rs": "0a8f6d242b6573050b24314a644173f0c37668b6946c6723fb3950973299cb92",
+    "crates/cocobeat-runtime/src/input.rs": "e58a5f5e33065dda8a2791ebe5beb3ee586d7cd03570b975498fea53cb272355",
+    "crates/cocobeat-runtime/src/lib.rs": "5c79ab19ad6c1c34e49af887cd807f240231c6154a8b4b19ec94f4f70e1b8c7e",
+    "crates/cocobeat-runtime/src/live_observation.rs": "953e75bf0c223a249eb646776e1cfe65843e93fe1e0f98dd220f6fee7b0f1c61",
+    "crates/cocobeat-runtime/src/online.rs": "200ba090bab621798b8ac249a0a55e01a96aa8fa599d944c01036a42dfc4f142",
+    "crates/cocobeat-runtime/src/probe.rs": "65622a49e316eb27dbe528f2b1d14f426be62db4728df1bd5b14fe03b9f4cc6b",
+    "crates/cocobeat-runtime/src/scene.rs": "7e06c73955f3e149f32f18bec027e4a199bf6a41d16f313148753a7a6ee707eb",
+    "crates/cocobeat-runtime/src/session.rs": "c8c646576548e9ce54c5dde3e60afc294db6b59e9eb5c355898ce281364687b7",
+    "crates/cocobeat-runtime/src/settings.rs": "80af1dd0c40ddba44532c21ccc1de41fd7f61e51513505705696044c3c0b8ff3",
+    "crates/cocobeat-runtime/src/settings_menu.rs": "ebc971c6e3936063dfb609e4ff589c0abf5e17409b1f917d3a0a4f008fe8775e",
+    "crates/cocobeat-runtime/src/ui_assets.rs": "f8c5d5cd4ba65d2bcce0d729cb29ad58966c5ee1018c3444df837fdeb47e894e",
+    "crates/cocobeat-runtime/src/view.rs": "9612cb462c074990775a749ac21dba773b22080f94c0fde0bf7d7fce221cbe3e",
+    "crates/cocobeat-schema/Cargo.toml": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+    "crates/cocobeat-schema/src/asset.rs": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe",
+    "crates/cocobeat-schema/src/content.rs": "7f0e9984dba5f87c7ab5a0305687613a6e6994ee27ce147b09db98e92087ff44",
+    "crates/cocobeat-schema/src/gameplay.rs": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+    "crates/cocobeat-schema/src/lib.rs": "4ee66bea6fa2d1de66a4a00122f5a6679cdbebdbadf5393f18af61bc9ea049c3",
+    "crates/cocobeat-schema/src/time.rs": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+    "crates/cocobeat-stage/Cargo.toml": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c",
+    "crates/cocobeat-stage/src/lib.rs": "06cff45a0565861f5f5c71f377b60bde9e427479ec03fd1c9ecb0f97730441a8",
+    "rust-toolchain.toml": "7458b2d74495e6fb1c1edeea4d5a793705476431dadb60627187111f91441e13",
+    "testdata/synthetic/media-import/README.md": "6d32830ab9f745ab61c34854092c398d668578b4bd2cdf12f877a05b8d9eec48",
+    "testdata/synthetic/media-import/mono.mp3": "d923f64fa8d33576b85608ac20f13a1cf512f8dfd0e94e9c0e1342d652ca6085",
+    "testdata/synthetic/media-import/mono.ogg": "2e98fad0c74320af0e9a98ec6e3e3ddc9b219afdc90826abc78aa9bd625fe33a",
+    "testdata/synthetic/media-import/stereo-canonical.ogg": "fad4556061e4253ae09c030fdc1e4f4f5a91de14227d147f15628d4e610c54cf",
+    "tools/canonical-audio-probe/fullband-regression/readback.rs": "d6aa6b06b8b3d6b97dca6b529952718fb60a5e809b1abfa5719a435d0351c477",
+    "tools/canonical-audio-probe/numeric-fullband/codec_numeric.rs": "7344facd24afb2b7888ffa5e307d7808661c25aad504b99162c18e189b8fa5d9",
+    "tools/canonical-audio-probe/numeric-fullband/kernel_bound.rs": "6bf03ef239a383a9aa4963db79f1fcdef5325cf81d890b63e5f97d6d576d2993",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.lock": "fcafced8e9af315432862883aed114808367a4a08fe79154ac4ae620a90a3301",
+    "tools/canonical-audio-probe/oxiaudio/Cargo.toml": "b9ed8906fba17aa4ef2c2d7d74e08502436fc5527213e45caa6a00fb2eeabdd0",
+    "tools/canonical-audio-probe/oxiaudio/src/main.rs": "e4e63967c069510ff90c4cac8e3842765a2de58a9b6ab610ecf0c86bc31d4263",
+    "tools/canonical-audio-probe/oxideav/Cargo.lock": "3b06972c2b34bae71a95b9c65bf784f1a5bf1b35bfe3a31676cbac034a3abd16",
+    "tools/canonical-audio-probe/oxideav/Cargo.toml": "085546c2ff0a0e930433b9432fd22101ffc4ab327fae90495d01fa9e4c017232",
+    "tools/canonical-audio-probe/oxideav/src/main.rs": "29320e2284146cf9734908472ac0cb7d4a05c6ae0497424d0cbbd60e1630d0fb",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.lock": "a0f9fe8bfb03b52975d51d58c93e30559caedab617ef8790eb4e628aaaf94e95",
+    "tools/canonical-audio-probe/oximedia-resample/Cargo.toml": "72c0f20dbd29e6b6724228f73c7c0dbf47560a16946de691fc51196d6675b483",
+    "tools/canonical-audio-probe/oximedia-resample/src/main.rs": "180e92fb72a2e687f7dcbca14296ac91b8644d7f2df2f9799f97f99e63510bc3",
+    "tools/canonical-audio-probe/readback.rs": "c3e10e9b30a5472ef33649663b8de086570680387788d92de9b4dd1576e0bf58",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.lock": "b6d6f71571e97be00e90349bd4c2f7006fa47eeeaf03c1d5d8d56319e48fd27f",
+    "tools/canonical-audio-probe/rusty-candidate/Cargo.toml": "42191ab850e02b84a128a957646d263cee1ec771ef967e98a347a0fa6ce4c3d2",
+    "tools/canonical-audio-probe/rusty-candidate/src/main.rs": "6b044d45cb8bdebad1cb289a6adb1d9177aec7bfc3cd406ecd768ffd72f8d9ad",
+    "tools/canonical-audio-probe/rusty-candidate/src/tests.rs": "0bfe7bafeef35b1291c5885a8b234ebee0759020f937981d145cac474ea5e769",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.lock": "a7f25bfcd8593f8b10a163a5b56d261159562eb86a7330423c7a48acf665019b",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/Cargo.toml": "fe324384f196ba6e174e1df82345fe937e07a732f3212305dbab430bb6c7cbeb",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/error.rs": "2e15078aae1de7b3ba369535d1dddc4c8ed5fb2f5503d6619c8ed8a6f82e67db",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/floor.rs": "a323ea98519aba994c969de4a931ffc45a8f2b8fea9e1ab2e9ad6296b7808ecc",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/frame.rs": "c7959dbe8c4531305c564c528258ba6b62c35898967cd2cff4d2f6512d1dec0c",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/lib.rs": "5bf7bfc2bf0605d8ee6c6789938ebc58ae5144f096acf99bd62c6c7961aead59",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/mdct.rs": "b9de8efefc9bbd72c3fff32e161c6c6cccc6c3da3d9bb07d5417be4002262cc7",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/psy.rs": "21a5c2b3bc2114acbdb750021368793249a97260eb03caf44b2cdd6ae64a3e5d",
+    "tools/canonical-audio-probe/rusty-candidate/vendor/rusty_vorbis/src/setup.rs": "2ed3eead3857715e0ec12a2227298377f0a69a4624c91e50492380f8e4bc3339",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.lock": "82877e0932e9121f01e1c99a3906072244c6b03011a8958c92820f003f328303",
+    "tools/canonical-audio-probe/rusty-vorbis/Cargo.toml": "b6081c2f8ecf883f2e86bd0fbd95633b2bac8cb35742b777874419df525d11cb",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/adapter.rs": "c4e0cc2c394961929d64a3b99add9b8e9a479d084e7fccfc914f20451878c840",
+    "tools/canonical-audio-probe/rusty-vorbis/src/bin/encode.rs": "a6f3140e5225b309407a527d956063950484cc782a82eda9818019cadcb20e7e",
+    "tools/canonical-audio-probe/seek.rs": "b1f88674dc269b9e86dd7d97fcac85abdd559bed8a34c9f2821d7cf448b73cca",
+    "tools/cocobeat-lab/Cargo.toml": "c913f558689789c9298f384330bdb1a98001c9e47690113ad13f154aa0f55b35",
+    "tools/cocobeat-lab/src/anchors.rs": "bb6500a80b39aef17fdc0fc1cd690b44392947bbc8f94f541f67031cb266a095",
+    "tools/cocobeat-lab/src/content.rs": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+    "tools/cocobeat-lab/src/editor.rs": "4301e5d77f30c34c682236024709f9dcd4b708d4d26be8fac655df22151d0093",
+    "tools/cocobeat-lab/src/main.rs": "06cf03458399d2468060de3f8b2f132eddfca514c046889fd3382401e8aeada0",
+    "tools/cocobeat-lab/src/media.rs": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+    "tools/cocobeat-lab/src/package.rs": "6eb918e9fdea728464a5ed95a5593a6c7d6b4c345458e3d6f915f90f7c78620b",
+    "tools/cocobeat-lab/src/replay.rs": "b95968a7a1f3581431e22dfb0a487581040bf9e0f467c34d218bad60035d86f7",
+    "tools/cocobeat-lab/src/stage.rs": "6a46f5a85321c93659b8a7ee34d25b7fea88337bc9915ebe3a5971709ae46243",
+    "tools/cocobeat-lab/src/timing.rs": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+    "tools/cocobeat-lab/src/workbench.rs": "f696d614804e2ab0523ae4ed7f51df27156f2cacf082dc2fcb78b8b8f9c7e544",
+    "tools/cocobeat-lab/src/workbench/input.rs": "ba7b5a264a6db1a91995ae59b3319e2a7ca82f3770c8c3eb472a64ac099f8399",
+    "tools/cocobeat-lab/src/workbench/ui.rs": "bf2c49561f54cea9617bc98476d8e28143363b61e410ea840bfbfb97d0450a0e",
+    "tools/mir-flux-gate-probe/Cargo.lock": "40afc1dc0d6b9919a335a20a4313c5228409638ba028bb926df578d6a6f3e10f",
+    "tools/mir-flux-gate-probe/Cargo.toml": "d1275637a06b1493c0a61eb89662c130e97b1e0ec9db9a1ba41d5ee2df04c511",
+    "tools/mir-flux-gate-probe/src/main.rs": "434d3708ede7f9201a92dac408a6b4eca636538631f5a8544d3067b674387756",
+    "tools/mir-flux-probe/Cargo.lock": "bf7275e578c1c560fc9dbb13b1ee5382beb4cfa79d65b17a740732d82562ac44",
+    "tools/mir-flux-probe/Cargo.toml": "b402ec1153e4dcaf2a3da2d145f43b300a5693d0024f7c5356147da67be31d4c",
+    "tools/mir-flux-probe/src/main.rs": "5343abafc6379100e6766b8d7fc6ea075803f88823a4eb4a149aeac84b8cd6f8",
+    "tools/mir-onset-diagnostic/Cargo.lock": "4b4e8202f7ed57ab77592ef9516653e85d788fc55ac525aebf69a705d6d15007",
+    "tools/mir-onset-diagnostic/Cargo.toml": "d6d2934ea86d762d4f38249383ebb608896b6ac98e5d969aeda78b5cc50c47e1",
+    "tools/mir-onset-diagnostic/src/main.rs": "4a0d7d4782f8a1a97aa77071559f42be2519c29f952d7e96219ccfd74c6743c9",
+    "tools/mir-onset-probe/Cargo.lock": "db1c8615cf95f7dbd05c685f8a7678f6120ecbf8d96e2074ce4309251d611dfd",
+    "tools/mir-onset-probe/Cargo.toml": "dc0f37f4e812a1ae024b905bdc36bdcf5052797bed71aa6d6d9e8e7775c87a0e",
+    "tools/mir-onset-probe/src/main.rs": "cda827107b9e5ada153ad9d57fe10526da251a54521e074cc13db0507ce01a26",
+    "tools/mir-spectral-probe/Cargo.lock": "ba9b8f8a9f43230d8d7608d1fc7ebe555fda95a4410c1953637f2c220d2827d0",
+    "tools/mir-spectral-probe/Cargo.toml": "8590385f1e310ab7205d8e4e29d567ce07bdea8a3a47d7cf7c7c6cef5097fb92",
+    "tools/mir-spectral-probe/src/main.rs": "4a29350f2283aff1a2955d4a5e33b487fa05348c65bdaf04550b8307d159932a",
+    "tools/quic-live-check/README.md": "f27971a2e2c2a4e38587b7ff9f87786eb339398d818e478f2c29f45c54a63a6e",
+    "tools/quic-live-check/check.py": "a8ffcc73515b2a6973f057cb9676eaa02f9db4a70b03ae3de033efd85c3ad75b",
+    "tools/quic-live-check/driver.rs": "2e8ec66e07633a680d175955f839db4e32bd4a4aa7edc6a4e1dc3af9127585c1",
+    "tools/quic-live-check/native.py": "02563a2d11c5e971ba1a9a7602b3ab8f4c0a8cf0926f55115edb55b69d51b94c",
+    "xtask/Cargo.toml": "9311b043c1bb6f23f70db07009ed19f4fdc9dc313cd30ba6c629d3a11c976de3",
+    "xtask/src/main.rs": "41e768b35dd36ee172caa0b6ddda6f85cfcd2084205912070506bb44212d5fde",
+    "tools/cocobeat-lab/src/workbench/replay.rs": "5ada5e3919eebee7ec1f73563845a778e9b7b8cf9fcfd58b3ade4c5a3f4b66fe"
+  },
+  "build_snapshot": {
+    "path": "target/session-diagnostics-20261007/source-fixed.json",
+    "sha256": "3ca3f0f76ed241ce89b52e2373e41d90dbc63df58f53f92685695937f78a630e"
+  },
+  "build_snapshot_difference": {
+    "files": [
+      "tools/quic-live-check/native.py"
+    ],
+    "reason": "post-build correction of the noncompiled native QA sequence assertion and PNG dimensions; registered Rust/Cargo/locale inputs unchanged"
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-p",
+        "cocobeat-runtime",
+        "-p",
+        "cocobeat-lab",
+        "-p",
+        "cocobeat-net",
+        "-p",
+        "xtask"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": {
+        "path": "target/session-diagnostics-20261007/tests-fixed.log",
+        "sha256": "297577dddce5b18739d8a28397701182ecf7a47adf9c2ce73f7399815fd38466"
+      },
+      "passed_tests": 169,
+      "counts": {
+        "runtime": 123,
+        "lab": 26,
+        "net": 16,
+        "xtask": 4
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-p",
+        "cocobeat-runtime",
+        "-p",
+        "cocobeat-net",
+        "-p",
+        "cocobeat-game",
+        "-p",
+        "cocobeat-lab",
+        "-p",
+        "xtask",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": {
+        "path": "target/session-diagnostics-20261007/clippy-fixed.log",
+        "sha256": "be405d19e5d2caab933cbc6d11ea06a87f0f0f4fc215dacdb94585a2284bd7f1"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-p",
+        "cocobeat-game",
+        "-p",
+        "cocobeat-lab",
+        "--message-format=json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": {
+        "path": "target/session-diagnostics-20261007/build.jsonl",
+        "sha256": "5f2045f129134cd58a0f9078006a97101a427f1fc0147796b3aee47c3ac1d0ec"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": {
+        "path": "target/session-diagnostics-20261007/fmt-final.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "xtask",
+        "boundaries"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "exit_code": 0,
+      "status": "PASS",
+      "log": {
+        "path": "target/session-diagnostics-20261007/boundaries-final.log",
+        "sha256": "add757a0e430f6eec42a7889c182667db317c0d40493846bbc7e103e0ed59a1d"
+      }
+    }
+  ],
+  "binaries": {
+    "game": {
+      "path": "target/debug/cocobeat-game",
+      "sha256": "2a4dba466fe0912c7c058ac9e0fc03468abc60fcccae942b0e723a1061856505"
+    },
+    "lab": {
+      "path": "target/debug/cocobeat-lab",
+      "sha256": "b99f9aa68819688d391c09f1f83548bba076095308373b56f91eb949d1e0fc2b"
+    },
+    "replay_gui_helper": {
+      "path": "target/replay-ui-20261007/native-final/replay-workbench-check",
+      "sha256": "aa2f05ec44e90ab7735c16a0f3cb0fef7ed4699d9a99f243ad5f480a2bbe066c"
+    }
+  },
+  "native_next_round": {
+    "probe_command": [
+      "python3",
+      "tools/quic-live-check/native.py",
+      "target/debug/cocobeat-game",
+      "target/quic-live-20261007/fixture/package",
+      "target/next-round-20261007/native-final",
+      "--compositor",
+      "gamescope",
+      "--rounds",
+      "2"
+    ],
+    "exit_code": 0,
+    "summary": {
+      "path": "target/next-round-20261007/native-final/summary.json",
+      "sha256": "8ca349e74bbfac1cd4c17d8b4d7a2910bd3a06163e4bbaeeb15c02a46f9a16c9"
+    },
+    "result": {
+      "status": "PASS",
+      "commands": [
+        {
+          "side": "host",
+          "command": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "--expose-wayland",
+            "-W",
+            "1280",
+            "-H",
+            "800",
+            "-r",
+            "60",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-game",
+            "--package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+            "--net-host",
+            "127.0.0.1:0",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/host-network",
+            "--next-round",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/invite-2.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/host-network-2",
+            "--live-observation",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/host-observation"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/host-cwd",
+          "exit_code": 0
+        },
+        {
+          "side": "guest",
+          "command": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "--expose-wayland",
+            "-W",
+            "1280",
+            "-H",
+            "800",
+            "-r",
+            "60",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-game",
+            "--net-receive",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/invite.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/received",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/guest-network",
+            "--next-round",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/invite-2.json",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/guest-network-2",
+            "--live-observation",
+            "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/guest-observation"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/next-round-20261007/native-final/guest-cwd",
+          "exit_code": 0
+        }
+      ],
+      "game_sha256": "2a4dba466fe0912c7c058ac9e0fc03468abc60fcccae942b0e723a1061856505",
+      "package_objects_sha256": {
+        "song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+        "analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+        "chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+        "song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b"
+      },
+      "reports": [
+        {
+          "side": "host",
+          "runtime": {
+            "canonical_frames": 96000,
+            "capture_diagnostics": [
+              {
+                "consumed_ns": 22931963365,
+                "observed_ns": 22931793364,
+                "player": "P1",
+                "seq": 0,
+                "song_frames": 26701,
+                "uncertainty_frames": 2403
+              },
+              {
+                "consumed_ns": 23915632088,
+                "observed_ns": 23915410137,
+                "player": "P1",
+                "seq": 1,
+                "song_frames": 73679,
+                "uncertainty_frames": 2402
+              },
+              {
+                "consumed_ns": 23955290367,
+                "observed_ns": 23955058346,
+                "player": "P1",
+                "seq": 2,
+                "song_frames": 75496,
+                "uncertainty_frames": 2403
+              }
+            ],
+            "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+            "epoch": 3124893908200008438,
+            "error": null,
+            "events": 5,
+            "facts": 71,
+            "frames_observed": 749,
+            "local_ended": true,
+            "local_player": "P1",
+            "network_started": true,
+            "phase": "Finished",
+            "running_capture": {
+              "Ok": [
+                1280,
+                800
+              ]
+            },
+            "status": "COMPLETE",
+            "synthetic_hits_requested": 3,
+            "terminal_capture": {
+              "Ok": [
+                1280,
+                800
+              ]
+            }
+          },
+          "network": {
+            "status": "COMPLETE",
+            "mode": "live",
+            "protocol_version": 4,
+            "epoch": 3124893908200008438,
+            "player": 1,
+            "peer_authenticated": true,
+            "package_received": false,
+            "resource_bytes": 0,
+            "network_timing": {
+              "probes_sent": 0,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 122077866,
+                "offset_ns": 10140454191,
+                "uncertainty_ns": 212129,
+                "round_trip_min_ns": 422973,
+                "round_trip_max_ns": 423829
+              },
+              "host_start_ns": 12262783458,
+              "local_start_ns": 12262783458,
+              "start_uncertainty_ns": 0,
+              "software_start_observed_ns": 12264051297,
+              "software_start_lateness_ns": 1267839
+            },
+            "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+            "endpoint": "127.0.0.1:59888",
+            "cert_blake3": "95ff99b64f908c7472b6017e51b48980c01eb0045df3882f5f0f89cfdacce6e7",
+            "template_blake3": "",
+            "template_epoch": 0,
+            "facts": [
+              35,
+              36
+            ],
+            "event_count": 5,
+            "live_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+            "authority_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+            "error": null
+          }
+        },
+        {
+          "side": "guest",
+          "runtime": {
+            "canonical_frames": 96000,
+            "capture_diagnostics": [
+              {
+                "consumed_ns": 12114650874,
+                "observed_ns": 12114464343,
+                "player": "P2",
+                "seq": 0,
+                "song_frames": 26551,
+                "uncertainty_frames": 2403
+              },
+              {
+                "consumed_ns": 13102711196,
+                "observed_ns": 13102513856,
+                "player": "P2",
+                "seq": 1,
+                "song_frames": 74076,
+                "uncertainty_frames": 2402
+              },
+              {
+                "consumed_ns": 13142629756,
+                "observed_ns": 13142370046,
+                "player": "P2",
+                "seq": 2,
+                "song_frames": 75890,
+                "uncertainty_frames": 2403
+              }
+            ],
+            "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+            "epoch": 3124893908200008438,
+            "error": null,
+            "events": 5,
+            "facts": 71,
+            "frames_observed": 433,
+            "local_ended": true,
+            "local_player": "P2",
+            "network_started": true,
+            "phase": "Finished",
+            "running_capture": {
+              "Ok": [
+                1280,
+                800
+              ]
+            },
+            "status": "COMPLETE",
+            "synthetic_hits_requested": 3,
+            "terminal_capture": {
+              "Ok": [
+                1280,
+                800
+              ]
+            }
+          },
+          "network": {
+            "status": "COMPLETE",
+            "mode": "live",
+            "protocol_version": 4,
+            "epoch": 3124893908200008438,
+            "player": 2,
+            "peer_authenticated": true,
+            "package_received": true,
+            "resource_bytes": 21474,
+            "network_timing": {
+              "probes_sent": 1,
+              "received_datagrams": 1,
+              "ignored_datagrams": 0,
+              "clock": {
+                "probe_id": 0,
+                "guest_sample_ns": 122077866,
+                "offset_ns": 10140454191,
+                "uncertainty_ns": 212129,
+                "round_trip_min_ns": 422973,
+                "round_trip_max_ns": 423829
+              },
+              "host_start_ns": 12262783458,
+              "local_start_ns": 2122329267,
+              "start_uncertainty_ns": 2214596,
+              "software_start_observed_ns": 2123604856,
+              "software_start_lateness_ns": 1275589
+            },
+            "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+            "endpoint": "127.0.0.1:59888",
+            "cert_blake3": "95ff99b64f908c7472b6017e51b48980c01eb0045df3882f5f0f89cfdacce6e7",
+            "template_blake3": "",
+            "template_epoch": 0,
+            "facts": [
+              35,
+              36
+            ],
+            "event_count": 5,
+            "live_replay_blake3": "1a315d337b21d993161d15329eb06f12be20303a91929ff2e3484cf4d616d9a1",
+            "authority_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+            "error": null
+          }
+        }
+      ],
+      "round_count": 2,
+      "rounds": [
+        [
+          {
+            "side": "host",
+            "runtime": {
+              "canonical_frames": 96000,
+              "capture_diagnostics": [
+                {
+                  "consumed_ns": 22931963365,
+                  "observed_ns": 22931793364,
+                  "player": "P1",
+                  "seq": 0,
+                  "song_frames": 26701,
+                  "uncertainty_frames": 2403
+                },
+                {
+                  "consumed_ns": 23915632088,
+                  "observed_ns": 23915410137,
+                  "player": "P1",
+                  "seq": 1,
+                  "song_frames": 73679,
+                  "uncertainty_frames": 2402
+                },
+                {
+                  "consumed_ns": 23955290367,
+                  "observed_ns": 23955058346,
+                  "player": "P1",
+                  "seq": 2,
+                  "song_frames": 75496,
+                  "uncertainty_frames": 2403
+                }
+              ],
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "epoch": 3124893908200008438,
+              "error": null,
+              "events": 5,
+              "facts": 71,
+              "frames_observed": 749,
+              "local_ended": true,
+              "local_player": "P1",
+              "network_started": true,
+              "phase": "Finished",
+              "running_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              },
+              "status": "COMPLETE",
+              "synthetic_hits_requested": 3,
+              "terminal_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              }
+            },
+            "network": {
+              "status": "COMPLETE",
+              "mode": "live",
+              "protocol_version": 4,
+              "epoch": 3124893908200008438,
+              "player": 1,
+              "peer_authenticated": true,
+              "package_received": false,
+              "resource_bytes": 0,
+              "network_timing": {
+                "probes_sent": 0,
+                "received_datagrams": 1,
+                "ignored_datagrams": 0,
+                "clock": {
+                  "probe_id": 0,
+                  "guest_sample_ns": 122077866,
+                  "offset_ns": 10140454191,
+                  "uncertainty_ns": 212129,
+                  "round_trip_min_ns": 422973,
+                  "round_trip_max_ns": 423829
+                },
+                "host_start_ns": 12262783458,
+                "local_start_ns": 12262783458,
+                "start_uncertainty_ns": 0,
+                "software_start_observed_ns": 12264051297,
+                "software_start_lateness_ns": 1267839
+              },
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "endpoint": "127.0.0.1:59888",
+              "cert_blake3": "95ff99b64f908c7472b6017e51b48980c01eb0045df3882f5f0f89cfdacce6e7",
+              "template_blake3": "",
+              "template_epoch": 0,
+              "facts": [
+                35,
+                36
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+              "authority_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+              "error": null
+            }
+          },
+          {
+            "side": "guest",
+            "runtime": {
+              "canonical_frames": 96000,
+              "capture_diagnostics": [
+                {
+                  "consumed_ns": 12114650874,
+                  "observed_ns": 12114464343,
+                  "player": "P2",
+                  "seq": 0,
+                  "song_frames": 26551,
+                  "uncertainty_frames": 2403
+                },
+                {
+                  "consumed_ns": 13102711196,
+                  "observed_ns": 13102513856,
+                  "player": "P2",
+                  "seq": 1,
+                  "song_frames": 74076,
+                  "uncertainty_frames": 2402
+                },
+                {
+                  "consumed_ns": 13142629756,
+                  "observed_ns": 13142370046,
+                  "player": "P2",
+                  "seq": 2,
+                  "song_frames": 75890,
+                  "uncertainty_frames": 2403
+                }
+              ],
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "epoch": 3124893908200008438,
+              "error": null,
+              "events": 5,
+              "facts": 71,
+              "frames_observed": 433,
+              "local_ended": true,
+              "local_player": "P2",
+              "network_started": true,
+              "phase": "Finished",
+              "running_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              },
+              "status": "COMPLETE",
+              "synthetic_hits_requested": 3,
+              "terminal_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              }
+            },
+            "network": {
+              "status": "COMPLETE",
+              "mode": "live",
+              "protocol_version": 4,
+              "epoch": 3124893908200008438,
+              "player": 2,
+              "peer_authenticated": true,
+              "package_received": true,
+              "resource_bytes": 21474,
+              "network_timing": {
+                "probes_sent": 1,
+                "received_datagrams": 1,
+                "ignored_datagrams": 0,
+                "clock": {
+                  "probe_id": 0,
+                  "guest_sample_ns": 122077866,
+                  "offset_ns": 10140454191,
+                  "uncertainty_ns": 212129,
+                  "round_trip_min_ns": 422973,
+                  "round_trip_max_ns": 423829
+                },
+                "host_start_ns": 12262783458,
+                "local_start_ns": 2122329267,
+                "start_uncertainty_ns": 2214596,
+                "software_start_observed_ns": 2123604856,
+                "software_start_lateness_ns": 1275589
+              },
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "endpoint": "127.0.0.1:59888",
+              "cert_blake3": "95ff99b64f908c7472b6017e51b48980c01eb0045df3882f5f0f89cfdacce6e7",
+              "template_blake3": "",
+              "template_epoch": 0,
+              "facts": [
+                35,
+                36
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "1a315d337b21d993161d15329eb06f12be20303a91929ff2e3484cf4d616d9a1",
+              "authority_replay_blake3": "60330aa1f2309f99626bdcb7d3276e5affb0d446a8fbc873ff63ee93f47160d2",
+              "error": null
+            }
+          }
+        ],
+        [
+          {
+            "side": "host",
+            "runtime": {
+              "canonical_frames": 96000,
+              "capture_diagnostics": [
+                {
+                  "consumed_ns": 29290519516,
+                  "observed_ns": 29290339925,
+                  "player": "P1",
+                  "seq": 0,
+                  "song_frames": 26095,
+                  "uncertainty_frames": 2403
+                },
+                {
+                  "consumed_ns": 30268015818,
+                  "observed_ns": 30267732628,
+                  "player": "P1",
+                  "seq": 1,
+                  "song_frames": 73001,
+                  "uncertainty_frames": 2402
+                },
+                {
+                  "consumed_ns": 30305946743,
+                  "observed_ns": 30305706602,
+                  "player": "P1",
+                  "seq": 2,
+                  "song_frames": 74773,
+                  "uncertainty_frames": 2403
+                }
+              ],
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "epoch": 1601151596960184129,
+              "error": null,
+              "events": 5,
+              "facts": 72,
+              "frames_observed": 142,
+              "local_ended": true,
+              "local_player": "P1",
+              "network_started": true,
+              "phase": "Finished",
+              "running_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              },
+              "status": "COMPLETE",
+              "synthetic_hits_requested": 3,
+              "terminal_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              }
+            },
+            "network": {
+              "status": "COMPLETE",
+              "mode": "live",
+              "protocol_version": 4,
+              "epoch": 1601151596960184129,
+              "player": 1,
+              "peer_authenticated": true,
+              "package_received": false,
+              "resource_bytes": 0,
+              "network_timing": {
+                "probes_sent": 0,
+                "received_datagrams": 1,
+                "ignored_datagrams": 0,
+                "clock": {
+                  "probe_id": 0,
+                  "guest_sample_ns": 138557900,
+                  "offset_ns": 1045999751,
+                  "uncertainty_ns": 224734,
+                  "round_trip_min_ns": 448108,
+                  "round_trip_max_ns": 449014
+                },
+                "host_start_ns": 3184825372,
+                "local_start_ns": 3184825372,
+                "start_uncertainty_ns": 0,
+                "software_start_observed_ns": 3185524296,
+                "software_start_lateness_ns": 698924
+              },
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "endpoint": "127.0.0.1:50684",
+              "cert_blake3": "d12ced3b7551e009ca16ee812ac39fbbf77501ecfaa004b582ca65cdd7d43430",
+              "template_blake3": "",
+              "template_epoch": 0,
+              "facts": [
+                36,
+                36
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "975985697fafe5521abb87577b02cefe3c2dc7ec4a2ab6e7d216de592feca078",
+              "authority_replay_blake3": "975985697fafe5521abb87577b02cefe3c2dc7ec4a2ab6e7d216de592feca078",
+              "error": null
+            }
+          },
+          {
+            "side": "guest",
+            "runtime": {
+              "canonical_frames": 96000,
+              "capture_diagnostics": [
+                {
+                  "consumed_ns": 18472848674,
+                  "observed_ns": 18472669134,
+                  "player": "P2",
+                  "seq": 0,
+                  "song_frames": 26078,
+                  "uncertainty_frames": 2403
+                },
+                {
+                  "consumed_ns": 19454363806,
+                  "observed_ns": 19454177645,
+                  "player": "P2",
+                  "seq": 1,
+                  "song_frames": 72986,
+                  "uncertainty_frames": 2402
+                },
+                {
+                  "consumed_ns": 19493846503,
+                  "observed_ns": 19493588393,
+                  "player": "P2",
+                  "seq": 2,
+                  "song_frames": 74845,
+                  "uncertainty_frames": 2403
+                }
+              ],
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "epoch": 1601151596960184129,
+              "error": null,
+              "events": 5,
+              "facts": 72,
+              "frames_observed": 108,
+              "local_ended": true,
+              "local_player": "P2",
+              "network_started": true,
+              "phase": "Finished",
+              "running_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              },
+              "status": "COMPLETE",
+              "synthetic_hits_requested": 3,
+              "terminal_capture": {
+                "Ok": [
+                  1280,
+                  800
+                ]
+              }
+            },
+            "network": {
+              "status": "COMPLETE",
+              "mode": "live",
+              "protocol_version": 4,
+              "epoch": 1601151596960184129,
+              "player": 2,
+              "peer_authenticated": true,
+              "package_received": false,
+              "resource_bytes": 0,
+              "network_timing": {
+                "probes_sent": 1,
+                "received_datagrams": 1,
+                "ignored_datagrams": 0,
+                "clock": {
+                  "probe_id": 0,
+                  "guest_sample_ns": 138557900,
+                  "offset_ns": 1045999751,
+                  "uncertainty_ns": 224734,
+                  "round_trip_min_ns": 448108,
+                  "round_trip_max_ns": 449014
+                },
+                "host_start_ns": 3184825372,
+                "local_start_ns": 2138825621,
+                "start_uncertainty_ns": 2227230,
+                "software_start_observed_ns": 2140426547,
+                "software_start_lateness_ns": 1600926
+              },
+              "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+              "endpoint": "127.0.0.1:50684",
+              "cert_blake3": "d12ced3b7551e009ca16ee812ac39fbbf77501ecfaa004b582ca65cdd7d43430",
+              "template_blake3": "",
+              "template_epoch": 0,
+              "facts": [
+                36,
+                36
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "e2e6f7cb642c7df8162a891f1a5af6025325e3bd04d2304b4ecfbdb87a29aac3",
+              "authority_replay_blake3": "975985697fafe5521abb87577b02cefe3c2dc7ec4a2ab6e7d216de592feca078",
+              "error": null
+            }
+          }
+        ]
+      ],
+      "preserved_network_sha256": {
+        "host/round-1": {
+          "authority.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+          "live.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+          "status.json": "21e50156b0932bff35239b29c68bb0281237be87d2e96be5a958003d7cef22c5"
+        },
+        "guest/round-1": {
+          "authority.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+          "live.replay.json": "3ef4192589e536a71351c133d745c63e559cb370bbe4cbdff930edfad58a47ea",
+          "status.json": "6d66294dfc0f2f1a83e16698e639635aba94ad2ec1bdaa70fc154975536ba9a9"
+        },
+        "host/round-2": {
+          "authority.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+          "live.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+          "status.json": "9a545eb3f062a157336c7ab900344726b084e003b65a13acc6da0fb046959c88"
+        },
+        "guest/round-2": {
+          "authority.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+          "live.replay.json": "00f5751979f1930c17e71d9389552a6492becf00ac2dc4485a8ec9d2215a4e8f",
+          "status.json": "230678d4f995d8996fcb0d25f55ecdd75e6c46b731006ebe13f6a01693d04545"
+        }
+      },
+      "evidence_sha256": {
+        "guest-cwd/replays/session-1601151596960184129-1791360790900810998.csv": "8083a3bb6b14a85f1588e2636b1bc51e2a1a4a045c547190340c1d6fe23f4235",
+        "guest-cwd/replays/session-1601151596960184129-1791360790900810998.json": "f2a2c810e7bbc9a389c84b5d1d81108c0edd7c78762dbbe87ff07b59d62c84d5",
+        "guest-cwd/replays/session-3124893908200008438-1791360784553696581.csv": "d72ce62da1a430c83bcdb35a5d46d20021b9ca334aab0cae95cf7e7b8b461157",
+        "guest-cwd/replays/session-3124893908200008438-1791360784553696581.json": "0eecbb4d08b28142a94063fc53df04445fa08af7847b8c2c2f84baf52c15d43a",
+        "guest-network/authority.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+        "guest-network/live.replay.json": "3ef4192589e536a71351c133d745c63e559cb370bbe4cbdff930edfad58a47ea",
+        "guest-network/status.json": "6d66294dfc0f2f1a83e16698e639635aba94ad2ec1bdaa70fc154975536ba9a9",
+        "guest-network-2/authority.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+        "guest-network-2/live.replay.json": "00f5751979f1930c17e71d9389552a6492becf00ac2dc4485a8ec9d2215a4e8f",
+        "guest-network-2/status.json": "230678d4f995d8996fcb0d25f55ecdd75e6c46b731006ebe13f6a01693d04545",
+        "guest-observation/round-1/frames.csv": "b8f2400312bb909bf32771ff7341aaefd844afd495afcc0eea55c07dc4328e74",
+        "guest-observation/round-1/metadata.json": "49316baadf6013c3d2c273258f70544b2adef9b3eefa1c7f37c0ef7cb2a9491c",
+        "guest-observation/round-1/result.json": "c225dc48cd86b95e799cbd69fb8cc7bc104f048ca354b04b72e1bdb361ecc10b",
+        "guest-observation/round-1/running.png": "8e1653fff67e9475e9f73abcce8a62c4b89ad7c037236499cbdd5bdf07b937a4",
+        "guest-observation/round-1/screenshot.png": "fb1d6d88d75e38d919dcabc05717c65583686ab2d59d18c99486d97b2830349d",
+        "guest-observation/round-2/frames.csv": "91157d7876badddd6ed24649e4fc3798c6033fa345e5fcc6982462d7c47b1e0e",
+        "guest-observation/round-2/metadata.json": "49316baadf6013c3d2c273258f70544b2adef9b3eefa1c7f37c0ef7cb2a9491c",
+        "guest-observation/round-2/result.json": "14990dffa746f24461cc5e3646a18f2d64f468a373d8da8e71314110d1f45cd2",
+        "guest-observation/round-2/running.png": "55ceabd897c78e6a46bc59a0d228230f18ad77c73ff989aaeafdfa02079195df",
+        "guest-observation/round-2/screenshot.png": "3a3d3d92c669fe19fa4b209b4b2e377d9747ce38b53c51ed7676c2dfd85c0ef5",
+        "guest-observation/summary.json": "9b43d0957f617eb804821e50eac4d2a310008f71a1ebe721167329fa621ccc92",
+        "guest.stderr": "9776e1d8f38593dbadced5512da7e7e9bbb736186995c069dfd9ab113daba2e5",
+        "guest.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "host-cwd/replays/session-1601151596960184129-1791360790899842356.csv": "83ec504ce26307f2375510d23058739b129b6df36bb56a7612457dd01922eb44",
+        "host-cwd/replays/session-1601151596960184129-1791360790899842356.json": "c00e45f0c79ef528decaa1c5e391462ce7df6cf5888b374a953d6049a539c67b",
+        "host-cwd/replays/session-1601151596960184129-1791360791008494677.csv": "83ec504ce26307f2375510d23058739b129b6df36bb56a7612457dd01922eb44",
+        "host-cwd/replays/session-1601151596960184129-1791360791008494677.json": "0d5a51b8a7d2765014631090e807212ffc397a80757f8d217f2123e7265d0b73",
+        "host-cwd/replays/session-3124893908200008438-1791360784516001226.csv": "9d7e78e46f2e435f703e8010f1d815d820615f99b2bbdd9bc66bab0141d2ca2b",
+        "host-cwd/replays/session-3124893908200008438-1791360784516001226.json": "664cefa357081214e80a3190c5b93f7547acfa1f80245ea71b1ea9ce5186c3f5",
+        "host-cwd/replays/session-3124893908200008438-1791360784659993690.csv": "9d7e78e46f2e435f703e8010f1d815d820615f99b2bbdd9bc66bab0141d2ca2b",
+        "host-cwd/replays/session-3124893908200008438-1791360784659993690.json": "ea8cca1145f3dc9ea12d9d16fdb432f613eddc37fb9a7465e26cd0c67e18b2d6",
+        "host-network/authority.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+        "host-network/live.replay.json": "f4ea49656f5434f6f596a1460809c2aa08eebdb8ca8c6f429affbad511909c79",
+        "host-network/status.json": "21e50156b0932bff35239b29c68bb0281237be87d2e96be5a958003d7cef22c5",
+        "host-network-2/authority.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+        "host-network-2/live.replay.json": "12c46b30a6a1e130d551b2bceb4e36c85287d87e0d92e439e78864e9913a4a03",
+        "host-network-2/status.json": "9a545eb3f062a157336c7ab900344726b084e003b65a13acc6da0fb046959c88",
+        "host-observation/round-1/frames.csv": "451cea833ab3385f1f4927a15fe331a35c899215588c7bb2efc820b8fd001cd9",
+        "host-observation/round-1/metadata.json": "49316baadf6013c3d2c273258f70544b2adef9b3eefa1c7f37c0ef7cb2a9491c",
+        "host-observation/round-1/result.json": "a38149e331efc814ee9fe2971d09a0eaeafbd251dc165ec687e7d1bafb326655",
+        "host-observation/round-1/running.png": "45034b84e0ff41c7b6626cae63ad9dc429a762e73530d0bef515a03bd7c3c707",
+        "host-observation/round-1/screenshot.png": "b01a248efc718e5a697ef43abfea451aca558da68d8cf991b3bd8288c31982a8",
+        "host-observation/round-2/frames.csv": "ba1046c373724f2fd90085d43f693f5ed6bb05d0c924783a6c2792b58a01081a",
+        "host-observation/round-2/metadata.json": "49316baadf6013c3d2c273258f70544b2adef9b3eefa1c7f37c0ef7cb2a9491c",
+        "host-observation/round-2/result.json": "239ebb2a56aa647c26d13f68826c3a829c191af1168d920b99ebd2b281418aae",
+        "host-observation/round-2/running.png": "ed33afd7f7f961a59a2f1d805b559c5579f4f4d4c5d3d77596290ff46430ac7f",
+        "host-observation/round-2/screenshot.png": "050a5f31e880acfbb1fefea311e13357eab1fbb46275936352bd27f34a437c82",
+        "host-observation/summary.json": "9b43d0957f617eb804821e50eac4d2a310008f71a1ebe721167329fa621ccc92",
+        "host.stderr": "58dfeaaed985c8f09dc6e43838010ee6229747ae4456b04a79ea094f2ab2f0e0",
+        "host.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "received/analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+        "received/chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+        "received/song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+        "received/song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b"
+      },
+      "scope": "two native Linux game processes, separate gamescope displays, actual Kira source cursors, synthetic controls, real loopback; physical input, speakers, two machines and human acceptance NOT RUN"
+    },
+    "visual_review": {
+      "status": "PASS",
+      "images_reviewed": 4,
+      "selection": "host/guest × round-1/round-2 screenshot.png (Finished); running.png size checked automatically only",
+      "checks": [
+        "local and remote player roles",
+        "fresh round availability only after first completion",
+        "last round no Start option",
+        "legible result text"
+      ]
+    }
+  },
+  "replay_cli_compatibility": {
+    "baseline": {
+      "path": "target/replay-ui-20261007/baseline.json",
+      "sha256": "52aeb41b935332c1e38dbb8e94cab64b88665d7e9c7dbef3022d5496717d7d5a"
+    },
+    "comparison": {
+      "path": "target/replay-ui-20261007/cli-comparison.json",
+      "sha256": "91ee6bd669d9b26bcd704f478ee7970e3d4fcaf648ded5cab0b707e3a05293f1"
+    },
+    "results": [
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "inspect-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/received",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/host-network/authority.replay.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/current-native.jsonl"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+        "exit_code": 0,
+        "binary_sha256": "b99f9aa68819688d391c09f1f83548bba076095308373b56f91eb949d1e0fc2b",
+        "byte_identical": true,
+        "stdout_identical": true,
+        "report_sha256": "54ef028a8df78679602d94deb86dc093efe16bffb1cf4e7e998d9ccff05e51a8"
+      },
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "inspect-replay",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/loopback-fixed/cancel-after-hit/host/live.replay.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/current-prefix.jsonl"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+        "exit_code": 0,
+        "binary_sha256": "b99f9aa68819688d391c09f1f83548bba076095308373b56f91eb949d1e0fc2b",
+        "byte_identical": true,
+        "stdout_identical": true,
+        "report_sha256": "d597ae7558177d8a0af721de32e9a00f7be60382e5d0450cce40c56f685c887d"
+      }
+    ]
+  },
+  "replay_graphical": {
+    "run": {
+      "path": "target/replay-ui-20261007/native-final/run.json",
+      "sha256": "f600f6376a5f05ed3ba2fa45dfe7a0c0900e78423d47908c6ce1e8c06e1fd0b6"
+    },
+    "build": {
+      "path": "target/replay-ui-20261007/native-final/build.json",
+      "sha256": "f95864d875f72d0640e4c629c8b22f4771183b7b9353f9f48ef79c3623d42ce9"
+    },
+    "prepared": {
+      "path": "target/replay-ui-20261007/native-final/prepared.json",
+      "sha256": "7701089c8e6ae0cc730b7b7fa2ce55cb439c867e9f74c9e8d7cdc544e7eddf56"
+    },
+    "instrumentation_patch": {
+      "path": "target/replay-ui-20261007/native-final/instrumentation.patch",
+      "sha256": "c1573b2f3f7595a797cea7003922ae1728d7040de8d9ac2cd764e66976f82346"
+    },
+    "input_basis": "Synthetic Bevy KeyboardInput messages through unchanged production input::capture",
+    "render_basis": "Native Bevy Screenshot GPU readback in an owned headless gamescope display",
+    "original_sha256": {
+      "package": {
+        "analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+        "chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+        "song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+        "song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b"
+      },
+      "replay": "fa96304e067bec900a96b5342d13f9b885dda410efe7950dcbdf68eabcab13d5",
+      "report": "54ef028a8df78679602d94deb86dc093efe16bffb1cf4e7e998d9ccff05e51a8"
+    },
+    "cases": [
+      {
+        "size": [
+          1280,
+          800
+        ],
+        "command": [
+          "gamescope",
+          "--backend",
+          "headless",
+          "-W",
+          "1280",
+          "-H",
+          "800",
+          "-w",
+          "1280",
+          "-h",
+          "800",
+          "--",
+          "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/native-final/replay-workbench-check",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/received",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/host-network/authority.replay.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/native-final/case-1280",
+        "owned_process_group": 67232,
+        "exit_code": 0,
+        "timed_out": false,
+        "cleanup_signals": [],
+        "png_sha256": {
+          "negative-watermark-details.png": "0dce5ec9af31c32492f236886bed90d86ba62dc9183bbb7cab5d93d7a99f6244",
+          "pair-details-bottom.png": "1fd8a96fd4b11f1d205a03b78254b91efe572a2ea3c6104e346a31c63af00fc6",
+          "pair-details-top.png": "401a239ec34c8fcd7241d9f1119648a8789f9391350e39670fd888736804f121",
+          "pair-wave-list.png": "24e02af46038cf444a83717086107864c0005ba5080e696964e5778f2b36be20",
+          "wave-list-tail.png": "d086235132f14a0b398ca9f97c73bf506b99aa3699a502f779cf19fb564239b1"
+        },
+        "records_visited": 76,
+        "synthetic_press_release_pairs": 107,
+        "selected_screenshot_states": [
+          {
+            "name": "negative-watermark-details",
+            "cursor": -1632,
+            "selected": 0,
+            "record": {
+              "epoch": 14090090734337410996,
+              "fact_index": 1,
+              "player": 1,
+              "through_frames": -1632,
+              "type": "watermark"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 761.0,
+            "first_row": 0,
+            "row_count": 13
+          },
+          {
+            "name": "wave-list-tail",
+            "cursor": 75877,
+            "selected": 75,
+            "record": {
+              "delta_frames": 1418,
+              "event_index": 5,
+              "midpoint_frames": 75877,
+              "p1": {
+                "input_fact_index": 49,
+                "input_seq": 2,
+                "input_song_time_frames": 76586
+              },
+              "p2": {
+                "input_fact_index": 46,
+                "input_seq": 2,
+                "input_song_time_frames": 75168
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 912.0,
+            "first_row": 63,
+            "row_count": 13
+          },
+          {
+            "name": "pair-wave-list",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 912.0,
+            "first_row": 63,
+            "row_count": 13
+          },
+          {
+            "name": "pair-details-top",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 912.0,
+            "first_row": 63,
+            "row_count": 13
+          },
+          {
+            "name": "pair-details-bottom",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 912.0,
+            "computed_scroll": 912.0,
+            "maximum_scroll": 912.0,
+            "first_row": 63,
+            "row_count": 13
+          }
+        ]
+      },
+      {
+        "size": [
+          640,
+          480
+        ],
+        "command": [
+          "gamescope",
+          "--backend",
+          "headless",
+          "-W",
+          "640",
+          "-H",
+          "480",
+          "-w",
+          "640",
+          "-h",
+          "480",
+          "--",
+          "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/native-final/replay-workbench-check",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/received",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/native-final/host-network/authority.replay.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/replay-ui-20261007/native-final/case-640",
+        "owned_process_group": 67385,
+        "exit_code": 0,
+        "timed_out": false,
+        "cleanup_signals": [],
+        "png_sha256": {
+          "negative-watermark-details.png": "bb5bb53a9f3ddfb5670b357260e7f0e981d0542d7680dc7c0deac7c4733f2357",
+          "pair-details-bottom.png": "e43de569d4259dabb372cbb91ef07e1465a0932b7b633fda6098f97e74418832",
+          "pair-details-top.png": "45ddcdd06e61e90a831d59d4c1ece8f96aca6b541aafa6ff2aa09d4232e25596",
+          "pair-wave-list.png": "4e0afcfde04c945f6797faff9ca74626979f262c906344872f71169fc4f913d9",
+          "wave-list-tail.png": "1a048c45852bdd91606afe224accd00f01e06e89be1da70bedfde11c470457a6"
+        },
+        "records_visited": 76,
+        "synthetic_press_release_pairs": 113,
+        "selected_screenshot_states": [
+          {
+            "name": "negative-watermark-details",
+            "cursor": -1632,
+            "selected": 0,
+            "record": {
+              "epoch": 14090090734337410996,
+              "fact_index": 1,
+              "player": 1,
+              "through_frames": -1632,
+              "type": "watermark"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 1031.0,
+            "first_row": 0,
+            "row_count": 5
+          },
+          {
+            "name": "wave-list-tail",
+            "cursor": 75877,
+            "selected": 75,
+            "record": {
+              "delta_frames": 1418,
+              "event_index": 5,
+              "midpoint_frames": 75877,
+              "p1": {
+                "input_fact_index": 49,
+                "input_seq": 2,
+                "input_song_time_frames": 76586
+              },
+              "p2": {
+                "input_fact_index": 46,
+                "input_seq": 2,
+                "input_song_time_frames": 75168
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "first_row": 71,
+            "row_count": 5
+          },
+          {
+            "name": "pair-wave-list",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 0.0,
+            "first_row": 71,
+            "row_count": 5
+          },
+          {
+            "name": "pair-details-top",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 0.0,
+            "computed_scroll": 0.0,
+            "maximum_scroll": 1182.0,
+            "first_row": 71,
+            "row_count": 5
+          },
+          {
+            "name": "pair-details-bottom",
+            "cursor": 26462,
+            "selected": 71,
+            "record": {
+              "delta_frames": 1274,
+              "event_index": 1,
+              "midpoint_frames": 26462,
+              "p1": {
+                "input_fact_index": 32,
+                "input_seq": 0,
+                "input_song_time_frames": 27099
+              },
+              "p2": {
+                "input_fact_index": 30,
+                "input_seq": 0,
+                "input_song_time_frames": 25825
+              },
+              "type": "free_sync"
+            },
+            "state_scroll": 1182.0,
+            "computed_scroll": 1182.0,
+            "maximum_scroll": 1182.0,
+            "first_row": 71,
+            "row_count": 5
+          }
+        ]
+      }
+    ],
+    "visual_review": {
+      "status": "PASS",
+      "reviewer": "root",
+      "images_reviewed": 10,
+      "checks": [
+        "raw negative watermark remains exact",
+        "both Hit markers for selected pair",
+        "virtual list tail and selection",
+        "details top and bottom",
+        "640×480 stacked layout reaches help text"
+      ]
+    },
+    "acceptance_scope": "instrumented production module copy linked to exact existing Cargo artifacts, not physical interaction with the unmodified lab executable"
+  },
+  "historical_failures": [
+    {
+      "status": "FAIL then fixed",
+      "check": "first Clippy",
+      "log": {
+        "path": "target/session-diagnostics-20261007/clippy.log",
+        "sha256": "277a7b76a9d8d09dd5fa72add1755818d9a7b145cdb283953739141d08d14e36"
+      },
+      "reason": "Rust 1.99 chunks_exact_to_as_chunks; replaced with std slice.as_chunks before final tests/build"
+    },
+    {
+      "status": "FAIL then full rerun PASS",
+      "check": "first native QA",
+      "record": {
+        "command": [
+          "python3",
+          "tools/quic-live-check/native.py",
+          "target/debug/cocobeat-game",
+          "target/quic-live-20261007/fixture/package",
+          "target/next-round-20261007/native",
+          "--compositor",
+          "gamescope",
+          "--rounds",
+          "2"
+        ],
+        "exit_code": 1,
+        "failed_assertion": "capture sequences == [1,2,3]",
+        "actual_sequences": [
+          0,
+          1,
+          2
+        ],
+        "reason": "probe expected one-based sequence, production Session sequences start at zero",
+        "production_results": "both processes exit zero; both rounds COMPLETE, fresh epochs and 72 facts each",
+        "probe_sha256": "4508ef569b5f250ff342058fa6c0a696f8828e8254684a9dc13034182350690b"
+      },
+      "record_file": {
+        "path": "target/next-round-20261007/native-validation-failure.json",
+        "sha256": "903cdca9ce4fc8e1206071562d1cd1d3b89c55d9e08463a6aae8e2abdd514378"
+      },
+      "original_probe": {
+        "path": "target/next-round-20261007/native-first-check.py",
+        "sha256": "4508ef569b5f250ff342058fa6c0a696f8828e8254684a9dc13034182350690b"
+      },
+      "reason": "probe expected one-based Hit sequences; production Session uses zero-based; both original production processes exited 0; final two-round run was independent"
+    }
+  ],
+  "not_run": [
+    "fault recovery or reconnect",
+    "long-song hardware drift",
+    "two physical machines/LAN/WAN",
+    "physical keyboard or controllers",
+    "speakers and listening",
+    "Replay v1 device latency or versioned visual replay",
+    "native GUI Windows/ARM",
+    "human or native-language acceptance"
+  ],
+  "next_milestone_excluded": [
+    "unregistered crates/cocobeat-media/src/encode.rs",
+    "tools/native-vorbis-check",
+    "tools/beat-model-probe",
+    "licenses/vorbis-rs"
+  ]
+}

@@ -1,12 +1,21 @@
 # Replay 规则诊断
 
-`inspect-replay` 读取真实歌曲包与 Replay v1，用现有 `Replay::replay` 和同一个 DuoEngine 重放，再把原始输入、水位、已确认判定及配对保存为 JSONL，供人工检查和后续时间线界面使用
+`inspect-replay` 与 `workbench-replay` 读取真实歌曲包与 Replay v1，共用完整校验和唯一 `Replay::replay` / DuoEngine 重放；前者保存 JSONL，后者在原生波形窗口中只读查看原始输入、水位、已确认判定及配对
 
 ```sh
 cargo run --locked -p cocobeat-lab -- inspect-replay PACKAGE REPLAY.json NEW_REPORT.jsonl
+cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json [--locale CODE]
 ```
 
 命令先完整验证歌曲包，只接受当前 `duo-watermark-v1`，再有界解码 Replay、检查所有 Hit 的歌曲范围并校验完整内容 / 规则身份；相同音频但不同谱面不能沿用旧 Replay。原 `build_id` 保留为来源记录，不作为兼容门槛，报告不改绑录制或重新解释歌曲时间
+
+## 图形查看
+
+图形入口复用[原生工作台](editor.md#只读-replay-工作台)的波形、单一主控和虚拟列表，P1 / P2 Hit 分别使用青色 / 橙色，列表逐条保留原 facts 与已确认 events 的顺序。选中 Hit 定位原始整数帧，Anchor 判定定位原 Anchor，Free Sync 定位 core 中点并同时高亮双方原 Hit；详情保留各自的 fact_index、seq、歌曲帧、等级与偏差，不把事件索引解释为触发事实索引
+
+负预滚水位和 EOF 后的水位在行、光标及详情中保持原值，波形视口仍限于实际歌曲；空或单方历史保持待确认状态，不追加水位或补出尚未确认的 Miss。相同帧的多条记录可分别选择，详情按选中记录、header、summary 排列，640×480 使用列表 / 详情页切换和可滚动长文本
+
+该入口只浏览，隐藏编辑、撤销重做和导出控件，并在输入路径阻止修改；原包、Replay 与游戏配置保持不变，没有试听或播放时钟
 
 ## 可检查的事实
 
@@ -40,6 +49,16 @@ Replay 输入沿用 v1 的 20 MiB、160,000 facts 和每个身份最多 256 UTF-
 
 ## 与计时和编辑的关系
 
-Replay v1 没有保存设备时间、软件观察 / 消费时间、音频回调位置或时钟不确定性，本报告不推算这些字段或把歌曲时间差当物理延迟。Session 的另存 CSV 尚缺完整内容 / epoch 关联，本入口不按同名文件自动合并 CSV
+Replay v1 没有保存设备时间、软件观察 / 消费时间、音频回调位置或时钟不确定性，本报告和图形入口不推算这些字段或把歌曲时间差当物理延迟。Session 的另存 CSV 尚缺完整内容 / epoch 关联，本入口不按同名文件自动合并 CSV
 
-[Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。JSONL 是开发诊断入口，波形时间线、Replay 图形界面和真实设备计时仍按各自任务实现
+Replay v1 没有视觉或着色器版本记录，原 `build_id` 不等于视觉兼容证明；当前图形诊断展示事实与规则结果，不承诺复现录制时的画面
+
+[Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。试听校准、设备计时关联和真实输入验收继续独立推进
+
+## 软件验证
+
+2026-10-07 本批 lab / net / runtime / xtask 共 169 项测试、Clippy 和构建通过；正式 `inspect-replay` 对完整网络录制与单事实前缀生成的报告及 stdout 均与旧版逐字节一致，具体来源与命令见[本批观察清单](../testdata/synthetic/session-diagnostics-observations-20261007.json)
+
+受控 GUI 验证使用冻结的五个生产源码文件副本，保持输入、布局与重放逻辑原样，只在副本附加窗口尺寸、合成 `KeyboardInput` 驱动和 Bevy 原生截图系统，再链接正式 Cargo JSON 中的精确 extern；[复现工具](../tools/replay-workbench-check/README.md)记录源 / helper / 依赖 SHA-256、注入差异、命令与退出码
+
+1280×800 和 640×480 各退出 0、逐条核对 76 条记录并保存 5 张 PNG，合计 10 张图已目检；负水位 -1632、Free Sync 双 Hit 与中点 26462、列表末尾和详情顶部 / 底部均有状态断言，原包、Replay 与期望报告字节保持不变。该证据覆盖合成输入和原生 GPU 渲染，物理输入、扬声器、真人体验及历史视觉复现为 NOT RUN

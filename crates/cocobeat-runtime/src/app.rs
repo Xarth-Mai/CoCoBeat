@@ -328,8 +328,12 @@ impl Game {
 #[path = "live_observation.rs"]
 mod live_observation;
 
-pub fn run() -> ExitCode {
-    let mut args: Vec<_> = std::env::args().skip(1).collect();
+struct LiveOptions {
+    observation: Option<PathBuf>,
+    next_rounds: Vec<(PathBuf, PathBuf)>,
+}
+
+fn live_options(args: &mut Vec<String>) -> Result<LiveOptions, String> {
     let observation = if args.len() >= 2 && args[args.len() - 2] == "--live-observation" {
         let path = PathBuf::from(args.pop().unwrap());
         args.pop();
@@ -337,14 +341,44 @@ pub fn run() -> ExitCode {
     } else {
         None
     };
-    if observation.is_some()
-        && !args
-            .iter()
-            .any(|arg| matches!(arg.as_str(), "--net-host" | "--net-join" | "--net-receive"))
-    {
-        eprintln!("--live-observation requires an invited live round");
-        return ExitCode::FAILURE;
+    let mut next_rounds = Vec::new();
+    if let Some(index) = args.iter().position(|arg| arg == "--next-round") {
+        let suffix = args.split_off(index);
+        let (rounds, remainder) = suffix.as_chunks::<3>();
+        for round in rounds {
+            if round[0] != "--next-round" || round[1].is_empty() || round[2].is_empty() {
+                return Err("Each --next-round requires NEW_INVITE NEW_OUTPUT".into());
+            }
+            next_rounds.push((round[1].clone().into(), round[2].clone().into()));
+        }
+        if !remainder.is_empty() {
+            return Err("Each --next-round requires NEW_INVITE NEW_OUTPUT".into());
+        }
     }
+    let invited = match args.as_slice() {
+        [package, _, net, _, _, _] => package == "--package" && net == "--net-host",
+        [package, _, net, _, _] => package == "--package" && net == "--net-join",
+        [net, _, _, _] => net == "--net-receive",
+        _ => false,
+    };
+    if (observation.is_some() || !next_rounds.is_empty()) && !invited {
+        return Err("--next-round and --live-observation require an invited live round".into());
+    }
+    Ok(LiveOptions {
+        observation,
+        next_rounds,
+    })
+}
+
+pub fn run() -> ExitCode {
+    let mut args: Vec<_> = std::env::args().skip(1).collect();
+    let options = match live_options(&mut args) {
+        Ok(options) => options,
+        Err(error) => {
+            eprintln!("{error}");
+            return ExitCode::FAILURE;
+        }
+    };
     let result = match args.as_slice() {
         [] => run_game(None, None),
         [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory)), None),
@@ -364,7 +398,8 @@ pub fn run() -> ExitCode {
                             },
                             output: output.into(),
                         }),
-                        observation.as_deref(),
+                        options.observation.as_deref(),
+                        options.next_rounds,
                     )
                 })
         }
@@ -378,7 +413,8 @@ pub fn run() -> ExitCode {
                     },
                     output: output.into(),
                 }),
-                observation.as_deref(),
+                options.observation.as_deref(),
+                options.next_rounds,
             )
         }
         [net, invite, package, output] if net == "--net-receive" => run_game_observed(
@@ -390,7 +426,8 @@ pub fn run() -> ExitCode {
                 },
                 output: output.into(),
             }),
-            observation.as_deref(),
+            options.observation.as_deref(),
+            options.next_rounds,
         ),
         [flag, directory, replay, path] if flag == "--package" && replay == "--replay" => {
             content::load_package(Path::new(directory))
@@ -452,7 +489,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -577,13 +614,14 @@ fn base_app() -> Result<App, String> {
 }
 
 fn run_game(package: Option<&Path>, network: Option<LiveConfig>) -> Result<(), String> {
-    run_game_observed(package, network, None)
+    run_game_observed(package, network, None, Vec::new())
 }
 
 fn run_game_observed(
     package: Option<&Path>,
     network: Option<LiveConfig>,
     observation: Option<&Path>,
+    next_rounds: Vec<(PathBuf, PathBuf)>,
 ) -> Result<(), String> {
     let receiving = matches!(
         network.as_ref().map(|config| &config.role),
@@ -608,7 +646,9 @@ fn run_game_observed(
     if let Some(player) = network_player {
         game.notice = Message::with("network.ready", [("player", format!("{player:?}"))]);
     }
-    let online = network.map_or_else(OnlineRound::default, OnlineRound::new);
+    let online = network.map_or_else(OnlineRound::default, |config| {
+        OnlineRound::new(config, next_rounds)
+    });
     let audio = AudioOutput::new(sound)?;
     let mut app = base_app()?;
     if let Some(stage) = &game.content.stage {
@@ -809,6 +849,8 @@ fn poll_network(
                 game.fault_details = None;
                 if let Some(stage) = &game.content.stage {
                     commands.insert_resource(crate::scene::StageScene(stage.clone()));
+                } else {
+                    commands.remove_resource::<crate::scene::StageScene>();
                 }
                 online.player = Some(song.player);
                 input.set_network_player(Some(song.player));
@@ -904,7 +946,7 @@ fn poll_network(
                     game.notice = Message::new("network.complete");
                     game.save()?;
                     input.set_menu_open(true);
-                    online.stop();
+                    online.complete();
                 }
                 LiveEvent::Failed(error) => return Err(error),
             },
@@ -1155,7 +1197,18 @@ fn update_game(
                 }
                 Control::Restart => {
                     if online.enabled() {
-                        continue;
+                        if game.phase != Phase::Finished || !online.can_start_next() {
+                            continue;
+                        }
+                        game.main_menu()?;
+                        audio.stop();
+                        online.start_next()?;
+                        game.phase = Phase::Connecting;
+                        game.notice = Message::new("network.connecting");
+                        input.reset_edges();
+                        reset_feedback(&mut visual);
+                        menu_scroll.reset();
+                        break;
                     }
                     game.start(&mut audio)?;
                     reset_feedback(&mut visual);
@@ -1270,6 +1323,14 @@ fn update_game(
         input.set_menu_open(true);
         menu_scroll.reset();
     }
+    if game.phase == Phase::Finished {
+        if online.waiting_for_next_invite() {
+            game.notice = Message::new("network.waiting_next_invite");
+        } else if game.notice.key == "network.waiting_next_invite" {
+            game.notice = Message::new("network.complete");
+        }
+    }
+    input.set_network_next_round(game.phase == Phase::Finished && online.can_start_next());
     visual.transitioning = matches!(
         game.phase,
         Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing
@@ -2344,6 +2405,88 @@ mod tests {
         backend::mock::{MockBackend, MockBackendSettings},
         sound::static_sound::StaticSoundData,
     };
+
+    #[test]
+    fn live_cli_keeps_ordered_next_rounds_and_optional_observation_separate() {
+        for initial in [
+            vec![
+                "--package",
+                "song",
+                "--net-host",
+                "127.0.0.1:0",
+                "invite-1",
+                "out-1",
+            ],
+            vec!["--package", "song", "--net-join", "invite-1", "out-1"],
+            vec!["--net-receive", "invite-1", "received", "out-1"],
+        ] {
+            let mut args: Vec<String> = initial.iter().map(|arg| (*arg).into()).collect();
+            args.extend(
+                [
+                    "--next-round",
+                    "invite-2",
+                    "out-2",
+                    "--next-round",
+                    "invite-3",
+                    "out-3",
+                    "--live-observation",
+                    "observations",
+                ]
+                .map(String::from),
+            );
+            let options = live_options(&mut args).unwrap();
+            assert_eq!(args, initial);
+            assert_eq!(options.observation, Some("observations".into()));
+            assert_eq!(
+                options.next_rounds,
+                vec![
+                    ("invite-2".into(), "out-2".into()),
+                    ("invite-3".into(), "out-3".into()),
+                ]
+            );
+        }
+        let mut args = vec!["--package".into(), "song".into()];
+        let options = live_options(&mut args).unwrap();
+        assert!(options.next_rounds.is_empty());
+        assert!(options.observation.is_none());
+    }
+
+    #[test]
+    fn live_cli_rejects_incomplete_rounds_and_non_network_commands() {
+        for suffix in [
+            vec!["--next-round"],
+            vec!["--next-round", "invite-2"],
+            vec!["--next-round", "", "out-2"],
+            vec!["--next-round", "invite-2", ""],
+            vec!["--next-round", "invite-2", "out-2", "unexpected"],
+            vec![
+                "--next-round",
+                "invite-2",
+                "out-2",
+                "wrong",
+                "invite-3",
+                "out-3",
+            ],
+        ] {
+            let mut args = vec!["--net-receive", "invite-1", "song", "out-1"];
+            args.extend(suffix);
+            assert!(live_options(&mut args.into_iter().map(String::from).collect()).is_err());
+        }
+        for initial in [
+            vec![],
+            vec!["--package", "song"],
+            vec!["--replay", "replay.json"],
+        ] {
+            for suffix in [
+                vec!["--next-round", "invite-2", "out-2"],
+                vec!["--live-observation", "observations"],
+            ] {
+                let mut args = initial.clone();
+                args.extend(suffix);
+                assert!(live_options(&mut args.into_iter().map(String::from).collect()).is_err());
+            }
+        }
+    }
 
     #[test]
     fn section_presentation_follows_the_song_and_clears_on_menus_or_inactive_phases() {

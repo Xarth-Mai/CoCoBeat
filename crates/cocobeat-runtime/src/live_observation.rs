@@ -6,6 +6,15 @@ use std::{fs::File, io::Write, time::Instant};
 #[derive(Resource)]
 struct Observation {
     directory: PathBuf,
+    round_count: usize,
+    rounds: Vec<serde_json::Value>,
+    current: RoundObservation,
+    restart_sent: bool,
+}
+
+struct RoundObservation {
+    number: usize,
+    directory: PathBuf,
     frames: File,
     result: File,
     started: Instant,
@@ -17,37 +26,113 @@ struct Observation {
     terminal_written: bool,
 }
 
-pub(super) fn install(app: &mut App, directory: &Path) -> Result<(), String> {
-    std::fs::create_dir(directory).map_err(|error| format!("Observation directory: {error}"))?;
-    let file = |name| File::create_new(directory.join(name)).map_err(|error| error.to_string());
-    let mut metadata = file("metadata.json")?;
-    serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
-        "build_id": env!("COCOBEAT_BUILD_ID"),
-        "entrypoint": "native DefaultPlugins, AudioOutput, update_game",
-        "controls": "synthetic CapturedControl at software-observed monotonic timestamps",
-        "audio": "actual Kira source cursor, no speaker latency measurement",
-        "output_info": app.world().non_send::<AudioOutput>().output_info(),
-        "not_run": ["physical keyboard", "physical gamepad", "speaker synchronization", "two machines", "human experience", "native-language review"]
-    })).map_err(|error| error.to_string())?;
-    metadata.sync_all().map_err(|error| error.to_string())?;
-    file("running.png")?;
-    file("screenshot.png")?;
-    let mut frames = file("frames.csv")?;
-    writeln!(frames, "frame,monotonic_ns,phase,controls_enabled,brand_complete,cursor_seconds,source_song_frames,estimated_song_frames,epoch,local_player,facts,events,synthetic_hits,network_started")
+impl RoundObservation {
+    fn new(directory: PathBuf, number: usize, output_info: &str) -> Result<Self, String> {
+        let file = |name| File::create_new(directory.join(name)).map_err(|error| error.to_string());
+        let mut metadata = file("metadata.json")?;
+        serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
+            "build_id": env!("COCOBEAT_BUILD_ID"),
+            "entrypoint": "native DefaultPlugins, AudioOutput, update_game",
+            "controls": "synthetic CapturedControl at software-observed monotonic timestamps",
+            "audio": "actual Kira source cursor, no speaker latency measurement",
+            "output_info": output_info,
+            "not_run": ["physical keyboard", "physical gamepad", "speaker synchronization", "two machines", "human experience", "native-language review"]
+        })).map_err(|error| error.to_string())?;
+        metadata.sync_all().map_err(|error| error.to_string())?;
+        file("running.png")?;
+        file("screenshot.png")?;
+        let mut frames = file("frames.csv")?;
+        writeln!(frames, "frame,monotonic_ns,phase,controls_enabled,brand_complete,cursor_seconds,source_song_frames,estimated_song_frames,epoch,local_player,facts,events,synthetic_hits,network_started")
+            .map_err(|error| error.to_string())?;
+        Ok(Self {
+            number,
+            frames,
+            result: file("result.json")?,
+            directory,
+            started: Instant::now(),
+            frame: 0,
+            start_sent: false,
+            hits_sent: 0,
+            requested: [false; 2],
+            captures: [None, None],
+            terminal_written: false,
+        })
+    }
+}
+
+impl Observation {
+    fn new(directory: &Path, round_count: usize, output_info: &str) -> Result<Self, String> {
+        std::fs::create_dir(directory)
+            .map_err(|error| format!("Observation directory: {error}"))?;
+        let first = if round_count > 1 {
+            let path = directory.join("round-1");
+            std::fs::create_dir(&path).map_err(|error| error.to_string())?;
+            path
+        } else {
+            directory.to_path_buf()
+        };
+        Ok(Self {
+            directory: directory.to_path_buf(),
+            round_count,
+            rounds: Vec::new(),
+            current: RoundObservation::new(first, 1, output_info)?,
+            restart_sent: false,
+        })
+    }
+
+    fn observe_transition(
+        &mut self,
+        phase: Phase,
+        remaining_rounds: usize,
+        output_info: &str,
+    ) -> Result<(), String> {
+        if self.restart_sent
+            && phase == Phase::Connecting
+            && remaining_rounds + self.current.number + 1 == self.round_count
+        {
+            let number = self.current.number + 1;
+            let directory = self.directory.join(format!("round-{number}"));
+            std::fs::create_dir(&directory).map_err(|error| error.to_string())?;
+            self.current = RoundObservation::new(directory, number, output_info)?;
+            self.restart_sent = false;
+        }
+        Ok(())
+    }
+
+    fn write_summary(&self, error: Option<&str>) -> Result<(), String> {
+        if self.round_count == 1 {
+            return Ok(());
+        }
+        let complete = error.is_none()
+            && self.rounds.len() == self.round_count
+            && self
+                .rounds
+                .iter()
+                .all(|round| round["status"] == "COMPLETE");
+        let mut file = File::create_new(self.directory.join("summary.json"))
+            .map_err(|error| error.to_string())?;
+        serde_json::to_writer_pretty(
+            &mut file,
+            &serde_json::json!({
+                "round_count": self.round_count,
+                "status": if complete { "COMPLETE" } else { "FAILED" },
+                "error": error,
+                "rounds": self.rounds,
+            }),
+        )
         .map_err(|error| error.to_string())?;
-    app.insert_resource(Observation {
-        directory: directory.to_path_buf(),
-        frames,
-        result: file("result.json")?,
-        started: Instant::now(),
-        frame: 0,
-        start_sent: false,
-        hits_sent: 0,
-        requested: [false; 2],
-        captures: [None, None],
-        terminal_written: false,
-    })
-    .add_systems(
+        file.sync_all().map_err(|error| error.to_string())
+    }
+}
+
+pub(super) fn install(app: &mut App, directory: &Path) -> Result<(), String> {
+    let round_count = app.world().non_send::<OnlineRound>().remaining_rounds() + 1;
+    let observation = Observation::new(
+        directory,
+        round_count,
+        app.world().non_send::<AudioOutput>().output_info(),
+    )?;
+    app.insert_resource(observation).add_systems(
         Update,
         observe
             .before(update_game)
@@ -62,10 +147,10 @@ fn record_result(
     online: &OnlineRound,
     error: Option<&str>,
 ) -> Result<(), String> {
-    if observation.terminal_written {
+    if observation.current.terminal_written {
         return Ok(());
     }
-    observation.terminal_written = true;
+    observation.current.terminal_written = true;
     let diagnostics: Vec<_> = game.session.diagnostics.iter().map(|capture| serde_json::json!({
         "player": format!("{:?}", capture.player), "seq": capture.seq,
         "observed_ns": capture.observed_ns, "consumed_ns": capture.consumed_ns,
@@ -75,20 +160,27 @@ fn record_result(
         "status": if game.phase == Phase::Finished && error.is_none() { "COMPLETE" } else { "FAILED" },
         "phase": format!("{:?}", game.phase), "error": error.or(game.fault_details.as_deref()),
         "epoch": game.session.epoch().0, "content_id": game.content.content_id,
-        "canonical_frames": game.content.end.frames(), "frames_observed": observation.frame,
+        "canonical_frames": game.content.end.frames(), "frames_observed": observation.current.frame,
         "local_player": online.player.map(|player| format!("{player:?}")),
         "network_started": online.started, "local_ended": online.local_ended,
         "facts": game.session.replay.facts().len(), "events": game.session.engine.events().len(),
-        "synthetic_hits_requested": observation.hits_sent, "capture_diagnostics": diagnostics,
-        "running_capture": observation.captures[0], "terminal_capture": observation.captures[1],
+        "synthetic_hits_requested": observation.current.hits_sent, "capture_diagnostics": diagnostics,
+        "running_capture": observation.current.captures[0], "terminal_capture": observation.current.captures[1],
     });
-    serde_json::to_writer_pretty(&mut observation.result, &result)
+    serde_json::to_writer_pretty(&mut observation.current.result, &result)
         .map_err(|error| error.to_string())?;
     observation
+        .current
         .frames
         .sync_all()
-        .and_then(|()| observation.result.sync_all())
-        .map_err(|error| error.to_string())
+        .and_then(|()| observation.current.result.sync_all())
+        .map_err(|error| error.to_string())?;
+    observation.rounds.push(serde_json::json!({
+        "round": observation.current.number,
+        "epoch": result["epoch"],
+        "status": result["status"],
+    }));
+    Ok(())
 }
 
 fn observe(
@@ -105,10 +197,15 @@ fn observe(
     }
     let now = u64::try_from(input.origin.elapsed().as_nanos()).unwrap_or(u64::MAX);
     let result = (|| -> Result<(), String> {
-        if observation.started.elapsed().as_secs() >= 120 {
+        observation.observe_transition(
+            game.phase,
+            online.remaining_rounds(),
+            audio.output_info(),
+        )?;
+        if observation.current.started.elapsed().as_secs() >= 120 {
             return Err("Native observation exceeded its 120-second deadline".into());
         }
-        observation.frame += 1;
+        observation.current.frame += 1;
         let source = game
             .session
             .clock
@@ -119,10 +216,10 @@ fn observe(
             .position()
             .map(|position| position.to_string())
             .unwrap_or_default();
-        let frame = observation.frame;
-        let hits_sent = observation.hits_sent;
+        let frame = observation.current.frame;
+        let hits_sent = observation.current.hits_sent;
         writeln!(
-            observation.frames,
+            observation.current.frames,
             "{},{now},{:?},{},{},{cursor},{source},{},{},{},{},{},{},{}",
             frame,
             game.phase,
@@ -140,7 +237,7 @@ fn observe(
             online.started
         )
         .map_err(|error| error.to_string())?;
-        if !observation.start_sent
+        if !observation.current.start_sent
             && brand.is_complete()
             && input.controls_enabled()
             && game.phase == Phase::Ready
@@ -149,20 +246,22 @@ fn observe(
                 control: Control::Start,
                 monotonic_ns: now,
             });
-            observation.start_sent = true;
+            observation.current.start_sent = true;
         }
-        if game.phase == Phase::Running && observation.hits_sent < 3 {
-            let threshold = game.content.end.frames() * (observation.hits_sent as i64 + 1) / 4;
+        if game.phase == Phase::Running && observation.current.hits_sent < 3 {
+            let threshold =
+                game.content.end.frames() * (observation.current.hits_sent as i64 + 1) / 4;
             if game.session.current.frames() >= threshold {
                 let player = online.player.unwrap_or(PlayerId::P1);
                 input.queued.push(input::CapturedControl {
                     control: Control::Hit(player),
                     monotonic_ns: now,
                 });
-                observation.hits_sent += 1;
+                observation.current.hits_sent += 1;
             }
         }
         if let Some(error) = observation
+            .current
             .captures
             .iter()
             .find_map(|capture| capture.as_ref().and_then(|result| result.as_ref().err()))
@@ -173,20 +272,27 @@ fn observe(
             let eligible = if index == 0 {
                 game.phase == Phase::Running && !game.session.diagnostics.is_empty()
             } else {
-                matches!(game.phase, Phase::Finished | Phase::Fault)
+                game.phase == Phase::Fault
+                    || (game.phase == Phase::Finished
+                        && (online.remaining_rounds() == 0
+                            || (online.can_start_next() && input.can_start_next_round())))
             };
-            if !eligible || observation.requested[index] {
+            if !eligible || observation.current.requested[index] {
                 continue;
             }
-            observation.requested[index] = true;
-            let path = observation.directory.join(if index == 0 {
+            observation.current.requested[index] = true;
+            let path = observation.current.directory.join(if index == 0 {
                 "running.png"
             } else {
                 "screenshot.png"
             });
+            let number = observation.current.number;
             commands.spawn(Screenshot::primary_window()).observe(
                 move |capture: On<ScreenshotCaptured>, mut observation: ResMut<Observation>| {
-                    observation.captures[index] = Some(
+                    if observation.current.number != number {
+                        return;
+                    }
+                    observation.current.captures[index] = Some(
                         capture
                             .image
                             .clone()
@@ -201,15 +307,29 @@ fn observe(
                 },
             );
         }
-        if observation.captures[1].is_some()
-            && (!observation.requested[0] || observation.captures[0].is_some())
+        if observation.current.captures[1].is_some()
+            && (!observation.current.requested[0] || observation.current.captures[0].is_some())
         {
             record_result(&mut observation, &game, &online, None)?;
-            game.closing_error = game.phase == Phase::Fault;
-            input.queued.push(input::CapturedControl {
-                control: Control::Quit,
-                monotonic_ns: now,
-            });
+            if game.phase == Phase::Finished && online.remaining_rounds() > 0 {
+                if !observation.restart_sent
+                    && online.can_start_next()
+                    && input.can_start_next_round()
+                {
+                    input.queued.push(input::CapturedControl {
+                        control: Control::Restart,
+                        monotonic_ns: now,
+                    });
+                    observation.restart_sent = true;
+                }
+            } else {
+                observation.write_summary(game.fault_details.as_deref())?;
+                game.closing_error = game.phase == Phase::Fault;
+                input.queued.push(input::CapturedControl {
+                    control: Control::Quit,
+                    monotonic_ns: now,
+                });
+            }
         }
         Ok(())
     })();
@@ -217,10 +337,107 @@ fn observe(
         eprintln!("Native observation failed: {error}");
         let _ = record_result(&mut observation, &game, &online, Some(&error))
             .inspect_err(|write| eprintln!("Observation result write failed: {write}"));
+        let _ = observation
+            .write_summary(Some(&error))
+            .inspect_err(|write| eprintln!("Observation summary write failed: {write}"));
         game.fault(&mut audio, error, "game.stopped");
         game.closing_error = true;
         game.closing = true;
         online.stop();
         input.queued.clear();
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn observations_keep_single_round_paths_and_rotate_only_after_a_new_connection() {
+        let directory = std::env::temp_dir().join(format!(
+            "cocobeat-observation-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir(&directory).unwrap();
+        let single = directory.join("single");
+        let observation = Observation::new(&single, 1, "test output").unwrap();
+        assert_eq!(observation.current.directory, single);
+        let files = [
+            "metadata.json",
+            "frames.csv",
+            "result.json",
+            "running.png",
+            "screenshot.png",
+        ];
+        assert!(files.iter().all(|file| single.join(file).is_file()));
+        observation.write_summary(None).unwrap();
+        assert!(!single.join("summary.json").exists());
+        drop(observation);
+
+        let multiple = directory.join("multiple");
+        let mut observation = Observation::new(&multiple, 2, "test output").unwrap();
+        observation.current.frame = 7;
+        observation.current.start_sent = true;
+        observation.current.hits_sent = 3;
+        observation.current.requested = [true; 2];
+        observation.current.captures = [Some(Ok([1280, 800])), Some(Ok([1280, 800]))];
+        let mut game = Game::new().unwrap();
+        game.phase = Phase::Finished;
+        record_result(&mut observation, &game, &OnlineRound::default(), None).unwrap();
+        let first_files =
+            files.map(|file| std::fs::read(multiple.join("round-1").join(file)).unwrap());
+        observation.restart_sent = true;
+        observation
+            .observe_transition(Phase::Finished, 1, "test output")
+            .unwrap();
+        observation
+            .observe_transition(Phase::Connecting, 1, "test output")
+            .unwrap();
+        assert_eq!(observation.current.number, 1);
+        assert!(!multiple.join("round-2").exists());
+
+        observation
+            .observe_transition(Phase::Connecting, 0, "test output")
+            .unwrap();
+        assert_eq!(observation.current.number, 2);
+        assert_eq!(observation.current.directory, multiple.join("round-2"));
+        assert_eq!(observation.current.frame, 0);
+        assert_eq!(observation.current.hits_sent, 0);
+        assert!(!observation.current.start_sent);
+        assert!(!observation.current.terminal_written);
+        assert_eq!(observation.current.requested, [false; 2]);
+        assert_eq!(observation.current.captures, [None, None]);
+        assert!(!observation.restart_sent);
+        observation.current.frame = 1;
+        observation
+            .observe_transition(Phase::Connecting, 0, "test output")
+            .unwrap();
+        assert_eq!(observation.current.frame, 1);
+        game.session = Session::for_content(SessionEpoch(42), &game.content).unwrap();
+        record_result(&mut observation, &game, &OnlineRound::default(), None).unwrap();
+        observation.write_summary(None).unwrap();
+        let summary: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(multiple.join("summary.json")).unwrap()).unwrap();
+        assert_eq!(summary["status"], "COMPLETE");
+        assert_eq!(summary["round_count"], 2);
+        assert_eq!(
+            summary["rounds"],
+            serde_json::json!([
+                {"round": 1, "epoch": 0, "status": "COMPLETE"},
+                {"round": 2, "epoch": 42, "status": "COMPLETE"},
+            ])
+        );
+        for (file, original) in files.iter().zip(first_files) {
+            assert_eq!(
+                std::fs::read(multiple.join("round-1").join(file)).unwrap(),
+                original
+            );
+        }
+        drop(observation);
+        std::fs::remove_dir_all(directory).unwrap();
     }
 }

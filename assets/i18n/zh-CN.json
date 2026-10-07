@@ -189,5 +189,14 @@
   "network.failed": "联网演奏已中断",
   "network.round_closed": "本次邀请已结束 · 请重新启动一场联网演奏",
   "network.local_binding": "本机 {player}：{binding}",
-  "network.remote_player": "伙伴 {player}：远端操作"
+  "network.remote_player": "伙伴 {player}：远端操作",
+  "replay.title": "CoCoBeat · Replay 诊断",
+  "replay.records": "记录（{count}）",
+  "replay.legend": "P1 青色 · P2 橙色 · Anchor 位于波形下方",
+  "replay.help": "只读 · Tab / 肩键切换焦点 · 方向键 / 十字键浏览 · Enter / South 查看详情 · 滚轮缩放 · Shift＋滚轮平移 · Esc / East 关闭",
+  "workbench.replay.fact": "事实 {index} · {kind} · {frame} 帧",
+  "workbench.replay.event": "事件 {index} · {kind} · {frame} 帧",
+  "workbench.replay.fields": "事实保留录制顺序，事件保留规则确认顺序。fact_index 和 input_fact_index 引用事实；event_index 是事件编号，不是触发事件的事实索引。所有 *_frames 字段均使用以 48 kHz 音频帧为单位的精确整数，负值及 EOF 之后的进度水位均保持原样。null 表示信息不可用。Replay v1 不记录设备时间戳，因此无法提供物理输入延迟。",
+  "network.next_round": "开始下一轮联网演奏",
+  "network.waiting_next_invite": "等待房主的下一次邀请"
 }

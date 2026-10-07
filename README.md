@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及支持预装或原字节接收同包的 QUIC 可靠历史与权威 Replay 软件会话；游戏也已接单局实时 QUIC 演奏、原字节曲包接收、Kira 预约与伙伴反馈；完整歌曲导入、自动 MIR、候选与 Replay 图形诊断、网络重开 / 重入及实际设备验收仍在后续路线图
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘/手柄菜单、Free Sync、Anchor Sync、Resonance 和本地 Replay；游戏可选择内置开发歌曲或通过 `--package` 播放已验证的手工内容包，实验工具已接入有资源上限的源音频解码、48 kHz 重采样、严格 canonical 读回和手工内容包事务，lab 已提供原生波形编辑工作台及支持预装或原字节接收同包的 QUIC 可靠历史与权威 Replay 软件会话；游戏也已接实时 QUIC 演奏、原字节曲包接收、Kira 预约与伙伴反馈，正常完成后可在同一进程使用新邀请开始下一局；lab 已提供只读 Replay 波形与配对诊断。完整歌曲导入、自动 MIR、候选审阅、试听、网络故障重入及实际设备验收仍在后续路线图
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
@@ -43,7 +43,7 @@ cargo xtask check
 cargo run --locked -p cocobeat-game
 ```
 
-Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。研究报告中的版本号只作为历史参考
+Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。各模块可采用适合需求的成熟库，不追求纯 Rust，须核验许可证、跨平台构建与发行方式；研究报告中的版本号只作为历史参考
 
 正常启动完整播放原生 Logo 动画，再将同一 Logo 移至左上角并显露界面，随后保持 Ready，主菜单播放眼睛循环；开始歌曲、暂停和结算时使用静态定稿，失焦冻结菜单动画，恢复后继续；音乐在用户另行选择 Start 后播放，片头期间的按键和手柄操作不会穿透到游戏，窗口关闭仍有效；音频输出初始化失败会明确退出
 
@@ -90,6 +90,7 @@ cargo run --locked -p cocobeat-game -- --quality-smoke low target/cocobeat-quali
 cargo run --locked -p cocobeat-game -- --settings-page-smoke graphics zh-CN target/cocobeat-graphics.png
 cargo run --locked -p cocobeat-game -- --settings-page-smoke pacing en-GB target/cocobeat-pacing.png
 cargo run --locked -p cocobeat-game -- --viewport-smoke languages en-GB 1280 800 2 2 target/cocobeat-dpi.png
+cargo run --locked -p cocobeat-lab -- workbench-replay path/to/song-package path/to/session.json --locale zh-CN
 cargo run --locked -p cocobeat-lab -- timing-sim
 cargo run --locked -p cocobeat-lab -- generate-dev
 cargo run --locked -p cocobeat-lab -- decode-audio input.wav new-output.f32le

@@ -1,8 +1,8 @@
-# Anchor 编辑工作台与命令行
+# Anchor 编辑与 Replay 工作台
 
 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 用整数音频帧修正已有 SongPackage 的 Anchor，并导出可重新加载的新包；当前支持增删、移动、撤销和重做，不修改分析事实、SectionCue 或判定规则，包格式继续使用 [SongPackage v1](song-package.md)
 
-原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，候选证据视图、Replay 图形诊断和试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的 JSONL 查看入口见 [Replay 诊断](replay-diagnostics.md)
+原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，并提供只读 Replay 诊断入口，候选证据视图和试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的查看契约见 [Replay 诊断](replay-diagnostics.md)
 
 ## 原生工作台
 
@@ -33,6 +33,20 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 密集重合标记显示选中像素内的 Anchor 数量，虚拟列表可逐个选中；详情显示作者原有 SectionCue 的 ID、帧和文字，不推断音乐强度或把提示当作判定点。光标可以查看 EOF，Anchor 只能位于结束帧之前；新项使用最小未用 ID，已有最大 u64 ID 不妨碍继续新增
 
 导出在后台调用同一 `export_anchors`，期间保留窗口并暂停编辑和关闭；成功输出源 / 新包身份及路径后退出。验证、源身份变化或目标冲突导致失败时保留草稿及窗口，可修正外部条件后重试；源包和已有目标均保留，输出路径继续遵守下述新目录约束
+
+## 只读 Replay 工作台
+
+```sh
+cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json --locale zh-CN
+```
+
+`workbench-replay PACKAGE REPLAY [--locale CODE]` 共用源包完整验证和 Replay 身份检查，复用同一窗口、波形、语言、主控与整数光标；工具栏只提供缩放和返回，隐藏帧编辑与导出，快捷键和拖动也不会修改 Anchor、撤销历史或源文件
+
+P1 青色、P2 橙色标记显示原始 Hit，Anchor 位于波形下方；列表先列录制顺序的 facts，再列 core 确认顺序的 events，最多绘制 16 行并随选择滚动，同帧记录可逐条选择。选择判定或配对时定位精确帧并高亮关联 Hit，详情顶部显示选中记录，随后是来源、规则与最终摘要
+
+Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表内方向键或滚轮逐条浏览，Enter / South 查看详情；640×480 窗口通过列表 / 详情页切换保留空间，详情支持换行和方向键 / 滚轮滚动到底。选中水位时保留负预滚或 EOF 后的原始帧值，手动光标导航仍限于歌曲范围
+
+本入口没有试听或物理计时测量；Replay v1 没有设备时间戳和视觉版本，界面不推算物理输入延迟，也不承诺复现录制时的视觉效果。本批软件与受控 GPU 证据见 [Replay 诊断验证](replay-diagnostics.md#软件验证)
 
 ## 使用方式
 

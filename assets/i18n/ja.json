@@ -189,5 +189,14 @@
   "network.failed": "オンライン演奏が中断されました",
   "network.round_closed": "この招待は終了しました · 新しいオンライン演奏を起動してください",
   "network.local_binding": "この端末の {player}：{binding}",
-  "network.remote_player": "パートナーの {player}：相手の端末で操作"
+  "network.remote_player": "パートナーの {player}：相手の端末で操作",
+  "replay.title": "CoCoBeat · Replay 診断",
+  "replay.records": "記録（{count}）",
+  "replay.legend": "P1：シアン · P2：オレンジ · Anchor は波形の下に表示",
+  "replay.help": "閲覧のみ · Tab / ショルダーボタン：フォーカス · 矢印 / 方向キー：閲覧 · Enter / South：詳細 · ホイール：拡大縮小 · Shift＋ホイール：範囲移動 · Esc / East：閉じる",
+  "workbench.replay.fact": "事実 {index} · {kind} · {frame} フレーム",
+  "workbench.replay.event": "イベント {index} · {kind} · {frame} フレーム",
+  "workbench.replay.fields": "事実は記録順、イベントはルールによる確定順を保持します。fact_index と input_fact_index は事実を参照します。event_index はイベントの番号であり、発生元の事実のインデックスではありません。すべての *_frames フィールドは 48 kHz のフレーム単位で正確な整数値を使用します。負の進行ウォーターマークと EOF 後の進行ウォーターマークもそのまま保持します。null は情報がないことを示します。Replay v1 はデバイスのタイムスタンプを記録しないため、物理入力の遅延は取得できません。",
+  "network.next_round": "次のオンラインラウンドを開始",
+  "network.waiting_next_invite": "ホストからの次の招待を待っています"
 }

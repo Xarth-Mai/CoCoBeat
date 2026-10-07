@@ -161,6 +161,7 @@ impl MenuAction {
             Self::Resume => ("menu.resume", None),
             Self::Players => ("menu.players", None),
             Self::Settings => ("menu.settings", None),
+            Self::Restart if network_player.is_some() => ("network.next_round", None),
             Self::Restart => ("menu.restart", None),
             Self::SaveReplay => ("menu.save_replay", None),
             Self::MainMenu => ("menu.main", None),
@@ -221,6 +222,7 @@ pub struct InputState {
     players_open: bool,
     network_player: Option<PlayerId>,
     network_spent: bool,
+    network_next_round: bool,
     menu_owner: Option<InputSource>,
     controller_order: Vec<Entity>,
     keys: [KeyCode; 2],
@@ -251,6 +253,7 @@ impl Default for InputState {
             players_open: false,
             network_player: None,
             network_spent: false,
+            network_next_round: false,
             menu_owner: None,
             controller_order: Vec::new(),
             keys: [KeyCode::KeyF, KeyCode::KeyJ],
@@ -291,6 +294,25 @@ impl InputState {
             self.menu_row_count = self.menu_actions().len().max(1);
             self.reset_edges();
         }
+    }
+
+    pub fn set_network_next_round(&mut self, available: bool) {
+        if self.network_next_round != available {
+            self.network_next_round = available;
+            self.queued
+                .retain(|event| event.control == Control::FocusLost);
+            self.selection = 0;
+            self.menu_row_count = self.menu_actions().len().max(1);
+            self.reset_edges();
+        }
+    }
+
+    pub(crate) fn can_start_next_round(&self) -> bool {
+        self.network_spent
+            && self.menu_open
+            && !self.settings_open
+            && !self.players_open
+            && self.menu_actions().contains(&MenuAction::Restart)
     }
 
     fn displayed_player(&self, player: PlayerId) -> PlayerId {
@@ -733,12 +755,14 @@ impl InputState {
         };
         actions
             .into_iter()
-            .filter(|action| {
-                !self.network_spent
-                    || !matches!(
-                        action,
-                        MenuAction::Start | MenuAction::Resume | MenuAction::Restart
-                    )
+            .filter(|action| match action {
+                MenuAction::Start | MenuAction::Resume => !self.network_spent,
+                MenuAction::Restart if self.network_player.is_some() || self.network_spent => {
+                    self.network_spent
+                        && self.network_next_round
+                        && self.menu_phase == MenuPhase::Finished
+                }
+                _ => true,
             })
             .filter(|action| {
                 self.network_player.is_none()
@@ -925,9 +949,12 @@ impl InputState {
             }
             KeyCode::Escape => self.emit(Control::TogglePause(InputSource::Keyboard), now),
             KeyCode::F5
-                if !self.network_spent
-                    && !self.players_open
-                    && (!self.menu_open || self.menu_actions().contains(&MenuAction::Restart)) =>
+                if !self.players_open
+                    && if self.menu_open {
+                        self.menu_actions().contains(&MenuAction::Restart)
+                    } else {
+                        self.network_player.is_none() && !self.network_spent
+                    } =>
             {
                 self.emit(Control::Restart, now)
             }
@@ -1428,6 +1455,115 @@ mod tests {
         next_frame(&mut input);
         input.key(KeyCode::Enter, true, false, 5, &mut scroll);
         assert_eq!(input.queued[0].control, Control::Start);
+    }
+
+    #[test]
+    fn network_next_round_requires_finished_spent_and_available_for_menu_and_f5() {
+        for phase in [
+            MenuPhase::Ready,
+            MenuPhase::Paused,
+            MenuPhase::Finished,
+            MenuPhase::Fault,
+        ] {
+            for spent in [false, true] {
+                for available in [false, true] {
+                    let mut input = controlled_input();
+                    let mut scroll = MenuScroll::default();
+                    input.set_network_player(Some(PlayerId::P2));
+                    input.set_menu_phase(phase, true);
+                    input.set_network_spent(spent);
+                    input.set_network_next_round(available);
+                    let expected = spent && available && phase == MenuPhase::Finished;
+                    let actions = input.menu_actions();
+                    assert_eq!(actions.contains(&MenuAction::Restart), expected);
+                    assert_eq!(input.can_start_next_round(), expected);
+                    if spent {
+                        assert!(!actions.contains(&MenuAction::Start));
+                        assert!(!actions.contains(&MenuAction::Resume));
+                    }
+                    next_frame(&mut input);
+                    input.key(KeyCode::F5, true, false, 0, &mut scroll);
+                    assert_eq!(input.queued.len(), usize::from(expected));
+                    if expected {
+                        assert_eq!(input.queued[0].control, Control::Restart);
+                        assert_eq!(
+                            actions[0].label(Locale::EnUs, input.network_player),
+                            Locale::EnUs.text("network.next_round")
+                        );
+                    }
+                    input.queued.clear();
+                    input.set_menu_open(false);
+                    next_frame(&mut input);
+                    input.key(KeyCode::F5, false, false, 1, &mut scroll);
+                    input.key(KeyCode::F5, true, false, 2, &mut scroll);
+                    assert!(input.queued.is_empty());
+                    assert!(!input.can_start_next_round());
+                }
+            }
+        }
+        let mut offline = controlled_input();
+        let mut scroll = MenuScroll::default();
+        offline.set_menu_open(false);
+        next_frame(&mut offline);
+        offline.key(KeyCode::F5, true, false, 0, &mut scroll);
+        assert_eq!(offline.queued[0].control, Control::Restart);
+        assert_eq!(
+            MenuAction::Restart.label(Locale::EnUs, None),
+            "Restart song"
+        );
+    }
+
+    #[test]
+    fn next_round_menu_changes_keep_held_barriers_and_consume_one_confirmation() {
+        let mut world = World::new();
+        let pad = world.spawn_empty().id();
+        for use_pad in [false, true] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            input.set_network_player(Some(PlayerId::P1));
+            input.set_network_spent(true);
+            input.set_menu_phase(MenuPhase::Finished, true);
+            if use_pad {
+                input.claim_menu(InputSource::Pad(pad));
+                input.pad_button(pad, GamepadButton::South, true, 0, &mut scroll);
+            } else {
+                input.key(KeyCode::Enter, true, false, 0, &mut scroll);
+            }
+            input.selection = input.menu_row_count - 1;
+            input.emit(Control::FocusLost, 1);
+            input.emit(Control::Restart, 2);
+            input.set_network_next_round(true);
+            assert_eq!(input.selection, 0);
+            assert_eq!(input.menu_row_count, input.menu_actions().len());
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::FocusLost);
+            input.queued.clear();
+            next_frame(&mut input);
+            if use_pad {
+                input.pad_button(pad, GamepadButton::South, true, 3, &mut scroll);
+                assert!(input.queued.is_empty());
+                input.pad_button(pad, GamepadButton::South, false, 4, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, true, 5, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, false, 6, &mut scroll);
+                input.pad_button(pad, GamepadButton::South, true, 7, &mut scroll);
+            } else {
+                input.key(KeyCode::Enter, true, false, 3, &mut scroll);
+                assert!(input.queued.is_empty());
+                input.key(KeyCode::Enter, false, false, 4, &mut scroll);
+                input.key(KeyCode::Enter, true, false, 5, &mut scroll);
+                input.key(KeyCode::Enter, false, false, 6, &mut scroll);
+                input.key(KeyCode::Enter, true, false, 7, &mut scroll);
+            }
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(input.queued[0].control, Control::Restart);
+            input.set_network_next_round(true);
+            assert_eq!(input.queued.len(), 1);
+            input.set_network_next_round(false);
+            assert!(input.queued.is_empty());
+            assert!(!input.can_start_next_round());
+            assert_eq!(input.selection, 0);
+            assert_eq!(input.menu_row_count, input.menu_actions().len());
+        }
     }
 
     #[test]

@@ -99,7 +99,7 @@ rusty q5 适配器的 600 秒输入、两路完整解码与 EOS 均为 28,800,00
 
 SNR 使用同一绝对帧位置的输入能量与误差能量；排除首尾各 2048 帧后，rusty 右声道 q5/q10 仍为 -1.516/-1.250 dB，libvorbis 为 40.644 dB，因此不能只用文件边缘的峰值解释；本次将 rusty 标为 `FAIL_QUALITY_CURRENT_CASE`，提高到最高官方 q10 也未解决，结构 `PASS_STRUCTURAL` 仍单独保留；不同库质量刻度和码率不等价，这个样本不支持普遍音质排名
 
-libvorbis 仅通过已安装 FFmpeg 执行独立参照，不进入产品或研究 Rust 依赖；当前不以它替换唯一纯 Rust 编码路径，OxideAV 的完整音质、十分钟资源和 Windows 门槛仍未通过
+该历史批次的 libvorbis 仅通过已安装 FFmpeg 执行独立参照，未进入当时的产品或研究 Rust 依赖，OxideAV 的完整音质、十分钟资源和 Windows 门槛未通过。2026-10-07 用户批准不再追求纯 Rust，并允许 vorbis_rs 静态内嵌成熟 C 编码库作为完成软件准入后的唯一生产路径；历史候选、参照和失败保持原样，新路径独立取证，产品仍不调用 FFmpeg 或运行时备用编码器
 
 ### rusty 独立 coupling 诊断：根因确认，未准入
 

@@ -21,6 +21,34 @@ const MAX_REPORT_LINES: usize = 2 + MAX_FACTS + 3 * MAX_CONTENT_ITEMS + MAX_FACT
 
 pub fn inspect(source: &Path, replay_path: &Path, destination: &Path) -> Result<(), String> {
     let package = cocobeat_media::validate_package(source)?;
+    let (replay, engine) = load(&package, replay_path)?;
+    let parent = destination
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    if fs::canonicalize(parent)
+        .map_err(|error| format!("Cannot resolve report destination parent: {error}"))?
+        .starts_with(fs::canonicalize(source).map_err(|error| error.to_string())?)
+    {
+        return Err("Replay diagnostic must be written outside the source package".into());
+    }
+    write_new_report(destination, &package, &replay, &engine, DuoRules::default())?;
+    println!(
+        "{}",
+        json!({
+            "report_version": REPORT_VERSION,
+            "content_id": replay.identity().content_id,
+            "fact_count": replay.facts().len(),
+            "event_count": engine.events().len(),
+        })
+    );
+    Ok(())
+}
+
+pub(crate) fn load(
+    package: &ValidatedPackage,
+    replay_path: &Path,
+) -> Result<(Replay, DuoEngine), String> {
     if package.chart.ruleset_id != RULES_ID {
         return Err(format!(
             "Unsupported song ruleset: {}",
@@ -66,27 +94,7 @@ pub fn inspect(source: &Path, replay_path: &Path, destination: &Path) -> Result<
             rules,
         )
         .map_err(|error| error.to_string())?;
-    let parent = destination
-        .parent()
-        .filter(|parent| !parent.as_os_str().is_empty())
-        .unwrap_or_else(|| Path::new("."));
-    if fs::canonicalize(parent)
-        .map_err(|error| format!("Cannot resolve report destination parent: {error}"))?
-        .starts_with(fs::canonicalize(source).map_err(|error| error.to_string())?)
-    {
-        return Err("Replay diagnostic must be written outside the source package".into());
-    }
-    write_new_report(destination, &package, &replay, &engine, rules)?;
-    println!(
-        "{}",
-        json!({
-            "report_version": REPORT_VERSION,
-            "content_id": replay.identity().content_id,
-            "fact_count": replay.facts().len(),
-            "event_count": engine.events().len(),
-        })
-    );
-    Ok(())
+    Ok((replay, engine))
 }
 
 fn write_new_report(
@@ -132,7 +140,24 @@ fn write_report(
     let mut bytes = 0;
     let mut lines = 0;
     let mut line = |value| write_line(writer, &mut bytes, &mut lines, value);
-    line(json!({
+    line(header(package, replay, engine, rules))?;
+    let index = ReportIndex::new(&package.chart.anchors, replay);
+    for (position, fact) in replay.facts().iter().enumerate() {
+        line(fact_row(position, *fact))?;
+    }
+    for (position, event) in engine.events().iter().enumerate() {
+        line(index.event_row(position, *event)?)?;
+    }
+    line(summary(package.chart.anchors.len(), replay, engine)?)
+}
+
+pub(crate) fn header(
+    package: &ValidatedPackage,
+    replay: &Replay,
+    engine: &DuoEngine,
+    rules: DuoRules,
+) -> Value {
+    json!({
         "type": "header", "format": "CoCoBeat Replay Diagnostic", "report_version": REPORT_VERSION,
         "content_id": replay.identity().content_id, "rules_id": replay.identity().rules_id,
         "build_id": replay.identity().build_id, "epoch": replay.epoch().0,
@@ -148,62 +173,68 @@ fn write_report(
             "resonance_window_frames": rules.resonance_window_frames,
             "resonance_full_pairs": rules.resonance_full_pairs,
         },
-    }))?;
-    let mut hits = BTreeMap::new();
-    let mut hit_counts = [0_u64; 2];
-    let mut watermarks = [None; 2];
-    for (index, fact) in replay.facts().iter().enumerate() {
-        line(match *fact {
-            DuoInput::Hit(hit) => {
-                hits.insert((hit.player, hit.seq), (index + 1, hit.song_time));
-                hit_counts[hit.player.index()] += 1;
-                json!({
-                    "type": "hit", "fact_index": index + 1, "epoch": hit.epoch.0,
-                    "player": hit.player.index() + 1, "seq": hit.seq,
-                    "song_time_frames": hit.song_time.frames(),
-                })
-            }
-            DuoInput::Watermark {
-                epoch,
-                player,
-                through,
-            } => {
-                watermarks[player.index()] = Some(through.frames());
-                json!({
-                    "type": "watermark", "fact_index": index + 1, "epoch": epoch.0,
-                    "player": player.index() + 1, "through_frames": through.frames(),
-                })
-            }
-        })?;
+    })
+}
+
+pub(crate) fn fact_row(index: usize, fact: DuoInput) -> Value {
+    match fact {
+        DuoInput::Hit(hit) => json!({
+            "type": "hit", "fact_index": index + 1, "epoch": hit.epoch.0,
+            "player": hit.player.index() + 1, "seq": hit.seq,
+            "song_time_frames": hit.song_time.frames(),
+        }),
+        DuoInput::Watermark {
+            epoch,
+            player,
+            through,
+        } => json!({
+            "type": "watermark", "fact_index": index + 1, "epoch": epoch.0,
+            "player": player.index() + 1, "through_frames": through.frames(),
+        }),
     }
-    let anchors: BTreeMap<_, _> = package
-        .chart
-        .anchors
-        .iter()
-        .map(|anchor| (anchor.id, anchor.song_time))
-        .collect();
-    let anchor_frame = |id| {
-        anchors
-            .get(&id)
-            .map(|time| time.frames())
-            .ok_or_else(|| format!("Rule event refers to missing Anchor {id}"))
-    };
-    let mut judged = 0;
-    let mut free_sync = 0;
-    let mut anchor_sync = 0;
-    for (index, event) in engine.events().iter().enumerate() {
-        let mut row = match *event {
+}
+
+pub(crate) struct ReportIndex {
+    hits: BTreeMap<(PlayerId, u64), (usize, SongTime)>,
+    anchors: BTreeMap<u64, SongTime>,
+}
+
+impl ReportIndex {
+    pub(crate) fn new(anchors: &[cocobeat_schema::Anchor], replay: &Replay) -> Self {
+        Self {
+            hits: replay
+                .facts()
+                .iter()
+                .enumerate()
+                .filter_map(|(index, fact)| match fact {
+                    DuoInput::Hit(hit) => Some(((hit.player, hit.seq), (index + 1, hit.song_time))),
+                    DuoInput::Watermark { .. } => None,
+                })
+                .collect(),
+            anchors: anchors
+                .iter()
+                .map(|anchor| (anchor.id, anchor.song_time))
+                .collect(),
+        }
+    }
+
+    pub(crate) fn event_row(&self, index: usize, event: DuoEvent) -> Result<Value, String> {
+        let anchor_frame = |id| {
+            self.anchors
+                .get(&id)
+                .map(|time| time.frames())
+                .ok_or_else(|| format!("Rule event refers to missing Anchor {id}"))
+        };
+        let mut row = match event {
             DuoEvent::AnchorJudged(value) => {
-                judged += 1;
-                let mut row = judgement(value, &hits)?;
+                let mut row = judgement(value, &self.hits)?;
                 row["type"] = "anchor_judged".into();
                 row["anchor_frame"] = anchor_frame(value.anchor_id)?.into();
                 row
             }
             DuoEvent::FreeSync(value) => {
-                free_sync += 1;
-                let (p1_index, p1_time) = recorded_hit(&hits, PlayerId::P1, value.p1_input)?;
-                let (p2_index, p2_time) = recorded_hit(&hits, PlayerId::P2, value.p2_input)?;
+                let (p1_index, p1_time) = recorded_hit(&self.hits, PlayerId::P1, value.p1_input)?;
+                let (p2_index, p2_time) = recorded_hit(&self.hits, PlayerId::P2, value.p2_input)?;
                 json!({
                     "type": "free_sync",
                     "p1": {"input_seq": value.p1_input, "input_fact_index": p1_index, "input_song_time_frames": p1_time.frames()},
@@ -211,33 +242,56 @@ fn write_report(
                     "delta_frames": value.delta_frames, "midpoint_frames": value.midpoint.frames(),
                 })
             }
-            DuoEvent::AnchorSync(value) => {
-                anchor_sync += 1;
-                json!({
-                    "type": "anchor_sync", "anchor_id": value.anchor_id,
-                    "anchor_frame": anchor_frame(value.anchor_id)?,
-                    "p1": judgement(value.p1, &hits)?, "p2": judgement(value.p2, &hits)?,
-                    "relative_delta_frames": value.relative_delta_frames,
-                })
-            }
+            DuoEvent::AnchorSync(value) => json!({
+                "type": "anchor_sync", "anchor_id": value.anchor_id,
+                "anchor_frame": anchor_frame(value.anchor_id)?,
+                "p1": judgement(value.p1, &self.hits)?, "p2": judgement(value.p2, &self.hits)?,
+                "relative_delta_frames": value.relative_delta_frames,
+            }),
         };
         row["event_index"] = (index + 1).into();
-        line(row)?;
+        Ok(row)
+    }
+}
+
+pub(crate) fn summary(
+    anchor_count: usize,
+    replay: &Replay,
+    engine: &DuoEngine,
+) -> Result<Value, String> {
+    let mut hit_counts = [0_u64; 2];
+    let mut watermarks = [None; 2];
+    for fact in replay.facts() {
+        match fact {
+            DuoInput::Hit(hit) => hit_counts[hit.player.index()] += 1,
+            DuoInput::Watermark {
+                player, through, ..
+            } => {
+                watermarks[player.index()] = Some(through.frames());
+            }
+        }
+    }
+    let mut judged = 0;
+    let mut free_sync = 0;
+    let mut anchor_sync = 0;
+    for event in engine.events() {
+        match event {
+            DuoEvent::AnchorJudged(_) => judged += 1,
+            DuoEvent::FreeSync(_) => free_sync += 1,
+            DuoEvent::AnchorSync(_) => anchor_sync += 1,
+        }
     }
     if judged % 2 != 0 {
         return Err("Rule events contain an incomplete pair of Anchor judgements".into());
     }
     let confirmed = judged / 2;
-    let pending = package
-        .chart
-        .anchors
-        .len()
+    let pending = anchor_count
         .checked_sub(confirmed)
         .ok_or("Rule events exceed the source Anchor count")?;
     let resonance = engine.resonance();
-    line(json!({
+    Ok(json!({
         "type": "summary", "fact_count": replay.facts().len(), "event_count": engine.events().len(),
-        "hit_counts": hit_counts, "anchor_count": package.chart.anchors.len(),
+        "hit_counts": hit_counts, "anchor_count": anchor_count,
         "confirmed_anchor_count": confirmed, "pending_anchor_count": pending,
         "free_sync_count": free_sync, "anchor_sync_count": anchor_sync,
         "last_watermarks_frames": watermarks,
@@ -449,6 +503,19 @@ mod tests {
         let replay = fixture.replay(&complete_facts());
         let original_replay = replay.encode().unwrap();
         let (bytes, rows) = fixture.run("complete", &replay);
+        let (loaded, engine) =
+            load(&fixture.package, &fixture.root.join("complete.replay")).unwrap();
+        let mut shared = Vec::new();
+        write_report(
+            &mut shared,
+            &fixture.package,
+            &loaded,
+            &engine,
+            DuoRules::default(),
+        )
+        .unwrap();
+        assert_eq!(loaded, replay);
+        assert_eq!(shared, bytes);
         assert_eq!(rows.len(), 12);
         assert_eq!(rows[0]["report_version"], 1);
         assert_eq!(rows[0]["build_id"], "test\0é");
@@ -630,17 +697,23 @@ mod tests {
             assert!(!output.exists());
             assert_eq!(fs::read(&input).unwrap(), before);
         }
-        let mut identity = fixture.replay(&[]).identity().clone();
-        identity.content_id = "other-content".into();
-        Replay::new(identity, SessionEpoch(17))
-            .unwrap()
-            .save(&input)
-            .unwrap();
-        assert!(
-            inspect(&fixture.source, &input, &output)
-                .unwrap_err()
-                .contains("identity mismatch")
-        );
+        for wrong_rules in [false, true] {
+            let mut identity = fixture.replay(&[]).identity().clone();
+            if wrong_rules {
+                identity.rules_id = "other-rules".into();
+            } else {
+                identity.content_id = "other-content".into();
+            }
+            Replay::new(identity, SessionEpoch(17))
+                .unwrap()
+                .save(&input)
+                .unwrap();
+            assert!(
+                inspect(&fixture.source, &input, &output)
+                    .unwrap_err()
+                    .contains("identity mismatch")
+            );
+        }
         fixture.replay(&complete_facts()).save(&input).unwrap();
         let original_replay = fs::read(&input).unwrap();
         fs::write(&output, b"keep").unwrap();

@@ -189,5 +189,14 @@
   "network.failed": "Interpretación en línea interrumpida",
   "network.round_closed": "Esta invitación terminó · Inicia una nueva interpretación en línea",
   "network.local_binding": "{player} local: {binding}",
-  "network.remote_player": "Compañero {player}: controles remotos"
+  "network.remote_player": "Compañero {player}: controles remotos",
+  "replay.title": "CoCoBeat · Diagnóstico de Replay",
+  "replay.records": "Registros ({count})",
+  "replay.legend": "P1 cian · P2 naranja · Anchors debajo de la forma de onda",
+  "replay.help": "Solo lectura · Tab / botones superiores: foco · flechas / cruceta: explorar · Enter / South: detalles · rueda: zoom · Shift+rueda: desplazar · Esc / East: cerrar",
+  "workbench.replay.fact": "Hecho {index} · {kind} · {frame} cuadros",
+  "workbench.replay.event": "Evento {index} · {kind} · {frame} cuadros",
+  "workbench.replay.fields": "Los hechos conservan el orden de grabación; los eventos conservan el orden de confirmación de las reglas. fact_index e input_fact_index hacen referencia a hechos; event_index numera los eventos y no es el índice del hecho que los desencadenó. Todos los campos *_frames usan enteros exactos en unidades de cuadros a 48 kHz; las marcas de avance negativas y posteriores a EOF se conservan sin cambios. null significa no disponible. Replay v1 no registra marcas de tiempo de dispositivos; la latencia de entrada física no está disponible.",
+  "network.next_round": "Iniciar la siguiente ronda en línea",
+  "network.waiting_next_invite": "Esperando la próxima invitación del anfitrión"
 }

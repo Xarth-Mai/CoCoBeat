@@ -189,5 +189,14 @@
   "network.failed": "온라인 연주 중단",
   "network.round_closed": "이번 초대는 종료되었습니다 · 새 온라인 연주를 시작하세요",
   "network.local_binding": "이 기기의 {player}: {binding}",
-  "network.remote_player": "파트너 {player}: 상대 기기에서 조작"
+  "network.remote_player": "파트너 {player}: 상대 기기에서 조작",
+  "replay.title": "CoCoBeat · Replay 진단",
+  "replay.records": "기록 ({count})",
+  "replay.legend": "P1 청록색 · P2 주황색 · Anchor는 파형 아래에 표시",
+  "replay.help": "읽기 전용 · Tab / 숄더 버튼: 포커스 · 방향키 / 방향패드: 탐색 · Enter / South: 상세 정보 · 휠: 확대 / 축소 · Shift＋휠: 범위 이동 · Esc / East: 닫기",
+  "workbench.replay.fact": "사실 {index} · {kind} · {frame}프레임",
+  "workbench.replay.event": "이벤트 {index} · {kind} · {frame}프레임",
+  "workbench.replay.fields": "사실은 기록 순서를 유지하고 이벤트는 규칙에 따른 확정 순서를 유지합니다. fact_index와 input_fact_index는 사실을 참조하며, event_index는 이벤트 번호로 해당 이벤트를 발생시킨 사실의 인덱스가 아닙니다. 모든 *_frames 필드는 48 kHz 프레임 단위의 정확한 정수 값을 사용합니다. 음수 및 EOF 이후의 진행 워터마크도 그대로 유지됩니다. null은 정보를 사용할 수 없음을 뜻합니다. Replay v1은 장치 타임스탬프를 기록하지 않으므로 물리 입력 지연은 확인할 수 없습니다.",
+  "network.next_round": "다음 온라인 라운드 시작",
+  "network.waiting_next_invite": "호스트의 다음 초대를 기다리는 중"
 }

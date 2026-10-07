@@ -189,5 +189,14 @@
   "network.failed": "連線演奏已中斷",
   "network.round_closed": "本次邀請已結束 · 請重新啟動一場連線演奏",
   "network.local_binding": "本機 {player}：{binding}",
-  "network.remote_player": "伙伴 {player}：遠端操作"
+  "network.remote_player": "伙伴 {player}：遠端操作",
+  "replay.title": "CoCoBeat · Replay 診斷",
+  "replay.records": "記錄（{count}）",
+  "replay.legend": "P1 青色 · P2 橙色 · Anchor 位於波形下方",
+  "replay.help": "唯讀 · Tab / 肩鍵切換焦點 · 方向鍵 / 十字鍵瀏覽 · Enter / South 檢視詳情 · 滾輪縮放 · Shift＋滾輪平移 · Esc / East 關閉",
+  "workbench.replay.fact": "事實 {index} · {kind} · {frame} 幀",
+  "workbench.replay.event": "事件 {index} · {kind} · {frame} 幀",
+  "workbench.replay.fields": "事實保留錄製次序，事件保留規則確認次序。fact_index 和 input_fact_index 引用事實；event_index 是事件編號，並非觸發事件的事實索引。所有 *_frames 欄位均使用以 48 kHz 音訊幀為單位的精確整數，負值及 EOF 之後的進度水位均保持原樣。null 表示資料不可用。Replay v1 不記錄裝置時間戳記，因此無法提供實體輸入延遲。",
+  "network.next_round": "開始下一輪連線演奏",
+  "network.waiting_next_invite": "等待房主的下一次邀請"
 }

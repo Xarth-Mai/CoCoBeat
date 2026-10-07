@@ -2,7 +2,7 @@
 
 `cocobeat-net` 提供受邀请的双端会话，游戏通过有界 `LiveSession` worker 使用实时输入与实际 Kira 音频，lab 的 `host` / `join` / `join_receive` 继续验证加速历史；双方使用完整验证的同一个 [SongPackage](song-package.md)，客机可以预装，也可以接收主机的四个原始对象，运行同一 DuoEngine 并保存实际录制结果
 
-本轮支持可直达端点的一次邀请、一局演奏；重连、重新开局和声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
+当前支持可直达端点，每份邀请只用于一局；正常完成后可以在同一窗口进入预先声明的新一局，逐局使用新邀请和独立输出路径。Fault 后重入、断线重连和声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
 
 ## 实时游戏
 
@@ -11,6 +11,9 @@ cargo run --locked -p cocobeat-game -- --package PACKAGE --net-host 127.0.0.1:0 
 cargo run --locked -p cocobeat-game -- --package PACKAGE --net-join INVITE.json GUEST_OUTPUT
 # 客机没有内容包时
 cargo run --locked -p cocobeat-game -- --net-receive INVITE.json NEW_PACKAGE GUEST_OUTPUT
+# 正常完成后在同一窗口继续第二局，可重复追加 --next-round
+cargo run --locked -p cocobeat-game -- --package PACKAGE --net-host 127.0.0.1:0 INVITE.json HOST_OUTPUT --next-round NEXT_INVITE.json NEXT_HOST_OUTPUT
+cargo run --locked -p cocobeat-game -- --package PACKAGE --net-join INVITE.json GUEST_OUTPUT --next-round NEXT_INVITE.json NEXT_GUEST_OUTPUT
 ```
 
 每端仍完整播放品牌开场，在 Ready 菜单由用户确认开始后才启动 worker；主机写出新邀请并等待客机。网络 Prepared 要求四对象与完整包已验证，窗口在后台完整解码 PCM，重新核对包身份、长度和最终规则边界后才发送本端 Ready
@@ -21,11 +24,17 @@ Scheduled 在未来 deadline 之前交给窗口，Kira 用原生 `start_time(Dur
 
 本地 Hit 立即反馈，并可靠发送已经接受的整数事实；每端只关闭自己玩家的历史，伙伴 Hit 与水位收到后才进入同一 core / Replay 入口，共享确认可以延迟。输入数量无需预声明，End 必须匹配实际接收计数及本玩家最终水位，随后沿用权威 Replay 校验和 FinishAck
 
-窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待线程完成保存后退出。完成或失败后可以保存、调整设置和退出，本次邀请不能重开；新一局重新启动并使用新的邀请与输出路径
+窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待线程完成保存后退出。完成或失败后可以保存、调整设置和退出；Fault 不消费后续配置，也不能通过下一局菜单重入
+
+每对 `--next-round NEW_INVITE NEW_OUTPUT` 声明一份后续配置；主机沿用原包与 bind，客机沿用原包，首局使用 `--net-receive` 的客机后续改用 Join 读取已成功发布的包。Finished 菜单仅在正常 COMPLETE、本地 Replay 保存成功、当前 worker 已退出且仍有后续配置时提供下一局；客机还需等新邀请路径出现，缺失时显示等待，已有的坏邀请仍交给完整校验并明确失败。路径继续经过排他检查，旧邀请和旧输出不复用
+
+确认下一局后整体替换 OnlineRound，清除音乐、反馈、Results、source clock、seq 和水位；新 Prepared 建立新 epoch，主机生成新的证书与邀请能力。一次确认只消费一份配置，按住或同批第二次确认不能穿透过渡阶段；最后一局完成后不再显示下一局入口
 
 实时命令 / 事件队列各最多 256 项，入队与轮询不阻塞界面，满队列明确失败而不丢事实；每条线上 Facts 可以容纳 1–64 项，当前窗口按已经捕获的事实逐项提交。真实输入交换从预约起点起最多歌曲长度加 60 秒，Prepared 后本机 Ready 最多等待 120 秒
 
-可在联网命令末尾加 `--live-observation NEW_DIR` 取得原生窗口、实际 Kira 游标、逐帧 CSV、输入计时诊断及 Running / 终态 PNG。此入口在完整品牌动画后注入明确标记的合成 Start / Hit，并自动关闭；它验证软件生产接线，不提供物理键盘、手柄、扬声器同步、双机或真人证据
+可在联网命令末尾加 `--live-observation NEW_DIR` 取得原生窗口、实际 Kira 游标、逐帧 CSV、输入计时诊断及 Running / 终态 PNG。此入口在完整品牌动画后注入明确标记的合成 Start / Hit，并自动关闭；多局时在 Finished 截图保存且下一局菜单实际可用后注入 Restart，每局写入 `round-1/`、`round-2/` 等独立目录，顶层 `summary.json` 记录各局 epoch 与状态，单局保留原顶层格式。它验证软件生产接线，不提供物理键盘、手柄、扬声器同步、双机或真人证据
+
+2026-10-07 原生软件验证已由两个持续运行的游戏进程连续完成两局，epoch 分别为 `3124893908200008438` / `1601151596960184129`，双方事实计数分别为 `[35, 36]` / `[36, 36]`，每局均得到相同的 5 个事件；新证书、独立输出、旧局文件保留、seq 重置及 Receive → Join 均通过检查，见 [综合软件观测](../testdata/synthetic/session-diagnostics-observations-20261007.json)。真实设备、双机和真人体验仍待验收
 
 ## 加速历史运行
 
