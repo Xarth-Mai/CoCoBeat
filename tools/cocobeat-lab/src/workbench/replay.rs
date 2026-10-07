@@ -1,7 +1,7 @@
 use crate::replay::{self, ReportIndex};
 use cocobeat_core::DuoEngine;
 use cocobeat_media::ValidatedPackage;
-use cocobeat_replay::Replay;
+use cocobeat_replay::{Replay, timing::TimingSidecar};
 use cocobeat_runtime::{Locale, Message};
 use cocobeat_schema::{DuoInput, DuoRules, Hit, PlayerId};
 use serde_json::Value;
@@ -13,18 +13,29 @@ pub(super) struct ReplayView {
     index: ReportIndex,
     header: Value,
     summary: Value,
+    timing: Option<TimingSidecar>,
     pub(super) selected: usize,
 }
 
 impl ReplayView {
-    pub(super) fn load(package: &ValidatedPackage, path: &Path) -> Result<Self, String> {
-        let (replay, engine) = replay::load(package, path)?;
+    pub(super) fn load(
+        package: &ValidatedPackage,
+        path: &Path,
+        timing_path: Option<&Path>,
+    ) -> Result<Self, String> {
+        let (replay, engine, timing) = replay::load_with_timing(package, path, timing_path)?;
+        let mut header = replay::header(package, &replay, &engine, DuoRules::default());
+        if let Some(timing) = &timing {
+            header["report_version"] = 3.into();
+            header["local_timing"] = replay::timing_header(timing);
+        }
         Ok(Self {
             index: ReportIndex::new(&package.chart.anchors, &replay),
-            header: replay::header(package, &replay, &engine, DuoRules::default()),
+            header,
             summary: replay::summary(package.chart.anchors.len(), &replay, &engine)?,
             replay,
             engine,
+            timing,
             selected: 0,
         })
     }
@@ -34,7 +45,7 @@ impl ReplayView {
     }
 
     fn record(&self, index: usize) -> Option<Value> {
-        if let Some(fact) = self.replay.facts().get(index) {
+        let mut record = if let Some(fact) = self.replay.facts().get(index) {
             Some(replay::fact_row(index, *fact))
         } else {
             let index = index.checked_sub(self.replay.facts().len())?;
@@ -43,7 +54,11 @@ impl ReplayView {
                     "Replayed events refer to the validated source Anchors and recorded Hits",
                 )
             })
+        }?;
+        if let Some(timing) = &self.timing {
+            replay::annotate_timing(&mut record, timing);
         }
+        Some(record)
     }
 
     pub(super) fn select(&mut self, index: usize) -> Option<i64> {
@@ -94,13 +109,49 @@ impl ReplayView {
         let pretty = |value: &Value| {
             serde_json::to_string_pretty(value).expect("Diagnostic values contain valid JSON")
         };
-        format!(
+        let mut details = format!(
             "{}\n\n{}\n\n{}\n\n{}",
             pretty(&selected),
             pretty(&self.header),
             pretty(&self.summary),
             locale.text("workbench.replay.fields"),
-        )
+        );
+        if self.timing.is_some() {
+            details.push_str(&format!(
+                "\n\n{}\n{}",
+                locale.text("workbench.replay.timing"),
+                locale.text("workbench.replay.timing_scope"),
+            ));
+            let captures = [
+                &selected["local_timing"],
+                &selected["p1"]["local_timing"],
+                &selected["p2"]["local_timing"],
+            ];
+            if captures
+                .iter()
+                .any(|capture| capture["status"] == "not_recorded")
+            {
+                details.push('\n');
+                details.push_str(locale.text("workbench.replay.timing_missing"));
+            }
+            if captures
+                .iter()
+                .any(|capture| capture["status"] == "recorded")
+            {
+                details.push('\n');
+                details.push_str(locale.text("workbench.replay.timing_audio_history"));
+            }
+            if captures.iter().any(|capture| {
+                capture["status"] == "recorded"
+                    && capture["independent_audio_read_history"]["before_observation"].is_null()
+                    && capture["independent_audio_read_history"]["at_or_after_observation"]
+                        .is_null()
+            }) {
+                details.push('\n');
+                details.push_str(locale.text("workbench.replay.timing_audio_missing"));
+            }
+        }
+        details
     }
 
     pub(super) fn hits(&self) -> impl Iterator<Item = &Hit> {
@@ -214,6 +265,7 @@ pub(super) fn fixture() -> ReplayView {
         summary: replay::summary(anchors.len(), &replay, &engine).unwrap(),
         replay,
         engine,
+        timing: None,
         selected: 0,
     }
 }
@@ -221,6 +273,81 @@ pub(super) fn fixture() -> ReplayView {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn timing_details_preserve_selected_facts_pairs_and_cursor() {
+        use cocobeat_replay::timing::{CaptureTiming, InputKind, MappingAnchor, TimingClock};
+
+        let mut view = fixture();
+        let default_details = view.details(Locale::EnUs);
+        let default_records: Vec<_> = (0..view.len())
+            .map(|index| view.record(index).unwrap())
+            .collect();
+        assert_eq!(view.details(Locale::EnUs), default_details);
+        let raw = view.replay.encode().unwrap();
+        let mut timing = TimingSidecar::new(
+            &view.replay,
+            &raw,
+            48_000,
+            vec![1],
+            TimingClock {
+                max_extrapolation_ns: 250_000_000,
+                max_drift_ppm: 1_000,
+                history_capacity: 256,
+            },
+        )
+        .unwrap();
+        for (index, fact) in view.replay.facts().iter().enumerate() {
+            if let DuoInput::Hit(hit) = fact
+                && hit.player == PlayerId::P1
+            {
+                let observed_ns = hit.song_time.frames() as u64 * 1_000_000_000 / 48_000;
+                timing.captures.push(CaptureTiming {
+                    fact_index: index as u64 + 1,
+                    player: 1,
+                    seq: hit.seq,
+                    song_time_frames: hit.song_time.frames(),
+                    observed_ns,
+                    consumed_ns: observed_ns + 2_000_000,
+                    uncertainty_frames: 2_402,
+                    input_kind: InputKind::GamepadMessage,
+                    mapping_anchor: MappingAnchor {
+                        monotonic_ns: 0,
+                        song_time_frames: 0,
+                        uncertainty_frames: 2_400,
+                    },
+                });
+            }
+        }
+        timing.validate(&view.replay, &raw, 48_000).unwrap();
+        view.timing = Some(timing);
+        assert_eq!(view.select(9), Some(1_200));
+        assert_eq!(
+            view.selected_hits(),
+            vec![(PlayerId::P1, 1_200), (PlayerId::P2, 1_200)]
+        );
+        let pair = view.record(9).unwrap();
+        assert_eq!(
+            pair["p1"]["local_timing"]["capture"]["seq"],
+            serde_json::json!(u64::MAX)
+        );
+        assert_eq!(pair["p2"]["local_timing"]["status"], "not_recorded");
+        assert!(
+            view.details(Locale::EnUs)
+                .contains("software_message_consumption_wait_ns")
+        );
+        assert_eq!(view.select(2), Some(-1));
+        assert_eq!(view.record(2).unwrap(), default_records[2]);
+        view.timing = None;
+        assert_eq!(
+            (0..view.len())
+                .map(|index| view.record(index).unwrap())
+                .collect::<Vec<_>>(),
+            default_records
+        );
+        view.select(0);
+        assert_eq!(view.details(Locale::EnUs), default_details);
+    }
 
     #[test]
     fn dense_facts_watermarks_and_paired_events_keep_exact_identity_and_frames() {

@@ -3,9 +3,13 @@
 use crate::{
     clock::*,
     content::{RULES_ID, SongContent},
+    timing_diagnostic::TimingDiagnostics,
 };
 use cocobeat_core::DuoEngine;
-use cocobeat_replay::{MAX_FACTS, Replay, ReplayIdentity};
+use cocobeat_replay::{
+    MAX_FACTS, Replay, ReplayIdentity,
+    timing::{CaptureTiming, InputKind, MappingAnchor},
+};
 use cocobeat_schema::{
     AnchorGrade, DuoEvent, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime,
     content::MAX_CANONICAL_FRAMES,
@@ -38,6 +42,7 @@ pub struct Session {
     pub replay: Replay,
     pub clock: ClockBridge,
     pub diagnostics: Vec<CaptureDiagnostic>,
+    pub(crate) timing: Option<TimingDiagnostics>,
     pub current: SongTime,
     pub uncertainty_frames: u64,
     end: SongTime,
@@ -86,12 +91,26 @@ impl Session {
             clock: ClockBridge::new(epoch, ClockConfig::default())
                 .map_err(|error| format!("Clock configuration: {error:?}"))?,
             diagnostics: Vec::new(),
+            timing: None,
             current: SongTime::ZERO,
             uncertainty_frames: CURSOR_UNCERTAINTY_FRAMES,
             end: content.end,
             sequence: [0, 0],
             watermarks: [None, None],
         })
+    }
+
+    pub(crate) fn enable_timing(&mut self, players: &[PlayerId]) -> Result<(), String> {
+        if !self.replay.facts().is_empty() {
+            return Err("Timing diagnostics must be enabled before any session facts".into());
+        }
+        self.timing = Some(TimingDiagnostics::new(
+            players
+                .iter()
+                .map(|player| player.index() as u8 + 1)
+                .collect(),
+        )?);
+        Ok(())
     }
 
     pub fn epoch(&self) -> SessionEpoch {
@@ -143,6 +162,7 @@ impl Session {
         Ok(())
     }
 
+    #[allow(dead_code)] // Preserve internal callers without message provenance
     pub fn hit(
         &mut self,
         player: PlayerId,
@@ -153,15 +173,33 @@ impl Session {
             .map(|(_, events)| events)
     }
 
+    #[allow(dead_code)] // Preserve internal callers without message provenance
     pub fn capture_hit(
         &mut self,
         player: PlayerId,
         observed_ns: u64,
         consumed_ns: u64,
     ) -> Result<(Option<DuoInput>, Vec<DuoEvent>), String> {
-        let estimate = self
+        self.capture_from(player, observed_ns, consumed_ns, InputKind::Internal)
+    }
+
+    pub(crate) fn capture_from(
+        &mut self,
+        player: PlayerId,
+        observed_ns: u64,
+        consumed_ns: u64,
+        input_kind: InputKind,
+    ) -> Result<(Option<DuoInput>, Vec<DuoEvent>), String> {
+        if self.timing.as_ref().is_some_and(|timing| {
+            observed_ns > consumed_ns || !timing.players.contains(&(player.index() as u8 + 1))
+        }) {
+            return Err(
+                "Timing input must belong to a local seat and its original time interval".into(),
+            );
+        }
+        let (estimate, selected) = self
             .clock
-            .estimate_song_time(MonotonicTime::from_nanos(observed_ns))
+            .estimate_with_observation(MonotonicTime::from_nanos(observed_ns))
             .map_err(|error| format!("Captured input clock: {error:?}"))?;
         if estimate.song_time < SongTime::ZERO || estimate.song_time >= self.end {
             return Ok((None, Vec::new()));
@@ -182,6 +220,23 @@ impl Session {
             song_frames: estimate.song_time.frames(),
             uncertainty_frames: estimate.uncertainty_frames,
         });
+        if let Some(timing) = &mut self.timing {
+            timing.captures.push(CaptureTiming {
+                fact_index: self.replay.facts().len() as u64,
+                player: player.index() as u8 + 1,
+                seq,
+                song_time_frames: estimate.song_time.frames(),
+                observed_ns,
+                consumed_ns,
+                uncertainty_frames: estimate.uncertainty_frames,
+                input_kind,
+                mapping_anchor: MappingAnchor {
+                    monotonic_ns: selected.monotonic.nanos(),
+                    song_time_frames: selected.song_time.frames(),
+                    uncertainty_frames: selected.uncertainty_frames,
+                },
+            });
+        }
         Ok((Some(fact), events))
     }
 
@@ -422,6 +477,32 @@ impl Session {
                 path.display()
             )
         })?;
+        if let Some(timing) = &self.timing {
+            let saved = (|| {
+                // Replay is immutable and deterministic; the original writer remains unchanged
+                let bytes = self.replay.encode().map_err(|error| error.to_string())?;
+                let sidecar = timing.sidecar(
+                    &self.replay,
+                    &bytes,
+                    self.end.frames() as u64,
+                    self.clock.config(),
+                )?;
+                sidecar
+                    .save_new(
+                        &path.with_extension("timing.json"),
+                        &self.replay,
+                        &bytes,
+                        self.end.frames() as u64,
+                    )
+                    .map_err(|error| error.to_string())
+            })();
+            saved.map_err(|error| {
+                format!(
+                    "Replay saved at {}, but timing sidecar failed: {error}",
+                    path.display()
+                )
+            })?;
+        }
         Ok(path)
     }
 }
@@ -644,6 +725,131 @@ mod tests {
             Session::new(SessionEpoch(8)).unwrap().summary(),
             SessionResults::default()
         );
+    }
+
+    #[test]
+    fn optional_timing_preserves_selected_old_anchor_and_exact_saved_replay_bytes() {
+        let mut enabled = Session::new(SessionEpoch(1)).unwrap();
+        let mut disabled = Session::new(SessionEpoch(1)).unwrap();
+        enabled
+            .enable_timing(&[PlayerId::P1, PlayerId::P2])
+            .unwrap();
+        for session in [&mut enabled, &mut disabled] {
+            session
+                .observe_audio(1.0, MonotonicTime::from_nanos(1_000_000_000))
+                .unwrap();
+            session
+                .observe_audio(1.1, MonotonicTime::from_nanos(1_100_000_000))
+                .unwrap();
+            session
+                .capture_from(
+                    PlayerId::P1,
+                    1_010_000_000,
+                    1_200_000_000,
+                    InputKind::KeyboardMessage,
+                )
+                .unwrap();
+            session
+                .capture_from(
+                    PlayerId::P2,
+                    1_020_000_000,
+                    1_200_000_001,
+                    InputKind::GamepadMessage,
+                )
+                .unwrap();
+            session.finish().unwrap();
+        }
+        assert_eq!(
+            enabled.replay.encode().unwrap(),
+            disabled.replay.encode().unwrap()
+        );
+        assert_eq!(enabled.engine.events(), disabled.engine.events());
+        assert!(disabled.timing.is_none());
+        let records = &enabled.timing.as_ref().unwrap().captures;
+        assert_eq!(records[0].fact_index, 1);
+        assert_eq!(records[0].mapping_anchor.monotonic_ns, 1_000_000_000);
+        assert_eq!(records[1].input_kind, InputKind::GamepadMessage);
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory =
+            std::env::temp_dir().join(format!("cocobeat-timing-{}-{stamp}", std::process::id()));
+        let path = enabled.save(&directory).unwrap();
+        let saved = std::fs::read(&path).unwrap();
+        assert_eq!(saved, enabled.replay.encode().unwrap());
+        let sidecar = cocobeat_replay::timing::TimingSidecar::load(
+            &path.with_extension("timing.json"),
+            &enabled.replay,
+            &saved,
+            enabled.end.frames() as u64,
+        )
+        .unwrap();
+        assert_eq!(sidecar.captures[0].observed_ns, 1_010_000_000);
+        assert_eq!(sidecar.captures[0].consumed_ns, 1_200_000_000);
+        assert!(path.with_extension("csv").exists());
+        let off = disabled.save(&directory).unwrap();
+        assert!(!off.with_extension("timing.json").exists());
+        assert_eq!(
+            std::fs::read(path.with_extension("csv")).unwrap(),
+            std::fs::read(off.with_extension("csv")).unwrap()
+        );
+        enabled.timing.as_mut().unwrap().captures[0].fact_index = 99;
+        let failed = enabled.save(&directory).unwrap_err();
+        assert!(failed.contains("Replay saved at") && failed.contains("timing sidecar failed"));
+        assert_eq!(std::fs::read(&path).unwrap(), saved);
+        let failed_path = failed
+            .strip_prefix("Replay saved at ")
+            .unwrap()
+            .split_once(", but timing sidecar failed:")
+            .unwrap()
+            .0;
+        assert_eq!(std::fs::read(failed_path).unwrap(), saved);
+        assert!(
+            !Path::new(failed_path)
+                .with_extension("timing.json")
+                .exists()
+        );
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
+    fn timing_local_scope_records_no_fabricated_remote_capture() {
+        let mut session = Session::new(SessionEpoch(1)).unwrap();
+        session.enable_timing(&[PlayerId::P2]).unwrap();
+        session
+            .observe_audio(1.0, MonotonicTime::from_nanos(1_000_000_000))
+            .unwrap();
+        session
+            .ingest_peer(
+                PlayerId::P1,
+                &[DuoInput::Hit(Hit {
+                    epoch: session.epoch(),
+                    player: PlayerId::P1,
+                    seq: 0,
+                    song_time: SongTime::from_frames(48_000),
+                })],
+            )
+            .unwrap();
+        session
+            .capture_hit(PlayerId::P2, 1_010_000_000, 1_020_000_000)
+            .unwrap();
+        let timing = session.timing.as_ref().unwrap();
+        assert_eq!(timing.players, vec![2]);
+        assert_eq!(timing.captures.len(), 1);
+        assert_eq!(timing.captures[0].fact_index, 2);
+        assert_eq!(timing.captures[0].input_kind, InputKind::Internal);
+        let bytes = session.replay.encode().unwrap();
+        timing
+            .sidecar(
+                &session.replay,
+                &bytes,
+                session.end.frames() as u64,
+                session.clock.config(),
+            )
+            .unwrap()
+            .validate(&session.replay, &bytes, session.end.frames() as u64)
+            .unwrap();
     }
 
     #[test]

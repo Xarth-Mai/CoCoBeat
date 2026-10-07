@@ -24,11 +24,34 @@ runtime 的 ClockBridge 已实现独立 MonotonicTime / DeviceTime、音频位�
 
 默认最多外推 250 ms、假定漂移不超过 1,000 ppm、保留 256 个观察；暂停后恢复需要新观察，设备丢失与重启使用新的 epoch，过期或不连续会明确失败；这些状态已有纯逻辑测试，真实设备切换验收仍为 NOT RUN
 
-运行时使用 Kira 音频回调最近发布的源播放位置建立观察，重复读取未推进的游标不会延长校准有效期；它不是声音到达扬声器的时刻，当前 `±50 ms` 是软件游标的初始实验估计，不是实测误差上界或端到端延迟保证
+运行时轮询 Kira 的公开 source position，并以本帧单调读取时刻建立 ClockBridge 观察；重复读取未推进的游标不会延长校准有效期，捕获查询保留当时实际命中的历史 anchor，而非保存时的最新观察。该映射不以 source publication interval 或 main-mix callback timestamp 代替原 anchor；当前 `±50 ms` 是软件游标的初始实验估计，不是实测误差上界或声音到达扬声器的时刻
 
 键盘在 Bevy `First`、手柄在 `PreUpdate` 输入处理后读取消息并打时间戳，Session 另外记录消费时刻；Replay 配套 CSV 保留 `observed_ns`、`consumed_ns`、`song_frames` 与 `uncertainty_frames`，首次软件读取时间不能宣称为硬件按键时间
 
 本地反馈在消费 Hit 时触发，不等待共享确认；水位只在当前输入队列消费后推进，并保留当前软件观察的误差余量；共享规则的初始确认窗口见 [gameplay.md](gameplay.md)
+
+## 本机 Replay 软件计时
+
+```sh
+cargo run --locked -p cocobeat-game -- --timing-diagnostics
+cargo run --locked -p cocobeat-game -- --package PACKAGE --timing-diagnostics
+```
+
+`--timing-diagnostics` 仅显式启用正常本地、package、library、authored import 或邀请制游戏；观看 Replay、退出式校验和 smoke 不接受此开关。默认仍保存既有 Replay / CSV，不采集新的稀疏音频历史或生成 timing sidecar；每次进程完整播放品牌开场并停 Ready，新确认才开始歌曲
+
+开关在新会话、重新开始、返回主菜单和换歌后继续生效，但新 Session 使用自己的 epoch、内容身份、空 Capture / audio history；本地双人声明 P1 / P2，邀请会话只声明本进程实际本地席位。每份 sidecar 只含本进程接受的本地 Hit，不发给 peer，不把双方 process clock 拼接，不绑定网络 worker 的另一份 authority Replay
+
+接受 Hit 时保存原软件消息 `observed_ns`、实际 `consumed_ns`、来源 `keyboard_message / gamepad_message / internal`、不确定性、1-based 原 Replay `fact_index` 及当次 ClockBridge 查询实际采用的 mapping anchor；持键屏障、菜单拒绝或曲外输入不凭空产生 Capture。时间来自同一 InputState 单调 origin，软件消费等待为 checked `consumed_ns - observed_ns`，不代表硬件按下时刻、声卡或扬声器延迟
+
+显式模式在 Starting / Running / Pausing / Paused / Recovering / Finishing 的 GUI 更新中最多每 50 ms 读取一次历史音频快照，不补齐帧卡顿期间的缺口，不在音频线程分配、写盘或另开采样线程；每份最多 12,000 条 AudioRead，到上限停止额外读取并标为 `limit_reached`，原 Hit 与其 mapping 诊断仍继续记录
+
+AudioRead 保留实际 read 区间及独立可空的 source / main-mix callback；缺出版、读取繁忙、失效或无法转换到本 origin 的字段保留 `null`，不填零。source 使用自己的 generation / source_id / sequence / position / publication interval，callback 使用自己的 generation / sequence / observed / previous batch，二者无需相同 sequence，也不承诺来自同一次 backend callback；previous_frames 只描述前一完成的 main-mix 批次，不是未来 deadline 或 DAC timestamp
+
+保存时先沿原入口写 Replay / CSV，再为该 Replay 新建 `session-*.timing.json`；sidecar 绑定精确 Replay 字节 BLAKE3、完整内容 / 规则 / 原 build / 明确 nullable Stage、epoch、canonical_frames 与声明的本地席位。普通有界文件上限为 128 MiB，Capture 不超过 Replay 的 160,000 facts，未知字段、未知版本、错误身份或不一致关联拒绝，不覆盖旧 sidecar
+
+sidecar 验证、创建、写入或 sync 失败时保留已成功写入的 Replay，并报告 `Replay saved at …, but timing sidecar failed: …`；既有 CSV 独立失败也保留 Replay。只有全部保存步骤成功才更新保存状态，失败仍可从原界面读取原因并重试，不能把 sidecar 失败显示为原 Replay 已丢失或已完整关联
+
+本批 core 9 项、replay 11 项、runtime 174 项、lab 32 项与边界工具 4 项检查通过；冻结 447 项输入的实际 game / Lab、两组原生软件计时回路及 32 条 CLI 消费完成，原生详情三张图的指定范围目检通过，命令、身份、原始失败及补验见[验收记录](../testdata/synthetic/timing-sidecar-observations-20261008.json)。物理键盘 / 手柄、USB / 蓝牙、DAC、扬声器和真人计时体验继续 NOT RUN，记录方法不改变现有 ClockConfig 或规则窗口
 
 ## 模拟与待测证据
 

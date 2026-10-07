@@ -245,5 +245,10 @@
   "import.working": "가져오는 중입니다. 돌아가면 결과를 선택하지 않지만 작업은 계속됩니다. 완료 전에는 시작할 수 없습니다",
   "import.background_back": "돌아가기 · 가져오기 계속",
   "import.background": "백그라운드에서 가져오는 중입니다. 완료 전에는 시작할 수 없습니다",
-  "import.background_done": "백그라운드 작업이 끝났습니다. 곡 목록을 새로 고쳐 저장된 패키지를 확인하세요"
+  "import.background_done": "백그라운드 작업이 끝났습니다. 곡 목록을 새로 고쳐 저장된 패키지를 확인하세요",
+  "workbench.replay.timing": "로컬 소프트웨어 타이밍",
+  "workbench.replay.timing_scope": "같은 프로세스의 메시지 관측과 처리 대기 시간입니다. Kira 음원 및 믹스 스냅샷은 독립된 이력이며 물리 입력이나 스피커 지연을 나타내지 않습니다",
+  "workbench.replay.timing_missing": "이 Hit의 로컬 타이밍 기록이 없습니다",
+  "workbench.replay.timing_audio_history": "인접한 실제 오디오 읽기 이력",
+  "workbench.replay.timing_audio_missing": "인접한 오디오 이력이 수집되지 않았습니다"
 }

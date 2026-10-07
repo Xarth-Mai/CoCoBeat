@@ -245,5 +245,10 @@
   "import.working": "正在导入；返回后不自动选中新包，后台仍继续，完成前不能开始歌曲",
   "import.background_back": "返回 · 导入继续",
   "import.background": "导入在后台继续，完成前不能开始歌曲",
-  "import.background_done": "后台导入已结束；刷新曲库查看保存的歌曲包"
+  "import.background_done": "后台导入已结束；刷新曲库查看保存的歌曲包",
+  "workbench.replay.timing": "本机软件计时",
+  "workbench.replay.timing_scope": "消息观察与同进程消费等待；Kira 音源和混音快照是独立历史，不代表物理输入或扬声器延迟",
+  "workbench.replay.timing_missing": "此 Hit 未记录本机计时",
+  "workbench.replay.timing_audio_history": "相邻的实际音频读取历史",
+  "workbench.replay.timing_audio_missing": "未采到相邻音频历史"
 }

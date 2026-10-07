@@ -245,5 +245,10 @@
   "import.working": "Importing; returning will not select the result, but import continues; Start waits for completion",
   "import.background_back": "Back · import continues",
   "import.background": "Import continues in the background; Start waits for completion",
-  "import.background_done": "Background import finished; refresh the library to find saved packages"
+  "import.background_done": "Background import finished; refresh the library to find saved packages",
+  "workbench.replay.timing": "Local software timing",
+  "workbench.replay.timing_scope": "Message observation and consumption wait in the same process; Kira source and mix snapshots are independent history, not physical input or speaker latency",
+  "workbench.replay.timing_missing": "No local timing capture for this Hit",
+  "workbench.replay.timing_audio_history": "Adjacent actual audio-read history",
+  "workbench.replay.timing_audio_missing": "No adjacent audio history was sampled"
 }

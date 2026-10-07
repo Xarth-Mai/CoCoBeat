@@ -11,6 +11,7 @@ use bevy::{
     prelude::*,
     window::WindowFocused,
 };
+use cocobeat_replay::timing::InputKind;
 use cocobeat_schema::PlayerId;
 
 use crate::i18n::{Locale, Message};
@@ -149,6 +150,7 @@ impl MenuScroll {
 pub struct CapturedControl {
     pub control: Control,
     pub monotonic_ns: u64,
+    pub input_kind: InputKind,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -762,6 +764,10 @@ impl InputState {
     }
 
     fn emit(&mut self, control: Control, monotonic_ns: u64) {
+        self.emit_from(control, monotonic_ns, InputKind::Internal);
+    }
+
+    fn emit_from(&mut self, control: Control, monotonic_ns: u64, input_kind: InputKind) {
         if matches!(
             control,
             Control::Start
@@ -777,6 +783,7 @@ impl InputState {
         self.queued.push(CapturedControl {
             control,
             monotonic_ns,
+            input_kind,
         });
     }
 
@@ -1177,7 +1184,7 @@ impl InputState {
                     if self.keys[player.index()] == key
                         && let Some(player) = self.hit_player(player)
                     {
-                        self.emit(Control::Hit(player), now);
+                        self.emit_from(Control::Hit(player), now, InputKind::KeyboardMessage);
                     }
                 }
             }
@@ -1359,7 +1366,7 @@ impl InputState {
                         && self.pad_buttons[index] == button
                         && let Some(player) = self.hit_player(player)
                     {
-                        self.emit(Control::Hit(player), now);
+                        self.emit_from(Control::Hit(player), now, InputKind::GamepadMessage);
                     }
                 }
             }
@@ -2773,6 +2780,12 @@ mod tests {
                 .collect::<Vec<_>>(),
             [Control::Hit(PlayerId::P1), Control::Hit(PlayerId::P2)]
         );
+        assert!(
+            input
+                .queued
+                .iter()
+                .all(|event| event.input_kind == InputKind::GamepadMessage)
+        );
         input.disconnect_pad(second);
         assert_eq!(input.pads, [Some(first), None]);
         assert_eq!(input.menu_owner, Some(InputSource::Keyboard));
@@ -3230,6 +3243,27 @@ mod tests {
     }
 
     #[test]
+    fn two_keyboard_seats_retain_message_kind_without_inventing_device_identity() {
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.key(KeyCode::KeyF, true, false, 1, &mut scroll);
+        input.key(KeyCode::KeyJ, true, false, 2, &mut scroll);
+        assert_eq!(
+            input
+                .queued
+                .iter()
+                .map(|event| (event.control, event.input_kind))
+                .collect::<Vec<_>>(),
+            [
+                (Control::Hit(PlayerId::P1), InputKind::KeyboardMessage),
+                (Control::Hit(PlayerId::P2), InputKind::KeyboardMessage)
+            ]
+        );
+    }
+
+    #[test]
     fn mixed_keyboard_and_controller_players_keep_hits_and_pause_sources() {
         let mut world = World::new();
         let pad = world.spawn_empty().id();
@@ -3255,6 +3289,14 @@ mod tests {
                     .map(|event| event.control)
                     .collect::<Vec<_>>(),
                 [Control::Hit(keyboard_player), Control::Hit(pad_player)]
+            );
+            assert_eq!(
+                input
+                    .queued
+                    .iter()
+                    .map(|event| event.input_kind)
+                    .collect::<Vec<_>>(),
+                [InputKind::KeyboardMessage, InputKind::GamepadMessage]
             );
             input.pad_button(stranger, GamepadButton::Start, true, 3, &mut scroll);
             assert_eq!(input.queued.len(), 2);

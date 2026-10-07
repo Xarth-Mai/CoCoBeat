@@ -2,6 +2,8 @@
 //!
 //! Files contain integer song frames and local provenance, never user audio
 
+pub mod timing;
+
 use cocobeat_core::DuoEngine;
 use cocobeat_schema::{Anchor, DuoInput, DuoRules, Hit, PlayerId, SessionEpoch, SongTime};
 use serde::{Deserialize, Serialize};

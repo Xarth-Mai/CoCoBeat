@@ -827,3 +827,15 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 `cargo test --locked -j 2 -p cocobeat-core -p cocobeat-replay -p cocobeat-runtime --lib` 通过 9 / 11 / 174 项，另有 lab 32 项和四包全目标 Clippy 通过；这些当前工作区检查同时包含待提交的可选计时接线，不能称为未修改 HEAD 的全项目构建。固定旧 core `64851020…` 与新 core `b40e2cc3…` 的离线对照为 21 项通过，其中旧 / 新原测试各 9 项、逐事实事件 / 错误 / Resonance 差分 3 项，涵盖 720 排列、96 密集到达序列、同时间计数和整数端点；原始命令、日志和源码身份见观察索引
 
 原十分钟密集测试仍含 144,004 条事实、24,000 Hit 和 12,000 事件，live 与保存后重放结果一致；两次 Replay 11 项开发测试组分别用时 192.11 秒和 3.24 秒，编译时间不计入这两个数值。这是测试运行记录，未做独占性能 benchmark、长曲原生窗口、呈现 FPS 或 GPU 测量，设备与真人验收另行记录
+
+## 显式本机 Replay 计时软件验收
+
+本批以 `9207073` 加未提交计时接线冻结 447 项源码 / 资源输入，实际 `cargo build --locked -j2 -p cocobeat-lab -p cocobeat-game --message-format=json` 取得二进制和依赖 artifact 身份；core 9 项、replay 11 项、runtime 174 项、lab 32 项、xtask 4 项检查、全目标 Clippy、格式和架构边界通过，首次边界 whitelist 拒绝保留后明确加入 Replay 的既有 blake3 依赖，13 个语言变体五个新文案字形覆盖通过
+
+固定 64 秒四对象包在显式开启 / 默认关闭两组实际 gamescope / Kira 游戏中完成完整开场、Ready、新确认、双人软件消息、暂停 / 恢复、F6 保存和正常关闭；开启组的两份 sidecar 各关联真实两条 Hit、两条 AnchorJudged 与一次双席 AnchorSync，独立历史实际观察 Starting / Running / Paused，其余阶段未由该窗口覆盖。关闭组不产生 sidecar，四份实际录制及四份 v1 兼容派生的默认报告 / stdout 与冻结旧 Lab 逐字节相同
+
+实际 Lab 共执行 32 条 CLI，21 条成功、11 条预期拒绝；错误 raw hash、nullable 字段缺失、Stage、Capture、未知字段、另一合法包及只改 Replay 空白均按原边界检查，显式 null 音频历史保持合法。原 Replay、CSV、sidecar 和四对象保持，root 独立复核 129 份原生 raw SHA，软件消息来源无法认证物理设备
+
+工作台 helper 仅复制八个生产模块并沿原输入 / 选择 / 滚动逻辑运行，绑定同一 Lab compiler artifacts；首次 QA 先发消息再假设焦点生效，helper exit 101，原日志与零截图保留。target-only 重试等待原 consumer 确认 owner / focus / Details 后实际成功，三个 1280×800 zh-CN 截图的记录、音频快照和软件范围说明通过指定范围目检，选中事实 1507 与波形光标 1250377 帧保持；此为 debug 模块副本的软件图形证据，不能作为发行性能或物理输入体验结论
+
+实际两个 game / 两个 helper 及四个 wrapper 的八个宿主 PID 与四个自有进程组全部退出，447 项冻结源码输入保持。原始身份、命令、失败和视图范围见[计时观察](../testdata/synthetic/timing-sidecar-observations-20261008.json)，完整小文件与原始记录身份见[raw 索引](../testdata/synthetic/timing-sidecar-raw-index-20261008.json)，实体键盘 / 双手柄 / 混合设备、DAC / 扬声器、其他平台与真人验收继续 NOT RUN

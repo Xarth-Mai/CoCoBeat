@@ -67,6 +67,7 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
             | "source-unknown-rules"
             | "source-background-error"
             | "source-close"
+            | "timing-short"
     ) {
         return Err("Unknown library observation scenario".into());
     }
@@ -80,7 +81,7 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         File::create_new(directory.join("metadata.json")).map_err(|error| error.to_string())?;
     serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
         "process_id": std::process::id(), "build_id": env!("COCOBEAT_BUILD_ID"),
-        "entrypoint": if scenario.starts_with("source-") { "normal local Ready runtime with existing data-root library and native DefaultPlugins / AudioOutput" } else { "--library DIR with native DefaultPlugins and AudioOutput" },
+        "entrypoint": if scenario.starts_with("source-") { "normal local Ready runtime with existing data-root library and native DefaultPlugins / AudioOutput" } else if scenario == "timing-short" { "--package PACKAGE with optional explicit --timing-diagnostics, native DefaultPlugins and original input capture" } else { "--library DIR with native DefaultPlugins and AudioOutput" },
         "scenario": scenario, "locale": locale.code(), "size": size,
         "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
         "audio": "acknowledged Kira source position, not speaker output",
@@ -334,6 +335,142 @@ fn observe(
                 window,
                 focused: true,
             });
+        }
+        if observation.scenario == "timing-short" {
+            if game.closing {
+                if observation.step != 9 {
+                    return Err("Timing observation closed before its actual control checks".into());
+                }
+                if !browser.busy() && browser.is_finished() && online.is_finished() {
+                    record(&observation, &game, &browser, &online, None)?;
+                    observation.recorded = true;
+                }
+                return Ok(());
+            }
+            let settled = observation.step_at.elapsed().as_millis() > 250;
+            let target = if game.session.timing.is_some() {
+                game.content
+                    .anchors
+                    .first()
+                    .ok_or("Timing fixture has no authored Anchor")?
+                    .song_time
+                    .as_seconds_f64()
+            } else {
+                0.5
+            };
+            let advance = match step {
+                0 if brand.is_complete()
+                    && input.controls_enabled()
+                    && game.phase == Phase::Ready =>
+                {
+                    observation
+                        .snapshots
+                        .insert("timing_ready", state(&game, &audio)?);
+                    observation.snapshots.insert("timing_configuration", serde_json::json!({
+                        "enabled": game.session.timing.is_some(), "target_song_seconds": target,
+                        "capture_players": game.session.timing.as_ref().map(|timing| &timing.players),
+                        "scope": "KeyboardInput message observation; no physical-versus-injected classification",
+                    }));
+                    key(&mut keys, window, KeyCode::Enter);
+                    true
+                }
+                1 if settled => {
+                    activate_label(&visual, visual.locale.text("menu.start"), &mut keys, window)?;
+                    true
+                }
+                2 if game.phase == Phase::Running
+                    && audio.position().is_some_and(|position| position >= target) =>
+                {
+                    observation
+                        .snapshots
+                        .insert("timing_emit_hits", state(&game, &audio)?);
+                    observation.snapshots.insert("timing_emission", serde_json::json!({
+                        "emit_input_relative_ns": input.origin.elapsed().as_nanos(),
+                        "target_song_seconds": target,
+                        "basis": "Observer emission time only; original capture timestamps come from Session diagnostics",
+                    }));
+                    key(&mut keys, window, KeyCode::KeyF);
+                    key(&mut keys, window, KeyCode::KeyJ);
+                    true
+                }
+                3 if game.phase == Phase::Running
+                    && game.session.diagnostics.len() == 2
+                    && audio
+                        .position()
+                        .is_some_and(|position| position >= target + 0.75) =>
+                {
+                    observation
+                        .snapshots
+                        .insert("timing_before_pause", state(&game, &audio)?);
+                    observation.snapshots.insert("timing_capture_diagnostics", serde_json::json!(
+                        game.session.diagnostics.iter().map(|capture| serde_json::json!({
+                            "player": capture.player.index() + 1, "seq": capture.seq,
+                            "observed_ns": capture.observed_ns, "consumed_ns": capture.consumed_ns,
+                            "song_frames": capture.song_frames, "uncertainty_frames": capture.uncertainty_frames,
+                        })).collect::<Vec<_>>()
+                    ));
+                    key(&mut keys, window, KeyCode::Escape);
+                    true
+                }
+                4 if game.phase == Phase::Paused && settled => {
+                    observation
+                        .snapshots
+                        .insert("timing_paused", state(&game, &audio)?);
+                    snapshot(&mut observation, "timing-paused", &mut commands)?;
+                    observation.captures["timing-paused"].is_some()
+                }
+                5 if settled => {
+                    activate_label(
+                        &visual,
+                        visual.locale.text("menu.resume"),
+                        &mut keys,
+                        window,
+                    )?;
+                    true
+                }
+                6 if game.phase == Phase::Running
+                    && settled
+                    && audio.position().is_some_and(|position| {
+                        position
+                            > observation.snapshots["timing_paused"]["source_position_seconds"]
+                                .as_f64()
+                                .unwrap_or(f64::INFINITY)
+                                + 0.25
+                    }) =>
+                {
+                    observation
+                        .snapshots
+                        .insert("timing_resumed", state(&game, &audio)?);
+                    key(&mut keys, window, KeyCode::F6);
+                    true
+                }
+                7 if settled => {
+                    if game.replay_status.key != "results.replay_saved" {
+                        return Err(
+                            "Explicit timing run save did not use the original Replay save path"
+                                .into(),
+                        );
+                    }
+                    observation.snapshots.insert("timing_explicit_saved", serde_json::json!({
+                        "status_key": game.replay_status.key, "status_args": game.replay_status.args,
+                        "actual_song": state(&game, &audio)?,
+                    }));
+                    true
+                }
+                8 => {
+                    observation
+                        .snapshots
+                        .insert("timing_before_close", state(&game, &audio)?);
+                    close.write(WindowCloseRequested { window });
+                    true
+                }
+                _ => false,
+            };
+            if advance {
+                observation.step += 1;
+                observation.step_at = Instant::now();
+            }
+            return Ok(());
         }
         if observation.scenario.starts_with("source-") {
             let settled = observation.step_at.elapsed().as_millis() > 150;

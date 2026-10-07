@@ -245,5 +245,10 @@
   "import.working": "Import läuft; Zurück wählt das Ergebnis nicht aus, der Import läuft weiter; Start erst nach Abschluss",
   "import.background_back": "Zurück · Import läuft weiter",
   "import.background": "Import läuft im Hintergrund; Start erst nach Abschluss",
-  "import.background_done": "Hintergrundimport beendet; Bibliothek aktualisieren, um gespeicherte Pakete zu sehen"
+  "import.background_done": "Hintergrundimport beendet; Bibliothek aktualisieren, um gespeicherte Pakete zu sehen",
+  "workbench.replay.timing": "Lokale Software-Zeitmessung",
+  "workbench.replay.timing_scope": "Nachrichtenbeobachtung und Wartezeit bis zur Verarbeitung im selben Prozess; Kira-Quell- und Mix-Aufnahmen sind unabhängige Verlaufsdaten, keine Latenz physischer Eingaben oder Lautsprecher",
+  "workbench.replay.timing_missing": "Für diesen Hit wurde keine lokale Zeitmessung aufgezeichnet",
+  "workbench.replay.timing_audio_history": "Verlauf benachbarter tatsächlicher Audioabfragen",
+  "workbench.replay.timing_audio_missing": "Kein benachbarter Audioverlauf erfasst"
 }

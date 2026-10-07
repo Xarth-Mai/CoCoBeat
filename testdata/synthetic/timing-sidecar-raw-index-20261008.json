@@ -1,0 +1,1520 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SCOPED_FINAL_RAW_INDEX",
+  "scope": "Timing software logs/receipts/candidates and small frozen/native/GUI files; exact binary identity via producer receipts, no large binary content rehash; terminal summary retained as12MiB receipt exception; large textual native raw independently root-readback verified",
+  "file_count": 368,
+  "total_indexed_bytes": 26333558,
+  "evidence_sha256": {
+    "target/timing-sidecar-delivery-20261008/boundaries-recheck-result.json": {
+      "sha256": "1dbe62ab04145b7444626ce1359ab2a7c858044a01b552359962908aa3fbe0b1",
+      "bytes": 189
+    },
+    "target/timing-sidecar-delivery-20261008/boundaries-recheck.log": {
+      "sha256": "d4212ecac8cf84c36b648c3bf76406d9fb01f72c799534c97e809a36a964222c",
+      "bytes": 260
+    },
+    "target/timing-sidecar-delivery-20261008/boundaries-result.json": {
+      "sha256": "b4a8566b43f0f5222040458c26132fe921b340cac90b50944ef358317b9f889d",
+      "bytes": 189
+    },
+    "target/timing-sidecar-delivery-20261008/boundaries.log": {
+      "sha256": "cc8c3ce699935f374d381c9c37243f9a8f293a3e6882b2a4dabee18d55bc961c",
+      "bytes": 165
+    },
+    "target/timing-sidecar-delivery-20261008/clippy-result.json": {
+      "sha256": "7b2188497d36d4d13cb87f9106940bd949ac6c136623c9a0ae5f5970ad22762b",
+      "bytes": 324
+    },
+    "target/timing-sidecar-delivery-20261008/clippy.log": {
+      "sha256": "d1c3b0363f63ed8c209ec18398fa87877194867d3d5f9afa86c12ded08cb3e66",
+      "bytes": 517
+    },
+    "target/timing-sidecar-delivery-20261008/core-replay-runtime-test-result.json": {
+      "sha256": "110db17e0e97add0a1850c4ac860324adc8b863d47c0a5b1c61ebf881ad1a5f8",
+      "bytes": 249
+    },
+    "target/timing-sidecar-delivery-20261008/core-replay-runtime-test.log": {
+      "sha256": "1d80d849bf9e5cbea2ce3beee3a2fa31373895f6b0e8e824a21b94ae4dfd60b6",
+      "bytes": 18908
+    },
+    "target/timing-sidecar-delivery-20261008/glyph-check.json": {
+      "sha256": "5b42a305dffc283cf6f5a70e10b8d352e9dbc04cd306a9911fae74050fc6bb7e",
+      "bytes": 1597
+    },
+    "target/timing-sidecar-delivery-20261008/lab-tests-result.json": {
+      "sha256": "bb6a6441a0d63c224769b25d329faafe9e70bbaa6a252924f8fb64dba572c515",
+      "bytes": 165
+    },
+    "target/timing-sidecar-delivery-20261008/lab-tests.log": {
+      "sha256": "888acabbd883e6270d5bbab11407513b1d117ff9845d484b952b7f356e886380",
+      "bytes": 3549
+    },
+    "target/timing-sidecar-delivery-20261008/shared-test-result.json": {
+      "sha256": "313893dbef3d8d5fa1538a2256ad4b94b3d6902667f69da1063fb417bacd092a",
+      "bytes": 185
+    },
+    "target/timing-sidecar-delivery-20261008/shared-test.log": {
+      "sha256": "97864545ca80dc908e0f0d308188ea8ebc94f1887de30260abe52f72bbea0212",
+      "bytes": 1619
+    },
+    "target/timing-sidecar-delivery-20261008/review/initial-authored-final-review.json": {
+      "sha256": "253d5033751ce4988ae820c693337484286f47e4f2c9b49e0d45d24e1a44d6b4",
+      "bytes": 7742
+    },
+    "target/timing-sidecar-delivery-20261008/build/build-result.json": {
+      "sha256": "c7243c806afbf916631b23b6166fca97ef8e2e3e627bc73bbb3aff1083a4dbd3",
+      "bytes": 140114
+    },
+    "target/timing-sidecar-delivery-20261008/build/build.jsonl": {
+      "sha256": "9d8c73b84f38c95e10a9218e6f0de62181bb6d829fe7795c12d36c60fb2b8ea4",
+      "bytes": 399227
+    },
+    "target/timing-sidecar-delivery-20261008/build/build.py": {
+      "sha256": "5446b5527cbb23e77de4c0c5376b7af0659ae93daed78b6d3ed06aabe4753262",
+      "bytes": 2663
+    },
+    "target/timing-sidecar-delivery-20261008/build/build.stderr": {
+      "sha256": "15b84f7b6a072032288cd818947a711a3ed617a22a25dc77e08e3b3bd2f721ae",
+      "bytes": 338
+    },
+    "target/timing-sidecar-delivery-20261008/build/cocobeat-game-build-result.json": {
+      "sha256": "fdfcaac17c2e879bc6974438e3d5ea84ebd2865f445c1ad1996d5e43ac388644",
+      "bytes": 140386
+    },
+    "target/timing-sidecar-delivery-20261008/build/cocobeat-lab-build-result.json": {
+      "sha256": "fdba5a0e3120e1a4ff1e5e1214240d80b6e15495c0a82f119766a0852bd9680c",
+      "bytes": 140384
+    },
+    "target/timing-sidecar-delivery-20261008/build/inputs-after.json": {
+      "sha256": "1d2d14a85ca5ce1015373f8b462e1e5bfc6a05bd0920caebca77ecf4e8302c9f",
+      "bytes": 55477
+    },
+    "target/timing-sidecar-delivery-20261008/build/inputs-before.json": {
+      "sha256": "1d2d14a85ca5ce1015373f8b462e1e5bfc6a05bd0920caebca77ecf4e8302c9f",
+      "bytes": 55477
+    },
+    "target/timing-sidecar-plan-20261008/PLAN.md": {
+      "sha256": "851aff24a9575a705d18ab53a0bf3d4661ffa6f8232a08f35cab4cdb5c7c2525",
+      "bytes": 12685
+    },
+    "target/timing-sidecar-plan-20261008/candidate/API.md": {
+      "sha256": "a7637cc613496ed479de00946140ddedd36ba65f2131e5f294f3eb03902e2e2b",
+      "bytes": 6505
+    },
+    "target/timing-sidecar-plan-20261008/candidate/integration.patch": {
+      "sha256": "818f9b3eb0d84de1cda3a54ad3d8696f392e57c101b82df0deeb37ba4171d705",
+      "bytes": 763
+    },
+    "target/timing-sidecar-plan-20261008/candidate/timing.rs": {
+      "sha256": "074007085a5cd3bae9dcb30f8c8289161c9349355392991519024800d02b718b",
+      "bytes": 28878
+    },
+    "target/timing-sidecar-plan-20261008/review/authored-final-review.json": {
+      "sha256": "ed956962bbcafa7554d45957588386e0c86de5b671a66c46353b85a265de0bdf",
+      "bytes": 3492
+    },
+    "target/timing-sidecar-lab-20261008/HANDOFF.md": {
+      "sha256": "1548207ba68d24dd09e3f3b9fc5c53bfa584e70bf6debf5530431ffdc44c7081",
+      "bytes": 3340
+    },
+    "target/timing-sidecar-lab-20261008/PLAN.md": {
+      "sha256": "d6f3cc49296940738d671b870afe022eae0685fe218781644a0e6687a0247006",
+      "bytes": 6237
+    },
+    "target/timing-sidecar-lab-20261008/bases.json": {
+      "sha256": "9dd27fcf824df493745d5ad5ac30f689004c0241a2f3c1f495fd9b6a0d06fc2c",
+      "bytes": 566
+    },
+    "target/timing-sidecar-lab-20261008/candidate/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "9765f5121c201f2aba1ed327ac0ada776d0ccab41d6e66882179b8c8fdecd7bf",
+      "bytes": 11124
+    },
+    "target/timing-sidecar-lab-20261008/candidate/tools/cocobeat-lab/src/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-lab-20261008/candidate/tools/cocobeat-lab/src/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-lab-20261008/candidate/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "db10ec79bc9481878ad7aed1d9241020b506f69add62d7ea481569712ec85ca2",
+      "bytes": 25504
+    },
+    "target/timing-sidecar-lab-20261008/candidate-manifest.json": {
+      "sha256": "45349bddd069d273d0a5425792d46996620207a37bed8dc34245e7cf81e82a7d",
+      "bytes": 2498
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/candidate/docs/replay-diagnostics.md": {
+      "sha256": "3507e252f853a92fd2d03f7cb8436f1d31218f1e17a81bb7d13b6635acc14fdb",
+      "bytes": 12910
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/candidate/docs/timing.md": {
+      "sha256": "e9affc16fec5ccf747fdd51be9e2d7fa2bdf3bd426fae81ba49d77b041cbc27d",
+      "bytes": 7856
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/candidate/todo/01-timing-lab.md": {
+      "sha256": "ac25c11dd69f08515128dd54e437dcd220840167723410b13f0f4066610cfac5",
+      "bytes": 2750
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/candidate/todo/09-editor-replay.md": {
+      "sha256": "0a7302f154c64098f6a153a2b7f4ca9b67b67e77d4cc502f041118d2df0974fa",
+      "bytes": 8028
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-check.py": {
+      "sha256": "ea75d68b771b1560e80315567551ef7f709a534e00f95ed45e012e3b62b344ed",
+      "bytes": 1665
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-plan.json": {
+      "sha256": "55e89bfa0d8a6294f390f2168695c2b9525d7333a1ba308cef9763aab0539ac2",
+      "bytes": 7293
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/de.txt": {
+      "sha256": "8e3dadac03fbf9105d2184258f14fb19083931635b781425217b046038bec8bc",
+      "bytes": 369
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/en-GB.txt": {
+      "sha256": "6d5cd77a424a60692c94e8997fac4f5713ab1f3d9c822bd865bd224c33bfde54",
+      "bytes": 287
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/en-US.txt": {
+      "sha256": "6d5cd77a424a60692c94e8997fac4f5713ab1f3d9c822bd865bd224c33bfde54",
+      "bytes": 287
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/es-419.txt": {
+      "sha256": "badc94997d206d7736261fffdaa8b6abd3a3275ba5da0a1b3859085657131378",
+      "bytes": 360
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/fr.txt": {
+      "sha256": "6726f02cf7f626ed888e31147459048860f069dcda63079e1e99ccdc10a8d4a9",
+      "bytes": 396
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/ja.txt": {
+      "sha256": "30fa0e578dea0c98ede08a8787fed6774fce41e6579d1bd2389336834848d6ee",
+      "bytes": 408
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/ko.txt": {
+      "sha256": "3b05ad5ceda716f9735c649900307a2a34fd0d8030cf8e54e2c62cf0ad153066",
+      "bytes": 383
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/pt-BR.txt": {
+      "sha256": "f01e5a49efe3fda00d12a959338c506169162cdcd43530f50e8f88b0f23349b0",
+      "bytes": 364
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/ru.txt": {
+      "sha256": "bd1b324edc3815632ca003ad8fdfe010faed525fcf01478342d8e68d0fac3db4",
+      "bytes": 584
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/uk.txt": {
+      "sha256": "88d865989c3a1a5b935fac46ede5b30a5d8168f307bc63fa6dc7fe6a4b3741ec",
+      "bytes": 570
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/zh-CN.txt": {
+      "sha256": "e3830e8dae2f61e08a4f06da182a7d7102be21656ffc6b3c628d07f5d55e78b6",
+      "bytes": 234
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/zh-HK.txt": {
+      "sha256": "9f5184a3a94a59130c8814228cc0da9f339332822c93cf9685887b64a6474624",
+      "bytes": 234
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/glyph-text/zh-TW.txt": {
+      "sha256": "b91475005c0095b6fd1d971fbb77f1b1edc6375e2f80792dd5a58127319726e6",
+      "bytes": 234
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/manifest.json": {
+      "sha256": "db95179f49184af7f49e6a7c48bdfb9c437fc29ac9799651a607c291d40ef7f1",
+      "bytes": 1301
+    },
+    "target/timing-sidecar-lab-20261008/docs-draft/timing-docs.patch": {
+      "sha256": "93d020599dfe3d281d4a75e34f5a30f2b7164f528a6ceaba3b959380ad5514c2",
+      "bytes": 15493
+    },
+    "target/timing-sidecar-lab-20261008/i18n-draft.json": {
+      "sha256": "cba0d1e159d382e4d001ffa7440272aae84259eaf74a2a89b0a901b0f81ddd4e",
+      "bytes": 7925
+    },
+    "target/timing-sidecar-lab-20261008/lab-timing-consumer.patch": {
+      "sha256": "1eb1b092aa44a1dbc79ee3199b2aaf849f958cab4c14c9c2c846cb4d8812045c",
+      "bytes": 29598
+    },
+    "target/timing-sidecar-lab-20261008/review/STATIC-REVIEW.md": {
+      "sha256": "61f5e77a4f65bcf2a771106662d4c72b7c158da3ed6319aa2ab7cd482d481e0e",
+      "bytes": 1422
+    },
+    "target/timing-sidecar-lab-20261008/review/static-review.json": {
+      "sha256": "73e31b1486b9d7a944f42af7c9845b3cceaadbdeb14662d4ce4ed87ae01f520f",
+      "bytes": 4545
+    },
+    "target/timing-sidecar-runtime-20261008/HANDOFF.md": {
+      "sha256": "742a1dbc6a1877fc4a1af0dffdc3006075756c833c805246beea77a2456b5c6a",
+      "bytes": 4046
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/app.rs": {
+      "sha256": "19b123477cd993887c62588b03e827f7769216021e044dc8c941f12eac6e7e28",
+      "bytes": 179165
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/clock.rs": {
+      "sha256": "57786dea30aea1d663e595d6140f52370b98171a3d1dcf5e727845a67ed314ae",
+      "bytes": 23486
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/input.rs": {
+      "sha256": "3d155adc64fa4bb68b75d665039cda6765a4534633425c764a448c7d9fb4f27f",
+      "bytes": 139129
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/lib.rs": {
+      "sha256": "fca4bf0ef4f6bab494672a640af06237d0505cb55015d4c92ea48827d74b97b8",
+      "bytes": 626
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/live_observation.rs": {
+      "sha256": "e8bc484e9628bc650424a7ec3b9bad5f7403d2626e61fb70101895e11c0be39d",
+      "bytes": 30040
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/performance_probe.rs": {
+      "sha256": "557fdc92aa12c89640217abdf9b34c71c0fac39920002915898ca4fd80d06038",
+      "bytes": 29396
+    },
+    "target/timing-sidecar-runtime-20261008/base/crates/cocobeat-runtime/src/session.rs": {
+      "sha256": "90dfeebfe51794f03aaaa65e0bc04d42ee20ed7afbff8ffc80f62f4a5a63a2b9",
+      "bytes": 33976
+    },
+    "target/timing-sidecar-runtime-20261008/base-manifest.json": {
+      "sha256": "a5cfa9622d25cca6fcbe16d7f5a5fa7eb1735a1c802fbc6268fa16435bd4341c",
+      "bytes": 794
+    },
+    "target/timing-sidecar-runtime-20261008/candidate-preparation-failure.json": {
+      "sha256": "57d4be7faba133b4ee4b06b4787f8f8b2c94649064c817b8314bbe9611caef6e",
+      "bytes": 369
+    },
+    "target/timing-sidecar-runtime-20261008/fix-save-snapshot.py": {
+      "sha256": "95d31bcbc5b97c1d8286c00991d4d608d6fc11dad7703821f707d74b05004306",
+      "bytes": 5136
+    },
+    "target/timing-sidecar-runtime-20261008/history/manifest-599edb9d.json": {
+      "sha256": "a847793bff09b6ec27a3fa0a601309c03cff918f58d88cca0a27491882c607b9",
+      "bytes": 3456
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/app.rs": {
+      "sha256": "2bc267d4b0e969e84c2a042915aa86ecdf1f61a282a91219b2039a8d9219dad7",
+      "bytes": 185892
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/clock.rs": {
+      "sha256": "715e1b02b4e07290d6f0c9cad5949fbb4d85ab52e4be37c4412916a17d2f65cc",
+      "bytes": 24744
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/input.rs": {
+      "sha256": "f30e7b2520b32f64d4fe7da80915e5409590846136c262ec30846388fc945105",
+      "bytes": 140669
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/lib.rs": {
+      "sha256": "7fddb4400ccc30347f1f6e412564598ca29f45fa2dd4c1c89bf659f459a39576",
+      "bytes": 649
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/live_observation.rs": {
+      "sha256": "a838ed2f946ba45ca4231b2b89e190826eb60b7318e2b6f480d2386b22a76437",
+      "bytes": 30434
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/performance_probe.rs": {
+      "sha256": "96e09153cff853135b6c316766b73714acb32a500026031a4a66d736f1f0d207",
+      "bytes": 29544
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/session.rs": {
+      "sha256": "c426f45d210d9b97734c9eb94cb76a83c02b828cfdcad1145188888dfb014162",
+      "bytes": 42126
+    },
+    "target/timing-sidecar-runtime-20261008/history/proposed-599edb9d/crates/cocobeat-runtime/src/timing_diagnostic.rs": {
+      "sha256": "2445abd5bafc581528bfac9bfd3ed3bb65d00b05f63ced62fdbaba6dc0a64f9a",
+      "bytes": 7742
+    },
+    "target/timing-sidecar-runtime-20261008/history/runtime-timing-599edb9d.patch": {
+      "sha256": "599edb9d903bf0bdb3a3d3ad2a082081cf904cb2ecd6d114696b91c4d92c9de6",
+      "bytes": 49698
+    },
+    "target/timing-sidecar-runtime-20261008/manifest.json": {
+      "sha256": "5fd5f9ae7044139bea40f353dc8de6ddb3738c6f085c25a7bf5cd1a62a93096f",
+      "bytes": 5854
+    },
+    "target/timing-sidecar-runtime-20261008/prepare-app.py": {
+      "sha256": "4e9e739c0d13fb8f05da11a362ab6cf75b979bc41b4bb05296e5fbbb54a04ff8",
+      "bytes": 8634
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/app.rs": {
+      "sha256": "5877dc132d573f64c18ec829db139579f5973f3fcaa50ec213233b93f6e5d47f",
+      "bytes": 190305
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/clock.rs": {
+      "sha256": "715e1b02b4e07290d6f0c9cad5949fbb4d85ab52e4be37c4412916a17d2f65cc",
+      "bytes": 24744
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/input.rs": {
+      "sha256": "f30e7b2520b32f64d4fe7da80915e5409590846136c262ec30846388fc945105",
+      "bytes": 140669
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/lib.rs": {
+      "sha256": "7fddb4400ccc30347f1f6e412564598ca29f45fa2dd4c1c89bf659f459a39576",
+      "bytes": 649
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/live_observation.rs": {
+      "sha256": "a838ed2f946ba45ca4231b2b89e190826eb60b7318e2b6f480d2386b22a76437",
+      "bytes": 30434
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/performance_probe.rs": {
+      "sha256": "96e09153cff853135b6c316766b73714acb32a500026031a4a66d736f1f0d207",
+      "bytes": 29544
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/session.rs": {
+      "sha256": "c426f45d210d9b97734c9eb94cb76a83c02b828cfdcad1145188888dfb014162",
+      "bytes": 42126
+    },
+    "target/timing-sidecar-runtime-20261008/proposed/crates/cocobeat-runtime/src/timing_diagnostic.rs": {
+      "sha256": "442d05d497995d7d8e55a0cfe1d76d816fc13dd98b34083a7805fcc5eacdf3d2",
+      "bytes": 9553
+    },
+    "target/timing-sidecar-runtime-20261008/review/final-runtime-independent-review.md": {
+      "sha256": "f2e675e7447c049c65ebfb801807ac6b1afc5161bb7a8aaaada5cd2f8f66e6ad",
+      "bytes": 4087
+    },
+    "target/timing-sidecar-runtime-20261008/review/timing-runtime-independent-review.md": {
+      "sha256": "15a198280213776634dc97e31917d11ff5577ec90fa543695ad1761da70033a9",
+      "bytes": 3507
+    },
+    "target/timing-sidecar-runtime-20261008/runtime-timing.patch": {
+      "sha256": "66eb72a59e79c7b1d1e4ae0d5fd1042f968db1008e743f42d7604475317532fe",
+      "bytes": 58537
+    },
+    "target/timing-sidecar-qa-20261008/run.py": {
+      "sha256": "f8459c26991af222234a606bdbff23024d9fb3130b25afb6230bc0b4de26b04c",
+      "bytes": 18270
+    },
+    "target/timing-sidecar-qa-20261008/PLAN.md": {
+      "sha256": "f44fa68351c30024d7251dded508fe4a7fb25f85437cb5a18c64041c7c69d3cb",
+      "bytes": 9734
+    },
+    "target/timing-sidecar-qa-20261008/independent-review.json": {
+      "sha256": "3d8adb08e998303e7486953ab2ce4efb3044e5b48621b825a432fb4cdb5326cc",
+      "bytes": 6861
+    },
+    "target/timing-sidecar-qa-20261008/candidate-check.json": {
+      "sha256": "13715d1fdd3350e9f2ee30f66adb541c05acbc77ed268475bc543f2259a46e36",
+      "bytes": 1359
+    },
+    "target/timing-sidecar-qa-20261008/timing-observer.patch": {
+      "sha256": "1a026fbc742dff7b00ce818fc014f7ac7b693b67273b066007d8dd2a82ee8c6d",
+      "bytes": 8278
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/Cargo.lock": {
+      "sha256": "bef6050a6fbee3de34b478f5495cb3de7adf6d8c2ee58a82d762b7724c8cfc0e",
+      "bytes": 158535
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/de.json": {
+      "sha256": "818dbf0e4aac4fe463c4527b49cedda2ee6262725536004ef39c02cdf2cca26f",
+      "bytes": 17897
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/en-GB.json": {
+      "sha256": "486e9f0a61c590a7c7219419b8cf83cc5b50046107faa04a06b77a73d2f3f3ba",
+      "bytes": 16085
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/en-US.json": {
+      "sha256": "486e9f0a61c590a7c7219419b8cf83cc5b50046107faa04a06b77a73d2f3f3ba",
+      "bytes": 16085
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/es-419.json": {
+      "sha256": "e20f1c1b4c44794a9e30f9fc3036047affcfe1797b3d5a2a1f2c5f38b6b763cb",
+      "bytes": 17831
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/fr.json": {
+      "sha256": "35473d6a2877067deb0ca4daad5d31e5abb3cfae07283cbc48e2e835c42b36c8",
+      "bytes": 18580
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/ja.json": {
+      "sha256": "c9982ef01817a0f0f780c1bcc4dfe23421560c3034a193476a06914ae07f6e8e",
+      "bytes": 20575
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/ko.json": {
+      "sha256": "5ced4adb96e9356d50a8a21035d260a30938b8893aaaadc71b59a2411d158cc7",
+      "bytes": 19269
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/pt-BR.json": {
+      "sha256": "6beeb8731619dda1aaeccf00d7164b53b4471c455cb6f2379a8d4ba2ce5f65f8",
+      "bytes": 17551
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/ru.json": {
+      "sha256": "7b82214955fc5e94b3e96d3513b98e68c6f8c7f5dde5dca394141fb673e15f5d",
+      "bytes": 24189
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/uk.json": {
+      "sha256": "ccb3c2f4abad4464441b2b33e412bd648371d9ae544a8c668ae46c3f24e17e58",
+      "bytes": 23947
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/zh-CN.json": {
+      "sha256": "3e04901374a47de4d0923075536188389754f7e4d920bc6422f7b2dbbe23a0b7",
+      "bytes": 16043
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/zh-HK.json": {
+      "sha256": "a92594b0ec74c1df61d3fcfbce842112f5ea5351d86e1d42c9ab427ce1f64942",
+      "bytes": 16133
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/assets/i18n/zh-TW.json": {
+      "sha256": "178e4c7ae70d762abdff66c450135e548caac8c52913ba18151c6e16430634d4",
+      "bytes": 16178
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-replay/Cargo.toml": {
+      "sha256": "987689a4fa9130be947a11d08fc576de3f322db9b74f90cf80bf49ff1f416da9",
+      "bytes": 344
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-replay/src/lib.rs": {
+      "sha256": "2bcbb301149df44c21ffc5b49d09a3037e18e3aaf11fc7b81b60061bbdcb39b2",
+      "bytes": 24345
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/app.rs": {
+      "sha256": "5877dc132d573f64c18ec829db139579f5973f3fcaa50ec213233b93f6e5d47f",
+      "bytes": 190305
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/clock.rs": {
+      "sha256": "715e1b02b4e07290d6f0c9cad5949fbb4d85ab52e4be37c4412916a17d2f65cc",
+      "bytes": 24744
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/input.rs": {
+      "sha256": "f30e7b2520b32f64d4fe7da80915e5409590846136c262ec30846388fc945105",
+      "bytes": 140669
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/lib.rs": {
+      "sha256": "7fddb4400ccc30347f1f6e412564598ca29f45fa2dd4c1c89bf659f459a39576",
+      "bytes": 649
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/library_observation.rs": {
+      "sha256": "d819dc6effeeee6703ec43e577441d21f4e755b85a91f8cad89d38aa6cee70f5",
+      "bytes": 48705
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/live_observation.rs": {
+      "sha256": "a838ed2f946ba45ca4231b2b89e190826eb60b7318e2b6f480d2386b22a76437",
+      "bytes": 30434
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/performance_probe.rs": {
+      "sha256": "96e09153cff853135b6c316766b73714acb32a500026031a4a66d736f1f0d207",
+      "bytes": 29544
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/session.rs": {
+      "sha256": "c426f45d210d9b97734c9eb94cb76a83c02b828cfdcad1145188888dfb014162",
+      "bytes": 42126
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "9765f5121c201f2aba1ed327ac0ada776d0ccab41d6e66882179b8c8fdecd7bf",
+      "bytes": 11124
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/tools/cocobeat-lab/src/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "db10ec79bc9481878ad7aed1d9241020b506f69add62d7ea481569712ec85ca2",
+      "bytes": 25504
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/tools/cocobeat-lab/src/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-replay/src/timing.rs": {
+      "sha256": "074007085a5cd3bae9dcb30f8c8289161c9349355392991519024800d02b718b",
+      "bytes": 28878
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/timing_diagnostic.rs": {
+      "sha256": "442d05d497995d7d8e55a0cfe1d76d816fc13dd98b34083a7805fcc5eacdf3d2",
+      "bytes": 9553
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-runtime/src/audio_observation.rs": {
+      "sha256": "8d41f748da88134c6cfe29a4f604b7810ed0e71f2fbb622639f3b064c98a814d",
+      "bytes": 15361
+    },
+    "target/timing-sidecar-delivery-20261008/build/source/crates/cocobeat-core/src/lib.rs": {
+      "sha256": "b40e2cc325ea009b94cd09476c99ed435dbf8b88aa00c43b009caea91e39a7a4",
+      "bytes": 29328
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-package-structural-positive.stdout": {
+      "sha256": "2e3c2a9d0500fa13458e38a1bbc88c64b6c0edcc2c23db5b16f69d46b147bff1",
+      "bytes": 362
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-package-structural-positive.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-new.jsonl": {
+      "sha256": "ee303c67913deaecea7243ad83d6ed0043c981737aae28d77fc8c1e4a21eb21a",
+      "bytes": 132396
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-new.stdout": {
+      "sha256": "7ffe1946e02240d3e83d660cdf5540ea938d7b61f4fce90c278981308152a654",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-old.jsonl": {
+      "sha256": "ee303c67913deaecea7243ad83d6ed0043c981737aae28d77fc8c1e4a21eb21a",
+      "bytes": 132396
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-old.stdout": {
+      "sha256": "7ffe1946e02240d3e83d660cdf5540ea938d7b61f4fce90c278981308152a654",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-default-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-compatibility.json": {
+      "sha256": "f2d46ed14846d1517556b845e1997280252f8d5361619a36fd5867c37fccf9d5",
+      "bytes": 169626
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-new.jsonl": {
+      "sha256": "0d31aa109cd4f50ccb10d358fd477b6c2bd567da3a304ffe6ad38421e5aa8ae0",
+      "bytes": 132369
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-new.stdout": {
+      "sha256": "6218afb4643f5236d87008ee129dfd785cf8cc877661e2f0d8b158d4e9491642",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-old.jsonl": {
+      "sha256": "0d31aa109cd4f50ccb10d358fd477b6c2bd567da3a304ffe6ad38421e5aa8ae0",
+      "bytes": 132369
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-old.stdout": {
+      "sha256": "6218afb4643f5236d87008ee129dfd785cf8cc877661e2f0d8b158d4e9491642",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-legacy-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-timing.jsonl": {
+      "sha256": "f72f7ecac5e6174bd1a12ad137dd12e5c76ecec7ff63e97c798820c34cbb3f5a",
+      "bytes": 140201
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-timing.stdout": {
+      "sha256": "6985727b4b0c8870b76d3b0f37ddaaebf63bf1fc36340522c24517d520799047",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-0-timing.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-new.jsonl": {
+      "sha256": "5f8a7f21d7330bbce1c0c9f0ee01ef75942078805165fda38292a08d352367a9",
+      "bytes": 133926
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-new.stdout": {
+      "sha256": "9e9cae59ea2e9c6b81272cd1ad1e0a2a802911d9005767b85e988f803f509826",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-old.jsonl": {
+      "sha256": "5f8a7f21d7330bbce1c0c9f0ee01ef75942078805165fda38292a08d352367a9",
+      "bytes": 133926
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-old.stdout": {
+      "sha256": "9e9cae59ea2e9c6b81272cd1ad1e0a2a802911d9005767b85e988f803f509826",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-default-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-compatibility.json": {
+      "sha256": "f5d8297a7a285d761ca1e1e68f238ffa025b6a7b3d285a4a9b3ff2820411c0bd",
+      "bytes": 171588
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-new.jsonl": {
+      "sha256": "8d1f582f3cee4b42d9d83ef848cb7cec0b579a3d90d424da51cf4a3f87db668b",
+      "bytes": 133899
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-new.stdout": {
+      "sha256": "26ce591362b869f656167e3e38611849986f02835017472a90f839287baeb7c5",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-old.jsonl": {
+      "sha256": "8d1f582f3cee4b42d9d83ef848cb7cec0b579a3d90d424da51cf4a3f87db668b",
+      "bytes": 133899
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-old.stdout": {
+      "sha256": "26ce591362b869f656167e3e38611849986f02835017472a90f839287baeb7c5",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-legacy-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-timing.jsonl": {
+      "sha256": "c7300f94abf7b1e3a4ad69092201586aed67788f0a1d0b7cf95d5a92d30a3caa",
+      "bytes": 141731
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-timing.stdout": {
+      "sha256": "0f3ebaa22ef691d3df778bb46807f1db06089956d42b983fd25ce69a55de2a79",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on-1-timing.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-new.jsonl": {
+      "sha256": "d2c369b48e4dd7bb6f29e81421e21970e10943eedb07d866729d523fa4fabe0d",
+      "bytes": 8774
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-new.stdout": {
+      "sha256": "4164d939cb0748c2b5510eab3d89259d56d51161aa100361a430262d1ccb9ed5",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-old.jsonl": {
+      "sha256": "d2c369b48e4dd7bb6f29e81421e21970e10943eedb07d866729d523fa4fabe0d",
+      "bytes": 8774
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-old.stdout": {
+      "sha256": "4164d939cb0748c2b5510eab3d89259d56d51161aa100361a430262d1ccb9ed5",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-default-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-compatibility.json": {
+      "sha256": "0390fa78b882c69e978fe245fcdc9256a6b13077703c933caf276b03bf81d6d7",
+      "bytes": 10322
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-new.jsonl": {
+      "sha256": "4ef950d7efbdd6f067e54defe5187b034e70eca0cf55f3cf290271ec4c4aff2d",
+      "bytes": 8747
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-new.stdout": {
+      "sha256": "824b70058ee247645d43d0b1aa54ba53ec14f932321155ace785c9976c9a4da4",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-old.jsonl": {
+      "sha256": "4ef950d7efbdd6f067e54defe5187b034e70eca0cf55f3cf290271ec4c4aff2d",
+      "bytes": 8747
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-old.stdout": {
+      "sha256": "824b70058ee247645d43d0b1aa54ba53ec14f932321155ace785c9976c9a4da4",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-0-legacy-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-new.jsonl": {
+      "sha256": "aa6d95ce3a84dd81ba59765cd805d11750331fd9606671617cb1b389f1acf311",
+      "bytes": 10247
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-new.stdout": {
+      "sha256": "d8e36825071fd02bbe56ee4c87b51969c5d1efd051684b2fcdab7c9e3b76f1a9",
+      "bytes": 149
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-old.jsonl": {
+      "sha256": "aa6d95ce3a84dd81ba59765cd805d11750331fd9606671617cb1b389f1acf311",
+      "bytes": 10247
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-old.stdout": {
+      "sha256": "d8e36825071fd02bbe56ee4c87b51969c5d1efd051684b2fcdab7c9e3b76f1a9",
+      "bytes": 149
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-default-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-compatibility.json": {
+      "sha256": "06413a1d99c4fdfd1ddf305185cb8467460ccab2e7e9afd299e3cd7ca549b199",
+      "bytes": 12248
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-new.jsonl": {
+      "sha256": "b1c2edf9b53786352579cb77f914cee4e1229312e8e641f96f7e301b8427d96c",
+      "bytes": 10220
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-new.stdout": {
+      "sha256": "57dbe4c453760f81c2523b3760a2c829b7b6f45885c8ed069fc32faebe217832",
+      "bytes": 149
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-new.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-old.jsonl": {
+      "sha256": "b1c2edf9b53786352579cb77f914cee4e1229312e8e641f96f7e301b8427d96c",
+      "bytes": 10220
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-old.stdout": {
+      "sha256": "57dbe4c453760f81c2523b3760a2c829b7b6f45885c8ed069fc32faebe217832",
+      "bytes": 149
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off-1-legacy-old.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-hash.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-hash.stderr": {
+      "sha256": "6feb6d58980e7c4b2398e36a044a1ec9d25b3ae9835dd4f0696ddfbe71d1319f",
+      "bytes": 62
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-stage.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-stage.stderr": {
+      "sha256": "5a8e3a86df6ab931284cb68e2b1e8c0ea07ac0bc9d30039015316e4143c824b2",
+      "bytes": 87
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-stage-null.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-stage-null.stderr": {
+      "sha256": "71cf3397a84358edc8f9b7047f9c9e1084e9158a07bcc8449424b5ffb14cf91b",
+      "bytes": 87
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-capture-seq.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-capture-seq.stderr": {
+      "sha256": "ea24b5f0af9b581132f4445a84c6b836165758a574671aee408384fb97feed3d",
+      "bytes": 83
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/unknown-field.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/unknown-field.stderr": {
+      "sha256": "fe5ef4b328992d5fc21f2192896ac872b53fe668ed5f0b490607feb59df37bfb",
+      "bytes": 403
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-source.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-source.stderr": {
+      "sha256": "13515747dc2c2e345153238790e222ad1c834664183fa30bd398dfeb6fe1bd3e",
+      "bytes": 69
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-callback.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-callback.stderr": {
+      "sha256": "65b7905ad242f8445709809a07fb2201616088df402b8ccea4598056f4a76965",
+      "bytes": 71
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-previous_observed_ns.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-previous_observed_ns.stderr": {
+      "sha256": "e5a4a550ec31bcce48c1289f0483135f3061f6e73e4110e1cfb1622c1d4b37ad",
+      "bytes": 83
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-previous_frames.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/missing-nullable-previous_frames.stderr": {
+      "sha256": "acbc3a36a565a0ee3f447cee09fea77adff2df525caf195c2a30efbe0b176ab8",
+      "bytes": 78
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-package.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/wrong-package.stderr": {
+      "sha256": "971d7d91308af723a054fc904c15e2f1f69e09fd7ac1b03c4f44f59494bc0b30",
+      "bytes": 42
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/whitespace-replay-default-positive.jsonl": {
+      "sha256": "5f8a7f21d7330bbce1c0c9f0ee01ef75942078805165fda38292a08d352367a9",
+      "bytes": 133926
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/whitespace-replay-default-positive.stdout": {
+      "sha256": "9e9cae59ea2e9c6b81272cd1ad1e0a2a802911d9005767b85e988f803f509826",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/whitespace-replay-default-positive.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/whitespace-replay-timing-rejection.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/whitespace-replay-timing-rejection.stderr": {
+      "sha256": "6feb6d58980e7c4b2398e36a044a1ec9d25b3ae9835dd4f0696ddfbe71d1319f",
+      "bytes": 62
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/explicit-null-audio-positive.jsonl": {
+      "sha256": "f4a032bb53212ce5c5209b496545a47454168b01f03c28c7421f8e01cf10df8f",
+      "bytes": 138461
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/explicit-null-audio-positive.stdout": {
+      "sha256": "0f3ebaa22ef691d3df778bb46807f1db06089956d42b983fd25ce69a55de2a79",
+      "bytes": 150
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/explicit-null-audio-positive.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/stderr": {
+      "sha256": "ade450e6300b7779b65da7e0f2fda0e6fc2f8b1ecbb826e890ea55ecacc3afc8",
+      "bytes": 6553
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/stderr": {
+      "sha256": "29537d4eb041df09f62448efd95864bad226b6327043af576432e1db0195cee3",
+      "bytes": 6555
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/wrong-hash.timing.json": {
+      "sha256": "0ba1b88759e08f1c0d86e7155c248fdd006db5cff79c00b77e524fd3f4e68c3f",
+      "bytes": 234162
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/missing-nullable-stage.timing.json": {
+      "sha256": "314895bca53c5f385cd3a3e0ec3d674f5e843f2e9f7fb20b38005152760ff212",
+      "bytes": 234131
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/wrong-stage-null.timing.json": {
+      "sha256": "4bef687542b810ca5558d4a2a09f4205dd5fbb2dc7cb3ad9b3746a0b7677c9fc",
+      "bytes": 234165
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/wrong-capture-seq.timing.json": {
+      "sha256": "da76161efad6e15b4d64f1b56650d324c5bcfb76754adc7275d37c05eace71d7",
+      "bytes": 234162
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/unknown-field.timing.json": {
+      "sha256": "88887c7daf17f91f8b61904acb5435fcc788ea4ff366702e1d4bedabdb736941",
+      "bytes": 234184
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/missing-nullable-source.timing.json": {
+      "sha256": "0059a362211a07b0e007c3022f40e9f6dd295a2312011037870fc2223da10be3",
+      "bytes": 233929
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/missing-nullable-callback.timing.json": {
+      "sha256": "1a820305e684e519aa657bc5fb51e1937b2f3b92671b45e618cf329516c3c630",
+      "bytes": 233936
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/missing-nullable-previous_observed_ns.timing.json": {
+      "sha256": "647890180ec720e9560275da2723b8b60fe9c76fde5b60767577cc7f81d4d074",
+      "bytes": 234118
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/missing-nullable-previous_frames.timing.json": {
+      "sha256": "dc2f0c97bde7502e31e5711a72ca326cfd8ed6bfd59c4942a5c994bc4f8629bd",
+      "bytes": 234130
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/whitespace-only-replay.json": {
+      "sha256": "bee6385ba65e0aadde5bf11111f076f5fdf6cc0c16d28646faaa37bb250fe5ea",
+      "bytes": 105039
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/negative-controls/explicit-null-audio-positive.timing.json": {
+      "sha256": "ec6c29a1a0eb848d219384be37924ab6350d311aa8fa6f88a80a87fa251c24c4",
+      "bytes": 65508
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/child/game.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/child/game.stderr": {
+      "sha256": "bbf24c7624b77fbd17af67e79db04619ddcdaf21e025e9b343f89179b798434c",
+      "bytes": 824
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/child/game-launch.json": {
+      "sha256": "953ad6702b45a279713a75a9f972a6a08aa4a111d9fc95845a4926c4d70772d2",
+      "bytes": 1271
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/child/child-exit.json": {
+      "sha256": "bd76c255f6b7a0dbcebb8dcd51443216e68b575652791c7d37757365ab4f5d7d",
+      "bytes": 84
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/observation/metadata.json": {
+      "sha256": "e78957726c04d1b17fdedddf4fd41860030d83d1e80aada6924b3256e89efcd4",
+      "bytes": 767
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/observation/frames.csv": {
+      "sha256": "c865e9d505cb319606a831a0d322ff874620beace32bfd5d720b2e737483886b",
+      "bytes": 61191
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/observation/timing-paused.png": {
+      "sha256": "11eb016deff376a2fc04a9972f2c2ff81967987a4fcd90130049d9d8b271acbb",
+      "bytes": 1028390
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/observation/result.json": {
+      "sha256": "8397f18e469d1b50146fd3f1540edce15151cc834eff540b1d6da1ba8dab998c",
+      "bytes": 455731
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/cwd/replays/session-1-1791407090100095228.json": {
+      "sha256": "e1ced329b3fc832d291a23b239e6fbc8288d5b6031102c41b29f48a804c6ebc2",
+      "bytes": 6352
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/cwd/replays/session-1-1791407090100095228.csv": {
+      "sha256": "bee9c241c666becfb730af040f3ffa68594e7fd94d7e8b5e174e3352c2060fd0",
+      "bytes": 144
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/cwd/replays/session-1-1791407090407263673.json": {
+      "sha256": "aa4af0acdf14117f1e5111d43b49f3fe664bc10539d45af94bf45ce4acd950c9",
+      "bytes": 7522
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-off/cwd/replays/session-1-1791407090407263673.csv": {
+      "sha256": "bee9c241c666becfb730af040f3ffa68594e7fd94d7e8b5e174e3352c2060fd0",
+      "bytes": 144
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/child/game.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/child/game.stderr": {
+      "sha256": "0df799661c797efbac8bb4ec4d4434123ed79c45b80f44739cb75a57bb51c921",
+      "bytes": 824
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/child/game-launch.json": {
+      "sha256": "8a65e63e3bd6c3409300966b8a712536e256bdf2882a291d54935e4cb044ad74",
+      "bytes": 1295
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/child/child-exit.json": {
+      "sha256": "cc688e1f143b7ff3402b4a95ca05bd893fe27eff2af9a95aa65c141b4309b2f9",
+      "bytes": 84
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/observation/metadata.json": {
+      "sha256": "7123c541da8ab39145ad11306cf08cbebb4a8640d44975131c4b703a08d62955",
+      "bytes": 767
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/observation/frames.csv": {
+      "sha256": "ab1bea923c34da7ca49b2d0ac1facc7a24c7e107eefa5802c2f9f4713d1727cc",
+      "bytes": 181231
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/observation/timing-paused.png": {
+      "sha256": "184a3f46358358e4a802ddefda3b0f34a06acbfab19fa28743e4bc7d21d891f6",
+      "bytes": 1027716
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980499896299.json": {
+      "sha256": "a1fa2bb48898afc42a5e8ff48d628d2c40058c81d2d6ca276ffd920fc2197e45",
+      "bytes": 103832
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980499896299.csv": {
+      "sha256": "48d69dd84b1859c7eefec24ed3ac4595e91e1064c1325dec00d2e48e259dd60d",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980499896299.timing.json": {
+      "sha256": "dae7a0e0f8811b531fdea8fe7ec06429bf9edfbb58e1f8cb64005c22de2fe765",
+      "bytes": 157379
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980819073156.json": {
+      "sha256": "4dfb196908bf86bd92eecce8c22a30e8ea6693862c06a66131f078dd75820db3",
+      "bytes": 105038
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980819073156.csv": {
+      "sha256": "48d69dd84b1859c7eefec24ed3ac4595e91e1064c1325dec00d2e48e259dd60d",
+      "bytes": 148
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/cwd/replays/session-1-1791406980819073156.timing.json": {
+      "sha256": "eaa2727f66dbd1b06ce0912ec4d32f73b5cfa8f274490ffbe13833550d8ada85",
+      "bytes": 158922
+    },
+    "target/timing-sidecar-delivery-20261008/formal-draft/REVIEW-PRE-NATIVE.json": {
+      "sha256": "7fcbaad75a25e7936541123611afddcb4294202fcb62f2cd770e8b015731be7a",
+      "bytes": 3113
+    },
+    "target/timing-sidecar-delivery-20261008/native-run-01/summary.json": {
+      "sha256": "8fd82df8a7f3c4f3817e434221d9a18a88c81a090adf194e3876040d004ef25d",
+      "bytes": 12409643
+    },
+    "target/timing-sidecar-delivery-20261008/native-readback.json": {
+      "sha256": "a8b31774c442d2e54a08161658582e03c9061f2992cc1b742f7a0370f73693ed",
+      "bytes": 1553
+    },
+    "target/timing-sidecar-delivery-20261008/native-host-processes.json": {
+      "sha256": "a27cb520081d9dd89e6decbfe05269df8574fc01717249e9c8840838a34987f7",
+      "bytes": 149
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/child/child-exit.json": {
+      "sha256": "9900120604a5a4e71ea4cc0fd3c9ec41a88ee9283caae0562976874b92b9935f",
+      "bytes": 86
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/child/game-launch.json": {
+      "sha256": "9e81f42408f3a0c04b2417b777c9548912e01f868173bf6cb95d127317cf7b77",
+      "bytes": 1208
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/child/game.stderr": {
+      "sha256": "698926109a788fea854d4309558e907f2d92f715b6729617be1ce4d6295880a4",
+      "bytes": 7295
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/child/game.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/result.json": {
+      "sha256": "64918ed78bb91756d6f2ff3cf74248da807602c0d42f01a4e030210856fc4fa9",
+      "bytes": 8977
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/stderr": {
+      "sha256": "fc0d9e419b4db00d79f52d9a3a1e3b08631dcc4ded6210ffa82e9fcd8ad1e827",
+      "bytes": 6527
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-01/stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/build.json": {
+      "sha256": "095df980280541e6fe189f3450fc9b187fcf25a17ce9c7f93a4ae391c6c3f089",
+      "bytes": 75932
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/build.log": {
+      "sha256": "2cc505fcff0452c2951930cdcedda524064e3944e67026f7e061aedb32d879c2",
+      "bytes": 3517
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/instrumentation.patch": {
+      "sha256": "7fe591ba1340c152ace8643d7f759ae305b16fe95088b25f42bbc537f0b7efcd",
+      "bytes": 1227
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/prepared.json": {
+      "sha256": "0b42578b597dd347b7b2c1c6d1df7bf54c16a897211e68bbb2118782201bd0ca",
+      "bytes": 2589
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/qa.rs": {
+      "sha256": "22c9c77b3ba22f8eb8b6576bd5fb2cef8168984957e152ffeadee8ca0d14575d",
+      "bytes": 9703
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/source/workbench.rs": {
+      "sha256": "9c11760299810fca47b1367ec343798bad36a2dac1cc89030c8729511d1dfde8",
+      "bytes": 25647
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-01/timing-build.json": {
+      "sha256": "16bc5e99eb96875888ad50672aaf0869744d4740dfa1ea3f7c9fbc2ec19ac912",
+      "bytes": 1164
+    },
+    "target/timing-sidecar-delivery-20261008/visual-review.json": {
+      "sha256": "120199cb68a45927791caa1e9e147a5930062d82a8dd3551249a0a24ed279a4c",
+      "bytes": 1543
+    },
+    "target/timing-sidecar-delivery-20261008/all-native-host-exit.json": {
+      "sha256": "f9122291113fe2e989fe7fbf1a8ee2a16eece61e59cdcf234627a08526521560",
+      "bytes": 246
+    },
+    "target/timing-sidecar-delivery-20261008/final-narrow-checks.json": {
+      "sha256": "29835805fe42be3c722d93926ff34848f18c2809bdddda1e228043b7336cbec3",
+      "bytes": 536
+    },
+    "target/timing-sidecar-delivery-20261008/gui-final-readback.json": {
+      "sha256": "d3c8e909f72efe1512b45a8ce1704be871646338d72fa992a44bf3894af64b7e",
+      "bytes": 403
+    },
+    "target/timing-sidecar-delivery-20261008/xtask-tests.log": {
+      "sha256": "c3bb03db785d490ddf6bbb02942a8147b03d19e33ef2fec4f73d2a96ce99e59a",
+      "bytes": 620
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/build.json": {
+      "sha256": "0aa63d462fe28d18139ffcca52a35adf431da5abfd8a90fff5fb9272dfd960e3",
+      "bytes": 75932
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/build.log": {
+      "sha256": "0be7ba315bcdd7488dddb67452ab83b51293b07e1b004bd449fb53eabae04e5c",
+      "bytes": 3517
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/instrumentation.patch": {
+      "sha256": "7fe591ba1340c152ace8643d7f759ae305b16fe95088b25f42bbc537f0b7efcd",
+      "bytes": 1227
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/prepared.json": {
+      "sha256": "9df4a2768346a4322d80e9b316d839aa895bf82196b7f090239a88b081533514",
+      "bytes": 2589
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/qa.rs": {
+      "sha256": "c65d7414c842193b90590beb56704a72de61f6a7cfab0d5ab95c4207a993399e",
+      "bytes": 10717
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/source/workbench.rs": {
+      "sha256": "9c11760299810fca47b1367ec343798bad36a2dac1cc89030c8729511d1dfde8",
+      "bytes": 25647
+    },
+    "target/timing-sidecar-delivery-20261008/gui-build-02/timing-build.json": {
+      "sha256": "367e118a1890e121d692f6c3dd05106b212ab5edb8da482a40856e23608b50d7",
+      "bytes": 1164
+    },
+    "target/timing-sidecar-qa-20261008/gui/HANDOFF.md": {
+      "sha256": "04a4b641b8ffaa61720c34bc64b2e604c549a79d8afe3dffb6e4a23b53a21064",
+      "bytes": 4729
+    },
+    "target/timing-sidecar-qa-20261008/gui/artifact-requests.json": {
+      "sha256": "fc521983a885bfb0cffca0da096aa71d04d9c6ea58b23a73f84f7717705834f8",
+      "bytes": 3477
+    },
+    "target/timing-sidecar-qa-20261008/gui/candidate-check.json": {
+      "sha256": "6abaf23636133f89466c901916168b2bbbe8bdc54632ca90abb50803d0578d33",
+      "bytes": 777
+    },
+    "target/timing-sidecar-qa-20261008/gui/check.py": {
+      "sha256": "b1121752716688aa90b158968242f22775159c846a8ae03d39e7b2bc623236a0",
+      "bytes": 10230
+    },
+    "target/timing-sidecar-qa-20261008/gui/independent-gui-review.json": {
+      "sha256": "dccda17e40a0aa433dc79185ec15eb2eb7e3cc743133a9fa757925d5fd428c71",
+      "bytes": 6572
+    },
+    "target/timing-sidecar-qa-20261008/gui/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/instrumentation.patch": {
+      "sha256": "7fe591ba1340c152ace8643d7f759ae305b16fe95088b25f42bbc537f0b7efcd",
+      "bytes": 1227
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/prepared.json": {
+      "sha256": "bc7da3e2c571daf37053713abac0a2984a2a27175b6407f02b08fab516a3ff22",
+      "bytes": 2589
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/qa.rs": {
+      "sha256": "22c9c77b3ba22f8eb8b6576bd5fb2cef8168984957e152ffeadee8ca0d14575d",
+      "bytes": 9703
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-01/source/workbench.rs": {
+      "sha256": "9c11760299810fca47b1367ec343798bad36a2dac1cc89030c8729511d1dfde8",
+      "bytes": 25647
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/instrumentation.patch": {
+      "sha256": "7fe591ba1340c152ace8643d7f759ae305b16fe95088b25f42bbc537f0b7efcd",
+      "bytes": 1227
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/prepared.json": {
+      "sha256": "0b42578b597dd347b7b2c1c6d1df7bf54c16a897211e68bbb2118782201bd0ca",
+      "bytes": 2589
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/qa.rs": {
+      "sha256": "22c9c77b3ba22f8eb8b6576bd5fb2cef8168984957e152ffeadee8ca0d14575d",
+      "bytes": 9703
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/timing-sidecar-qa-20261008/gui/prepared-02/source/workbench.rs": {
+      "sha256": "9c11760299810fca47b1367ec343798bad36a2dac1cc89030c8729511d1dfde8",
+      "bytes": 25647
+    },
+    "target/timing-sidecar-qa-20261008/gui/qa.rs": {
+      "sha256": "22c9c77b3ba22f8eb8b6576bd5fb2cef8168984957e152ffeadee8ca0d14575d",
+      "bytes": 9703
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/HANDOFF.md": {
+      "sha256": "b1b821c2c01dff8e7bef90f80a3324eaa101664b40f223d1b5e16e8ccc245853",
+      "bytes": 2620
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/candidate-check.json": {
+      "sha256": "0a05efdae7675c7ea3aa3549e17be44f0277be94c480ffa26bdf62dabf5bfd35",
+      "bytes": 960
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/check.py": {
+      "sha256": "b1121752716688aa90b158968242f22775159c846a8ae03d39e7b2bc623236a0",
+      "bytes": 10230
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/independent-gui-review.json": {
+      "sha256": "67e2ce2aab35a83bbbd58f791c22aa60f18c69e34fba7fd9429fcf3430defb04",
+      "bytes": 5426
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/instrumentation.patch": {
+      "sha256": "7fe591ba1340c152ace8643d7f759ae305b16fe95088b25f42bbc537f0b7efcd",
+      "bytes": 1227
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/prepared.json": {
+      "sha256": "9df4a2768346a4322d80e9b316d839aa895bf82196b7f090239a88b081533514",
+      "bytes": 2589
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/main.rs": {
+      "sha256": "8ccf03e7080a9ff4590e5580e94e963838892800f1e251b2e18b889eabad4414",
+      "bytes": 672
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/qa.rs": {
+      "sha256": "c65d7414c842193b90590beb56704a72de61f6a7cfab0d5ab95c4207a993399e",
+      "bytes": 10717
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/prepared-01/source/workbench.rs": {
+      "sha256": "9c11760299810fca47b1367ec343798bad36a2dac1cc89030c8729511d1dfde8",
+      "bytes": 25647
+    },
+    "target/timing-sidecar-qa-20261008/gui-retry-02/qa.rs": {
+      "sha256": "c65d7414c842193b90590beb56704a72de61f6a7cfab0d5ab95c4207a993399e",
+      "bytes": 10717
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/stderr": {
+      "sha256": "ebf7d002063d1e527f38ab37dc7d494ee86a30f8a8c78b86b5aeee3524f6a7ab",
+      "bytes": 6527
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/child/game.stdout": {
+      "sha256": "aa38e9fae28b410c973999f0be0a003936f7c6311da67e5d73c35e9187a88e1c",
+      "bytes": 2194
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/child/game-launch.json": {
+      "sha256": "134758fe9de331fc12ae5240f6ac68acbad6c640d3d49aec1bbf800b5f5c26bf",
+      "bytes": 1208
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/child/child-exit.json": {
+      "sha256": "dd98b8d077e9791bb7b4d522d2ee35b7076c43750ad25d4cfa38b0bc2df18417",
+      "bytes": 84
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-top.png": {
+      "sha256": "a36bc3d0c061c744be5e376514c876d22a6da1f3ddc471321464334c607dfca1",
+      "bytes": 231364
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-top.json": {
+      "sha256": "9593f2fcc70193ff768f0eec7363ba53480f9569e842e0c8cc37885b21a3f11b",
+      "bytes": 12854
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-middle.png": {
+      "sha256": "0174673cd37e932f8dcf4ad02e5034847576a9fc7459539f942f9c100d178d5c",
+      "bytes": 240122
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-middle.json": {
+      "sha256": "39ac1a8c8aad8603f8a6998012fb737060d50c1270f6bce22ca21f0f66a1cfed",
+      "bytes": 12861
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-explanation.png": {
+      "sha256": "09d76edc1dd4fe790533bc5f27d855a4371e7205377edadbba2d77cd0a89a4ed",
+      "bytes": 305833
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/screenshots/timing-details-explanation.json": {
+      "sha256": "2843a8efa5183ecbe2d879c945c069da9ec7a2d74856346a42e25db3625aa60c",
+      "bytes": 12868
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/result.json": {
+      "sha256": "9d5d05e287b0507361f15afdf37f3074bdf0374b4a245823f59af595001ff97e",
+      "bytes": 52693
+    },
+    "target/timing-sidecar-delivery-20261008/formal-draft/REVIEW-GUI-RETRY.json": {
+      "sha256": "057195fd078cd6b1d04856f7f3955494c859b5f3e4dbe1238cf45edcb9020472",
+      "bytes": 3038
+    },
+    "target/timing-sidecar-delivery-20261008/formal-draft/REVIEW-NATIVE-CLI.json": {
+      "sha256": "613043828147dec98e7725d60899bb71b83bec2a7b155d01f14fc63d23d9a747",
+      "bytes": 3728
+    }
+  },
+  "large_raw_recorded_identities": {
+    "target/timing-sidecar-delivery-20261008/native-run-01/timing-on/observation/result.json": {
+      "sha256": "b5383b5b9dc727e15ccf6754593b0969e37982144138b9dc20c0493bd80fa7a0",
+      "bytes": 7969900,
+      "identity_evidence": "Terminal runner SHA256 independently confirmed by root native-readback129-file PASS; excluded from this small-file index"
+    },
+    "target/timing-sidecar-delivery-20261008/gui-run-02/child/game.stderr": {
+      "sha256": "c653b3c2f2cf558d43cc1a5d378062554811935766e8f2ca572becb1e2b344f0",
+      "bytes": 5733478,
+      "identity_evidence": "Terminal runner SHA256 independently confirmed by root final raw readback; binary contents excluded; large textual raw not rehashed by this small-file index"
+    }
+  },
+  "excluded_binary_identities": {
+    "cocobeat-game": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/timing-sidecar-delivery-20261008/build/bin/cocobeat-game",
+      "sha256": "5f7763517291d25ccfea9f60db6cee4ed141b5c62e5c592c7139b7eb04c3572d",
+      "bytes": 1472655648,
+      "receipt": "target/timing-sidecar-delivery-20261008/build/cocobeat-game-build-result.json",
+      "identity_evidence": "Actual build producer hashed compiler output and copied binary and asserted equality; not independently rehashed during exclusive native run"
+    },
+    "cocobeat-lab": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/timing-sidecar-delivery-20261008/build/bin/cocobeat-lab",
+      "sha256": "0a60bcfb19db14d80480f5c53a6ba32f0667229b28aa4839c40b7b1bdabd7ef2",
+      "bytes": 1473067648,
+      "receipt": "target/timing-sidecar-delivery-20261008/build/cocobeat-lab-build-result.json",
+      "identity_evidence": "Actual build producer hashed compiler output and copied binary and asserted equality; not independently rehashed during exclusive native run"
+    },
+    "gui-run-01": {
+      "path": "target/timing-sidecar-delivery-20261008/gui-build-01/replay-workbench-check",
+      "sha256": "dfc7aa29a547885bbedd2bf2bbfd5e38ac1cc9eb6387753a4d588b8aee6eeab0",
+      "identity_evidence": "Terminal GUI runner protected-input hash, binary not reopened"
+    },
+    "gui-run-02": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/timing-sidecar-delivery-20261008/gui-build-02/replay-workbench-check",
+      "sha256": "5c4f7eb7d83c102764d9c440986008ed38de039b9113c8cea15865b5ad7a94e6",
+      "bytes": 1446987072,
+      "identity_evidence": "Successful helper build and terminal protected-input receipts; no binary content rehash by record preparer"
+    }
+  }
+}

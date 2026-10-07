@@ -7,7 +7,8 @@
 - [x] 增删移动 Anchor，支持撤销重做，重新生成内容哈希，已由实际修包 CLI 消费
 - [x] 图形界面显示 Replay 输入、水位、Anchor 判定与 Free Sync 配对，保留原始整数和事实关联
 - [x] 三种工作台共用 canonical PCM 试听，独立显示源游标和请求起点，暂停 / 恢复 / 停止 / 选择跳转保留原编辑与 Replay 帧
-- [ ] 关联设备计时诊断；Replay v1 尚无设备时间戳，不能从歌曲帧推算物理延迟
+- [x] 关联显式本机软件计时 sidecar，按精确 Replay 原字节和原 Hit fact_index 展示观察、消费等待、真实 mapping anchor 与独立音频历史；共享 / runtime / lab、实际 CLI 和原生详情软件验证通过，物理设备另验
+- [ ] 物理输入、DAC / 扬声器与设备计时验收；Replay v1 / v2 不含设备 timestamp，软件消费等待不能从歌曲帧推算成物理延迟
 - [x] 固定带版本/长度限制的 SongPackage / Replay 及 CLI 诊断契约，校验损坏与不支持版本
 - [x] 编辑导出再载入无损，同一 core headless 重放结果一致；真实改谱必须使用匹配新身份的录制
 
@@ -46,3 +47,5 @@
 2026-10-07 · 试听真实 callback 补验：冻结生产模块和旧 extern 的 helper 实际走 Kira CPAL，两个尺寸正常播放 / 暂停 / 暂停跳转 / 恢复 / 失焦 / Stop 与一个实际输出初始化失败共三 case 通过，七张实际图 agent / 主线程目检通过；原选中事实和源包保持，见[独立记录](../testdata/synthetic/workbench-audition-callback-observations-20261007.json)。callback 状态不证明声学输出或物理计时
 
 2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计
+
+2026-10-08 · 本机 timing sidecar 已接通正式 `inspect-replay … --timing SIDECAR` 和 `workbench-replay … --timing SIDECAR [--locale CODE]` 消费路径；显式报告 v3，未传时维持 v1 / v2 原内容，旧 CSV 不自动猜关联。core 9 项、replay 11 项、runtime 174 项与 lab 32 项检查通过，32 条实际 CLI、两组原生游戏与原生详情补验通过；首次 QA 焦点失败及指定范围三图目检见[观察记录](../testdata/synthetic/timing-sidecar-observations-20261008.json)，接口与原文件保护见[显式计时关联](../docs/replay-diagnostics.md#显式本机计时关联)

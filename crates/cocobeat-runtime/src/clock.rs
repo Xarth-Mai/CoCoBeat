@@ -230,6 +230,19 @@ impl ClockBridge {
         &self,
         monotonic: MonotonicTime,
     ) -> Result<ClockEstimate, ClockError> {
+        self.estimate_with_observation(monotonic)
+            .map(|(estimate, _)| estimate)
+    }
+
+    pub const fn config(&self) -> ClockConfig {
+        self.config
+    }
+
+    /// Retains the same actual anchor selected for an original captured input
+    pub fn estimate_with_observation(
+        &self,
+        monotonic: MonotonicTime,
+    ) -> Result<(ClockEstimate, ClockObservation), ClockError> {
         let anchor = self
             .history
             .iter()
@@ -240,6 +253,7 @@ impl ClockBridge {
             return Err(ClockError::OutsideHistory);
         }
         self.project(anchor.observation, monotonic)
+            .map(|estimate| (estimate, anchor.observation))
     }
 
     /// Returns nondecreasing song positions within an epoch, with any clamp disclosed
@@ -486,6 +500,23 @@ mod tests {
         assert_eq!(current.uncertainty_frames, raw.uncertainty_frames + 5);
         assert_eq!(clock.now(mono(100_000)), Err(ClockError::NonMonotonicQuery));
         assert_eq!(clock.estimate_song_time(mono(100_000)).unwrap(), first);
+    }
+
+    #[test]
+    fn captured_query_returns_its_old_selected_anchor_without_latest_substitution() {
+        let mut clock = bridge();
+        let first = observation(1_000_000_000, 48_000, 2_400);
+        let newer = observation(1_100_000_000, 52_800, 2_400);
+        clock.observe(first).unwrap();
+        clock.observe(newer).unwrap();
+        let at = mono(1_020_000_000);
+        let (estimate, used) = clock.estimate_with_observation(at).unwrap();
+        assert_eq!(used, first);
+        assert_eq!(clock.last_observation(), Some(newer));
+        assert_eq!(estimate, clock.estimate_song_time(at).unwrap());
+        assert_eq!(estimate.song_time.frames(), 48_960);
+        assert_eq!(estimate.uncertainty_frames, 2_402);
+        assert_eq!(clock.config(), ClockConfig::default());
     }
 
     #[test]

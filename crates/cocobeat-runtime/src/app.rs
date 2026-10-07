@@ -138,10 +138,13 @@ struct Game {
     package_path: Option<PathBuf>,
     content: SongContent,
     session: Session,
+    timing_enabled: bool,
+    timing_players: Vec<PlayerId>,
     playback: Option<ReplayPlayback>,
     phase: Phase,
     notice: Message,
     saved_facts: usize,
+    saved_timing_reads: usize,
     replay_status: Message,
     fault_details: Option<String>,
     results: Option<SessionResults>,
@@ -161,11 +164,14 @@ impl Game {
             song_id: None,
             package_path: None,
             session: Session::for_content(SessionEpoch(0), &content)?,
+            timing_enabled: false,
+            timing_players: vec![PlayerId::P1, PlayerId::P2],
             content,
             playback: None,
             phase: Phase::Ready,
             notice: Message::new("game.welcome"),
             saved_facts: 0,
+            saved_timing_reads: 0,
             replay_status: Message::default(),
             fault_details: None,
             results: None,
@@ -175,12 +181,39 @@ impl Game {
         })
     }
 
+    fn configure_timing(
+        &mut self,
+        network: Option<&LiveConfig>,
+    ) -> Result<Option<PlayerId>, String> {
+        let player = network.map(|config| match &config.role {
+            LiveRole::Host { .. } => PlayerId::P1,
+            LiveRole::Join { .. } | LiveRole::Receive { .. } => PlayerId::P2,
+        });
+        self.timing_players =
+            player.map_or_else(|| vec![PlayerId::P1, PlayerId::P2], |player| vec![player]);
+        if self.timing_enabled {
+            if self.playback.is_some() {
+                return Err("Replay watching does not collect new timing diagnostics".into());
+            }
+            self.session.enable_timing(&self.timing_players)?;
+        }
+        Ok(player)
+    }
+
+    fn new_session(&self, epoch: SessionEpoch, content: &SongContent) -> Result<Session, String> {
+        let mut session = Session::for_content(epoch, content)?;
+        if self.timing_enabled {
+            session.enable_timing(&self.timing_players)?;
+        }
+        Ok(session)
+    }
+
     fn install_library_song(
         &mut self,
         audio: &mut AudioOutput,
         song: LoadedSong,
     ) -> Result<(), String> {
-        let session = Session::for_content(self.session.epoch(), &song.content)?;
+        let session = self.new_session(self.session.epoch(), &song.content)?;
         self.save()?;
         audio.replace_song(song.sound);
         self.content = song.content;
@@ -190,6 +223,7 @@ impl Game {
         self.playback = None;
         self.phase = Phase::Ready;
         self.saved_facts = 0;
+        self.saved_timing_reads = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
         self.results = None;
@@ -216,7 +250,7 @@ impl Game {
     }
 
     fn reset_session(&mut self, epoch: SessionEpoch) -> Result<(), String> {
-        let mut session = Session::for_content(epoch, &self.content)?;
+        let mut session = self.new_session(epoch, &self.content)?;
         if let Some(playback) = &mut self.playback {
             session.replay = self.session.replay.clone();
             playback.reset();
@@ -261,12 +295,24 @@ impl Game {
             if self.phase != Phase::Fault {
                 self.notice = Message::new("game.nothing_to_save");
             }
-        } else if self.saved_facts != self.session.replay.facts().len() {
+        } else if self.saved_facts != self.session.replay.facts().len()
+            || self.saved_timing_reads
+                != self
+                    .session
+                    .timing
+                    .as_ref()
+                    .map_or(0, |timing| timing.audio_read_count())
+        {
             let path = self.session.save(directory).inspect_err(|error| {
                 self.replay_status =
                     Message::with("results.replay_failed", [("error", error.clone())]);
             })?;
             self.saved_facts = self.session.replay.facts().len();
+            self.saved_timing_reads = self
+                .session
+                .timing
+                .as_ref()
+                .map_or(0, |timing| timing.audio_read_count());
             self.replay_status = Message::with(
                 "results.replay_saved",
                 [("path", path.display().to_string())],
@@ -307,6 +353,7 @@ impl Game {
         audio.start()?;
         self.reset_session(epoch)?;
         self.saved_facts = 0;
+        self.saved_timing_reads = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
         self.results = None;
@@ -321,6 +368,7 @@ impl Game {
         // Keep the epoch until the next explicit Start advances it
         self.reset_session(self.session.epoch())?;
         self.saved_facts = 0;
+        self.saved_timing_reads = 0;
         self.replay_status = Message::default();
         self.fault_details = None;
         self.results = None;
@@ -680,11 +728,22 @@ mod performance_probe;
 mod watch_observation;
 
 struct LiveOptions {
+    timing_enabled: bool,
     observation: Option<PathBuf>,
     next_rounds: Vec<(PathBuf, PathBuf)>,
 }
 
 fn live_options(args: &mut Vec<String>) -> Result<LiveOptions, String> {
+    let timing_enabled =
+        if let Some(index) = args.iter().position(|arg| arg == "--timing-diagnostics") {
+            args.remove(index);
+            if args.iter().any(|arg| arg == "--timing-diagnostics") {
+                return Err("--timing-diagnostics may be supplied once".into());
+            }
+            true
+        } else {
+            false
+        };
     let observation = if args.len() >= 2 && args[args.len() - 2] == "--live-observation" {
         let path = PathBuf::from(args.pop().unwrap());
         args.pop();
@@ -715,7 +774,18 @@ fn live_options(args: &mut Vec<String>) -> Result<LiveOptions, String> {
     if (observation.is_some() || !next_rounds.is_empty()) && !invited {
         return Err("--next-round and --live-observation require an invited live round".into());
     }
+    let local = match args.as_slice() {
+        [] => true,
+        [flag, _] => matches!(flag.as_str(), "--package" | "--library"),
+        [flag, _, library, _] if flag == "--package" && library == "--library" => true,
+        [flag, _, _, _] if flag == "--import-authored" => true,
+        _ => false,
+    };
+    if timing_enabled && !local && !invited {
+        return Err("--timing-diagnostics requires normal local/library/import/package or invited gameplay; watching, validation and smoke are unsupported".into());
+    }
     Ok(LiveOptions {
+        timing_enabled,
         observation,
         next_rounds,
     })
@@ -731,8 +801,10 @@ pub fn run() -> ExitCode {
         }
     };
     let result = match args.as_slice() {
-        [] => run_game(None, None),
-        [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory)), None),
+        [] => run_game(None, None, options.timing_enabled),
+        [flag, directory] if flag == "--package" => {
+            run_game(Some(Path::new(directory)), None, options.timing_enabled)
+        }
         [flag, source, authoring, destination] if flag == "--import-authored" => {
             cocobeat_media::import_authored_package(
                 Path::new(source),
@@ -740,11 +812,11 @@ pub fn run() -> ExitCode {
                 Path::new(destination),
                 &format!("cocobeat-game/{}", env!("CARGO_PKG_VERSION")),
             )
-            .and_then(|_| run_game(Some(Path::new(destination)), None))
+            .and_then(|_| run_game(Some(Path::new(destination)), None, options.timing_enabled))
         }
-        [flag, root] if flag == "--library" => run_library_game(None, root),
+        [flag, root] if flag == "--library" => run_library_game(None, root, options.timing_enabled),
         [flag, directory, library, root] if flag == "--package" && library == "--library" => {
-            run_library_game(Some(Path::new(directory)), root)
+            run_library_game(Some(Path::new(directory)), root, options.timing_enabled)
         }
         [flag, directory, net, bind, invite, output]
             if flag == "--package" && net == "--net-host" =>
@@ -764,6 +836,7 @@ pub fn run() -> ExitCode {
                         }),
                         options.observation.as_deref(),
                         options.next_rounds,
+                        options.timing_enabled,
                     )
                 })
         }
@@ -779,6 +852,7 @@ pub fn run() -> ExitCode {
                 }),
                 options.observation.as_deref(),
                 options.next_rounds,
+                options.timing_enabled,
             )
         }
         [net, invite, package, output] if net == "--net-receive" => run_game_observed(
@@ -792,6 +866,7 @@ pub fn run() -> ExitCode {
             }),
             options.observation.as_deref(),
             options.next_rounds,
+            options.timing_enabled,
         ),
         [flag, directory, replay, path] if flag == "--package" && replay == "--watch-replay" => {
             run_watcher(Path::new(directory), Path::new(path))
@@ -856,7 +931,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local or invited online duet\n  --import-authored SOURCE AUTHORING NEW_PACKAGE  import an authored source and open the validated package at Ready\n  --library DIR         browse authored package folders from one local song library\n  --package DIR --library DIR  load a package initially and browse the selected library\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --timing-diagnostics   explicitly record local software timing alongside saved Replay (normal gameplay only)\n  --import-authored SOURCE AUTHORING NEW_PACKAGE  import an authored source and open the validated package at Ready\n  --library DIR         browse authored package folders from one local song library\n  --package DIR --library DIR  load a package initially and browse the selected library\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -981,11 +1056,19 @@ fn base_app() -> Result<App, String> {
     Ok(app)
 }
 
-fn run_game(package: Option<&Path>, network: Option<LiveConfig>) -> Result<(), String> {
-    run_game_observed(package, network, None, Vec::new())
+fn run_game(
+    package: Option<&Path>,
+    network: Option<LiveConfig>,
+    timing_enabled: bool,
+) -> Result<(), String> {
+    run_game_observed(package, network, None, Vec::new(), timing_enabled)
 }
 
-fn run_library_game(package: Option<&Path>, root: &str) -> Result<(), String> {
+fn run_library_game(
+    package: Option<&Path>,
+    root: &str,
+    timing_enabled: bool,
+) -> Result<(), String> {
     if root.is_empty() {
         return Err("Song library directory must not be empty".into());
     }
@@ -1006,7 +1089,7 @@ fn run_library_game(package: Option<&Path>, root: &str) -> Result<(), String> {
         }
         _ => {}
     }
-    run_game_configured(package, None, None, Vec::new(), Some(path))
+    run_game_configured(package, None, None, Vec::new(), Some(path), timing_enabled)
 }
 
 fn run_game_observed(
@@ -1014,8 +1097,16 @@ fn run_game_observed(
     network: Option<LiveConfig>,
     observation: Option<&Path>,
     next_rounds: Vec<(PathBuf, PathBuf)>,
+    timing_enabled: bool,
 ) -> Result<(), String> {
-    run_game_configured(package, network, observation, next_rounds, None)
+    run_game_configured(
+        package,
+        network,
+        observation,
+        next_rounds,
+        None,
+        timing_enabled,
+    )
 }
 
 fn run_game_configured(
@@ -1024,6 +1115,7 @@ fn run_game_configured(
     observation: Option<&Path>,
     next_rounds: Vec<(PathBuf, PathBuf)>,
     library_root: Option<PathBuf>,
+    timing_enabled: bool,
 ) -> Result<(), String> {
     let receiving = matches!(
         network.as_ref().map(|config| &config.role),
@@ -1043,6 +1135,7 @@ fn run_game_configured(
         )
     };
     let mut game = Game::with_content(content)?;
+    game.timing_enabled = timing_enabled;
     game.song_id = song_id;
     game.package_path = package.map(Path::to_path_buf);
     run_loaded_game(game, sound, network, observation, next_rounds, library_root)
@@ -1068,10 +1161,7 @@ fn run_loaded_game(
     next_rounds: Vec<(PathBuf, PathBuf)>,
     library_root: Option<PathBuf>,
 ) -> Result<(), String> {
-    let network_player = network.as_ref().map(|config| match &config.role {
-        LiveRole::Host { .. } => PlayerId::P1,
-        _ => PlayerId::P2,
-    });
+    let network_player = game.configure_timing(network.as_ref())?;
     if let Some(player) = network_player {
         game.notice = Message::with("network.ready", [("player", format!("{player:?}"))]);
     }
@@ -1307,7 +1397,8 @@ fn poll_network(
         let Some(update) = online.poll()? else { break };
         match update {
             NetworkUpdate::Song(song) => {
-                let session = Session::for_content(song.epoch, &song.content)?;
+                game.timing_players = vec![song.player];
+                let session = game.new_session(song.epoch, &song.content)?;
                 if session.final_through()?.frames() != song.final_through {
                     return Err("Network final boundary differs from the runtime rules".into());
                 }
@@ -1317,6 +1408,7 @@ fn poll_network(
                 game.content = song.content;
                 game.session = session;
                 game.saved_facts = 0;
+                game.saved_timing_reads = 0;
                 game.replay_status = Message::default();
                 game.results = None;
                 game.fault_details = None;
@@ -1688,6 +1780,18 @@ fn update_game(
             let events = online.update_recovery(&mut game.session, &mut audio, origin)?;
             feedback(events, &mut audio, &mut visual)?;
         }
+        let timing_phase = match game.phase {
+            Phase::Starting => Some(cocobeat_replay::timing::TimingPhase::Starting),
+            Phase::Running => Some(cocobeat_replay::timing::TimingPhase::Running),
+            Phase::Pausing => Some(cocobeat_replay::timing::TimingPhase::Pausing),
+            Phase::Paused => Some(cocobeat_replay::timing::TimingPhase::Paused),
+            Phase::Recovering => Some(cocobeat_replay::timing::TimingPhase::Recovering),
+            Phase::Finishing => Some(cocobeat_replay::timing::TimingPhase::Finishing),
+            _ => None,
+        };
+        if let (Some(timing), Some(phase)) = (&mut game.session.timing, timing_phase) {
+            timing.sample(&audio, input.origin, phase)?;
+        }
         game.filter_transition_controls(&mut input);
         if matches!(
             game.phase,
@@ -1899,19 +2003,19 @@ fn update_game(
                 Control::Hit(player) if game.phase == Phase::Running && game.playback.is_none() => {
                     let consumed_ns =
                         u64::try_from(input.origin.elapsed().as_nanos()).unwrap_or(u64::MAX);
-                    let events = if online.enabled() {
-                        if online.player != Some(player) {
-                            continue;
-                        }
-                        let (fact, events) =
-                            game.session
-                                .capture_hit(player, event.monotonic_ns, consumed_ns)?;
+                    if online.enabled() && online.player != Some(player) {
+                        continue;
+                    }
+                    let (fact, events) = game.session.capture_from(
+                        player,
+                        event.monotonic_ns,
+                        consumed_ns,
+                        event.input_kind,
+                    )?;
+                    if online.enabled() {
                         let Some(fact) = fact else { continue };
                         online.send(LiveCommand::Fact(fact))?;
-                        events
-                    } else {
-                        game.session.hit(player, event.monotonic_ns, consumed_ns)?
-                    };
+                    }
                     audio.hit(player)?;
                     visual.hit_pulses[player.index()] = 1.0;
                     feedback(events, &mut audio, &mut visual)?;
@@ -3446,6 +3550,186 @@ mod tests {
     }
 
     #[test]
+    fn timing_cli_is_explicit_and_only_accepts_gameplay_modes() {
+        for initial in [
+            vec![],
+            vec!["--package", "song"],
+            vec!["--library", "songs"],
+            vec!["--package", "song", "--library", "songs"],
+            vec!["--import-authored", "source", "authoring", "new-song"],
+            vec![
+                "--package",
+                "song",
+                "--net-host",
+                "127.0.0.1:0",
+                "invite",
+                "out",
+            ],
+            vec!["--package", "song", "--net-join", "invite", "out"],
+            vec!["--net-receive", "invite", "received", "out"],
+        ] {
+            let mut plain = initial
+                .iter()
+                .map(|arg| (*arg).into())
+                .collect::<Vec<String>>();
+            assert!(!live_options(&mut plain).unwrap().timing_enabled);
+            let mut enabled = initial
+                .iter()
+                .map(|arg| (*arg).into())
+                .collect::<Vec<String>>();
+            enabled.push("--timing-diagnostics".into());
+            assert!(live_options(&mut enabled).unwrap().timing_enabled);
+            assert_eq!(enabled, initial);
+        }
+        for initial in [
+            vec!["--replay", "saved.json"],
+            vec!["--package", "song", "--watch-replay", "saved.json"],
+            vec!["--package", "song", "--replay", "saved.json"],
+            vec!["--visual-smoke", "preview.png"],
+            vec!["--package", "song", "--visual-smoke", "preview.png"],
+            vec!["--timing-diagnostics"],
+        ] {
+            let mut args = initial.into_iter().map(String::from).collect::<Vec<_>>();
+            args.push("--timing-diagnostics".into());
+            assert!(live_options(&mut args).is_err());
+        }
+        let mut network = [
+            "--net-receive",
+            "invite",
+            "song",
+            "out",
+            "--timing-diagnostics",
+            "--next-round",
+            "invite2",
+            "out2",
+            "--live-observation",
+            "observer",
+        ]
+        .map(String::from)
+        .to_vec();
+        let options = live_options(&mut network).unwrap();
+        assert!(options.timing_enabled);
+        assert_eq!(options.observation, Some("observer".into()));
+        assert_eq!(options.next_rounds, vec![("invite2".into(), "out2".into())]);
+    }
+
+    #[test]
+    fn timing_scope_survives_fresh_session_reset_and_new_content_without_old_records() {
+        let mut game = Game::new().unwrap();
+        game.reset_session(SessionEpoch(1)).unwrap();
+        assert!(game.session.timing.is_none());
+        game.timing_enabled = true;
+        game.reset_session(SessionEpoch(2)).unwrap();
+        assert_eq!(game.session.timing.as_ref().unwrap().players, vec![1, 2]);
+        game.timing_players = vec![PlayerId::P2];
+        game.reset_session(SessionEpoch(3)).unwrap();
+        assert_eq!(game.session.timing.as_ref().unwrap().players, vec![2]);
+        let mut next = game.content.clone();
+        next.content_id = "timing-next-content".into();
+        let session = game.new_session(SessionEpoch(4), &next).unwrap();
+        assert_eq!(session.replay.identity().content_id, next.content_id);
+        assert_eq!(session.timing.as_ref().unwrap().players, vec![2]);
+        assert!(session.timing.as_ref().unwrap().captures.is_empty());
+    }
+
+    #[test]
+    fn timing_uses_actual_network_role_and_saves_new_audio_without_new_facts() {
+        for (role, expected) in [
+            (
+                LiveRole::Host {
+                    package: "song".into(),
+                    bind: "127.0.0.1:0".parse().unwrap(),
+                    invite: "invite".into(),
+                },
+                PlayerId::P1,
+            ),
+            (
+                LiveRole::Join {
+                    package: "song".into(),
+                    invite: "invite".into(),
+                },
+                PlayerId::P2,
+            ),
+            (
+                LiveRole::Receive {
+                    package_destination: "song".into(),
+                    invite: "invite".into(),
+                },
+                PlayerId::P2,
+            ),
+        ] {
+            let mut game = Game::new().unwrap();
+            game.timing_enabled = true;
+            let config = LiveConfig {
+                role,
+                output: "output".into(),
+            };
+            assert_eq!(
+                game.configure_timing(Some(&config)).unwrap(),
+                Some(expected)
+            );
+            assert_eq!(
+                game.session.timing.as_ref().unwrap().players,
+                vec![expected.index() as u8 + 1]
+            );
+        }
+        let mut game = Game::new().unwrap();
+        game.timing_enabled = true;
+        assert_eq!(game.configure_timing(None).unwrap(), None);
+        game.session.finish().unwrap();
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "cocobeat-timing-dirty-{}-{stamp}",
+            std::process::id()
+        ));
+        game.save_to(&directory).unwrap();
+        let original = game.session.replay.encode().unwrap();
+        let facts = game.saved_facts;
+        game.session
+            .timing
+            .as_mut()
+            .unwrap()
+            .add_test_read(cocobeat_replay::timing::AudioRead {
+                read_before_ns: 50_000_000,
+                read_after_ns: 50_000_100,
+                phase: cocobeat_replay::timing::TimingPhase::Finishing,
+                source: None,
+                callback: None,
+            });
+        game.save_to(&directory).unwrap();
+        assert_eq!(game.saved_facts, facts);
+        assert_eq!(game.saved_timing_reads, 1);
+        assert_eq!(game.session.replay.encode().unwrap(), original);
+        let sidecars = std::fs::read_dir(&directory)
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .filter(|path| path.to_string_lossy().ends_with(".timing.json"))
+            .collect::<Vec<_>>();
+        assert_eq!(sidecars.len(), 2);
+        let lengths = sidecars
+            .iter()
+            .map(|path| {
+                cocobeat_replay::timing::TimingSidecar::load(
+                    path,
+                    &game.session.replay,
+                    &original,
+                    game.content.end.frames() as u64,
+                )
+                .unwrap()
+                .audio_history
+                .len()
+            })
+            .collect::<std::collections::BTreeSet<_>>();
+        assert_eq!(lengths, [0, 1].into_iter().collect());
+        game.save_to(&directory).unwrap();
+        assert_eq!(std::fs::read_dir(&directory).unwrap().count(), 6);
+        std::fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[test]
     fn live_cli_rejects_incomplete_rounds_and_non_network_commands() {
         for suffix in [
             vec!["--next-round"],
@@ -4385,6 +4669,7 @@ mod tests {
         ]
         .into_iter()
         .map(|control| input::CapturedControl {
+            input_kind: cocobeat_replay::timing::InputKind::Internal,
             control,
             monotonic_ns: 11_000_000,
         })
@@ -4445,6 +4730,7 @@ mod tests {
             Control::FocusLost,
         ]
         .map(|control| input::CapturedControl {
+            input_kind: cocobeat_replay::timing::InputKind::Internal,
             control,
             monotonic_ns: 21_000_000,
         })
@@ -4478,6 +4764,7 @@ mod tests {
             Control::TogglePause(InputSource::Keyboard),
         ]
         .map(|control| input::CapturedControl {
+            input_kind: cocobeat_replay::timing::InputKind::Internal,
             control,
             monotonic_ns: 40_000_000,
         })

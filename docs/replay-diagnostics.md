@@ -47,9 +47,30 @@ Replay v1 / v2 输入沿用 20 MiB、160,000 facts 和每个身份最多 256 UTF
 
 失败时只清理本调用新建的报告，清理失败会一并报错，原包与 Replay 保持不变；普通新文件写入不提供额外原子发布保证。成功 stdout 输出报告版本、内容身份及 fact / event 数，详细事实留在报告中
 
+## 显式本机计时关联
+
+```sh
+cargo run --locked -p cocobeat-lab -- inspect-replay PACKAGE REPLAY.json NEW_REPORT.jsonl --timing SIDECAR.timing.json
+cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json --timing SIDECAR.timing.json [--locale CODE]
+```
+
+`--timing` 只消费明确指定的一份[本机软件计时 sidecar](timing.md#本机-replay-软件计时)，在图形命令中置于可选 `--locale` 前；其他工作台不接受此选项。未传时维持原 v1 / v2 报告、stdout 和 GUI 内容，不寻找同名 CSV / JSON，不按文件名、Hit 数或接近的歌曲时间猜绑定
+
+同一次打开的普通 Replay 有界原字节用于 decode、原包 / Hit 范围 / 唯一 core 校验及 sidecar raw BLAKE3 绑定，不重开文件计算身份，也不对重新编码的 JSON 猜原 hash；仅改变空白字节也不再是同一精确 recording。sidecar 的 content / rules / build / 明确 Stage / epoch / canonical_frames 必须与该 Replay 和源包相等；原 build_id 不作跨版本 core 兼容门槛，但 sidecar 必须保留它绑定的这份原身份，旧 v1 的 Stage 保持明确 `null`
+
+共享校验要求 Capture 按原事实顺序覆盖声明本地席位的全部 Hit，1-based fact_index 指向完全相同的 player / seq / song frame，不重复、不遗漏、不给远端补软件时间；mapping anchor 不晚于原 observed 时刻，消费时刻不得早于观察，source / callback 的各自序列与 nullable 前驱保持。该结构校验不把软件时间变成经过测量的物理精度
+
+显式关联使用 `report_version = 3`，header 的 `local_timing` 保存 raw Replay hash、原 Stage nullable、clock 配置、本地席位、Capture 数与稀疏历史覆盖；Hit 和 AnchorJudged 的 `local_timing`、Sync 双方各自的 `p1 / p2.local_timing` 均沿原 Hit fact_index 查询，Watermark、core 判定与 summary 不改写。匹配 Capture 保留原字段和软件消息消费等待；远端未录制为 `not_recorded`，未关联 Hit 的 Miss 为 `no_hit`，不补造数值
+
+既有可滚动详情展示本机记录和选中 Hit 的真实缺失状态，保留原 waveform、事实光标、试听游标与 read-only 控制；关联 Capture 前后最近的实际 AudioRead 按本 origin 的 read 时刻显示，缺失使用 `null`，不插值、不重新映射 Hit，也不说该 source / callback 就是 Hit 当时或同一次 backend callback。消息观察、消费等待及独立历史快照不能宣称物理输入或声学延迟
+
+sidecar 输入要求普通有界文件，128 MiB、12,000 AudioRead 和最多 160,000 Capture 的限制与采集端相同；未知字段 / 版本、错误字节身份或 fact join 在创建报告之前拒绝。原报告的源包外 create_new、8 KiB 行限额、128 MiB 总限额和失败清理保护保持，不覆盖原 Replay / sidecar / 包对象；完整 sidecar 音频历史不展开为无界 JSONL 单行
+
+共享、runtime、lab 与边界检查通过，实际 Lab 完成 32 条 CLI 调用，原生工作台副本完成真实记录选择与详情滚动，三张图的指定范围可读性目检通过；13 个语言变体的五个新文案字形覆盖通过，完整记录和首次 QA 焦点失败见[计时观察](../testdata/synthetic/timing-sidecar-observations-20261008.json)。字体覆盖不代表其他窗口 / 母语校对，物理设备、DAC / 扬声器与真人体验继续分别验收
+
 ## 与计时和编辑的关系
 
-Replay v1 没有保存设备时间、软件观察 / 消费时间、音频回调位置或时钟不确定性，本报告和图形入口不推算这些字段或把歌曲时间差当物理延迟。Session 的另存 CSV 尚缺完整内容 / epoch 关联，本入口不按同名文件自动合并 CSV
+Replay v1 / v2 的事实文档不增加设备时间、软件观察 / 消费时间或音频历史，默认诊断不推算这些字段或把歌曲时间差当物理延迟；显式 sidecar 保持独立来源和精确原字节关联。既有另存 CSV 保留生成行为和历史文件，但缺完整字节身份，本入口不自动升级、猜测或合并它
 
 Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未知，原 `build_id` 不等于视觉兼容证明；Replay v2 明确记录 `stage_compiler_version = 1 / 2`，只绑定确定性几何编译，不记录 shader、呈现设置或设备表现
 
@@ -57,7 +78,7 @@ Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未�
 
 runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接通下面的原生只读观看，几何版本使用明确记录，历史 shader、网络到达时间和设备计时仍没有记录
 
-[Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。试听校准、设备计时关联和真实输入验收继续独立推进
+[Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。本机软件计时关联按上面的显式 sidecar 入口推进；试听校准、物理设备计时和真实输入验收继续独立推进
 
 ## 原生只读 Replay 观看
 

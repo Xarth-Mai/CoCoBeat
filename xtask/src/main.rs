@@ -101,7 +101,13 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
             "cocobeat-schema" => (&[], false),
             "cocobeat-core" => (&["cocobeat-schema"], false),
             "cocobeat-replay" => (
-                &["cocobeat-schema", "cocobeat-core", "serde", "serde_json"],
+                &[
+                    "cocobeat-schema",
+                    "cocobeat-core",
+                    "serde",
+                    "serde_json",
+                    "blake3",
+                ],
                 false,
             ),
             "cocobeat-media" => (&["cocobeat-schema"], true),

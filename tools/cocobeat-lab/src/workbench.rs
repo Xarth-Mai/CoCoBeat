@@ -21,7 +21,7 @@ const BIN_FRAMES: i64 = 64;
 
 pub enum Mode<'a> {
     Edit(&'a Path),
-    Replay(&'a Path),
+    Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
 }
 
@@ -61,8 +61,8 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         Ok(())
     })?;
     let mut document = Document::new(&package)?;
-    let replay = if let Mode::Replay(path) = mode {
-        let mut replay = replay::ReplayView::load(&package, path)?;
+    let replay = if let Mode::Replay(path, timing) = mode {
+        let mut replay = replay::ReplayView::load(&package, path, timing)?;
         document.cursor = replay.select(0).unwrap_or(0);
         document.selected = replay.selected_anchor();
         Some(replay)

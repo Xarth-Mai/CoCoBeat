@@ -82,7 +82,7 @@ lab 的 `inspect-replay` 复用 `Replay::replay` 唯一重放循环，从返回�
 ## 自动约束
 
 `cargo xtask boundaries` 检查 Cargo metadata 中所有直接依赖声明，包括 build/dev、目标平台条件与重命名依赖。
-schema / core 不允许外部依赖，stage 只允许 schema 与标准库并由 runtime / lab 消费，replay 仅允许 serde / serde_json 处理私有持久化格式，且只能沿上图依赖；game 的运行时只允许 runtime，Windows 构建脚本允许 embed-resource 编译 EXE 图标资源，例外不扩展到普通、dev 或其它平台依赖；media、runtime 和 lab 可接入第三方实现依赖，未声明的本地 helper 不得绕过边界
+schema / core 不允许外部依赖，stage 只允许 schema 与标准库并由 runtime / lab 消费，replay 允许 serde / serde_json 处理私有持久化格式及 blake3 绑定可选计时 sidecar 的精确 Replay 原字节，且只能沿上图依赖；game 的运行时只允许 runtime，Windows 构建脚本允许 embed-resource 编译 EXE 图标资源，例外不扩展到普通、dev 或其它平台依赖；media、runtime 和 lab 可接入第三方实现依赖，未声明的本地 helper 不得绕过边界
 net 采用实际本地及第三方依赖的明确白名单，并拒绝 Bevy / Kira；需要 serde 等纯数据工具时，应显式更新白名单并说明用途，不能泛化为允许任意第三方依赖。
 
 边界检查约束模块图，不能证明所有函数都尊重语义；例如反馈不修改判定，还需要 API 设计、测试和代码审查。

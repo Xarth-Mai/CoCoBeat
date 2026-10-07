@@ -344,6 +344,7 @@ fn observe(
                 }
                 if online.recovering() && recovery.probe_requested_ns.is_none() {
                     input.queued.push(input::CapturedControl {
+                        input_kind: cocobeat_replay::timing::InputKind::Internal,
                         control: Control::Hit(
                             online.player.ok_or("Recovery probe lacks a player")?,
                         ),
@@ -424,6 +425,7 @@ fn observe(
             && game.phase == Phase::Ready
         {
             input.queued.push(input::CapturedControl {
+                input_kind: cocobeat_replay::timing::InputKind::Internal,
                 control: Control::Start,
                 monotonic_ns: now,
             });
@@ -442,6 +444,7 @@ fn observe(
             if game.session.current.frames() >= threshold {
                 let player = online.player.unwrap_or(PlayerId::P1);
                 input.queued.push(input::CapturedControl {
+                    input_kind: cocobeat_replay::timing::InputKind::Internal,
                     control: Control::Hit(player),
                     monotonic_ns: now,
                 });
@@ -566,6 +569,7 @@ fn observe(
                     && input.can_start_next_round()
                 {
                     input.queued.push(input::CapturedControl {
+                        input_kind: cocobeat_replay::timing::InputKind::Internal,
                         control: Control::Restart,
                         monotonic_ns: now,
                     });
@@ -575,6 +579,7 @@ fn observe(
                 observation.write_summary(game.fault_details.as_deref())?;
                 game.closing_error = game.phase == Phase::Fault;
                 input.queued.push(input::CapturedControl {
+                    input_kind: cocobeat_replay::timing::InputKind::Internal,
                     control: Control::Quit,
                     monotonic_ns: now,
                 });

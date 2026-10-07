@@ -19,6 +19,7 @@ mod scene;
 mod session;
 mod settings;
 mod settings_menu;
+mod timing_diagnostic;
 mod ui_assets;
 mod view;
 

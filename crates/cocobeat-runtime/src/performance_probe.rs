@@ -402,6 +402,7 @@ fn drive(
         if !probe.started && now.saturating_sub(ready_at) >= 15_000_000_000 {
             let monotonic_ns = input.origin.elapsed().as_nanos() as u64;
             input.queued.push(input::CapturedControl {
+                input_kind: cocobeat_replay::timing::InputKind::Internal,
                 control: Control::Start,
                 monotonic_ns,
             });
@@ -420,6 +421,7 @@ fn drive(
                 .get_or_insert("Capture arrived outside Running".into());
         } else {
             input.queued.push(input::CapturedControl {
+                input_kind: cocobeat_replay::timing::InputKind::Internal,
                 control: Control::Hit(capture.player),
                 monotonic_ns: capture.observed_ns,
             });

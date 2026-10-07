@@ -1823,6 +1823,7 @@ dependencies = [
 name = "cocobeat-replay"
 version = "0.1.0"
 dependencies = [
+ "blake3",
  "cocobeat-core",
  "cocobeat-schema",
  "serde",

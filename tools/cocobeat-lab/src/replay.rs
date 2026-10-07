@@ -1,6 +1,6 @@
 use cocobeat_core::DuoEngine;
 use cocobeat_media::ValidatedPackage;
-use cocobeat_replay::{MAX_FACTS, Replay};
+use cocobeat_replay::{MAX_FACTS, MAX_FILE_BYTES, Replay, timing::TimingSidecar};
 use cocobeat_schema::{
     AnchorGrade, AnchorJudgement, DuoEvent, DuoInput, DuoRules, MAX_CONTENT_ITEMS, PlayerId,
     SongTime,
@@ -9,7 +9,7 @@ use serde_json::{Value, json};
 use std::{
     collections::BTreeMap,
     fs::{self, File, OpenOptions},
-    io::{BufWriter, Write},
+    io::{BufWriter, Read, Write},
     path::Path,
 };
 
@@ -26,8 +26,17 @@ const MAX_LINE_BYTES: usize = 8 * 1024;
 const MAX_REPORT_LINES: usize = 2 + MAX_FACTS + 3 * MAX_CONTENT_ITEMS + MAX_FACTS / 2;
 
 pub fn inspect(source: &Path, replay_path: &Path, destination: &Path) -> Result<(), String> {
+    inspect_with_timing(source, replay_path, destination, None)
+}
+
+pub fn inspect_with_timing(
+    source: &Path,
+    replay_path: &Path,
+    destination: &Path,
+    timing_path: Option<&Path>,
+) -> Result<(), String> {
     let package = cocobeat_media::validate_package(source)?;
-    let (replay, engine) = load(&package, replay_path)?;
+    let (replay, engine, timing) = load_with_timing(&package, replay_path, timing_path)?;
     let parent = destination
         .parent()
         .filter(|parent| !parent.as_os_str().is_empty())
@@ -38,11 +47,18 @@ pub fn inspect(source: &Path, replay_path: &Path, destination: &Path) -> Result<
     {
         return Err("Replay diagnostic must be written outside the source package".into());
     }
-    write_new_report(destination, &package, &replay, &engine, DuoRules::default())?;
+    write_new_report(
+        destination,
+        &package,
+        &replay,
+        &engine,
+        DuoRules::default(),
+        timing.as_ref(),
+    )?;
     println!(
         "{}",
         json!({
-            "report_version": report_version(&replay),
+            "report_version": if timing.is_some() { 3 } else { report_version(&replay) },
             "content_id": replay.identity().content_id,
             "fact_count": replay.facts().len(),
             "event_count": engine.events().len(),
@@ -55,6 +71,14 @@ pub(crate) fn load(
     package: &ValidatedPackage,
     replay_path: &Path,
 ) -> Result<(Replay, DuoEngine), String> {
+    load_with_timing(package, replay_path, None).map(|(replay, engine, _)| (replay, engine))
+}
+
+pub(crate) fn load_with_timing(
+    package: &ValidatedPackage,
+    replay_path: &Path,
+    timing_path: Option<&Path>,
+) -> Result<(Replay, DuoEngine, Option<TimingSidecar>), String> {
     if package.chart.ruleset_id != RULES_ID {
         return Err(format!(
             "Unsupported song ruleset: {}",
@@ -75,7 +99,19 @@ pub(crate) fn load(
     {
         return Err("Opened Replay input must be a regular file".into());
     }
-    let replay = Replay::decode(file).map_err(|error| format!("Cannot decode Replay: {error}"))?;
+    let mut raw = Vec::new();
+    let replay = if timing_path.is_some() {
+        file.take(MAX_FILE_BYTES + 1)
+            .read_to_end(&mut raw)
+            .map_err(|error| format!("Cannot read Replay for Timing: {error}"))?;
+        if raw.len() as u64 > MAX_FILE_BYTES {
+            return Err("Replay file byte limit exceeded".into());
+        }
+        Replay::decode(raw.as_slice())
+    } else {
+        Replay::decode(file)
+    }
+    .map_err(|error| format!("Cannot decode Replay: {error}"))?;
     for (index, fact) in replay.facts().iter().enumerate() {
         if matches!(fact, DuoInput::Hit(hit) if hit.song_time < SongTime::ZERO || hit.song_time.frames() as u64 >= package.manifest.canonical_frames)
         {
@@ -100,7 +136,11 @@ pub(crate) fn load(
             rules,
         )
         .map_err(|error| error.to_string())?;
-    Ok((replay, engine))
+    let timing = timing_path
+        .map(|path| TimingSidecar::load(path, &replay, &raw, package.manifest.canonical_frames))
+        .transpose()
+        .map_err(|error| format!("Cannot bind local Timing: {error}"))?;
+    Ok((replay, engine, timing))
 }
 
 fn write_new_report(
@@ -109,6 +149,7 @@ fn write_new_report(
     replay: &Replay,
     engine: &DuoEngine,
     rules: DuoRules,
+    timing: Option<&TimingSidecar>,
 ) -> Result<(), String> {
     let file = OpenOptions::new()
         .write(true)
@@ -117,7 +158,7 @@ fn write_new_report(
         .map_err(|error| format!("Cannot create Replay diagnostic: {error}"))?;
     let mut writer = BufWriter::new(file);
     let result = (|| {
-        write_report(&mut writer, package, replay, engine, rules)?;
+        write_report(&mut writer, package, replay, engine, rules, timing)?;
         writer
             .flush()
             .map_err(|error| format!("Cannot flush Replay diagnostic: {error}"))?;
@@ -142,19 +183,93 @@ fn write_report(
     replay: &Replay,
     engine: &DuoEngine,
     rules: DuoRules,
+    timing: Option<&TimingSidecar>,
 ) -> Result<(), String> {
     let mut bytes = 0;
     let mut lines = 0;
     let mut line = |value| write_line(writer, &mut bytes, &mut lines, value);
-    line(header(package, replay, engine, rules))?;
+    let mut header = header(package, replay, engine, rules);
+    if let Some(timing) = timing {
+        header["report_version"] = 3.into();
+        header["local_timing"] = timing_header(timing);
+    }
+    line(header)?;
     let index = ReportIndex::new(&package.chart.anchors, replay);
     for (position, fact) in replay.facts().iter().enumerate() {
-        line(fact_row(position, *fact))?;
+        let mut row = fact_row(position, *fact);
+        if let Some(timing) = timing {
+            annotate_timing(&mut row, timing);
+        }
+        line(row)?;
     }
     for (position, event) in engine.events().iter().enumerate() {
-        line(index.event_row(position, *event)?)?;
+        let mut row = index.event_row(position, *event)?;
+        if let Some(timing) = timing {
+            annotate_timing(&mut row, timing);
+        }
+        line(row)?;
     }
     line(summary(package.chart.anchors.len(), replay, engine)?)
+}
+
+pub(crate) fn timing_header(timing: &TimingSidecar) -> Value {
+    json!({
+        "format": timing.format, "version": timing.version,
+        "replay_blake3": timing.replay_blake3,
+        "stage_compiler_version": timing.stage_compiler_version,
+        "timestamp_basis": timing.timestamp_basis,
+        "input_timestamp_kind": timing.input_timestamp_kind,
+        "clock_observation_kind": timing.clock_observation_kind,
+        "clock": timing.clock, "capture_players": timing.capture_players,
+        "capture_count": timing.captures.len(),
+        "audio_sampling_interval_ns": timing.audio_sampling_interval_ns,
+        "audio_history_status": timing.audio_history_status,
+        "audio_read_count": timing.audio_history.len(),
+    })
+}
+
+fn timing_for_fact(timing: &TimingSidecar, fact_index: Option<u64>) -> Value {
+    let Some(fact_index) = fact_index else {
+        return json!({"status": "no_hit"});
+    };
+    // Shared validation guarantees ordered, exact local Hit fact indices
+    let Ok(index) = timing
+        .captures
+        .binary_search_by_key(&fact_index, |row| row.fact_index)
+    else {
+        return json!({"status": "not_recorded", "input_fact_index": fact_index});
+    };
+    let capture = &timing.captures[index];
+    let read_index = timing
+        .audio_history
+        .partition_point(|read| read.read_after_ns <= capture.observed_ns);
+    json!({
+        "status": "recorded", "capture": capture,
+        "software_message_consumption_wait_ns": capture.consumed_ns.checked_sub(capture.observed_ns)
+            .expect("Validated captures preserve observation before consumption"),
+        "independent_audio_read_history": {
+            "before_observation": read_index.checked_sub(1).and_then(|index| timing.audio_history.get(index)),
+            "at_or_after_observation": timing.audio_history.get(read_index),
+        },
+    })
+}
+
+pub(crate) fn annotate_timing(record: &mut Value, timing: &TimingSidecar) {
+    match record["type"].as_str() {
+        Some("hit") => {
+            record["local_timing"] = timing_for_fact(timing, record["fact_index"].as_u64())
+        }
+        Some("anchor_judged") => {
+            record["local_timing"] = timing_for_fact(timing, record["input_fact_index"].as_u64())
+        }
+        Some("free_sync" | "anchor_sync") => {
+            for player in ["p1", "p2"] {
+                record[player]["local_timing"] =
+                    timing_for_fact(timing, record[player]["input_fact_index"].as_u64());
+            }
+        }
+        _ => {}
+    }
 }
 
 pub(crate) fn header(
@@ -561,6 +676,7 @@ mod tests {
             &loaded,
             &engine,
             DuoRules::default(),
+            None,
         )
         .unwrap();
         assert_eq!(loaded, replay);
@@ -813,6 +929,144 @@ mod tests {
     }
 
     #[test]
+    fn explicit_timing_keeps_core_rows_and_rejects_changed_raw_replay() {
+        use cocobeat_replay::timing::{
+            AudioRead, CallbackPublication, CaptureTiming, InputKind, MappingAnchor,
+            SourcePublication, TimingClock, TimingPhase,
+        };
+
+        let fixture = Fixture::new();
+        for stage in [None, Some(1), Some(2)] {
+            let original = fixture.replay(&complete_facts());
+            let mut identity = original.identity().clone();
+            identity.stage_compiler_version = stage;
+            let mut recording = Replay::new(identity, original.epoch()).unwrap();
+            for fact in original.facts() {
+                recording.record(*fact).unwrap();
+            }
+            let name = format!("timing-{stage:?}");
+            let (default_bytes, default_rows) = fixture.run(&name, &recording);
+            let path = fixture.root.join(format!("{name}.replay"));
+            let raw = fs::read(&path).unwrap();
+            let timing_path = fixture.root.join(format!("{name}.timing.json"));
+            let mut timing = TimingSidecar::new(
+                &recording,
+                &raw,
+                4_800,
+                vec![1],
+                TimingClock {
+                    max_extrapolation_ns: 250_000_000,
+                    max_drift_ppm: 1_000,
+                    history_capacity: 256,
+                },
+            )
+            .unwrap();
+            for (index, fact) in recording.facts().iter().enumerate() {
+                if let DuoInput::Hit(hit) = fact
+                    && hit.player == PlayerId::P1
+                {
+                    let observed_ns = hit.song_time.frames() as u64 * 1_000_000_000 / 48_000;
+                    timing.captures.push(CaptureTiming {
+                        fact_index: index as u64 + 1,
+                        player: 1,
+                        seq: hit.seq,
+                        song_time_frames: hit.song_time.frames(),
+                        observed_ns,
+                        consumed_ns: observed_ns + 1_000_000,
+                        uncertainty_frames: 2_402,
+                        input_kind: InputKind::KeyboardMessage,
+                        mapping_anchor: MappingAnchor {
+                            monotonic_ns: 0,
+                            song_time_frames: 0,
+                            uncertainty_frames: 2_400,
+                        },
+                    });
+                }
+            }
+            for before in [10_000_000, 70_000_000] {
+                timing.audio_history.push(AudioRead {
+                    read_before_ns: before,
+                    read_after_ns: before + 1_000_000,
+                    phase: TimingPhase::Running,
+                    source: Some(SourcePublication {
+                        generation: 1,
+                        source_id: 1,
+                        sequence: 2,
+                        position_seconds: 0.001,
+                        published_before_ns: 1_000_000,
+                        published_after_ns: 2_000_000,
+                    }),
+                    callback: Some(CallbackPublication {
+                        generation: 1,
+                        sequence: 7,
+                        observed_ns: 3_000_000,
+                        previous_observed_ns: Some(2_000_000),
+                        previous_frames: Some(48),
+                        output_sample_rate: 48_000,
+                    }),
+                });
+            }
+            timing
+                .save_new(&timing_path, &recording, &raw, 4_800)
+                .unwrap();
+            let output = fixture.root.join(format!("{name}.timed.jsonl"));
+            inspect_with_timing(&fixture.source, &path, &output, Some(&timing_path)).unwrap();
+            let mut rows: Vec<Value> = fs::read(&output)
+                .unwrap()
+                .split(|&byte| byte == b'\n')
+                .filter(|line| !line.is_empty())
+                .map(|line| serde_json::from_slice(line).unwrap())
+                .collect();
+            assert_eq!(rows[0]["report_version"], 3);
+            assert_eq!(
+                rows[0]["local_timing"]["stage_compiler_version"],
+                json!(stage)
+            );
+            assert_eq!(rows[1]["local_timing"]["status"], "not_recorded");
+            assert_eq!(rows[2]["local_timing"]["capture"]["fact_index"], 2);
+            assert_eq!(
+                rows[2]["local_timing"]["software_message_consumption_wait_ns"],
+                1_000_000
+            );
+            assert_eq!(rows[9]["p1"]["local_timing"]["capture"]["seq"], 7);
+            assert_eq!(rows[9]["p2"]["local_timing"]["status"], "not_recorded");
+            assert_eq!(rows[10]["p1"]["local_timing"]["capture"]["seq"], 8);
+            let history = &rows[2]["local_timing"]["independent_audio_read_history"];
+            assert_eq!(history["before_observation"]["source"]["sequence"], 2);
+            assert_eq!(history["before_observation"]["callback"]["sequence"], 7);
+            assert_eq!(
+                history["at_or_after_observation"]["read_before_ns"],
+                70_000_000
+            );
+            for (index, row) in rows.iter_mut().enumerate() {
+                if index == 0 {
+                    row["report_version"] = report_version(&recording).into();
+                }
+                row.as_object_mut().unwrap().remove("local_timing");
+                for player in ["p1", "p2"] {
+                    if let Some(pair) = row.get_mut(player).and_then(Value::as_object_mut) {
+                        pair.remove("local_timing");
+                    }
+                }
+            }
+            assert_eq!(rows, default_rows);
+            let explicit_none = fixture.root.join(format!("{name}.none.jsonl"));
+            inspect_with_timing(&fixture.source, &path, &explicit_none, None).unwrap();
+            assert_eq!(fs::read(explicit_none).unwrap(), default_bytes);
+            let mut changed_raw = raw.clone();
+            changed_raw.push(b'\n');
+            fs::write(&path, changed_raw).unwrap();
+            let rejected = fixture.root.join(format!("{name}.rejected.jsonl"));
+            assert!(
+                inspect_with_timing(&fixture.source, &path, &rejected, Some(&timing_path))
+                    .unwrap_err()
+                    .contains("byte identity differs")
+            );
+            assert!(!rejected.exists());
+        }
+    }
+
+    #[test]
     fn line_limits_include_newlines_and_failed_output_is_removed() {
         let mut output = Vec::new();
         let (mut bytes, mut lines) = (0, 0);
@@ -876,7 +1130,8 @@ mod tests {
                 &fixture.package,
                 &replay,
                 &engine,
-                DuoRules::default()
+                DuoRules::default(),
+                None
             )
             .unwrap_err()
             .contains("controlled write failure")
@@ -890,7 +1145,8 @@ mod tests {
                 &inconsistent,
                 &replay,
                 &engine,
-                DuoRules::default()
+                DuoRules::default(),
+                None
             )
             .unwrap_err()
             .contains("missing Anchor")
@@ -903,7 +1159,8 @@ mod tests {
                 &inconsistent,
                 &replay,
                 &engine,
-                DuoRules::default()
+                DuoRules::default(),
+                None
             )
             .is_err()
         );

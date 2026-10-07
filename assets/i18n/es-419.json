@@ -245,5 +245,10 @@
   "import.working": "Importando; al volver no se seleccionará el resultado, pero la importación continuará; no podrás empezar hasta que termine",
   "import.background_back": "Volver · la importación continúa",
   "import.background": "La importación continúa en segundo plano; espera a que termine para empezar",
-  "import.background_done": "La importación terminó; actualiza la biblioteca para ver los paquetes guardados"
+  "import.background_done": "La importación terminó; actualiza la biblioteca para ver los paquetes guardados",
+  "workbench.replay.timing": "Tiempos del software local",
+  "workbench.replay.timing_scope": "Observación del mensaje y espera de consumo en el mismo proceso; las instantáneas de la fuente y la mezcla de Kira son historiales independientes, no latencia de entrada física ni del altavoz",
+  "workbench.replay.timing_missing": "Este Hit no tiene registro de tiempos local",
+  "workbench.replay.timing_audio_history": "Historial de lecturas de audio reales adyacentes",
+  "workbench.replay.timing_audio_missing": "No se muestreó historial de audio adyacente"
 }

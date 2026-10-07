@@ -245,5 +245,10 @@
   "import.working": "正在匯入；返回後不會自動選取新包，背景仍繼續，完成前不能開始歌曲",
   "import.background_back": "返回 · 匯入繼續",
   "import.background": "匯入在背景繼續，完成前不能開始歌曲",
-  "import.background_done": "背景匯入已結束；重新整理曲庫查看已儲存的歌曲包"
+  "import.background_done": "背景匯入已結束；重新整理曲庫查看已儲存的歌曲包",
+  "workbench.replay.timing": "本機軟件計時",
+  "workbench.replay.timing_scope": "訊息觀察與同程序消費等待；Kira 音源和混音快照是獨立歷史，不代表實體輸入或揚聲器延遲",
+  "workbench.replay.timing_missing": "此 Hit 未記錄本機計時",
+  "workbench.replay.timing_audio_history": "相鄰的實際音訊讀取歷史",
+  "workbench.replay.timing_audio_missing": "未擷取相鄰音訊歷史"
 }

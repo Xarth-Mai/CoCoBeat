@@ -245,5 +245,10 @@
   "import.working": "インポート中。戻ると結果は選択されませんが処理は続行します。完了まで開始できません",
   "import.background_back": "戻る · インポートは続行",
   "import.background": "バックグラウンドでインポート中。完了まで開始できません",
-  "import.background_done": "バックグラウンド処理が終了しました。ライブラリを更新して保存済みパッケージを確認"
+  "import.background_done": "バックグラウンド処理が終了しました。ライブラリを更新して保存済みパッケージを確認",
+  "workbench.replay.timing": "ローカルのソフトウェア計時",
+  "workbench.replay.timing_scope": "同一プロセス内のメッセージ観測と処理待ち時間。Kira の音源とミックスのスナップショットは独立した履歴であり、物理入力やスピーカーの遅延を表しません",
+  "workbench.replay.timing_missing": "この Hit のローカル計時記録はありません",
+  "workbench.replay.timing_audio_history": "前後の実際の音声読み取り履歴",
+  "workbench.replay.timing_audio_missing": "前後の音声履歴は採取されていません"
 }
