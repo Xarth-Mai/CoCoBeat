@@ -43,3 +43,10 @@
 退出条件：可复现报告解释音乐证据的能力和不足，不把 beat 检测指标直接当作 Anchor 可玩性。
 
 2026-10-07 · 分析依赖边界：用户允许成熟原生 / C / C++ 库，不追求纯 Rust；明确不接受 GPL 组合发行或 Python 分析部署。Aubio、Essentia 与 librosa 不采用所提生产方案，继续核验许可宽松的原生候选，原始研究与质量 FAIL 保持；能力按模块实测准入，未知置信度不自动补谱
+
+2026-10-07 · [AudioFlux MIT 原生候选](../tools/native-onset-check/README.md)完成内置 FFT 构建、原 Matcher 单测、12 项输入边界控制及 29 份原 PCM 的逐 SHA 恢复，全部 34 项质量结果为 2 PASS、28 FAIL、1 项不支持、3 项不评分；原时间坐标、默认峰选择、近邻与首尾失败及未知置信度保持，未接入生产 Python、GPL 或新 codec
+
+首次 sandbox LeakSanitizer 环境失败与后续宿主同二进制 / 同参数完整验证分别保留；宿主无 ASan / UBSan / LSan 诊断，33 份预测与 native 逐字节相同，见[观察记录](../testdata/synthetic/native-onset-observations-20261007.json)。生产准入继续 FAIL，同源 canonical、独立数值 oracle、四目标、长期成本与人工标签另验
+
+- [x] AudioFlux 原生 C 软件研究前置：构建、原输入按 SHA 恢复、原 Matcher 与边界控制、完整原质量矩阵及失败证据
+- [x] AudioFlux 短矩阵 sanitizer 验证：保留环境失败，宿主同二进制同参数完整执行，无诊断，质量仍 FAIL

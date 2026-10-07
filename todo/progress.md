@@ -74,3 +74,5 @@
 2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计
 
 2026-10-07 · 02b 小窗口标签：两个身份提示改为独立区域并随窗口高度定位；实际字体布局与确切静态帧软件验证通过，原重叠 / 遮脸失败保留，完整设备体验未据此退出
+
+2026-10-07 · AudioFlux MIT 原生 C onset 研究完成：内置 FFT / 原 Matcher / 12 项边界控制及 29 原 PCM 恢复通过，原 34 项质量仍 2 PASS / 28 FAIL / 1 不支持 / 3 不评分；宿主同二进制同参数 sanitizer 无诊断，原 sandbox 失败保留。无 Python 产品后端或 GPL 分析依赖，未接入生产，见[观察记录](../testdata/synthetic/native-onset-observations-20261007.json)

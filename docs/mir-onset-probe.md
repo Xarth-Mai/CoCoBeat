@@ -84,3 +84,11 @@ HFC 完全复现原 13 PASS / 5 FAIL，Flux 为 11 PASS / 7 FAIL；新增 6 项�
 同一过滤工具已加入预先声明的 9 项[后续控制](../tools/mir-flux-gate-probe/README.md#近邻慢起音与叠加声部)，保持全部原始参数与 Matcher：7 项离散控制为原生 2 PASS / 5 FAIL、过滤后 4 PASS / 3 FAIL，额外峰 229 → 0，漏检 2 → 3；两种慢起音没有唯一离散真值，仍只记录峰数，不计入通过率。旧 25 项的 44,417 窗完全重现，累计 31 项离散门槛为 21 PASS / 10 FAIL
 
 384 帧近邻的弱峰在原生局部均值门槛阶段已被丢弃；3 kHz 弱声部叠加在 440 Hz 基底上时，frame 24000 的实际候选被全谱归一化过滤删除，独奏同一声部则通过。完整 [观察清单](../testdata/synthetic/mir-flux-gate-probe/observations-next-controls-20261003.json)保留匹配窗重叠的配对歧义和原始假峰，独立 PCM 重建及 FFT 复算通过；下一步分别修复两处压制机制，现结果仍不构成生产 MusicAnalysis、真实音乐或人工 Anchor 标签准入
+
+## AudioFlux 原生候选
+
+2026-10-07，[AudioFlux MIT C 候选](../tools/native-onset-check/README.md)完成 Linux x86-64 内置 FFT 构建、原 Matcher 单测及 12 项输入边界控制，29 份历史 PCM 按原 SHA 完整恢复；原 34 项矩阵为 2 PASS、28 FAIL、1 项短输入不支持与 3 项连续不评分，完整[观察记录](../testdata/synthetic/native-onset-observations-20261007.json)保留原始索引坐标、全部预测、近邻与首尾失败及未知置信度
+
+默认峰选择窗口与 wait 保持，上述 hop 下最小候选间隔为 32 ms；原始 STFT 索引还存在超出 Matcher 的系统性提前，不把全部失败归因于近邻限制，不平移输出或放宽 ±10 ms / median≤2 ms 门槛
+
+首次 sandbox LeakSanitizer ptrace 环境失败保留，随后宿主使用同一二进制与 detect_leaks=1 完成全部 controls / matrix，无 ASan / UBSan / LSan 诊断；33 份完整预测与 native 逐字节相同，1 项拒绝相同，指标一致。该固定组合质量继续 FAIL，未接入产品；同源 canonical、独立数值 oracle、四目标、长期成本及真人标签仍 NOT RUN
