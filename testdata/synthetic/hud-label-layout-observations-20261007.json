@@ -1,0 +1,434 @@
+{
+  "status": "PASS",
+  "date": "2026-10-07",
+  "scope": "Two common HUD role-label slots separated while preserving actor centers, full localized names and original colors; software layout and native GPU static section previews only",
+  "source": {
+    "view": {
+      "path": "target/hud-label-layout-20261007/source/view.rs",
+      "sha256": "607fe5fa6bc9dd218c01e3098108958365589da80ba32897dc11add926b457bd"
+    },
+    "change": "left32/48 width20percent to left35/51 width14percent; centers42/58percent preserved, nominal2percent gap; no font, opacity, locale or vertical-position change",
+    "production_path": "crates/cocobeat-runtime/src/view.rs",
+    "snapshot_scope": "Exact view.rs bytes matching recorded debug build input, kept independently of the forthcoming vertical-placement change"
+  },
+  "narrow_test": {
+    "status": "PASS",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "cocobeat-runtime",
+      "--lib",
+      "player_labels_wrap_without_overlapping_and_keep_actor_centers"
+    ],
+    "passed": 1,
+    "failed": 0,
+    "filtered_out": 134,
+    "stdout": {
+      "path": "target/hud-label-layout-20261007/narrow/test.stdout",
+      "sha256": "2b5f27c7afaaf3b840d09edd4609aa960b788b9ccacd9142f5dc1e7c0dd55f47"
+    },
+    "stderr": {
+      "path": "target/hud-label-layout-20261007/narrow/test.stderr",
+      "sha256": "edf26605bf75a33a24a5b201f53ae9a89213af6f97f3295325928b563de73dad"
+    },
+    "scope": "Actual existing measured_hud_app Bevy font shaping and UI layout, en-US/de at640x480/1280x800; not a constant-only assertion",
+    "measured_assertions": [
+      "Original complete localized Text value",
+      "Nonempty shaped glyphs and layout width<=ComputedNode width+1pixel",
+      "Two computed label rectangles have positive gap>1pixel",
+      "Raster glyph bounds transformed to screen coordinates do not overlap",
+      "Computed centers are within1pixel of42percent and58percent viewport width"
+    ]
+  },
+  "build": {
+    "receipt": {
+      "path": "target/performance-20261007/game-build-debug/build-result.json",
+      "sha256": "2c9b5d89678792462209657165da3664dc160c4729ce1cce218fdbb7631613dd"
+    },
+    "cargo_json": {
+      "path": "target/performance-20261007/game-build-debug/build.jsonl",
+      "sha256": "94e658ea5d0cf9ddab6f34f789e75f5cff25924a0f5a7b8893fcfcecceaed741"
+    },
+    "inputs_before": {
+      "path": "target/performance-20261007/game-build-debug/inputs-before.json",
+      "sha256": "df7d46ba2a2f12fe1f32cc61f1e4d9a4ce52c262456e67a6ec5094d1c1f3e04c"
+    },
+    "inputs_after": {
+      "path": "target/performance-20261007/game-build-debug/inputs-after.json",
+      "sha256": "df7d46ba2a2f12fe1f32cc61f1e4d9a4ce52c262456e67a6ec5094d1c1f3e04c"
+    },
+    "binary": {
+      "path": "target/performance-20261007/game-build-debug/bin/cocobeat-game",
+      "sha256": "0b5f774b02014be64c1e012fc56acc741cfdc4c27edcbc7ea4fc4693618535cc"
+    },
+    "source_input_count": 422,
+    "inputs_unchanged_during_build": true,
+    "head": "0884728eee0f122dc9eefb13f1aa817052df3b31",
+    "scope": "Current main 0884728 plus targeted two-role HUD label fix and opt-in native performance instrumentation; debug only, not measurement release. Unregistered library.rs excluded because it is not compiled"
+  },
+  "native_static": {
+    "status": "PASS",
+    "recovered_summary": {
+      "path": "target/hud-label-layout-20261007/native/recovered-summary.json",
+      "sha256": "e76635866bfcd9688c40c78533e0d91aec3b4d9ad67e425d14e51b7ea031240a"
+    },
+    "recovery_script": {
+      "path": "target/hud-label-layout-20261007/recover.py",
+      "sha256": "e5b4badfe4edb076077b51c60432283b15c7ceef6ba06a897a71e9a9263e3b55"
+    },
+    "recovery_stdout": {
+      "path": "target/hud-label-layout-20261007/recovery.stdout",
+      "sha256": "6668b3f2d33b904610dd6e99cd37caaf06b989faee476d78e70c88a6d717bdf8"
+    },
+    "recovery_stderr": {
+      "path": "target/hud-label-layout-20261007/recovery.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "scope": "Read-only reconstruction and integrity check of four successful existing section-smoke outputs after original wrapper final Path/str guard failure; no additional GPU or executable run",
+    "cases": [
+      {
+        "name": "en-US-640x480",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/performance-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "en-US",
+          "medium",
+          "640",
+          "480",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-layout-20261007/native/en-US-640x480.png"
+        ],
+        "exit_code": 0,
+        "exit_evidence": "Original wrapper asserted run.returncode==0 for every case; only final guard raised after all four successful case assertions, no earlier chained exception",
+        "dimensions": [
+          640,
+          480
+        ],
+        "png": {
+          "path": "target/hud-label-layout-20261007/native/en-US-640x480.png",
+          "sha256": "7e16bac9dea6717c31a4133036517503a6727bc850c0df6fba95d109f5d3ab80"
+        },
+        "stdout": {
+          "path": "target/hud-label-layout-20261007/native/en-US-640x480.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-layout-20261007/native/en-US-640x480.stderr",
+          "sha256": "994a96c64c0716456e7a152b784d73e337ed663ad56f466b90adbaf1897b4949"
+        },
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "en-US",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "Next cue \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "child_visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "visual_scope": "Complete role names and original distinct colors; two lines at640 and one at1280; labels separated and centered, not overall scene visibility acceptance"
+      },
+      {
+        "name": "en-US-1280x800",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/performance-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "en-US",
+          "medium",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-layout-20261007/native/en-US-1280x800.png"
+        ],
+        "exit_code": 0,
+        "exit_evidence": "Original wrapper asserted run.returncode==0 for every case; only final guard raised after all four successful case assertions, no earlier chained exception",
+        "dimensions": [
+          1280,
+          800
+        ],
+        "png": {
+          "path": "target/hud-label-layout-20261007/native/en-US-1280x800.png",
+          "sha256": "9927899afa34e1ecff2b86ba0c15c8fe6f623470f84dc5b2fa474492c306557a"
+        },
+        "stdout": {
+          "path": "target/hud-label-layout-20261007/native/en-US-1280x800.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-layout-20261007/native/en-US-1280x800.stderr",
+          "sha256": "19a7b237da1a77ed45e7a4d2c4d3b96d84aa6ec47a290d5c32fc87dca7729c29"
+        },
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "en-US",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "Next cue \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "child_visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "visual_scope": "Complete role names and original distinct colors; two lines at640 and one at1280; labels separated and centered, not overall scene visibility acceptance"
+      },
+      {
+        "name": "de-640x480",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/performance-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "de",
+          "medium",
+          "640",
+          "480",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-layout-20261007/native/de-640x480.png"
+        ],
+        "exit_code": 0,
+        "exit_evidence": "Original wrapper asserted run.returncode==0 for every case; only final guard raised after all four successful case assertions, no earlier chained exception",
+        "dimensions": [
+          640,
+          480
+        ],
+        "png": {
+          "path": "target/hud-label-layout-20261007/native/de-640x480.png",
+          "sha256": "b95a26e8544b7ae59cb8700266b5c1dae11a8c5da3664d8574e6be06a91888f1"
+        },
+        "stdout": {
+          "path": "target/hud-label-layout-20261007/native/de-640x480.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-layout-20261007/native/de-640x480.stderr",
+          "sha256": "2c5a292d80843d202fd5698538da589d85099aa59fffe2d960bbc2375ebd2dfa"
+        },
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "de",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "N\u00e4chste Marke \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "child_visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "visual_scope": "Complete role names and original distinct colors; two lines at640 and one at1280; labels separated and centered, not overall scene visibility acceptance"
+      },
+      {
+        "name": "de-1280x800",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/performance-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "de",
+          "medium",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-layout-20261007/native/de-1280x800.png"
+        ],
+        "exit_code": 0,
+        "exit_evidence": "Original wrapper asserted run.returncode==0 for every case; only final guard raised after all four successful case assertions, no earlier chained exception",
+        "dimensions": [
+          1280,
+          800
+        ],
+        "png": {
+          "path": "target/hud-label-layout-20261007/native/de-1280x800.png",
+          "sha256": "997b10d546657dfa5b443b969ee33e7aeb424630f705168e149283391a87ea1a"
+        },
+        "stdout": {
+          "path": "target/hud-label-layout-20261007/native/de-1280x800.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-layout-20261007/native/de-1280x800.stderr",
+          "sha256": "9452f0fa2254d0dc9d755031a9d9423460f294768b05acd31164aaaca215fb17"
+        },
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "de",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "N\u00e4chste Marke \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "child_visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "visual_scope": "Complete role names and original distinct colors; two lines at640 and one at1280; labels separated and centered, not overall scene visibility acceptance"
+      }
+    ],
+    "package_objects_match_prior_validated_capture": [
+      {
+        "path": "target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg",
+        "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1"
+      },
+      {
+        "path": "target/source-import-20261007/cli-gpu-native/original-64s-package/analysis.bin",
+        "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba"
+      },
+      {
+        "path": "target/source-import-20261007/cli-gpu-native/original-64s-package/chart.bin",
+        "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6"
+      },
+      {
+        "path": "target/source-import-20261007/cli-gpu-native/original-64s-package/song.package",
+        "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      }
+    ]
+  },
+  "retained_failures": [
+    {
+      "status": "FAIL",
+      "script": {
+        "path": "target/hud-label-layout-20261007/check.py",
+        "sha256": "9022df1ad9409a6a5ff1df36c370194fab0c69c677c12310c70c3f4dd74977c4"
+      },
+      "stdout": {
+        "path": "target/hud-label-layout-20261007/native-wrapper.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "target/hud-label-layout-20261007/native-wrapper.stderr",
+        "sha256": "4b73a718b79903055ac98ac1f4182046d6b6850ca4f24d6ec32729e38131cf8b"
+      },
+      "reason": "sha helper accepted Path but final protected dict loop supplied str; four rendering cases completed before failure; original final guard and summary write did not complete"
+    },
+    {
+      "status": "FAIL",
+      "scope": "Historical watcher640 role labels overlap, before this targeted slot fix",
+      "image": {
+        "path": "target/visual-replay-20261007/native-small-final/stage-2-partial-640x480/restarted.png",
+        "sha256": "58e2cb05405ba12fa92f45dcffd574666c065047cd13a4699e4c9b246e14618a"
+      },
+      "binary_sha256": "f39a067efafc1ab93aece902a249529da63c03994eeb46970a474b56af9ed57d",
+      "record": {
+        "path": "testdata/synthetic/visual-replay-observations-20261007.json",
+        "sha256": "ea6c88883822d97df9073e87783a9e44625a1e5e1ceada77749d27b386b4bd75"
+      }
+    }
+  ],
+  "visual_review": {
+    "child": "PASS",
+    "root": "PASS",
+    "review_scope": "Exactly the four static section preview PNGs listed above: fullP1/P2 names/distinct colors,640two lines/1280one line, no mutual label overlap",
+    "known_common_HUD_position_limit": "At640x480 fixed bottom150pixels places the labels over actor faces/chests. This is visible in both languages and remains unresolved by this horizontal-slot fix; overall scene obstruction acceptance is notPASS",
+    "vertical_fix": "Deferred to separate responsive vertical placement change and targeted recaptures; current source kept frozen during root release build"
+  },
+  "review": {
+    "correctness": "PASS",
+    "ponytail": "Lean already. Ship.",
+    "scope": "Read-only source diff review including measured-layout/glyph test; no reviewer Cargo/GPU"
+  },
+  "not_run": [
+    "Live gameplay input or audio",
+    "Performance measurement from this debug binary or these static render targets",
+    "Physical keyboard/gamepads",
+    "Speaker timing",
+    "All13localized visual layouts",
+    "Vertical placement fix or scene-wide visual acceptance"
+  ]
+}

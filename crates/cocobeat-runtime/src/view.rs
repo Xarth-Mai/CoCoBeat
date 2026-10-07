@@ -168,9 +168,9 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
             TextLayout::justify(Justify::Center),
             Node {
                 position_type: PositionType::Absolute,
-                left: percent(if player == 0 { 32.0 } else { 48.0 }),
-                width: percent(20),
-                bottom: px(150),
+                left: percent(if player == 0 { 35.0 } else { 51.0 }),
+                width: percent(14),
+                bottom: percent(18.75),
                 ..default()
             },
         ));
@@ -1290,6 +1290,94 @@ mod tests {
             app.world().get::<Text>(subtitle).unwrap().0,
             Locale::ZhCn.text("hud.subtitle")
         );
+    }
+
+    #[test]
+    fn player_labels_wrap_without_overlapping_and_keep_actor_centers() {
+        use bevy::{camera::RenderTargetInfo, text::TextLayoutInfo};
+
+        let (mut app, camera) = measured_hud_app();
+        app.world_mut().resource_mut::<VisualState>().status =
+            "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
+                .into();
+        for locale in [Locale::EnUs, Locale::De] {
+            app.world_mut().resource_mut::<VisualState>().locale = locale;
+            for size in [UVec2::new(640, 480), UVec2::new(1280, 800)] {
+                app.world_mut()
+                    .get_mut::<Camera>(camera)
+                    .unwrap()
+                    .computed
+                    .target_info = Some(RenderTargetInfo {
+                    physical_size: size,
+                    scale_factor: 1.0,
+                });
+                for _ in 0..4 {
+                    app.update();
+                }
+                let mut labels = app
+                    .world_mut()
+                    .query_filtered::<(
+                        &UiText,
+                        &Text,
+                        &ComputedNode,
+                        &UiGlobalTransform,
+                        &TextLayoutInfo,
+                    ), With<PlayerLabel>>()
+                    .iter(app.world())
+                    .map(|(kind, text, node, transform, layout)| {
+                        let UiText::Player(player) = *kind else {
+                            unreachable!()
+                        };
+                        let expected = locale.text(if player == 0 {
+                            "hud.player_one"
+                        } else {
+                            "hud.player_two"
+                        });
+                        assert_eq!(text.0, expected);
+                        assert!(!layout.glyphs.is_empty());
+                        assert!(layout.size.x <= node.size.x + 1.0, "{locale:?} {size:?}");
+                        let rect = Rect::from_center_size(transform.translation, node.size);
+                        let glyph_min = layout
+                            .glyphs
+                            .iter()
+                            .map(|glyph| glyph.position.x - glyph.atlas_info.rect.width() * 0.5)
+                            .fold(f32::INFINITY, f32::min);
+                        let glyph_max = layout
+                            .glyphs
+                            .iter()
+                            .map(|glyph| glyph.position.x + glyph.atlas_info.rect.width() * 0.5)
+                            .fold(f32::NEG_INFINITY, f32::max);
+                        (
+                            player,
+                            rect,
+                            Vec2::new(rect.min.x + glyph_min, rect.min.x + glyph_max),
+                        )
+                    })
+                    .collect::<Vec<_>>();
+                labels.sort_by_key(|(player, _, _)| *player);
+                assert_eq!(labels.len(), 2);
+                let status = app
+                    .world_mut()
+                    .query_filtered::<(&ComputedNode, &UiGlobalTransform), With<StatusPanel>>()
+                    .single(app.world())
+                    .map(|(node, transform)| {
+                        Rect::from_center_size(transform.translation, node.size)
+                    })
+                    .unwrap();
+                let gap = labels[1].1.min.x - labels[0].1.max.x;
+                assert!(gap > 1.0, "{locale:?} {size:?}: {labels:?}");
+                assert!(
+                    labels[0].2.y < labels[1].2.x,
+                    "{locale:?} {size:?}: {labels:?}"
+                );
+                for (player, rect, _) in labels {
+                    let expected = size.x as f32 * if player == 0 { 0.42 } else { 0.58 };
+                    assert!((rect.center().x - expected).abs() < 1.0);
+                    assert!(rect.min.y > size.y as f32 * 2.0 / 3.0);
+                    assert!(rect.max.y < status.min.y);
+                }
+            }
+        }
     }
 
     #[test]

@@ -711,3 +711,11 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 初次 Xvfb 呈现失败、gamescope 请求 640 却实际 1280 的尺寸失败、德语 sandbox GPU 枚举失败及修正前 marker 问题均保留。最终德语标题两行完整、主控提示与五操作可见，进度详情在底缘之外；640 游戏角色标签重叠已记为共同场景后续修复。完整原始命令、帧游标、哈希、分阶段视图和已知边界见[持久观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)与[复现工具](../tools/visual-replay-check/README.md)
 
 当前软件控制和 callback 证据不证明物理双手柄 / 混合输入、扬声器计时、历史 shader、网络到达时间、四平台运行或真人体验；这些保持 NOT RUN
+
+## 小窗口双人角色标签
+
+2026-10-07，实际只读观看的 640 图暴露 P1 / P2 标签区域互相重叠；公共 view 将两个区域改为 14% 宽并保留 2% 间隔，中心仍对齐 42% / 58%。实际字体布局窄测覆盖英 / 德与 640×480 / 1280×800，检查完整文字、真实 ComputedNode 和 glyph 边界；四张 frame 32 原生静态图由 agent / 主线程逐张目检，来源和原 QA 后处理失败保留于[水平布局记录](../testdata/synthetic/hud-label-layout-observations-20261007.json)
+
+随后这四图仍显示 640 的固定 150px 底距遮到脸部；公共底距改为窗口高度的 18.75%，保留 800 高时的原位置。实际布局窄测检查下方区域与状态面板分离，最终固定 debug 二进制 `913f4a57e6f3dc7c7cfcc10cfec99b48b9b8f3e1a29fe3125e95d9ca4f803c7e` 的 422 项列明输入前后相同，两张英 / 德 640、frame 32 原生静态图目检通过：完整标签位于角色脚下和状态栏上方，见[垂直布局记录](../testdata/synthetic/hud-label-vertical-observations-20261007.json)
+
+本次证据覆盖确切静态帧和真实字体布局，不代表所有动画时刻、DPI、十三语言、双手柄或真人体验通过

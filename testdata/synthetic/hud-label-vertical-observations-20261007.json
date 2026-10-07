@@ -1,0 +1,274 @@
+{
+  "status": "PASS",
+  "date": "2026-10-07",
+  "scope": "Responsive common HUD role-label vertical placement; actual font/UI layout in two sizes plus exactly two640x480 authored-stage static GPU previews atframe1536000, not whole live-session UI acceptance",
+  "source": {
+    "snapshot": {
+      "path": "target/hud-label-vertical-20261007/source/view.rs",
+      "sha256": "0aa8375bfd2914a2c5b0ae2f6a6319de7e8f5c4270b93f9bc84541e5ffcd8313"
+    },
+    "production_path": "crates/cocobeat-runtime/src/view.rs",
+    "snapshot_matches_frozen_build_input": true,
+    "change": "bottom150pixels to18.75percent; horizontal14percent width,2percent gap,42/58percent centers, original font/color/full locale names preserved"
+  },
+  "build": {
+    "receipt": {
+      "path": "target/hud-label-vertical-20261007/game-build-debug/build-result.json",
+      "sha256": "9317f78ddba176c0cefd6661a19162d32dad4c8df0aca9b9b09bdfde68fde8d5"
+    },
+    "cargo_json": {
+      "path": "target/hud-label-vertical-20261007/game-build-debug/build.jsonl",
+      "sha256": "3dc8e4e5479f006425620c750b411494637c5dbbe3b8c2581a820f919df3f238"
+    },
+    "inputs_before": {
+      "path": "target/hud-label-vertical-20261007/game-build-debug/inputs-before.json",
+      "sha256": "5f151aae8ca4cea11b49e2865c9e90a123a1d7ce76d9c307608094e9938d59e7"
+    },
+    "inputs_after": {
+      "path": "target/hud-label-vertical-20261007/game-build-debug/inputs-after.json",
+      "sha256": "5f151aae8ca4cea11b49e2865c9e90a123a1d7ce76d9c307608094e9938d59e7"
+    },
+    "binary": {
+      "path": "target/hud-label-vertical-20261007/game-build-debug/bin/cocobeat-game",
+      "sha256": "913f4a57e6f3dc7c7cfcc10cfec99b48b9b8f3e1a29fe3125e95d9ca4f803c7e"
+    },
+    "head": "0884728eee0f122dc9eefb13f1aa817052df3b31",
+    "scope": "Current main 0884728 plus two-role HUD horizontal separation and responsive vertical placement plus opt-in native performance instrumentation; debug only, not measurement release. Unregistered library.rs excluded because it is not compiled",
+    "source_input_count": 422,
+    "inputs_unchanged_during_build": true
+  },
+  "narrow_test": {
+    "status": "PASS",
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "cocobeat-runtime",
+      "--lib",
+      "player_labels_wrap_without_overlapping_and_keep_actor_centers"
+    ],
+    "passed": 1,
+    "failed": 0,
+    "filtered_out": 134,
+    "stdout": {
+      "path": "target/hud-label-vertical-20261007/narrow/test.stdout",
+      "sha256": "18429ee141f4f1f3270f335a0cacaee6e077a31c1fb5fa4ef0e087cac79dbb6b"
+    },
+    "stderr": {
+      "path": "target/hud-label-vertical-20261007/narrow/test.stderr",
+      "sha256": "bbcdca987b2a870126a4d747b45ee3ed296b38858e60f2bdcc9239c71f33cf2b"
+    },
+    "scope": "Existing measured_hud_app actual font shaping/UI layout; en-US/de x640x480/1280x800; representative two-line status panel",
+    "measured_assertions": [
+      "Original complete localized Text and nonempty glyphs",
+      "Computed label rectangles have positive horizontal gap>1pixel and rendered glyph bounds do not intersect",
+      "Computed label centers within1pixel of42/58percent viewport width",
+      "Computed label minY below central two-thirds viewport boundary",
+      "Computed label maxY above actual bottom StatusPanel minY"
+    ]
+  },
+  "native_static": {
+    "status": "PASS",
+    "summary": {
+      "path": "target/hud-label-vertical-20261007/native/summary.json",
+      "sha256": "7984386b576035e5a07e904a799e0074f5c8432df2edb1017d57d510f5ab2315"
+    },
+    "wrapper": {
+      "path": "target/hud-label-vertical-20261007/check.py",
+      "sha256": "c09bdca392fe61228ae17e4a2355f9f1d01e1ccdb8919b4439d16784a09b2df1"
+    },
+    "wrapper_stdout": {
+      "path": "target/hud-label-vertical-20261007/native-wrapper.stdout",
+      "sha256": "daea9f036eb5f5f3cae5863f7ac22c87153346cfd397b9af5c4a23b08291b485"
+    },
+    "wrapper_stderr": {
+      "path": "target/hud-label-vertical-20261007/native-wrapper.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "protected_inputs_unchanged": true,
+    "cases": [
+      {
+        "name": "en-US-640x480",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-vertical-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "en-US",
+          "medium",
+          "640",
+          "480",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-vertical-20261007/native/en-US-640x480.png"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e24d79c0a6b292345ffe9a2d1a8e880de0487cd22750b3b9c0b2c3fba2395df9",
+        "visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "dimensions": [
+          640,
+          480
+        ],
+        "png_sha256": "b95b228eaac0e29b5172a93670e7621ff42f8fe6a933c0871bab4500e830fdb0",
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "en-US",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "Next cue \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "visual_reviewer": "visual_replay_delivery",
+        "visual_scope": "Atframe32 static preview, complete separate colored two-line labels below actor feet and above bottom status panel; no label covers actor face/chest",
+        "png": {
+          "path": "target/hud-label-vertical-20261007/native/en-US-640x480.png",
+          "sha256": "b95b228eaac0e29b5172a93670e7621ff42f8fe6a933c0871bab4500e830fdb0"
+        },
+        "stdout": {
+          "path": "target/hud-label-vertical-20261007/native/en-US.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-vertical-20261007/native/en-US.stderr",
+          "sha256": "e24d79c0a6b292345ffe9a2d1a8e880de0487cd22750b3b9c0b2c3fba2395df9"
+        },
+        "root_visual_scope": "Only this640x480 staticframe32 image: complete two-line colored labels below actor feet, above statusbar and not over face/chest"
+      },
+      {
+        "name": "de-640x480",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-vertical-20261007/game-build-debug/bin/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--section-smoke",
+          "1536000",
+          "de",
+          "medium",
+          "640",
+          "480",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hud-label-vertical-20261007/native/de-640x480.png"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e4ae7ae2148326a8250618c2544aba18f222b8b66bbfd6cb9b920d5a74ce8a54",
+        "visual_review": "PASS",
+        "root_visual_review": "PASS",
+        "dimensions": [
+          640,
+          480
+        ],
+        "png_sha256": "f7df81f84744cf391c1ff1a031cc28bc90fa3c9cbac2a2d2a86c7c468afaf02c",
+        "content_sample": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "de",
+          "next_anchor_seconds": 34.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa2",
+            "bloom": true,
+            "fog": true,
+            "preset": "medium",
+            "rain": "half",
+            "shadows": true
+          },
+          "section_hint": "N\u00e4chste Marke \u00b7 #4 \u00b7 silence",
+          "song_seconds": 32.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        },
+        "visual_reviewer": "visual_replay_delivery",
+        "visual_scope": "Atframe32 static preview, complete separate colored two-line labels below actor feet and above bottom status panel; no label covers actor face/chest",
+        "png": {
+          "path": "target/hud-label-vertical-20261007/native/de-640x480.png",
+          "sha256": "f7df81f84744cf391c1ff1a031cc28bc90fa3c9cbac2a2d2a86c7c468afaf02c"
+        },
+        "stdout": {
+          "path": "target/hud-label-vertical-20261007/native/de.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/hud-label-vertical-20261007/native/de.stderr",
+          "sha256": "e4ae7ae2148326a8250618c2544aba18f222b8b66bbfd6cb9b920d5a74ce8a54"
+        },
+        "root_visual_scope": "Only this640x480 staticframe32 image: complete two-line colored labels below actor feet, above statusbar and not over face/chest"
+      }
+    ]
+  },
+  "visual_review": {
+    "child": "PASS",
+    "root": "PASS",
+    "scope": "Exactly these two640English/German static screenshots atframe32: full distinct colored two-line labels beneath actors, above statusbar, no face/chest obstruction atthis frame; no other sizes or animation/hardware experience acceptance"
+  },
+  "previous_evidence": {
+    "horizontal_fix": {
+      "path": "testdata/synthetic/hud-label-layout-observations-20261007.json",
+      "sha256": "3af171227b06f40ceb882297687a1fbae1c587a2aca53a20dc95e0e5e3611e7d"
+    },
+    "before_vertical_fix": [
+      {
+        "path": "target/hud-label-layout-20261007/native/en-US-640x480.png",
+        "sha256": "7e16bac9dea6717c31a4133036517503a6727bc850c0df6fba95d109f5d3ab80"
+      },
+      {
+        "path": "target/hud-label-layout-20261007/native/de-640x480.png",
+        "sha256": "b95a26e8544b7ae59cb8700266b5c1dae11a8c5da3664d8574e6be06a91888f1"
+      }
+    ],
+    "old_wrapper_failure_retained": "Previous horizontal-wrapper finalPath/str guard failure and recovery remain in separate artifacts; this new wrapper completed normally",
+    "unchanged800_geometry": "18.75percent of800pixels equals original150pixels; actual1280x800 layout test passed. Prior1280 English/German captures belong to older0b5f binary, no new1280 GPU capture is claimed"
+  },
+  "review": {
+    "correctness": "PASS",
+    "ponytail": "Lean already. Ship.",
+    "scope": "Independent readonly source review of responsive one-line change and actual measured-layout assertions; these two screenshots separately reviewed by child and root"
+  },
+  "immutability_scope": "Fixedbinary/package/receipt/script hashes unchanged during these two captures; exact compiled view source independently copied and verified. Concurrent rootlibrary/audio light source work is not a change to this frozen binary and current whole worktree immutability is not asserted",
+  "not_run": [
+    "Live running UI obstruction across all song times or poses",
+    "New1280x800 GPU captures after this vertical change",
+    "All13language visual layouts",
+    "Audio or input operation",
+    "Physical controller/speaker timing acceptance",
+    "Performance measurement from these staticdebug captures"
+  ]
+}
