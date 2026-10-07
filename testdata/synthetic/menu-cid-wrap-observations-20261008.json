@@ -1,0 +1,111 @@
+{
+  "schema": 1,
+  "date": "2026-10-08",
+  "status": "PASS_ACTUAL_FONT_LAYOUT_SOFTWARE_ONLY",
+  "head_before": "2e1f49d00449a8be27cdfd501984e21162e73f48",
+  "scope": "Shared production menu RowPrefix uses native WordOrCharacter fallback, retains full CID; same text entity with actual Noto glyph layouts checks old WordBoundary overflow and restores original fallback",
+  "production_file": "crates/cocobeat-runtime/src/view.rs",
+  "production_sha256": "7b37a89814ffecfc45ac6c061b469be6366672ef81be4abf92d209330e86c168",
+  "cargo_lock_sha256": "4689c692ac5fee6b34349f39350a6edc0a3747f4ce17740cea24b3ca9703eb59",
+  "cases": [
+    {
+      "locale": "zh-CN",
+      "physical_size": [
+        1280,
+        800
+      ],
+      "scale_factor": 1.0
+    },
+    {
+      "locale": "en-US",
+      "physical_size": [
+        640,
+        480
+      ],
+      "scale_factor": 1.0
+    },
+    {
+      "locale": "de",
+      "physical_size": [
+        1280,
+        800
+      ],
+      "scale_factor": 2.0
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-runtime",
+        "view::tests::menu_identity_wraps_inside_its_row_without_changing_text",
+        "--",
+        "--exact"
+      ],
+      "status": "PASS",
+      "executed_tests": 1,
+      "filtered_out": 160
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-runtime",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "status": "PASS"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "identity": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+  "negative_control": "Same Text, font, CID and viewport switches only test TextLayout to WordBoundary, actual glyph exceeds row; restores original production fallback and verifies fit again",
+  "not_run": [
+    "new native GPU CID PNG",
+    "physical input and window navigation",
+    "human readability",
+    "full runtime regression"
+  ],
+  "raw_references": {
+    "target/hud-cid-followup-20261008/font-layout-test.log": {
+      "sha256": "75b347e680d59df4ae09526a868952845c5f8064c165e2b4865a5fec72a02a0d",
+      "bytes": 452
+    },
+    "target/hud-cid-followup-20261008/clippy.log": {
+      "sha256": "8b47f83f2b3055fc85b311e7a42c7d2ae1b75b3c274487bf21297da9935fb401",
+      "bytes": 166
+    },
+    "target/hud-cid-followup-20261008/hud-cid-wrap.patch": {
+      "sha256": "90be80cfc89b0cb346450f0daa049d80dc09bfe947eb49cd2440a0315a8b5114",
+      "bytes": 4761
+    },
+    "target/hud-cid-followup-20261008/manifest.json": {
+      "sha256": "b79726ec9983979dacee69bc8541356df4f6d2223f42e968c87a2ea01d58be22",
+      "bytes": 2077
+    },
+    "target/hud-cid-followup-20261008/REVIEW.md": {
+      "sha256": "0b13c6378342ecd4121118daafb4e1261faf4f44da43d4627d166a693d7ecca3",
+      "bytes": 2476
+    }
+  }
+}

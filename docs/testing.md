@@ -789,3 +789,7 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 2026-10-08，生产窗口、Kira、StagePlan 与 Session/core 的真实软件运行取得描述性性能观察，复现方法与数值见[性能记录](runtime-performance.md)，源码 / 构建 / 17 次实际命令 / 原始捕获 / PID 退出与失败身份见[持久观察](../testdata/synthetic/runtime-performance-observations-20261008.json)
 
 原环境 14 项矩阵为 13 VALID、1 Wayland VSync 超时，原最慢有效 limited60 两次复跑 VALID；独立 X11 VSync 补测 VALID，保留后端环境差异及原超时，未归并为统一 14 项 PASS。实际独立 Instant 输入与原 core 判定完整覆盖，性能数值是 main-update 间隔与进程 RSS；GPU / 呈现帧 / 真实输入 / DAC / 四平台图形 / 真人验收另行取证
+
+## 完整 CID 文本换行
+
+2026-10-08 · 完整 CID 行换行：共用 RowPrefix 使用 Bevy WordOrCharacter 后备，完整身份文本保留；实际 Noto 字体布局检查覆盖 zh-CN 1280×800、en-US 640×480 和 de 2×DPI，同一文本切旧 WordBoundary 必须越界，恢复新值必须重新通过。1 项窄测、runtime 全目标 Clippy 和格式通过，见[换行记录](../testdata/synthetic/menu-cid-wrap-observations-20261008.json)；本批没有新的联网 CID GPU 图或设备 / 真人可读性结论

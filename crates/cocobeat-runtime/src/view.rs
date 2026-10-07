@@ -367,6 +367,7 @@ fn ensure_menu_rows(
                     let color = TextColor(Color::srgb(0.87, 0.91, 0.96));
                     row.spawn((
                         Text::default(),
+                        TextLayout::linebreak(bevy::text::LineBreak::WordOrCharacter),
                         font.clone(),
                         color,
                         UiText::RowPrefix(index),
@@ -1376,6 +1377,102 @@ mod tests {
                     assert!(rect.min.y > size.y as f32 * 2.0 / 3.0);
                     assert!(rect.max.y < status.min.y);
                 }
+            }
+        }
+    }
+
+    #[test]
+    fn menu_identity_wraps_inside_its_row_without_changing_text() {
+        use bevy::{camera::RenderTargetInfo, text::TextLayoutInfo};
+
+        let (mut app, camera) = measured_hud_app();
+        let identity =
+            "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac"
+                .to_owned();
+        for (locale, physical_size, scale_factor) in [
+            (Locale::ZhCn, UVec2::new(1280, 800), 1.0),
+            (Locale::EnUs, UVec2::new(640, 480), 1.0),
+            (Locale::De, UVec2::new(1280, 800), 2.0),
+        ] {
+            let label = Message::with(
+                "library.current",
+                [("song", identity.clone()), ("seconds", "64.0".into())],
+            )
+            .render(locale);
+            {
+                let mut state = app.world_mut().resource_mut::<VisualState>();
+                state.locale = locale;
+                state.menu = Some(MenuPresentation {
+                    title: locale.text("phase.finished").into(),
+                    rows: vec![MenuRow {
+                        text: label.clone(),
+                        role: MenuRowRole::Information,
+                        ..default()
+                    }],
+                    ..default()
+                });
+            }
+            app.world_mut()
+                .get_mut::<Camera>(camera)
+                .unwrap()
+                .computed
+                .target_info = Some(RenderTargetInfo {
+                physical_size,
+                scale_factor,
+            });
+            for _ in 0..4 {
+                app.update();
+            }
+            let entity = app
+                .world_mut()
+                .query::<(Entity, &UiText)>()
+                .iter(app.world())
+                .find_map(|(entity, kind)| matches!(kind, UiText::RowPrefix(0)).then_some(entity))
+                .unwrap();
+            let original = *app.world().get::<TextLayout>(entity).unwrap();
+            assert_eq!(original.linebreak, bevy::text::LineBreak::WordOrCharacter);
+            for (override_break, fits) in [
+                (None, true),
+                (Some(bevy::text::LineBreak::WordBoundary), false),
+                (Some(original.linebreak), true),
+            ] {
+                if let Some(linebreak) = override_break {
+                    app.world_mut()
+                        .get_mut::<TextLayout>(entity)
+                        .unwrap()
+                        .linebreak = linebreak;
+                    for _ in 0..4 {
+                        app.update();
+                    }
+                }
+                let text = app.world().get::<Text>(entity).unwrap();
+                let node = app.world().get::<ComputedNode>(entity).unwrap();
+                let layout = app.world().get::<TextLayoutInfo>(entity).unwrap();
+                assert_eq!(text.0, format!("  {label}"));
+                assert!(text.0.contains(&identity));
+                assert!(!layout.glyphs.is_empty());
+                let glyph_max = layout
+                    .glyphs
+                    .iter()
+                    .map(|glyph| glyph.position.x + glyph.atlas_info.rect.width() * 0.5)
+                    .fold(f32::NEG_INFINITY, f32::max);
+                assert_eq!(
+                    glyph_max <= node.size.x + 1.0,
+                    fits,
+                    "{locale:?} {physical_size:?} {scale_factor} {override_break:?}: glyph {glyph_max}, node {:?}",
+                    node.size
+                );
+                if fits {
+                    assert!(layout.size.x <= node.content_box().size().x + 1.0);
+                }
+                let row = app.world().get::<ChildOf>(entity).unwrap().parent();
+                let row_content = app
+                    .world()
+                    .get::<ComputedNode>(row)
+                    .unwrap()
+                    .content_box()
+                    .size();
+                assert!(node.size.x <= row_content.x + 1.0);
             }
         }
     }
