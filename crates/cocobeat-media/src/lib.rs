@@ -14,7 +14,8 @@ pub use anchors::{
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use package::{
-    PackageBuildInput, ValidatedPackage, build_package, export_anchors, read_package,
-    validate_package,
+    MAX_RECEIVED_PACKAGE_BYTES, PACKAGE_OBJECT_LIMITS, PACKAGE_OBJECT_NAMES, PackageBuildInput,
+    ReceivedPackage, ValidatedPackage, build_package, export_anchors, read_package,
+    validate_package, validate_package_objects,
 };
 pub use resample::{ResampledSource, resample_source};

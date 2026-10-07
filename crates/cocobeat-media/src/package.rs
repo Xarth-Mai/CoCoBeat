@@ -20,12 +20,22 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
-const FILE_NAMES: [&str; 4] = [
+pub const PACKAGE_OBJECT_NAMES: [&str; 4] = [
     "song.audio.ogg",
     "analysis.bin",
     "chart.bin",
     "song.package",
 ];
+pub const PACKAGE_OBJECT_LIMITS: [u64; 4] = [
+    MAX_SOURCE_BYTES,
+    MAX_ANALYSIS_BYTES as u64,
+    MAX_CHART_BYTES as u64,
+    MAX_PACKAGE_BYTES as u64,
+];
+pub const MAX_RECEIVED_PACKAGE_BYTES: u64 = MAX_SOURCE_BYTES
+    + MAX_ANALYSIS_BYTES as u64
+    + MAX_CHART_BYTES as u64
+    + MAX_PACKAGE_BYTES as u64;
 static NEXT_STAGING: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Debug)]
@@ -45,6 +55,137 @@ pub struct ValidatedPackage {
     pub chart: CompiledChart,
 }
 
+/// Receives four bounded objects in their fixed order without rebuilding their bytes
+/// Dropping an unfinished receiver removes only its own objects and staging directory
+pub struct ReceivedPackage {
+    staging: PathBuf,
+    destination: PathBuf,
+    expected_package_hash: [u8; 32],
+    remaining: [u64; 4],
+    next_object: usize,
+    files: Vec<File>,
+    created: Vec<PathBuf>,
+    failed: bool,
+    active: bool,
+}
+
+impl ReceivedPackage {
+    pub fn new(
+        destination: impl AsRef<Path>,
+        expected_package_hash: [u8; 32],
+        lengths: [u64; 4],
+    ) -> Result<Self, String> {
+        if lengths
+            .iter()
+            .zip(PACKAGE_OBJECT_LIMITS)
+            .any(|(&length, limit)| !(1..=limit).contains(&length))
+            || lengths
+                .iter()
+                .try_fold(0_u64, |sum, length| sum.checked_add(*length))
+                .is_none_or(|sum| sum > MAX_RECEIVED_PACKAGE_BYTES)
+        {
+            return Err("Received package object or total byte limit exceeded".into());
+        }
+        let destination = destination.as_ref();
+        let staging = staging_path(destination)?;
+        fs::create_dir(&staging)
+            .map_err(|error| format!("Cannot create package staging directory: {error}"))?;
+        let destination = staging
+            .parent()
+            .unwrap()
+            .join(destination.file_name().unwrap());
+        let mut received = Self {
+            staging,
+            destination,
+            expected_package_hash,
+            remaining: lengths,
+            next_object: 0,
+            files: Vec::with_capacity(4),
+            created: Vec::with_capacity(4),
+            failed: false,
+            active: true,
+        };
+        let result = (|| {
+            for name in PACKAGE_OBJECT_NAMES {
+                let path = received.staging.join(name);
+                let file = OpenOptions::new()
+                    .write(true)
+                    .create_new(true)
+                    .open(&path)
+                    .map_err(|error| format!("Cannot create package object {name}: {error}"))?;
+                received.created.push(path);
+                received.files.push(file);
+            }
+            Ok(())
+        })();
+        if let Err(error) = result {
+            received.files.clear();
+            received.active = false;
+            return Err(cleanup_staging(&received.staging, &received.created, error));
+        }
+        Ok(received)
+    }
+
+    /// A rejected chunk invalidates the transaction, even if a caller ignores its error
+    pub fn write(&mut self, object_index: usize, bytes: &[u8]) -> Result<(), String> {
+        let result = (|| {
+            if self.failed
+                || object_index != self.next_object
+                || object_index >= 4
+                || bytes.is_empty()
+                || bytes.len() as u64 > self.remaining[object_index]
+            {
+                return Err(
+                    "Received package chunk is empty, out of order or exceeds its declared length"
+                        .into(),
+                );
+            }
+            self.files[object_index]
+                .write_all(bytes)
+                .map_err(|error| format!("Cannot write received package object: {error}"))?;
+            self.remaining[object_index] -= bytes.len() as u64;
+            if self.remaining[object_index] == 0 {
+                self.next_object += 1;
+            }
+            Ok(())
+        })();
+        self.failed |= result.is_err();
+        result
+    }
+
+    /// Call only after the transport has checked stream termination and rejected trailing bytes
+    pub fn finish(mut self) -> Result<ValidatedPackage, String> {
+        let result = (|| {
+            if self.failed || self.next_object != 4 {
+                return Err("Received package is incomplete or a chunk failed".into());
+            }
+            for file in &self.files {
+                file.sync_all().map_err(|error| error.to_string())?;
+            }
+            self.files.clear();
+            let validated = validate_package(&self.staging)?;
+            if validated.manifest.package_hash != self.expected_package_hash {
+                return Err(
+                    "Received package identity does not match the authenticated peer".into(),
+                );
+            }
+            publish_validated_package(&self.staging, &self.destination, validated)
+        })();
+        self.files.clear();
+        self.active = false;
+        result.map_err(|error| cleanup_staging(&self.staging, &self.created, error))
+    }
+}
+
+impl Drop for ReceivedPackage {
+    fn drop(&mut self) {
+        if self.active {
+            self.files.clear();
+            let _ = cleanup_staging(&self.staging, &self.created, String::new());
+        }
+    }
+}
+
 /// Validates the staged final bytes before atomically publishing the whole directory
 /// Content is built from the strictly verified staged audio, independent of later source changes
 /// Existing destinations are preserved; failed staging removes only this call's own files
@@ -57,7 +198,7 @@ pub fn build_package(
     let source_audio = source_audio.as_ref();
     let destination = destination.as_ref();
     let (staging, audio) = stage_audio(source_audio, expected_frames, destination)?;
-    let mut created = vec![staging.join(FILE_NAMES[0])];
+    let mut created = vec![staging.join(PACKAGE_OBJECT_NAMES[0])];
     let result = (|| {
         let input = build_content(&staging.join(&audio.asset.file_name), &audio)?;
         if input.analysis.audio_hash != audio.asset.blake3
@@ -67,13 +208,13 @@ pub fn build_package(
         }
         let analysis = write_object(
             &staging,
-            FILE_NAMES[1],
+            PACKAGE_OBJECT_NAMES[1],
             &encode_analysis(&input.analysis, audio.canonical_frames)?,
             &mut created,
         )?;
         let chart = write_object(
             &staging,
-            FILE_NAMES[2],
+            PACKAGE_OBJECT_NAMES[2],
             &encode_chart(&input.chart, audio.canonical_frames)?,
             &mut created,
         )?;
@@ -94,7 +235,7 @@ pub fn build_package(
         manifest.package_hash = package_hash(&manifest)?;
         write_object(
             &staging,
-            FILE_NAMES[3],
+            PACKAGE_OBJECT_NAMES[3],
             &encode_package(&manifest)?,
             &mut created,
         )?;
@@ -153,20 +294,35 @@ fn publish_anchors(
         package.manifest.canonical_frames,
         destination,
     )?;
-    let mut created = vec![staging.join(FILE_NAMES[0])];
+    let mut created = vec![staging.join(PACKAGE_OBJECT_NAMES[0])];
     let result = (|| {
         if audio.asset != package.manifest.audio {
             return Err("Copied audio identity differs from the validated source package".into());
         }
-        write_object(&staging, FILE_NAMES[1], &analysis_bytes, &mut created)?;
-        let chart = write_object(&staging, FILE_NAMES[2], &chart_bytes, &mut created)?;
+        write_object(
+            &staging,
+            PACKAGE_OBJECT_NAMES[1],
+            &analysis_bytes,
+            &mut created,
+        )?;
+        let chart = write_object(
+            &staging,
+            PACKAGE_OBJECT_NAMES[2],
+            &chart_bytes,
+            &mut created,
+        )?;
         if changed {
             package.manifest.chart = chart;
             package.manifest.chart_version = "manual-editor-v1".into();
             package.manifest.package_hash = package_hash(&package.manifest)?;
             manifest_bytes = encode_package(&package.manifest)?;
         }
-        write_object(&staging, FILE_NAMES[3], &manifest_bytes, &mut created)?;
+        write_object(
+            &staging,
+            PACKAGE_OBJECT_NAMES[3],
+            &manifest_bytes,
+            &mut created,
+        )?;
         publish_package(&staging, destination)
     })();
     result.map_err(|error| cleanup_staging(&staging, &created, error))
@@ -175,6 +331,24 @@ fn publish_anchors(
 /// Returns content only after bounded object, envelope, semantic and canonical readback checks
 pub fn validate_package(root: impl AsRef<Path>) -> Result<ValidatedPackage, String> {
     read_package(root, |_| Ok(()))
+}
+
+/// Includes the raw manifest identity from the same fully validated four-object snapshot
+pub fn validate_package_objects(
+    root: impl AsRef<Path>,
+) -> Result<(ValidatedPackage, [AssetRef; 4]), String> {
+    let (package, manifest_bytes) = read_package_snapshot(root.as_ref(), |_| Ok(()))?;
+    let objects = [
+        package.manifest.audio.clone(),
+        package.manifest.analysis.clone(),
+        package.manifest.chart.clone(),
+        AssetRef {
+            file_name: PACKAGE_OBJECT_NAMES[3].into(),
+            byte_len: manifest_bytes.len() as u64,
+            blake3: *blake3::hash(&manifest_bytes).as_bytes(),
+        },
+    ];
+    Ok((package, objects))
 }
 
 /// Delivers PCM from the same owned audio snapshot used for hash and strict decoding checks
@@ -198,11 +372,14 @@ fn read_package_snapshot(
     }
     for entry in fs::read_dir(root).map_err(|error| error.to_string())? {
         let entry = entry.map_err(|error| error.to_string())?;
-        if !FILE_NAMES.iter().any(|name| entry.file_name() == *name) {
+        if !PACKAGE_OBJECT_NAMES
+            .iter()
+            .any(|name| entry.file_name() == *name)
+        {
             return Err("Package directory must contain only its four declared objects".into());
         }
     }
-    let manifest_bytes = read_object(&root.join(FILE_NAMES[3]), MAX_PACKAGE_BYTES)?;
+    let manifest_bytes = read_object(&root.join(PACKAGE_OBJECT_NAMES[3]), MAX_PACKAGE_BYTES)?;
     let manifest = decode_package(&manifest_bytes)?;
     if package_hash(&manifest)? != manifest.package_hash {
         return Err("Package manifest hash does not match its canonical bytes".into());
@@ -231,8 +408,13 @@ fn stage_audio(
     expected_frames: u64,
     destination: &Path,
 ) -> Result<(PathBuf, PreparedCanonicalAudio), String> {
-    require_absent(destination)?;
     drop(open_object(source_audio, MAX_SOURCE_BYTES)?);
+    let path = staging_path(destination)?;
+    prepare_canonical_audio(source_audio, expected_frames, &path).map(|audio| (path, audio))
+}
+
+fn staging_path(destination: &Path) -> Result<PathBuf, String> {
+    require_absent(destination)?;
     let parent = destination
         .parent()
         .filter(|parent| !parent.as_os_str().is_empty())
@@ -240,6 +422,8 @@ fn stage_audio(
     if destination.file_name().is_none() {
         return Err("Package destination must name a new directory".into());
     }
+    let parent = fs::canonicalize(parent)
+        .map_err(|error| format!("Cannot resolve package destination parent: {error}"))?;
     (0..32)
         .find_map(|_| {
             let path = parent.join(format!(
@@ -249,10 +433,7 @@ fn stage_audio(
             ));
             match fs::symlink_metadata(&path) {
                 Ok(_) => None,
-                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Some(
-                    prepare_canonical_audio(source_audio, expected_frames, &path)
-                        .map(|audio| (path, audio)),
-                ),
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => Some(Ok(path)),
                 Err(error) => Some(Err(format!("Cannot inspect staging path: {error}"))),
             }
         })
@@ -261,6 +442,14 @@ fn stage_audio(
 
 fn publish_package(staging: &Path, destination: &Path) -> Result<ValidatedPackage, String> {
     let validated = validate_package(staging)?;
+    publish_validated_package(staging, destination, validated)
+}
+
+fn publish_validated_package(
+    staging: &Path,
+    destination: &Path,
+    validated: ValidatedPackage,
+) -> Result<ValidatedPackage, String> {
     require_absent(destination)?;
     // Concurrent builders publish nonempty directories, which rename cannot replace
     fs::rename(staging, destination)
@@ -454,17 +643,21 @@ mod tests {
 
     fn save_manifest(root: &Path, manifest: &mut SongPackage) {
         manifest.package_hash = package_hash(manifest).unwrap();
-        fs::write(root.join(FILE_NAMES[3]), encode_package(manifest).unwrap()).unwrap();
+        fs::write(
+            root.join(PACKAGE_OBJECT_NAMES[3]),
+            encode_package(manifest).unwrap(),
+        )
+        .unwrap();
     }
 
     fn rewrite_package(root: &Path, package: &mut ValidatedPackage) {
         fs::write(
-            root.join(FILE_NAMES[1]),
+            root.join(PACKAGE_OBJECT_NAMES[1]),
             encode_analysis(&package.analysis, package.manifest.canonical_frames).unwrap(),
         )
         .unwrap();
         fs::write(
-            root.join(FILE_NAMES[2]),
+            root.join(PACKAGE_OBJECT_NAMES[2]),
             encode_chart(&package.chart, package.manifest.canonical_frames).unwrap(),
         )
         .unwrap();
@@ -479,7 +672,7 @@ mod tests {
     }
 
     fn object_bytes(root: &Path) -> [Vec<u8>; 4] {
-        FILE_NAMES.map(|name| fs::read(root.join(name)).unwrap())
+        PACKAGE_OBJECT_NAMES.map(|name| fs::read(root.join(name)).unwrap())
     }
 
     fn noncanonical_version(bytes: &mut Vec<u8>) {
@@ -487,6 +680,181 @@ mod tests {
         bytes.splice(20..21, [0x81, 0]);
         let payload_len = (bytes.len() - 20) as u64;
         bytes[12..20].copy_from_slice(&payload_len.to_le_bytes());
+    }
+
+    #[test]
+    fn received_packages_preserve_raw_objects_and_validate_before_publication() {
+        let root = TestDirectory::new();
+        let (audio, input) = root.source_and_input();
+        let source = root.0.join("source-package");
+        let mut package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        for name in &PACKAGE_OBJECT_NAMES[1..3] {
+            let path = source.join(name);
+            let mut bytes = fs::read(&path).unwrap();
+            noncanonical_version(&mut bytes);
+            fs::write(path, bytes).unwrap();
+        }
+        refresh_reference(&source, &mut package.manifest.analysis);
+        refresh_reference(&source, &mut package.manifest.chart);
+        save_manifest(&source, &mut package.manifest);
+        let manifest_path = source.join(PACKAGE_OBJECT_NAMES[3]);
+        let mut manifest_bytes = fs::read(&manifest_path).unwrap();
+        noncanonical_version(&mut manifest_bytes);
+        fs::write(manifest_path, manifest_bytes).unwrap();
+        assert_eq!(validate_package(&source).unwrap(), package);
+        let objects = object_bytes(&source);
+        let (validated, references) = validate_package_objects(&source).unwrap();
+        assert_eq!(validated, package);
+        for (index, reference) in references.iter().enumerate() {
+            assert_eq!(reference.file_name, PACKAGE_OBJECT_NAMES[index]);
+            assert_eq!(reference.byte_len, objects[index].len() as u64);
+            assert_eq!(reference.blake3, *blake3::hash(&objects[index]).as_bytes());
+        }
+        assert_ne!(
+            references[3].blake3,
+            *blake3::hash(&encode_package(&package.manifest).unwrap()).as_bytes()
+        );
+        let destination = root.0.join("received");
+        let mut received = ReceivedPackage::new(
+            &destination,
+            package.manifest.package_hash,
+            objects.each_ref().map(|bytes| bytes.len() as u64),
+        )
+        .unwrap();
+        for (index, bytes) in objects.iter().enumerate() {
+            assert!(!destination.exists());
+            for chunk in bytes.chunks(17) {
+                received.write(index, chunk).unwrap();
+            }
+        }
+        assert!(!destination.exists());
+        assert_eq!(received.finish().unwrap(), package);
+        assert_eq!(object_bytes(&destination), objects);
+        assert_eq!(validate_package(destination).unwrap(), package);
+    }
+
+    #[test]
+    fn received_packages_reject_lengths_bad_chunks_and_cancel_only_owned_files() {
+        let root = TestDirectory::new();
+        let destination = root.0.join("received");
+        for index in 0..4 {
+            for length in [0, PACKAGE_OBJECT_LIMITS[index] + 1, u64::MAX] {
+                let mut lengths = [1; 4];
+                lengths[index] = length;
+                assert!(ReceivedPackage::new(&destination, [0; 32], lengths).is_err());
+                assert_eq!(fs::read_dir(&root.0).unwrap().count(), 0);
+            }
+        }
+        for (index, bytes) in [(1, &[1][..]), (4, &[1][..]), (0, &[1, 2][..]), (0, &[][..])] {
+            let mut received = ReceivedPackage::new(&destination, [0; 32], [1; 4]).unwrap();
+            assert!(received.write(index, bytes).is_err());
+            assert_eq!(
+                fs::metadata(received.staging.join(PACKAGE_OBJECT_NAMES[0]))
+                    .unwrap()
+                    .len(),
+                0
+            );
+            assert!(received.write(0, &[1]).is_err());
+            assert!(received.finish().is_err());
+            assert_eq!(fs::read_dir(&root.0).unwrap().count(), 0);
+        }
+        let mut duplicate = ReceivedPackage::new(&destination, [0; 32], [1; 4]).unwrap();
+        duplicate.write(0, &[1]).unwrap();
+        assert!(duplicate.write(0, &[1]).is_err());
+        drop(duplicate);
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 0);
+        let mut cancelled = ReceivedPackage::new(&destination, [0; 32], [2; 4]).unwrap();
+        cancelled.write(0, &[1]).unwrap();
+        let staging = cancelled.staging.clone();
+        let foreign = staging.join("foreign");
+        fs::write(&foreign, b"preserve").unwrap();
+        drop(cancelled);
+        assert!(!destination.exists());
+        assert_eq!(fs::read(&foreign).unwrap(), b"preserve");
+        assert_eq!(fs::read_dir(staging).unwrap().count(), 1);
+    }
+
+    #[test]
+    fn received_packages_reject_corruption_wrong_identity_and_existing_destinations() {
+        let root = TestDirectory::new();
+        let (audio, input) = root.source_and_input();
+        let source = root.0.join("source-package");
+        let package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        let objects = object_bytes(&source);
+        let lengths = objects.each_ref().map(|bytes| bytes.len() as u64);
+        let destination = root.0.join("received");
+        for bad_index in 0..6 {
+            let mut expected = package.manifest.package_hash;
+            let mut bad_objects = objects.clone();
+            if bad_index < 4 {
+                bad_objects[bad_index][0] ^= 1;
+            } else if bad_index == 4 {
+                expected[0] ^= 1;
+            }
+            let mut received = ReceivedPackage::new(&destination, expected, lengths).unwrap();
+            for (index, bytes) in bad_objects.iter().enumerate() {
+                if bad_index == 5 && index == 3 {
+                    break;
+                }
+                received.write(index, bytes).unwrap();
+            }
+            assert!(received.finish().is_err());
+            assert!(!destination.exists());
+            assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
+        }
+        let mut received =
+            ReceivedPackage::new(&destination, package.manifest.package_hash, lengths).unwrap();
+        for (index, bytes) in objects.iter().enumerate() {
+            received.write(index, bytes).unwrap();
+        }
+        fs::create_dir(&destination).unwrap();
+        fs::write(destination.join("sentinel"), b"keep").unwrap();
+        assert!(received.finish().is_err());
+        assert_eq!(fs::read(destination.join("sentinel")).unwrap(), b"keep");
+        assert!(
+            ReceivedPackage::new(&destination, package.manifest.package_hash, lengths).is_err()
+        );
+        assert_eq!(object_bytes(&source), objects);
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 3);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn received_packages_preserve_destination_aliases_and_freeze_parent_resolution() {
+        use std::os::unix::fs::symlink;
+        let root = TestDirectory::new();
+        let (audio, input) = root.source_and_input();
+        let source = root.0.join("source-package");
+        let package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
+        let objects = object_bytes(&source);
+        let lengths = objects.each_ref().map(|bytes| bytes.len() as u64);
+        let alias = root.0.join("alias");
+        for target in [&source, &root.0.join("missing")] {
+            symlink(target, &alias).unwrap();
+            assert!(ReceivedPackage::new(&alias, package.manifest.package_hash, lengths).is_err());
+            assert!(fs::symlink_metadata(&alias).unwrap().is_symlink());
+            fs::remove_file(&alias).unwrap();
+        }
+        let first = root.0.join("first");
+        let second = root.0.join("second");
+        fs::create_dir(&first).unwrap();
+        fs::create_dir(&second).unwrap();
+        symlink(&first, &alias).unwrap();
+        let mut received = ReceivedPackage::new(
+            alias.join("received"),
+            package.manifest.package_hash,
+            lengths,
+        )
+        .unwrap();
+        fs::remove_file(&alias).unwrap();
+        symlink(&second, &alias).unwrap();
+        for (index, bytes) in objects.iter().enumerate() {
+            received.write(index, bytes).unwrap();
+        }
+        assert_eq!(received.finish().unwrap(), package);
+        assert_eq!(object_bytes(&first.join("received")), objects);
+        assert!(!second.join("received").exists());
+        assert_eq!(object_bytes(&source), objects);
     }
 
     #[test]
@@ -500,7 +868,7 @@ mod tests {
         });
         let source = root.0.join("source-package");
         let mut package = build_package(audio, 4_800, &source, |_, _| Ok(input)).unwrap();
-        for name in &FILE_NAMES[1..3] {
+        for name in &PACKAGE_OBJECT_NAMES[1..3] {
             let path = source.join(name);
             let mut bytes = fs::read(&path).unwrap();
             noncanonical_version(&mut bytes);
@@ -509,9 +877,9 @@ mod tests {
         refresh_reference(&source, &mut package.manifest.analysis);
         refresh_reference(&source, &mut package.manifest.chart);
         save_manifest(&source, &mut package.manifest);
-        let mut manifest_bytes = fs::read(source.join(FILE_NAMES[3])).unwrap();
+        let mut manifest_bytes = fs::read(source.join(PACKAGE_OBJECT_NAMES[3])).unwrap();
         noncanonical_version(&mut manifest_bytes);
-        fs::write(source.join(FILE_NAMES[3]), &manifest_bytes).unwrap();
+        fs::write(source.join(PACKAGE_OBJECT_NAMES[3]), &manifest_bytes).unwrap();
         assert_eq!(validate_package(&source).unwrap(), package);
         let original = object_bytes(&source);
         assert_ne!(encode_package(&package.manifest).unwrap(), original[3]);
@@ -593,7 +961,7 @@ mod tests {
         let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| {
             let mut bytes = original_bytes[3].clone();
             noncanonical_version(&mut bytes);
-            fs::write(source.join(FILE_NAMES[3]), bytes).unwrap();
+            fs::write(source.join(PACKAGE_OBJECT_NAMES[3]), bytes).unwrap();
             Ok(())
         })
         .unwrap();
@@ -609,13 +977,13 @@ mod tests {
         .unwrap();
         assert_eq!(object_bytes(&destination), original_bytes);
         fs::remove_dir_all(&destination).unwrap();
-        fs::write(source.join(FILE_NAMES[3]), &original_bytes[3]).unwrap();
+        fs::write(source.join(PACKAGE_OBJECT_NAMES[3]), &original_bytes[3]).unwrap();
 
         for index in [1, 2] {
             let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| Ok(())).unwrap();
             let mut changed = original_bytes[index].clone();
             noncanonical_version(&mut changed);
-            fs::write(source.join(FILE_NAMES[index]), changed).unwrap();
+            fs::write(source.join(PACKAGE_OBJECT_NAMES[index]), changed).unwrap();
             let error = publish_anchors(
                 &source,
                 snapshot,
@@ -627,7 +995,11 @@ mod tests {
             assert!(error.contains("Object identity mismatch"));
             assert!(!destination.exists());
             assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
-            fs::write(source.join(FILE_NAMES[index]), &original_bytes[index]).unwrap();
+            fs::write(
+                source.join(PACKAGE_OBJECT_NAMES[index]),
+                &original_bytes[index],
+            )
+            .unwrap();
         }
 
         // Retag each Ogg page and recompute CRC: valid PCM, different audio object identity
@@ -659,8 +1031,8 @@ mod tests {
             offset = end;
         }
         let (snapshot, manifest_bytes) = read_package_snapshot(&source, |_| Ok(())).unwrap();
-        fs::write(source.join(FILE_NAMES[0]), &changed_audio).unwrap();
-        decode_canonical(source.join(FILE_NAMES[0]), 4_800, |_| Ok(())).unwrap();
+        fs::write(source.join(PACKAGE_OBJECT_NAMES[0]), &changed_audio).unwrap();
+        decode_canonical(source.join(PACKAGE_OBJECT_NAMES[0]), 4_800, |_| Ok(())).unwrap();
         let error = publish_anchors(
             &source,
             snapshot,
@@ -672,7 +1044,10 @@ mod tests {
         assert!(error.contains("Copied audio identity differs"));
         assert!(!destination.exists());
         assert_eq!(fs::read_dir(&root.0).unwrap().count(), 2);
-        assert_eq!(fs::read(source.join(FILE_NAMES[0])).unwrap(), changed_audio);
+        assert_eq!(
+            fs::read(source.join(PACKAGE_OBJECT_NAMES[0])).unwrap(),
+            changed_audio
+        );
     }
 
     #[test]
@@ -844,7 +1219,10 @@ mod tests {
             })
             .unwrap();
             assert_eq!(package.analysis, expected);
-            assert_eq!(fs::read(destination.join(FILE_NAMES[0])).unwrap(), STEREO);
+            assert_eq!(
+                fs::read(destination.join(PACKAGE_OBJECT_NAMES[0])).unwrap(),
+                STEREO
+            );
             assert_eq!(validate_package(destination).unwrap(), package);
         }
 
@@ -869,7 +1247,7 @@ mod tests {
         let (source, input) = root.source_and_input();
         let destination = root.0.join("ready");
         let package = build_package(&source, 4_800, &destination, |_, _| Ok(input)).unwrap();
-        let audio_path = destination.join(FILE_NAMES[0]);
+        let audio_path = destination.join(PACKAGE_OBJECT_NAMES[0]);
         let mut expected = Vec::new();
         decode_canonical(&audio_path, 4_800, |block| {
             expected.extend_from_slice(block);
@@ -915,7 +1293,7 @@ mod tests {
         assert_eq!(result.unwrap_err(), "consumer cancelled");
         assert_eq!(callbacks, 1);
 
-        for name in FILE_NAMES {
+        for name in PACKAGE_OBJECT_NAMES {
             let path = destination.join(name);
             let bytes = fs::read(&path).unwrap();
             let mut changed = bytes.clone();
@@ -931,7 +1309,7 @@ mod tests {
         let mut corrupt_audio = STEREO.to_vec();
         *corrupt_audio.last_mut().unwrap() ^= 1;
         let hash = *blake3::hash(&corrupt_audio).as_bytes();
-        fs::write(destination.join(FILE_NAMES[0]), corrupt_audio).unwrap();
+        fs::write(destination.join(PACKAGE_OBJECT_NAMES[0]), corrupt_audio).unwrap();
         package.analysis.audio_hash = hash;
         package.chart.audio_hash = hash;
         rewrite_package(&destination, &mut package);
@@ -944,7 +1322,7 @@ mod tests {
         let (source, input) = root.source_and_input();
         let destination = root.0.join("ready");
         let package = build_package(source, 4_800, &destination, |_, _| Ok(input)).unwrap();
-        for (name, limit) in FILE_NAMES.into_iter().zip([
+        for (name, limit) in PACKAGE_OBJECT_NAMES.into_iter().zip([
             MAX_SOURCE_BYTES,
             MAX_ANALYSIS_BYTES as u64,
             MAX_CHART_BYTES as u64,
@@ -970,7 +1348,7 @@ mod tests {
         let mut manifest = package.manifest;
         manifest.package_hash[0] ^= 1;
         fs::write(
-            destination.join(FILE_NAMES[3]),
+            destination.join(PACKAGE_OBJECT_NAMES[3]),
             encode_package(&manifest).unwrap(),
         )
         .unwrap();
@@ -1008,7 +1386,11 @@ mod tests {
         assert!(validate_package(&destination).is_err());
 
         let mut package = original;
-        fs::write(destination.join(FILE_NAMES[0]), b"not canonical audio").unwrap();
+        fs::write(
+            destination.join(PACKAGE_OBJECT_NAMES[0]),
+            b"not canonical audio",
+        )
+        .unwrap();
         let hash = *blake3::hash(b"not canonical audio").as_bytes();
         package.analysis.audio_hash = hash;
         package.chart.audio_hash = hash;
@@ -1022,14 +1404,14 @@ mod tests {
         let (source, input) = root.source_and_input();
         let destination = root.0.join("ready");
         let package = build_package(source, 4_800, &destination, |_, _| Ok(input)).unwrap();
-        for name in &FILE_NAMES[1..] {
+        for name in &PACKAGE_OBJECT_NAMES[1..] {
             let path = destination.join(name);
             let original = fs::read(&path).unwrap();
             let mut unsupported = original.clone();
             unsupported[8..12].copy_from_slice(&2_u32.to_le_bytes());
             fs::write(&path, unsupported).unwrap();
             let mut manifest = package.manifest.clone();
-            if *name != FILE_NAMES[3] {
+            if *name != PACKAGE_OBJECT_NAMES[3] {
                 refresh_reference(&destination, &mut manifest.analysis);
                 refresh_reference(&destination, &mut manifest.chart);
                 save_manifest(&destination, &mut manifest);
@@ -1041,7 +1423,7 @@ mod tests {
             fs::write(path, original).unwrap();
             save_manifest(&destination, &mut package.manifest.clone());
         }
-        let manifest_path = destination.join(FILE_NAMES[3]);
+        let manifest_path = destination.join(PACKAGE_OBJECT_NAMES[3]);
         let mut bytes = fs::read(&manifest_path).unwrap();
         let name = b"song.audio.ogg";
         let offset = bytes
@@ -1078,7 +1460,7 @@ mod tests {
         fs::write(&foreign, b"not created by the package transaction").unwrap();
         cleanup_staging(
             &interrupted,
-            &[interrupted.join(FILE_NAMES[0])],
+            &[interrupted.join(PACKAGE_OBJECT_NAMES[0])],
             "failed".into(),
         );
         assert!(foreign.is_file());
@@ -1126,7 +1508,7 @@ mod tests {
         let (source, input) = root.source_and_input();
         let destination = root.0.join("ready");
         build_package(&source, 4_800, &destination, |_, _| Ok(input.clone())).unwrap();
-        for name in FILE_NAMES {
+        for name in PACKAGE_OBJECT_NAMES {
             let object = destination.join(name);
             let outside = root.0.join(name);
             fs::rename(&object, &outside).unwrap();

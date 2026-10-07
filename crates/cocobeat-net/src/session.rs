@@ -8,12 +8,17 @@ use std::{
 
 use cocobeat_core::DuoEngine;
 use cocobeat_replay::{MAX_FACTS, MAX_FILE_BYTES, Replay, ReplayIdentity};
-use cocobeat_schema::{Anchor, DuoInput, DuoRules, PlayerId, SessionEpoch};
+use cocobeat_schema::{
+    Anchor, CONTENT_SCHEMA_VERSION, DuoInput, DuoRules, MAX_CANONICAL_FRAMES, PlayerId,
+    SessionEpoch,
+};
 use quinn::{Connection, Endpoint, RecvStream, SendStream};
 use serde::Serialize;
 use tokio::{sync::mpsc, task::JoinSet, time::Instant};
 
-use crate::{Invitation, PROTOCOL_VERSION, connect, listen, read_invite, wire, write_invite};
+use crate::{
+    Invitation, PROTOCOL_VERSION, connect, listen, read_invite, resource, wire, write_invite,
+};
 use wire::{Control, Fact, Identity, Input};
 
 const RULESET: &str = "duo-watermark-v1";
@@ -28,6 +33,8 @@ pub struct SessionSummary {
     pub epoch: u64,
     pub player: u8,
     pub peer_authenticated: bool,
+    pub package_received: bool,
+    pub resource_bytes: u64,
     pub content_id: String,
     pub endpoint: String,
     pub cert_blake3: String,
@@ -82,6 +89,14 @@ fn validate_fact(fact: Fact, end: i64, final_through: i64) -> Result<(), String>
 
 fn prepare(package: &Path, template: &Path, player: PlayerId) -> Result<Prepared, String> {
     let package = cocobeat_media::validate_package(package)?;
+    prepare_validated(package, template, player)
+}
+
+fn prepare_validated(
+    package: cocobeat_media::ValidatedPackage,
+    template: &Path,
+    player: PlayerId,
+) -> Result<Prepared, String> {
     if package.chart.ruleset_id != RULESET {
         return Err("network sessions support only duo-watermark-v1".into());
     }
@@ -224,6 +239,8 @@ impl Session {
             epoch: epoch.0,
             player: number(player),
             peer_authenticated: false,
+            package_received: false,
+            resource_bytes: 0,
             content_id: prepared.identity.content_id.clone(),
             endpoint: invitation.endpoint.clone(),
             cert_blake3: blake3::Hash::from_bytes(invitation.cert_blake3)
@@ -740,7 +757,7 @@ async fn guest_finish(
 // Connection closure is handled by the active protocol operation, not as an extra stream
 async fn extra_uni(connection: &Connection) -> String {
     if connection.accept_uni().await.is_ok() {
-        return "unexpected additional authority stream".into();
+        return "unexpected additional unidirectional stream".into();
     }
     std::future::pending().await
 }
@@ -789,17 +806,38 @@ pub fn host(
             let refusal_endpoint = endpoint.clone();
             let mut refusal = JoinSet::new();
             refusal.spawn(async move { while let Some(incoming) = refusal_endpoint.accept().await { incoming.refuse(); } });
-            let (connection, mut control) = tokio::time::timeout(Duration::from_secs(10), async {
+            let (connection, mut control, fetch) = tokio::time::timeout(Duration::from_secs(10), async {
                 let connection = incoming.await.map_err(|_| "guest TLS handshake failed")?;
                 let mut control = ControlIo::new(connection.accept_bi().await.map_err(|_| "accept control stream failed")?);
-                match control.recv().await? {
+                let fetch = match control.recv().await? {
                     Control::Hello { protocol_version: PROTOCOL_VERSION, epoch, player: 2, token, identity, fact_count }
-                        if epoch == invitation.epoch && token == invitation.token => session.bind_peer(&identity, fact_count)?,
+                        if epoch == invitation.epoch && token == invitation.token => { session.bind_peer(&identity, fact_count)?; false },
+                    Control::Fetch { protocol_version: PROTOCOL_VERSION, epoch, player: 2, token }
+                        if epoch == invitation.epoch && token == invitation.token => { session.summary.peer_authenticated = true; true },
                     _ => return Err("guest capability, role, epoch or protocol rejected".into()),
-                }
+                };
                 control.send(Control::Welcome { protocol_version: PROTOCOL_VERSION, epoch: invitation.epoch, player: 1, identity: session.prepared.identity.clone(), fact_count: session.prepared.local.len() as u64 }).await?;
-                Ok::<_, String>((connection, control))
+                Ok::<_, String>((connection, control, fetch))
             }).await.map_err(|_| "guest TLS/capability phase timed out")??;
+            if fetch {
+                tokio::time::timeout(resource::TRANSFER_TIMEOUT, async {
+                    let transfer = async {
+                        let source = resource::Source::open(package, &session.prepared.identity)?;
+                        control.send(Control::Resources { epoch: invitation.epoch, objects: source.objects }).await?;
+                        source.send(&connection, invitation.epoch).await?;
+                        match control.recv().await? {
+                            Control::Installed { epoch, identity, fact_count } if epoch == invitation.epoch => session.bind_peer(&identity, fact_count),
+                            _ => Err("expected validated Installed package for this epoch".into()),
+                        }
+                    };
+                    tokio::select! {
+                        biased;
+                        error = extra_bidi(&connection) => Err(error),
+                        result = transfer => result,
+                    }
+                }).await.map_err(|_| "package transfer and validation exceeded 5 minutes")??;
+                control.send(Control::InstalledAck { epoch: invitation.epoch }).await?;
+            }
             let (inputs, start) = ready(&connection, &mut control, &session).await?;
             let run = async {
                 exchange(&mut session, inputs).await?;
@@ -870,19 +908,146 @@ pub fn join(
             })
             .await
             .map_err(|_| "host capability phase timed out")??;
-            let (inputs, start) = ready(&connection, &mut control, &session).await?;
-            tokio::time::timeout_at(start + Duration::from_secs(15 * 60), async {
-                exchange(&mut session, inputs).await?;
-                guest_finish(&mut session, &connection, &mut control).await
-            })
-            .await
-            .map_err(|_| "accelerated session exceeded 15 minutes")?
+            guest_run(&mut session, &connection, &mut control).await
         }
         .await;
         close_endpoint(&endpoint, result.is_err()).await;
         result
     });
     session.finish(result)
+}
+
+async fn guest_run(
+    session: &mut Session,
+    connection: &Connection,
+    control: &mut ControlIo,
+) -> Result<(), String> {
+    let (inputs, start) = ready(connection, control, session).await?;
+    tokio::time::timeout_at(start + Duration::from_secs(15 * 60), async {
+        exchange(session, inputs).await?;
+        guest_finish(session, connection, control).await
+    })
+    .await
+    .map_err(|_| "accelerated session exceeded 15 minutes")?
+}
+
+fn new_destination(destination: &Path) -> Result<PathBuf, String> {
+    let name = destination
+        .file_name()
+        .ok_or("destination requires a file name")?;
+    let parent = destination
+        .parent()
+        .filter(|path| !path.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let resolved = fs::canonicalize(parent)
+        .map_err(|_| "destination parent must already exist")?
+        .join(name);
+    match fs::symlink_metadata(&resolved) {
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(resolved),
+        _ => Err("destination must be a new path".into()),
+    }
+}
+
+/// Authenticates an invited host before receiving and validating a new four-object package
+/// The local Replay is used only after the received package has passed complete validation
+pub fn join_receive(
+    package_destination: &Path,
+    template: &Path,
+    invite: &Path,
+    output: &Path,
+) -> Result<SessionSummary, String> {
+    let package_destination = new_destination(package_destination)?;
+    let output = new_destination(output)?;
+    if output.starts_with(&package_destination) || package_destination.starts_with(&output) {
+        return Err("received package and session output must be separate paths".into());
+    }
+    let invitation = read_invite(invite)?;
+    let runtime = runtime()?;
+    fs::create_dir(&output)
+        .map_err(|error| format!("create new session output directory: {error}"))?;
+    let mut session = None;
+    let mut authenticated = false;
+    let mut received = false;
+    let mut content_id = None;
+    let mut resource_bytes = 0_u64;
+    let result = runtime.block_on(async {
+        let handshake_deadline = Instant::now() + Duration::from_secs(10);
+        let connected = tokio::time::timeout_at(handshake_deadline, connect(&invitation)).await
+            .map_err(|_| "host TLS/capability phase timed out")?;
+        let (endpoint, connection) = connected?;
+        let result = async {
+            let (mut control, identity, fact_count) = tokio::time::timeout_at(handshake_deadline, async {
+                let mut control = ControlIo::new(connection.open_bi().await.map_err(|_| "open control stream failed")?);
+                control.send(Control::Fetch { protocol_version: PROTOCOL_VERSION, epoch: invitation.epoch, player: 2, token: invitation.token }).await?;
+                match control.recv().await? {
+                    Control::Welcome { protocol_version: PROTOCOL_VERSION, epoch, player: 1, identity, fact_count } if epoch == invitation.epoch => Ok::<_, String>((control, identity, fact_count)),
+                    _ => Err("host role, epoch or protocol rejected".into()),
+                }
+            }).await.map_err(|_| "host capability phase timed out")??;
+            authenticated = true;
+            content_id = Some(identity.content_id.clone());
+            resource::package_hash(&identity)?;
+            if identity.ruleset_id != RULESET
+                || identity.content_schema != CONTENT_SCHEMA_VERSION
+                || !(1..=MAX_CANONICAL_FRAMES).contains(&identity.canonical_frames)
+                || fact_count == 0 || fact_count > MAX_FACTS as u64 {
+                return Err("host content identity, ruleset or fact count is invalid".into());
+            }
+            let package = tokio::time::timeout(resource::TRANSFER_TIMEOUT, async {
+                let objects = match control.recv().await? {
+                    Control::Resources { epoch, objects } if epoch == invitation.epoch => objects,
+                    _ => return Err("expected four resource descriptors for this epoch".into()),
+                };
+                resource::validate_objects(&objects)?;
+                resource_bytes = objects.iter().try_fold(0_u64, |sum, object| sum.checked_add(object.bytes)).ok_or("resource byte count overflow")?;
+                let mut stream = connection.accept_uni().await.map_err(|_| "accept package stream failed")?;
+                tokio::select! {
+                    biased;
+                    error = extra_uni(&connection) => Err(error),
+                    package = resource::receive(&mut stream, &package_destination, &identity, invitation.epoch, objects) => package,
+                }
+            }).await.map_err(|_| "package transfer and validation exceeded 5 minutes")??;
+            received = true;
+            let prepared = prepare_validated(package, template, PlayerId::P2)?;
+            if prepared.identity != identity {
+                return Err("received package identity differs from authenticated Welcome".into());
+            }
+            let mut installed = Session::new(prepared, PlayerId::P2, &invitation, output.clone())?;
+            installed.summary.package_received = true;
+            installed.summary.resource_bytes = resource_bytes;
+            installed.bind_peer(&identity, fact_count)?;
+            session = Some(installed);
+            let installed = session.as_mut().ok_or("received session disappeared")?;
+            control.send(Control::Installed { epoch: invitation.epoch, identity: installed.prepared.identity.clone(), fact_count: installed.prepared.local.len() as u64 }).await?;
+            if control.recv().await? != (Control::InstalledAck { epoch: invitation.epoch }) {
+                return Err("expected InstalledAck for this validated package".into());
+            }
+            guest_run(installed, &connection, &mut control).await
+        }.await;
+        close_endpoint(&endpoint, result.is_err()).await;
+        result
+    });
+    if let Some(session) = session {
+        return session.finish(result);
+    }
+    let error = result
+        .err()
+        .unwrap_or_else(|| "received session was not initialized".into());
+    let summary = serde_json::json!({
+        "status": "FAILED", "protocol_version": PROTOCOL_VERSION,
+        "epoch": invitation.epoch, "player": 2, "peer_authenticated": authenticated,
+        "package_received": received, "resource_bytes": resource_bytes,
+        "content_id": content_id, "endpoint": invitation.endpoint,
+        "cert_blake3": blake3::Hash::from_bytes(invitation.cert_blake3).to_hex().to_string(),
+        "facts": [0,0], "event_count": 0, "live_replay_blake3": null,
+        "authority_replay_blake3": null, "error": error,
+    });
+    write_new(
+        &output.join("status.json"),
+        &serde_json::to_vec_pretty(&summary)
+            .map_err(|_| "encode resource failure evidence failed")?,
+    )?;
+    Err(format!("{error}; session evidence: {}", output.display()))
 }
 
 #[cfg(test)]
@@ -911,7 +1076,7 @@ mod tests {
         };
         let invitation = Invitation {
             invite_version: 1,
-            protocol_version: 1,
+            protocol_version: PROTOCOL_VERSION,
             endpoint: "127.0.0.1:1".into(),
             server_name: "cocobeat.local".into(),
             certificate_der: vec![],

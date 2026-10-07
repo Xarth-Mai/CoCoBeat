@@ -1,9 +1,10 @@
-//! Invited QUIC sessions over validated local song packages
+//! Invited QUIC sessions over validated local or received song packages
 
+mod resource;
 mod session;
 mod wire;
 
-pub use session::{SessionSummary, host, join};
+pub use session::{SessionSummary, host, join, join_receive};
 
 use std::{
     fs::{File, OpenOptions},
@@ -21,9 +22,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 1;
+pub(crate) const PROTOCOL_VERSION: u32 = 2;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/1";
+const ALPN: &[u8] = b"cocobeat-session/2";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 
@@ -133,7 +134,7 @@ fn transport(host: bool) -> Arc<TransportConfig> {
     let mut transport = TransportConfig::default();
     transport
         .max_concurrent_bidi_streams(if host { 2_u8.into() } else { 0_u8.into() })
-        .max_concurrent_uni_streams(if host { 0_u8.into() } else { 1_u8.into() })
+        .max_concurrent_uni_streams(if host { 0_u8.into() } else { 2_u8.into() })
         .stream_receive_window((256_u32 * 1024).into())
         .receive_window((512_u32 * 1024).into())
         .send_window(1024 * 1024)
@@ -291,7 +292,7 @@ mod tests {
         }
         for (field, invalid) in [
             ("invite_version", serde_json::json!(2)),
-            ("protocol_version", serde_json::json!(2)),
+            ("protocol_version", serde_json::json!(3)),
             ("endpoint", serde_json::json!("0.0.0.0:12345")),
             ("endpoint", serde_json::json!("[::]:12345")),
             ("endpoint", serde_json::json!("[::ffff:0.0.0.0]:12345")),

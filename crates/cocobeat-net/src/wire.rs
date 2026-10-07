@@ -20,6 +20,21 @@ pub(crate) struct Identity {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum Control {
+    Fetch {
+        protocol_version: u32,
+        epoch: u64,
+        player: u8,
+        token: [u8; 32],
+    },
+    Resources {
+        epoch: u64,
+        objects: [ResourceObject; 4],
+    },
+    Installed {
+        epoch: u64,
+        identity: Identity,
+        fact_count: u64,
+    },
     Hello {
         protocol_version: u32,
         epoch: u64,
@@ -34,6 +49,9 @@ pub(crate) enum Control {
         player: u8,
         identity: Identity,
         fact_count: u64,
+    },
+    InstalledAck {
+        epoch: u64,
     },
     Ready {
         epoch: u64,
@@ -53,6 +71,13 @@ pub(crate) enum Control {
         epoch: u64,
         blake3: [u8; 32],
     },
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct ResourceObject {
+    pub bytes: u64,
+    pub blake3: [u8; 32],
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -299,6 +324,32 @@ mod tests {
         let mut json = serde_json::to_value(&hello).unwrap();
         json["token"].as_array_mut().unwrap().pop();
         assert!(serde_json::from_value::<Control>(json).is_err());
+        let resources = Control::Resources {
+            epoch: 2,
+            objects: [ResourceObject {
+                bytes: 1,
+                blake3: [0; 32],
+            }; 4],
+        };
+        let valid = serde_json::to_value(&resources).unwrap();
+        assert_eq!(
+            serde_json::from_value::<Control>(valid.clone()).unwrap(),
+            resources
+        );
+        for count in [0, 3, 5] {
+            let mut invalid = valid.clone();
+            invalid["objects"] = serde_json::json!(vec![
+                ResourceObject {
+                    bytes: 1,
+                    blake3: [0; 32]
+                };
+                count
+            ]);
+            assert!(serde_json::from_value::<Control>(invalid).is_err());
+        }
+        let mut invalid = valid;
+        invalid["objects"][0]["file_name"] = "../untrusted".into();
+        assert!(serde_json::from_value::<Control>(invalid).is_err());
     }
 
     #[test]

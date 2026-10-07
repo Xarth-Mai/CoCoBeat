@@ -36,7 +36,7 @@ editor 的 `AnchorEditor` 只管理整数帧 Anchor、稳定 ID、排序和最�
 
 lab 的 `workbench` 直接组合 Bevy 窗口与 AnchorEditor，通过 media 验证回调生成有界双声道峰值包络，UI 和鼠标都使用实际节点的同一逻辑矩形映射整数帧；后台线程只执行既有保真导出，主线程保留草稿并处理结果。runtime 只向工具暴露现有语言、内嵌字体安装与纯菜单主控判定，不启动游戏 Session、品牌动画或音频；工具读取已有语言配置但不写回，手柄浏览与键鼠编辑共用单一主控
 
-net 拥有受邀请的 QUIC 端点、证书与能力校验、可靠历史、会话屏障和应用 FinishAck，lab 的 `net-host` / `net-join` 是当前消费者；双方预装同包，用现有 Replay 模板提供每玩家子序列，经唯一 core 生成权威 Replay，断线只保存已成功 ingest 的前缀。net 不依赖 runtime / Bevy / Kira，资源接收、音频 ClockSync 和正式游戏联网入口继续独立接线，具体状态与限额见 [网络会话](network-sessions.md)
+net 拥有受邀请的 QUIC 端点、证书与能力校验、可靠历史、会话屏障和应用 FinishAck，lab 的 `net-host` / `net-join` / `net-receive` 是当前消费者；客机预装或有界接收并完整验证四对象后进入 Ready，用现有 Replay 模板提供每玩家子序列，经唯一 core 生成权威 Replay，断线只保存已成功 ingest 的前缀。net 不依赖 runtime / Bevy / Kira，音频 ClockSync 和正式游戏联网入口继续独立接线，具体状态与限额见 [网络会话](network-sessions.md)
 
 media 的纯 `compile_anchor_proposal` 只消费完整合法 MusicAnalysis、实际帧数和显式策略，以稳定排序选择 onset，返回独立 AnchorProposal 与全部接受 / 拒绝证据；lab 将其保存为有界报告，采用时核对来源并完整重编，再交给原保真导出。现有手工包没有 onset 时返回空提案，报告不代表生产 MIR / 音乐置信度准入，也不取代原 chart 的 SectionCue，详细字段见 [Anchor 提案](anchors.md)
 

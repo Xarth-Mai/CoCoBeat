@@ -614,3 +614,15 @@ lab 的 `workbench PACKAGE NEW_PACKAGE [--locale CODE]` 接入独立静音 Bevy 
 沙箱内未暴露 GPU，首个无头探针报 `failed to find physical device`，通过已授权的独立 GPU 验证环境完成补验；没有操作用户桌面或安装系统软件。辅助程序是 target 内的独立二进制，这些软件按键和原生读回不代表正式程序的物理键鼠 / 手柄验收；CJK 分词诊断仍按既有上游限制保留
 
 本次 160 项已列出的 Rust / Cargo / 配置 / 语言 / 字体 / 旗帜输入前后哈希一致，实际命令、构建身份、源码哈希、CLI 结果及截图 / 状态摘要已保存为可提交的 [观察记录](../testdata/synthetic/workbench-observations-20261005.json)，原始产物在 `target/workbench-milestone-20261005/`。本批不证明物理呈现性能、Windows / ARM 窗口、音频试听、真实双手柄、13 种语言的真人翻译质量或完整编辑器退出；候选证据、Replay 图形诊断与设备计时关联继续留在 todo/09
+
+## QUIC 四对象资源接收
+
+2026-10-07 在 `7fe4016` 后的资源接收源码冻结版本验证，新增 `net-receive`，protocol / ALPN v2；记录见 [持久化观察](../testdata/synthetic/quic-resource-observations-20261007.json)，原始日志与 helper 保存在 `target/quic-resource-20261007/`，后者可随构建缓存清理，完整阶段退出继续按 todo 10 / 11 / 12
+
+`cargo test --locked --offline -p cocobeat-media package::tests` 的 17 项、`cargo test --locked --offline -p cocobeat-net` 的 8 项通过；`cargo clippy --locked --offline -p cocobeat-media -p cocobeat-net -p cocobeat-lab --all-targets -- -D warnings`、`cargo fmt --all -- --check`、`cargo xtask boundaries` 和 lab 实际构建通过。首次 net 编译的两处 Rust 类型推断错误已修复，失败日志保留，当前结论来自后续通过的冻结代码
+
+`python3 tools/quic-session-check/check.py target/debug/cocobeat-lab target/quic-resource-20261007/loopback-host` 实际运行 16 条命令，覆盖未预装接收、预装加入、超过 64 条的批次、原始四对象保真、两端相同权威 Replay、core JSONL 诊断、模板错配、已有文件 / 包 / 输出 / 符号链接保护及旧协议拒绝；有效包发布后模板错误保留有效包，事实保持 `[0,0]` 且会话 FAILED
+
+恶意 host helper 通过准确 Cargo JSON 的 10 个现有 rlib 用 rustc 构建，在私有 loopback 与实际生产 lab 接收程序通信，6 类输入分别为超长 descriptor、坏对象 hash、截断、尾随数据、错误预期包哈希及额外 uni stream；每端均 exit 1 / FAILED、事实 `[0,0]`、未观察到 Installed / Ready、无发布目录和 staging 泄漏。helper 复制冻结 net 实现后附加测试入口，原始源码、构建参数和摘要 hash 留在本批 target 记录，不替代生产游戏接线验收
+
+sandbox 首次绑定 UDP 返回 `Operation not permitted`，记录保留；获批后在实际主机只使用 loopback 重跑成功，未连接远端、操作设备或修改系统配置。最大容量性能、进展超时实际到期、真实双机、游戏窗口联网、音频设备同步和真人体验为 NOT RUN；异步期限不能抢占同步校验，已有本地空目录发布竞态边界见网络会话文档

@@ -11,7 +11,7 @@
 | [timing.md](timing.md) | 音乐时间的单位、边界和待测量的不确定性 |
 | [gameplay.md](gameplay.md) | 已实现规则、初始参数与待验证的体验 |
 | [editor.md](editor.md) | 原生波形工作台、精确 Anchor 修改、撤销重做与保真导出 |
-| [network-sessions.md](network-sessions.md) | 邀请、预装同包的 QUIC 可靠历史、断线前缀与应用完成确认 |
+| [network-sessions.md](network-sessions.md) | 邀请、四对象接收与 Ready、QUIC 可靠历史、断线前缀与应用完成确认 |
 | [testing.md](testing.md) | 自动检查、硬件实验和真人测试各自证明什么 |
 | [canonical-audio-probe.md](canonical-audio-probe.md) | 编码候选的失败、适配与有限回读证据，以及复现入口 |
 | [build-release.md](build-release.md) | 性能优化发行参数、轻量 CI 与四种目标的手动构建 |
