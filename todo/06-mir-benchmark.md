@@ -50,3 +50,4 @@
 
 - [x] AudioFlux 原生 C 软件研究前置：构建、原输入按 SHA 恢复、原 Matcher 与边界控制、完整原质量矩阵及失败证据
 - [x] AudioFlux 短矩阵 sanitizer 验证：保留环境失败，宿主同二进制同参数完整执行，无诊断，质量仍 FAIL
+- [x] BTT MIT 原生 tempo 软件研究：固定 48 kHz、native / sanitizer 各 16 项边界控制与原 source / canonical 两声道各 40 条完整记录通过软件检查；原始输出一致，质量未设准入门槛，13/20 编码前后曲线有变化，精确 onset / beat 与完整分析继续未准入，见[研究结果](../tools/native-tempo-check/results-2026-10-07.json)

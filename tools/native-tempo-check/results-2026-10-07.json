@@ -1,0 +1,1948 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "purpose": "Linux native tempo software pre-admission research",
+  "software_status": "PASS_OBSERVED_SCOPE",
+  "quality_status": "UNSCORED_NO_ADMISSION_THRESHOLD",
+  "production_admission": false,
+  "platform": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "performance_scope": "nonisolated; other Cargo work permitted"
+  },
+  "candidate": {
+    "name": "Beat-and-Tempo-Tracking",
+    "repository": "https://github.com/michaelkrzyzaniak/Beat-and-Tempo-Tracking",
+    "commit": "c039090f1af771092d95c3ffc402e557940f7384",
+    "commit_date": "2023-12-18T06:52:24Z",
+    "license": "MIT",
+    "weights": "none",
+    "upstream_manifest": {
+      "path": "target/native-tempo-20261007/prepared-v1/btt/manifest.json",
+      "sha256": "570e4591dda2e15c586ff03bcf601a6f24e4306ddea3f75cca16a2df52a1f7c8"
+    },
+    "official_git_blob_verified_files": 14,
+    "source_files": [
+      {
+        "path": "BTT.h",
+        "git_blob": "ccd1850cbe7f342b34a07ad8d4a4bb7457e8f8bb",
+        "bytes": 10554,
+        "sha256": "311d25e681b5b712e7af44192439d7cd69f0bc0afd9a52799b124474d56ca032"
+      },
+      {
+        "path": "LICENSE",
+        "git_blob": "6e906d35597066b98d0982ac6ef2fdb58bb9e9f6",
+        "bytes": 1074,
+        "sha256": "74400a6ea5b29562c7b128ff1ae0921e8f39af5c56f65e569c3bc8d69fefe829"
+      },
+      {
+        "path": "README.md",
+        "git_blob": "dc985ae6608168d6b1107b3f59d69645aaf5cd2d",
+        "bytes": 18579,
+        "sha256": "a284f68013e1d2d294a4f2cac305a70d237c20d9ec152d0bd24c33795ffdcfb8"
+      },
+      {
+        "path": "src/BTT.c",
+        "git_blob": "17f2abaa9f7728619bf342b9b47524220bab38e5",
+        "bytes": 41730,
+        "sha256": "75a95836ab862006a1dc0e488697584a993955a63c2c0a8cddbd771cecffefb2"
+      },
+      {
+        "path": "src/DFT.c",
+        "git_blob": "01c971ff29bb2024388f2013b0d68ed0aa1d16dc",
+        "bytes": 24258,
+        "sha256": "8c24a060cadfb11f87c3f152a701d523ca7dc5b08cf8178a773c8b1a84f11da2"
+      },
+      {
+        "path": "src/DFT.h",
+        "git_blob": "6d5e35bd3d0ea8383566eb858c224363d9a31820",
+        "bytes": 4005,
+        "sha256": "646cf25435697e5d9359957f56c034bcb57addd74e6967dc30cd4db195dbbbc2"
+      },
+      {
+        "path": "src/Filter.c",
+        "git_blob": "717ee905ba7370f4c6918d7136adbcd552ae9d78",
+        "bytes": 9151,
+        "sha256": "46b1dce0e1e4fa5acd9f8d1edb3387e279d638fa6439be5ffb8827f08ab01b24"
+      },
+      {
+        "path": "src/Filter.h",
+        "git_blob": "62141f82b5c6f324545fe52309bde9689dd7069c",
+        "bytes": 1483,
+        "sha256": "ea1ba1fd659b293cdc9c98eab95c63d95deb21f7ee204e7d95aeeff698997477"
+      },
+      {
+        "path": "src/STFT.c",
+        "git_blob": "17cd4dd309455b44460f165ac23325077a4cf87a",
+        "bytes": 10974,
+        "sha256": "d22b42143e94362ed7a94cac75c9874049525210d13eae21edbd3ea529201230"
+      },
+      {
+        "path": "src/STFT.h",
+        "git_blob": "70305fa35f6cc2f4fc6c0d84f72251cfd9d7a23e",
+        "bytes": 1561,
+        "sha256": "75d70342afced34a500fddb4ad56882d250fcd017c9c1f27226370b0f53c6e10"
+      },
+      {
+        "path": "src/Statistics.c",
+        "git_blob": "1e23cd07379487a8159b3eaa9b6bfd705c11dd67",
+        "bytes": 16861,
+        "sha256": "99962f5eeadd2cfd3fef1fe583f359d3593cbcd0c7269c4daac2eca644129f37"
+      },
+      {
+        "path": "src/Statistics.h",
+        "git_blob": "3b602143a396937c0a007dfedb81890c2060e110",
+        "bytes": 7084,
+        "sha256": "9c42fc0035dfa25c4826836db5fb7f67811bd03fb61e44b3f46752357b183334"
+      },
+      {
+        "path": "src/fastsin.c",
+        "git_blob": "14363a1613ad0c1014526ce1d8947509c001a0a1",
+        "bytes": 48367,
+        "sha256": "8ac02d8d7fc98766148be52e411552db4135a659b681bf435a93f793786dc3e7"
+      },
+      {
+        "path": "src/fastsin.h",
+        "git_blob": "de34ecd53e5114c9f9ddf5523d5e20effdba175e",
+        "bytes": 1165,
+        "sha256": "6525ef5b2b27dac7823b2b04e00d366f004c312a28cf64f49367a8046ae6fecd"
+      }
+    ]
+  },
+  "frozen": {
+    "source_index": {
+      "path": "target/native-tempo-20261007/prepared-v1/source-files.sha256",
+      "sha256": "0acd03d059ee4c177a51c5ec6ec83608adaa7b190f1ceed26f3b2cc6394eaa3d"
+    },
+    "verified_files": 25,
+    "unchanged_before_after_all_runs": true,
+    "current_tool_changes_after_execution": "README result text only; four executable tool sources match prepared-v1",
+    "tool_files": [
+      {
+        "path": "frozen/README.md",
+        "sha256": "a1df32f952b68bdfa7d5a52266ab0ddf9dd85b0b74d8a15af978321133137401"
+      },
+      {
+        "path": "frozen/build.sh",
+        "sha256": "e40c29757437b9edcfb245fd4edbbd513a575bc2ad812e8a9609c3537ec03c8a"
+      },
+      {
+        "path": "frozen/check.py",
+        "sha256": "ee0afcebbcd5ef9effad715007353d1062b3323e1a81e2dfd160e5e3d464d134"
+      },
+      {
+        "path": "frozen/driver.c",
+        "sha256": "d89d1b207d3cd75758ef5b2dbf76808dbffdf0f8d708d0ed70c8991d01312936"
+      },
+      {
+        "path": "frozen/prepare.py",
+        "sha256": "68f17f2ea595da64ebbf60a9c6c89844c1d2b2be8a8ac612498d46b2430200d4"
+      }
+    ]
+  },
+  "configuration": {
+    "constructor": "btt_new(1024,8,15,1024,1024,1024,48000,0,0)",
+    "mode": "BTT_ONSET_AND_TEMPO_TRACKING",
+    "other_parameters": "upstream defaults unchanged",
+    "onset_and_beat_callbacks": false,
+    "confidence": null,
+    "certainty": "unmodified native histogram-bin value, not a probability",
+    "input_origin_frame": 0,
+    "coordinate": "consumed PCM frames, not event positions",
+    "warmup_frames": 131072,
+    "zero_support_frames": 134272
+  },
+  "input_identity": {
+    "source_matrix": {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/source-matrix.json",
+      "sha256": "27f43448b0608c9c0f03cabfe3188c428b8f47003f678adc7a856effd22967bb"
+    },
+    "canonical_matrix": {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/canonical-matrix.json",
+      "sha256": "ddcb0fbc64e094c8a9accd1ed3b76ead95ae8ec1a1953225b49b9d5dbcdec250"
+    },
+    "strict_readback_receipts": {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/readback-receipts.json",
+      "sha256": "46d463e2b7ee24d59ad17072467717c80e47a67f6e8f913d13a51a7b0da47fc8"
+    },
+    "canonical_driver_sha256": "199953f3115af196bc2262c72a4fc1928341192608cbe726838e569f7c92449a",
+    "unique_pcm_files": 20,
+    "records": 40,
+    "frames_each": 1536000,
+    "channels_each": 2,
+    "rate": 48000,
+    "reencoded_or_regenerated": false,
+    "verification": "each PCM checked against old SHA before and after native calls and after each matrix"
+  },
+  "reference": {
+    "source": "unchanged beat_seconds and reference_beat_unit in frozen metadata",
+    "interval": "[round(beat[i]*48000), round(beat[i+1]*48000))",
+    "bpm": "60*48000/(end-start), interval mean, not an exact instantaneous tempo",
+    "stable_cases": [
+      "fixed_120",
+      "fractional_123_45",
+      "meter_3_4",
+      "meter_6_8",
+      "pickup_two_beats",
+      "swing_2_to_1",
+      "antiphase",
+      "right_only"
+    ],
+    "variable_cases": [
+      "accelerando_90_150"
+    ],
+    "silent_channels": "original silent_channels has no scalar reference",
+    "outside_intervals": "unscored, not inferred silence or missing beats",
+    "six_eight": "original dotted_quarter unit, no harmonic correction"
+  },
+  "execution": {
+    "pilot": {
+      "report": {
+        "path": "target/native-tempo-20261007/pilot-v1/report.json",
+        "sha256": "086791141e08f60f03a2e18b26a3f987573dd6c4fbdde2d3335816c2407c8e22"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 11.212533872996573
+    },
+    "native_matrix": {
+      "report": {
+        "path": "target/native-tempo-20261007/matrix-native-v1/report.json",
+        "sha256": "b4e5bd5b6f33838559d8cd21314a6ed91dd13110f74cbf9f39f2d9aa28bab60a"
+      },
+      "exit_code": 0,
+      "records": 40,
+      "elapsed_seconds": 56.933441703004064
+    },
+    "sanitized_matrix": {
+      "report": {
+        "path": "target/native-tempo-20261007/matrix-sanitized-v1/report.json",
+        "sha256": "e50f1484ca7672bf30dbf54c61ddc169806c3d1ce6a86ce06dbdbf0d01e64f18"
+      },
+      "exit_code": 0,
+      "records": 40,
+      "elapsed_seconds": 110.96486401298898
+    },
+    "controls": {
+      "native": {
+        "count": 16,
+        "report": {
+          "path": "target/native-tempo-20261007/pilot-v1/controls-native/report.json",
+          "sha256": "1d6dab11e0bc1943ace5a5e042120d3889ac83a9e33012be78e5a134b57071d3"
+        },
+        "expected_exit_0": 4,
+        "expected_exit_2": 12
+      },
+      "sanitized": {
+        "count": 16,
+        "report": {
+          "path": "target/native-tempo-20261007/pilot-v1/controls-sanitized/report.json",
+          "sha256": "2de9afb86cdd23a9dc14a9b17b2411ed0715914e487ad06c3efcfca92b41a889"
+        },
+        "expected_exit_0": 4,
+        "expected_exit_2": 12
+      }
+    },
+    "native_binary": {
+      "path": "target/native-tempo-20261007/pilot-v1/build-native/native-tempo-check",
+      "sha256": "1175bf8d27a21d691048ce0aab026f91c2a52f363a787875972cf57ff0e7257f"
+    },
+    "sanitized_binary": {
+      "path": "target/native-tempo-20261007/pilot-v1/build-sanitized/native-tempo-check",
+      "sha256": "89922d57fe59adfc5deae24a8b2c89a10df637f6f903c3e000b2f74f2963d0a2"
+    },
+    "native_sanitized_equal_raw_records": 40,
+    "matrix_stderr_empty_streams": 80,
+    "sanitizer_environment": {
+      "ASAN_OPTIONS": "detect_leaks=1:halt_on_error=1",
+      "UBSAN_OPTIONS": "halt_on_error=1"
+    },
+    "owned_children_remaining": [],
+    "rss_scope": "RUSAGE_CHILDREN high-water since each runner start; not a separate peak for each driver"
+  },
+  "source_canonical_comparison": [
+    {
+      "case": "fixed_120",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 281,
+        "period_frames": 281,
+        "native_certainty": 10577,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "fixed_120",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 281,
+        "period_frames": 281,
+        "native_certainty": 10577,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "fractional_123_45",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 6881,
+        "trailing_zero_frames": 9263
+      }
+    },
+    {
+      "case": "fractional_123_45",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 6881,
+        "trailing_zero_frames": 9263
+      }
+    },
+    {
+      "case": "accelerando_90_150",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 103,
+        "period_frames": 103,
+        "native_certainty": 8999,
+        "trailing_zero_frames": 9347
+      }
+    },
+    {
+      "case": "accelerando_90_150",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 103,
+        "period_frames": 103,
+        "native_certainty": 8999,
+        "trailing_zero_frames": 9347
+      }
+    },
+    {
+      "case": "meter_3_4",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 43,
+        "period_frames": 43,
+        "native_certainty": 8057,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "meter_3_4",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 43,
+        "period_frames": 43,
+        "native_certainty": 8057,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "meter_6_8",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 10862,
+        "trailing_zero_frames": 6474
+      }
+    },
+    {
+      "case": "meter_6_8",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 10862,
+        "trailing_zero_frames": 6474
+      }
+    },
+    {
+      "case": "pickup_two_beats",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 1001,
+        "period_frames": 1001,
+        "native_certainty": 9734,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "pickup_two_beats",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 1001,
+        "period_frames": 1001,
+        "native_certainty": 9734,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "swing_2_to_1",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 419,
+        "period_frames": 419,
+        "native_certainty": 10670,
+        "trailing_zero_frames": 7082
+      }
+    },
+    {
+      "case": "swing_2_to_1",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 419,
+        "period_frames": 419,
+        "native_certainty": 10670,
+        "trailing_zero_frames": 7082
+      }
+    },
+    {
+      "case": "silence",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 0
+      }
+    },
+    {
+      "case": "silence",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 0
+      }
+    },
+    {
+      "case": "antiphase",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 281,
+        "period_frames": 281,
+        "native_certainty": 10577,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "antiphase",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 281,
+        "period_frames": 281,
+        "native_certainty": 10577,
+        "trailing_zero_frames": 9339
+      }
+    },
+    {
+      "case": "right_only",
+      "channel": 0,
+      "changed_readings": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 0
+      }
+    },
+    {
+      "case": "right_only",
+      "channel": 1,
+      "changed_readings": {
+        "bpm": 281,
+        "period_frames": 281,
+        "native_certainty": 10577,
+        "trailing_zero_frames": 9339
+      }
+    }
+  ],
+  "observations": {
+    "non_silent_reference_coverage": "34/34 records have coverage 1 after warmup inside original adjacent-beat intervals",
+    "silent_channels": "6/6 records have zero nonzero BPM readings",
+    "source_canonical_bpm_sequence_equal_pairs": 7,
+    "source_canonical_bpm_changed_pairs": 13,
+    "accelerando_error_percent": {
+      "p50": 4.570959944751377,
+      "p95": 5.496162280701748
+    },
+    "six_eight": "original dotted-quarter BPM reference only, not meter recognition",
+    "stale_after_audio": "NOT_RUN: original non-silent tails have insufficient exact-zero history; no tail appended",
+    "confidence_calibration": "UNSUPPORTED"
+  },
+  "records": [
+    {
+      "origin": "source",
+      "case": "fixed_120",
+      "channel": 0,
+      "pcm_sha256": "8f173937a770c391190a24c6c6a565e7099f629858ce907b237231401565f7c9",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9919803142547607,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "00-channel-0",
+      "raw_sha256_native_and_sanitized": "fbc0b02f2adb6b648dcf0ceab9aa0278ea1ddc8d146286be1b1d3537659db69e",
+      "native_run_sha256": "8b810b9d0234187ea80419be675bfb27af2b6e8975f9d42e68dc074f42be9ca8",
+      "sanitized_run_sha256": "519b48223c490f594a4fe7ed0d4a5da1e56b87ac0a2722e7f775536b539e0b27"
+    },
+    {
+      "origin": "source",
+      "case": "fixed_120",
+      "channel": 1,
+      "pcm_sha256": "8f173937a770c391190a24c6c6a565e7099f629858ce907b237231401565f7c9",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9919803142547607,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "00-channel-1",
+      "raw_sha256_native_and_sanitized": "1d69896f1362f106e706b57b67b1d15538b5b142a9cbd521b6d009647cc7ac2f",
+      "native_run_sha256": "ed1853615941c3103b5f4cf55d65ea6081b9f4239bab448b2fdeccaab41d3d0a",
+      "sanitized_run_sha256": "ba082d42079ddfba52a0ce7eb4b90a9d9721e90f0f7475629d77e23899caba95"
+    },
+    {
+      "origin": "source",
+      "case": "fractional_123_45",
+      "channel": 0,
+      "pcm_sha256": "13342b7a93ceb0707b71bfc7a191cfb65fa2c345002c467223e21a6636492629",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10651,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.14165521978021378,
+        "p50": 0.14165521978021378,
+        "p95": 0.14165521978021378,
+        "max": 0.14165521978021378
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0014165521978022,
+        "p50": 1.0014165521978022,
+        "p95": 1.0014165521978022,
+        "max": 1.0014165521978022
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 123.62637362637362,
+        "period_frames": 23296,
+        "native_certainty": 0.9949092268943787,
+        "trailing_zero_frames": 36802,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "01-channel-0",
+      "raw_sha256_native_and_sanitized": "f3d19fc6e3f913fa0b9e39595ae625e0e8755e123eb75b12126d4641ce11ee14",
+      "native_run_sha256": "6f73c72c6976d1b574da9c28d3334e6258a8b5a52e2d7b0bef6422fbc47dbd5d",
+      "sanitized_run_sha256": "37a3152e4bf4db73f528e7657c57f4e562295b5cdc192fed244bce4be4032d4a"
+    },
+    {
+      "origin": "source",
+      "case": "fractional_123_45",
+      "channel": 1,
+      "pcm_sha256": "13342b7a93ceb0707b71bfc7a191cfb65fa2c345002c467223e21a6636492629",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10651,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.14165521978021378,
+        "p50": 0.14165521978021378,
+        "p95": 0.14165521978021378,
+        "max": 0.14165521978021378
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0014165521978022,
+        "p50": 1.0014165521978022,
+        "p95": 1.0014165521978022,
+        "max": 1.0014165521978022
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 123.62637362637362,
+        "period_frames": 23296,
+        "native_certainty": 0.9949092268943787,
+        "trailing_zero_frames": 36802,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "01-channel-1",
+      "raw_sha256_native_and_sanitized": "b9de7803b91256c3c461ed4085d2df473ce39050ea42b372c7d66f08fee85210",
+      "native_run_sha256": "4d1479368ac2a0caf8653d5761a7098ddac9b8791d91568dcf926199f982359f",
+      "sanitized_run_sha256": "cf4a41ded8161a7bae4b38b98f19cf99fbc0ffcf19a8e8b1e9616a82399a4fe2"
+    },
+    {
+      "origin": "source",
+      "case": "accelerando_90_150",
+      "channel": 0,
+      "pcm_sha256": "25ead7c5e785e5cb3e8bb3584bdadc7db6dc79a93a74a26ca71c6c5e400156e4",
+      "reference_unit": "quarter",
+      "reference_kind": "variable_interval_mean",
+      "reference_readings": 10713,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 3.9353649068323038,
+        "p50": 4.570959944751377,
+        "p95": 5.496162280701748,
+        "max": 6.410845588235298
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9450383771929826,
+        "p50": 0.9542904005524863,
+        "p95": 0.9606463509316769,
+        "max": 0.9762173694779116
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 143.31210191082803,
+        "period_frames": 20096,
+        "native_certainty": 0.636028528213501,
+        "trailing_zero_frames": 28916,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "02-channel-0",
+      "raw_sha256_native_and_sanitized": "3c81ed58351fc189ec7060b4dfcbb194253fcc86a1072a17ca9d42ed16a57d0d",
+      "native_run_sha256": "a70c5f49aa7854378f655733cf592a3e8bdc3fa3634d052aa0a26ad063f049d0",
+      "sanitized_run_sha256": "99f1ab83141824e3ec734c2d6026db3c44a72eb93b337de6390b74294098fcc1"
+    },
+    {
+      "origin": "source",
+      "case": "accelerando_90_150",
+      "channel": 1,
+      "pcm_sha256": "25ead7c5e785e5cb3e8bb3584bdadc7db6dc79a93a74a26ca71c6c5e400156e4",
+      "reference_unit": "quarter",
+      "reference_kind": "variable_interval_mean",
+      "reference_readings": 10713,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 3.9353649068323038,
+        "p50": 4.570959944751377,
+        "p95": 5.496162280701748,
+        "max": 6.410845588235298
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9450383771929826,
+        "p50": 0.9542904005524863,
+        "p95": 0.9606463509316769,
+        "max": 0.9762173694779116
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 143.31210191082803,
+        "period_frames": 20096,
+        "native_certainty": 0.636028528213501,
+        "trailing_zero_frames": 28916,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "02-channel-1",
+      "raw_sha256_native_and_sanitized": "a14b9740feb8f3e05c11f32011c586b6b3f83a51cd100481aadb24be61da54ee",
+      "native_run_sha256": "ef9571087dda20796e2a17056bf43e248b0ac7cdad63cc8c3801d3bf6bfb0249",
+      "sanitized_run_sha256": "40cb8daa9e94e7fee85434e6ed0aac4fe82c4d3cfb57a506f8e54af744d1c4be"
+    },
+    {
+      "origin": "source",
+      "case": "meter_3_4",
+      "channel": 0,
+      "pcm_sha256": "407881da24a3fb54314687d290eac2bfba82c47e86cf70236b6dc8b0ad0cde1e",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9910901188850403,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "03-channel-0",
+      "raw_sha256_native_and_sanitized": "ba40d13645ba8fa85ad06c83b5f8b8f4aa9c7d0627adb5dfa16beb9d575e7be6",
+      "native_run_sha256": "cb992b39a41adecffd175c316d9b2210c099e6bb6e4ec17093cb642ef5b44dd2",
+      "sanitized_run_sha256": "17ee02da043ae585f300d0f44c8b9921a1257d5fef6d1e45dfabe575119a96f8"
+    },
+    {
+      "origin": "source",
+      "case": "meter_3_4",
+      "channel": 1,
+      "pcm_sha256": "407881da24a3fb54314687d290eac2bfba82c47e86cf70236b6dc8b0ad0cde1e",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9910901188850403,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "03-channel-1",
+      "raw_sha256_native_and_sanitized": "24f9b74aadd4ac53d20361778179d7228cb8fdd6cd1f8cae7ba8796de8bb7fac",
+      "native_run_sha256": "751e55e4a56ed7f962deedf1e1902c2f4ccda3bd08aa1d2ab9b43c0616343b1d",
+      "sanitized_run_sha256": "59c0c08c530c4b9b6a7f1f030fa9f6101906d45811dd264ca9016b9b726fbe4f"
+    },
+    {
+      "origin": "source",
+      "case": "meter_6_8",
+      "channel": 0,
+      "pcm_sha256": "1bfc7d977752d25506579427cff45b9fc033b72d51d0c87928a6066a7b569a1e",
+      "reference_unit": "dotted_quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 90,
+        "period_frames": 32000,
+        "native_certainty": 0.5376594662666321,
+        "trailing_zero_frames": 21868,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "04-channel-0",
+      "raw_sha256_native_and_sanitized": "1ac0231edf604301d98e13f541c96f4ceb3f42312011e776c07e92178f65e0b4",
+      "native_run_sha256": "810999f60165b0918ebbe72a0c5400ea8cda8d320a3e84323fd7aab3db4046d3",
+      "sanitized_run_sha256": "e489ee069812b60fee08f0dbd5b720f4f47ee50cdd52d93fbe99a48ae928e27d"
+    },
+    {
+      "origin": "source",
+      "case": "meter_6_8",
+      "channel": 1,
+      "pcm_sha256": "1bfc7d977752d25506579427cff45b9fc033b72d51d0c87928a6066a7b569a1e",
+      "reference_unit": "dotted_quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 90,
+        "period_frames": 32000,
+        "native_certainty": 0.5376594662666321,
+        "trailing_zero_frames": 21868,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "04-channel-1",
+      "raw_sha256_native_and_sanitized": "c2aa0ee239ef61f02731f2a9dfa1c366ff43ba8a50d3e7ec34bf4368f8d5f006",
+      "native_run_sha256": "316d5b1e8647c8ac9db90e55449ddfc51a71b8722b33c11050a2877885413c61",
+      "sanitized_run_sha256": "4e40f20f16b127d4b18469c5bcccb3b990275b3cdcbf6a1c810cbdd094c68796"
+    },
+    {
+      "origin": "source",
+      "case": "pickup_two_beats",
+      "channel": 0,
+      "pcm_sha256": "732e80b40772a1e2b6bda1993ec1626ffa7abfaa09ed55578ad22e3e5b1f75d3",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.993079662322998,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "05-channel-0",
+      "raw_sha256_native_and_sanitized": "53ed28fafa0032c7460f454badffe10751861caa38383ae08f1a57a0ea61ca64",
+      "native_run_sha256": "4c742d6c4ab86595ce91f0f1c1b6cfca80f52ce66ea1901f89ae439e9af7a5b5",
+      "sanitized_run_sha256": "b570de3c19bcdf21ffd751ad96f968a8161b604289d6c9f898a755e8bc600803"
+    },
+    {
+      "origin": "source",
+      "case": "pickup_two_beats",
+      "channel": 1,
+      "pcm_sha256": "732e80b40772a1e2b6bda1993ec1626ffa7abfaa09ed55578ad22e3e5b1f75d3",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.993079662322998,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "05-channel-1",
+      "raw_sha256_native_and_sanitized": "8e803a059d7dc0fd3b8dc62e6992e4736e3f3b8cb6663f9d51c868a095843cd1",
+      "native_run_sha256": "e72eb79fab2753ab5d81b3fcd93327ad9b589e52ba540e892f394997c9206a7d",
+      "sanitized_run_sha256": "da448f272da73a498f317a9a5b3c4e62e3398d0705c821ff8c22eae660c89973"
+    },
+    {
+      "origin": "source",
+      "case": "swing_2_to_1",
+      "channel": 0,
+      "pcm_sha256": "72156556c53c0db2d1c4211060b87a797c19fdecc0e0a3023f5900518a01427a",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9907335042953491,
+        "trailing_zero_frames": 27201,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "06-channel-0",
+      "raw_sha256_native_and_sanitized": "6beb77ef24e75b63f933543ff3caf812be682c428bb6c6274540217f1d1c7a5c",
+      "native_run_sha256": "b198e1b8ad4c40d6028d4e92c155ec8ba90fa6f198b700e80080dd9e8801467d",
+      "sanitized_run_sha256": "654b42a6bf4bc146bc4253b45428919c2eb44823a513ea9d148c4b25754eb67d"
+    },
+    {
+      "origin": "source",
+      "case": "swing_2_to_1",
+      "channel": 1,
+      "pcm_sha256": "72156556c53c0db2d1c4211060b87a797c19fdecc0e0a3023f5900518a01427a",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9907335042953491,
+        "trailing_zero_frames": 27201,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "06-channel-1",
+      "raw_sha256_native_and_sanitized": "47d6e094ab196b5b4ad8a791de935fe8b87a3c21766cb9e1b8966f81fed7ed81",
+      "native_run_sha256": "a63bc2292939e34c9f0fadb901bd606f5ce10ec49e678b4ece304a140a06453a",
+      "sanitized_run_sha256": "259a23be14af46785a55fa86dba9490bff4d7d9db87784d639eda56634f0e794"
+    },
+    {
+      "origin": "source",
+      "case": "silence",
+      "channel": 0,
+      "pcm_sha256": "64bbe8e5587f9988c7e866771d9656c6d97621e37423c5aa94350bc26a2284a7",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "07-channel-0",
+      "raw_sha256_native_and_sanitized": "f8b30c553544bd1e191507338d859308b4529631d767b719f5152b3da172269b",
+      "native_run_sha256": "f20d1c6c5e934f4b1830043d5d8cd53ce66fbf4b0ea227b28ece1de7c4deef5d",
+      "sanitized_run_sha256": "75f3a007c71b77886013416a31457241b45c1f0eb5b5037c9b533108e405cbe4"
+    },
+    {
+      "origin": "source",
+      "case": "silence",
+      "channel": 1,
+      "pcm_sha256": "64bbe8e5587f9988c7e866771d9656c6d97621e37423c5aa94350bc26a2284a7",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "07-channel-1",
+      "raw_sha256_native_and_sanitized": "8b0257779dd43bcaec4bde4fec0a940e091ce44b70fe6f82cdaf9da51d10c798",
+      "native_run_sha256": "1b87fe0a89a33d14da1f03d0ed4e999e0661eec0a288594ba2df360543011968",
+      "sanitized_run_sha256": "b22670e679159ce5819890f81a3362327dcc29cfae6baa13dda98bbc1d0b0956"
+    },
+    {
+      "origin": "source",
+      "case": "antiphase",
+      "channel": 0,
+      "pcm_sha256": "6a0b545dbf570fa9b78f6ffd94221753f237ba0afb8f7e247ac623b0aa369c22",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9919803142547607,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "08-channel-0",
+      "raw_sha256_native_and_sanitized": "fbc0b02f2adb6b648dcf0ceab9aa0278ea1ddc8d146286be1b1d3537659db69e",
+      "native_run_sha256": "f25c3f53d02600ffc505d2ef2d971c80f653deadab6f64f958778049c5c77be0",
+      "sanitized_run_sha256": "f5a4f15b98f9a97be5e417caa161db4c5519b47433fb3a635b8d6d7b98e96c3e"
+    },
+    {
+      "origin": "source",
+      "case": "antiphase",
+      "channel": 1,
+      "pcm_sha256": "6a0b545dbf570fa9b78f6ffd94221753f237ba0afb8f7e247ac623b0aa369c22",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9919803142547607,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "08-channel-1",
+      "raw_sha256_native_and_sanitized": "1d69896f1362f106e706b57b67b1d15538b5b142a9cbd521b6d009647cc7ac2f",
+      "native_run_sha256": "1770a4009869a1c1aad583b1af0189de6a300af5dcfe95de1b39cb6816136759",
+      "sanitized_run_sha256": "f9bbaad1fde710f00a014805067975e622f184d84c35b782f03cd66034699758"
+    },
+    {
+      "origin": "source",
+      "case": "right_only",
+      "channel": 0,
+      "pcm_sha256": "c3814102427d63b8bfff038d706231eabf90d4db919ff0d5b716f934657db180",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "09-channel-0",
+      "raw_sha256_native_and_sanitized": "f8b30c553544bd1e191507338d859308b4529631d767b719f5152b3da172269b",
+      "native_run_sha256": "d6a702e74d9c5efb369f15b2c92c124fec1a4e9293a0e3abf5a251b81737e681",
+      "sanitized_run_sha256": "10e6314162823f501629831239b65d253da29402c850ee0ad1a3c2fc74e99a23"
+    },
+    {
+      "origin": "source",
+      "case": "right_only",
+      "channel": 1,
+      "pcm_sha256": "c3814102427d63b8bfff038d706231eabf90d4db919ff0d5b716f934657db180",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9919803142547607,
+        "trailing_zero_frames": 43200,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "09-channel-1",
+      "raw_sha256_native_and_sanitized": "1d69896f1362f106e706b57b67b1d15538b5b142a9cbd521b6d009647cc7ac2f",
+      "native_run_sha256": "8a8a02fff71a3ea1df2d33d908e518c72a74d3f5de2efbb05879ca601094e6e9",
+      "sanitized_run_sha256": "ced2e78dc0fb4d9a04cfb3a7ee17ed3f39cc5db0f8330bd56de1cdafd3fec30e"
+    },
+    {
+      "origin": "canonical",
+      "case": "fixed_120",
+      "channel": 0,
+      "pcm_sha256": "deeb4b2e8f0f18781cefb0b07c5b160a320463a9a8e0a8deb908e4805f022d08",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9920031428337097,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "10-channel-0",
+      "raw_sha256_native_and_sanitized": "9e44873b098cb2dcd45f9ad31129f7e35a75e098c740c6b92b6ca88e016ddd6f",
+      "native_run_sha256": "ff5639ae0a9cf61d94ec129bacd405d7aa4a4afbf72027fef0cf8e3a367728bd",
+      "sanitized_run_sha256": "8900f9e98be58def2f0da5d633ec3be09527c2b1c84ea1cb173a1f0a6c25e352"
+    },
+    {
+      "origin": "canonical",
+      "case": "fixed_120",
+      "channel": 1,
+      "pcm_sha256": "deeb4b2e8f0f18781cefb0b07c5b160a320463a9a8e0a8deb908e4805f022d08",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9920031428337097,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "10-channel-1",
+      "raw_sha256_native_and_sanitized": "33b5aa0ef58adfc83605309065066dc21ac2b7c79181d9ba305aebfe195a3b39",
+      "native_run_sha256": "3c054bfba97d9e34ad61054f1d3d3d7e17ad8a53682104abdf1617996d5927c3",
+      "sanitized_run_sha256": "c73350941e7e913b83837d73c5ec4ea8bc6bca6428ad1701c8da7dda12171f3a"
+    },
+    {
+      "origin": "canonical",
+      "case": "fractional_123_45",
+      "channel": 0,
+      "pcm_sha256": "9374143d0f2320cf699d6511b7a27296713149728fcf041501857927d639cab8",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10651,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.14165521978021378,
+        "p50": 0.14165521978021378,
+        "p95": 0.14165521978021378,
+        "max": 0.14165521978021378
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0014165521978022,
+        "p50": 1.0014165521978022,
+        "p95": 1.0014165521978022,
+        "max": 1.0014165521978022
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 123.62637362637362,
+        "period_frames": 23296,
+        "native_certainty": 0.9949079155921936,
+        "trailing_zero_frames": 35648,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "11-channel-0",
+      "raw_sha256_native_and_sanitized": "48cbfd709f259c2194a62c041dd1c0a07dfead4608f70082d5ab07a05383db62",
+      "native_run_sha256": "0d0cb63af20fc14cefac22e6f912c552577bf06218125b289732689df84ffecf",
+      "sanitized_run_sha256": "fbbb9569fc3329aa8e8082b66a7f9d2c3b9b4e2c9df9f8accf3406c60aae0338"
+    },
+    {
+      "origin": "canonical",
+      "case": "fractional_123_45",
+      "channel": 1,
+      "pcm_sha256": "9374143d0f2320cf699d6511b7a27296713149728fcf041501857927d639cab8",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10651,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.14165521978021378,
+        "p50": 0.14165521978021378,
+        "p95": 0.14165521978021378,
+        "max": 0.14165521978021378
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0014165521978022,
+        "p50": 1.0014165521978022,
+        "p95": 1.0014165521978022,
+        "max": 1.0014165521978022
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 123.62637362637362,
+        "period_frames": 23296,
+        "native_certainty": 0.9949079155921936,
+        "trailing_zero_frames": 35648,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "11-channel-1",
+      "raw_sha256_native_and_sanitized": "e6261c75f40370101b25dcd46d0bc277e9f76856223fd25014f2bb10c17473ac",
+      "native_run_sha256": "7cb7a2c464ee3b1befe6d1bf8f768206aee9939793bb6ad146d7ed7e443c981e",
+      "sanitized_run_sha256": "d50f5537eee805e3636762c83af767cb43f3cd4ed22d9ec451b222a8f405af4a"
+    },
+    {
+      "origin": "canonical",
+      "case": "accelerando_90_150",
+      "channel": 0,
+      "pcm_sha256": "78df73ab33f4716aa1aafae3a5b0e985fa9252314fed101bd98bd30dd02eb212",
+      "reference_unit": "quarter",
+      "reference_kind": "variable_interval_mean",
+      "reference_readings": 10713,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 3.9353649068323038,
+        "p50": 4.570959944751377,
+        "p95": 5.496162280701748,
+        "max": 6.410845588235298
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9450383771929826,
+        "p50": 0.9542904005524863,
+        "p95": 0.9606463509316769,
+        "max": 0.9762173694779116
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 143.31210191082803,
+        "period_frames": 20096,
+        "native_certainty": 0.6359725594520569,
+        "trailing_zero_frames": 27712,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "12-channel-0",
+      "raw_sha256_native_and_sanitized": "e4c86d80ba338c26d2c7d1e33c94c62df0b5863b6c74999244ceb8921f40d3c4",
+      "native_run_sha256": "7066f8595842395821acf90e33a76cde7a2c7fd488bfcadc9376f89bb2b500c9",
+      "sanitized_run_sha256": "89b7dc7b99e00000c347dcc7dfeaaf429c9c1104a73f8e073acc107479580dbb"
+    },
+    {
+      "origin": "canonical",
+      "case": "accelerando_90_150",
+      "channel": 1,
+      "pcm_sha256": "78df73ab33f4716aa1aafae3a5b0e985fa9252314fed101bd98bd30dd02eb212",
+      "reference_unit": "quarter",
+      "reference_kind": "variable_interval_mean",
+      "reference_readings": 10713,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 3.9353649068323038,
+        "p50": 4.570959944751377,
+        "p95": 5.496162280701748,
+        "max": 6.410845588235298
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9450383771929826,
+        "p50": 0.9542904005524863,
+        "p95": 0.9606463509316769,
+        "max": 0.9762173694779116
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 143.31210191082803,
+        "period_frames": 20096,
+        "native_certainty": 0.6359725594520569,
+        "trailing_zero_frames": 27712,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "12-channel-1",
+      "raw_sha256_native_and_sanitized": "f677520a696a80610d441868c2986cfc77f852fb24833cfc7f3524bd13392759",
+      "native_run_sha256": "6bb7c5a4c05cdf8788642879e61f513a305ef24b90bb5a171dfa0ddc64fe8295",
+      "sanitized_run_sha256": "d5888539d807cc4ad3fdf88622260fe16519b46d27e817195a3cb6be7c9bf60b"
+    },
+    {
+      "origin": "canonical",
+      "case": "meter_3_4",
+      "channel": 0,
+      "pcm_sha256": "ca106014e8876d92c621ce2b43d69fff9624d2dbe54e9f3cb03fcd166dd4fc48",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9926660656929016,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "13-channel-0",
+      "raw_sha256_native_and_sanitized": "51ec6b0b973fc6e26818cfef396d07d2b13dfb08c5573c81c27ff9c7a6d9d467",
+      "native_run_sha256": "76193323cf69abf3bec7c48d5988a88ec3b7fc451d1fbea978c1f3b68c17f443",
+      "sanitized_run_sha256": "2f4578c36707ed31ac872d6bd6b68ac4cda7d6fbdf4ae7480f9766265dfdbb7e"
+    },
+    {
+      "origin": "canonical",
+      "case": "meter_3_4",
+      "channel": 1,
+      "pcm_sha256": "ca106014e8876d92c621ce2b43d69fff9624d2dbe54e9f3cb03fcd166dd4fc48",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9926660656929016,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "13-channel-1",
+      "raw_sha256_native_and_sanitized": "39e351035a7117e554828e7dac73e942fe0fa360cdf82b51f1718a9342ba8ca4",
+      "native_run_sha256": "c4449a63e18d5dd5003f49a305bc3d0236052d646cd3081cd5170ecb73b4b1f7",
+      "sanitized_run_sha256": "cfea463923b009a1865657dce2c888824899563230c6c7c5f7a82ab5ee18d994"
+    },
+    {
+      "origin": "canonical",
+      "case": "meter_6_8",
+      "channel": 0,
+      "pcm_sha256": "ab7044ac3836641589fa29529539b8c2872b0f4de7910aef71b24ce95ed071dc",
+      "reference_unit": "dotted_quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 90,
+        "period_frames": 32000,
+        "native_certainty": 0.5372677445411682,
+        "trailing_zero_frames": 20800,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "14-channel-0",
+      "raw_sha256_native_and_sanitized": "da1f79ff9cf53dc5890d035e03d33d62a5dc582207f03235b52c2f5a157067ab",
+      "native_run_sha256": "05cae139f4b7cdbdada68fdd8fe5dea9a60d20ebf378cb5f32eab06a14fcdac9",
+      "sanitized_run_sha256": "62b2cd14ab932c7afe7e414c81d40f86c092b79bc88efa2db49809870a98e1c8"
+    },
+    {
+      "origin": "canonical",
+      "case": "meter_6_8",
+      "channel": 1,
+      "pcm_sha256": "ab7044ac3836641589fa29529539b8c2872b0f4de7910aef71b24ce95ed071dc",
+      "reference_unit": "dotted_quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.0,
+        "p50": 0.0,
+        "p95": 0.0,
+        "max": 0.0
+      },
+      "raw_bpm_over_reference": {
+        "p05": 1.0,
+        "p50": 1.0,
+        "p95": 1.0,
+        "max": 1.0
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 90,
+        "period_frames": 32000,
+        "native_certainty": 0.5372677445411682,
+        "trailing_zero_frames": 20800,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "14-channel-1",
+      "raw_sha256_native_and_sanitized": "62bfec69f31efb8d47c4b50ca4dc134b0905623eb2935556c81ac4a6a8dddbbe",
+      "native_run_sha256": "fed26bc8f4327cb4cd8ba0948fbbce63043342faed063360e8867a3f9be22708",
+      "sanitized_run_sha256": "253f665d445acfadf66e148ee3b3f0e91153374e538ff6f1c4eb7f34b378d01b"
+    },
+    {
+      "origin": "canonical",
+      "case": "pickup_two_beats",
+      "channel": 0,
+      "pcm_sha256": "a828b1682d129c4c54f4cbead2b243c5b34e28da4673e1b8e1f0a2ae96cfb2f7",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9929530024528503,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "15-channel-0",
+      "raw_sha256_native_and_sanitized": "a57552886acab49be3a168fa80465033c913d9d0e18c77cfbde15354c76d2f19",
+      "native_run_sha256": "b323d77a001219a5e58672a4f379de23277d328f749185bc195f52f9ebadaa42",
+      "sanitized_run_sha256": "c51c470302faffad7aad1c6805df00a44e11133c09eb9d16355845feae8b853f"
+    },
+    {
+      "origin": "canonical",
+      "case": "pickup_two_beats",
+      "channel": 1,
+      "pcm_sha256": "a828b1682d129c4c54f4cbead2b243c5b34e28da4673e1b8e1f0a2ae96cfb2f7",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9929530024528503,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "15-channel-1",
+      "raw_sha256_native_and_sanitized": "99949cf917450e6e2b35acd292169c6087839f57fbd8886143464fe3e98cec5a",
+      "native_run_sha256": "42ca3e9756cd1654e893b2aba90b1ca1639c0266784f16b0cf4b0a1674a54d9c",
+      "sanitized_run_sha256": "629f79cd01929fa5720f59cc7192322408d83e667020137c7841a9d5df5cc47a"
+    },
+    {
+      "origin": "canonical",
+      "case": "swing_2_to_1",
+      "channel": 0,
+      "pcm_sha256": "fd29970849b42bc002c3e8239fd21e30e97939da922e6bd9210e5c718bc8522a",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.990953266620636,
+        "trailing_zero_frames": 25664,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "16-channel-0",
+      "raw_sha256_native_and_sanitized": "c2f4d2fb7f234af195559365c938cd6e131b65afc03fd47e18d24cc5c463d692",
+      "native_run_sha256": "8b87d92066a369d075e91395d7c3929286c4dded35af2bc09e62f1845b276718",
+      "sanitized_run_sha256": "0ed7dd189092fe5a0142170950d4b956679b0cb9bfa57b564621e830db3325d4"
+    },
+    {
+      "origin": "canonical",
+      "case": "swing_2_to_1",
+      "channel": 1,
+      "pcm_sha256": "fd29970849b42bc002c3e8239fd21e30e97939da922e6bd9210e5c718bc8522a",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26737967914439054,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 1.0026737967914439,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.990953266620636,
+        "trailing_zero_frames": 25664,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "16-channel-1",
+      "raw_sha256_native_and_sanitized": "219f93d553b4c3ed1a93f34b53b00c311d63a5c5860fdb50edf67bc5afc71408",
+      "native_run_sha256": "22f1714b67c872a679318aaeab5c2d9e2dd6f444cbf14fbc6373ed5887322442",
+      "sanitized_run_sha256": "00346712b86b911b436eafa5fc9a4d0d20ab8a118f6b95d3eb8a31495a6447e7"
+    },
+    {
+      "origin": "canonical",
+      "case": "silence",
+      "channel": 0,
+      "pcm_sha256": "8a3c14e3c1a2453f8fa3690b9cb70a44f04ce0b47fe77c1ed02d4efb37ab0c04",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "17-channel-0",
+      "raw_sha256_native_and_sanitized": "f8b30c553544bd1e191507338d859308b4529631d767b719f5152b3da172269b",
+      "native_run_sha256": "e61f8c0b886eee58f13d725db75d1e230c3cd3d15f99acc7af2a42a042517666",
+      "sanitized_run_sha256": "bd515b0ccfe5121fa82b782116a50c16af5d6f68922516eee3fceede336c5ac4"
+    },
+    {
+      "origin": "canonical",
+      "case": "silence",
+      "channel": 1,
+      "pcm_sha256": "8a3c14e3c1a2453f8fa3690b9cb70a44f04ce0b47fe77c1ed02d4efb37ab0c04",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "17-channel-1",
+      "raw_sha256_native_and_sanitized": "8b0257779dd43bcaec4bde4fec0a940e091ce44b70fe6f82cdaf9da51d10c798",
+      "native_run_sha256": "c3ea21af08c1e1cb40ef0c7ddd1c35ba026115b235732f7f6eac85a4d910902f",
+      "sanitized_run_sha256": "84142b7f88917563914cfe0f87c46a49c200091b97b67dd48f87764e48704b76"
+    },
+    {
+      "origin": "canonical",
+      "case": "antiphase",
+      "channel": 0,
+      "pcm_sha256": "c0373ff0c59ced9829884c4c4bb50bb45d8653dd74af4d6611ccb1c60cbf15f0",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9920031428337097,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "18-channel-0",
+      "raw_sha256_native_and_sanitized": "9e44873b098cb2dcd45f9ad31129f7e35a75e098c740c6b92b6ca88e016ddd6f",
+      "native_run_sha256": "3db7082df64993d672c99946999e44dd444615a68e72e680dacb944e5d75b464",
+      "sanitized_run_sha256": "8bf9a083160822430f63069e82d09b355fe503adb1c7f12c84337a73648ae691"
+    },
+    {
+      "origin": "canonical",
+      "case": "antiphase",
+      "channel": 1,
+      "pcm_sha256": "c0373ff0c59ced9829884c4c4bb50bb45d8653dd74af4d6611ccb1c60cbf15f0",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9920031428337097,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "18-channel-1",
+      "raw_sha256_native_and_sanitized": "33b5aa0ef58adfc83605309065066dc21ac2b7c79181d9ba305aebfe195a3b39",
+      "native_run_sha256": "850462fcde6a41658ab0f66cbc83467880a0ac6cadc30c4df092280e718e3f79",
+      "sanitized_run_sha256": "f08dbbe193bb0bb7967f9e0b2c44f5a5c26d8bff24b78ae8ee1b90311cb9b873"
+    },
+    {
+      "origin": "canonical",
+      "case": "right_only",
+      "channel": 0,
+      "pcm_sha256": "ef0269f7270694e636d3469cf43ccaea121bf0cf539dac628f567345ee764261",
+      "reference_unit": "quarter",
+      "reference_kind": "silent_channel",
+      "reference_readings": 0,
+      "coverage": null,
+      "relative_error_percent": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "raw_bpm_over_reference": {
+        "p05": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "first_nonzero_consumed_frame": null,
+      "silent_channel_nonzero_readings": 0,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 0,
+        "period_frames": 0,
+        "native_certainty": 0,
+        "trailing_zero_frames": 1536000,
+        "stale_status": "no_retained_tempo"
+      },
+      "raw_stem": "19-channel-0",
+      "raw_sha256_native_and_sanitized": "f8b30c553544bd1e191507338d859308b4529631d767b719f5152b3da172269b",
+      "native_run_sha256": "a80cd93a77072c4d0f6e2235905aeb4fb70c875d91c35c73425a3bdf10fa7b27",
+      "sanitized_run_sha256": "139382ddae36d0e7284cd36cd149fe9ae9867d1f34dc50df6eb0d7d4760d68b7"
+    },
+    {
+      "origin": "canonical",
+      "case": "right_only",
+      "channel": 1,
+      "pcm_sha256": "ef0269f7270694e636d3469cf43ccaea121bf0cf539dac628f567345ee764261",
+      "reference_unit": "quarter",
+      "reference_kind": "stable_recipe_interval_mean",
+      "reference_readings": 10601,
+      "coverage": 1.0,
+      "relative_error_percent": {
+        "p05": 0.26595744680850686,
+        "p50": 0.26595744680850686,
+        "p95": 0.26737967914439054,
+        "max": 0.26737967914439054
+      },
+      "raw_bpm_over_reference": {
+        "p05": 0.9973404255319149,
+        "p50": 0.9973404255319149,
+        "p95": 1.0026737967914439,
+        "max": 1.0026737967914439
+      },
+      "first_nonzero_consumed_frame": 131072,
+      "silent_channel_nonzero_readings": null,
+      "full_zero_support_stale_readings": 0,
+      "last_reading": {
+        "bpm": 120.32085561497327,
+        "period_frames": 23936,
+        "native_certainty": 0.9920031428337097,
+        "trailing_zero_frames": 41536,
+        "stale_status": "insufficient_zero_history"
+      },
+      "raw_stem": "19-channel-1",
+      "raw_sha256_native_and_sanitized": "33b5aa0ef58adfc83605309065066dc21ac2b7c79181d9ba305aebfe195a3b39",
+      "native_run_sha256": "bc76f18faf2f7727ce764bf78a17a0f8003068da4296c15e048f6c938f725b1f",
+      "sanitized_run_sha256": "0c8eeecdfda2f87eedf1948611d3583aabd82859ce528738ae99bc8089ca47b5"
+    }
+  ],
+  "evidence_inventory": {
+    "path": "target/native-tempo-20261007/evidence-files.sha256",
+    "sha256": "f7413c89ee31873c55c387a3a227ce2bda15bc32609d386cc79586c185c38de4"
+  },
+  "not_run": [
+    "Windows x86_64",
+    "Windows ARM64",
+    "Linux ARM64",
+    "four-target release/CI",
+    "600 s cost",
+    "OOM/deadline controls",
+    "real music/manual labels",
+    "physical audio/input"
+  ],
+  "unsupported": [
+    "precise onset",
+    "beat event coordinates",
+    "meter inference",
+    "reliable TempoRegion",
+    "section/repetition",
+    "calibrated confidence"
+  ],
+  "product_integration": "none; no Python backend, production FFI/dependencies, Cargo or schema changes",
+  "review": "Lean already. Ship.",
+  "raw_record_directories": {
+    "native": "target/native-tempo-20261007/matrix-native-v1",
+    "sanitized": "target/native-tempo-20261007/matrix-sanitized-v1",
+    "naming": "Each record stem selects .jsonl, .run.json, .input-before.json, .input-after.json, .stdout and .stderr"
+  }
+}

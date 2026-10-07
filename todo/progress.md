@@ -78,3 +78,5 @@
 2026-10-07 · AudioFlux MIT 原生 C onset 研究完成：内置 FFT / 原 Matcher / 12 项边界控制及 29 原 PCM 恢复通过，原 34 项质量仍 2 PASS / 28 FAIL / 1 不支持 / 3 不评分；宿主同二进制同参数 sanitizer 无诊断，原 sandbox 失败保留。无 Python 产品后端或 GPL 分析依赖，未接入生产，见[观察记录](../testdata/synthetic/native-onset-observations-20261007.json)
 
 2026-10-07 · Ready 曲库生产选择：已制作四对象包经后台完整验证才换歌，取消 / 三类拒绝保留原歌曲与 Replay，成功后停 Ready 等新确认；5 项行为检查、焦点反馈窄测、Clippy / 格式及六项原生 case 通过，42 张指定范围截图通过，旧小窗口视觉失败保留。自动 MIR 和游戏内原始源导入继续推进，见[曲库验证](../docs/testing.md#生产曲库选择与小窗口反馈)
+
+2026-10-07 · BTT MIT 原生 tempo 研究：native / sanitizer 各 16 项边界控制及原 40 条 source / strict canonical 软件观察完成，40 对输出逐字节一致且无 sanitizer 诊断；变速误差与 13/20 编码前后曲线变化完整保留，质量 UNSCORED、生产分析未准入，见[方法与边界](../docs/mir-onset-probe.md#btt-原生-tempo-研究)

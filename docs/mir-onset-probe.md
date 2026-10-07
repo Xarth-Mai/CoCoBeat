@@ -92,3 +92,11 @@ HFC 完全复现原 13 PASS / 5 FAIL，Flux 为 11 PASS / 7 FAIL；新增 6 项�
 默认峰选择窗口与 wait 保持，上述 hop 下最小候选间隔为 32 ms；原始 STFT 索引还存在超出 Matcher 的系统性提前，不把全部失败归因于近邻限制，不平移输出或放宽 ±10 ms / median≤2 ms 门槛
 
 首次 sandbox LeakSanitizer ptrace 环境失败保留，随后宿主使用同一二进制与 detect_leaks=1 完成全部 controls / matrix，无 ASan / UBSan / LSan 诊断；33 份完整预测与 native 逐字节相同，1 项拒绝相同，指标一致。该固定组合质量继续 FAIL，未接入产品；同源 canonical、独立数值 oracle、四目标、长期成本及真人标签仍 NOT RUN
+
+## BTT 原生 tempo 研究
+
+2026-10-07，[BTT MIT C 候选](../tools/native-tempo-check/README.md)保持官方固定源码、自有 DSP / FFT 与标准 C 依赖，在实际 48 kHz 下仅读取滚动 BPM、整数周期和原始 histogram certainty；不注册 onset / beat callback、不做倍速或延迟修正，置信度为未知，Python 标准库只用于研究取证，未作为产品后端
+
+native / sanitizer 各 16 项边界控制及原 source / strict canonical 两声道共 40 条记录完成，40 对原始输出逐字节相同，无 sanitizer 诊断；矩阵实际耗时 56.933 / 110.965 秒，仅记录同期有其他 Cargo 活动的短研究成本。热身后 34 条非静默声道有参考区间的估计覆盖率为 100%，六条静默声道没有非零估计，变速误差 P50 / P95 为 4.571% / 5.496%，完整尾静默清空仍未验明
+
+源与编码回读的 20 对 BPM 曲线中 13 对有变化，不能因汇总分位数相同声称逐点一致；参考保留原拍单位与区间，质量为 `UNSCORED_NO_ADMISSION_THRESHOLD`，`production_admission=false`。它不提供精确 onset、beat 坐标、可靠拍号或完整 TempoRegion，原 onset FAIL 不变；四目标、十分钟成本与真实音乐另验，完整版本、原始输入和统计见[小型结果索引](../tools/native-tempo-check/results-2026-10-07.json)
