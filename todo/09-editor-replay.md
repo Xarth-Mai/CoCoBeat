@@ -6,6 +6,7 @@
 - [x] 显示 Anchor 候选、音乐结构证据与拒绝原因
 - [x] 增删移动 Anchor，支持撤销重做，重新生成内容哈希，已由实际修包 CLI 消费
 - [x] 图形界面显示 Replay 输入、水位、Anchor 判定与 Free Sync 配对，保留原始整数和事实关联
+- [x] 三种工作台共用 canonical PCM 试听，独立显示源游标和请求起点，暂停 / 恢复 / 停止 / 选择跳转保留原编辑与 Replay 帧
 - [ ] 关联设备计时诊断；Replay v1 尚无设备时间戳，不能从歌曲帧推算物理延迟
 - [x] 固定带版本/长度限制的 SongPackage / Replay 及 CLI 诊断契约，校验损坏与不支持版本
 - [x] 编辑导出再载入无损，同一 core headless 重放结果一致；真实改谱必须使用匹配新身份的录制
@@ -39,3 +40,5 @@
 主线程在当前工作区另完成正式 Cargo 的 28 项 lab 测试、Clippy、全仓格式与依赖边界检查；这份补验包含当时未提交的 Stage 新 API，与固定 GUI 源码副本分别取证
 
 构造 onset／beat／section 是未校准机制控制，不能作为 MIR 质量准入；本批不包含试听、设备计时关联、物理手柄或母语使用者验收，完整阶段退出继续保留
+
+2026-10-07 · 歌曲试听软件交付：首次播放才创建 Kira 输出，17 项最终工作台窄测覆盖命令合并、原始帧保留、菜单主控、held、失焦和断开；实际 Kira MockBackend 起点与暂停 / 恢复检查通过。两尺寸四张原生 GPU 图目检通过，音频游标是构造显示控制，输出设备和物理输入为 NOT RUN，见[操作契约](../docs/editor.md#歌曲试听)与[观察清单](../testdata/synthetic/workbench-audition-observations-20261007.json)

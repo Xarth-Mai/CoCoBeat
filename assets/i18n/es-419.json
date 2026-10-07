@@ -138,7 +138,6 @@
   "display.work_area_windows": "Se usa el área de trabajo del monitor de Windows",
   "display.work_area_x11": "Se usa la intersección del área de trabajo del escritorio X11 con este monitor",
   "workbench.title": "CoCoBeat · Editor de Anchor",
-  "workbench.silent": "Herramienta de contenido sin audio · 48,000 cuadros/s",
   "workbench.source": "Origen: {identity}",
   "workbench.owner_none": "Enter / clic / Start para tomar el control",
   "workbench.owner_keyboard": "Control: teclado + mouse · Start transfiere el control",
@@ -204,5 +203,17 @@
   "candidates.row": "Candidato {index} · {kind} · {frame} cuadros",
   "candidates.legend": "Las marcas muestran las decisiones de la propuesta; los Anchor del mapa original permanecen debajo de la forma de onda",
   "candidates.help": "Solo lectura · Revisa evidencias y bloqueos · La adopción requiere una selección explícita por CLI",
-  "candidates.fields": "confidence conserva el valor de origen; null significa desconocido, sin afirmar una calibración. selected_by_experimental_policy indica una selección experimental; not_assessed indica que no se evaluó su uso en producción. onset_index y blocking_onset_index empiezan en 0. beat, section y energy son datos del análisis original"
+  "candidates.fields": "confidence conserva el valor de origen; null significa desconocido, sin afirmar una calibración. selected_by_experimental_policy indica una selección experimental; not_assessed indica que no se evaluó su uso en producción. onset_index y blocking_onset_index empiezan en 0. beat, section y energy son datos del análisis original",
+  "audition.toggle": "Reproducir / Pausar",
+  "audition.stop": "Detener audio",
+  "audition.seek": "Ir al cursor",
+  "audition.playing": "Reproduciendo",
+  "audition.paused": "En pausa",
+  "audition.pausing": "Pausando",
+  "audition.resuming": "Iniciando",
+  "audition.stopped": "Detenido",
+  "audition.ended": "Finalizado",
+  "audition.failed": "Error de audio",
+  "audition.cursor": "Audio {state} · ~{frame} cuadros · inicio {target}",
+  "audition.help": "Espacio / botón frontal izquierdo: reproducir o pausar · Ir: usar cuadro seleccionado · El cursor indica PCM renderizado, no latencia de salida o entrada"
 }

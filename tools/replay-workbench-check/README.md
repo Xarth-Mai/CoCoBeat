@@ -13,3 +13,5 @@ python3 tools/replay-workbench-check/check.py run NEW_EVIDENCE_DIR PACKAGE REPLA
 运行需要已有 gamescope 和 Vulkan 环境，每个进程使用独立 headless 显示与工作目录，按 1280×800 和 640×480 逐条检查事实与事件索引、整数定位、Free Sync 双 Hit 标记、负水位原值、虚拟列表和详情滚动，并保存五张原生 PNG；原包、Replay 和期望报告的完整字节哈希必须保持一致
 
 `prepared.json`、`instrumentation.patch`、`build.json`、`run.json` 与进程日志记录源码、注入边界、extern、命令、退出码、状态断言及图像哈希，截图仍需人工视觉检查；这是软件注入与 GPU 渲染证据，物理输入、扬声器和真人验收另行完成
+
+试听接线后的复现同步复制 `workbench/audition.rs` 并链接同一 Kira 产物，只读工具栏增为六项；这些既有审阅控制不启动音频，原冻结证据的源码与依赖哈希保留历史值

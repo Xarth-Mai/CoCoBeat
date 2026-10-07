@@ -95,7 +95,7 @@ impl Default for Driver {
                 Step::Key(KeyCode::Enter),
                 Step::Capture(RICH_CAPTURES[0]),
             ]);
-            steps.extend([Step::Key(KeyCode::Tab); 5]);
+            steps.extend([Step::Key(KeyCode::Tab); 8]);
             for index in 1..count {
                 steps.extend([Step::Key(KeyCode::ArrowDown), Step::Check(index)]);
             }
@@ -104,7 +104,7 @@ impl Default for Driver {
                 steps.extend([Step::Key(KeyCode::ArrowUp), Step::Check(index)]);
             }
             steps.extend([Step::Key(KeyCode::Enter), Step::Capture(RICH_CAPTURES[2])]);
-            steps.extend([Step::Key(KeyCode::Tab); 5]);
+            steps.extend([Step::Key(KeyCode::Tab); 8]);
             steps.extend([
                 Step::Key(KeyCode::ArrowDown),
                 Step::Check(3),
@@ -321,7 +321,14 @@ pub(super) fn capture(
     assert!(state.document.editor.undo().is_err() && state.document.editor.redo().is_err());
     assert_eq!(
         state.toolbar(),
-        &[Action::ZoomIn, Action::ZoomOut, Action::Back]
+        &[
+            Action::PlayPause,
+            Action::Stop,
+            Action::Seek,
+            Action::ZoomIn,
+            Action::ZoomOut,
+            Action::Back
+        ]
     );
     let (_, canvas, image, _) = boxes
         .iter()

@@ -138,7 +138,6 @@
   "display.work_area_windows": "Usando a área de trabalho do monitor no Windows",
   "display.work_area_x11": "Usando a interseção da área de trabalho do desktop X11 com este monitor",
   "workbench.title": "CoCoBeat · Editor de Anchor",
-  "workbench.silent": "Ferramenta de conteúdo sem áudio · 48.000 quadros/s",
   "workbench.source": "Origem: {identity}",
   "workbench.owner_none": "Enter / clique / Start para assumir o controle",
   "workbench.owner_keyboard": "Controle: teclado + mouse · Start transfere o controle",
@@ -204,5 +203,17 @@
   "candidates.row": "Candidato {index} · {kind} · {frame} quadros",
   "candidates.legend": "As marcas mostram as decisões da proposta; os Anchor do mapa original permanecem abaixo da forma de onda",
   "candidates.help": "Somente leitura · Examine evidências e bloqueios · A adoção requer seleção explícita pela CLI",
-  "candidates.fields": "confidence preserva o valor de origem; null significa desconhecido, sem afirmar calibração. selected_by_experimental_policy indica seleção experimental; not_assessed indica que o uso em produção não foi avaliado. onset_index e blocking_onset_index começam em 0. beat, section e energy são dados da análise original"
+  "candidates.fields": "confidence preserva o valor de origem; null significa desconhecido, sem afirmar calibração. selected_by_experimental_policy indica seleção experimental; not_assessed indica que o uso em produção não foi avaliado. onset_index e blocking_onset_index começam em 0. beat, section e energy são dados da análise original",
+  "audition.toggle": "Reproduzir / Pausar",
+  "audition.stop": "Parar áudio",
+  "audition.seek": "Ir ao cursor",
+  "audition.playing": "Reproduzindo",
+  "audition.paused": "Pausado",
+  "audition.pausing": "Pausando",
+  "audition.resuming": "Iniciando",
+  "audition.stopped": "Parado",
+  "audition.ended": "Encerrado",
+  "audition.failed": "Erro de áudio",
+  "audition.cursor": "Áudio {state} · ~{frame} quadros · início {target}",
+  "audition.help": "Espaço / botão frontal esquerdo: reproduzir ou pausar · Ir: usar quadro selecionado · O cursor indica PCM renderizado, não latência de saída ou entrada"
 }

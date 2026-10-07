@@ -1,0 +1,666 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "status": "PASS",
+  "host": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.44",
+  "architecture": "x86_64",
+  "claim": "Fixed native debug production CLI imports manual-authored source packages through the sole encoder, then strict final PCM readback and the production game package loader with exact Stage integer sampling pass on this Linux host",
+  "build_scope": {
+    "lab": {
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+      "sha256": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42",
+      "receipt": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/lab-build-result.json",
+      "receipt_sha256": "025bb032a78dec6f0d7ea5e0a8643d6e57650b6e32c0c6a9ab34b8d9205cb728",
+      "build_scope": "Recorded current workspace sources at main cf8d2ec plus uncommitted Stage/Replay, source import and workbench audition; native debug build, not immutable shipping release"
+    },
+    "game": {
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-game",
+      "sha256": "e73539d3a6a36ab36b055f5411f15a40ecd5f4d22126e9a3a944f372ae6d461e",
+      "receipt": "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/game-build-result.json",
+      "receipt_sha256": "e03637a41df2c977ce9b0b2147cf6ad2bc803ac5244b44355d115c1f6d1bbbcf",
+      "build_scope": "Current main base 7c27b69 plus recorded uncommitted Stage/Replay v2, network reentry and audition AudioOutput APIs; native dev build, not immutable committed shipping release"
+    }
+  },
+  "build_input_receipts": {
+    "lab": {
+      "before": "target/software-integration-20261007/lab-retry-source-before.json",
+      "before_sha256": "8ebfa66f2a9aff8f1babc29fb6622a5b90ded16110603083b76db39bccca5bf0",
+      "after": "target/software-integration-20261007/lab-retry-source-after.json",
+      "after_sha256": "8ebfa66f2a9aff8f1babc29fb6622a5b90ded16110603083b76db39bccca5bf0",
+      "inputs": 437,
+      "inputs_unchanged": true
+    },
+    "game": {
+      "before": "target/software-integration-20261007/game-inputs-before.json",
+      "before_sha256": "e1e698ee783ab312e764e9b22ff74070ab1ac33b1a2e36a0d69c4bdfaab02c91",
+      "after": "target/software-integration-20261007/game-inputs-after.json",
+      "after_sha256": "e1e698ee783ab312e764e9b22ff74070ab1ac33b1a2e36a0d69c4bdfaab02c91",
+      "inputs": 419,
+      "inputs_unchanged": true
+    }
+  },
+  "commands_pass": 10,
+  "expected_rejections_pass": 5,
+  "native_loader_captures_pass": 2,
+  "packages": [
+    {
+      "name": "short",
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package",
+      "source_sha256": "7e937be7a291f2eb71b09ae379ff18e080f8076c076623184c392abb0bb04a02",
+      "authoring_sha256": "9584898e49fc8f4f0d2fcf6112869e2cb8c4df71ffe2c93ee72c173351c3b793",
+      "provenance": {
+        "canonical_frames": 4800,
+        "encoder_profile": "aotuv-lancer-vorbis-q10-v1",
+        "source_blake3": "6757dcfc1db0a0bc4c69526eb080f1bd9e4e8be70735431152fcacc3d9ea59b7",
+        "source_bytes": 17684,
+        "source_frames": 4410,
+        "source_sample_rate": 44100
+      },
+      "objects_sha256": {
+        "song.audio.ogg": "bee051c98763f4a5fbd2e537ba974435afad1923c5c6af87c84d6915f5aa231e",
+        "analysis.bin": "24ed9d2073eccb8abb6c3b38f35488140d901121e515274b901b809ae0e07ebe",
+        "chart.bin": "52f5aac64dfb06159b9419efdab04ea93caf4ea578efc1eb420fae20638b8e90",
+        "song.package": "15d1b43f41a4692477556a3ba4eb7f01fbba5ff99a886e78fc557a28fee08493"
+      },
+      "pcm_sha256": "1a387212fff01b6ac00ec191e969a012785379fdf1482aa816658a4073a60759",
+      "stage": {
+        "at_end": false,
+        "compiler_version": 2,
+        "content_id": "package-blake3:139081915462d7ae94a2872de9976f13d508d207fb761e8ea242a2b868bd4d7a",
+        "distance_mm": 150,
+        "elevation_mm": 0,
+        "end_frames": 4800,
+        "frame": 2400,
+        "half_width_mm": 3650,
+        "kind": "plaza",
+        "lateral_mm": 0,
+        "segment_count": 1,
+        "slope_x_ppm": 0,
+        "slope_y_ppm": 0
+      },
+      "end": {
+        "at_end": true,
+        "compiler_version": 2,
+        "content_id": "package-blake3:139081915462d7ae94a2872de9976f13d508d207fb761e8ea242a2b868bd4d7a",
+        "distance_mm": 300,
+        "elevation_mm": 0,
+        "end_frames": 4800,
+        "frame": 4800,
+        "half_width_mm": 3500,
+        "kind": "plaza",
+        "lateral_mm": 0,
+        "segment_count": 1,
+        "slope_x_ppm": 0,
+        "slope_y_ppm": 0
+      }
+    },
+    {
+      "name": "original-64s",
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+      "source_sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+      "authoring_sha256": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+      "provenance": {
+        "canonical_frames": 3072000,
+        "encoder_profile": "aotuv-lancer-vorbis-q10-v1",
+        "source_blake3": "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+        "source_bytes": 12288044,
+        "source_frames": 3072000,
+        "source_sample_rate": 48000
+      },
+      "objects_sha256": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      },
+      "pcm_sha256": "e37d46df20f926fe216a5a1c8686efe19b22580a21822e6b9995ed61b2524985",
+      "stage": {
+        "at_end": false,
+        "compiler_version": 2,
+        "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+        "distance_mm": 84000,
+        "elevation_mm": 0,
+        "end_frames": 3072000,
+        "frame": 1344000,
+        "half_width_mm": 3500,
+        "kind": "curve",
+        "lateral_mm": 600,
+        "segment_count": 8,
+        "slope_x_ppm": 0,
+        "slope_y_ppm": 0
+      },
+      "end": {
+        "at_end": true,
+        "compiler_version": 2,
+        "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+        "distance_mm": 192000,
+        "elevation_mm": 0,
+        "end_frames": 3072000,
+        "frame": 3072000,
+        "half_width_mm": 3500,
+        "kind": "plaza",
+        "lateral_mm": 0,
+        "segment_count": 8,
+        "slope_x_ppm": 0,
+        "slope_y_ppm": 0
+      }
+    }
+  ],
+  "commands": [
+    {
+      "name": "short-import",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.11321171000599861,
+      "stdout_sha256": "e3609e537b22d99daa64e4cf2d8a5fcab27e48201293b4ba758c86bcb69a8b77",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "short-verify",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "verify-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.02148997099720873,
+      "stdout_sha256": "bcf1ab374553d1b60466dc0402af36a3135799f274937144020f318b1f78d68c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "short-readback",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "readback-canonical",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/song.audio.ogg",
+        "4800",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short.f32le"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.026540949009358883,
+      "stdout_sha256": "ffc5db39f15b93ef6e60005fa8a542aae61545cffd6affe16b644c834798b883",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "short-stage",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "inspect-stage",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package",
+        "2400"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.021407453998108394,
+      "stdout_sha256": "88923b261b562ec43ef1211a93c5500ee06ff93afff55539a8511dbe619b34f9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "short-end",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "inspect-stage",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package",
+        "4800"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.021794199012219906,
+      "stdout_sha256": "d5c6ed175d3d5a41936324bfc91ce78526e5202ea5636e493e45a8f23352f935",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "original-64s-import",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/vorbis-admission-20261007/matrix-shipping/dev/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 12.249750358998426,
+      "stdout_sha256": "edd4f797db288585e8ce64344448fbab8538fbee19ef1c3279bcb3f4456c42b8",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "original-64s-verify",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "verify-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.067715784010943,
+      "stdout_sha256": "8365d633a424a7844d544656411c96361f540bacea562f8869b3930b4841da61",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "original-64s-readback",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "readback-canonical",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg",
+        "3072000",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s.f32le"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.31787570900633,
+      "stdout_sha256": "6c3ae016a4db10af8727008a3b1895f5a3ae8a9de2249fd7059be47bcbe4422d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "original-64s-stage",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "inspect-stage",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "1344000"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.0565523029945325,
+      "stdout_sha256": "769b655d6aa3abad44c5629b59c304a7273d86b68a848cc33e11c3d740bdbb90",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "original-64s-end",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "inspect-stage",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "3072000"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 2.140993665001588,
+      "stdout_sha256": "a647489050613e4ef3ee645e8deb1f32e551765523118e8e8755d53baca7aa1e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "expected_error": null
+    },
+    {
+      "name": "existing-package",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.011207848001504317,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+      "expected_error": "already exists"
+    },
+    {
+      "name": "existing-file",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/existing-file"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.010070488002384081,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+      "expected_error": "already exists"
+    },
+    {
+      "name": "existing-link",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/existing-link"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.00992839400714729,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+      "expected_error": "already exists"
+    },
+    {
+      "name": "out-of-range",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/out-of-range.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/rejected"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.10230651599704288,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0d232dd2890e5812ee0a24d259f176a5cb2d11952409510471f440b77329a5af",
+      "expected_error": "outside"
+    },
+    {
+      "name": "bad-source",
+      "command": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/bad-source",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/rejected"
+      ],
+      "exit_code": 1,
+      "wall_seconds": 0.021237837994704023,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "afb2d83774f2e3972783e36378ead146b6ea728651421ee5bf189ce6c65f82cf",
+      "expected_error": "invalid audio source"
+    }
+  ],
+  "native": [
+    {
+      "name": "short",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "1280",
+        "-H",
+        "720",
+        "-w",
+        "1280",
+        "-h",
+        "720",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package",
+        "--section-smoke",
+        "2400",
+        "en-US",
+        "high",
+        "1280",
+        "720",
+        "1",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-native/scene.png"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "cleanup_signals": [],
+      "owned_process_group": 276920,
+      "wall_seconds": 7.331081121010357,
+      "run_log_sha256": "54eb70ae60891a0f40e3a2a4c39f8be6ddd5df09bc3f19dde9cd17d009938741",
+      "events": [
+        {
+          "content_id": "package-blake3:139081915462d7ae94a2872de9976f13d508d207fb761e8ea242a2b868bd4d7a",
+          "duration_frames": 4800,
+          "duration_seconds": 0.1,
+          "locale": "en-US",
+          "next_anchor_seconds": 0.05,
+          "next_section_seconds": null,
+          "quality": {
+            "antialiasing": "msaa4",
+            "bloom": true,
+            "fog": true,
+            "preset": "high",
+            "rain": "full",
+            "shadows": true
+          },
+          "section_hint": "Latest cue · #1 · short",
+          "song_seconds": 0.05,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 150,
+            "elevation_mm": 0,
+            "frame": 2400,
+            "half_width_mm": 3650,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 1,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        }
+      ],
+      "png_sha256": "9899f4e5759ac65d6088ba008de930e654d8f92196a7d942c014848fa6cd3fb3"
+    },
+    {
+      "name": "original-64s",
+      "command": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "-W",
+        "1280",
+        "-H",
+        "720",
+        "-w",
+        "1280",
+        "-h",
+        "720",
+        "--",
+        "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-game",
+        "--package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+        "--section-smoke",
+        "1344000",
+        "en-US",
+        "high",
+        "1280",
+        "720",
+        "1",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-native/scene.png"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "cleanup_signals": [],
+      "owned_process_group": 280283,
+      "wall_seconds": 10.232738266000524,
+      "run_log_sha256": "bb456d3947bc1657774357eb149006c3ef1b629d6a646b6cd212d436ea64410f",
+      "events": [
+        {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "duration_frames": 3072000,
+          "duration_seconds": 64.0,
+          "locale": "en-US",
+          "next_anchor_seconds": 30.0,
+          "next_section_seconds": 40.0,
+          "quality": {
+            "antialiasing": "msaa4",
+            "bloom": true,
+            "fog": true,
+            "preset": "high",
+            "rain": "full",
+            "shadows": true
+          },
+          "section_hint": "Next cue · #4 · silence",
+          "song_seconds": 28.0,
+          "stage": {
+            "at_end": false,
+            "compiler_version": 2,
+            "distance_mm": 84000,
+            "elevation_mm": 0,
+            "frame": 1344000,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 600,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        }
+      ],
+      "png_sha256": "e116fbd07fe675aeaa6d6fedfe3623ca588fe6c3c5fb51398090b2af92e20a9a"
+    }
+  ],
+  "input_sha256": {
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-game": "e73539d3a6a36ab36b055f5411f15a40ecd5f4d22126e9a3a944f372ae6d461e",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/lab-build-result.json": "025bb032a78dec6f0d7ea5e0a8643d6e57650b6e32c0c6a9ab34b8d9205cb728",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/game-build-result.json": "e03637a41df2c977ce9b0b2147cf6ad2bc803ac5244b44355d115c1f6d1bbbcf",
+    "/home/lzzz/MyProjects/CoCoBeat/target/vorbis-admission-20261007/matrix-shipping/dev/cocobeat-64.wav": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+    "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+    "/home/lzzz/MyProjects/CoCoBeat/tools/replay-workbench-check/check.py": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+    "/home/lzzz/MyProjects/CoCoBeat/tools/source-import-check/check.py": "30510df3d277ca548e9aaf47cdf86d64ccbbfb8368ea16d173b8258ce90e089c",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav": "7e937be7a291f2eb71b09ae379ff18e080f8076c076623184c392abb0bb04a02",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json": "9584898e49fc8f4f0d2fcf6112869e2cb8c4df71ffe2c93ee72c173351c3b793",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/song.audio.ogg": "bee051c98763f4a5fbd2e537ba974435afad1923c5c6af87c84d6915f5aa231e",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/analysis.bin": "24ed9d2073eccb8abb6c3b38f35488140d901121e515274b901b809ae0e07ebe",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/chart.bin": "52f5aac64dfb06159b9419efdab04ea93caf4ea578efc1eb420fae20638b8e90",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/song.package": "15d1b43f41a4692477556a3ba4eb7f01fbba5ff99a886e78fc557a28fee08493",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+  },
+  "inputs_after_sha256": {
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-lab": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/bin/cocobeat-game": "e73539d3a6a36ab36b055f5411f15a40ecd5f4d22126e9a3a944f372ae6d461e",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/lab-build-result.json": "025bb032a78dec6f0d7ea5e0a8643d6e57650b6e32c0c6a9ab34b8d9205cb728",
+    "/home/lzzz/MyProjects/CoCoBeat/target/software-integration-20261007/game-build-result.json": "e03637a41df2c977ce9b0b2147cf6ad2bc803ac5244b44355d115c1f6d1bbbcf",
+    "/home/lzzz/MyProjects/CoCoBeat/target/vorbis-admission-20261007/matrix-shipping/dev/cocobeat-64.wav": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+    "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+    "/home/lzzz/MyProjects/CoCoBeat/tools/replay-workbench-check/check.py": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+    "/home/lzzz/MyProjects/CoCoBeat/tools/source-import-check/check.py": "30510df3d277ca548e9aaf47cdf86d64ccbbfb8368ea16d173b8258ce90e089c",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-44100.wav": "7e937be7a291f2eb71b09ae379ff18e080f8076c076623184c392abb0bb04a02",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-authoring.json": "9584898e49fc8f4f0d2fcf6112869e2cb8c4df71ffe2c93ee72c173351c3b793",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/song.audio.ogg": "bee051c98763f4a5fbd2e537ba974435afad1923c5c6af87c84d6915f5aa231e",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/analysis.bin": "24ed9d2073eccb8abb6c3b38f35488140d901121e515274b901b809ae0e07ebe",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/chart.bin": "52f5aac64dfb06159b9419efdab04ea93caf4ea578efc1eb420fae20638b8e90",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/short-package/song.package": "15d1b43f41a4692477556a3ba4eb7f01fbba5ff99a886e78fc557a28fee08493",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+    "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package/song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+  },
+  "objects_after_sha256": {
+    "short": {
+      "song.audio.ogg": "bee051c98763f4a5fbd2e537ba974435afad1923c5c6af87c84d6915f5aa231e",
+      "analysis.bin": "24ed9d2073eccb8abb6c3b38f35488140d901121e515274b901b809ae0e07ebe",
+      "chart.bin": "52f5aac64dfb06159b9419efdab04ea93caf4ea578efc1eb420fae20638b8e90",
+      "song.package": "15d1b43f41a4692477556a3ba4eb7f01fbba5ff99a886e78fc557a28fee08493"
+    },
+    "original-64s": {
+      "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+    }
+  },
+  "evidence_directory": "target/source-import-20261007/cli-gpu-native",
+  "raw_evidence_sha256": {
+    "target/source-import-20261007/cli-gpu-native/bad-source": "ebaf7e7c94dfd0d6446a63f55b2711bb31158e1a8b55ed1d6a82768cf9fa8535",
+    "target/source-import-20261007/cli-gpu-native/bad-source.stderr": "afb2d83774f2e3972783e36378ead146b6ea728651421ee5bf189ce6c65f82cf",
+    "target/source-import-20261007/cli-gpu-native/bad-source.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/existing-file": "d50c77976ddedb3aa7e9e30d2286949e510fa5fbc381232e694fceee690f1591",
+    "target/source-import-20261007/cli-gpu-native/existing-file.stderr": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+    "target/source-import-20261007/cli-gpu-native/existing-file.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/existing-link": "d50c77976ddedb3aa7e9e30d2286949e510fa5fbc381232e694fceee690f1591",
+    "target/source-import-20261007/cli-gpu-native/existing-link.stderr": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+    "target/source-import-20261007/cli-gpu-native/existing-link.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/existing-package.stderr": "0dc0df43edc671fb18a40f5ea85577947709643c205f5bd24c6537dba90b1ed9",
+    "target/source-import-20261007/cli-gpu-native/existing-package.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-end.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-end.stdout": "a647489050613e4ef3ee645e8deb1f32e551765523118e8e8755d53baca7aa1e",
+    "target/source-import-20261007/cli-gpu-native/original-64s-import.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-import.stdout": "edd4f797db288585e8ce64344448fbab8538fbee19ef1c3279bcb3f4456c42b8",
+    "target/source-import-20261007/cli-gpu-native/original-64s-native/run.log": "bb456d3947bc1657774357eb149006c3ef1b629d6a646b6cd212d436ea64410f",
+    "target/source-import-20261007/cli-gpu-native/original-64s-native/scene.png": "e116fbd07fe675aeaa6d6fedfe3623ca588fe6c3c5fb51398090b2af92e20a9a",
+    "target/source-import-20261007/cli-gpu-native/original-64s-package/analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+    "target/source-import-20261007/cli-gpu-native/original-64s-package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+    "target/source-import-20261007/cli-gpu-native/original-64s-package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+    "target/source-import-20261007/cli-gpu-native/original-64s-package/song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+    "target/source-import-20261007/cli-gpu-native/original-64s-readback.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-readback.stdout": "6c3ae016a4db10af8727008a3b1895f5a3ae8a9de2249fd7059be47bcbe4422d",
+    "target/source-import-20261007/cli-gpu-native/original-64s-stage.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-stage.stdout": "769b655d6aa3abad44c5629b59c304a7273d86b68a848cc33e11c3d740bdbb90",
+    "target/source-import-20261007/cli-gpu-native/original-64s-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/original-64s-verify.stdout": "8365d633a424a7844d544656411c96361f540bacea562f8869b3930b4841da61",
+    "target/source-import-20261007/cli-gpu-native/original-64s.f32le": "e37d46df20f926fe216a5a1c8686efe19b22580a21822e6b9995ed61b2524985",
+    "target/source-import-20261007/cli-gpu-native/out-of-range.json": "2f05922de53b9083ee49017b12712b6c9ad5df4cddf6fe4dc57bfafbfe557f14",
+    "target/source-import-20261007/cli-gpu-native/out-of-range.stderr": "0d232dd2890e5812ee0a24d259f176a5cb2d11952409510471f440b77329a5af",
+    "target/source-import-20261007/cli-gpu-native/out-of-range.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-44100.wav": "7e937be7a291f2eb71b09ae379ff18e080f8076c076623184c392abb0bb04a02",
+    "target/source-import-20261007/cli-gpu-native/short-authoring.json": "9584898e49fc8f4f0d2fcf6112869e2cb8c4df71ffe2c93ee72c173351c3b793",
+    "target/source-import-20261007/cli-gpu-native/short-end.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-end.stdout": "d5c6ed175d3d5a41936324bfc91ce78526e5202ea5636e493e45a8f23352f935",
+    "target/source-import-20261007/cli-gpu-native/short-import.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-import.stdout": "e3609e537b22d99daa64e4cf2d8a5fcab27e48201293b4ba758c86bcb69a8b77",
+    "target/source-import-20261007/cli-gpu-native/short-native/run.log": "54eb70ae60891a0f40e3a2a4c39f8be6ddd5df09bc3f19dde9cd17d009938741",
+    "target/source-import-20261007/cli-gpu-native/short-native/scene.png": "9899f4e5759ac65d6088ba008de930e654d8f92196a7d942c014848fa6cd3fb3",
+    "target/source-import-20261007/cli-gpu-native/short-package/analysis.bin": "24ed9d2073eccb8abb6c3b38f35488140d901121e515274b901b809ae0e07ebe",
+    "target/source-import-20261007/cli-gpu-native/short-package/chart.bin": "52f5aac64dfb06159b9419efdab04ea93caf4ea578efc1eb420fae20638b8e90",
+    "target/source-import-20261007/cli-gpu-native/short-package/song.audio.ogg": "bee051c98763f4a5fbd2e537ba974435afad1923c5c6af87c84d6915f5aa231e",
+    "target/source-import-20261007/cli-gpu-native/short-package/song.package": "15d1b43f41a4692477556a3ba4eb7f01fbba5ff99a886e78fc557a28fee08493",
+    "target/source-import-20261007/cli-gpu-native/short-readback.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-readback.stdout": "ffc5db39f15b93ef6e60005fa8a542aae61545cffd6affe16b644c834798b883",
+    "target/source-import-20261007/cli-gpu-native/short-stage.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-stage.stdout": "88923b261b562ec43ef1211a93c5500ee06ff93afff55539a8511dbe619b34f9",
+    "target/source-import-20261007/cli-gpu-native/short-verify.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/source-import-20261007/cli-gpu-native/short-verify.stdout": "bcf1ab374553d1b60466dc0402af36a3135799f274937144020f318b1f78d68c",
+    "target/source-import-20261007/cli-gpu-native/short.f32le": "1a387212fff01b6ac00ec191e969a012785379fdf1482aa816658a4073a60759",
+    "target/source-import-20261007/cli-gpu-native/summary.json": "24615b0704ebc602abccb224e911802946019a93718d73fbeab2822e2d3ba45b"
+  },
+  "additional_evidence_sha256": {
+    "target/source-import-20261007/preflight-failure.json": "7610efcbf8083e6d2c27c8326c7ef96b434f8f2b397354d888960a64c23e039e",
+    "target/source-import-20261007/cli-gpu-final/summary.json": "395c9d581f4b76fadff66002a772623c15576d29d5ef8367295cdfb6b3188449",
+    "target/source-import-20261007/cli-gpu-final/short-native/run.log": "1315b32142f43c5903e297e117ce49335ca726d6b9a83b9cb1fe3f02de7ac23d",
+    "target/source-import-20261007/cli-gpu-native/summary.json": "24615b0704ebc602abccb224e911802946019a93718d73fbeab2822e2d3ba45b",
+    "target/source-import-20261007/module-tests-receipt.json": "56b4ef4303d197423429a0e1f028b834bb610c84d9517a42079235cb0f5416f8"
+  },
+  "prior_failures": [
+    {
+      "status": "FAIL",
+      "scope": "QA source selection guard before any CLI invocation or output creation",
+      "evidence": "target/source-import-20261007/preflight-failure.json",
+      "cause": "Selected PCM F32 converted source e23cc22... instead of documented original PCM16 source 3390dd...; corrected only the source argument"
+    },
+    {
+      "status": "FAIL",
+      "scope": "First native compositor launch after all 15 CLI controls passed",
+      "evidence": "target/source-import-20261007/cli-gpu-final/summary.json",
+      "cause": "Sandbox Vulkan failed to find physical device before game startup",
+      "resolution": "Same unchanged harness and fixed binaries run with approved GPU access in a separate evidence directory"
+    }
+  ],
+  "assertion_scope": {
+    "source_sha256_and_four_objects_before_after": "PASS",
+    "source_blake3_shape_and_metadata_in_validated_analysis": "PASS",
+    "independent_source_blake3_comparison": "PASS in package module test; CLI harness records the diagnostic value without another BLAKE3 implementation",
+    "canonical_actual_frames_and_finite_samples": "PASS",
+    "stage_integer_sample_vs_native_loader": "PASS",
+    "deterministic_four_objects_across_two_identical_CLI_runs": "PASS",
+    "visual_review": "PASS: root viewed both native PNGs; characters, Anchor/cue and explicit no-audio preview labels readable without overlap; fixed-state appearance only",
+    "normal_intro_and_Ready_confirmation": "NOT RUN in this check; native capture uses explicit section-smoke mode",
+    "real_audio_device_timing": "NOT RUN",
+    "physical_controllers_or_keyboard": "NOT RUN",
+    "human_music_listening": "NOT RUN",
+    "four_platform_lab_import_transactions": "NOT RUN",
+    "automatic_complete_MIR": "NOT RUN",
+    "in_game_library_import_UI": "NOT RUN"
+  },
+  "limitations": [
+    "Separate fixed lab and game build scopes are recorded; these native debug binaries are not one immutable committed shipping release",
+    "Two synthetic original sources and five rejection controls do not establish quality of arbitrary real music",
+    "Stage captures are fixed-state no-audio renders; matching sampled geometry does not establish human gameplay acceptance"
+  ],
+  "visual_review": {
+    "status": "PASS",
+    "reviewer": "root",
+    "paths": [
+      "target/source-import-20261007/cli-gpu-native/short-native/scene.png",
+      "target/source-import-20261007/cli-gpu-native/original-64s-native/scene.png"
+    ],
+    "scope": "Two actual fixed-state native production-loader GPU PNGs; no normal Ready flow, gameplay input or audio/listening acceptance"
+  }
+}

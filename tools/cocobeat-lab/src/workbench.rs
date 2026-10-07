@@ -1,4 +1,4 @@
-//! A silent package workbench for Anchor editing and read-only evidence diagnostics
+//! A package workbench for Anchor editing and read-only evidence diagnostics
 
 use bevy::{prelude::*, window::WindowResizeConstraints};
 use cocobeat_editor::AnchorEditor;
@@ -11,6 +11,7 @@ use std::{
     sync::{Mutex, mpsc},
 };
 
+mod audition;
 mod candidates;
 mod input;
 mod replay;
@@ -46,7 +47,19 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         None
     };
     let mut wave = Waveform::default();
-    let package = cocobeat_media::read_package(source, |frames| wave.push(frames))?;
+    let mut pcm = Vec::new();
+    let package = cocobeat_media::read_package(source, |frames| {
+        wave.push(frames)?;
+        // ponytail: validated static PCM is capped at 230 MB; stream if songs exceed ten minutes
+        pcm.try_reserve(frames.len())
+            .map_err(|error| error.to_string())?;
+        pcm.extend(
+            frames
+                .iter()
+                .map(|&[left, right]| kira::Frame::new(left, right)),
+        );
+        Ok(())
+    })?;
     let mut document = Document::new(&package)?;
     let replay = if let Mode::Replay(path) = mode {
         let mut replay = replay::ReplayView::load(&package, path)?;
@@ -91,27 +104,32 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         }),
     );
     install_ui_assets(&mut app)?;
-    app.insert_resource(Workbench {
-        source: source.to_owned(),
-        destination,
-        replay,
-        candidates,
-        source_hash: package.manifest.package_hash,
-        locale,
-        document,
-        wave,
-        focus: Focus::Timeline,
-        details: false,
-        detail_scroll: 0.0,
-        close_confirm: false,
-        discard_selected: false,
-        notice: String::new(),
-        saving: None,
-    })
-    .init_resource::<input::Controls>()
-    .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
-    .add_systems(Startup, ui::setup)
-    .add_systems(Update, (poll_save, input::capture, ui::update).chain());
+    app.insert_non_send(audition::Output::new(pcm))
+        .insert_resource(Workbench {
+            source: source.to_owned(),
+            destination,
+            replay,
+            candidates,
+            source_hash: package.manifest.package_hash,
+            locale,
+            document,
+            wave,
+            focus: Focus::Timeline,
+            details: false,
+            detail_scroll: 0.0,
+            close_confirm: false,
+            discard_selected: false,
+            notice: String::new(),
+            saving: None,
+            audition: audition::Audition::default(),
+        })
+        .init_resource::<input::Controls>()
+        .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
+        .add_systems(Startup, ui::setup)
+        .add_systems(
+            Update,
+            (poll_save, input::capture, audition::update, ui::update).chain(),
+        );
     match app.run() {
         AppExit::Success => Ok(()),
         error => Err(format!("Workbench exited: {error:?}")),
@@ -344,6 +362,9 @@ enum Focus {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Action {
+    PlayPause,
+    Stop,
+    Seek,
     Undo,
     Redo,
     Add,
@@ -362,7 +383,10 @@ enum Action {
     Discard,
 }
 
-const TOOLBAR: [Action; 8] = [
+const TOOLBAR: [Action; 11] = [
+    Action::PlayPause,
+    Action::Stop,
+    Action::Seek,
     Action::Undo,
     Action::Redo,
     Action::Add,
@@ -390,6 +414,7 @@ struct Workbench {
     discard_selected: bool,
     notice: String,
     saving: Option<Mutex<mpsc::Receiver<Result<ValidatedPackage, String>>>>,
+    audition: audition::Audition,
 }
 
 impl Workbench {
@@ -424,7 +449,14 @@ impl Workbench {
 
     fn toolbar(&self) -> &[Action] {
         if self.is_read_only() {
-            &[Action::ZoomIn, Action::ZoomOut, Action::Back]
+            &[
+                Action::PlayPause,
+                Action::Stop,
+                Action::Seek,
+                Action::ZoomIn,
+                Action::ZoomOut,
+                Action::Back,
+            ]
         } else {
             &TOOLBAR
         }
@@ -481,6 +513,7 @@ impl Workbench {
         if self.saving.is_some() {
             return;
         }
+        self.audition.stop();
         self.document.cancel();
         if self.document.dirty {
             self.close_confirm = true;
@@ -520,6 +553,14 @@ impl Workbench {
             return;
         }
         let result = match action {
+            Action::PlayPause => self
+                .audition
+                .toggle(self.document.cursor, self.document.end),
+            Action::Stop => {
+                self.audition.stop();
+                Ok(())
+            }
+            Action::Seek => self.audition.seek(self.document.cursor, self.document.end),
             Action::Undo => self
                 .document
                 .editor
@@ -593,6 +634,7 @@ impl Workbench {
                 Ok(())
             }
             Action::Discard => {
+                self.audition.stop();
                 exit.write(AppExit::Success);
                 Ok(())
             }
@@ -605,7 +647,14 @@ impl Workbench {
             self.error(reason);
         } else if matches!(
             action,
-            Action::Undo | Action::Redo | Action::Add | Action::Remove | Action::Apply
+            Action::PlayPause
+                | Action::Stop
+                | Action::Seek
+                | Action::Undo
+                | Action::Redo
+                | Action::Add
+                | Action::Remove
+                | Action::Apply
         ) {
             self.notice.clear();
         }
@@ -615,6 +664,7 @@ impl Workbench {
         let Some(destination) = self.destination.clone() else {
             return;
         };
+        self.audition.pause();
         self.document.cancel();
         let source = self.source.clone();
         let hash = self.source_hash;
@@ -710,6 +760,7 @@ mod tests {
             discard_selected: false,
             notice: String::new(),
             saving: None,
+            audition: audition::Audition::default(),
         }
     }
 

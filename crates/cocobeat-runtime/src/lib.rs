@@ -21,6 +21,7 @@ mod ui_assets;
 mod view;
 
 pub use app::run;
+pub use audio::{AudioOutput, sound_data};
 pub use i18n::{Locale, Message};
 pub use input::{InputSource, MenuAccess, menu_access};
 pub use settings::configured_locale;

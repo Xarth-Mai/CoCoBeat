@@ -138,7 +138,6 @@
   "display.work_area_windows": "Используется рабочая область монитора Windows",
   "display.work_area_x11": "Используется пересечение рабочей области рабочего стола X11 с областью этого монитора",
   "workbench.title": "CoCoBeat · Редактор Anchor",
-  "workbench.silent": "Инструмент редактирования без звука · 48 000 кадров/с",
   "workbench.source": "Источник: {identity}",
   "workbench.owner_none": "Enter / щелчок / Start — получить управление",
   "workbench.owner_keyboard": "Управление: клавиатура + мышь · Start — передать управление",
@@ -204,5 +203,17 @@
   "candidates.row": "Кандидат {index} · {kind} · {frame} кадров",
   "candidates.legend": "Маркеры показывают решения предложения; Anchor исходной карты остаются под волновой формой",
   "candidates.help": "Только чтение · Просмотр оснований и конфликтов · Принятие требует явного выбора через CLI",
-  "candidates.fields": "confidence сохраняет исходное значение; null означает неизвестное, калибровка не заявлена. selected_by_experimental_policy означает экспериментальный выбор; not_assessed — допуск к рабочему использованию не оценён. onset_index и blocking_onset_index начинаются с 0. beat, section и energy — исходные данные анализа"
+  "candidates.fields": "confidence сохраняет исходное значение; null означает неизвестное, калибровка не заявлена. selected_by_experimental_policy означает экспериментальный выбор; not_assessed — допуск к рабочему использованию не оценён. onset_index и blocking_onset_index начинаются с 0. beat, section и energy — исходные данные анализа",
+  "audition.toggle": "Играть / Пауза",
+  "audition.stop": "Остановить звук",
+  "audition.seek": "К курсору",
+  "audition.playing": "Воспроизведение",
+  "audition.paused": "Пауза",
+  "audition.pausing": "Переход к паузе",
+  "audition.resuming": "Запуск",
+  "audition.stopped": "Остановлено",
+  "audition.ended": "Завершено",
+  "audition.failed": "Ошибка звука",
+  "audition.cursor": "Звук {state} · ~{frame} кадров · цель {target}",
+  "audition.help": "Пробел / левая лицевая кнопка: воспроизведение или пауза · Переход: выбранный кадр · Курсор показывает обработанный PCM, а не задержку вывода или ввода"
 }

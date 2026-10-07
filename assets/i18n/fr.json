@@ -138,7 +138,6 @@
   "display.work_area_windows": "Utilisation de la zone de travail du moniteur Windows",
   "display.work_area_x11": "Utilisation de l’intersection de la zone de travail du bureau X11 avec ce moniteur",
   "workbench.title": "CoCoBeat · Atelier Anchor",
-  "workbench.silent": "Outil de contenu sans audio · 48 000 trames/s",
   "workbench.source": "Source : {identity}",
   "workbench.owner_none": "Enter / clic / Start pour prendre le contrôle",
   "workbench.owner_keyboard": "Contrôle : clavier + souris · Start transfère le contrôle",
@@ -204,5 +203,17 @@
   "candidates.row": "Candidat {index} · {kind} · {frame} trames",
   "candidates.legend": "Les repères montrent les décisions de la proposition ; les Anchor de la partition d’origine restent sous la forme d’onde",
   "candidates.help": "Lecture seule · Examiner les preuves et les blocages · L’adoption exige une sélection explicite par CLI",
-  "candidates.fields": "confidence conserve la valeur source ; null signifie inconnu, sans prétendre à un étalonnage. selected_by_experimental_policy indique une sélection expérimentale ; not_assessed signifie que l’usage en production n’a pas été évalué. onset_index et blocking_onset_index commencent à 0. beat, section et energy sont les données de l’analyse d’origine"
+  "candidates.fields": "confidence conserve la valeur source ; null signifie inconnu, sans prétendre à un étalonnage. selected_by_experimental_policy indique une sélection expérimentale ; not_assessed signifie que l’usage en production n’a pas été évalué. onset_index et blocking_onset_index commencent à 0. beat, section et energy sont les données de l’analyse d’origine",
+  "audition.toggle": "Lecture / Pause",
+  "audition.stop": "Arrêter le son",
+  "audition.seek": "Aller au curseur",
+  "audition.playing": "Lecture",
+  "audition.paused": "En pause",
+  "audition.pausing": "Mise en pause",
+  "audition.resuming": "Démarrage",
+  "audition.stopped": "Arrêté",
+  "audition.ended": "Terminé",
+  "audition.failed": "Erreur audio",
+  "audition.cursor": "Audio {state} · ~{frame} trames · repère {target}",
+  "audition.help": "Espace / bouton de façade gauche : lecture ou pause · Aller : trame sélectionnée · Le curseur indique le PCM rendu, pas la latence de sortie ou de saisie"
 }

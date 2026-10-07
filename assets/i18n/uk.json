@@ -138,7 +138,6 @@
   "display.work_area_windows": "Використовується робоча область монітора Windows",
   "display.work_area_x11": "Використовується перетин робочої області стільниці X11 з областю цього монітора",
   "workbench.title": "CoCoBeat · Редактор Anchor",
-  "workbench.silent": "Інструмент редагування без звуку · 48 000 кадрів/с",
   "workbench.source": "Джерело: {identity}",
   "workbench.owner_none": "Enter / клацання / Start — отримати керування",
   "workbench.owner_keyboard": "Керування: клавіатура + миша · Start — передати керування",
@@ -204,5 +203,17 @@
   "candidates.row": "Кандидат {index} · {kind} · {frame} кадрів",
   "candidates.legend": "Маркери показують рішення пропозиції; Anchor початкової карти залишаються під хвильовою формою",
   "candidates.help": "Лише читання · Перегляд підстав і конфліктів · Прийняття потребує явного вибору через CLI",
-  "candidates.fields": "confidence зберігає початкове значення; null означає невідоме, калібрування не заявлено. selected_by_experimental_policy означає експериментальний вибір; not_assessed — допуск до робочого використання не оцінено. onset_index і blocking_onset_index починаються з 0. beat, section і energy — початкові дані аналізу"
+  "candidates.fields": "confidence зберігає початкове значення; null означає невідоме, калібрування не заявлено. selected_by_experimental_policy означає експериментальний вибір; not_assessed — допуск до робочого використання не оцінено. onset_index і blocking_onset_index починаються з 0. beat, section і energy — початкові дані аналізу",
+  "audition.toggle": "Грати / Пауза",
+  "audition.stop": "Зупинити звук",
+  "audition.seek": "До курсора",
+  "audition.playing": "Відтворення",
+  "audition.paused": "Пауза",
+  "audition.pausing": "Перехід до паузи",
+  "audition.resuming": "Запуск",
+  "audition.stopped": "Зупинено",
+  "audition.ended": "Завершено",
+  "audition.failed": "Помилка звуку",
+  "audition.cursor": "Звук {state} · ~{frame} кадрів · ціль {target}",
+  "audition.help": "Пробіл / ліва лицьова кнопка: відтворення або пауза · Перехід: вибраний кадр · Курсор показує оброблений PCM, а не затримку виводу чи вводу"
 }

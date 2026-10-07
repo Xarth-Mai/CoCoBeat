@@ -12,8 +12,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "tools/cocobeat-lab/src"
-COPIES = ("anchors.rs", "replay.rs", "workbench.rs", "workbench/input.rs", "workbench/ui.rs", "workbench/replay.rs", "workbench/candidates.rs")
-EXTERNS = {"bevy", "serde", "serde_json", "cocobeat_schema", "cocobeat_media", "cocobeat_editor", "cocobeat_runtime", "cocobeat_core", "cocobeat_replay"}
+COPIES = ("anchors.rs", "replay.rs", "workbench.rs", "workbench/input.rs", "workbench/ui.rs", "workbench/replay.rs", "workbench/candidates.rs", "workbench/audition.rs")
+EXTERNS = {"bevy", "serde", "serde_json", "cocobeat_schema", "cocobeat_media", "cocobeat_editor", "cocobeat_runtime", "cocobeat_core", "cocobeat_replay", "kira"}
 PNGS = {"negative-watermark-details.png", "wave-list-tail.png", "pair-wave-list.png", "pair-details-top.png", "pair-details-bottom.png"}
 
 
@@ -49,8 +49,8 @@ def prepare(output):
     for before, after in [
         ("mod ui;", "mod ui;\nmod qa;"),
         ("resolution: (1280, 800).into(),", "resolution: qa::size().into(),"),
-        (".add_systems(Update, (poll_save, input::capture, ui::update).chain());",
-         ".add_systems(Update, (poll_save, input::capture, ui::update).chain())\n"
+        (".add_systems(\n            Update,\n            (poll_save, input::capture, audition::update, ui::update).chain(),\n        );",
+         ".add_systems(Update, (poll_save, input::capture, audition::update, ui::update).chain())\n"
          "    .init_resource::<qa::Driver>()\n"
          "    .add_systems(Update, qa::drive.before(input::capture))\n"
          "    .add_systems(PostUpdate, qa::capture.after(bevy::ui::UiSystems::Layout));"),

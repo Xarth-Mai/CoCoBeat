@@ -177,3 +177,7 @@ Rust 入口为 `build_package(source_audio, expected_frames, destination, build_
 包格式验证成功只证明当前初始契约及最终音频结构通过，不等于编码音质、seek、设备兼容、真人听感或游戏内曲库导入流程已通过；编码候选的独立状态继续见 [canonical 音频实验](canonical-audio-probe.md)
 
 [06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 已有手工区间派生的直道 / 广场 / 缓弯 / 低桥、霓虹拱门和终点，完整自动编排、真人预告可读性和跨版本视觉重放仍待后续，当前包没有持久化舞台对象
+
+## 原始音频的手工内容导入
+
+`import-authored-package SOURCE_AUDIO AUTHORING_JSON NEW_PACKAGE` 从有界源快照经唯一准入编码器创建上述四对象，自动取得真实最终 N 和来源诊断；Anchor / 段落仍由作者以最终 48 kHz 整数帧提供，具体操作、故障保护与能力边界见[源导入](source-import.md)

@@ -677,3 +677,15 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 普通矩阵的完整读回主判定与 FFmpeg 互操作分开：两独立 reader 完整 N / EOS / finite 和同位置容差通过，FFmpeg 保留 17 项 FAIL_COMPLETE；8 个历史来源缺失仍 NOT RUN。四轮旧 Sanitizer 错误、验证工具初次 Clippy 失败及 Cargo test 重建例子产生的二进制身份变化均保留，最终普通矩阵使用显式 release 构建的固定副本，不混用旧构建证据
 
 这些控制未覆盖所有整数采样率或所有音乐，LSan、seek、三项其他原生目标、曲库及真人听感分别待验，不以本机结果宣称完整生产导入或跨平台准入完成
+
+## 生产源导入与工作台试听软件交付
+
+2026-10-07，固定 lab 副本经 `tools/source-import-check/check.py` 完成 10 条成功 CLI、5 条预期拒绝：真实 44.1 kHz 短源和 64 秒原创源经唯一 q10 编码进入四对象，严格最终 PCM、来源与对象身份、能量及整数 Stage 检查通过；固定生产 game 的两个 `--package --section-smoke` 原生 loader 图与 lab Stage 一致，主线程目检通过。精确 command、源码 / 二进制与失败记录见[源导入观察](../testdata/synthetic/source-import-observations-20261007.json)；这两张静态图不证明 Ready 启动歌曲、输出设备或完整 MIR / 曲库体验
+
+工作台完整 lab 32 项测试在最后命令合并和通知修正前通过，此后 17 项最终工作台窄测重新通过；实际 Kira MockBackend 检查 canonical 起点、边界、暂停和恢复，13 个语言变体各 217 key / 占位符一致。两尺寸四张原生 GPU 图由 agent 与主线程目检，音频游标是明确注入的显示控制，白色原始光标、另色音频游标、请求目标和按钮可区分；未打开真实试听设备，原始 Replay 负帧及 EOF 后水位保持原值
+
+正式 lab 重试构建的 437 项输入前后哈希一致，固定二进制为 `2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42`；game 构建的 419 项输入前后相同，固定二进制为 `e73539d3a6a36ab36b055f5411f15a40ecd5f4d22126e9a3a944f372ae6d461e`。它们绑定记录的工作区源码和旧 extern，包含当时未提交的相邻功能，不等于最终提交或发行构建不可变证明；最后 help 文案和 CLI 格式调整在冻结后分别记录
+
+最后代码检查的 `cargo clippy --locked -p cocobeat-runtime -p cocobeat-lab --all-targets -- -D warnings`、`cargo run --locked -p xtask -- boundaries` 和 `cargo fmt --all -- --check` 通过，作用域为后续视觉 Replay 开发前的源导入 / 试听 / Stage / 网络工作区。初次 lab 构建发生两个必要源码调整，记 FAIL_INPUT_DRIFT 后重试；初次 fmt 只发现新增 CLI arm 格式，修正后通过，旧失败保留。完整记录见[试听观察](../testdata/synthetic/workbench-audition-observations-20261007.json)，原始日志位于 `target/software-integration-20261007/`
+
+本批软件结果不替代真实工作台输出设备、扬声器听感、物理双手柄 / 混合输入、输入 / 音频延迟、四目标源导入或完整编辑器退出，计时与真人任务继续保留

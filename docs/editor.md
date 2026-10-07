@@ -2,7 +2,7 @@
 
 `edit-anchors PACKAGE PATCH NEW_PACKAGE` 用整数音频帧修正已有 SongPackage 的 Anchor，并导出可重新加载的新包；当前支持增删、移动、撤销和重做，不修改分析事实、SectionCue 或判定规则，包格式继续使用 [SongPackage v1](song-package.md)
 
-原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，并提供只读 Replay 与 Anchor 候选证据入口，试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的查看契约见 [Replay 诊断](replay-diagnostics.md)
+原生工作台与可重复执行的 CLI 共用 AnchorEditor 和保真导出；工作台显示立体声波形、整数时间线、Anchor 列表及作者设置的 SectionCue，并提供只读 Replay、Anchor 候选证据入口与歌曲试听，设备计时和试听校准继续后续。候选报告与明确采用见 [Anchor 提案](anchors.md)，原始输入、判定与配对的查看契约见 [Replay 诊断](replay-diagnostics.md)
 
 ## 原生工作台
 
@@ -11,7 +11,7 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/new-package --locale zh-CN
 ```
 
-源包完整验证后打开独立 Bevy 窗口，最小尺寸 640×480；这是静音内容工具，没有播放按钮。波形来自同一验证过程的真实立体声 PCM，每 64 帧保存左右声道峰值包络，最多 450,000 组；显示随视口聚合，整数帧编辑不受波形栅格分辨率影响
+源包完整验证后打开独立 Bevy 窗口，最小尺寸 640×480；工具栏提供播放 / 暂停、停止与跳到选中帧，首次播放时才打开 Kira 输出设备。波形来自同一验证过程的真实立体声 PCM，每 64 帧保存左右声道峰值包络，最多 450,000 组；显示随视口聚合，整数帧编辑不受波形栅格分辨率影响
 
 默认读取现有游戏配置中的语言，配置不存在则跟随系统，配置损坏会在 stderr 说明后使用系统语言；显式 `--locale` 使用游戏支持的 13 个完整语言代码并优先于配置。工作台复用 Noto Sans 与脚本回退，始终不保存或修改游戏设置
 
@@ -24,15 +24,26 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 | 选择 / 移动 Anchor | 点击波形标记或列表项，拖动标记；一次拖动只记一次撤销 |
 | 精确输入帧 | 详情中的 Frame 字段输入整数，Enter 或 Apply frame 应用 |
 | 新增 / 删除 | 工具栏在光标新增、删除选中项，Delete 删除选中项 |
+| 歌曲试听 | 空格播放 / 暂停，工具栏停止或跳到选中帧；精确帧输入时空格不控制试听 |
 | 撤销 / 重做 | Ctrl+Z / Ctrl+Shift+Z |
 | 导出并关闭 | Ctrl+S 或 Export and close |
 | 取消输入 / 关闭 | Esc；有未保存修改时默认选择 Keep editing |
 
-窗口同时只有一个菜单主控，键鼠与具体手柄身份分开处理；手柄 Start 显式接管，方向键 / 左摇杆浏览、肩键切换焦点、South 查看、East 返回，编辑和导出需切回键鼠。普通副控输入不抢焦点，失焦或主控断开取消拖动，按住的输入须释放后才能再次生效；这些规则复用游戏菜单主控判定，不改变游戏 P1/P2 分配
+窗口同时只有一个菜单主控，键鼠与具体手柄身份分开处理；手柄 Start 显式接管，方向键 / 左摇杆浏览、肩键切换焦点、South 查看、左侧面按钮播放 / 暂停、East 返回，编辑和导出需切回键鼠。普通副控输入不抢焦点，失焦或主控断开取消拖动，按住的输入须释放后才能再次生效；这些规则复用游戏菜单主控判定，不改变游戏 P1/P2 分配
 
 密集重合标记显示选中像素内的 Anchor 数量，虚拟列表可逐个选中；详情显示作者原有 SectionCue 的 ID、帧和文字，不推断音乐强度或把提示当作判定点。光标可以查看 EOF，Anchor 只能位于结束帧之前；新项使用最小未用 ID，已有最大 u64 ID 不妨碍继续新增
 
 导出在后台调用同一 `export_anchors`，期间保留窗口并暂停编辑和关闭；成功输出源 / 新包身份及路径后退出。验证、源身份变化或目标冲突导致失败时保留草稿及窗口，可修正外部条件后重试；源包和已有目标均保留，输出路径继续遵守下述新目录约束
+
+## 歌曲试听
+
+三种工作台共用包校验时得到的 canonical PCM，不另读原来源或转码；播放从当前选中帧开始，已有暂停声音可以恢复，停止后再次播放使用当前选择，EOF 不能作为新起点。暂停期间跳转只更新请求目标，下次明确播放才创建新声音；播放期间跳转从该帧重新开始
+
+白色编辑 / Replay 光标保留精确原值，另色音频线显示已观察到的 Kira source position，请求目标与源游标分别标注；负水位或 EOF 后的原始 Replay 帧不会因试听被改写，也不能直接作为音频起点。Starting / Pausing / Paused / Playing / Ended 来自声音状态，初始 handle 位置不冒充已推进的 callback
+
+失焦、主控接管或断开暂停试听，关闭停止声音，导出开始也暂停声音；设备初始化或运行错误保留草稿、选中证据和失败原因。13 个语言变体共用相同键与占位符，左侧面按钮说明不绑定 Xbox 字母
+
+[观察记录](../testdata/synthetic/workbench-audition-observations-20261007.json)记录实际 Kira MockBackend 起点、17 项最终工作台窄测及四张构造 UI 原生 GPU 图；图中的音频线是明确注入的显示控制，没有打开试听设备，真实输出设备、听感、物理手柄和计时校准另验
 
 ## 只读 Replay 工作台
 
@@ -40,13 +51,13 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json --locale zh-CN
 ```
 
-`workbench-replay PACKAGE REPLAY [--locale CODE]` 共用源包完整验证和 Replay 身份检查，复用同一窗口、波形、语言、主控与整数光标；工具栏只提供缩放和返回，隐藏帧编辑与导出，快捷键和拖动也不会修改 Anchor、撤销历史或源文件
+`workbench-replay PACKAGE REPLAY [--locale CODE]` 共用源包完整验证和 Replay 身份检查，复用同一窗口、波形、语言、主控与整数光标；工具栏提供试听、缩放和返回，隐藏帧编辑与导出，快捷键和拖动也不会修改 Anchor、撤销历史或源文件
 
 P1 青色、P2 橙色标记显示原始 Hit，Anchor 位于波形下方；列表先列录制顺序的 facts，再列 core 确认顺序的 events，最多绘制 16 行并随选择滚动，同帧记录可逐条选择。选择判定或配对时定位精确帧并高亮关联 Hit，详情顶部显示选中记录，随后是来源、规则与最终摘要
 
 Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表内方向键或滚轮逐条浏览，Enter / South 查看详情；640×480 窗口通过列表 / 详情页切换保留空间，详情支持换行和方向键 / 滚轮滚动到底。选中水位时保留负预滚或 EOF 后的原始帧值，手动光标导航仍限于歌曲范围
 
-本入口没有试听或物理计时测量；Replay v1 没有设备时间戳和视觉版本，界面不推算物理输入延迟，也不承诺复现录制时的视觉效果。本批软件与受控 GPU 证据见 [Replay 诊断验证](replay-diagnostics.md#软件验证)
+本入口可以试听同一包内音频，原始 Replay 光标与音频源游标分开显示；不测量物理计时。Replay v1 没有设备时间戳和视觉版本，界面不推算物理输入延迟，也不承诺复现录制时的视觉效果。本批软件与受控 GPU 证据见 [Replay 诊断验证](replay-diagnostics.md#软件验证)
 
 ## 只读候选证据
 
@@ -54,9 +65,9 @@ Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表�
 
 候选以原始零基 onset index 逐项浏览，波形分开显示候选和原谱面；详情首先显示选中证据、提案和阻挡候选，再列相邻 beat、所在 section、energy 与来源信息。未知置信度保持 `null`，实验策略选择不等于生产准入
 
-密集同像素候选仍可逐项选择；列表与详情使用现有主控、焦点和滚动规则，640×480 窗口可查看详情到底。此模式只提供缩放和返回，不修改 Anchor、历史、报告或包，明确采用继续使用 `adopt-anchor-proposal`
+密集同像素候选仍可逐项选择；列表与详情使用现有主控、焦点和滚动规则，640×480 窗口可查看详情到底。此模式提供试听、缩放和返回，不修改 Anchor、历史、报告或包，明确采用继续使用 `adopt-anchor-proposal`
 
-[观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)保留 28 项软件测试、三组原生 GPU 窗口与 11 张目检 PNG，以及修正前的实际失败；构造候选仅验证证据查看和只读行为，不证明 MIR 质量、试听或物理输入
+[观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)保留 28 项软件测试、三组原生 GPU 窗口与 11 张目检 PNG，以及修正前的实际失败；构造候选仅验证证据查看和只读行为，不证明 MIR 质量、输出设备试听或物理输入
 
 ## 使用方式
 

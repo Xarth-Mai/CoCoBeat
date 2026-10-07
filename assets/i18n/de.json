@@ -138,7 +138,6 @@
   "display.work_area_windows": "Windows-Monitorarbeitsbereich wird verwendet",
   "display.work_area_x11": "Schnittmenge des X11-Desktop-Arbeitsbereichs mit diesem Monitor wird verwendet",
   "workbench.title": "CoCoBeat · Anchor-Werkbank",
-  "workbench.silent": "Inhaltswerkzeug ohne Audio · 48.000 Frames/s",
   "workbench.source": "Quelle: {identity}",
   "workbench.owner_none": "Enter / Klick / Start zum Übernehmen der Steuerung",
   "workbench.owner_keyboard": "Steuerung: Tastatur + Maus · Start übergibt die Steuerung",
@@ -204,5 +203,17 @@
   "candidates.row": "Kandidat {index} · {kind} · {frame} Frames",
   "candidates.legend": "Die Markierungen zeigen die Entscheidungen des Vorschlags; die Anchor des ursprünglichen Charts bleiben unter der Wellenform",
   "candidates.help": "Nur Lesen · Belege und Konflikte prüfen · Übernahme erfordert eine ausdrückliche CLI-Auswahl",
-  "candidates.fields": "confidence behält den Quellwert; null bedeutet unbekannt, ohne Kalibrierung zu behaupten. selected_by_experimental_policy bezeichnet eine experimentelle Auswahl; not_assessed bedeutet, dass die Produktionsfreigabe nicht bewertet wurde. onset_index und blocking_onset_index beginnen bei 0. beat, section und energy sind ursprüngliche Analysedaten"
+  "candidates.fields": "confidence behält den Quellwert; null bedeutet unbekannt, ohne Kalibrierung zu behaupten. selected_by_experimental_policy bezeichnet eine experimentelle Auswahl; not_assessed bedeutet, dass die Produktionsfreigabe nicht bewertet wurde. onset_index und blocking_onset_index beginnen bei 0. beat, section und energy sind ursprüngliche Analysedaten",
+  "audition.toggle": "Wiedergabe / Pause",
+  "audition.stop": "Audio stoppen",
+  "audition.seek": "Zum Cursor",
+  "audition.playing": "Wiedergabe",
+  "audition.paused": "Pausiert",
+  "audition.pausing": "Pausiert gerade",
+  "audition.resuming": "Startet",
+  "audition.stopped": "Gestoppt",
+  "audition.ended": "Beendet",
+  "audition.failed": "Audiofehler",
+  "audition.cursor": "Audio {state} · ~{frame} Frames · Ziel {target}",
+  "audition.help": "Leertaste / linke Fronttaste: Wiedergabe oder Pause · Sprung: gewählter Frame · Der Cursor zeigt gerendertes PCM, keine Ausgabe- oder Eingabelatenz"
 }

@@ -80,7 +80,7 @@ impl Default for Driver {
             Step::Key(KeyCode::Enter),
             Step::Capture(CAPTURES[0]),
         ];
-        for _ in 0..5 {
+        for _ in 0..8 {
             steps.push(Step::Key(KeyCode::Tab));
         }
         for index in 1..rows.len() {

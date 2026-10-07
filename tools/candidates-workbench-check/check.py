@@ -51,8 +51,8 @@ def prepare(output):
     for before, after in [
         ("mod ui;", "mod ui;\nmod qa;"),
         ("resolution: (1280, 800).into(),", "resolution: qa::size().into(),"),
-        (".add_systems(Update, (poll_save, input::capture, ui::update).chain());",
-         ".add_systems(Update, (poll_save, input::capture, ui::update).chain())\n"
+        (".add_systems(\n            Update,\n            (poll_save, input::capture, audition::update, ui::update).chain(),\n        );",
+         ".add_systems(Update, (poll_save, input::capture, audition::update, ui::update).chain())\n"
          "    .init_resource::<qa::Driver>()\n"
          "    .add_systems(Update, qa::drive.before(input::capture))\n"
          "    .add_systems(PostUpdate, qa::capture.after(bevy::ui::UiSystems::Layout));"),
@@ -71,7 +71,7 @@ def prepare(output):
         "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "input_sha256": inputs, "helper_source": tree(output / "source"),
         "instrumentation_sha256": digest(patch),
-        "scope": "Seven copied production modules; workbench.rs changes only window size and QA systems; fixture features are constructed uncalibrated controls, not MIR output",
+        "scope": "Eight copied production modules; workbench.rs changes only window size and QA systems; fixture features are constructed uncalibrated controls, not MIR output",
     })
     print(f"PREPARED {output}", flush=True)
 

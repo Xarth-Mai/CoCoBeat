@@ -138,7 +138,6 @@
   "display.work_area_windows": "Windows が報告するモニターの作業領域を使用しています",
   "display.work_area_x11": "X11 のデスクトップ作業領域と現在のモニターが重なる範囲を使用しています",
   "workbench.title": "CoCoBeat · Anchor ワークベンチ",
-  "workbench.silent": "音声再生なしの編集ツール · 毎秒 48,000 フレーム",
   "workbench.source": "編集元：{identity}",
   "workbench.owner_none": "Enter / クリック / Start で操作権を取得",
   "workbench.owner_keyboard": "操作：キーボード＋マウス · Start で操作権を切り替え",
@@ -204,5 +203,17 @@
   "candidates.row": "候補 {index} · {kind} · {frame} フレーム",
   "candidates.legend": "候補マーカーは提案の判定を示し、元の譜面の Anchor は波形の下に残ります",
   "candidates.help": "読み取り専用 · 根拠と競合項目を確認 · 採用には CLI での明示的な選択が必要です",
-  "candidates.fields": "confidence は元の値を保持し、null は不明を示します。校正済みとはみなしません。selected_by_experimental_policy は実験的な選択、not_assessed は本番採用の未評価を示します。onset_index と blocking_onset_index は 0 始まりです。beat、section、energy は元の解析結果です"
+  "candidates.fields": "confidence は元の値を保持し、null は不明を示します。校正済みとはみなしません。selected_by_experimental_policy は実験的な選択、not_assessed は本番採用の未評価を示します。onset_index と blocking_onset_index は 0 始まりです。beat、section、energy は元の解析結果です",
+  "audition.toggle": "再生 / 一時停止",
+  "audition.stop": "試聴を停止",
+  "audition.seek": "カーソルへ移動",
+  "audition.playing": "再生中",
+  "audition.paused": "一時停止",
+  "audition.pausing": "停止処理中",
+  "audition.resuming": "開始処理中",
+  "audition.stopped": "停止済み",
+  "audition.ended": "終了",
+  "audition.failed": "音声エラー",
+  "audition.cursor": "試聴 {state} · 約 {frame} フレーム · 開始 {target}",
+  "audition.help": "Space / パッド左側フェイスボタン：再生・一時停止 · 移動：選択フレームへ · 音声カーソルは描画済み PCM の位置で、出力や入力の遅延ではありません"
 }

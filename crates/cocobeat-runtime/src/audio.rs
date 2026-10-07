@@ -5,7 +5,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-use cocobeat_schema::PlayerId;
+use cocobeat_schema::{PlayerId, SongTime};
 use kira::{
     AudioManager, AudioManagerSettings, DefaultBackend, Frame, Tween,
     backend::cpal::{
@@ -77,7 +77,13 @@ impl AudioOutput {
     }
 
     pub fn start(&mut self) -> Result<(), String> {
+        self.start_at(SongTime::ZERO)
+    }
+
+    /// Starts a new canonical PCM instance at a source frame, without changing any clock mapping
+    pub fn start_at(&mut self, position: SongTime) -> Result<(), String> {
         let song = self.song.as_ref().ok_or("No song has been loaded")?.clone();
+        let song = sound_at(song, position)?;
         self.stop();
         self.music = Some(ControlledSound::new(
             self.manager
@@ -322,13 +328,20 @@ fn immediate() -> Tween {
     }
 }
 
-pub(crate) fn sound_data(frames: Vec<Frame>) -> StaticSoundData {
+pub fn sound_data(frames: Vec<Frame>) -> StaticSoundData {
     StaticSoundData {
         sample_rate: dev_song::SAMPLE_RATE,
         frames: frames.into(),
         settings: StaticSoundSettings::default(),
         slice: None,
     }
+}
+
+fn sound_at(song: StaticSoundData, position: SongTime) -> Result<StaticSoundData, String> {
+    if song.sample_rate != 48_000 || !(0..song.frames.len() as i64).contains(&position.frames()) {
+        return Err("Playback start must be inside canonical PCM".into());
+    }
+    Ok(song.start_position(position.frames() as f64 / 48_000.0))
 }
 
 pub(crate) fn probe_duration_frames(seconds: u32) -> Result<u32, String> {
@@ -514,6 +527,43 @@ mod tests {
         callback(&mut audio);
         assert_eq!(sound.state(), PlaybackState::Playing);
         assert!(sound.handle.position() > 0.0);
+    }
+
+    #[test]
+    fn canonical_start_positions_reject_edges_and_render_from_requested_source_frame() {
+        let mut audio = mock_audio();
+        let data = sound_data(
+            (0..48_000)
+                .map(|i| Frame::from_mono(i as f32 / 48_000.0))
+                .collect(),
+        );
+        for frame in [-1, 48_000, i64::MAX] {
+            assert!(sound_at(data.clone(), SongTime::from_frames(frame)).is_err());
+        }
+        let mut noncanonical = data.clone();
+        noncanonical.sample_rate = 44_100;
+        assert!(sound_at(noncanonical, SongTime::ZERO).is_err());
+        let mut sound = ControlledSound::new(
+            audio
+                .play(sound_at(data, SongTime::from_frames(24_000)).unwrap())
+                .unwrap(),
+        );
+        assert_eq!(sound.handle.position(), 0.5);
+        callback(&mut audio);
+        callback(&mut audio);
+        assert!(sound.handle.position() > 0.5);
+        sound.paused = true;
+        sound.reconcile();
+        callback(&mut audio);
+        assert_eq!(sound.state(), PlaybackState::Paused);
+        let paused = sound.handle.position();
+        callback(&mut audio);
+        assert_eq!(sound.handle.position(), paused);
+        sound.paused = false;
+        sound.reconcile();
+        callback(&mut audio);
+        callback(&mut audio);
+        assert!(sound.handle.position() > paused);
     }
 
     #[test]

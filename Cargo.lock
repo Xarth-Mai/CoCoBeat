@@ -1774,6 +1774,7 @@ name = "cocobeat-lab"
 version = "0.1.0"
 dependencies = [
  "bevy",
+ "blake3",
  "cocobeat-core",
  "cocobeat-editor",
  "cocobeat-media",
@@ -1782,6 +1783,7 @@ dependencies = [
  "cocobeat-runtime",
  "cocobeat-schema",
  "cocobeat-stage",
+ "kira",
  "serde",
  "serde_json",
 ]

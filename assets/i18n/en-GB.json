@@ -138,7 +138,6 @@
   "display.work_area_windows": "Using the Windows monitor work area",
   "display.work_area_x11": "Using the X11 desktop work area intersected with this monitor",
   "workbench.title": "CoCoBeat · Anchor workbench",
-  "workbench.silent": "Silent content tool · 48,000 frames/s",
   "workbench.source": "Source: {identity}",
   "workbench.owner_none": "Enter / click / Start to take control",
   "workbench.owner_keyboard": "Control: keyboard + mouse · Start transfers control",
@@ -204,5 +203,17 @@
   "candidates.row": "Candidate {index} · {kind} · {frame} frames",
   "candidates.legend": "Candidate marks show proposal decisions; source chart Anchors remain below the waveform",
   "candidates.help": "Read only · Browse evidence and blockers · Adoption requires an explicit CLI selection",
-  "candidates.fields": "confidence retains the source value; null means unknown, and no calibration is claimed. selected_by_experimental_policy is an experimental selection; not_assessed means production admission has not been assessed. onset_index and blocking_onset_index are zero-based. Beat, section and energy context are original analysis facts"
+  "candidates.fields": "confidence retains the source value; null means unknown, and no calibration is claimed. selected_by_experimental_policy is an experimental selection; not_assessed means production admission has not been assessed. onset_index and blocking_onset_index are zero-based. Beat, section and energy context are original analysis facts",
+  "audition.toggle": "Play / Pause",
+  "audition.stop": "Stop audio",
+  "audition.seek": "Seek to cursor",
+  "audition.playing": "Playing",
+  "audition.paused": "Paused",
+  "audition.pausing": "Pausing",
+  "audition.resuming": "Starting",
+  "audition.stopped": "Stopped",
+  "audition.ended": "Ended",
+  "audition.failed": "Audio error",
+  "audition.cursor": "Audio {state} · ~{frame} frames · cue {target}",
+  "audition.help": "Space / left face button: play/pause · Seek: use selected frame · Audio cursor describes rendered PCM, not speaker or input latency"
 }

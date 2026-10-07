@@ -51,6 +51,7 @@ impl Controls {
         match menu_access(&mut self.owner, source, claim) {
             MenuAccess::Action => true,
             MenuAccess::Claimed => {
+                state.audition.pause();
                 state.document.cancel();
                 false
             }
@@ -127,6 +128,9 @@ pub(super) fn capture(
         .filter(|event| event.window == window_id)
     {
         controls.focused = event.focused;
+        if !event.focused {
+            state.audition.pause();
+        }
         state.document.cancel();
         used = true;
     }
@@ -141,6 +145,7 @@ pub(super) fn capture(
             if event.disconnected() {
                 if controls.owner == Some(InputSource::Pad(event.gamepad)) {
                     controls.owner = None;
+                    state.audition.pause();
                     state.document.cancel();
                     used = true;
                 }
@@ -360,6 +365,7 @@ fn handled_key(key: KeyCode) -> bool {
     matches!(
         key,
         KeyCode::Enter
+            | KeyCode::Space
             | KeyCode::Escape
             | KeyCode::Tab
             | KeyCode::ArrowLeft
@@ -482,6 +488,10 @@ fn key(
         }
         return true;
     }
+    if key == KeyCode::Space && !state.document.editing_frame && state.focus != Focus::Frame {
+        state.action(Action::PlayPause, true, width, exit);
+        return true;
+    }
     if state.focus == Focus::Frame && !state.is_read_only() {
         if !state.document.editing_frame {
             state.document.begin_frame();
@@ -577,6 +587,7 @@ impl PadCommand {
             Self::Button(button) => matches!(
                 button,
                 GamepadButton::Start
+                    | GamepadButton::West
                     | GamepadButton::South
                     | GamepadButton::East
                     | GamepadButton::DPadLeft
@@ -640,6 +651,7 @@ fn pad_command(
         GamepadButton::LeftTrigger | GamepadButton::RightTrigger => {
             cycle_focus(state, button == GamepadButton::LeftTrigger)
         }
+        GamepadButton::West => state.action(Action::PlayPause, false, width, exit),
         GamepadButton::East | GamepadButton::Start => state.close(exit),
         GamepadButton::South => match state.focus {
             Focus::Toolbar(i) => state.action(state.toolbar()[i], false, width, exit),
@@ -822,7 +834,7 @@ mod tests {
     #[test]
     fn mixed_owners_consume_claims_and_block_same_batch_secondary_actions() {
         let (mut app, window, first, second) = app();
-        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(2);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(5);
         key(&mut app, window, KeyCode::Enter, true);
         pad(&mut app, first, GamepadButton::Start, true);
         pad(&mut app, second, GamepadButton::Start, true);
@@ -1284,6 +1296,64 @@ mod tests {
     }
 
     #[test]
+    fn audition_input_uses_the_menu_owner_and_preserves_raw_record_positions() {
+        let (mut app, window, first, second) = app();
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.replay = Some(replay::fixture());
+            state.document.cursor = -1;
+        }
+        tap(&mut app, window, KeyCode::Space);
+        assert!(!app.world().resource::<Workbench>().audition.playing);
+        assert_eq!(app.world().resource::<Workbench>().document.cursor, -1);
+        app.world_mut().resource_mut::<Workbench>().document.cursor = 1_200;
+        tap(&mut app, window, KeyCode::Space);
+        assert!(app.world().resource::<Workbench>().audition.playing);
+        pad(&mut app, second, GamepadButton::West, true);
+        app.update();
+        assert!(app.world().resource::<Workbench>().audition.playing);
+        pad(&mut app, first, GamepadButton::Start, true);
+        app.update();
+        assert_eq!(
+            app.world().resource::<Controls>().owner,
+            Some(InputSource::Pad(first))
+        );
+        assert!(!app.world().resource::<Workbench>().audition.playing);
+        pad(&mut app, first, GamepadButton::West, true);
+        app.update();
+        assert!(app.world().resource::<Workbench>().audition.playing);
+        app.world_mut().write_message(WindowFocused {
+            window,
+            focused: false,
+        });
+        app.update();
+        assert!(!app.world().resource::<Workbench>().audition.playing);
+        app.world_mut().write_message(WindowFocused {
+            window,
+            focused: true,
+        });
+        pad(&mut app, first, GamepadButton::West, true);
+        app.update();
+        assert!(!app.world().resource::<Workbench>().audition.playing);
+        pad(&mut app, first, GamepadButton::West, false);
+        pad(&mut app, first, GamepadButton::West, true);
+        app.update();
+        assert!(app.world().resource::<Workbench>().audition.playing);
+        app.world_mut().write_message(GamepadConnectionEvent {
+            gamepad: first,
+            connection: GamepadConnection::Disconnected,
+        });
+        app.update();
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        assert!(!state.audition.playing);
+        assert_eq!(state.document.cursor, 1_200);
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.document.editor.undo().is_err());
+        assert!(state.saving.is_none());
+    }
+
+    #[test]
     fn replay_focus_toolbar_and_dense_rows_follow_the_read_only_controls() {
         let (mut app, window, first, _) = app();
         app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
@@ -1296,6 +1366,9 @@ mod tests {
         for expected in [
             Focus::Toolbar(1),
             Focus::Toolbar(2),
+            Focus::Toolbar(3),
+            Focus::Toolbar(4),
+            Focus::Toolbar(5),
             Focus::Timeline,
             Focus::List,
             Focus::Details,
@@ -1310,10 +1383,10 @@ mod tests {
         tap(&mut app, window, KeyCode::Tab);
         assert_eq!(app.world().resource::<Workbench>().focus, Focus::List);
         key(&mut app, window, KeyCode::ShiftLeft, false);
-        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(0);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(3);
         tap(&mut app, window, KeyCode::Enter);
         assert!(app.world().resource::<Workbench>().document.span < 48_000);
-        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(1);
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Toolbar(4);
         app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Pad(first));
         pad(&mut app, first, GamepadButton::South, true);
         app.update();

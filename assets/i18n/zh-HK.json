@@ -138,7 +138,6 @@
   "display.work_area_windows": "使用 Windows 回報的顯示器工作區",
   "display.work_area_x11": "使用 X11 桌面工作區與目前顯示器的交集範圍",
   "workbench.title": "CoCoBeat · Anchor 工作台",
-  "workbench.silent": "靜音內容工具 · 每秒 48,000 幀",
   "workbench.source": "來源：{identity}",
   "workbench.owner_none": "Enter / 點擊 / Start 接管操作",
   "workbench.owner_keyboard": "主控：鍵盤＋滑鼠 · Start 可接管",
@@ -204,5 +203,17 @@
   "candidates.row": "候選 {index} · {kind} · {frame} 幀",
   "candidates.legend": "候選標記顯示提案決策，來源譜面的 Anchor 保留在波形下方",
   "candidates.help": "唯讀 · 瀏覽證據及阻擋項 · 採用須透過 CLI 明確選擇",
-  "candidates.fields": "confidence 保留來源數值，null 表示未知，未聲明已校準；selected_by_experimental_policy 僅表示實驗策略選擇，not_assessed 表示尚未評估正式使用資格；onset_index 與 blocking_onset_index 均從 0 開始；beat、section、energy 上下文均為原分析事實"
+  "candidates.fields": "confidence 保留來源數值，null 表示未知，未聲明已校準；selected_by_experimental_policy 僅表示實驗策略選擇，not_assessed 表示尚未評估正式使用資格；onset_index 與 blocking_onset_index 均從 0 開始；beat、section、energy 上下文均為原分析事實",
+  "audition.toggle": "播放 / 暫停",
+  "audition.stop": "停止試聽",
+  "audition.seek": "定位到游標",
+  "audition.playing": "播放中",
+  "audition.paused": "已暫停",
+  "audition.pausing": "正在暫停",
+  "audition.resuming": "正在啟動",
+  "audition.stopped": "已停止",
+  "audition.ended": "已結束",
+  "audition.failed": "音訊錯誤",
+  "audition.cursor": "試聽 {state} · 約 {frame} 幀 · 定位 {target}",
+  "audition.help": "空白鍵 / 手掣左側面鍵：播放暫停 · 定位：使用所選幀 · 試聽游標是渲染 PCM 位置，不代表揚聲器或輸入延遲"
 }

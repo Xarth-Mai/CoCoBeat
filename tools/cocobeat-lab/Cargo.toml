@@ -18,6 +18,8 @@ cocobeat-net.workspace = true
 bevy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+blake3.workspace = true
+kira.workspace = true
 
 [lints]
 workspace = true

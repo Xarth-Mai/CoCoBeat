@@ -1,0 +1,307 @@
+{
+  "observation_version": 1,
+  "milestone": "Workbench audition software controls and separate song cursor",
+  "production_delivery": [
+    "Lazy Kira output after complete canonical package validation, same decode also builds stereo waveform",
+    "Play/Pause, Stop, Seek to selected song frame; paused Seek defers new sound until explicit Play",
+    "Same-batch initial Play/Pause coalesces safely and does not resume a nonexistent handle",
+    "Playback source cursor, requested target and natural EOF remain separate from raw Replay/edit cursor",
+    "Loss of focus, owner claim/disconnect, close and export control audio while preserving unsaved edits and read-only restrictions"
+  ],
+  "software_status": "PASS_IN_RECORDED_SCOPES",
+  "checks": [
+    {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "cocobeat-lab",
+        "--locked"
+      ],
+      "tests": 32,
+      "scope": "Before final same-batch Play/Pause and read-only notice fixes",
+      "log": {
+        "path": "target/workbench-audition-20261007/lab-tests-final.log",
+        "sha256": "264b83326cc011a59c0d945a482bf9358b715464d21fc64594b8394339325129"
+      }
+    },
+    {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "cocobeat-lab",
+        "--locked",
+        "workbench"
+      ],
+      "tests": 17,
+      "scope": "Final audition commands, actual capture menu ownership/held/focus/disconnect, read-only notice and raw positions",
+      "log": {
+        "path": "target/workbench-audition-20261007/workbench-tests-notice-final.log",
+        "sha256": "e53d128440e5e9929e6678596d32980d46138f622857a8d51150a75bc6fd6d28"
+      }
+    },
+    {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "cocobeat-runtime",
+        "--locked",
+        "canonical_start_positions"
+      ],
+      "tests": 1,
+      "scope": "Actual Kira MockBackend callbacks, exact half-song start and pause/resume; no output device",
+      "log": {
+        "path": "target/workbench-audition-20261007/runtime-start-at.log",
+        "sha256": "5161ef600158aa8c27abb8c18a596e63971582e3854cf6559ba5a52a9cbc4980"
+      }
+    },
+    {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "tests": null,
+      "scope": "After same-batch command correction, before final notice prepend; root final workspace gate remains separate",
+      "log": {
+        "path": "target/workbench-audition-20261007/clippy.log",
+        "sha256": "b0b2d9039491965c90fbd38e6c0197cdd3f7b4d6f386c71cd6fcbd95b703ddae"
+      }
+    },
+    {
+      "status": "PASS",
+      "exit_code": 0,
+      "command": [
+        "cargo",
+        "test",
+        "-p",
+        "cocobeat-runtime",
+        "--locked",
+        "catalogs_have_matching_keys_and_placeholders"
+      ],
+      "tests": 1,
+      "scope": "Platform-neutral help catalogs, before final Korean wording refinement; final 13x217 key and placeholder invariant rechecked in JSON after wording correction",
+      "log": {
+        "path": "target/workbench-audition-20261007/catalog-post-freeze.log",
+        "sha256": "ff86e155fd5266045c6b006c47f45410bac495318f8c64c1647aac0cdd26f4c6"
+      }
+    }
+  ],
+  "formal_lab_build": {
+    "status": "PASS",
+    "exit_code": 0,
+    "source_inputs": 437,
+    "inputs_unchanged": true,
+    "scope": "Recorded current workspace sources at main cf8d2ec plus uncommitted Stage/Replay, source import and workbench audition; native debug build, not immutable shipping release",
+    "record": {
+      "path": "target/software-integration-20261007/lab-build-result.json",
+      "sha256": "025bb032a78dec6f0d7ea5e0a8643d6e57650b6e32c0c6a9ab34b8d9205cb728"
+    },
+    "cargo_json": {
+      "path": "target/software-integration-20261007/lab-retry-build.jsonl",
+      "sha256": "02faa3ee8868ee31da116416e8b188020d9030914989e562ec07db4a0e46b408"
+    },
+    "source_before": {
+      "path": "target/software-integration-20261007/lab-retry-source-before.json",
+      "sha256": "8ebfa66f2a9aff8f1babc29fb6622a5b90ded16110603083b76db39bccca5bf0"
+    },
+    "source_after": {
+      "path": "target/software-integration-20261007/lab-retry-source-after.json",
+      "sha256": "8ebfa66f2a9aff8f1babc29fb6622a5b90ded16110603083b76db39bccca5bf0"
+    },
+    "fixed_binary_sha256": "2b2b9498233c11f7bb8342b6fd296f1d5edb118091a6a1379442f99144861c42"
+  },
+  "native_gui": {
+    "status": "PASS",
+    "scope": "Constructed UI software control, copied production modules and recorded exact externs; the driver explicitly injects visual playback position/target/status, no audition device is opened",
+    "helper_binary": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-audition-20261007/gui-notice-final/replay-workbench-check",
+      "sha256": "2815cb7d6312eb0ab41de3ac83c99d314026a7ea8efcefbc5a46f9fdc5dbd06b"
+    },
+    "build": {
+      "path": "target/workbench-audition-20261007/gui-native/build.json",
+      "sha256": "f2d2ef15bd8dce0687bee37950fc35cd649c245025a41b203ba6937bef51007e"
+    },
+    "run": {
+      "path": "target/workbench-audition-20261007/gui-native/run.json",
+      "sha256": "770b802ba811f2f454450e7e01bb1e1392247e2f710429314665281db41099a3"
+    },
+    "visual": {
+      "path": "target/workbench-audition-20261007/gui-native/visual-review.json",
+      "sha256": "f30ec07de331ea53f6f0f34713ee0cae340497d5c1c15caa498a32fba1a08b82"
+    },
+    "source_sha256": {
+      "anchors.rs": "d9fe61ff32f0e1f71db2f2082fe8bc3e40718b88213e18718a4c02fdf80a96c7",
+      "replay.rs": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1",
+      "workbench.rs": "71ce7ad2b9647b45c8e7f08a9c6e99b671c27930ddd43dfafec783c4722e7f0b",
+      "workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "workbench/replay.rs": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4",
+      "workbench/candidates.rs": "3e8d97837da7f73604502afe53a48f7f67278eb90036b59acb66aa00ce3e102b",
+      "workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    "locale_keys": 217,
+    "cases": [
+      {
+        "size": [
+          1280,
+          800
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "png_sha256": {
+          "idle-toolbar.png": "957692fce7123c7aab4f35dee4547a12920d9a90bd039982cf2c7d7122ac03da",
+          "independent-audio-cursor.png": "ad948fc0dccfcec2e03454299924560c80ac54ce710f48af1debcc8ade0e7450"
+        },
+        "finished": true
+      },
+      {
+        "size": [
+          640,
+          480
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "png_sha256": {
+          "idle-toolbar.png": "174e08102cb8e3f6c1c1a6e8a54e48b0202d6b9bbc0b00fd6674c0191d938432",
+          "independent-audio-cursor.png": "160d8103e6edfae24ae84cd8d8c11e84c03951db777b2a63e8ef1638ca4adbb7"
+        },
+        "finished": true
+      }
+    ],
+    "total_png": 4,
+    "agent_visual_status": "PASS",
+    "root_visual_status": "PASS",
+    "root_review_scope": "Root viewed the same four exact PNGs individually: both toolbars intact, white edit cursor separate from orange audition cursor and position/target labels, capture-time text readable without overlap; constructed UI display only",
+    "reviewed_png_sha256": {
+      "target/workbench-audition-20261007/gui-native/case-1280/idle-toolbar.png": "957692fce7123c7aab4f35dee4547a12920d9a90bd039982cf2c7d7122ac03da",
+      "target/workbench-audition-20261007/gui-native/case-1280/independent-audio-cursor.png": "ad948fc0dccfcec2e03454299924560c80ac54ce710f48af1debcc8ade0e7450",
+      "target/workbench-audition-20261007/gui-native/case-640/idle-toolbar.png": "174e08102cb8e3f6c1c1a6e8a54e48b0202d6b9bbc0b00fd6674c0191d938432",
+      "target/workbench-audition-20261007/gui-native/case-640/independent-audio-cursor.png": "160d8103e6edfae24ae84cd8d8c11e84c03951db777b2a63e8ef1638ca4adbb7"
+    }
+  },
+  "retained_failures": [
+    {
+      "status": "FAIL",
+      "phase": "initial lab tests",
+      "passed": 30,
+      "failed": 1,
+      "reason": "Existing test selected stale toolbar index 2 (now Seek) rather than Add at index 5; production owner policy was preserved",
+      "record": {
+        "path": "target/workbench-audition-20261007/initial-lab-test.json",
+        "sha256": "6974d5b9d821f641327b42fae4effd8a478445cee278c4882e74d11c077bbee1"
+      },
+      "raw_log": "NOT RECORDED locally; original tool console retained; record is an honest summary"
+    },
+    {
+      "status": "FAIL",
+      "phase": "harness prepare",
+      "reason": "Instrumentation assumed a one-line add_systems call after rustfmt had split it",
+      "record": {
+        "path": "target/workbench-audition-20261007/gui/prepare-failure.json",
+        "sha256": "4c0e8544f08fbb2909f42c46a9602d13c142399a4841723d0cf68c03eef1d12d"
+      }
+    },
+    {
+      "status": "FAIL_INPUT_DRIFT",
+      "phase": "first official lab build",
+      "reason": "Build succeeded while workbench.rs/ui.rs changed for necessary read-only error display; later source identity cannot be attributed to this attempt",
+      "record": {
+        "path": "target/software-integration-20261007/lab-first-attempt.json",
+        "sha256": "231630c242cbb6231c034c385102b27158028f7d9b4d9077c19e4526b9e0e189"
+      }
+    },
+    {
+      "status": "FAIL_ENVIRONMENT",
+      "phase": "sandbox native GUI",
+      "reason": "gamescope could not find a Vulkan physical device before Bevy/helper startup, no PNG",
+      "record": {
+        "path": "target/workbench-audition-20261007/gui-notice-final/run.json",
+        "sha256": "87c6d38ea6340eae89400502bb45c84f7afb8e573361499192b3f9360cb6d6ce"
+      },
+      "log": {
+        "path": "target/workbench-audition-20261007/gui-notice-final/case-1280/run.log",
+        "sha256": "1315b32142f43c5903e297e117ce49335ca726d6b9a83b9cb1fe3f02de7ac23d"
+      }
+    }
+  ],
+  "temporary_catalog_edit": {
+    "status": "RESTORED_TO_FROZEN_IDENTITY",
+    "reason": "Audition GUI finished; root clarified network419 source freeze was still active",
+    "provisional_edit": {
+      "path": "target/workbench-audition-20261007/post-gui-label-edit.json",
+      "sha256": "694dfbd627816c12223dec36b9bd731650a343dc59a1dee6503caf9ab3d7c1c5"
+    },
+    "restore": {
+      "path": "target/workbench-audition-20261007/label-edit-restored-for-network-freeze.json",
+      "sha256": "acb7b9e97c1a957cb0f92a488d075825c9f8e964846749316d897fd654a3368a"
+    },
+    "note": "Does not erase or certify another thread source postcheck; any sampled drift belongs to that separate record"
+  },
+  "review": "Independent final correctness and ponytail review: Lean already. Ship.",
+  "not_run": [
+    "Actual workbench output-device audition",
+    "Physical keyboard/gamepad or mixed-control hardware",
+    "Speaker or input latency measurement",
+    "Human audition or calibration"
+  ],
+  "whole_commit_or_shipping_immutable_claim": false,
+  "post_freeze_labels": {
+    "status": "PASS",
+    "scope": "Only audition.help changed after network agent explicitly released419-source freeze; generic left-face-button terminology for GamepadButton::West instead of Xbox-specific X",
+    "record": {
+      "path": "target/workbench-audition-20261007/post-freeze-labels.json",
+      "sha256": "a9c73a603c05dd3e2e5e5371c55afa079d600104e787467cd2020a97dbfba2aa"
+    },
+    "keys": 217,
+    "catalog_count": 13,
+    "placeholder_match": true,
+    "historical_gui": "Previous four captures and their input hashes retain the old capture-time label; no new physical, actual callback or graphical assertion",
+    "review_correction": "Korean explicitly says left button in front face-button group, avoiding confusion with left directional buttons"
+  },
+  "root_final_code_gates": {
+    "status": "PASS",
+    "scope": "Source import/audition and adjacent Stage/network workspace before visual Replay development; same runtime/lab code as staged milestone, CLI arm later changed by rustfmt only; no final-commit or shipping claim",
+    "checks": [
+      {
+        "command": "cargo clippy --locked -p cocobeat-runtime -p cocobeat-lab --all-targets -- -D warnings",
+        "exit_code": 0,
+        "log": "target/software-integration-20261007/final-clippy.log",
+        "sha256": "2e1cd792b9df93176e41e746e7c772207ad634ddedea781e6b8f37a39b4fc917"
+      },
+      {
+        "command": "cargo run --locked -p xtask -- boundaries",
+        "exit_code": 0,
+        "log": "target/software-integration-20261007/final-boundaries.log",
+        "sha256": "99675c0191f515b54f533dede017f19f3e637f699c50c87e5214f172ddfefffc"
+      },
+      {
+        "command": "cargo fmt --all -- --check",
+        "exit_code": 0,
+        "log": "target/software-integration-20261007/final-fmt-retry.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "retained_fmt_failure": {
+      "log": "target/software-integration-20261007/final-fmt.log",
+      "sha256": "e5c2be8dbca527fd08225bfd536f8bc3a1883f3691c5ccc13cfc41dc6e2eb08e",
+      "reason": "Formatting of newly added import-authored-package CLI arm; rustfmt corrected it and retry passed"
+    }
+  }
+}

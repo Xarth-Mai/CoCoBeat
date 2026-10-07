@@ -1,6 +1,6 @@
 # Anchor 候选工作台受控验证
 
-复用 Replay 检查脚本的哈希与 owned process group 清理，复制同一组七个生产模块，仅在工作台副本注入窗口尺寸、合成键盘驱动与 Bevy 原生截图；每次使用新的证据目录，脚本不会调用 Cargo
+复用 Replay 检查脚本的哈希与 owned process group 清理，复制同一组八个生产模块，仅在工作台副本注入窗口尺寸、合成键盘驱动与 Bevy 原生截图；每次使用新的证据目录，脚本不会调用 Cargo
 
 ```sh
 python3 tools/candidates-workbench-check/check.py prepare NEW_EVIDENCE_DIR
@@ -25,3 +25,5 @@ helper 的 `--fixture NEW_DIRECTORY` 使用正式包构建器和候选编译器�
 此前的旧 catalog 两项测试失败、QA 浮点类型不一致、Wayland socket 路径过长和自动断言通过但选中证据在首屏之外的视觉失败独立保留；最终修复把选中证据放在详情顶部，原事实及原失败记录保持，`run.json` 仍记录当时未目检，后续目检结论以单独 `visual-review.json` 为准
 
 该批链接的 debug Stage 产物包含当时未提交的 `compile_version`／版本 getter；候选工作台只调用既有默认编译行为，不调用新增入口，此证据不证明整个提交的 Cargo 构建或历史 Stage 画面复现。观察清单记录运行时 README 的旧哈希，本段说明在运行后加入，不改变原运行记录
+
+试听接线后的复现同步复制 `workbench/audition.rs` 并链接同一 Kira 产物，只读工具栏增为六项；这些既有审阅控制不启动音频，原冻结证据的源码与依赖哈希保留历史值

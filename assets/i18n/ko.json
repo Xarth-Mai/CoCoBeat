@@ -138,7 +138,6 @@
   "display.work_area_windows": "Windows에서 보고한 모니터 작업 영역을 사용합니다",
   "display.work_area_x11": "X11 바탕 화면 작업 영역과 현재 모니터가 겹치는 범위를 사용합니다",
   "workbench.title": "CoCoBeat · Anchor 작업대",
-  "workbench.silent": "소리 없는 콘텐츠 도구 · 초당 48,000 프레임",
   "workbench.source": "원본: {identity}",
   "workbench.owner_none": "Enter / 클릭 / Start로 조작 권한 얻기",
   "workbench.owner_keyboard": "조작: 키보드＋마우스 · Start로 조작 권한 전환",
@@ -204,5 +203,17 @@
   "candidates.row": "후보 {index} · {kind} · {frame} 프레임",
   "candidates.legend": "후보 표시는 제안의 판단을 나타내며 원본 차트의 Anchor는 파형 아래에 유지됩니다",
   "candidates.help": "읽기 전용 · 근거와 차단 항목 확인 · 채택하려면 CLI에서 명시적으로 선택해야 합니다",
-  "candidates.fields": "confidence는 원본 값을 유지하며 null은 알 수 없음을 뜻합니다. 보정된 값으로 간주하지 않습니다. selected_by_experimental_policy는 실험적 선택이고 not_assessed는 정식 사용 평가가 없음을 뜻합니다. onset_index와 blocking_onset_index는 0부터 시작합니다. beat, section, energy는 원본 분석 정보입니다"
+  "candidates.fields": "confidence는 원본 값을 유지하며 null은 알 수 없음을 뜻합니다. 보정된 값으로 간주하지 않습니다. selected_by_experimental_policy는 실험적 선택이고 not_assessed는 정식 사용 평가가 없음을 뜻합니다. onset_index와 blocking_onset_index는 0부터 시작합니다. beat, section, energy는 원본 분석 정보입니다",
+  "audition.toggle": "재생 / 일시 정지",
+  "audition.stop": "미리 듣기 중지",
+  "audition.seek": "커서로 이동",
+  "audition.playing": "재생 중",
+  "audition.paused": "일시 정지",
+  "audition.pausing": "정지 처리 중",
+  "audition.resuming": "시작 중",
+  "audition.stopped": "중지됨",
+  "audition.ended": "종료됨",
+  "audition.failed": "오디오 오류",
+  "audition.cursor": "오디오 {state} · 약 {frame} 프레임 · 시작 {target}",
+  "audition.help": "Space / 패드 전면 버튼 중 왼쪽 버튼: 재생·일시 정지 · 이동: 선택 프레임 사용 · 오디오 커서는 렌더링된 PCM 위치이며 스피커나 입력 지연이 아닙니다"
 }

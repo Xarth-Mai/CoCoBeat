@@ -22,6 +22,7 @@ pub(super) enum Part {
     Title,
     Owner,
     Cursor,
+    Audition,
     Range,
     ListTab,
     Row(usize),
@@ -63,6 +64,7 @@ struct Raster {
 struct PaintKey {
     viewport: (u32, u32, i64, i64),
     cursor: i64,
+    audition: Option<i64>,
     selected: Option<u64>,
     drag: Option<(u64, i64)>,
     revision: u64,
@@ -71,6 +73,9 @@ struct PaintKey {
 
 fn key(action: Action) -> &'static str {
     match action {
+        Action::PlayPause => "audition.toggle",
+        Action::Stop => "audition.stop",
+        Action::Seek => "audition.seek",
         Action::Undo => "workbench.undo",
         Action::Redo => "workbench.redo",
         Action::Add => "workbench.add",
@@ -109,6 +114,7 @@ pub(super) fn setup(
         (Part::Title, 20.0),
         (Part::Owner, 13.0),
         (Part::Cursor, 14.0),
+        (Part::Audition, 12.0),
         (Part::Range, 12.0),
     ] {
         commands.spawn((Text::default(), font(size), TextColor(INK), node(), part));
@@ -354,14 +360,10 @@ pub(super) fn update(
     let compact = w < 1000.0;
     let columns = state.toolbar().len().min(if compact { 4 } else { 8 });
     let toolbar_y = 65.0;
-    let toolbar_height = if state.toolbar().len() > columns {
-        72.0
-    } else {
-        38.0
-    };
+    let toolbar_height = state.toolbar().len().div_ceil(columns) as f32 * 38.0;
     let wave_y = toolbar_y + toolbar_height + 10.0;
     let wave_height = (h * 0.27).clamp(80.0, 240.0);
-    let bottom_y = wave_y + wave_height + 44.0;
+    let bottom_y = wave_y + wave_height + 66.0;
     let bottom_height = (h - bottom_y - 12.0).max(30.0);
     let full_width = (w - 24.0).max(1.0);
     let list_width = if compact {
@@ -574,6 +576,36 @@ pub(super) fn update(
                     ],
                 )
             }
+            Part::Audition => {
+                place(
+                    &mut node,
+                    rect(12.0, wave_y + wave_height + 43.0, full_width, 20.0),
+                    true,
+                );
+                state.text(
+                    "audition.cursor",
+                    [
+                        (
+                            "state",
+                            state.locale.text(state.audition.status_key()).to_owned(),
+                        ),
+                        (
+                            "frame",
+                            state
+                                .audition
+                                .position
+                                .map_or_else(|| "—".into(), |frame| frame.to_string()),
+                        ),
+                        (
+                            "target",
+                            state
+                                .audition
+                                .target
+                                .map_or_else(|| "—".into(), |frame| frame.to_string()),
+                        ),
+                    ],
+                )
+            }
             Part::Row(i) => {
                 if let Some(replay) = &state.replay {
                     replay.row(view.first_row + i, state.locale)
@@ -616,9 +648,14 @@ pub(super) fn update(
                     .as_ref()
                     .expect("Replay details require a recording");
                 [
+                    state.notice.clone(),
                     replay.details(state.locale),
                     state.locale.text("replay.help").to_owned(),
+                    state.locale.text("audition.help").to_owned(),
                 ]
+                .into_iter()
+                .filter(|line| !line.is_empty())
+                .collect::<Vec<_>>()
                 .join("\n\n")
             }
             Part::DetailText if state.candidates.is_some() => {
@@ -627,9 +664,14 @@ pub(super) fn update(
                     .as_ref()
                     .expect("Candidate details require a proposal");
                 [
+                    state.notice.clone(),
                     candidates.details(state.locale),
                     state.locale.text("candidates.help").to_owned(),
+                    state.locale.text("audition.help").to_owned(),
                 ]
+                .into_iter()
+                .filter(|line| !line.is_empty())
+                .collect::<Vec<_>>()
                 .join("\n\n")
             }
             Part::DetailText => {
@@ -713,8 +755,8 @@ pub(super) fn update(
                                 .to_string(),
                         )],
                     ),
-                    state.locale.text("workbench.silent").into(),
                     state.locale.text("workbench.help").into(),
+                    state.locale.text("audition.help").into(),
                     state.locale.text("workbench.pad_help").into(),
                     state.locale.text("workbench.scroll").into(),
                 ]
@@ -745,6 +787,7 @@ pub(super) fn update(
     let paint = PaintKey {
         viewport,
         cursor: doc.cursor,
+        audition: state.audition.position,
         selected: doc.selected,
         drag: doc.drag,
         revision: doc.revision,
@@ -771,6 +814,7 @@ pub(super) fn update(
                 doc,
                 state.replay.as_ref(),
                 state.candidates.as_ref(),
+                state.audition.position,
                 width,
                 height,
             );
@@ -814,6 +858,7 @@ fn paint_wave(
     doc: &Document,
     replay: Option<&replay::ReplayView>,
     candidates: Option<&candidates::CandidateView>,
+    audition: Option<i64>,
     width: u32,
     height: u32,
 ) -> Image {
@@ -940,6 +985,11 @@ fn paint_wave(
             );
         }
     }
+    if let Some(frame) = audition
+        && (doc.start..=doc.start + doc.span).contains(&frame)
+    {
+        line(column(frame), 0, height, [255, 191, 91, 255]);
+    }
     if (doc.start..=doc.start + doc.span).contains(&doc.cursor) {
         line(column(doc.cursor), 0, height, [242, 243, 246, 255]);
     }
@@ -1007,7 +1057,15 @@ mod tests {
             assert_eq!(hit, displayed);
             let raster_width = logical_width.min(4096.0) as u32;
             let pixels = waveform_pixels(&state.wave, &state.document, raster_width, 216);
-            let raster = paint_wave(&pixels, &state.document, None, None, raster_width, 216);
+            let raster = paint_wave(
+                &pixels,
+                &state.document,
+                None,
+                None,
+                None,
+                raster_width,
+                216,
+            );
             let column = raster_width / 4;
             let bytes = raster.data.as_ref().unwrap();
             assert_eq!(
@@ -1056,6 +1114,7 @@ mod tests {
             &state.document,
             state.replay.as_ref(),
             None,
+            None,
             480,
             100,
         );
@@ -1069,6 +1128,7 @@ mod tests {
             &pixels,
             &state.document,
             state.replay.as_ref(),
+            None,
             None,
             480,
             100,
@@ -1095,6 +1155,9 @@ mod tests {
             })
             .id();
         app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut()
+            .resource_mut::<Workbench>()
+            .error("Audition failure fixture".into());
         for scale in [1.0, 1.25, 2.0] {
             app.world_mut()
                 .get_mut::<Window>(window)
@@ -1125,7 +1188,7 @@ mod tests {
                         _ => {}
                     }
                 }
-                assert_eq!(toolbars, 3);
+                assert_eq!(toolbars, 6);
                 let detail = app
                     .world_mut()
                     .query::<(&Part, &Text)>()
@@ -1134,6 +1197,7 @@ mod tests {
                     .unwrap();
                 assert!(detail.contains("\"input_fact_index\": 4"));
                 assert!(detail.contains("\"pending_anchor_count\": 0"));
+                assert!(detail.contains("Audition failure fixture"));
                 assert!(detail.contains("no device timestamps"));
             }
         }
@@ -1168,6 +1232,7 @@ mod tests {
             &state.document,
             None,
             state.candidates.as_ref(),
+            None,
             4,
             100,
         );
@@ -1192,6 +1257,9 @@ mod tests {
             ..default()
         });
         app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut()
+            .resource_mut::<Workbench>()
+            .error("Audition failure fixture".into());
         for details in [false, true] {
             app.world_mut().resource_mut::<Workbench>().details = details;
             app.world_mut().run_system_once(update).unwrap();
@@ -1210,7 +1278,7 @@ mod tests {
                     _ => {}
                 }
             }
-            assert_eq!(toolbars, 3);
+            assert_eq!(toolbars, 6);
             let detail = app
                 .world_mut()
                 .query::<(&Part, &Text)>()
@@ -1220,6 +1288,7 @@ mod tests {
             assert!(detail.contains("\"onset_index\": 3"));
             assert!(detail.contains("\"id\": 4"));
             assert!(detail.contains("not_assessed"));
+            assert!(detail.contains("Audition failure fixture"));
         }
     }
 
