@@ -11,6 +11,7 @@
 | [timing.md](timing.md) | 音乐时间的单位、边界和待测量的不确定性 |
 | [gameplay.md](gameplay.md) | 已实现规则、初始参数与待验证的体验 |
 | [editor.md](editor.md) | 原生波形、歌曲试听、Replay / 候选证据与精确 Anchor 编辑 |
+| [independent-labels.md](independent-labels.md) | 来源绑定的人工标签导入、双人分歧与验收边界 |
 | [source-import.md](source-import.md) | 有界源快照、唯一生产编码器、手工内容四对象导入 |
 | [network-sessions.md](network-sessions.md) | 邀请、四对象接收与 Ready、QUIC 可靠历史、断线前缀与应用完成确认 |
 | [testing.md](testing.md) | 自动检查、硬件实验和真人测试各自证明什么 |

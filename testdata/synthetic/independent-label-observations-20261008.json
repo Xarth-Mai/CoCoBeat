@@ -1,0 +1,1866 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "status": "PASS_SOFTWARE_INDEPENDENT_LABEL_CLI_CONTROLS",
+  "scope": "Constructed independent label record import and explicit item_id comparison mechanism; frozen Linux debug CLI and filesystem controls; no human listening, blind review, confidence calibration or GUI labels editor acceptance",
+  "builds": {
+    "build": {
+      "status": "PASS",
+      "receipt": "target/independent-label-delivery-20261008/build/cocobeat-lab-build-result.json",
+      "base_commit": "499c174f93a3ef42d89c8bebd552cb4e34421a7a",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--message-format=json"
+      ],
+      "source_inputs": 449,
+      "inputs_unchanged": true,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build/source",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build/bin/cocobeat-lab",
+        "sha256": "45975720d9310cb536279bd3943edb6de8e50740b18c6ed803ddd2da8f7ee51b",
+        "bytes": 1474362264,
+        "identity_evidence": "Successful actual compiler/copy receipt and CLI protected before/after binary hashes; record preparer did not rehash binary"
+      },
+      "dependency_artifact_count": 861,
+      "dependency_artifacts": "Full actual artifact hashes retained in original build receipt; not reopened or copied to small raw index"
+    },
+    "build-02": {
+      "status": "PASS",
+      "receipt": "target/independent-label-delivery-20261008/build-02/cocobeat-lab-build-result.json",
+      "base_commit": "499c174f93a3ef42d89c8bebd552cb4e34421a7a",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--message-format=json"
+      ],
+      "source_inputs": 449,
+      "inputs_unchanged": true,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/source",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+        "sha256": "45975720d9310cb536279bd3943edb6de8e50740b18c6ed803ddd2da8f7ee51b",
+        "bytes": 1474362264,
+        "identity_evidence": "Successful actual compiler/copy receipt and CLI protected before/after binary hashes; record preparer did not rehash binary"
+      },
+      "dependency_artifact_count": 861,
+      "dependency_artifacts": "Full actual artifact hashes retained in original build receipt; not reopened or copied to small raw index"
+    }
+  },
+  "build_input_difference": {
+    "changed_file_count": 1,
+    "changed_assertion_count": 2,
+    "changed_file": "tools/cocobeat-lab/src/labels.rs",
+    "before_sha256": "df0a60c7f76f322e6f10090615ef7c553eaa2e1fd608265147bc244fe72c77f1",
+    "after_sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+    "scope": "Only two test assertions changed from length+1<=limit to length<limit to resolve Clippy int_plus_one; production code and emitted binary unchanged",
+    "exact_diff": "--- build/tools/cocobeat-lab/src/labels.rs\n+++ build-02/tools/cocobeat-lab/src/labels.rs\n@@ -379,8 +379,8 @@\n             .collect();\n         let mut right = left.clone();\n         right.reviewer = \"reviewer-b\".into();\n-        assert!(serde_json::to_vec_pretty(&left).unwrap().len() + 1 <= MAX_BYTES);\n-        assert!(serde_json::to_vec_pretty(&right).unwrap().len() + 1 <= MAX_BYTES);\n+        assert!(serde_json::to_vec_pretty(&left).unwrap().len() < MAX_BYTES);\n+        assert!(serde_json::to_vec_pretty(&right).unwrap().len() < MAX_BYTES);\n         let result = compare(&source(), &left, &right).unwrap();\n         assert!(serde_json::to_vec_pretty(&result).unwrap().len() > MAX_BYTES * 2);\n         let path = std::env::temp_dir().join(format!(\n"
+  },
+  "compiled_inputs_sha256": {
+    ".cargo/config.toml": "07e75f80544a833951c1532649fadd0ee21712b40e55b6e74b880b3c11259e36",
+    "Cargo.lock": "bef6050a6fbee3de34b478f5495cb3de7adf6d8c2ee58a82d762b7724c8cfc0e",
+    "Cargo.toml": "5bd1728ac1272a80c5041e476c375f237f10c40b78471a3336b1158d7cbefb89",
+    "apps/cocobeat-game/Cargo.toml": "d58948f5559284dc68f2fb1390e312cce35637d899986bdb8e5ed7ee763e5b0b",
+    "apps/cocobeat-game/app.rc": "5bfd9c4dce6656b5389530a804364482c37fb4b630f2e3f14d8a5bc6c4ee5900",
+    "apps/cocobeat-game/build.rs": "81de396f2a1f8a71c68f45770d94f4fcd37df01cacb64fe861a87fc90723c961",
+    "apps/cocobeat-game/src/main.rs": "6857c4b544686ce6bcfa992238c4ca2eb44ebe236336384215d7da809c1e2466",
+    "assets/brand/PROVENANCE.csv": "a6f5cc3fe050f4bb147f6cbdcce854e8dd3495b556c2931dbc89129c64fd43a9",
+    "assets/brand/README.md": "3cd9663c6bed21c11690617e0167355c67733258f8732886d78b77792c6b6672",
+    "assets/brand/VALIDATION.md": "07581c49d8372308cf384246f5afb6c9c980dd85316e1990e330e2b1b333ee2b",
+    "assets/brand/export_icons.sh": "ea429e2a28ea2c73aa26b3924ad781fa1b0b61a7d96e06bbc1ebb29b4fd320e7",
+    "assets/brand/export_wordmark.py": "68a3017a0c213c378f75e137496ed4e5b96d4adb5eaadfbb7ff0931017af6afd",
+    "assets/brand/icons/cocobeat.ico": "e737bc5b8498e76dfbba99bd04eb2abd0620eb73e9863ca009d689d35c786ecd",
+    "assets/brand/icons/favicon.ico": "bef2d3147301b968738296e9f26208ea30a4a09883525f7fdbd11b708a2ccebf",
+    "assets/brand/icons/symbol-1024.png": "e198ff7c91dac47960dce5134fcb4457908e48f524fcd70f02eccc7f42613b57",
+    "assets/brand/icons/symbol-128.png": "ef68446f0972b7db1d04866fe29ae16e66ab46a2d11c65f9463199cd557ae233",
+    "assets/brand/icons/symbol-16.png": "a752bf818418a38c03e5dd569a7ea58140887f2d42c191d11f0da2e23a595d34",
+    "assets/brand/icons/symbol-256.png": "f62a810f8b0f3ff998fa1c5dfb94a219ea8af0903f2585f46f61a04e0a3e9aae",
+    "assets/brand/icons/symbol-32.png": "157054b16640fc67e6287f1a7996472b48fa9765dbd8f2d1046f0c9614d466b0",
+    "assets/brand/icons/symbol-48.png": "275594daa2d7b8cec3ffb477e68caf07ca0f7cb06473e304c5a6ccfb8fba880f",
+    "assets/brand/icons/symbol-512.png": "aeb5fe43d375d6db9dee32bb366ae86db9784066183854ab948777325d037194",
+    "assets/brand/icons/symbol-64.png": "b3d0e09ffebe0a8a3dd15b4a48f40db444d4cb174a4e89e470696ea07e84a416",
+    "assets/brand/icons/symbol-source.png": "1cf06c0cd2ed82b3db23af2e7474f318dacec0b1574d97eefdb722475183d5f0",
+    "assets/brand/masks/eyes_blue.png": "4d4e3c4e534735fbadab5011e3ab5d857039f05e584ba5a8cf2b3670fa625cc2",
+    "assets/brand/masks/eyes_pink.png": "bbc5a9bed912c36f522c5e80acb9b312df568c3c4c41b7140084967225e525a3",
+    "assets/brand/masks/logo_beat.png": "1463cc59b321b413bd2c44b11db2e8f680b0aa173ac16ea990f5d0d18a09fc97",
+    "assets/brand/masks/logo_co1.png": "9db30d77437cb242f74c20b45208681837510bae568a54bac829b8e724d35bf2",
+    "assets/brand/masks/logo_co2.png": "1aa52044eeb69cdae7af5ef5c769fa6cd47954bafa8546ea46a98e4de5885694",
+    "assets/brand/shaders/brand.wgsl": "8b366125efc50ff71afb70626f9ac0efbd4e76046c4f2f9e77cb6ea4e9be71a0",
+    "assets/brand/validation/Cargo.lock": "e9d6937210e8e1d08425465ad702fe97555f02d823df77a4ab5126516e5e26f5",
+    "assets/brand/validation/Cargo.toml": "a2e1e78d21bb8a0aa9312729a6ab19e5fa21377fa28b7d016b31fc85965a023a",
+    "assets/brand/validation/README.md": "c49205015c9aea6c4e993b13a2678ae48321954bc574cfc0d8fffe742078d177",
+    "assets/brand/validation/main.rs": "ec3055d55da738329d44f5244684734fc3cf6678bdd79419e9f6ffcd94e275eb",
+    "assets/brand/wordmark.svg": "a9957f1386f5d7872d815945599f3f0011f749fdb79824d3c8082131c136d909",
+    "assets/dev/README.md": "dee69117cde375e3bade85604aeec796b9c0fe75d10955cb074a22f5e0092cfe",
+    "assets/dev/vertical_slice/README.md": "56431816096ec0c6afb71ac9275d2a79d7e131d07938d77dbc71c870045cb578",
+    "assets/dev/vertical_slice/anchors.csv": "843ad9d30c2d7eb1322248c91278d769af56422fbcf08422eee01b23b923953d",
+    "assets/dev/vertical_slice/authoring.json": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+    "assets/dev/vertical_slice/event_frames.csv": "0794ba13ab3bd82321299060b504c7cf0fa903f925a25f6c121ebc899c324ce9",
+    "assets/flags/LICENSE": "8f1195d55a2fd315a07d812328470ca9ba2abb78c8d317ff19619d5125e00cea",
+    "assets/flags/README.md": "0cb8e746f1104a65f4ae30d324f7c9df0b1d06a399a155606c85caf59a8591a8",
+    "assets/flags/SOURCES.json": "78abd78782023fda094a494678513a925aa18c0bd711bbdb983de1be711820c8",
+    "assets/flags/br.png": "957956a9c568826967ba92e9a5f050bcadbf3d876f96143881d08f14d895426a",
+    "assets/flags/br.svg": "b0a912826c3ffd7287435ebed66e18fe058e992309c00dc10b430dd41a29ba91",
+    "assets/flags/cn.png": "2d35012a40b9ce5a234c42e9b512aa9189c35a2d42c23905a48c6d05ae26a400",
+    "assets/flags/cn.svg": "981da9bdf82d48e31691f20578cefcb26cf7d0bd95e4ebd5c0df00bdfe988c1a",
+    "assets/flags/de.png": "aa4e7afa762a381b623d8a725f458eb0db05177b0239111c38ccd5ee7766cd21",
+    "assets/flags/de.svg": "efd480af5a154a7651f29da23ee0d09dbc892410fb4041898ddf8face336c575",
+    "assets/flags/fr.png": "dc85d0201a7ee39ec464966e25edffd0f3e9b030b869599b61724926313cb8d7",
+    "assets/flags/fr.svg": "8cdacc8d79bcf210cdca2777a2c0de1f9e5862526877bd3026c9d59ecdcd4578",
+    "assets/flags/gb.png": "cbfe43561d7f0eb157fc4298992f0723c79ce521b62c236fa1b3fda227e2dc46",
+    "assets/flags/gb.svg": "c8be1e7208798a4ae692ee1e937065d498bb29e741943f6172b29118b8ed8066",
+    "assets/flags/hk.png": "a510cca9511203e2fa185c6232da4e5fcb351f819931b53b63e9548af6736566",
+    "assets/flags/hk.svg": "d9d142b2b97ec3b8190bff3802072c1b4f15573a679eead89a0ce59986dcad0c",
+    "assets/flags/jp.png": "dc170ada3b8b1644d31c693b07d1d7016d85a3cecafcd87bb6899d36cb5b4eb6",
+    "assets/flags/jp.svg": "bfea80baf9989383dc4bf7ca594ed95be0df0ff125bfc88d0bfa878eb0198022",
+    "assets/flags/kr.png": "d5fa8bdae10cbe3b2e9186bce8b43e2c92b0a6db73b4e83329df318c7a0714ef",
+    "assets/flags/kr.svg": "7a6cd5b51d0e2841ed8b79b1147ad8a66cf3c09f6344d4a63b5e4413ffa5d15b",
+    "assets/flags/mx.png": "84657c6be243983aca339baaca485a6f26aee3f857f2c86c6beae79fe1115cf1",
+    "assets/flags/mx.svg": "9dbc8ad8b35e52ce7cb686d5cd93bd95e4c0dd8505c184186a740148ffd34901",
+    "assets/flags/ru.png": "2d368f770dcbe8602adfd31758df2c231fef9da7eb92def95c763d5c8d182be9",
+    "assets/flags/ru.svg": "7100aaae51ff3b6a2bf0ca932b3bc518bdc760814725e7cca31d821a26c3dd7c",
+    "assets/flags/tw.png": "cebc9dce0f9df68ece5eace0278f1ccee5fec1f8cf74bb2edf3952533a1c4a14",
+    "assets/flags/tw.svg": "931757f06b9ee751fd1a0cc8dd7cf862e21fdcaf894d10ed7bcc68dabcca59ad",
+    "assets/flags/ua.png": "2cf7c93e5152d82a34ee5cf17413f2923210199dcfeb12c041b6ff3c2a40f944",
+    "assets/flags/ua.svg": "2d869c23ebfefb2ae0a633297c11dee06fcb666ce7b3ca75eba09b7a1a3a03ac",
+    "assets/flags/us.png": "69cc1af9a042a3a028de02f28f5863a91416ab7d35ffbd241a1761bcc7692c6c",
+    "assets/flags/us.svg": "e7be4240cf57987926673708f09233be1ab6bdf35acc7b86bd32a263f197a2a7",
+    "assets/fonts/NotoSans-OFL.txt": "cee9892f9f0cc8fe882c9e9537ee6a89621d86ee7ceaf70b02e2b2b1c25c061a",
+    "assets/fonts/NotoSansCJK-OFL.txt": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2",
+    "assets/fonts/NotoSansHK-Regular.otf": "8a43afea92bb58dfd9027bd7ac6f5b0b2662e2ffb3e7c1edc02c62b2b21924f1",
+    "assets/fonts/NotoSansJP-Regular.otf": "dff723ba59d57d136764a04b9b2d03205544f7cd785a711442d6d2d085ac5073",
+    "assets/fonts/NotoSansKR-Regular.otf": "69975a0ac8472717870aefeab0a4d52739308d90856b9955313b2ad5e0148d68",
+    "assets/fonts/NotoSansSC-Regular.otf": "faa6c9df652116dde789d351359f3d7e5d2285a2b2a1f04a2d7244df706d5ea9",
+    "assets/fonts/NotoSansTC-Regular.otf": "5bab0cb3c1cf89dde07c4a95a4054b195afbcfe784d69d75c340780712237537",
+    "assets/fonts/NotoSans[wdth,wght].ttf": "bfb7bb691513f12e734dc346c03a03f784912432d7e3fa8e56efcf906fe86b3d",
+    "assets/fonts/README.md": "8c0d0feed713c5be8884332e6da49d85b70901ffd8a6b8c8c3720433dc6c90b0",
+    "assets/fonts/SOURCES.json": "b9d46e0ab144acdf76895304d5f56487a66eeef78ce166698f244df47e9826b2",
+    "assets/fonts/verify.py": "f6557891570ee1e1e1a182504ec5d0f4c48a114bdb6d28612d21866e6771c5d7",
+    "assets/i18n/README.md": "a9ca0c77def8d1a643b06101819cb64af3e99db08a97aedded279fa0a16a2f85",
+    "assets/i18n/de.json": "818dbf0e4aac4fe463c4527b49cedda2ee6262725536004ef39c02cdf2cca26f",
+    "assets/i18n/en-GB.json": "486e9f0a61c590a7c7219419b8cf83cc5b50046107faa04a06b77a73d2f3f3ba",
+    "assets/i18n/en-US.json": "486e9f0a61c590a7c7219419b8cf83cc5b50046107faa04a06b77a73d2f3f3ba",
+    "assets/i18n/es-419.json": "e20f1c1b4c44794a9e30f9fc3036047affcfe1797b3d5a2a1f2c5f38b6b763cb",
+    "assets/i18n/fr.json": "35473d6a2877067deb0ca4daad5d31e5abb3cfae07283cbc48e2e835c42b36c8",
+    "assets/i18n/ja.json": "c9982ef01817a0f0f780c1bcc4dfe23421560c3034a193476a06914ae07f6e8e",
+    "assets/i18n/ko.json": "5ced4adb96e9356d50a8a21035d260a30938b8893aaaadc71b59a2411d158cc7",
+    "assets/i18n/pt-BR.json": "6beeb8731619dda1aaeccf00d7164b53b4471c455cb6f2379a8d4ba2ce5f65f8",
+    "assets/i18n/ru.json": "7b82214955fc5e94b3e96d3513b98e68c6f8c7f5dde5dca394141fb673e15f5d",
+    "assets/i18n/uk.json": "ccb3c2f4abad4464441b2b33e412bd648371d9ae544a8c668ae46c3f24e17e58",
+    "assets/i18n/zh-CN.json": "3e04901374a47de4d0923075536188389754f7e4d920bc6422f7b2dbbe23a0b7",
+    "assets/i18n/zh-HK.json": "a92594b0ec74c1df61d3fcfbce842112f5ea5351d86e1d42c9ab427ce1f64942",
+    "assets/i18n/zh-TW.json": "178e4c7ae70d762abdff66c450135e548caac8c52913ba18151c6e16430634d4",
+    "crates/cocobeat-core/Cargo.toml": "97953d32f3820f005fdefe43a7ff7d8693424be78b9f0c655a83959a026ec8b1",
+    "crates/cocobeat-core/src/lib.rs": "b40e2cc325ea009b94cd09476c99ed435dbf8b88aa00c43b009caea91e39a7a4",
+    "crates/cocobeat-editor/Cargo.toml": "83549c0857e31f7d2250b7c944094ab3cf6ea8c437db321b83429465a7ad80bf",
+    "crates/cocobeat-editor/src/lib.rs": "7aa3670d806a23072f338b190dc3a2a8625817c0bf29c6dc5a8dd4fc1874b537",
+    "crates/cocobeat-media/Cargo.toml": "c20d7edf6b1af921ccc4af6ace05f4086c882e4ad409a9aa8984ffe203269990",
+    "crates/cocobeat-media/src/anchors.rs": "696d78496c649bb6dabbe7b24a77d551388084f08c0a5316375bab3c21ae9949",
+    "crates/cocobeat-media/src/audio_asset.rs": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+    "crates/cocobeat-media/src/authored.rs": "2e410c169163fba45ab28a1e1f2f45c461c8eb180244a058705ad1bfb2966044",
+    "crates/cocobeat-media/src/content_codec.rs": "bf3c37315553cdf49479ce111fb5433603e3416f949434ba80ae46c6279cb266",
+    "crates/cocobeat-media/src/decode.rs": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+    "crates/cocobeat-media/src/encode.rs": "d287697d1c5292bddd5d1541c0c88f60b0a9dee567b5a11be8e41522c6e05093",
+    "crates/cocobeat-media/src/lib.rs": "301104eb4a32ff8a07376cce1bb093b18f930d5bbb49c4cca9dc2f5c575a43dd",
+    "crates/cocobeat-media/src/package.rs": "1d62a85638ace493612e3fde66f60683b5850449539df9b284012fd9ea05f225",
+    "crates/cocobeat-media/src/resample.rs": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+    "crates/cocobeat-net/Cargo.toml": "e328736eadc27a4fd28cc995c17dbd21f89dae695b3b0204002380be46f58891",
+    "crates/cocobeat-net/src/clock.rs": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+    "crates/cocobeat-net/src/lib.rs": "4043aa85b02bf34bac08e1912879c3c9ff039c96411d59a3ba841ad0f413bb02",
+    "crates/cocobeat-net/src/live.rs": "9833e1f3ca7b4a2a765714b50902bb0dfc9b378b687c8248a07db8b5e8514ee4",
+    "crates/cocobeat-net/src/resource.rs": "a292e4b26a187d7c0c1abc7bdcefcf024c0eb5b728ebc4893d9b0e01ee8c6f58",
+    "crates/cocobeat-net/src/session.rs": "a2cca34cc047924eed9daf9a9d135045784ed7ed595cb48ca841cba99cb5dc7f",
+    "crates/cocobeat-net/src/sync.rs": "b8d4e757b9aaa611ca40fb7232e8827aa08d4dfc5e18255fd3f3e5d798a089dd",
+    "crates/cocobeat-net/src/wire.rs": "0c0a09a0dafa654dccb4d146a62959b3502d7331e161bbe14d42fe6abf15e510",
+    "crates/cocobeat-replay/Cargo.toml": "987689a4fa9130be947a11d08fc576de3f322db9b74f90cf80bf49ff1f416da9",
+    "crates/cocobeat-replay/src/lib.rs": "2bcbb301149df44c21ffc5b49d09a3037e18e3aaf11fc7b81b60061bbdcb39b2",
+    "crates/cocobeat-replay/src/timing.rs": "074007085a5cd3bae9dcb30f8c8289161c9349355392991519024800d02b718b",
+    "crates/cocobeat-runtime/Cargo.toml": "40654b858ecc13d3e1a5ff857153928228086a06a50d17c9d51bb4738a1cb59b",
+    "crates/cocobeat-runtime/build.rs": "6c948a5e384b709de42eee8b5cef80d0a2d53cd9771bea605468c0d52abb5b86",
+    "crates/cocobeat-runtime/src/app.rs": "5877dc132d573f64c18ec829db139579f5973f3fcaa50ec213233b93f6e5d47f",
+    "crates/cocobeat-runtime/src/audio.rs": "77701cf6b369f4d2e2fe9c711c1039a459169ed83b016da9c367d6274e123ecd",
+    "crates/cocobeat-runtime/src/audio_observation.rs": "8d41f748da88134c6cfe29a4f604b7810ed0e71f2fbb622639f3b064c98a814d",
+    "crates/cocobeat-runtime/src/brand_audio.rs": "b69cff85a37aa6c43b477b975cb1704206df679b89272af5b0bedddf8acab590",
+    "crates/cocobeat-runtime/src/brand_intro.rs": "ab4b4c0e8ce63daa7368b8d1e23ed1a4e5dfa445abf788ebeba59191404a87a2",
+    "crates/cocobeat-runtime/src/clock.rs": "715e1b02b4e07290d6f0c9cad5949fbb4d85ab52e4be37c4412916a17d2f65cc",
+    "crates/cocobeat-runtime/src/content.rs": "8b60e82ff8de9850aac873bdbd66e75a3cb2391beb7cd6e91114f4681a1d4ba5",
+    "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+    "crates/cocobeat-runtime/src/display.rs": "a7253d51f4b4d95b149f5754d4154d4c31fac1dcef396fd4845f2226f789ee3c",
+    "crates/cocobeat-runtime/src/display_area.rs": "27a85d9d07263b6dbb0cd5788c8f4f8d5dbd80b37dbcd929b63c7d233afe58f4",
+    "crates/cocobeat-runtime/src/i18n.rs": "0a8f6d242b6573050b24314a644173f0c37668b6946c6723fb3950973299cb92",
+    "crates/cocobeat-runtime/src/input.rs": "f30e7b2520b32f64d4fe7da80915e5409590846136c262ec30846388fc945105",
+    "crates/cocobeat-runtime/src/lib.rs": "7fddb4400ccc30347f1f6e412564598ca29f45fa2dd4c1c89bf659f459a39576",
+    "crates/cocobeat-runtime/src/library.rs": "3b6f67b9305e17178761cb1f1e809a8f1769a8161af995a898873b06aff08f39",
+    "crates/cocobeat-runtime/src/library_observation.rs": "d819dc6effeeee6703ec43e577441d21f4e755b85a91f8cad89d38aa6cee70f5",
+    "crates/cocobeat-runtime/src/live_observation.rs": "a838ed2f946ba45ca4231b2b89e190826eb60b7318e2b6f480d2386b22a76437",
+    "crates/cocobeat-runtime/src/online.rs": "0970d13720fea13b6a772e3c4690f5f540f4f8564e7ca96e990599cca6c31f6a",
+    "crates/cocobeat-runtime/src/performance_probe.rs": "96e09153cff853135b6c316766b73714acb32a500026031a4a66d736f1f0d207",
+    "crates/cocobeat-runtime/src/probe.rs": "65622a49e316eb27dbe528f2b1d14f426be62db4728df1bd5b14fe03b9f4cc6b",
+    "crates/cocobeat-runtime/src/recovery.rs": "44abd206a72e4adaf8b8392cc4c3ae53f96e887fb903b9427f765bb52a4cab83",
+    "crates/cocobeat-runtime/src/replay_playback.rs": "eb01359c5db1da31f76834129aa27071f0482a94eb8357042e23368e997d047d",
+    "crates/cocobeat-runtime/src/scene.rs": "7e06c73955f3e149f32f18bec027e4a199bf6a41d16f313148753a7a6ee707eb",
+    "crates/cocobeat-runtime/src/session.rs": "c426f45d210d9b97734c9eb94cb76a83c02b828cfdcad1145188888dfb014162",
+    "crates/cocobeat-runtime/src/settings.rs": "80af1dd0c40ddba44532c21ccc1de41fd7f61e51513505705696044c3c0b8ff3",
+    "crates/cocobeat-runtime/src/settings_menu.rs": "ebc971c6e3936063dfb609e4ff589c0abf5e17409b1f917d3a0a4f008fe8775e",
+    "crates/cocobeat-runtime/src/timing_diagnostic.rs": "442d05d497995d7d8e55a0cfe1d76d816fc13dd98b34083a7805fcc5eacdf3d2",
+    "crates/cocobeat-runtime/src/ui_assets.rs": "f8c5d5cd4ba65d2bcce0d729cb29ad58966c5ee1018c3444df837fdeb47e894e",
+    "crates/cocobeat-runtime/src/view.rs": "7b37a89814ffecfc45ac6c061b469be6366672ef81be4abf92d209330e86c168",
+    "crates/cocobeat-runtime/src/watch_observation.rs": "47eb6e2f54a519ac819bbb6d7a44a0a164c9a50296ec4d0b7def963c16d26092",
+    "crates/cocobeat-schema/Cargo.toml": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+    "crates/cocobeat-schema/src/asset.rs": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe",
+    "crates/cocobeat-schema/src/content.rs": "4cc6c5f64794fb669423dbcdad02ba5bb868bc25bac8f30fb977131bd513ed84",
+    "crates/cocobeat-schema/src/gameplay.rs": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+    "crates/cocobeat-schema/src/lib.rs": "5f118404beaa4173934062e6af96af70d2d2dfd06ff8e188c0ce7493f447878f",
+    "crates/cocobeat-schema/src/time.rs": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+    "crates/cocobeat-stage/Cargo.toml": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c",
+    "crates/cocobeat-stage/src/lib.rs": "4c2ed3afbc61b0b11a40a913d1d9eabfa9a5fd71a3d7356f29b48f698032cc5f",
+    "rust-toolchain.toml": "7458b2d74495e6fb1c1edeea4d5a793705476431dadb60627187111f91441e13",
+    "tools/cocobeat-lab/Cargo.toml": "ad2e28bae893079ea6f55ab0f1989014b0be714642ead361bf255f0b2150e8bd",
+    "tools/cocobeat-lab/src/anchors.rs": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+    "tools/cocobeat-lab/src/content.rs": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+    "tools/cocobeat-lab/src/editor.rs": "91a3419eda668d8cf3d9a077fe4a12bd682591ad949325dfd26525ffc70fc662",
+    "tools/cocobeat-lab/src/labels.rs": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+    "tools/cocobeat-lab/src/labels_cli.rs": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+    "tools/cocobeat-lab/src/main.rs": "0d588c59fa075dd24a2af35422c67056cd1b2af90b9b2d0c6af8c7109872f334",
+    "tools/cocobeat-lab/src/media.rs": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+    "tools/cocobeat-lab/src/package.rs": "2ede4ec5eec494068b8392f4104efa0d1b78fadfb4987e7ce90d91cb78e1c108",
+    "tools/cocobeat-lab/src/replay.rs": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+    "tools/cocobeat-lab/src/stage.rs": "1f2d262bed5b15929693f44cdadca2e1d9b1d2dcd409559066e63a80b1b78707",
+    "tools/cocobeat-lab/src/timing.rs": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+    "tools/cocobeat-lab/src/workbench.rs": "db10ec79bc9481878ad7aed1d9241020b506f69add62d7ea481569712ec85ca2",
+    "tools/cocobeat-lab/src/workbench/audition.rs": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+    "tools/cocobeat-lab/src/workbench/candidates.rs": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+    "tools/cocobeat-lab/src/workbench/input.rs": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+    "tools/cocobeat-lab/src/workbench/replay.rs": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+    "tools/cocobeat-lab/src/workbench/ui.rs": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+    "vendor/aotuv_lancer_vorbis_sys/.cargo_vcs_info.json": "824f14ff4a6db234bf27b493cad0f5fe728633106196eadfd8f5d33c16d08a41",
+    "vendor/aotuv_lancer_vorbis_sys/Cargo.lock": "a8906499d7a52fdf65208441e8f0608a5eeff1f903d04e9d304e33ecb865bcf4",
+    "vendor/aotuv_lancer_vorbis_sys/Cargo.toml": "d1be10a42abbff5ea1b5eac65f15c08ea80fd38537acfb0844232320a121a8e5",
+    "vendor/aotuv_lancer_vorbis_sys/Cargo.toml.orig": "01e4a0713e60ca05a26c39ec07ab51c38a0e4e64b1802336d3ef728d79ba106d",
+    "vendor/aotuv_lancer_vorbis_sys/LICENSE": "86c9ae504639a2a0e68f46f244a95daa9011b955aa0d02cf70f09c06d10e26e4",
+    "vendor/aotuv_lancer_vorbis_sys/README.md": "d8588acd3be883bbcd631e984b9a474fc4c576387bb6368f4cc111679ec50abb",
+    "vendor/aotuv_lancer_vorbis_sys/UPSTREAM.json": "9b6ad7913f2a5808959e8028381eaed4195520cbf689cc77736e7ff42744c818",
+    "vendor/aotuv_lancer_vorbis_sys/UPSTREAM.md": "0a13241d137d8e4a0f47ed292e5ef3d9cbe2ae52aaeeeb98564e141b5e98a1e9",
+    "vendor/aotuv_lancer_vorbis_sys/build.rs": "d45bb5998d4e3b5783969e8eb6ef91f5a8b75c867afef6c3f256bbc4319c5a12",
+    "vendor/aotuv_lancer_vorbis_sys/cocobeat-backport.patch": "4b8b145973615c7a91eed3e7dff784d0426e0c1b54e088e0fd2f2b0179c85a19",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/AUTHORS": "6fcb33d0cdd60b5054e7df820916388b590427514288c2bab01c626bb8ae9506",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/CHANGES": "3670d3f896fbdc85daeb2d99d8f1b0e2b56f7b5fe61bfef919711ebe2698322b",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/CMakeLists.txt": "bcca1f08efab7a3e2521b1ed84f996702e6d724c7cf213c4bb12afc89c32644a",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/COPYING": "d2ab5758336489da61c12cc5bb757da5339c4ae9001f9bb0562b4370249af814",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/appveyor.yml": "27902e9fb05a9407e2c7bfa10c3f5552e9886ac4a450aaf6b83f1e070b191787",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/autogen.sh": "fa536758c372e2177dab71ce2ce6ee1a0f75905a44d4d0412ffab5399f0b0f4a",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/include/ogg/config_types.h": "7de4e3ca8d7f83728ffb7c5bd7965ec5c9fb7c347ff54470219a32d6fa4a1032",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/include/ogg/ogg.h": "aad86109c1fdb377738675a63e0b19859e06ada25ae5c59c290ca7263d1dc4ca",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/include/ogg/os_types.h": "3bbab6a5d31e3c25c6080252b042afb87028e3ffff100e3e0285648b250b70f4",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/releases.sha2": "8eaad4a1d69e7b58c69e1eaaf299128a44bb375dcd581fd4e42de780f3249f82",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/src/bitwise.c": "7785ccda445a4e2e2aea8aff6fefebbb88ac21084406cd45cb25703abbff46de",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/src/crctable.h": "bbeb9f7e2ef15925400943a16ea9e3ce6aaf2f84a1e74b69b33e53a5c4693023",
+    "vendor/aotuv_lancer_vorbis_sys/ogg_vendor/src/framing.c": "8db03888f4e999b49af9c4f335d6d91cdc8340a1905606036f652fb791020caa",
+    "vendor/aotuv_lancer_vorbis_sys/src/bindings.rs": "c7dc462ce48a4f3b5c8a5258652e1e09ee3c8053634e4ed0b1f0b97404907b48",
+    "vendor/aotuv_lancer_vorbis_sys/src/lib.rs": "d0b8821a5982932661a5aa09ea8980b277c9785c412bd2b0cda2663ac7759cbd",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/AUTHORS": "a5bc317ac49a97f1d2b84706227bed64e963233a4af312aecef16b5b204c5464",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/Brewfile": "0ea450c6fd29a230b5df0613b1aa2aeb5f2fd20c33ad7ec4c2240ac84617c9d6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CHANGES": "18d414a3069c3b76f9cb0d4dde91bcb6189914acb63d42c56e1e2775b601946d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeCache.txt": "67c8c272600d01cccbf16722dd756ea63c2f35a7fa4fef686665ea7add7ffe17",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CMakeCCompiler.cmake": "b4904822729264ae694b85e3b9af600ce1a4d219ff73b9af7f86cbb2acaece19",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CMakeCXXCompiler.cmake": "71ae8a60335baa8b2dc85a5e3089ffe7d12607e8e03fdcac92953ffeaa625bdf",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CMakeDetermineCompilerABI_C.bin": "42d2798573f162034735a4f36b0e060b09249339d8a7166c68ddf8ad7b8056f0",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CMakeDetermineCompilerABI_CXX.bin": "724496e9c6bbe893c8dd5fa03c0599cfd9c775242b09c8021cbd03ec0decadbc",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CMakeSystem.cmake": "4006a468ddcf32ade94ebe121f16a7e4eeb7ed97653ca42651d9b4e92ebcef68",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CompilerIdC/CMakeCCompilerId.c": "fdf6ba6324e3b29e4268e3ab04f9eb181809b98fe6a52f48fbd526b331e66e02",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CompilerIdC/a.out": "724995eaf9b71552781bb0cf0ad625981c3bb922f8d89050c8aa4afaff1a1f0e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CompilerIdCXX/CMakeCXXCompilerId.cpp": "15597e769f9705997844403bbbf0c2fa65eb5b46a8ad4e6db684547644239fae",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/4.3.4/CompilerIdCXX/a.out": "310cd0d29ab3ff101caf2b43638f291b4c996d3b8420880884978f7fd95dca47",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/CMakeConfigureLog.yaml": "85579492c036c593aa1421416cacd9425d301d9c994e16cbcdf6c56470920a5c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/CMakeDirectoryInformation.cmake": "40a3d342ea27c0195aec84eba2f03bc87ba3a52f3e335bae7e20cc345d99e48e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/InstallScripts.json": "cc79f774583c659dc16c11c7b0413eddafa04b3ee6b5fa35d4d960885fd399b8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/Makefile.cmake": "26228020d5c9f277740f643ac3f477d8fe3e3de4245711e385c88f0a7e2a63d8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/Makefile2": "06bb96961a3ffd975b62e66f712d79d76e65344cdab9aabbf554ecc25b6d35c6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/TargetDirectories.txt": "50ec8c7dc5a4ed48cd13de681d01dd219b4c18c554e06af4177afbdd88eebc9c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/cmake.check_cache": "a26189e394421da57f45706a07713c5720acd200a41711b0c0c590c3c63371c4",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeFiles/progress.marks": "932ab0a0e4191d32c0af7b3f565b7b180dbe9869378abc5816f9add54b806e7f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/CMakeLists.txt": "66083c2c545fab98a075e3c5aa3b73d113ae41dcfeb6040a5f435e58059e69d5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/COPYING": "0c72574d90753e1eda1f21a83c1a04990e67b26bb56e01acf3ce241140518156",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/Makefile": "a6167f5dec902892f86260db414c9d5366c639aa67e943298f57515c840aeaed",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/VorbisConfig.cmake": "15d7787d026bf77e74bd967ba4f557814d207db0e7f18a8fc8f3ff7d07e93eba",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/VorbisConfigVersion.cmake": "b5b2f4148bcea8230933514ebb15f58aa46b5266a995de0b9bcdb54405ad0d2c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/aoTuV_technical.txt": "73c663c51ccc5d4788ca7713f94cd040f8b19bd1965378990575248beb2adc37",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/appveyor.yml": "07cf1574fd79d865d4dc7dc0a2c4c3b4a5ffbe5d0fbaeec32b7809faa170427b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/autogen.sh": "9825dccae7dfdc8a43d57e6426e5dcbd0e7298b0eba70a4b52e573d6bf3cfc73",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/cmake_install.cmake": "74a1e3d488de4c2de529657a5d7488a698f624490cc76aa7bc894587c935eea8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/compile_commands.json": "ede48c684b9dc89f4c299751edfd74478e47d4aa7cc5a19ab7f9fadd3846785e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/contrib/oss-fuzz/build.sh": "6c7ee1dcf4c9a2836fd917506ce83a7716395ada04fd9027d2987a2244f02c1f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/contrib/oss-fuzz/decode_fuzzer.cc": "a1ad08f974fb17ad41c9cfc28225cdf86d48e5df3b34a01d610baa6923b25acc",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/changelog": "a1c4d6b5b3157535951f313b00cdda6adf27604a9518c8d8d7cc5958ac8f6eb7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/control": "dafed99721bbd2310b9607380294330570eee7abaeb87f536bed18730449ac20",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/copyright": "1f6c6b6397d86d20968d7856d6945591b89e4cb64e5fc1ec8b992811f6a65ed8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbis-dev.docs": "a8f8965b2cb5b5b9c0a61e02ed23be9296775e9087ba7f92d83f13ec89032493",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbis-dev.examples": "cf93f787fd1b7fd3ff134df8a53a3d24a443e45cef5114b419d6388c9c850514",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbis-dev.install": "34a74644d8ed242e7fa29a0afdbe4b312a4de5b3725b25cca32fe9548729608b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbis0a.install": "c9be022fc24bae5ce6d8b86067824356c1a955c5f78f39cdd6c594c549269c94",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbisenc2.install": "502a3e59c1ecff6df2914868edad162413df6618cb0b6f3c55022fb2254add03",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/libvorbisfile3.install": "b6eaf8acd575c53455013a728a0f77d2bf65d63edf445b424f29610614cf65ec",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/rules": "95efde1a3e589dfbaec82388770cd36a2ac4401ac65c5c3e2e9cb1544ce95463",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/debian/watch": "e37b1b4c240dd34fd0dced14ffb23204312c31f85923b212e5168c98addc9913",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/chaining_example.c": "0cf7282e75d27448fe5529c9b66a95e0e027a1244a880b654333e2e81500e9a0",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/decoder_example.c": "3563090c2ae3848acb3644716ec2a5db1da5c4304c0830be9fc9418530984de7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/encoder_example.c": "8fad3307e454a563bbf446990c710647e07a83d663e4e436a6ff80b10dea8f1f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/frameview.pl": "25c284bad4c7e5d437a20611366782513d4d234c0d6f64c026407e9cf1570bbe",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/seeking_example.c": "af5a64b6902ae4f2c34c934f9319743188118e7eb332634ecd96eba4bc827a1b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/examples/vorbisfile_example.c": "a5e7e0f721a856415c563ac03754d0c7a1091df1f01e4871488b6e1bf0d6da3b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/include/vorbis/codec.h": "723f8c7ac18d786991bd44a3937f9cbcac8e0f12a75c7aea2f51d23ff0672f40",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/include/vorbis/vorbisenc.h": "d2aba0527252dc265ffc40bc9b1955d5ac0dc8d5e16d9376fa366c05fa27dc7f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/include/vorbis/vorbisfile.h": "7d98264e57b0190ef0a2701a0bea5f982e82fc1bedd93cd9408a2fff7790f803",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/CMakeDirectoryInformation.cmake": "40a3d342ea27c0195aec84eba2f03bc87ba3a52f3e335bae7e20cc345d99e48e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/Export/cc38caa321284793c52f43683a3b76fc/VorbisTargets-noconfig.cmake": "64bb5aff8aad071e6a35e4f63294ca285ea71e4eb289e81828511d8becec0191",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/Export/cc38caa321284793c52f43683a3b76fc/VorbisTargets.cmake": "9d10d7ec131855e81cd6c69f8662de38597d78525db12b75075eb78c0b14dc53",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/progress.marks": "932ab0a0e4191d32c0af7b3f565b7b180dbe9869378abc5816f9add54b806e7f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/DependInfo.cmake": "a0945b3327debf4e776cd2e3f3cc0ca1908c5f703fce0ea5a27102d067a13c8f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/build.make": "bef06180af6bb004bfd3f229ff469cd5c121020e813b83af39f8969535aa9b50",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/cmake_clean.cmake": "79cb76259ee408862c3b7a424aaa7dea3bf455d52a371133bc9273f156f2b195",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/cmake_clean_target.cmake": "33aeb88cd714fa4f1803d99a0e7a2b2b543d1a559f9acb38f9089c350b230b35",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/compiler_depend.make": "5d8c9a2fb2cb1a3adb97ac362d43260452ff64b834d7f0c5fe33ea0c97dcb2c5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/compiler_depend.ts": "f01440ca15f720297208ab45ad968878613f4aea15d812d310d0cf45b104d70f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/depend.make": "57e923e2537920e0c7b3a11334c35e56ba8ca8b3915c21cf6e157171cbb0bd02",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/flags.make": "158d06cd8589738e5a899a9b49b9d9434d94d2f2329debf8438beb8d371224b7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/link.txt": "c0d0545a4a290a58483981e7faee53bec090efc27b1d982a2037d93cf624c08c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbis.dir/progress.make": "d9d1a13dffc7f394f099f94d1e0e6e8452de7b6119f479e138b06352bcaa602a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/DependInfo.cmake": "45a60b23488c4d7ca846cbf0ce29b613b219309949edc390e708dbcb54a53ac5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/build.make": "a04fa23bc63e7e9e2e2a45eb6d88611f36d50604703dab60ad8cc74d50f25a7c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/cmake_clean.cmake": "6e9239e44ac1b8af2537d349a0b220ea882233c0d227513563abd79683d1d74d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/cmake_clean_target.cmake": "505a16e32a65dc33d9aa6b21e7a99674805db290bb687e1bb9416d8e48beaae1",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/compiler_depend.make": "aaf2b9879469e00189d4f2c69c962cb8258a58f08bb91d05bda39b3e25fa25d8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/compiler_depend.ts": "f1f9cd00743ff8bc7f50d1444bb9d79b2da8cbf1d4b4e3155540edfe59b9ac0f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/depend.make": "908e709e5c075f84e1bd383b298be8260b571dda212f102338398f6707ff1052",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/flags.make": "158d06cd8589738e5a899a9b49b9d9434d94d2f2329debf8438beb8d371224b7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/link.txt": "5f69ef2fc4585f76b9c92487dc380af157af5739a1213245b3356068b253278a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisenc.dir/progress.make": "03b13e5306a85332ac75180ce95727f860778e5dc6710f38d21ee781c13570c0",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/DependInfo.cmake": "020a49542359086cf47a6f7737892e89ba8247d89211edb09e792bea8ea6a8be",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/build.make": "e87fbb2921d4b1b121b2607e67748a8a47f0d7b77c72b5b44e0318e97940a0d4",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/cmake_clean.cmake": "e5f362803f11406fd1fd4f647d4e040195e71dfb54e8edb2dd2ef06b3fc8f7b9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/cmake_clean_target.cmake": "cbb7b9f7592a7c4e66f1d7f819c06b1a98ec13024458ec42c5a483b4d21cc30c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/compiler_depend.make": "de39c59b6596d333754a84973086165872c08385bc69f2cbb675e125c069984c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/compiler_depend.ts": "6e8e52234083037da5e86589a5c2ede617426aeb4e8366a5b3302855ce1d8193",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/depend.make": "892b5651f5aa46fb3a604e3b3d5dc6e9167a5064bf0cfd3b46dbe05525b427fa",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/flags.make": "fdf98f8f9b4373646d89800fe86dd21564dd7365e18c5af5447446bb26675c92",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/link.txt": "79c7f342e319d1feedf31fc47e68e1c058af67644f883b5e975e30eb1cad6629",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeFiles/vorbisfile.dir/progress.make": "a750004aa2b0887e3c06a7197e0741f80921940e3db86c202645e09bb4f790f9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/CMakeLists.txt": "f29306f958491024633a4c0001bdd0ee57bd9465aaaaa59c0ab4dc76b3bbe05f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/Makefile": "9fb0053ffc47eda1048dde0438bca3384f8618583ba80decf84cfd01036e07cd",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/analysis.c": "cf75d75c762f27ee9f50e9be794e47551d86cbdfb00fbce962ba3280a9516e4d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/backends.h": "1253a0cf54a10b46591bf1dac1717b3bd76abe89188217cd7fbfaa8f50745df5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/barkmel.c": "75486bfdcb6d4360b606c400a11c5d471def82edb2d204258afa5666eaff6afd",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/bitrate.c": "fd8940a065820c247e0e115b9a10af82c09ed419f8c9a6b88eddaaed221f52b3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/bitrate.h": "06bd012d67f97a5dc1de135371060a0c879a83b01c69d2cceee4ddc7cbef2676",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/block.c": "b0362b44b6ccdb059d5b53faf8128eb06a72cca1ef86690115ce3e895f8ddb49",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/books/coupled/res_books_51.h": "9e87f1929f827d6c1987d9056aadee865475f522598b2d7c1f484b43db7abfc2",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/books/coupled/res_books_stereo.h": "af0a24656e4726623836f0b8af30aa8f77a80853eee52c5f761fccd2b151a35b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/books/floor/floor_books.h": "5ee30dd6f4dbab7a13e0f2975f54994034769e8061d7d8e1d56ecad6ffcf627b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/books/uncoupled/res_books_uncoupled.h": "2a162ca24be180c6988663164e2490d7eeaacffde984852622112223be615e51",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/cmake_install.cmake": "ce6b2e6e64295868b5a8adf4591a0d0ade26dd321504a87bbd6b80b9d2ead2b7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/codebook.c": "43a6fb05619bbdb37a3addcf309457c466b79a417fa6880c760f4b8dbfb66840",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/codebook.h": "1a0bf4ebc17645910080155a83bd39b810c7e73703e97c65c5e7ccfdcb89ec55",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/codec_internal.h": "bec5db20079592ef0622afd6b31e7325fe3fd82beea0b238ab587d09d2f6922b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/cpu.c": "a3fa92f954539aa24d86290af816670763b34b0b17a18cd1205c03c692fd03a1",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/envelope.c": "1f70ae900c42f1ce22e6050ce9762dd8080633558318e11e93d129483a521b80",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/envelope.h": "dbd0f5fbdcf36fc594149f2d1bc88026c495fe94abc26b74e8faed28e0fd05ac",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/floor0.c": "20185fa3bff19f7c162a113f8fb969f3961079454b3ffd2019e9e555b0bbc61c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/floor1.c": "0b47744ac19c01e73390136a8951b262911ff94b13bb0be4bb6a6e24f641275c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/highlevel.h": "2daf10bbfaef50fe4365afd78c1b6e1434675c401ef406e22c7780b9543bc0f8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/info.c": "ebc3a5afb8114c34bad2f5a8c70781bdaa90df0875d0d13eca277082b03560a7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lookup.c": "4b169c62256e13a6575aaf38eb49514d8e7825c0df2429a669768b5a6d6716fa",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lookup.h": "1efc9bdd275e812a7cca384e0880ddc85ea94c4c845bcd41a4fe5a557b32ac86",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lookup_data.h": "cd14d76eb3380d091bbcdda5bc361e5f2f31803e71e3a2287ac4d1435ed57bd5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lookups.pl": "d20442461647a8c64c00d2b6cd09d9bbe32238fd54c0903dad4e3b31cefbd7fa",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lpc.c": "e782bd2780f354fcb0156855260c082ccdeed76dc1152ba7a6ae45b98520dfeb",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lpc.h": "90b11956f6fe25980613e1fce79d13a49e1109ad76e87c1f11891940df4f78f5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lsp.c": "cf618a3be06feb94e39eb7a06ad0db4fd8462f8edac93faf4765b28516a9f5ef",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/lsp.h": "588111726561c1caa8a22278eb63b7b4fa84dfbeea14d99a1d9d46b77aacda0c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/mapping0.c": "5f30205f64855ab04c487689a695f172646eb3cf3166a21308000bf7b9991c72",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/masking.h": "988af08ca95e560d3bc2d46789715aa7d49bdb44b719aeae55cba05a2b952f07",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/mdct.c": "663cdeb76a07db6c568660654a35eec85061f9b5eecadcb5664f2bc6b10836a7",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/mdct.h": "fe50c91880b635e1fb6fb42f9dadbbf93ae53d5e44c96883cd035f810f14f44f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/misc.c": "541173afa41f9f66d53ebdf8ddd0dcaad1594fdb60c80949913fb5184c797b1c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/misc.h": "385747067ee97ef3ce9441c7fbeb27bbe34f4f91a357647f4d1f5ea23e832ca2",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/floor_all.h": "ea2f5f5d35b760f1626485db67cdd87a076813b41333bed2221703c3f1f9cbe0",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/psych_11.h": "2e29ec370c8ac74cb7731df86432426643d402151522af9080520f671f1f3d89",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/psych_16.h": "94a1408aa24432428c4abea273f1ba8df0c20ea4abe32c0a9e4c574d3b9e3de3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/psych_44.h": "348c575e48a2eaad96923c1d200f25b8a682c64e9a5c2ee95af3f3bc0c286577",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/psych_8.h": "80242d553309616676a7d43c8753b7c918ca89834e7d4df9e13f23ab339a8ad8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/residue_16.h": "e5f1b8e32000f62f4856ccbbb06047f50dbd950e81de3854bbcef8ddc13bdad4",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/residue_44.h": "dbf2acd073c5ee7729a907d0ea23bb2d0dd00e2d3ad793c18fd70817138f36fc",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/residue_44p51.h": "458d655100d0734d82351682cbdef4d28eed8a90354d02655756d48037cc444b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/residue_44u.h": "20dcfb94aeeaaa7ca8dfc9d01d0063987b3ab8f96463520c1b97e08eb377ed0c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/residue_8.h": "144e0fa807f62cc06800fa8cf50f34d92a894476429d90b6f64cfe495a8243e6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_11.h": "0ec4a7cb677d5d5348098c6b2b533b23c6239fcc3ea0126bfaaff383d29d124e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_16.h": "90d8d8236575c8b3ee10ae0d082da7213151cae17dabf77ad1cb923072ee23d3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_22.h": "8ccc8dabab094403d37f5ba19a6eb98f7ff98ddddaf65ac86502767ded9ffb1f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_32.h": "ae23bd62750b55d0139a1a2f4cc5fdee121824dbc8b2d7daada90d24e747e71c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_44.h": "0a5d8514c212e8028094e1a24c23d8f65d52077f8a02b179603e414fde01bcd5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_44p51.h": "27a31ca55ac79c334dbd4ef01f352ebca39945eb2c531fb803e39ff2ea6e6ef6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_44u.h": "d485a8edbcd3a5c05cb3ec9035a613be06e78de9e1761fada07290f6dede563c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_8.h": "50fdd6cc48aeea0525cb20784c0a652cc99c0f9d68565357a13cec2bf2796e25",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/modes/setup_X.h": "cdb2287eb6dc9b01d4c109795e0ac80cb502a51d72e3c6146a8a7b5810b49861",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/os.h": "5035160afd1efc6be490ddbb2eb2c6f022a1aff86c34abc6903f7f90d49f7b40",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/psy.c": "e188b4763ef5a51d66d28b5c6c018e784731f08698b5171f1c15e5ff0af90fd6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/psy.h": "fce21a144029de8f50e11cfb941aa043c90c8168b8239bb09d48ae85f987446a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/psytune.c": "dc7a55cabd7ee6431f723f3c5923930a944562cb56aafba8a699cd22c420fb9d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/registry.c": "4259a70a4de23ab48a0af4ff08e0f68102052c6c7d3535c06bd7d7e2fdb82a65",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/registry.h": "29a25a4e34b3d41458b7a7e1757da9c63cea24322c39616b7fe16b3bf51ab55a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/res0.c": "0d3daf9327dbe14460d9b11df1ea0d9de709e3326d70b607d65720323d0caf62",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/scales.h": "455637c2955912086613c0acf0451091dd22707bf1560ac9f964b975998fb545",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/sharedbook.c": "5383bedd6313c01dd486c061c61b63a1b488d4c7a423f6a2c8f352c6eba6bb4e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/sharedbook.c.orig": "cc4c5bc8b9a1f62d5a820f56f150acc486d2f85fbefc8054b1265f49bf0305f3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/smallft.c": "d86742fd7776eff23fec926c749215061fb17112d42d39dab698d98474b56421",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/smallft.h": "6df874852a7247f181e9a8e7ead541a40893cc50c0a17f1f3e799db25c5a9e61",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/synthesis.c": "d5f92aaed1e7b59f3c01e0405813009cda29a61a0e6155d60980907d93c1eeb3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/tone.c": "07baf17ef59384c2831abfa6b46fb37ffe18fe11337cb64a152f5c637e53a842",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/vorbisenc.c": "5ebeb0fff9ea72394b762c3f923bebd9f1dd842eb04a00a9b71807a7865ff45a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/vorbisfile.c": "2f88b498a8efe944e20a488a75ad962ecb554c43a68b46733acc044d958e0ed5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/window.c": "6a1ecba1281b938a212489c7f088959667405f0bd7f5c291f753e0568d96d0ae",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/window.h": "9bb736d228deae67699012cc38f81d379e0b077432f162f2dcd1087f7669dc98",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/xmmlib.c": "e12ded9f663b68594387c781d9df5858e7f118a1ce079cafb2476c1311c31ecc",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/lib/xmmlib.h": "c414396e8204af3573083a682968915eadf76b978e8f468a06f7e66a93d2bb0e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/macosx/English.lproj/InfoPlist.strings": "cd2a1689466d976fee888abab2c97da7e9876ab1a2233072862d6707621b958d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/macosx/Info.plist": "acd04e7af0276c913861d96e64fb5b71a39dcbe345dbd96bfebb097d2834afea",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/macosx/Vorbis.xcodeproj/project.pbxproj": "7574b57fc3c24b4c4bb34969aa07e91130c53be9cb6766534cae03675de8f59b",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/symbian/bld.inf": "a5f144b58bc998f1116a79df45fce01c47efe448d0d34fa27e2b1ded8fc6651f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/symbian/config.h": "7eba257b9e79c832f4bcae5a03222fdc6391ba3e41170c00d0c31470352010a3",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/symbian/vorbis.mmp": "48ea94d7c8a7e65f84d30a2cee2db88e00fcafc493337ac8c6416a046b6f9f57",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vorbis.pc": "457c8e1e12469c4f8e62f4898a5a3f73fca7bb4703602f4a8ed8b77d0d8c0d81",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vorbisenc.pc": "bf89115e05dcaffd8fd3840929d745b83c50b25d1052b3467fb3e59aa5cb8999",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vorbisfile.pc": "f056a85fcf23a59ba43cc6f90195758cb76c4a84097305922fcf38e5fb5112dd",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/16.vqs": "c93ad4b3d7c659b39f42d361b8cc5219bdde3244ec037cf02096cdde68adcf9a",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/16u.vqs": "7d14c70cac78961d1581a857a04ab00c5390ca5972396dad0cb675f8ea5971a9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c-1.vqs": "142519bf283a66340b975979a2182c32b6975bcf86bf79d792dfad332a5af28f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c0.vqs": "b71d004336a6614223a06ebb7df9aecacb60981e0efefb92bc6e0524607fe71f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c1.vqs": "b56b5c95608304ad6a79bb0330f02e66eb8011caffe72a1a4205b327a426bd84",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c2.vqs": "c2688dc49fcc98557b2fdb40072d6d09ee5481ddf0ea0edc901be82c69d042b4",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c3.vqs": "a5d7fd9c34f134dfd83b09b9628b25c0092aad236d1dee0370d76c8183632f03",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c4.vqs": "27e0430d3b65e8d9255c86d60762ad0e65914de3fefd6adc94281a35216b5961",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c5.vqs": "728b6d08b9a5902425866de16586adb682a70bfdd65520610c7109e041a50347",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c6.vqs": "b804b263c0ea27c8d7b59b0649afe4ee1bbbac6fd565e2c096e3a14abff3df22",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c7.vqs": "f65256e498b7c2a2d9105bec2a5d0d21f72b9ccdb469aca2b7e5ae3e23e95646",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c8.vqs": "842190cf8bd1d527d966caa8c84ab4af9a175d44bfb9af92f8b1f7ff7107fce1",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44c9.vqs": "2d88a8c0fc3f2f58d0240f0dbf532392b4eb279b3aa4add1caea5ee96c3d2324",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p-1.vqs": "eb3c14a7d289f3bce82ebdaa40024f859cde205c83ccdfff8cd4ffc08a856d59",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p0.vqs": "2805e6b3db138978771f6c31950f9f5b6c88dc3de4a78406383f06e8f23655a9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p1.vqs": "6decb732fc0cdb9def4412390b9b669b408679ef3beaab220b42f0ffebb06a65",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p2.vqs": "29be14aea08ec97b64cb18efd92466303fa262b9ba44af1d6014292c167e49f5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p3.vqs": "7a948bf028570d3dfa329c102e24616d3c61ad62158b4b13efc28486c0f78e95",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p4.vqs": "7e66565260a614cd6bbfd20ec4e9e8ca94c8d65a83ee91204ef2af5f0aa78d0d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p5.vqs": "1a62446e12df116eab11e3ba1cdc98c1e8b8c0cf90db860c21e72b1e01d5ebf5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p6.vqs": "26326173325999df633013734a9473b17459e3fa7d961798245bdf43969e9afc",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p7.vqs": "5703b94cea4b0467bbc411238bb55af9b921b26d195ca1c78934efe4f7919b6e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p8.vqs": "b2382741588c1aa4d92ac414d1ad4ce7c48065fc243e2d07d54f090e5a6ea96f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44p9.vqs": "6f06897aac6ec956306385db4326d804e191a733d615cd57fca96216a2ba858e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u0.vqs": "e4959e6d6c67a5bbbcc71db8a2fec7401072a8c1d49cd22e6300e2d1ddd71861",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u1.vqs": "89907542596ef5c93989ccb7ee7bb66eb053a78d056afe3107d0570632515fc9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u2.vqs": "f1e6d54a88a0fe995bfd83942c3850d4a9b8cf14cd6a359132ab8d4aa0e9a2c5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u3.vqs": "f2949c4b421da10a6a4832054e552a4d6783db3044ae2ee5fd302593150cd03e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u4.vqs": "672610e2ce8076f648583740495e4be5399df87e9ce789ffb5b5a07104c739bd",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u5.vqs": "e53a197767a503496a2c1c70b49e36eb24ffde06ddc7f104c2a242992fffd5ca",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u6.vqs": "43f29e29a266b9b9e1ba43a721d5ed01f3d07679f5479498fa085bee2c7124d0",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u7.vqs": "7fd209d77a4351dbcf49f9cfbf8af48174d20c1288a89fd349ad65e4a9a6369d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u8.vqs": "bf9231c26d740b77e623f772842f972c81feadab46099448aec9e7a0efa89444",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/44u9.vqs": "b7556150f98a036a9ac63099358ccb4085b10c1e7f2ee725f7252d18f1d3c4d5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/8.vqs": "6824c2bad34f29e49720cb91cf7ec09b9723d337c18936796eeba42eb0fd57d5",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/8u.vqs": "10d79feddd584a18187ebbe2898f4821c55d4186150aa801f74e86d6d8a690d8",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/bookutil.c": "7416c2978c86b2d22b03f694de27a46566167c58264ecc17eba796baa7fde136",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/bookutil.h": "9fe57d728d8b7f61a9b8672c6b6f9eaa6e273c94c9d6e40d4681f208b2170daf",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/distribution.c": "48757d8a970b2f540ff848d9a6c44707c4057e8c958864abf1265d14faacd614",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/floor_11.vqs": "0c8ffa14a84fea7aa9f55b3c1cf3727a6406bd227153986b764ae90c99f332f6",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/floor_22.vqs": "224b98257b2f080d40e12fabd447b4f5ee5694ddbf83651a26ede0d1c4c3df2d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/floor_44.vqs": "30eee790d9ca50330df6ba9a80675c58879a3bacc41885222fdbb5c305f2730d",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/huffbuild.c": "0c335ff4b4366ae8c2b2b41f34efd3d64e2951015303057a308faad3bce87f88",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/latticebuild.c": "34c499f9a901f1bd5570addfa9eb2f66d78678ba8911ace6fe2a9c832a364236",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/latticetune.c": "b543bae946d6d85a42ac7f085b3d39181dc0c1e8f745b76921713bdb687b96ca",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/localcodebook.h": "de02f2046bcca6191a7b9fdfd1825dfe5fa987075ff613589220411c97662c1c",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/make_floor_books.pl": "ab96a055f81539a7521cbe3709ae5c2aca197c6c89e0a790d53680e658a3b2e9",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/make_residue_books.pl": "9b2ff20d3354ace4b63036449e3206447691376c17ccc69c31f6eb9358860453",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/metrics.c": "27935a23aafabcaa11815cf19e12fb7ae36b49ed50f243b5e1726feac77bba5e",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/vqgen.c": "962b16e6fddb1c60c8bdc4380a760b5c91b50056643c4f157de7aca3f555203f",
+    "vendor/aotuv_lancer_vorbis_sys/vorbis_vendor/vq/vqgen.h": "1a81c311cac154543a02f11707a98cc52139c490e040167e5b65d67617b59428",
+    "vendor/ogg_next_sys/.cargo_vcs_info.json": "1f938df81fdf73d3fb69cae95af7c59cefe46a9cdf6c5f78827349a7daf33154",
+    "vendor/ogg_next_sys/Cargo.lock": "fab14f644d22669ed47bdb8bb0170c6377e22f7f11630b648fe17de5aa191fbb",
+    "vendor/ogg_next_sys/Cargo.toml": "9e3683b02a826e5e90830e0244475be57990f65cc020cb83527f3142f8c8a102",
+    "vendor/ogg_next_sys/Cargo.toml.orig": "c200084605b69ceaa0e1c2cfd71ad73aad6bcc88ad220b782b03e32d8c70e9e1",
+    "vendor/ogg_next_sys/LICENSE": "86c9ae504639a2a0e68f46f244a95daa9011b955aa0d02cf70f09c06d10e26e4",
+    "vendor/ogg_next_sys/README.md": "d8588acd3be883bbcd631e984b9a474fc4c576387bb6368f4cc111679ec50abb",
+    "vendor/ogg_next_sys/UPSTREAM.json": "b2c336d499f90bca65f566e6e61c04f7cd96ab8de1bd8b31be39e5719a8a2b49",
+    "vendor/ogg_next_sys/UPSTREAM.md": "22065957c841018e52db3fbca726b15b3525f6e630daee27176589eac15b6a78",
+    "vendor/ogg_next_sys/build.rs": "2131f73c90a136a1d57f3c9a28a72a07791d41abaf6a598b0bd35a875b1101bc",
+    "vendor/ogg_next_sys/cocobeat-backport.patch": "9d08d188c803504f8c51c0324fe0eb247ed16eff63b3f78248e9f4ed9dd3e5a7",
+    "vendor/ogg_next_sys/ogg_vendor/AUTHORS": "6fcb33d0cdd60b5054e7df820916388b590427514288c2bab01c626bb8ae9506",
+    "vendor/ogg_next_sys/ogg_vendor/CHANGES": "3670d3f896fbdc85daeb2d99d8f1b0e2b56f7b5fe61bfef919711ebe2698322b",
+    "vendor/ogg_next_sys/ogg_vendor/CMakeLists.txt": "bcca1f08efab7a3e2521b1ed84f996702e6d724c7cf213c4bb12afc89c32644a",
+    "vendor/ogg_next_sys/ogg_vendor/COPYING": "d2ab5758336489da61c12cc5bb757da5339c4ae9001f9bb0562b4370249af814",
+    "vendor/ogg_next_sys/ogg_vendor/appveyor.yml": "27902e9fb05a9407e2c7bfa10c3f5552e9886ac4a450aaf6b83f1e070b191787",
+    "vendor/ogg_next_sys/ogg_vendor/autogen.sh": "fa536758c372e2177dab71ce2ce6ee1a0f75905a44d4d0412ffab5399f0b0f4a",
+    "vendor/ogg_next_sys/ogg_vendor/include/ogg/config_types.h": "7de4e3ca8d7f83728ffb7c5bd7965ec5c9fb7c347ff54470219a32d6fa4a1032",
+    "vendor/ogg_next_sys/ogg_vendor/include/ogg/ogg.h": "aad86109c1fdb377738675a63e0b19859e06ada25ae5c59c290ca7263d1dc4ca",
+    "vendor/ogg_next_sys/ogg_vendor/include/ogg/os_types.h": "3bbab6a5d31e3c25c6080252b042afb87028e3ffff100e3e0285648b250b70f4",
+    "vendor/ogg_next_sys/ogg_vendor/releases.sha2": "8eaad4a1d69e7b58c69e1eaaf299128a44bb375dcd581fd4e42de780f3249f82",
+    "vendor/ogg_next_sys/ogg_vendor/src/bitwise.c": "b3a90a6993d4f63386c1e38b953a92449438431989e1c3634a7d4933f8e11545",
+    "vendor/ogg_next_sys/ogg_vendor/src/crctable.h": "bbeb9f7e2ef15925400943a16ea9e3ce6aaf2f84a1e74b69b33e53a5c4693023",
+    "vendor/ogg_next_sys/ogg_vendor/src/framing.c": "a5a836b47ecce00a2ec9e2ffe3b812cbd59548e06b64b8fb79cd9507cc721e2e",
+    "vendor/ogg_next_sys/src/bindings.rs": "872f0cc5b26a64b28c569e1cc6f78e1c69148c3f711d91369ccd0defb2e593a8",
+    "vendor/ogg_next_sys/src/lib.rs": "0e8d9ee73f72fd34e02dcd1f98057339d64b1debca322f151572b01fc4ee71cb"
+  },
+  "software_checks": {
+    "lab-tests": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j2",
+        "-p",
+        "cocobeat-lab"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 36.12949730800756,
+      "tests_passed": 40,
+      "result": "target/independent-label-delivery-20261008/lab-tests-result.json",
+      "log": "target/independent-label-delivery-20261008/lab-tests.log"
+    },
+    "clippy": {
+      "status": "FAIL_PRESERVED",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 3.5307378950092243,
+      "tests_passed": null,
+      "result": "target/independent-label-delivery-20261008/clippy-result.json",
+      "log": "target/independent-label-delivery-20261008/clippy.log"
+    },
+    "clippy-recheck": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-j2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.212022348001483,
+      "tests_passed": null,
+      "result": "target/independent-label-delivery-20261008/clippy-recheck-result.json",
+      "log": "target/independent-label-delivery-20261008/clippy-recheck.log"
+    },
+    "near-limit-recheck": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-j2",
+        "-p",
+        "cocobeat-lab",
+        "labels::tests::near_limit_valid_inputs_export_the_full_comparison",
+        "--",
+        "--exact"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 25.562422351009445,
+      "tests_passed": 1,
+      "result": "target/independent-label-delivery-20261008/near-limit-recheck-result.json",
+      "log": "target/independent-label-delivery-20261008/near-limit-recheck.log"
+    }
+  },
+  "cli": {
+    "status": "PASS_SOFTWARE_CLI_CONTROLS",
+    "scope": "Constructed label mechanism controls only; no human listening or labels",
+    "summary": "target/independent-label-delivery-20261008/cli-controls-01/summary.json",
+    "case_count": 33,
+    "successful_commands": 5,
+    "expected_rejections": 28,
+    "cases": [
+      {
+        "name": "source",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "label-source",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 2.0344115369953215,
+        "stdout_sha256": "6349f4ae8accd8379b47721010d2bf8eb15c7240b402480a5ca586e664fe75bb",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "import",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/imported-a.json"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 4.069964555994375,
+        "stdout_sha256": "b3c6788177093acfad84af38beff159fe03f9c723d83f6be5601a9b1e9b42d3e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "compare",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "compare-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-b-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/comparison.json"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 4.061350277013844,
+        "stdout_sha256": "6e8d20e2f3aaed4eb027a5db059fb8810689176504f9b872dd3061a290b4cc3d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "import-existing",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/imported-a.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.092227033004747,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "compare-existing",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "compare-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-b-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/comparison.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.1091806440090295,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "import-input-output-same",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.04715245400439,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "compare-input-output-same",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "compare-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-b-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.058504175001872,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "inside-package",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package/forbidden.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0350187869917136,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+        "status": "PASS"
+      },
+      {
+        "name": "alias-inside-package",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/source-alias/forbidden.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0278767889976734,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+        "status": "PASS"
+      },
+      {
+        "name": "same-reviewer",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "compare-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/same-reviewer-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/same-reviewer-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0384766740025952,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "47b08cb76626bb407e68355c143685fbe72c0e99b0ca9acf36bbe9e6ae28e3c7",
+        "status": "PASS"
+      },
+      {
+        "name": "identity",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/identity-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/identity-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.033262980010477,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+        "status": "PASS"
+      },
+      {
+        "name": "audio-hash",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/audio-hash-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/audio-hash-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.029867490011384,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+        "status": "PASS"
+      },
+      {
+        "name": "extent",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/extent-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/extent-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0343440949945943,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+        "status": "PASS"
+      },
+      {
+        "name": "basis",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/basis-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/basis-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.036030628005392,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "fa9eb8881956794d0f23b8307106f7b936e32270c59dd8c87d3bfc2e4c14346b",
+        "status": "PASS"
+      },
+      {
+        "name": "unknown-field",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/unknown-field-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/unknown-field-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.029033970000455,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "ca14ca13ca3eddb481cf2a4e84ffceef8434923aa3a2a7f98d2cb3c661922caa",
+        "status": "PASS"
+      },
+      {
+        "name": "point-negative",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/point-negative-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/point-negative-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.031417331992998,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+        "status": "PASS"
+      },
+      {
+        "name": "point-eof",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/point-eof-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/point-eof-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0289782990003005,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+        "status": "PASS"
+      },
+      {
+        "name": "interval-empty",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/interval-empty-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/interval-empty-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0291770979965804,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+        "status": "PASS"
+      },
+      {
+        "name": "interval-eof-overrun",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/interval-eof-overrun-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/interval-eof-overrun-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.032604715990601,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+        "status": "PASS"
+      },
+      {
+        "name": "duplicate-id",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/duplicate-id-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/duplicate-id-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0334184630046366,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e0cd717a170272b939f182d0e4a4cc00b5c98404f8ce83a770b1f3ebae214d98",
+        "status": "PASS"
+      },
+      {
+        "name": "empty-reason",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/empty-reason-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/empty-reason-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.030502722001984,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "26d94bac17ef58d55c3e62559a3b410d53372c674cdebe39e473a449b24f799e",
+        "status": "PASS"
+      },
+      {
+        "name": "empty-reviewer",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/empty-reviewer-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/empty-reviewer-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.033578131988179,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "f8fc070df5b81d1f20f8f46ceaf1ecae60ee63a1f704ab6d8903bc1bd0727403",
+        "status": "PASS"
+      },
+      {
+        "name": "too-many",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/too-many-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/too-many-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0320699860021705,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "367f9e1ab35cfa49759cf62a29ef14de764168c7e639b59132a564c3ede1d24e",
+        "status": "PASS"
+      },
+      {
+        "name": "duplicate-field",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/duplicate-field.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/duplicate-field-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0300485719926655,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "cb52593f610d682b48d20e746459fe2d307e4966be832dafb956abf9aca18ea0",
+        "status": "PASS"
+      },
+      {
+        "name": "oversized",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/oversized.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/oversized-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0336360899964347,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aaa26cd83f9e0e92013cda16650079a29f17989e15b34bfc0d43d80d81c4ccea",
+        "status": "PASS"
+      },
+      {
+        "name": "input-directory",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-directory",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-directory-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.0312520579900593,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+        "status": "PASS"
+      },
+      {
+        "name": "input-fifo-no-writer",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-fifo",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-fifo-no-writer-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.03776431598817,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+        "status": "PASS"
+      },
+      {
+        "name": "input-symlink",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-symlink",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-symlink-must-not-exist.json"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 2.030504979993566,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+        "status": "PASS"
+      },
+      {
+        "name": "existing-output-symlink",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/existing-output-symlink"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.049374447000446,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "existing-output-fifo",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/existing-output-fifo"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.048848927996005,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "existing-output-directory",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/input-directory"
+        ],
+        "exit_code": 1,
+        "timed_out": false,
+        "seconds": 4.053196864988422,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "status": "PASS"
+      },
+      {
+        "name": "nearcap-import",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "import-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/nearcap-a.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/nearcap-imported.json"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 4.125858572995639,
+        "stdout_sha256": "719db34cd89bab5a78d77a3eef09b2477745f24cc5bf8fc35a023e0c54407408",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "nearcap-compare",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+          "compare-labels",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/nearcap-a.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/nearcap-b.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/nearcap-report.json"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "seconds": 4.159532609992311,
+        "stdout_sha256": "fc904e585222d445ba05fa7dfae159f5e23bdf5606f537f6aa868c4d76977b16",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      }
+    ],
+    "actual_source_identity": {
+      "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+      "audio_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e",
+      "canonical_frames": 3072000,
+      "audio_basis": "canonical_decoded"
+    },
+    "binary_unchanged": true,
+    "original_package_unchanged": true,
+    "copied_package_unchanged": true,
+    "protected_files_unchanged": true,
+    "protected_inputs_count": 22,
+    "postflight_errors": [],
+    "nearcap": {
+      "left_bytes": 1008583,
+      "right_bytes": 1008583,
+      "report_bytes": 2102012,
+      "preserved_rows": 448
+    },
+    "nearcap_report_sha256": "0bce3f77c2d38369c94dfc38d9646aa08c7f97aceff6ec4896292c4028d9d136",
+    "nearcap_full_rows_independently_verified": 448,
+    "source_change_boundary": {
+      "status": "PASS_NARROW_TEST",
+      "test": "labels_cli::tests::a_different_fresh_valid_package_is_rejected",
+      "log": "target/independent-label-delivery-20261008/lab-tests.log",
+      "scope": "Replace source with a different complete valid package then invoke actual require_fresh_source helper; full CLI load-to-write timing replacement NOT RUN"
+    },
+    "special_files": {
+      "target/independent-label-delivery-20261008/cli-controls-01/existing-output-fifo": {
+        "kind": "fifo",
+        "read_content": false
+      },
+      "target/independent-label-delivery-20261008/cli-controls-01/existing-output-symlink": {
+        "kind": "symlink",
+        "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+        "read_content": false
+      },
+      "target/independent-label-delivery-20261008/cli-controls-01/input-fifo": {
+        "kind": "fifo",
+        "read_content": false
+      },
+      "target/independent-label-delivery-20261008/cli-controls-01/input-symlink": {
+        "kind": "symlink",
+        "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+        "read_content": false
+      },
+      "target/independent-label-delivery-20261008/cli-controls-01/source-alias": {
+        "kind": "symlink",
+        "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+        "read_content": false
+      }
+    }
+  },
+  "contracts": {
+    "commands": [
+      "cocobeat-lab label-source PACKAGE",
+      "cocobeat-lab import-labels PACKAGE INPUT.json NEW_OUTPUT.json",
+      "cocobeat-lab compare-labels PACKAGE LEFT.json RIGHT.json NEW_REPORT.json"
+    ],
+    "positions": "Explicit authored canonical48kHz integer frames; point in[0,EOF), half-open interval0<=start<end<=EOF; not input/callback/speaker timestamps",
+    "identity": "Validated package content identity, audio object BLAKE3, canonical extent and canonical-decoded timeline basis must match; revalidate source immediately before new-file save",
+    "limits": {
+      "label_document_bytes": 1048576,
+      "labels_per_document": 1024,
+      "comparison_report_bytes": 4194304,
+      "nearcap_valid_inputs_bytes": [
+        1008583,
+        1008583
+      ],
+      "nearcap_report_bytes": 2102012
+    },
+    "comparison": "Explicit shared item_id only; both original records, location/decision discrepancy flags and unmatched sets retained; distinct reviewer aliases required; no closest-time alignment or confidence value",
+    "outputs": "create_new only outside canonicalized package parent; existing files/symlinks/FIFOs/directories refused; source package and input labels preserved",
+    "inputs": "Regular file requirement rejects directory/FIFO/symlink before bounded read; strict unknown/duplicate fields, identity and extent validation"
+  },
+  "preserved_failures": [
+    {
+      "status": "FAIL_CLIPPY_RESOLVED_BY_TEST_ASSERTION_CHANGE",
+      "exit_code": 101,
+      "lint": "int_plus_one",
+      "occurrences": 2,
+      "locations": [
+        "tools/cocobeat-lab/src/labels.rs:382",
+        "tools/cocobeat-lab/src/labels.rs:383"
+      ],
+      "result": "target/independent-label-delivery-20261008/clippy-result.json",
+      "log": "target/independent-label-delivery-20261008/clippy.log",
+      "resolution": "Two equivalent test-only bounds assertions simplified; final Clippy0, near-limit1 test0, new449 input frozen buildPASS and identical production binary SHA",
+      "resolved_by": [
+        "target/independent-label-delivery-20261008/clippy-recheck-result.json",
+        "target/independent-label-delivery-20261008/near-limit-recheck-result.json",
+        "target/independent-label-delivery-20261008/build-02/cocobeat-lab-build-result.json"
+      ]
+    }
+  ],
+  "not_run": [
+    "Human independent labels/playability",
+    "Confidence calibration",
+    "GUI labels editor/hidden-hint blind review",
+    "Full CLI source replacement between load and write; only fresh-source valid-package unit control covers that helper",
+    "Cross-platform CLI execution"
+  ],
+  "source_reviews": {
+    "label_data": "target/independent-label-plan-20261008/review/final-review.json",
+    "label_cli": "target/independent-label-plan-20261008/review/cli-review.json",
+    "qa": "target/independent-label-cli-qa-20261008/review/final-review.json",
+    "scope": "Read-only static source reviews; CLI/test execution evidence is separately bound above"
+  },
+  "evidence_sha256": {
+    "target/independent-label-delivery-20261008/clippy-recheck-result.json": {
+      "sha256": "2482859f8c4ddf8067872508ec9b20ae546cdda5fb98907f7811b78e588de94c",
+      "bytes": 221
+    },
+    "target/independent-label-delivery-20261008/clippy-recheck.log": {
+      "sha256": "887d33676027e10de0294b9029fd56f967bc7e56a20aa6992e9ffc06453cb096",
+      "bytes": 157
+    },
+    "target/independent-label-delivery-20261008/clippy-result.json": {
+      "sha256": "72e6ae9dc81b4e2f541418912bcdd374f592aafc8ec73099546154248f99e787",
+      "bytes": 224
+    },
+    "target/independent-label-delivery-20261008/clippy.log": {
+      "sha256": "544fef548454bbf924fc85f5102ba48fdd8c9a7e5495240a437b6d0f982086d3",
+      "bytes": 1371
+    },
+    "target/independent-label-delivery-20261008/lab-tests-result.json": {
+      "sha256": "6e1058b3612daca5ee3010a0cc7c3fe9de15a2e8c6ee73e7e311f94d26137783",
+      "bytes": 162
+    },
+    "target/independent-label-delivery-20261008/lab-tests.log": {
+      "sha256": "e9862af0bb9f5cf46520f590e86a9a421789dca5583018272ffaffb2c942de76",
+      "bytes": 4216
+    },
+    "target/independent-label-delivery-20261008/near-limit-recheck-result.json": {
+      "sha256": "72c2798299f938e2e634e9d83eb46b27c8685635ce8540b5447bd1d41a5e1397",
+      "bytes": 261
+    },
+    "target/independent-label-delivery-20261008/near-limit-recheck.log": {
+      "sha256": "4e2ddc90101bdc03ef18810f6dd3553ccfe4b2104a3014e6f94741f52a5c016b",
+      "bytes": 435
+    },
+    "target/independent-label-delivery-20261008/root-source-readback.json": {
+      "sha256": "6204926671376b8a6bc83616af2405f219ea194db1ed44bb3531daceca11deea",
+      "bytes": 79
+    },
+    "target/independent-label-delivery-20261008/build/build-result.json": {
+      "sha256": "048cba4caaa943f772044e9e5a53824c297e40a54c91bd326ba2bf305e493bb1",
+      "bytes": 139742
+    },
+    "target/independent-label-delivery-20261008/build/build.jsonl": {
+      "sha256": "63c947688365cdfafe27961b0d877299b734e6348fdd7e7ea7d8ca0d8297109b",
+      "bytes": 397614
+    },
+    "target/independent-label-delivery-20261008/build/build.py": {
+      "sha256": "0988174439d36a0e3ea9b0a572f35cd94e03a10cdd8bb372a3b07306cb607046",
+      "bytes": 2594
+    },
+    "target/independent-label-delivery-20261008/build/build.stderr": {
+      "sha256": "91e6fb08dc93a5fe4bbd914d06aea0943510b72b2560592737c27e1299e782be",
+      "bytes": 158
+    },
+    "target/independent-label-delivery-20261008/build/cocobeat-lab-build-result.json": {
+      "sha256": "19438f0dcf528afd896e87f4be3c8db6b0c463b7ffc698f8da5bd8e60f624c54",
+      "bytes": 140015
+    },
+    "target/independent-label-delivery-20261008/build/inputs-after.json": {
+      "sha256": "5ac47792b498dc6e2a3ef609aa73fc1c9ddbb6a173ff0ad3c8a1f228e4006381",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build/inputs-before.json": {
+      "sha256": "5ac47792b498dc6e2a3ef609aa73fc1c9ddbb6a173ff0ad3c8a1f228e4006381",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build-02/build-result.json": {
+      "sha256": "1e5349779937d9696eff0fbe3d9870d32c1331197d357c61688d150ef46a81c0",
+      "bytes": 139745
+    },
+    "target/independent-label-delivery-20261008/build-02/build.jsonl": {
+      "sha256": "03faf3e0d563b82c6dcdf25e86129a74575ef08bb4171725b459642f48bb977f",
+      "bytes": 397614
+    },
+    "target/independent-label-delivery-20261008/build-02/build.py": {
+      "sha256": "5b34f8bbb0bd419d3e78f24a46af3aa3dece800ac0d5d6db4dd44954896a7d4a",
+      "bytes": 2597
+    },
+    "target/independent-label-delivery-20261008/build-02/build.stderr": {
+      "sha256": "9a982d090d9c8ec6431e3b350be6a078061d1ea434ef129dfb8153aace76a948",
+      "bytes": 157
+    },
+    "target/independent-label-delivery-20261008/build-02/cocobeat-lab-build-result.json": {
+      "sha256": "e8d7edbbe8b71f1c7499ae6790b8e717a652ae91688b72648cf2479168bd2f7d",
+      "bytes": 140021
+    },
+    "target/independent-label-delivery-20261008/build-02/inputs-after.json": {
+      "sha256": "2cddaa5290f72e36a2d85f9179ae1d01d85ed297537efbecf0245bac05ae5fc2",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build-02/inputs-before.json": {
+      "sha256": "2cddaa5290f72e36a2d85f9179ae1d01d85ed297537efbecf0245bac05ae5fc2",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/audio-hash-input.json": {
+      "sha256": "180dfb15861436c3cad75bf7ad9140663b1c3f9ff065bc1e33c3969242b33db9",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/basis-input.json": {
+      "sha256": "0961eb157d53f23660845055f788eb163ffdc7004c5e040a9c517305b018ae89",
+      "bytes": 1101
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/comparison.json": {
+      "sha256": "3de68ce03c488313b8f20cf6c9958b569d0cb2e30004e28d2b995e60b1cd8696",
+      "bytes": 2362
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/duplicate-field.json": {
+      "sha256": "6d35c1827b9b248361368104aad6dc81af8ecda6fbfdd00c2cdce5a410065182",
+      "bytes": 900
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/duplicate-id-input.json": {
+      "sha256": "7c14bd7a1b52e5bc440bcb028d841b0c7581fdbbf19ec0906b97cc41047bea9d",
+      "bytes": 1362
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/empty-reason-input.json": {
+      "sha256": "b917b9bd14b59d1bdbe8cc509d949ff1f546765fae0410176ebe5e8d25f63e01",
+      "bytes": 1055
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/empty-reviewer-input.json": {
+      "sha256": "4d6eb63183f9362e6dc00e34cecf3a869b312e78a961d992c1f9eff68d673c9f",
+      "bytes": 1095
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/extent-input.json": {
+      "sha256": "f0b3a1c01d88e752995753b5fe549dcb34bbacbf75ecd04e93c01c0ad7c49947",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/identity-input.json": {
+      "sha256": "871cdbf392809675b2e9aad5b6a1aeffd9acf657e0ca74e9b4dad98fd57535a1",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/imported-a.json": {
+      "sha256": "54ca8f2aa8c2f8c53a9666a7b4c40a0673450bbd27f9953e1221b606e5b2bd42",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/interval-empty-input.json": {
+      "sha256": "c1c968d9a64396935285963057331a29db0a529248d3ebc6db2487855632b2dd",
+      "bytes": 1139
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/interval-eof-overrun-input.json": {
+      "sha256": "47c90df9ba2e374cdcda3b638f609bd5ed7688e6c6fe1152918aa526826d3d93",
+      "bytes": 1145
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/alias-inside-package.stderr": {
+      "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+      "bytes": 74
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/alias-inside-package.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/audio-hash.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/audio-hash.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/basis.stderr": {
+      "sha256": "fa9eb8881956794d0f23b8307106f7b936e32270c59dd8c87d3bfc2e4c14346b",
+      "bytes": 107
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/basis.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-existing.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-existing.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-input-output-same.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-input-output-same.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare.stdout": {
+      "sha256": "6e8d20e2f3aaed4eb027a5db059fb8810689176504f9b872dd3061a290b4cc3d",
+      "bytes": 539
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-field.stderr": {
+      "sha256": "cb52593f610d682b48d20e746459fe2d307e4966be832dafb956abf9aca18ea0",
+      "bytes": 81
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-field.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-id.stderr": {
+      "sha256": "e0cd717a170272b939f182d0e4a4cc00b5c98404f8ce83a770b1f3ebae214d98",
+      "bytes": 28
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-id.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reason.stderr": {
+      "sha256": "26d94bac17ef58d55c3e62559a3b410d53372c674cdebe39e473a449b24f799e",
+      "bytes": 48
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reason.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reviewer.stderr": {
+      "sha256": "f8fc070df5b81d1f20f8f46ceaf1ecae60ee63a1f704ab6d8903bc1bd0727403",
+      "bytes": 71
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reviewer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-directory.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-directory.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-fifo.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-fifo.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-symlink.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-symlink.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/extent.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/extent.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/identity.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/identity.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-existing.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-existing.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-input-output-same.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-input-output-same.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import.stdout": {
+      "sha256": "b3c6788177093acfad84af38beff159fe03f9c723d83f6be5601a9b1e9b42d3e",
+      "bytes": 446
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-directory.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-directory.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-fifo-no-writer.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-fifo-no-writer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-symlink.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-symlink.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/inside-package.stderr": {
+      "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+      "bytes": 74
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/inside-package.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-empty.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-empty.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-eof-overrun.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-eof-overrun.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-compare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-compare.stdout": {
+      "sha256": "fc904e585222d445ba05fa7dfae159f5e23bdf5606f537f6aa868c4d76977b16",
+      "bytes": 545
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-import.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-import.stdout": {
+      "sha256": "719db34cd89bab5a78d77a3eef09b2477745f24cc5bf8fc35a023e0c54407408",
+      "bytes": 454
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/oversized.stderr": {
+      "sha256": "aaa26cd83f9e0e92013cda16650079a29f17989e15b34bfc0d43d80d81c4ccea",
+      "bytes": 29
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/oversized.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-eof.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-eof.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-negative.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-negative.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/same-reviewer.stderr": {
+      "sha256": "47b08cb76626bb407e68355c143685fbe72c0e99b0ca9acf36bbe9e6ae28e3c7",
+      "bytes": 47
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/same-reviewer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/source.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/source.stdout": {
+      "sha256": "6349f4ae8accd8379b47721010d2bf8eb15c7240b402480a5ca586e664fe75bb",
+      "bytes": 257
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/too-many.stderr": {
+      "sha256": "367f9e1ab35cfa49759cf62a29ef14de764168c7e639b59132a564c3ede1d24e",
+      "bytes": 36
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/too-many.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/unknown-field.stderr": {
+      "sha256": "ca14ca13ca3eddb481cf2a4e84ffceef8434923aa3a2a7f98d2cb3c661922caa",
+      "bytes": 139
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/unknown-field.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-a.json": {
+      "sha256": "8c70ffc28b3b43f0b7dcaea75ee41bcf233f665dc6b0a2fb9214465073a12eec",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-b.json": {
+      "sha256": "67b1a97e1b56d25e1a608a052ba1df846ad9fb2df8fbb8042a8f4171bb01f0b6",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-imported.json": {
+      "sha256": "8c70ffc28b3b43f0b7dcaea75ee41bcf233f665dc6b0a2fb9214465073a12eec",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-report.json": {
+      "sha256": "0bce3f77c2d38369c94dfc38d9646aa08c7f97aceff6ec4896292c4028d9d136",
+      "bytes": 2102012
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/oversized.json": {
+      "sha256": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee",
+      "bytes": 1048577
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/song.package": {
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+      "bytes": 319
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/point-eof-input.json": {
+      "sha256": "f624c4041a767d0d9e3350651e49d80df44557650b2ef785a8f5029aa4f82c0d",
+      "bytes": 1112
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/point-negative-input.json": {
+      "sha256": "e8e02f73d6a3154785f222cf1a6fa246443b996489b57ba859cf5d54dc17176e",
+      "bytes": 1107
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json": {
+      "sha256": "54ca8f2aa8c2f8c53a9666a7b4c40a0673450bbd27f9953e1221b606e5b2bd42",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/reviewer-b-control.json": {
+      "sha256": "a4b3734afcb1b2c69849f94988c1c9f587cacaa74a8b81e3b93845631c2e4712",
+      "bytes": 1138
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/same-reviewer-control.json": {
+      "sha256": "513f22c3cfe1e35033723cf425b7008382aab1720abaf30c7665c19264a6283c",
+      "bytes": 1138
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/summary.json": {
+      "sha256": "8e9793e6e8fdec39cf429887728f79e3eca66b5a6201356a330327d979ccb59f",
+      "bytes": 40006
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/too-many-input.json": {
+      "sha256": "1dffd7120f5fc4863338dc4f1fddaa2dadd9f660e03bb5b067f15861b3633180",
+      "bytes": 262585
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/unknown-field-input.json": {
+      "sha256": "ae26f78605c0ef129e5be8c9c985705a55d11227a0e1b7bc9ebe23928af6ea58",
+      "bytes": 1124
+    },
+    "target/independent-label-plan-20261008/CLI-HANDOFF.json": {
+      "sha256": "b05ef8737193c31b224970f643d93d51fbad5c3b20428eb23bc99493ab9a724d",
+      "bytes": 1025
+    },
+    "target/independent-label-plan-20261008/CLI.md": {
+      "sha256": "37c11f0941458724ecfa3e91708f84427d040e8a1ecd40deec1977d26ccd0fbd",
+      "bytes": 5263
+    },
+    "target/independent-label-plan-20261008/HANDOFF.json": {
+      "sha256": "112bad495a147040f667d6268215cf538833c9e4390c2e846c63e98686b51364",
+      "bytes": 1616
+    },
+    "target/independent-label-plan-20261008/PLAN.md": {
+      "sha256": "4c86626517f09be39f557580745c59a18d3223360378bc31396c8b5918e46a2c",
+      "bytes": 6781
+    },
+    "target/independent-label-plan-20261008/labels.rs": {
+      "sha256": "008e445259540ca0137938393dd5395ff11737d5cf040bc08726eaf79de4f3f6",
+      "bytes": 13260
+    },
+    "target/independent-label-plan-20261008/labels_cli.rs": {
+      "sha256": "3e3b2e1238995ce7a6dd58d050e912aaa2e3742403b3721e3f4cd649071f2601",
+      "bytes": 6971
+    },
+    "target/independent-label-plan-20261008/main-cli.fragment.rs": {
+      "sha256": "e5e29c3ad31d450c42803c74c2b2b66a5febb369ac2640d05a661741b2ed797a",
+      "bytes": 803
+    },
+    "target/independent-label-plan-20261008/review/README.md": {
+      "sha256": "54c5de7cf54e5241045d062aa655f30e08867ec82c42a0831896ba7e74b71182",
+      "bytes": 1269
+    },
+    "target/independent-label-plan-20261008/review/cli-review.json": {
+      "sha256": "cfc152efb529dfda8f07e56a5c677a7d85a1e7fc079ddb019b1fc4f016da34dc",
+      "bytes": 3519
+    },
+    "target/independent-label-plan-20261008/review/final-review.json": {
+      "sha256": "90480587b51cf72dd7524763b7591008b499db92d80a4fb1c6e3879982efa232",
+      "bytes": 4341
+    },
+    "target/independent-label-plan-20261008/review/initial-review.json": {
+      "sha256": "1f5ae406ef20b0a197ccf615abdd236005d61470a01be4a0733033aebbb9cc0a",
+      "bytes": 3855
+    },
+    "target/independent-label-plan-20261008/review-history/HANDOFF-before-fifo-fix.json": {
+      "sha256": "8f8ad7b6027565bea94269cf0d3fc4f507a6750d83210e7403625dd94d8850f6",
+      "bytes": 1006
+    },
+    "target/independent-label-plan-20261008/review-history/fifo-fix-review.json": {
+      "sha256": "8f8299e22a1603835021447a1391d007ea39edeabec8d5013b78140d289e95ec",
+      "bytes": 782
+    },
+    "target/independent-label-plan-20261008/review-history/labels-before-fifo-fix.rs": {
+      "sha256": "627b20006c1b136d9963dfad51773daae584d75afba983c20ef4f21b830610f9",
+      "bytes": 11494
+    },
+    "target/independent-label-plan-20261008/review-history/labels-before-report-cap-fix.rs": {
+      "sha256": "f5d4d4a364e98855ccbbe0de7b0c6ca84b89bbb05ad85b2aee550e9d678e520e",
+      "bytes": 11677
+    },
+    "target/independent-label-plan-20261008/review-history/report-cap-1024-structure.json": {
+      "sha256": "2fc6381d38d00321a6a8f315d33b403b682cbdc6eba97e011693a2ead0bebded",
+      "bytes": 733
+    },
+    "target/independent-label-plan-20261008/review-history/report-cap-fix-review.json": {
+      "sha256": "2d1a6375f68c463f525a5d8382d9f416a55bf79cebbbae447b25098f5964385c",
+      "bytes": 545
+    },
+    "target/independent-label-cli-qa-20261008/HANDOFF.json": {
+      "sha256": "2c11d4c6a1b07dd2a8fe5cd3b561796022ca9f261030ac9d722c1b5bd8eb21a2",
+      "bytes": 1221
+    },
+    "target/independent-label-cli-qa-20261008/README.md": {
+      "sha256": "d23afd98e77fe10c38375d415bd9f468dfa4385f8980b607af53be91c79f73fb",
+      "bytes": 3596
+    },
+    "target/independent-label-cli-qa-20261008/check.py": {
+      "sha256": "50af19032f5936cafc2ae7fe82ae37c8ddac77b54c416b4f3764882bb1fe4abb",
+      "bytes": 15867
+    },
+    "target/independent-label-cli-qa-20261008/docs-labels.candidate.md": {
+      "sha256": "9b4885923e1392cc9e6a05d61ee362d617066a029bebc3dd46320e2b66df172a",
+      "bytes": 3111
+    },
+    "target/independent-label-cli-qa-20261008/fixture-receipt.json": {
+      "sha256": "d4f8d1d317b667ef0230347e074447dd9f5402efb82c71d68ee210ea87bb7981",
+      "bytes": 811
+    },
+    "target/independent-label-cli-qa-20261008/review/final-review.json": {
+      "sha256": "301d46305b03f2e6ef9ca99bb03bda60a90cd7c4340ea0a2548bf87f5a85dbd8",
+      "bytes": 4261
+    },
+    "target/independent-label-cli-qa-20261008/review/fixture-readonly-check.json": {
+      "sha256": "64b125cce77699d2266303205790923c9cc8a0785d243f73fe9b4af14cc91f76",
+      "bytes": 944
+    },
+    "target/independent-label-cli-qa-20261008/review/initial-review.json": {
+      "sha256": "bbfe90d628343773c9fb7b455752513d45f43d925debb2208da2bb99f26baebb",
+      "bytes": 2662
+    },
+    "target/independent-label-cli-qa-20261008/review-history/check-before-qa-review-fixes.py": {
+      "sha256": "ba11009eb2f0b3d4517e4c931d671328882da950a1ce7877cef217829ddd1375",
+      "bytes": 14563
+    },
+    "target/independent-label-cli-qa-20261008/review-history/qa-review-fixes.json": {
+      "sha256": "bd9d18c3a0da5845f954303b74172223cc8e49ef7393cf4e89afc23f260da827",
+      "bytes": 782
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "0d588c59fa075dd24a2af35422c67056cd1b2af90b9b2d0c6af8c7109872f334",
+      "bytes": 11941
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/labels.rs": {
+      "sha256": "df0a60c7f76f322e6f10090615ef7c553eaa2e1fd608265147bc244fe72c77f1",
+      "bytes": 15463
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "0d588c59fa075dd24a2af35422c67056cd1b2af90b9b2d0c6af8c7109872f334",
+      "bytes": 11941
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/song.package": {
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+      "bytes": 319
+    }
+  }
+}

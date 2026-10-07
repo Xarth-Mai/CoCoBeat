@@ -1,0 +1,668 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SOFTWARE_RAW_INDEX",
+  "scope": "Complete regular raw logs, controls, fixture objects, build receipts and selected relevant frozen Rust sources; excludes executable/dependency artifacts and full large-font source copies; special files retain type/target only without reading FIFO or following symlink",
+  "file_count": 155,
+  "total_indexed_bytes": 13081190,
+  "evidence_sha256": {
+    "target/independent-label-delivery-20261008/clippy-recheck-result.json": {
+      "sha256": "2482859f8c4ddf8067872508ec9b20ae546cdda5fb98907f7811b78e588de94c",
+      "bytes": 221
+    },
+    "target/independent-label-delivery-20261008/clippy-recheck.log": {
+      "sha256": "887d33676027e10de0294b9029fd56f967bc7e56a20aa6992e9ffc06453cb096",
+      "bytes": 157
+    },
+    "target/independent-label-delivery-20261008/clippy-result.json": {
+      "sha256": "72e6ae9dc81b4e2f541418912bcdd374f592aafc8ec73099546154248f99e787",
+      "bytes": 224
+    },
+    "target/independent-label-delivery-20261008/clippy.log": {
+      "sha256": "544fef548454bbf924fc85f5102ba48fdd8c9a7e5495240a437b6d0f982086d3",
+      "bytes": 1371
+    },
+    "target/independent-label-delivery-20261008/lab-tests-result.json": {
+      "sha256": "6e1058b3612daca5ee3010a0cc7c3fe9de15a2e8c6ee73e7e311f94d26137783",
+      "bytes": 162
+    },
+    "target/independent-label-delivery-20261008/lab-tests.log": {
+      "sha256": "e9862af0bb9f5cf46520f590e86a9a421789dca5583018272ffaffb2c942de76",
+      "bytes": 4216
+    },
+    "target/independent-label-delivery-20261008/near-limit-recheck-result.json": {
+      "sha256": "72c2798299f938e2e634e9d83eb46b27c8685635ce8540b5447bd1d41a5e1397",
+      "bytes": 261
+    },
+    "target/independent-label-delivery-20261008/near-limit-recheck.log": {
+      "sha256": "4e2ddc90101bdc03ef18810f6dd3553ccfe4b2104a3014e6f94741f52a5c016b",
+      "bytes": 435
+    },
+    "target/independent-label-delivery-20261008/root-source-readback.json": {
+      "sha256": "6204926671376b8a6bc83616af2405f219ea194db1ed44bb3531daceca11deea",
+      "bytes": 79
+    },
+    "target/independent-label-delivery-20261008/build/build-result.json": {
+      "sha256": "048cba4caaa943f772044e9e5a53824c297e40a54c91bd326ba2bf305e493bb1",
+      "bytes": 139742
+    },
+    "target/independent-label-delivery-20261008/build/build.jsonl": {
+      "sha256": "63c947688365cdfafe27961b0d877299b734e6348fdd7e7ea7d8ca0d8297109b",
+      "bytes": 397614
+    },
+    "target/independent-label-delivery-20261008/build/build.py": {
+      "sha256": "0988174439d36a0e3ea9b0a572f35cd94e03a10cdd8bb372a3b07306cb607046",
+      "bytes": 2594
+    },
+    "target/independent-label-delivery-20261008/build/build.stderr": {
+      "sha256": "91e6fb08dc93a5fe4bbd914d06aea0943510b72b2560592737c27e1299e782be",
+      "bytes": 158
+    },
+    "target/independent-label-delivery-20261008/build/cocobeat-lab-build-result.json": {
+      "sha256": "19438f0dcf528afd896e87f4be3c8db6b0c463b7ffc698f8da5bd8e60f624c54",
+      "bytes": 140015
+    },
+    "target/independent-label-delivery-20261008/build/inputs-after.json": {
+      "sha256": "5ac47792b498dc6e2a3ef609aa73fc1c9ddbb6a173ff0ad3c8a1f228e4006381",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build/inputs-before.json": {
+      "sha256": "5ac47792b498dc6e2a3ef609aa73fc1c9ddbb6a173ff0ad3c8a1f228e4006381",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build-02/build-result.json": {
+      "sha256": "1e5349779937d9696eff0fbe3d9870d32c1331197d357c61688d150ef46a81c0",
+      "bytes": 139745
+    },
+    "target/independent-label-delivery-20261008/build-02/build.jsonl": {
+      "sha256": "03faf3e0d563b82c6dcdf25e86129a74575ef08bb4171725b459642f48bb977f",
+      "bytes": 397614
+    },
+    "target/independent-label-delivery-20261008/build-02/build.py": {
+      "sha256": "5b34f8bbb0bd419d3e78f24a46af3aa3dece800ac0d5d6db4dd44954896a7d4a",
+      "bytes": 2597
+    },
+    "target/independent-label-delivery-20261008/build-02/build.stderr": {
+      "sha256": "9a982d090d9c8ec6431e3b350be6a078061d1ea434ef129dfb8153aace76a948",
+      "bytes": 157
+    },
+    "target/independent-label-delivery-20261008/build-02/cocobeat-lab-build-result.json": {
+      "sha256": "e8d7edbbe8b71f1c7499ae6790b8e717a652ae91688b72648cf2479168bd2f7d",
+      "bytes": 140021
+    },
+    "target/independent-label-delivery-20261008/build-02/inputs-after.json": {
+      "sha256": "2cddaa5290f72e36a2d85f9179ae1d01d85ed297537efbecf0245bac05ae5fc2",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/build-02/inputs-before.json": {
+      "sha256": "2cddaa5290f72e36a2d85f9179ae1d01d85ed297537efbecf0245bac05ae5fc2",
+      "bytes": 55693
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/audio-hash-input.json": {
+      "sha256": "180dfb15861436c3cad75bf7ad9140663b1c3f9ff065bc1e33c3969242b33db9",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/basis-input.json": {
+      "sha256": "0961eb157d53f23660845055f788eb163ffdc7004c5e040a9c517305b018ae89",
+      "bytes": 1101
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/comparison.json": {
+      "sha256": "3de68ce03c488313b8f20cf6c9958b569d0cb2e30004e28d2b995e60b1cd8696",
+      "bytes": 2362
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/duplicate-field.json": {
+      "sha256": "6d35c1827b9b248361368104aad6dc81af8ecda6fbfdd00c2cdce5a410065182",
+      "bytes": 900
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/duplicate-id-input.json": {
+      "sha256": "7c14bd7a1b52e5bc440bcb028d841b0c7581fdbbf19ec0906b97cc41047bea9d",
+      "bytes": 1362
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/empty-reason-input.json": {
+      "sha256": "b917b9bd14b59d1bdbe8cc509d949ff1f546765fae0410176ebe5e8d25f63e01",
+      "bytes": 1055
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/empty-reviewer-input.json": {
+      "sha256": "4d6eb63183f9362e6dc00e34cecf3a869b312e78a961d992c1f9eff68d673c9f",
+      "bytes": 1095
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/extent-input.json": {
+      "sha256": "f0b3a1c01d88e752995753b5fe549dcb34bbacbf75ecd04e93c01c0ad7c49947",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/identity-input.json": {
+      "sha256": "871cdbf392809675b2e9aad5b6a1aeffd9acf657e0ca74e9b4dad98fd57535a1",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/imported-a.json": {
+      "sha256": "54ca8f2aa8c2f8c53a9666a7b4c40a0673450bbd27f9953e1221b606e5b2bd42",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/interval-empty-input.json": {
+      "sha256": "c1c968d9a64396935285963057331a29db0a529248d3ebc6db2487855632b2dd",
+      "bytes": 1139
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/interval-eof-overrun-input.json": {
+      "sha256": "47c90df9ba2e374cdcda3b638f609bd5ed7688e6c6fe1152918aa526826d3d93",
+      "bytes": 1145
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/alias-inside-package.stderr": {
+      "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+      "bytes": 74
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/alias-inside-package.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/audio-hash.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/audio-hash.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/basis.stderr": {
+      "sha256": "fa9eb8881956794d0f23b8307106f7b936e32270c59dd8c87d3bfc2e4c14346b",
+      "bytes": 107
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/basis.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-existing.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-existing.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-input-output-same.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare-input-output-same.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/compare.stdout": {
+      "sha256": "6e8d20e2f3aaed4eb027a5db059fb8810689176504f9b872dd3061a290b4cc3d",
+      "bytes": 539
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-field.stderr": {
+      "sha256": "cb52593f610d682b48d20e746459fe2d307e4966be832dafb956abf9aca18ea0",
+      "bytes": 81
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-field.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-id.stderr": {
+      "sha256": "e0cd717a170272b939f182d0e4a4cc00b5c98404f8ce83a770b1f3ebae214d98",
+      "bytes": 28
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/duplicate-id.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reason.stderr": {
+      "sha256": "26d94bac17ef58d55c3e62559a3b410d53372c674cdebe39e473a449b24f799e",
+      "bytes": 48
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reason.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reviewer.stderr": {
+      "sha256": "f8fc070df5b81d1f20f8f46ceaf1ecae60ee63a1f704ab6d8903bc1bd0727403",
+      "bytes": 71
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/empty-reviewer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-directory.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-directory.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-fifo.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-fifo.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-symlink.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/existing-output-symlink.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/extent.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/extent.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/identity.stderr": {
+      "sha256": "dbbb8b23176ba3dac10ddf2c0dd361ce463ee6f80701e5452ad7fc441ce97fcd",
+      "bytes": 72
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/identity.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-existing.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-existing.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-input-output-same.stderr": {
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+      "bytes": 65
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import-input-output-same.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/import.stdout": {
+      "sha256": "b3c6788177093acfad84af38beff159fe03f9c723d83f6be5601a9b1e9b42d3e",
+      "bytes": 446
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-directory.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-directory.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-fifo-no-writer.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-fifo-no-writer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-symlink.stderr": {
+      "sha256": "1e1d5fad6a817c14e5f7af73ed83ba58b3bf02b82db4d4a60d0bb4033cf35282",
+      "bytes": 42
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/input-symlink.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/inside-package.stderr": {
+      "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+      "bytes": 74
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/inside-package.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-empty.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-empty.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-eof-overrun.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/interval-eof-overrun.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-compare.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-compare.stdout": {
+      "sha256": "fc904e585222d445ba05fa7dfae159f5e23bdf5606f537f6aa868c4d76977b16",
+      "bytes": 545
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-import.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/nearcap-import.stdout": {
+      "sha256": "719db34cd89bab5a78d77a3eef09b2477745f24cc5bf8fc35a023e0c54407408",
+      "bytes": 454
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/oversized.stderr": {
+      "sha256": "aaa26cd83f9e0e92013cda16650079a29f17989e15b34bfc0d43d80d81c4ccea",
+      "bytes": 29
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/oversized.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-eof.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-eof.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-negative.stderr": {
+      "sha256": "0c14b56460921b74646fa302838059d124e8d0ef4a12ea6e4215701fcfb33065",
+      "bytes": 76
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/point-negative.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/same-reviewer.stderr": {
+      "sha256": "47b08cb76626bb407e68355c143685fbe72c0e99b0ca9acf36bbe9e6ae28e3c7",
+      "bytes": 47
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/same-reviewer.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/source.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/source.stdout": {
+      "sha256": "6349f4ae8accd8379b47721010d2bf8eb15c7240b402480a5ca586e664fe75bb",
+      "bytes": 257
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/too-many.stderr": {
+      "sha256": "367f9e1ab35cfa49759cf62a29ef14de764168c7e639b59132a564c3ede1d24e",
+      "bytes": 36
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/too-many.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/unknown-field.stderr": {
+      "sha256": "ca14ca13ca3eddb481cf2a4e84ffceef8434923aa3a2a7f98d2cb3c661922caa",
+      "bytes": 139
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/logs/unknown-field.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-a.json": {
+      "sha256": "8c70ffc28b3b43f0b7dcaea75ee41bcf233f665dc6b0a2fb9214465073a12eec",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-b.json": {
+      "sha256": "67b1a97e1b56d25e1a608a052ba1df846ad9fb2df8fbb8042a8f4171bb01f0b6",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-imported.json": {
+      "sha256": "8c70ffc28b3b43f0b7dcaea75ee41bcf233f665dc6b0a2fb9214465073a12eec",
+      "bytes": 1008583
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/nearcap-report.json": {
+      "sha256": "0bce3f77c2d38369c94dfc38d9646aa08c7f97aceff6ec4896292c4028d9d136",
+      "bytes": 2102012
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/oversized.json": {
+      "sha256": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee",
+      "bytes": 1048577
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/package/song.package": {
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+      "bytes": 319
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/point-eof-input.json": {
+      "sha256": "f624c4041a767d0d9e3350651e49d80df44557650b2ef785a8f5029aa4f82c0d",
+      "bytes": 1112
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/point-negative-input.json": {
+      "sha256": "e8e02f73d6a3154785f222cf1a6fa246443b996489b57ba859cf5d54dc17176e",
+      "bytes": 1107
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json": {
+      "sha256": "54ca8f2aa8c2f8c53a9666a7b4c40a0673450bbd27f9953e1221b606e5b2bd42",
+      "bytes": 1108
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/reviewer-b-control.json": {
+      "sha256": "a4b3734afcb1b2c69849f94988c1c9f587cacaa74a8b81e3b93845631c2e4712",
+      "bytes": 1138
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/same-reviewer-control.json": {
+      "sha256": "513f22c3cfe1e35033723cf425b7008382aab1720abaf30c7665c19264a6283c",
+      "bytes": 1138
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/summary.json": {
+      "sha256": "8e9793e6e8fdec39cf429887728f79e3eca66b5a6201356a330327d979ccb59f",
+      "bytes": 40006
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/too-many-input.json": {
+      "sha256": "1dffd7120f5fc4863338dc4f1fddaa2dadd9f660e03bb5b067f15861b3633180",
+      "bytes": 262585
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/unknown-field-input.json": {
+      "sha256": "ae26f78605c0ef129e5be8c9c985705a55d11227a0e1b7bc9ebe23928af6ea58",
+      "bytes": 1124
+    },
+    "target/independent-label-plan-20261008/CLI-HANDOFF.json": {
+      "sha256": "b05ef8737193c31b224970f643d93d51fbad5c3b20428eb23bc99493ab9a724d",
+      "bytes": 1025
+    },
+    "target/independent-label-plan-20261008/CLI.md": {
+      "sha256": "37c11f0941458724ecfa3e91708f84427d040e8a1ecd40deec1977d26ccd0fbd",
+      "bytes": 5263
+    },
+    "target/independent-label-plan-20261008/HANDOFF.json": {
+      "sha256": "112bad495a147040f667d6268215cf538833c9e4390c2e846c63e98686b51364",
+      "bytes": 1616
+    },
+    "target/independent-label-plan-20261008/PLAN.md": {
+      "sha256": "4c86626517f09be39f557580745c59a18d3223360378bc31396c8b5918e46a2c",
+      "bytes": 6781
+    },
+    "target/independent-label-plan-20261008/labels.rs": {
+      "sha256": "008e445259540ca0137938393dd5395ff11737d5cf040bc08726eaf79de4f3f6",
+      "bytes": 13260
+    },
+    "target/independent-label-plan-20261008/labels_cli.rs": {
+      "sha256": "3e3b2e1238995ce7a6dd58d050e912aaa2e3742403b3721e3f4cd649071f2601",
+      "bytes": 6971
+    },
+    "target/independent-label-plan-20261008/main-cli.fragment.rs": {
+      "sha256": "e5e29c3ad31d450c42803c74c2b2b66a5febb369ac2640d05a661741b2ed797a",
+      "bytes": 803
+    },
+    "target/independent-label-plan-20261008/review/README.md": {
+      "sha256": "54c5de7cf54e5241045d062aa655f30e08867ec82c42a0831896ba7e74b71182",
+      "bytes": 1269
+    },
+    "target/independent-label-plan-20261008/review/cli-review.json": {
+      "sha256": "cfc152efb529dfda8f07e56a5c677a7d85a1e7fc079ddb019b1fc4f016da34dc",
+      "bytes": 3519
+    },
+    "target/independent-label-plan-20261008/review/final-review.json": {
+      "sha256": "90480587b51cf72dd7524763b7591008b499db92d80a4fb1c6e3879982efa232",
+      "bytes": 4341
+    },
+    "target/independent-label-plan-20261008/review/initial-review.json": {
+      "sha256": "1f5ae406ef20b0a197ccf615abdd236005d61470a01be4a0733033aebbb9cc0a",
+      "bytes": 3855
+    },
+    "target/independent-label-plan-20261008/review-history/HANDOFF-before-fifo-fix.json": {
+      "sha256": "8f8ad7b6027565bea94269cf0d3fc4f507a6750d83210e7403625dd94d8850f6",
+      "bytes": 1006
+    },
+    "target/independent-label-plan-20261008/review-history/fifo-fix-review.json": {
+      "sha256": "8f8299e22a1603835021447a1391d007ea39edeabec8d5013b78140d289e95ec",
+      "bytes": 782
+    },
+    "target/independent-label-plan-20261008/review-history/labels-before-fifo-fix.rs": {
+      "sha256": "627b20006c1b136d9963dfad51773daae584d75afba983c20ef4f21b830610f9",
+      "bytes": 11494
+    },
+    "target/independent-label-plan-20261008/review-history/labels-before-report-cap-fix.rs": {
+      "sha256": "f5d4d4a364e98855ccbbe0de7b0c6ca84b89bbb05ad85b2aee550e9d678e520e",
+      "bytes": 11677
+    },
+    "target/independent-label-plan-20261008/review-history/report-cap-1024-structure.json": {
+      "sha256": "2fc6381d38d00321a6a8f315d33b403b682cbdc6eba97e011693a2ead0bebded",
+      "bytes": 733
+    },
+    "target/independent-label-plan-20261008/review-history/report-cap-fix-review.json": {
+      "sha256": "2d1a6375f68c463f525a5d8382d9f416a55bf79cebbbae447b25098f5964385c",
+      "bytes": 545
+    },
+    "target/independent-label-cli-qa-20261008/HANDOFF.json": {
+      "sha256": "2c11d4c6a1b07dd2a8fe5cd3b561796022ca9f261030ac9d722c1b5bd8eb21a2",
+      "bytes": 1221
+    },
+    "target/independent-label-cli-qa-20261008/README.md": {
+      "sha256": "d23afd98e77fe10c38375d415bd9f468dfa4385f8980b607af53be91c79f73fb",
+      "bytes": 3596
+    },
+    "target/independent-label-cli-qa-20261008/check.py": {
+      "sha256": "50af19032f5936cafc2ae7fe82ae37c8ddac77b54c416b4f3764882bb1fe4abb",
+      "bytes": 15867
+    },
+    "target/independent-label-cli-qa-20261008/docs-labels.candidate.md": {
+      "sha256": "9b4885923e1392cc9e6a05d61ee362d617066a029bebc3dd46320e2b66df172a",
+      "bytes": 3111
+    },
+    "target/independent-label-cli-qa-20261008/fixture-receipt.json": {
+      "sha256": "d4f8d1d317b667ef0230347e074447dd9f5402efb82c71d68ee210ea87bb7981",
+      "bytes": 811
+    },
+    "target/independent-label-cli-qa-20261008/review/final-review.json": {
+      "sha256": "301d46305b03f2e6ef9ca99bb03bda60a90cd7c4340ea0a2548bf87f5a85dbd8",
+      "bytes": 4261
+    },
+    "target/independent-label-cli-qa-20261008/review/fixture-readonly-check.json": {
+      "sha256": "64b125cce77699d2266303205790923c9cc8a0785d243f73fe9b4af14cc91f76",
+      "bytes": 944
+    },
+    "target/independent-label-cli-qa-20261008/review/initial-review.json": {
+      "sha256": "bbfe90d628343773c9fb7b455752513d45f43d925debb2208da2bb99f26baebb",
+      "bytes": 2662
+    },
+    "target/independent-label-cli-qa-20261008/review-history/check-before-qa-review-fixes.py": {
+      "sha256": "ba11009eb2f0b3d4517e4c931d671328882da950a1ce7877cef217829ddd1375",
+      "bytes": 14563
+    },
+    "target/independent-label-cli-qa-20261008/review-history/qa-review-fixes.json": {
+      "sha256": "bd9d18c3a0da5845f954303b74172223cc8e49ef7393cf4e89afc23f260da827",
+      "bytes": 782
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "0d588c59fa075dd24a2af35422c67056cd1b2af90b9b2d0c6af8c7109872f334",
+      "bytes": 11941
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/labels.rs": {
+      "sha256": "df0a60c7f76f322e6f10090615ef7c553eaa2e1fd608265147bc244fe72c77f1",
+      "bytes": 15463
+    },
+    "target/independent-label-delivery-20261008/build/source/tools/cocobeat-lab/src/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "0d588c59fa075dd24a2af35422c67056cd1b2af90b9b2d0c6af8c7109872f334",
+      "bytes": 11941
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-delivery-20261008/build-02/source/tools/cocobeat-lab/src/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package/song.package": {
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+      "bytes": 319
+    }
+  },
+  "special_files": {
+    "target/independent-label-delivery-20261008/cli-controls-01/existing-output-fifo": {
+      "kind": "fifo",
+      "read_content": false
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/existing-output-symlink": {
+      "kind": "symlink",
+      "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+      "read_content": false
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/input-fifo": {
+      "kind": "fifo",
+      "read_content": false
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/input-symlink": {
+      "kind": "symlink",
+      "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/reviewer-a-control.json",
+      "read_content": false
+    },
+    "target/independent-label-delivery-20261008/cli-controls-01/source-alias": {
+      "kind": "symlink",
+      "target": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/cli-controls-01/package",
+      "read_content": false
+    }
+  },
+  "excluded_binary_identities": {
+    "build": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build/bin/cocobeat-lab",
+      "sha256": "45975720d9310cb536279bd3943edb6de8e50740b18c6ed803ddd2da8f7ee51b",
+      "bytes": 1474362264,
+      "identity_evidence": "Successful actual compiler/copy receipt and CLI protected before/after binary hashes; record preparer did not rehash binary"
+    },
+    "build-02": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-delivery-20261008/build-02/bin/cocobeat-lab",
+      "sha256": "45975720d9310cb536279bd3943edb6de8e50740b18c6ed803ddd2da8f7ee51b",
+      "bytes": 1474362264,
+      "identity_evidence": "Successful actual compiler/copy receipt and CLI protected before/after binary hashes; record preparer did not rehash binary"
+    }
+  }
+}
