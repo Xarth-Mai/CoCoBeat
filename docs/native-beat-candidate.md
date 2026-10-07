@@ -22,4 +22,8 @@ MusicAnalysis v2 的 beat / downbeat capability 标为 `Candidate / Algorithm`�
 
 13 项事务 / 资源控制为 5 成功、8 预期拒绝，覆盖过短音频、非法作者 / 声道、已有目标、缺失或损坏模型 / SDK；旧新 Lab 普通手工导入的四对象逐字节一致。固定 Lab SHA-256 为 `217d2c987b7dd3c2501abced6ae0f337f712ac79ea33f74784e538b8bf662f68`，命令、源码、原始结果与失败见[观察记录](../testdata/synthetic/native-beat-observations-20261008.json)及对应 raw index，工作区原图位于 `target/native-beat-delivery-20261008/`
 
-旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。四目标 workflow 已准备实际解包后的候选 / 手工入口检查，但这轮四目标原生 GitHub Actions 和新 tag Release 未运行；十分钟成本 / 取消、同进程 ORT 重试、真实音乐 / 设备 / 真人验收仍为 NOT_RUN
+2026-10-08 使用同一冻结 debug Lab 完成原创 64 秒 PCM 重复 9 次加首 24 秒的 600 秒成本样本：导入 exit0、293.164615 秒，kernel 单子进程峰值 RSS 1495372 KiB、/proc 采样峰值 1496700 KiB、实际采样最多 3 threads；独立 verify-package exit0、19.600872 秒，计时另列且四对象字节保持。实际 N=28800000、M=13230000、F=30001、21 chunks、原 q 范围与覆盖核对通过，481 项实际输入前后 hash 相同；这是 Linux x86-64 debug CPU 观察，不是发行 CPU/RSS 预算准入，完整命令、原始输入和结果见[十分钟观察记录](../testdata/synthetic/native-beat-cost-observations-20261008.json)及对应 raw index
+
+48 bytes 上限控制仅有 1 frame 真实 payload，header 声明 600 秒加 1 frame，实际拒绝原因确为十分钟上限，因此只通过 declared-duration header guard；完整超长音频和本 600 秒样本的独立 Python 数值对照仍为 NOT_RUN。首轮源生成的最终 print TypeError 与 staging glob 漏记均保留，后续只读文件快照及 mtime 标记不能补成精确内部阶段计时；长样本仍为 Candidate / Algorithm / confidence None，成本样本不作为音乐真值
+
+旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。各目标原生发行接线与实际 tag Release 按[构建发行](build-release.md)逐版本另验；发行 CPU/RSS 预算、十分钟产品取消、同进程 ORT 重试、真实音乐 / 设备 / 真人验收仍为 NOT_RUN
