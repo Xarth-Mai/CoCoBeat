@@ -112,6 +112,7 @@ jobs:
           Copy-Item assets/brand/README.md, assets/brand/PROVENANCE.csv -Destination dist/package/assets/brand
           Copy-Item assets/brand/icons/symbol-256.png -Destination dist/package/assets/brand/icons
           Copy-Item assets/fonts, assets/flags -Destination dist/package/assets -Recurse
+          Remove-Item -LiteralPath dist/package/assets/fonts/verify.py
           cargo run --locked -p xtask -- prepare-model-assets $env:BUILD_TARGET $env:NATIVE_SDK_ROOT dist/package
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           @(
@@ -261,6 +262,7 @@ jobs:
           cp assets/brand/README.md assets/brand/PROVENANCE.csv dist/package/assets/brand/
           cp assets/brand/icons/symbol-256.png dist/package/assets/brand/icons/
           cp -R assets/fonts assets/flags dist/package/assets/
+          rm dist/package/assets/fonts/verify.py
           cargo run --locked -p xtask -- prepare-model-assets "$BUILD_TARGET" "$NATIVE_SDK_ROOT" dist/package
           for size in 16 32 48 64 128 256 512 1024; do
             install -Dm644 "assets/brand/icons/symbol-$size.png" "dist/package/share/icons/hicolor/${size}x${size}/apps/cocobeat.png"

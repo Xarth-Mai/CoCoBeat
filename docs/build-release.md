@@ -69,7 +69,7 @@ CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/
 
 四目标工作流核验固定官方 CPU SDK 归档 SHA，并通过 `cargo xtask prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT` 验证和复制匹配的 SDK / provider / small0 模型与完整许可 notices；Linux 可执行文件在 `bin/`，Windows 在包根目录，资源路径见[原生候选](native-beat-candidate.md)。打包后从实际解包目录运行左右候选导入 / verify / Stage、缺失模型拒绝及普通手工导入回归，QA 命令记录独立于游戏设备验收；本次这套新工作流的四目标原生 run 和新 tag Release 尚未运行
 
-Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及完整的 `assets/fonts/`、`assets/flags/`；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及 OFL/MIT 许可一起分发，来源文件的原字节哈希按资源总台账核验，运行时多语言的软件验证见 [验证策略](testing.md#国际化与字体里程碑)，四平台首次构建与下载包核验结果见下文，真实游戏设备的运行验收仍需分别执行
+Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及 `assets/fonts/` 的字体 / 许可 / 来源文件和完整 `assets/flags/`；字体开发验证器 `verify.py` 仅留在源码仓库，不进入发行包；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及 OFL/MIT 许可一起分发，来源文件的原字节哈希按资源总台账核验，运行时多语言的软件验证见 [验证策略](testing.md#国际化与字体里程碑)，四平台首次构建与下载包核验结果见下文，真实游戏设备的运行验收仍需分别执行
 
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，后续门槛按 [工作进度](../todo/progress.md) 推进，不能用本机编译推断其他平台或真实设备兼容性
 
