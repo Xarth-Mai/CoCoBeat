@@ -1,0 +1,996 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-07",
+  "milestone": "Explicit Stage compiler identity in Replay and QUIC protocol 5",
+  "scope_notes": [
+    "The 15 source hashes identify the prepared Stage contract patch applied before reentry, source import, and audition integration; they are historical snapshots, not the final current commit or a frozen whole repository Cargo graph",
+    "The 184 Cargo tests ran the binaries compiled for this Stage batch: lab 30, net 16, replay 8, runtime 124, stage 6; subsequent app/online/main changes require their own integration verification",
+    "Wire negative controls use copied production network source with only a QA peer appended; decoder controls use copied content/online/dev_song and the exact sound_data function extraction",
+    "The old decoder source copy validates the Stage identity guard and full PCM readback; it does not validate later reentry code or observe app sending Ready",
+    "Integer geometry reconstruction is not full visual Replay playback, historical shader reproduction, physical audio timing, or two-machine acceptance"
+  ],
+  "raw_receipt": {
+    "path": "target/stage-version-20261007/integration-observations.json",
+    "sha256": "ab67221cc2451de85bb3825b79310fc97f187d8b27d0a6a5f91eb37cc3667f8d"
+  },
+  "status": "PASS",
+  "scope": "Stage/Replay/protocol v5 integration before later reentry/import/audition source merges; current whole workspace is not an immutable tested commit",
+  "stage_patch_sha256": "13c07fc43454e263edca921895957521db779bc5add14144e14f9c49183c2af0",
+  "applied_rust_files": [
+    {
+      "path": "crates/cocobeat-schema/src/lib.rs",
+      "source_sha256": "4ee66bea6fa2d1de66a4a00122f5a6679cdbebdbadf5393f18af61bc9ea049c3",
+      "prepared_sha256": "a28dd8ef46c9a97610e9f65f6b248ac91277768f9958126e36eedbda71c3674c"
+    },
+    {
+      "path": "crates/cocobeat-stage/src/lib.rs",
+      "source_sha256": "b24ecbcd68bdf9ee6d3749a1c1fee0b9babcc7510053c296fc93041c1a47509a",
+      "prepared_sha256": "4c2ed3afbc61b0b11a40a913d1d9eabfa9a5fd71a3d7356f29b48f698032cc5f"
+    },
+    {
+      "path": "crates/cocobeat-replay/src/lib.rs",
+      "source_sha256": "240af38c6a4f23711fb9c071cb243e4cffbe215b21c8f74eb04f3cb12651945d",
+      "prepared_sha256": "976eb82ee80650af27528cb7473e909b027dba80a9a95588f62a22813e29c031"
+    },
+    {
+      "path": "crates/cocobeat-runtime/src/session.rs",
+      "source_sha256": "c8c646576548e9ce54c5dde3e60afc294db6b59e9eb5c355898ce281364687b7",
+      "prepared_sha256": "90dfeebfe51794f03aaaa65e0bc04d42ee20ed7afbff8ffc80f62f4a5a63a2b9"
+    },
+    {
+      "path": "crates/cocobeat-runtime/src/online.rs",
+      "source_sha256": "200ba090bab621798b8ac249a0a55e01a96aa8fa599d944c01036a42dfc4f142",
+      "prepared_sha256": "e363e9a6807651be83b9d4459a332b5a11076e1eaa66c7e20d0ce6ad0e610262"
+    },
+    {
+      "path": "crates/cocobeat-runtime/src/app.rs",
+      "source_sha256": "11386ce9fadf620e9701a1ba34e5af90e33ee760733506febdba79d800728c37",
+      "prepared_sha256": "2a2eaf5ef5f04133754567db0b22657a324a6724b016e3bd19919c05d47de9d1"
+    },
+    {
+      "path": "crates/cocobeat-net/src/lib.rs",
+      "source_sha256": "abe069d888c8caff94b340c4959bb38ada0be3bc24305a8a10ba9bfed287ca95",
+      "prepared_sha256": "b480e5806b8be373393481917a58b7eb8dab542a0ada4b937f75c2691230f618"
+    },
+    {
+      "path": "crates/cocobeat-net/src/wire.rs",
+      "source_sha256": "59396ee24d72b8fa836353719c7ad6173c477cddc33ab32de7c2dfeb0f906d20",
+      "prepared_sha256": "196841ad8737b2e2a91e1d726d8f208f0302f142ef4bb318052641ffb32b49b4"
+    },
+    {
+      "path": "crates/cocobeat-net/src/session.rs",
+      "source_sha256": "9d7bd160e0ec6f471ecf6d081ab7a60859b73359296a530cafb01916d3e4d4c5",
+      "prepared_sha256": "00641cab95d44508dc88fd356839a98fae091219cfbb591c690ad5e64d89c531"
+    },
+    {
+      "path": "crates/cocobeat-net/src/live.rs",
+      "source_sha256": "2730dab44c4b54d179bdc71676f3089abe861c8550eb8907e482220c3f894928",
+      "prepared_sha256": "2963a85448ab3f7e0f7369ebbdd64839406b8ea8329924d762bd23d0816134cd"
+    },
+    {
+      "path": "crates/cocobeat-net/src/resource.rs",
+      "source_sha256": "035dd3edc796d2729de800c7185c3a575be55e4c162cf988c861830a4af2160d",
+      "prepared_sha256": "a292e4b26a187d7c0c1abc7bdcefcf024c0eb5b728ebc4893d9b0e01ee8c6f58"
+    },
+    {
+      "path": "tools/cocobeat-lab/src/replay.rs",
+      "source_sha256": "b95968a7a1f3581431e22dfb0a487581040bf9e0f467c34d218bad60035d86f7",
+      "prepared_sha256": "bd9ef777b8f994c2e0deae7339c79c39f08ec5021032f5c141c9bd74b4b99cc1"
+    },
+    {
+      "path": "tools/cocobeat-lab/src/workbench/replay.rs",
+      "source_sha256": "5ada5e3919eebee7ec1f73563845a778e9b7b8cf9fcfd58b3ade4c5a3f4b66fe",
+      "prepared_sha256": "bc0ad980118d84bd5c731481110e14e00bb96c9eaf39b141e908bc654fc856e4"
+    },
+    {
+      "path": "tools/cocobeat-lab/src/stage.rs",
+      "source_sha256": "6a46f5a85321c93659b8a7ee34d25b7fea88337bc9915ebe3a5971709ae46243",
+      "prepared_sha256": "1f2d262bed5b15929693f44cdadca2e1d9b1d2dcd409559066e63a80b1b78707"
+    },
+    {
+      "path": "tools/cocobeat-lab/src/main.rs",
+      "source_sha256": "93243d2fcccf70cfc378966ae2efbb028a2ca80287fac09752da82d1f5b5a09b",
+      "prepared_sha256": "baa2b4f307aa361342c9ce8bcac6c1ae194df85be1108548f464d49e22cb0e63"
+    }
+  ],
+  "manifest_sha256": "79e6981dfffc062ab10ee143c8c62416a174da40bf2a4ecaf6f5bab1612b553e",
+  "checks": [
+    {
+      "command": "cargo test -p cocobeat-stage -p cocobeat-replay -p cocobeat-net -p cocobeat-runtime -p cocobeat-lab --message-format=json",
+      "exit_code": 0,
+      "test_counts": {
+        "lab": 30,
+        "net": 16,
+        "replay": 8,
+        "runtime": 124,
+        "stage": 6
+      },
+      "total": 184
+    },
+    {
+      "command": "cargo clippy -p cocobeat-stage -p cocobeat-replay -p cocobeat-net --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "rustfmt --check --edition 2024 crates/cocobeat-schema/src/lib.rs crates/cocobeat-stage/src/lib.rs crates/cocobeat-replay/src/lib.rs crates/cocobeat-net/src/lib.rs crates/cocobeat-runtime/src/session.rs crates/cocobeat-runtime/src/online.rs tools/cocobeat-lab/src/stage.rs tools/cocobeat-lab/src/replay.rs",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- crates/cocobeat-stage/src/lib.rs crates/cocobeat-replay/src/lib.rs crates/cocobeat-net/src crates/cocobeat-schema/src/lib.rs crates/cocobeat-runtime/src/session.rs tools/cocobeat-lab/src/replay.rs tools/cocobeat-lab/src/stage.rs tools/cocobeat-lab/src/workbench/replay.rs",
+      "exit_code": 0
+    }
+  ],
+  "logs_sha256": {
+    "target/stage-version-20261007/integrated-tests.jsonl": "143aaa41f81b6932fabd903a806389102816de2323b716a968d8134ac5c676da",
+    "target/stage-version-20261007/integrated-tests.stderr": "e7f7695ced43206d05ed3040e83bbacbd0a1fc4f1d4cc01fe2272cdb9397846e",
+    "target/stage-version-20261007/contract-clippy.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/stage-version-20261007/contract-clippy.stderr": "3021862fd4456665675f11c6e5bcc465a1a1c3bb43ca86647cd52a4b4f3d594d"
+  },
+  "wire_negative_controls": {
+    "status": "PASS",
+    "commands": [
+      {
+        "case": "hello-missing",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "hello",
+          "missing",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/hello-missing"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "missing",
+          "path": "hello",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 10987342383962851723,
+          "player": 1,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:39534",
+          "cert_blake3": "a63c500843bb6466ac55d7f4aab7f0f6bc0bde2a51a23131143136ec9a68d2c1",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "c442939cb2a59354d2448a2847f4778acf8dc23efd93f52e17d8f91b75d4bd27",
+          "authority_replay_blake3": null,
+          "error": "decode frame: invalid JSON message"
+        },
+        "evidence_sha256": {
+          "hello-missing/session/live.replay.json": "e2e8dcacf393c2339e40d67a0c192808efd28eeabdb0cea247a84f929ff028c7",
+          "hello-missing/session/status.json": "9f43d438ea2f1e9e5694649165f31ff841a71c155622e5be6baf172abe27c816"
+        }
+      },
+      {
+        "case": "hello-null",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "hello",
+          "null",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/hello-null"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "null",
+          "path": "hello",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 10758766673452797181,
+          "player": 1,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:53737",
+          "cert_blake3": "2be1718ef89e4521e306cfbbc7765b2d4049b7b2bab858b74f67fe5a8b5e76b6",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "9fe986f5b7396bfaac3f197a9be440c4a6d5fde50ed72e4bf8bfcae95a954228",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "hello-null/session/live.replay.json": "839071f6061e237eb41cbebd0e2adf1685977d18d536ba3a879f58c7c9d77999",
+          "hello-null/session/status.json": "2d50ca2ac282aab4747edfe46a5849cde7882ba6ace06676e398cf4b7d86e495"
+        }
+      },
+      {
+        "case": "hello-one",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "hello",
+          "one",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/hello-one"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "one",
+          "path": "hello",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 10141585211380887203,
+          "player": 1,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:39154",
+          "cert_blake3": "523638be4fa32286167495b1b82a5994acf7e565a4ec7c5f4ffd3762bab50659",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "ee09ab6f395e5a2e3d09ba8369e6eb5ee8bca9c4cd2e153eeef9ba99dd469164",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "hello-one/session/live.replay.json": "69a597f7068a249c731b2d2f9ca6db1192e632022789f5d000130e25a2feb044",
+          "hello-one/session/status.json": "daaa5a89fcf5afc116d9d12695e34eedba3fcfe3ebe686ae035d75f992ba5ff0"
+        }
+      },
+      {
+        "case": "hello-three",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "hello",
+          "three",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/hello-three"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "three",
+          "path": "hello",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 18373684924247446287,
+          "player": 1,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:55503",
+          "cert_blake3": "c4925507057275283e2bce4b71cf21f87ec4ecbcb46ce536de3be9ebb31856c0",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "37b7c196b26c75623ad009392d65bd7c24225d9313f81f80c1c51c99513cf43a",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "hello-three/session/live.replay.json": "4a37b7d782be15ca22268bdfde5b918bb0b7123a1cb4c2e52817c83f2e3fab4b",
+          "hello-three/session/status.json": "365ec7d734333916974b02fa03b1640f83e8257fdf3711558e1c8ea0e4179415"
+        }
+      },
+      {
+        "case": "welcome-missing",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "welcome",
+          "missing",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/welcome-missing"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "missing",
+          "path": "welcome",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 2618164168686195050,
+          "player": 2,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:41937",
+          "cert_blake3": "052024b9b43ea6a6b9184b40fea86aa978cab5510db1f8dfda0efd8687cb4d25",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "b0af4736ebb695ecc066d9a4611343b478709d46f34aaf84993eefaf810ced38",
+          "authority_replay_blake3": null,
+          "error": "decode frame: invalid JSON message"
+        },
+        "evidence_sha256": {
+          "welcome-missing/session/live.replay.json": "5411527bb3ce92d09723591d64446af8d657b9f689d897f333e6ca389cee752e",
+          "welcome-missing/session/status.json": "54278eecaba18617ffeddfb0f0a07d2dcb7cd77a7c9c3088058dcfb68eb88d47"
+        }
+      },
+      {
+        "case": "welcome-null",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "welcome",
+          "null",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/welcome-null"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "null",
+          "path": "welcome",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 15557952343777988330,
+          "player": 2,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:47764",
+          "cert_blake3": "e2b0941d90632784679b94ed3382d9a320a77a0fde8aa7a4d0ebda36b7706003",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "d364e0222630240f2ad51b9d989dafa0f1de976c4d93677fdae1235b214bd6b8",
+          "authority_replay_blake3": null,
+          "error": "host content identity or ruleset is invalid"
+        },
+        "evidence_sha256": {
+          "welcome-null/session/live.replay.json": "af7affbbf397bb750ec636a423de38b15a8d20275b08f4a45912e26a4e6b1b97",
+          "welcome-null/session/status.json": "43ac70e46ffeefa3132a42c5aa7ea8f152102ce2f2234f41cb2ac816b0a4e576"
+        }
+      },
+      {
+        "case": "welcome-one",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "welcome",
+          "one",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/welcome-one"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "one",
+          "path": "welcome",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 11422948055919662050,
+          "player": 2,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:39187",
+          "cert_blake3": "f1d72ca0994d4881ce49833f1f2ef669501ce0b5024a2c1ba82628d41a5c106a",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "847f7d05601221e45d6e27c32f056cf69cbba3604df6f2d85746d3af24187e74",
+          "authority_replay_blake3": null,
+          "error": "host content identity or ruleset is invalid"
+        },
+        "evidence_sha256": {
+          "welcome-one/session/live.replay.json": "b55cdf434c4c3475f68fbb15e7d0364e7efda48a00e5d875069a71fdcc984937",
+          "welcome-one/session/status.json": "6b509e43f40bffb6f142b99e292d229898543897713b326b55b6b81631d1d04b"
+        }
+      },
+      {
+        "case": "welcome-three",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "welcome",
+          "three",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/welcome-three"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "three",
+          "path": "welcome",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 8890924939891967048,
+          "player": 2,
+          "peer_authenticated": false,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:60375",
+          "cert_blake3": "288a51d702c49f9ab5dbf892d145dbe24a39c7438be565e039c3b4dcc614495f",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "6bf25d3da0f2c4417576002355d06976e172bfe893485c1408853d0271cf2c84",
+          "authority_replay_blake3": null,
+          "error": "host content identity or ruleset is invalid"
+        },
+        "evidence_sha256": {
+          "welcome-three/session/live.replay.json": "3fa6155202c3b4028d4f02200989d86c85f390ec99f59cd6306f17c3e4c30c1d",
+          "welcome-three/session/status.json": "6d62d2f31792fbfaea237e12885715851989e3e167ebfa4dccb45b04b770a604"
+        }
+      },
+      {
+        "case": "installed-missing",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "installed",
+          "missing",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/installed-missing"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "missing",
+          "path": "installed",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 610246452281332280,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:59975",
+          "cert_blake3": "41e3240dca8ff4d479b0c2e1ef9ee9517ef2ffc08f588e35ebeb5862c2a7f296",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "dd64384bc27e96ddd9a2bae9712b45053621e45599de37b1c47d73b88c8c5bca",
+          "authority_replay_blake3": null,
+          "error": "decode frame: invalid JSON message"
+        },
+        "evidence_sha256": {
+          "installed-missing/received/analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+          "installed-missing/received/chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+          "installed-missing/received/song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+          "installed-missing/received/song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b",
+          "installed-missing/session/live.replay.json": "af57660ced41e44d89d8d94d59666a55ca43d6f291df355de44b4c157c089b14",
+          "installed-missing/session/status.json": "e15c1bb0359ce0aa7bac95cf8569927f3a9baa1f187bc5af9adbd32c56e181af"
+        }
+      },
+      {
+        "case": "installed-null",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "installed",
+          "null",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/installed-null"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "null",
+          "path": "installed",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 1837527850218466440,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:49170",
+          "cert_blake3": "0fb707223e2c004016e9e60f590a0331ae91ff13dcee90bf5bdd3b017324559b",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "53ddc5e6a0421d7474d401b81f0fa318172481c2ca2b80cbf80e6343283ddccd",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "installed-null/received/analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+          "installed-null/received/chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+          "installed-null/received/song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+          "installed-null/received/song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b",
+          "installed-null/session/live.replay.json": "5a085edbb7f6b24542a25322d301a5e4e5937ad054aedee45cf3cfc73f9f88d8",
+          "installed-null/session/status.json": "b3ba3d285ae1c313da6721d354a5895a434d9be52fa3691193746476cb33b88e"
+        }
+      },
+      {
+        "case": "installed-one",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "installed",
+          "one",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/installed-one"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "one",
+          "path": "installed",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 8155024527160076995,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:45423",
+          "cert_blake3": "58dd36eaec63ddeabe6039ea07dc42a3441120206ecbb795d16dbb032eb80ef1",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "c175359f59449e213ad9bf17bc9812c896eac6c1e9aa5edd7e4d49afda668a0c",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "installed-one/received/analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+          "installed-one/received/chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+          "installed-one/received/song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+          "installed-one/received/song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b",
+          "installed-one/session/live.replay.json": "4a633896c21527b2a3a577fbac7850ff1af67a731cebce4e830d680379b77950",
+          "installed-one/session/status.json": "9dac0513c1ee995ef7c6991ad363c61c195b45c70273cf58fb169757206047eb"
+        }
+      },
+      {
+        "case": "installed-three",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+          "installed",
+          "three",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/results-native/installed-three"
+        ],
+        "exit_code": 0,
+        "report": {
+          "mutation": "three",
+          "path": "installed",
+          "prepared": false,
+          "ready_sent": false,
+          "status": "PASS",
+          "worker_finished": true
+        },
+        "status": {
+          "status": "FAILED",
+          "mode": "live",
+          "protocol_version": 5,
+          "epoch": 9540899768357211191,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": null,
+          "content_id": "package-blake3:e396230105a7309ba56493f6dd8149a681ed1caeca69a3c4d40cf617eafa361a",
+          "endpoint": "127.0.0.1:60002",
+          "cert_blake3": "a6c5094668ef186950cfee8f8e409579964d7f53bc909fbacadf0ba17f5184d6",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            0,
+            0
+          ],
+          "event_count": 0,
+          "live_replay_blake3": "eff75a9a707678c6660e446c2054bdd48a55353726f846461135b8f44b3ba412",
+          "authority_replay_blake3": null,
+          "error": "peer validated package identity differs"
+        },
+        "evidence_sha256": {
+          "installed-three/received/analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+          "installed-three/received/chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+          "installed-three/received/song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+          "installed-three/received/song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b",
+          "installed-three/session/live.replay.json": "f7e8ad8d3cdd26aeafb245195e1c86651309bae60893d4286a53857fbd5d83a5",
+          "installed-three/session/status.json": "fb1fa76070c74c0360ead3fc5f0ed91b6f0a0fc402895b46eafd54c601efbabd"
+        }
+      }
+    ],
+    "probe_sha256": "da30e8b9454dba67186bde43ddb0249b1eaaff5864a2a3ff9ec93afd1defcfda",
+    "build_sha256": "b5195ead14bfadd9a676be032c93353142b08ce300363509af2c05130161a6ae",
+    "package_objects_sha256": {
+      "song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+      "analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+      "chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+      "song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b"
+    },
+    "scope": "actual QUIC/TLS and unchanged source-copy LiveSession worker rejects before Prepared/Ready; no runtime decoder/audio/GPU or two-machine acceptance"
+  },
+  "wire_summary_sha256": "1dedeafb9a3a125e40e3fce2e2c71a67ab7c08e96d276e88d92879b50eaa0cfa",
+  "decoder_controls": {
+    "status": "PASS",
+    "commands": [
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/decoder-retry/probe",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "1"
+        ],
+        "exit_code": 0,
+        "report": {
+          "error": "Playback package differs from the validated network identity",
+          "scope": "actual decoder guard, no Song update or Ready sent",
+          "status": "PASS",
+          "update": "Err",
+          "version": 1
+        }
+      },
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/decoder-retry/probe",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "2"
+        ],
+        "exit_code": 0,
+        "report": {
+          "pcm_frames": 96000,
+          "scope": "actual production content decode and OnlineRound load; no LiveCommand::Ready sent, audio device or GPU",
+          "status": "PASS",
+          "update": "Song",
+          "version": 2
+        }
+      },
+      {
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/decoder-retry/probe",
+          "/home/lzzz/MyProjects/CoCoBeat/target/quic-live-20261007/fixture/package",
+          "3"
+        ],
+        "exit_code": 0,
+        "report": {
+          "error": "Playback package differs from the validated network identity",
+          "scope": "actual decoder guard, no Song update or Ready sent",
+          "status": "PASS",
+          "update": "Err",
+          "version": 3
+        }
+      }
+    ],
+    "package_objects_sha256": {
+      "song.audio.ogg": "d21db263cfb280cae0df82324dad034f77cad9867784cdd187eb88a55fc1956b",
+      "analysis.bin": "dd0d600a9492e063d33f1274ab27c9a62fd11dbf2e24eac3fff02845740b613b",
+      "chart.bin": "f59a7414c964ea832413280caaf0172b3acd07cb90694de39a020e0154faf6f9",
+      "song.package": "c2d00e3f5527a03724ac06c8d7b5af8f712f5fbbada4d52e8be91fe9e877943b"
+    },
+    "build_sha256": "8e2962a5e8245122e8926ec2fde00ec4123eff38b9eb8e668b978d9bbe53e4c5",
+    "probe_sha256": "fedd1d518a6b0cbca13ec495e84cb4ccf3c2acdc01b06d7d750b1a06979398a7",
+    "scope": "unchanged actual content / OnlineRound decode sources and exact sound_data extraction, current version Song plus old/unknown rejected before Song; no hardware or app Ready observer"
+  },
+  "decoder_summary_sha256": "9e93d54ff09ec31efd44db651f69edae7a6540ec335efd31fb7393ab0926b5ca",
+  "retained_preceding_failures": [
+    {
+      "scope": "restricted environment, UDP bind denied before peer",
+      "path": "target/stage-version-20261007/identity-gate/results",
+      "command_record_sha256": "be41f64669d32031c1136cfd449d71621b5c37967b5913f85bc0ee68f2615fff",
+      "status_record": {
+        "error": "bind host endpoint: Operation not permitted (os error 1)",
+        "facts": [
+          0,
+          0
+        ],
+        "mode": "live",
+        "protocol_version": 5,
+        "status": "FAILED"
+      },
+      "status_record_sha256": "d4d93ce8e781b83047d4b7da6352ff14286fcd003fbc3c08cbf03ef99005ba06",
+      "test_state": "NOT RUN: real peer exchange was prevented by restricted UDP bind"
+    },
+    {
+      "scope": "QA extraction expected pub(crate), parallel audio refactor made sound_data public; before decoder build, no production behavior failure",
+      "path": "target/stage-version-20261007/identity-gate/decoder",
+      "test_state": "NOT RUN: extraction failed before rustc or PCM decode"
+    }
+  ],
+  "not_run": [
+    "full visual Replay playback",
+    "GPU presentation for this geometry identity change",
+    "physical input/audio",
+    "two machines"
+  ],
+  "review": "independent stage_contract_review: Lean already. Ship.; all 10 wire extern and all 8 decoder extern SHA256 verified, earlier decoder 7 count was a corrected typo",
+  "wire_build": {
+    "path": "target/stage-version-20261007/identity-gate/build/build.json",
+    "sha256": "b5195ead14bfadd9a676be032c93353142b08ce300363509af2c05130161a6ae",
+    "record": {
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "-Dwarnings",
+        "-Adead_code",
+        "--crate-name",
+        "stage_identity_probe",
+        "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/lib.rs",
+        "-L",
+        "dependency=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps",
+        "-o",
+        "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/build/probe",
+        "--extern",
+        "cocobeat_schema=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+        "--extern",
+        "cocobeat_core=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+        "--extern",
+        "cocobeat_replay=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+        "--extern",
+        "cocobeat_media=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_media-454014d19a532e9c.rlib",
+        "--extern",
+        "quinn=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libquinn-420d8fecf9240d62.rlib",
+        "--extern",
+        "rcgen=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/librcgen-d1ada3cfcdfe8ade.rlib",
+        "--extern",
+        "tokio=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libtokio-90608ef877df679a.rlib",
+        "--extern",
+        "serde=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+        "--extern",
+        "serde_json=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+        "--extern",
+        "blake3=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libblake3-ac112f361d87a498.rlib"
+      ],
+      "exit_code": 0,
+      "source_sha256": {
+        "crates/cocobeat-net/src/clock.rs": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+        "crates/cocobeat-net/src/lib.rs": "b480e5806b8be373393481917a58b7eb8dab542a0ada4b937f75c2691230f618",
+        "crates/cocobeat-net/src/live.rs": "2963a85448ab3f7e0f7369ebbdd64839406b8ea8329924d762bd23d0816134cd",
+        "crates/cocobeat-net/src/resource.rs": "a292e4b26a187d7c0c1abc7bdcefcf024c0eb5b728ebc4893d9b0e01ee8c6f58",
+        "crates/cocobeat-net/src/session.rs": "00641cab95d44508dc88fd356839a98fae091219cfbb591c690ad5e64d89c531",
+        "crates/cocobeat-net/src/sync.rs": "3d4e56a809ed81b5ce7270951380d9ca02597ff6075adf90f3b69de9e2836918",
+        "crates/cocobeat-net/src/wire.rs": "196841ad8737b2e2a91e1d726d8f208f0302f142ef4bb318052641ffb32b49b4"
+      },
+      "qa_tail_sha256": "6ed4962dbfea268a5671eac6e229dd4b965301a3fef3f308d93c2832dad9a38d",
+      "cargo_json": "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/artifacts.jsonl",
+      "cargo_json_sha256": "bb453121b7b5c91adcfa72376514c9f28ab4733a70726bb0e80316b25c250544",
+      "externs": {
+        "cocobeat_schema": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+          "sha256": "7cadb25f20d0299ec35b35095396a42dd58b0b834152028d1f2d813c3e75d851"
+        },
+        "cocobeat_core": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+          "sha256": "862624f92ff78a338371332b6e833c8f1a7609fe0d945e235d698dec601d11cb"
+        },
+        "cocobeat_replay": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_replay-7c778b4d5d595263.rlib",
+          "sha256": "a5ead3b6a5e1d36790bda53529d426064a0a05d2c8879ec7c21fbec6f2c04cac"
+        },
+        "cocobeat_media": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_media-454014d19a532e9c.rlib",
+          "sha256": "8456f6a32c780101ad81505ee4ee73f3f5f9e87888d4360125444c08855cb09b"
+        },
+        "quinn": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libquinn-420d8fecf9240d62.rlib",
+          "sha256": "893c5d3937fb558cf4432cb75f7af0751aeb3b4efd23b504e24bd1cdd6737185"
+        },
+        "rcgen": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/librcgen-d1ada3cfcdfe8ade.rlib",
+          "sha256": "0e4490450fd6cd011925e93c8abc3c157180952126dbfb1f40ddde74496187d0"
+        },
+        "tokio": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libtokio-90608ef877df679a.rlib",
+          "sha256": "298e9a4abbe3a3e9dedba403880f8717c49720a5fe40a64d0bc127ac11278ffb"
+        },
+        "serde": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde-1aad0b6b7405f01f.rlib",
+          "sha256": "a87d41a23125766ef9e47f11b258e8ee1f682089da03febeb83390ec1052472f"
+        },
+        "serde_json": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+          "sha256": "bfd95f5bb2620a8373955c4205a6e3a431e774f6c4c8009ec89c58ec3d52325a"
+        },
+        "blake3": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libblake3-ac112f361d87a498.rlib",
+          "sha256": "76c2062d5272ee19db177ac7036149c91b4f836dffbe32b234dbc1b9d30371f8"
+        }
+      },
+      "probe_sha256": "da30e8b9454dba67186bde43ddb0249b1eaaff5864a2a3ff9ec93afd1defcfda"
+    }
+  },
+  "decoder_build": {
+    "path": "target/stage-version-20261007/identity-gate/decoder-retry/build.json",
+    "sha256": "8e2962a5e8245122e8926ec2fde00ec4123eff38b9eb8e668b978d9bbe53e4c5",
+    "record": {
+      "command": [
+        "rustc",
+        "--edition=2024",
+        "-Dwarnings",
+        "-Adead_code",
+        "--crate-name",
+        "stage_decoder_probe",
+        "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/decoder-retry/main.rs",
+        "-L",
+        "dependency=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps",
+        "-o",
+        "/home/lzzz/MyProjects/CoCoBeat/target/stage-version-20261007/identity-gate/decoder-retry/probe",
+        "--extern",
+        "cocobeat_schema=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+        "--extern",
+        "cocobeat_core=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+        "--extern",
+        "cocobeat_net=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_net-c72f9a5ff20e5a82.rlib",
+        "--extern",
+        "cocobeat_media=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_media-454014d19a532e9c.rlib",
+        "--extern",
+        "cocobeat_stage=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_stage-414fab68ab8e7288.rlib",
+        "--extern",
+        "kira=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libkira-08431432094055fc.rlib",
+        "--extern",
+        "serde_json=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+        "--extern",
+        "blake3=/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libblake3-ac112f361d87a498.rlib"
+      ],
+      "exit_code": 0,
+      "source_sha256": {
+        "crates/cocobeat-runtime/src/content.rs": "e7529e5566496199bc2b01cded35bc93e634be9921ab9e0edce5fee6e1d5e05b",
+        "crates/cocobeat-runtime/src/online.rs": "e363e9a6807651be83b9d4459a332b5a11076e1eaa66c7e20d0ce6ad0e610262",
+        "crates/cocobeat-runtime/src/dev_song.rs": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+        "crates/cocobeat-runtime/src/audio.rs": "032a17653ed139383da9239be722ba4dc776ea251403884c67f9a6c7fc02f50c"
+      },
+      "audio_extraction_sha256": "005db41ee8a8b1a965e9744c23c75ac954a9af24b684d3c578ac23af1da8af93",
+      "qa_main_sha256": "0b1442e7431e572593b3e69e10284f6432edb3517daee93478bb58491335aaf5",
+      "cargo_json_sha256": "bb453121b7b5c91adcfa72376514c9f28ab4733a70726bb0e80316b25c250544",
+      "externs": {
+        "cocobeat_schema": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_schema-b72081a01c0962fb.rlib",
+          "sha256": "7cadb25f20d0299ec35b35095396a42dd58b0b834152028d1f2d813c3e75d851"
+        },
+        "cocobeat_core": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_core-b662446071f896ed.rlib",
+          "sha256": "862624f92ff78a338371332b6e833c8f1a7609fe0d945e235d698dec601d11cb"
+        },
+        "cocobeat_net": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_net-c72f9a5ff20e5a82.rlib",
+          "sha256": "efbe44d34c45d647676a6eed1b61ca77a1d516a7d9a2fc3486f4965dd48fc4c5"
+        },
+        "cocobeat_media": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_media-454014d19a532e9c.rlib",
+          "sha256": "8456f6a32c780101ad81505ee4ee73f3f5f9e87888d4360125444c08855cb09b"
+        },
+        "cocobeat_stage": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_stage-414fab68ab8e7288.rlib",
+          "sha256": "e72d26903e4792400882b9f65fcdc4b179603da90e76fd6ad8a974881107a486"
+        },
+        "kira": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libkira-08431432094055fc.rlib",
+          "sha256": "1ed344a3c82d92f6347ff56e955ce0d054a6c4b450c53ca18b479a4642801a35"
+        },
+        "serde_json": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libserde_json-87d0501a13f9b79f.rlib",
+          "sha256": "bfd95f5bb2620a8373955c4205a6e3a431e774f6c4c8009ec89c58ec3d52325a"
+        },
+        "blake3": {
+          "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libblake3-ac112f361d87a498.rlib",
+          "sha256": "76c2062d5272ee19db177ac7036149c91b4f836dffbe32b234dbc1b9d30371f8"
+        }
+      },
+      "probe_sha256": "fedd1d518a6b0cbca13ec495e84cb4ccf3c2acdc01b06d7d750b1a06979398a7"
+    }
+  },
+  "qa_source_sha256": {
+    "target/stage-version-20261007/identity-gate/check.py": "f639dd85f48f7dfad1dc1c7356ac02c48a541fca0a34a693aae1d249d09f2fa3",
+    "target/stage-version-20261007/identity-gate/main-tail.rs": "6ed4962dbfea268a5671eac6e229dd4b965301a3fef3f308d93c2832dad9a38d",
+    "target/stage-version-20261007/identity-gate/decoder.py": "7654601248c97011dac842401745c21a3d655b96ca0497024a9703c07ed436ca",
+    "target/stage-version-20261007/identity-gate/decoder-main.rs": "0b1442e7431e572593b3e69e10284f6432edb3517daee93478bb58491335aaf5"
+  }
+}

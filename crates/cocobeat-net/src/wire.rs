@@ -15,6 +15,9 @@ pub(crate) struct Identity {
     pub canonical_frames: u64,
     pub content_schema: u32,
     pub ruleset_id: String,
+    // A present null means a core-only session; missing fields are not v5
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub stage_compiler_version: Option<u32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -353,6 +356,7 @@ mod tests {
                 canonical_frames: 48_000,
                 content_schema: 1,
                 ruleset_id: "duo-watermark-v1".into(),
+                stage_compiler_version: None,
             },
             fact_count: 3,
         };
@@ -361,6 +365,12 @@ mod tests {
             serde_json::from_value::<Control>(json.clone()).unwrap(),
             hello
         );
+        let mut missing_stage = json.clone();
+        missing_stage["identity"]
+            .as_object_mut()
+            .unwrap()
+            .remove("stage_compiler_version");
+        assert!(serde_json::from_value::<Control>(missing_stage).is_err());
         json["identity"]["extra"] = 0.into();
         assert!(serde_json::from_value::<Control>(json).is_err());
         let mut json = serde_json::to_value(&hello).unwrap();

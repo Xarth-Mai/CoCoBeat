@@ -108,6 +108,7 @@ pub(crate) fn prepare_package(
         canonical_frames: package.manifest.canonical_frames,
         content_schema: package.manifest.schema_version,
         ruleset_id: package.chart.ruleset_id,
+        stage_compiler_version: None,
     };
     let end = i64::try_from(identity.canonical_frames).map_err(|_| "song frame overflow")?;
     let final_through = DuoRules::default()
@@ -250,6 +251,7 @@ impl Session {
                 content_id: prepared.identity.content_id.clone(),
                 rules_id: RULESET.into(),
                 build_id: format!("cocobeat-net/{}", env!("CARGO_PKG_VERSION")),
+                stage_compiler_version: prepared.identity.stage_compiler_version,
             },
             epoch,
         )
@@ -382,6 +384,10 @@ impl Session {
     }
 
     pub(crate) fn verify_replay(&self, replay: &Replay) -> Result<(), String> {
+        if replay.identity().stage_compiler_version != self.prepared.identity.stage_compiler_version
+        {
+            return Err("authority Replay Stage compiler identity differs".into());
+        }
         if replay.epoch() != self.epoch || !same_player_histories(replay, &self.replay) {
             return Err(
                 "authority Replay does not contain the complete actual player histories".into(),
@@ -1034,6 +1040,7 @@ pub fn join_receive(
             resource::package_hash(&identity)?;
             if identity.ruleset_id != RULESET
                 || identity.content_schema != CONTENT_SCHEMA_VERSION
+                || identity.stage_compiler_version.is_some()
                 || !(1..=MAX_CANONICAL_FRAMES).contains(&identity.canonical_frames)
                 || fact_count == 0 || fact_count > MAX_FACTS as u64 {
                 return Err("host content identity, ruleset or fact count is invalid".into());
@@ -1107,6 +1114,7 @@ mod tests {
             canonical_frames: 48_000,
             content_schema: 1,
             ruleset_id: RULESET.into(),
+            stage_compiler_version: None,
         };
         let prepared = Prepared {
             identity,
@@ -1139,6 +1147,10 @@ mod tests {
         let identity = session.prepared.identity.clone();
         let mut wrong = identity.clone();
         wrong.canonical_frames += 1;
+        assert!(session.bind_peer(&wrong, 2).is_err());
+        assert!(!session.summary.peer_authenticated);
+        wrong = identity.clone();
+        wrong.stage_compiler_version = Some(2);
         assert!(session.bind_peer(&wrong, 2).is_err());
         assert!(!session.summary.peer_authenticated);
         assert!(session.bind_peer(&identity, MAX_FACTS as u64).is_err());
@@ -1220,6 +1232,13 @@ mod tests {
         }
         assert!(same_player_histories(&reordered, &session.replay));
         session.verify_replay(&reordered).unwrap();
+        let mut wrong_identity = reordered.identity().clone();
+        wrong_identity.stage_compiler_version = Some(2);
+        let mut wrong_stage = Replay::new(wrong_identity, reordered.epoch()).unwrap();
+        for fact in reordered.facts() {
+            wrong_stage.record(*fact).unwrap();
+        }
+        assert!(session.verify_replay(&wrong_stage).is_err());
         let mut short = Replay::new(session.replay.identity().clone(), session.epoch).unwrap();
         for input in &session.replay.facts()[..4] {
             short.record(*input).unwrap();

@@ -1,5 +1,8 @@
 //! CoCoBeat-owned data contracts. No engine, audio, transport, or MIR types.
 
+/// Current native geometry contract shared with transport identity
+pub const STAGE_COMPILER_VERSION: u32 = 2;
+
 pub mod asset;
 pub mod content;
 pub mod gameplay;

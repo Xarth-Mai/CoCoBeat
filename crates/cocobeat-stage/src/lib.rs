@@ -5,7 +5,7 @@ use cocobeat_schema::{
     SectionFeature, SongTime,
 };
 
-pub const COMPILER_VERSION: u32 = 2;
+pub use cocobeat_schema::STAGE_COMPILER_VERSION as COMPILER_VERSION;
 pub const BASE_HALF_WIDTH_MM: i64 = 3_500;
 const MAX_PLAZA_EXPANSION_MM: i64 = 500;
 const FRAMES_PER_MM: i64 = 16;
@@ -16,6 +16,7 @@ const BRIDGE_HEIGHT_MM: i64 = 300;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StagePlan {
     content_id: String,
+    compiler_version: u32,
     end: SongTime,
     segments: Vec<TrackSegment>,
 }
@@ -52,6 +53,21 @@ pub fn compile(
     end: SongTime,
     sections: &[SectionFeature],
 ) -> Result<StagePlan, String> {
+    compile_version(content_id, end, sections, COMPILER_VERSION)
+}
+
+/// Version 1 keeps every analysis interval as a Plaza; version 2 adds Curve and Bridge
+pub fn compile_version(
+    content_id: &str,
+    end: SongTime,
+    sections: &[SectionFeature],
+    compiler_version: u32,
+) -> Result<StagePlan, String> {
+    if !matches!(compiler_version, 1 | 2) {
+        return Err(format!(
+            "Unsupported stage compiler version: {compiler_version}"
+        ));
+    }
     if content_id.is_empty() || content_id.len() > MAX_CONTENT_TEXT_BYTES {
         return Err("Stage content identity must contain 1 to 256 UTF-8 bytes".into());
     }
@@ -62,9 +78,13 @@ pub fn compile(
         return Err("Stage section count exceeds the content item limit".into());
     }
 
-    let max_long_sections = sections
-        .len()
-        .min((end.frames() / LONG_SECTION_FRAMES) as usize);
+    let max_long_sections = if compiler_version == 2 {
+        sections
+            .len()
+            .min((end.frames() / LONG_SECTION_FRAMES) as usize)
+    } else {
+        0
+    };
     let mut segments = Vec::with_capacity(sections.len() * 2 + 1 + max_long_sections);
     let mut through = SongTime::ZERO;
     for section in sections {
@@ -82,7 +102,7 @@ pub fn compile(
             });
         }
         let duration = section.end.frames() - section.start.frames();
-        if duration >= LONG_SECTION_FRAMES {
+        if compiler_version == 2 && duration >= LONG_SECTION_FRAMES {
             let middle = SongTime::from_frames(section.start.frames() + duration / 2);
             segments.push(TrackSegment {
                 start: section.start,
@@ -112,6 +132,7 @@ pub fn compile(
     }
     Ok(StagePlan {
         content_id: content_id.into(),
+        compiler_version,
         end,
         segments,
     })
@@ -127,7 +148,7 @@ impl StagePlan {
     }
 
     pub fn compiler_version(&self) -> u32 {
-        COMPILER_VERSION
+        self.compiler_version
     }
 
     pub fn segments(&self) -> &[TrackSegment] {
@@ -199,6 +220,87 @@ mod tests {
             end: SongTime::from_frames(end),
             confidence: None,
             label: "authored".into(),
+        }
+    }
+
+    #[test]
+    fn compiler_versions_keep_historical_geometry_and_the_current_default() {
+        for duration in [767_999, 768_000, 768_001] {
+            let end = SongTime::from_frames(duration + 16);
+            let sections = [section(0, duration)];
+            let old = compile_version("versioned", end, &sections, 1).unwrap();
+            let current = compile_version("versioned", end, &sections, 2).unwrap();
+            assert_eq!(old.compiler_version(), 1);
+            assert_eq!(current.compiler_version(), 2);
+            assert_eq!(compile("versioned", end, &sections).unwrap(), current);
+            assert_ne!(old, current);
+            assert_eq!(old.segments().len(), 2);
+            assert_eq!(old.segments()[0].kind, SegmentKind::Plaza);
+            assert_eq!(old.segments()[0].end.frames(), duration);
+            assert_eq!(old.segments()[1].kind, SegmentKind::Straight);
+            if duration < 768_000 {
+                assert_eq!(old.segments(), current.segments());
+            } else {
+                assert_eq!(current.segments().len(), 3);
+                assert_eq!(current.segments()[0].kind, SegmentKind::Curve);
+                assert_eq!(current.segments()[0].end.frames(), duration / 2);
+                assert_eq!(current.segments()[1].kind, SegmentKind::Bridge);
+                assert_eq!(current.segments()[1].end.frames(), duration);
+            }
+            for time in [SongTime::ZERO, SongTime::from_frames(duration), end] {
+                assert_eq!(
+                    old.sample(time),
+                    current.sample(time).map(|mut sample| {
+                        sample.kind = old.sample(time).unwrap().kind;
+                        sample
+                    })
+                );
+            }
+            for time in [
+                SongTime::from_frames(-1),
+                SongTime::from_frames(duration + 17),
+            ] {
+                assert_eq!(old.sample(time), None);
+                assert_eq!(current.sample(time), None);
+            }
+        }
+        let end = SongTime::from_frames(768_000);
+        let sections = [section(0, end.frames())];
+        let old = compile_version("versioned", end, &sections, 1).unwrap();
+        let current = compile_version("versioned", end, &sections, 2).unwrap();
+        for (frame, width, kind, x, y) in [
+            (0, 3_500, SegmentKind::Curve, 0, 0),
+            (192_000, 3_750, SegmentKind::Curve, 600, 0),
+            (384_000, 4_000, SegmentKind::Bridge, 0, 0),
+            (576_000, 3_750, SegmentKind::Bridge, 0, 300),
+            (768_000, 3_500, SegmentKind::Bridge, 0, 0),
+        ] {
+            let time = SongTime::from_frames(frame);
+            assert_eq!(
+                old.sample(time),
+                Some(TrackSample {
+                    distance_mm: frame / 16,
+                    half_width_mm: width,
+                    lateral_mm: 0,
+                    elevation_mm: 0,
+                    slope_x_ppm: 0,
+                    slope_y_ppm: 0,
+                    kind: SegmentKind::Plaza,
+                })
+            );
+            let sample = current.sample(time).unwrap();
+            assert_eq!(
+                (
+                    sample.half_width_mm,
+                    sample.kind,
+                    sample.lateral_mm,
+                    sample.elevation_mm
+                ),
+                (3_500, kind, x, y)
+            );
+        }
+        for version in [0, 3, u32::MAX] {
+            assert!(compile_version("versioned", end, &sections, version).is_err());
         }
     }
 

@@ -10,7 +10,7 @@ import subprocess
 
 CRATES = ("cocobeat_net", "cocobeat_media", "cocobeat_schema", "cocobeat_core", "cocobeat_replay", "serde_json")
 OBJECTS = ("song.audio.ogg", "analysis.bin", "chart.bin", "song.package")
-SCENARIOS = ("installed", "receive", "cancel-before-ready", "cancel-after-hit", "missing-armed", "wrong-player", "wrong-epoch")
+SCENARIOS = ("installed", "receive", "cancel-before-ready", "cancel-after-hit", "missing-armed", "wrong-player", "wrong-epoch", "reenter-before-ready", "reenter-after-hit")
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -71,7 +71,7 @@ def run(driver, package, output):
     for scenario in SCENARIOS:
         destination = output / scenario
         command = [str(driver), scenario, str(package), str(destination)]
-        result = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=22)
+        result = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=44 if scenario.startswith("reenter-") else 22)
         (output / f"{scenario}.stdout").write_bytes(result.stdout)
         (output / f"{scenario}.stderr").write_bytes(result.stderr)
         record = {"scenario": scenario, "command": command, "exit_code": result.returncode}
@@ -79,11 +79,37 @@ def run(driver, package, output):
         save(output / "commands.json", records)
         assert result.returncode == 0, f"{scenario}: {(output / f'{scenario}.stderr').read_text()}"
         report = json.loads(result.stdout.decode().splitlines()[-1])
+        if scenario.startswith("reenter-"):
+            assert report["same_process"] and report["old_files_unchanged"] and report["fresh_invitation"] and report["fresh_epoch"] and report["seq_reset"]
+            rounds = []
+            for index, expected_status in enumerate(("FAILED", "COMPLETE"), start=1):
+                directory = destination / f"round-{index}"
+                statuses = [json.loads((directory / side / "status.json").read_text()) for side in ("host", "guest")]
+                assert all(status["mode"] == "live" and status["protocol_version"] == 5 and status["status"] == expected_status for status in statuses)
+                expected = [93, 27] if index == 2 else [1, 0] if scenario == "reenter-after-hit" else [0, 0]
+                assert all(status["facts"] == expected for status in statuses)
+                assert report["rounds"][index - 1]["owned_workers_finished"]
+                if index == 1:
+                    assert all(status["authority_replay_blake3"] is None for status in statuses)
+                    if scenario == "reenter-before-ready":
+                        assert report["rounds"][0]["started"] == [False, False]
+                else:
+                    assert statuses[0]["epoch"] != rounds[0][0]["epoch"]
+                    assert statuses[0]["epoch"] == statuses[1]["epoch"]
+                    assert statuses[0]["event_count"] == statuses[1]["event_count"]
+                    assert (directory / "host/authority.replay.json").read_bytes() == (directory / "guest/authority.replay.json").read_bytes()
+                    assert all(status["network_timing"]["software_start_lateness_ns"] <= 100_000_000 for status in statuses)
+                rounds.append(statuses)
+            record["report"] = report
+            record["statuses_by_round"] = rounds
+            record["evidence_sha256"] = {str(path.relative_to(output)): digest(path) for path in sorted(destination.glob("**/*")) if path.is_file() and path.name != "invite.json"}
+            save(output / "commands.json", records)
+            continue
         statuses = [json.loads((destination / side / "status.json").read_text()) for side in ("host", "guest")]
         record["report"] = report
         record["statuses"] = statuses
         success = scenario in ("installed", "receive")
-        assert all(status["mode"] == "live" and status["protocol_version"] == 4 for status in statuses)
+        assert all(status["mode"] == "live" and status["protocol_version"] == 5 for status in statuses)
         assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
         expected = [93, 27] if success else [1, 0] if scenario == "cancel-after-hit" else [0, 0]
         assert all(status["facts"] == expected for status in statuses), scenario

@@ -39,7 +39,7 @@ cargo run --locked -p cocobeat-lab -- workbench-replay PACKAGE REPLAY.json [--lo
 
 ## 限额和文件保护
 
-Replay 输入沿用 v1 的 20 MiB、160,000 facts 和每个身份最多 256 UTF-8 字节限制，要求普通文件；未知版本、非法字段、损坏内容或 core 无法接受的历史明确失败。Hit 必须位于 `[0, canonical_frames)`，水位由原 core 的单调性和历史规则校验，不套用 Hit 的曲内范围
+Replay v1 / v2 输入沿用 20 MiB、160,000 facts 和每个身份最多 256 UTF-8 字节限制，要求普通文件；未知版本、非法字段、损坏内容或 core 无法接受的历史明确失败。Hit 必须位于 `[0, canonical_frames)`，水位由原 core 的单调性和历史规则校验，不套用 Hit 的曲内范围
 
 输入范围错误和 core 语义错误包含原事实序号，例如 `Replay fact 2:`；所有 Hit 范围先检查，再执行身份与 core 重放，因此错误序号不承诺跨验证阶段寻找最早错误
 
@@ -51,7 +51,11 @@ Replay 输入沿用 v1 的 20 MiB、160,000 facts 和每个身份最多 256 UTF-
 
 Replay v1 没有保存设备时间、软件观察 / 消费时间、音频回调位置或时钟不确定性，本报告和图形入口不推算这些字段或把歌曲时间差当物理延迟。Session 的另存 CSV 尚缺完整内容 / epoch 关联，本入口不按同名文件自动合并 CSV
 
-Replay v1 没有视觉或着色器版本记录，原 `build_id` 不等于视觉兼容证明；当前图形诊断展示事实与规则结果，不承诺复现录制时的画面
+Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未知，原 `build_id` 不等于视觉兼容证明；Replay v2 明确记录 `stage_compiler_version = 1 / 2`，只绑定确定性几何编译，不记录 shader、呈现设置或设备表现
+
+`cocobeat-lab inspect-replay-stage PACKAGE REPLAY FRAME` 先沿用同一完整包、身份、整数事实范围与 core 校验，再按明确记录的版本重建 StagePlan 并输出整数采样；v1 缺字段明确失败，不猜测历史版本。v1 图形诊断与 JSONL 的原字节保持，v2 JSONL 使用 `report_version = 2` 并在 header 增加 `stage_compiler_version`
+
+runtime 的 `--replay` 仍是退出式 core 校验，当前图形诊断展示事实与规则结果，没有动画回放、历史 shader 或设备计时复现；整数几何重建不表示复现录制时的画面
 
 [Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。试听校准、设备计时关联和真实输入验收继续独立推进
 

@@ -25,13 +25,13 @@ pub(crate) struct OnlineRound {
     next_rounds: VecDeque<LiveConfig>,
     worker: Option<LiveSession>,
     loading: Option<mpsc::Receiver<Result<PreparedSong, String>>>,
+    loading_thread: Option<std::thread::JoinHandle<()>>,
     pub player: Option<PlayerId>,
     pub spent: bool,
     pub started: bool,
     pub local_ended: bool,
     pub deadline: Option<Instant>,
     terminal: bool,
-    completed: bool,
 }
 
 impl OnlineRound {
@@ -45,12 +45,15 @@ impl OnlineRound {
                         bind: *bind,
                         invite,
                     },
-                    LiveRole::Join { package, .. }
-                    | LiveRole::Receive {
-                        package_destination: package,
-                        ..
-                    } => LiveRole::Join {
+                    LiveRole::Join { package, .. } => LiveRole::Join {
                         package: package.clone(),
+                        invite,
+                    },
+                    LiveRole::Receive {
+                        package_destination,
+                        ..
+                    } => LiveRole::Receive {
+                        package_destination: package_destination.clone(),
                         invite,
                     },
                 },
@@ -64,24 +67,20 @@ impl OnlineRound {
         }
     }
 
-    pub fn complete(&mut self) {
-        self.stop();
-        self.completed = true;
-    }
-
     pub fn can_start_next(&self) -> bool {
-        self.completed
+        self.terminal
+            && self.spent
             && self.is_finished()
             && !self.next_rounds.is_empty()
             && !self.waiting_for_next_invite()
     }
 
     pub fn waiting_for_next_invite(&self) -> bool {
-        if !self.completed || !self.is_finished() {
+        if !self.terminal || !self.spent || !self.is_finished() {
             return false;
         }
         let Some(LiveConfig {
-            role: LiveRole::Join { invite, .. },
+            role: LiveRole::Join { invite, .. } | LiveRole::Receive { invite, .. },
             ..
         }) = self.next_rounds.front()
         else {
@@ -94,10 +93,28 @@ impl OnlineRound {
     pub fn start_next(&mut self) -> Result<(), String> {
         if !self.can_start_next() {
             return Err(
-                "The completed network round must finish before starting a queued round".into(),
+                "The previous network round must finish before starting a queued round".into(),
             );
         }
-        let config = self.next_rounds.pop_front().unwrap();
+        let mut config = self.next_rounds.pop_front().unwrap();
+        if let LiveRole::Receive {
+            package_destination,
+            invite,
+        } = &config.role
+        {
+            match std::fs::symlink_metadata(package_destination) {
+                Ok(metadata) if metadata.is_dir() && !metadata.is_symlink() => {
+                    config.role = LiveRole::Join {
+                        package: package_destination.clone(),
+                        invite: invite.clone(),
+                    };
+                }
+                Ok(_) => return Err("Received package target must be a real directory".into()),
+                Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+                Err(error) => return Err(format!("Inspect received package target: {error}")),
+            }
+        }
+
         *self = Self {
             config: Some(config),
             next_rounds: std::mem::take(&mut self.next_rounds),
@@ -158,25 +175,31 @@ impl OnlineRound {
         }
     }
 
-    pub fn load(
-        &mut self,
-        epoch: SessionEpoch,
-        player: PlayerId,
-        path: PathBuf,
-        content_id: String,
-        canonical_frames: u64,
-        final_through: i64,
-    ) -> Result<(), String> {
-        if self.loading.is_some() || self.player.is_some() {
+    pub fn load(&mut self, event: LiveEvent) -> Result<(), String> {
+        let LiveEvent::Prepared {
+            epoch,
+            player,
+            package_path: path,
+            content_id,
+            canonical_frames,
+            stage_compiler_version,
+            final_through,
+        } = event
+        else {
+            return Err("Expected a validated network preparation event".into());
+        };
+        if self.loading_thread.is_some() || self.player.is_some() {
             return Err("Duplicate network package preparation".into());
         }
         let (sender, receiver) = mpsc::sync_channel(1);
-        std::thread::Builder::new()
+        let thread = std::thread::Builder::new()
             .name("cocobeat-song-decode".into())
             .spawn(move || {
                 let result = content::load_package(&path).and_then(|(content, sound)| {
                     if content.content_id != content_id
                         || content.end.frames() as u64 != canonical_frames
+                        || content.stage.as_ref().map(|stage| stage.compiler_version())
+                            != Some(stage_compiler_version)
                     {
                         return Err(
                             "Playback package differs from the validated network identity".into(),
@@ -194,20 +217,28 @@ impl OnlineRound {
             })
             .map_err(|error| format!("Start song decoder: {error}"))?;
         self.loading = Some(receiver);
+        self.loading_thread = Some(thread);
         Ok(())
     }
 
-    pub fn stop(&mut self) {
+    pub fn cancel_worker(&mut self) {
         if let Some(worker) = &mut self.worker {
             worker.cancel();
         }
+    }
+
+    pub fn stop(&mut self) {
+        self.cancel_worker();
         self.terminal = true;
-        self.completed = false;
         self.loading = None;
     }
 
     pub fn is_finished(&self) -> bool {
         self.worker.as_ref().is_none_or(LiveSession::is_finished)
+            && self
+                .loading_thread
+                .as_ref()
+                .is_none_or(std::thread::JoinHandle::is_finished)
     }
 }
 
@@ -278,7 +309,13 @@ mod tests {
                         assert!(!host);
                         (package, invite)
                     }
-                    LiveRole::Receive { .. } => panic!("A received package must be reused by Join"),
+                    LiveRole::Receive {
+                        package_destination,
+                        invite,
+                    } => {
+                        assert_eq!(expected_package, "received");
+                        (package_destination, invite)
+                    }
                 };
                 assert_eq!(package, &PathBuf::from(expected_package));
                 assert_eq!(actual_invite, &PathBuf::from(invite));
@@ -287,7 +324,7 @@ mod tests {
     }
 
     #[test]
-    fn only_completed_rounds_advance_and_a_failed_start_consumes_one_config() {
+    fn terminal_rounds_advance_and_a_failed_start_consumes_one_config() {
         let mut round = OnlineRound::new(
             LiveConfig {
                 role: LiveRole::Host {
@@ -316,15 +353,7 @@ mod tests {
         assert!(sender.send(Err("old decoder result".into())).is_ok());
         round.loading = Some(receiver);
         round.stop();
-        assert!(round.start_next().is_err());
-        assert_eq!(round.remaining_rounds(), 2);
-        round.complete();
         assert!(round.can_start_next());
-        round.stop();
-        assert!(!round.can_start_next());
-        assert!(round.start_next().is_err());
-        assert_eq!(round.remaining_rounds(), 2);
-        round.complete();
         assert_eq!(
             round.start_next().unwrap_err(),
             "destination requires a file name"
@@ -340,7 +369,6 @@ mod tests {
         assert!(!round.local_ended);
         assert!(round.deadline.is_none());
         assert!(!round.terminal);
-        assert!(!round.completed);
         assert!(round.poll().unwrap().is_none());
         assert!(round.start_next().is_err());
         assert_eq!(round.remaining_rounds(), 1);
@@ -349,7 +377,7 @@ mod tests {
     #[test]
     fn the_last_completed_round_has_no_next_action() {
         let mut round = OnlineRound::default();
-        round.complete();
+        round.stop();
         assert_eq!(round.remaining_rounds(), 0);
         assert!(!round.can_start_next());
         assert!(round.start_next().is_err());
@@ -394,7 +422,8 @@ mod tests {
         });
         for (index, round) in rounds.iter_mut().enumerate() {
             assert!(!round.waiting_for_next_invite());
-            round.complete();
+            round.spent = true;
+            round.stop();
             assert_eq!(round.waiting_for_next_invite(), index != 0);
             assert_eq!(round.can_start_next(), index == 0);
             if index != 0 {
@@ -419,6 +448,152 @@ mod tests {
                 assert!(round.can_start_next());
                 assert_eq!(round.remaining_rounds(), 1);
             }
+        }
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn failed_workers_reenter_only_after_decoder_exit_and_keep_old_evidence() {
+        fn wait(round: &OnlineRound) {
+            let deadline = Instant::now() + std::time::Duration::from_secs(5);
+            while !round.is_finished() && Instant::now() < deadline {
+                std::thread::sleep(std::time::Duration::from_millis(1));
+            }
+            assert!(round.is_finished());
+        }
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-reentry-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir(&root).unwrap();
+        let destination = root.join("package");
+        let invite = root.join("second-invite");
+        std::fs::write(&invite, b"invalid fresh invitation").unwrap();
+        let mut round = OnlineRound::new(
+            LiveConfig {
+                role: LiveRole::Receive {
+                    package_destination: destination.clone(),
+                    invite: root.join("missing-first-invite"),
+                },
+                output: root.join("first-output"),
+            },
+            vec![(invite.clone(), root.join("second-output"))],
+        );
+        round.start().unwrap();
+        wait(&round);
+        assert!(matches!(
+            round.poll().unwrap(),
+            Some(Update::Network(LiveEvent::Failed(_)))
+        ));
+        let first = std::fs::read(root.join("first-output/status.json")).unwrap();
+        let (release, held) = mpsc::sync_channel(1);
+        let (sender, receiver) = mpsc::sync_channel(1);
+        round.loading = Some(receiver);
+        round.loading_thread = Some(std::thread::spawn(move || {
+            let _ = held.recv();
+            let _ = sender.send(Err("discarded old decoder result".into()));
+        }));
+        round.stop();
+        assert!(!round.is_finished());
+        assert!(round.start_next().is_err());
+        assert_eq!(round.remaining_rounds(), 1);
+        release.send(()).unwrap();
+        wait(&round);
+        assert!(round.poll().unwrap().is_none());
+        round.start_next().unwrap();
+        assert_eq!(round.remaining_rounds(), 0);
+        assert!(round.loading_thread.is_none());
+        wait(&round);
+        assert!(matches!(
+            round.poll().unwrap(),
+            Some(Update::Network(LiveEvent::Failed(_)))
+        ));
+        let second: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(root.join("second-output/status.json")).unwrap())
+                .unwrap();
+        assert_eq!(second["status"], "FAILED");
+        assert_eq!(second["facts"], serde_json::json!([0, 0]));
+        assert!(!destination.exists());
+        assert_eq!(
+            std::fs::read(root.join("first-output/status.json")).unwrap(),
+            first
+        );
+        drop(round);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn received_targets_are_preserved_and_invalid_published_packages_never_ready() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-reentry-targets-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        std::fs::create_dir(&root).unwrap();
+        let invite = root.join("invite");
+        std::fs::write(&invite, b"invalid invitation").unwrap();
+        let directory = root.join("directory");
+        std::fs::create_dir(&directory).unwrap();
+        std::fs::write(directory.join("keep"), b"invalid published package").unwrap();
+        let file = root.join("file");
+        std::fs::write(&file, b"preserved existing file").unwrap();
+        let targets = vec![(directory.clone(), true), (file.clone(), false)];
+        #[cfg(unix)]
+        let targets = {
+            let mut targets = targets;
+            let link = root.join("link");
+            std::os::unix::fs::symlink(&directory, &link).unwrap();
+            targets.push((link, false));
+            targets
+        };
+        for (index, (target, directory)) in targets.into_iter().enumerate() {
+            let output = root.join(format!("output-{index}"));
+            let mut round = OnlineRound::new(
+                LiveConfig {
+                    role: LiveRole::Receive {
+                        package_destination: target.clone(),
+                        invite: invite.clone(),
+                    },
+                    output: root.join("unused-original"),
+                },
+                vec![(invite.clone(), output.clone())],
+            );
+            round.spent = true;
+            round.stop();
+            let result = round.start_next();
+            if directory {
+                result.unwrap();
+                let deadline = Instant::now() + std::time::Duration::from_secs(5);
+                while !round.is_finished() && Instant::now() < deadline {
+                    std::thread::sleep(std::time::Duration::from_millis(1));
+                }
+                assert!(round.is_finished());
+                assert!(matches!(
+                    round.poll().unwrap(),
+                    Some(Update::Network(LiveEvent::Failed(_)))
+                ));
+                let status: serde_json::Value =
+                    serde_json::from_slice(&std::fs::read(output.join("status.json")).unwrap())
+                        .unwrap();
+                assert_eq!(status["status"], "FAILED");
+                assert_eq!(
+                    std::fs::read(target.join("keep")).unwrap(),
+                    b"invalid published package"
+                );
+            } else {
+                assert!(result.is_err());
+                assert!(!output.exists());
+                assert!(std::fs::symlink_metadata(&target).is_ok());
+            }
+            assert_eq!(round.remaining_rounds(), 0);
+            assert_eq!(std::fs::read(&file).unwrap(), b"preserved existing file");
         }
         std::fs::remove_dir_all(root).unwrap();
     }

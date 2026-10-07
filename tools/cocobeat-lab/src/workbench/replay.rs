@@ -167,6 +167,7 @@ pub(super) fn fixture() -> ReplayView {
             content_id: "constructed-workbench-test".into(),
             rules_id: "duo-watermark-v1".into(),
             build_id: "test".into(),
+            stage_compiler_version: None,
         },
         epoch,
     )

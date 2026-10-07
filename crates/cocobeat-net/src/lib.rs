@@ -27,9 +27,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 4;
+pub(crate) const PROTOCOL_VERSION: u32 = 5;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/4";
+const ALPN: &[u8] = b"cocobeat-session/5";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 
@@ -308,6 +308,7 @@ mod tests {
             ("protocol_version", serde_json::json!(1)),
             ("protocol_version", serde_json::json!(2)),
             ("protocol_version", serde_json::json!(3)),
+            ("protocol_version", serde_json::json!(4)),
             ("endpoint", serde_json::json!("0.0.0.0:12345")),
             ("endpoint", serde_json::json!("[::]:12345")),
             ("endpoint", serde_json::json!("[::ffff:0.0.0.0]:12345")),

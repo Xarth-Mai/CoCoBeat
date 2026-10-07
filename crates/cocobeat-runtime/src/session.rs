@@ -62,6 +62,11 @@ impl Session {
         {
             return Err("Session Anchor lies outside the song timeline".into());
         }
+        if let Some(stage) = &content.stage
+            && (stage.content_id() != content.content_id || stage.end() != content.end)
+        {
+            return Err("Session StagePlan differs from its content identity or duration".into());
+        }
         Ok(Self {
             engine: DuoEngine::new(epoch, content.anchors.clone(), DuoRules::default())
                 .map_err(|error| error.to_string())?,
@@ -70,6 +75,10 @@ impl Session {
                     content_id: content.content_id.clone(),
                     rules_id: RULES_ID.into(),
                     build_id: env!("COCOBEAT_BUILD_ID").into(),
+                    stage_compiler_version: content
+                        .stage
+                        .as_ref()
+                        .map(|stage| stage.compiler_version()),
                 },
                 epoch,
             )
@@ -434,6 +443,35 @@ mod tests {
             sections: vec![],
             stage: None,
         }
+    }
+
+    #[test]
+    fn recorder_uses_the_actual_stage_version_and_checks_plan_identity() {
+        let mut content = SongContent::development();
+        assert_eq!(
+            Session::for_content(SessionEpoch(3), &content)
+                .unwrap()
+                .replay
+                .identity()
+                .stage_compiler_version,
+            None
+        );
+        for version in [1, 2] {
+            content.stage = Some(std::sync::Arc::new(
+                cocobeat_stage::compile_version(&content.content_id, content.end, &[], version)
+                    .unwrap(),
+            ));
+            assert_eq!(
+                Session::for_content(SessionEpoch(3), &content)
+                    .unwrap()
+                    .replay
+                    .identity()
+                    .stage_compiler_version,
+                Some(version)
+            );
+        }
+        content.content_id = "mismatched".into();
+        assert!(Session::for_content(SessionEpoch(3), &content).is_err());
     }
 
     #[test]

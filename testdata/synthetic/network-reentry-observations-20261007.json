@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "observed_on": "2026-10-07",
+  "milestone": "Network Fault recovery and fresh round in the same native game processes",
+  "status": "PASS",
+  "scope": "Production Linux game and public production QUIC workers on one host; protocol 5, Replay version 2 and Stage compiler version 2; synthetic controls and a legacy synthetic audio fixture",
+  "raw_receipt": {
+    "path": "target/network-reentry-20261007/final-validation.json",
+    "sha256": "df86fb204be41bf3a1d5f5a67d17ca915dd4241a3f99534fa04fd59736d02e7a"
+  },
+  "runtime_tests": {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "-p",
+      "cocobeat-runtime"
+    ],
+    "passed": 127,
+    "failed": 0,
+    "receipt": {
+      "path": "target/network-reentry-20261007/runtime-tests.json",
+      "sha256": "746a23f72c4b326592e50d35598b4683d7d5dfafe0dee66c9d93e84515b2eb38"
+    }
+  },
+  "worker_loopback": {
+    "status": "PASS",
+    "scenario_count": 9,
+    "scenarios": [
+      "installed",
+      "receive",
+      "cancel-before-ready",
+      "cancel-after-hit",
+      "missing-armed",
+      "wrong-player",
+      "wrong-epoch",
+      "reenter-before-ready",
+      "reenter-after-hit"
+    ],
+    "summary": {
+      "path": "target/network-reentry-20261007/worker-final/summary.json",
+      "sha256": "6c31422bd2de4d595f4bfeb77aff009d9aa1df3459997e7dc859efb3132ec147"
+    },
+    "scope": "Actual production LiveSession workers with software Armed signals; no native PCM or hardware timing claim"
+  },
+  "native_two_round_cases": [
+    {
+      "scenario": "complete",
+      "status": "PASS",
+      "rounds": 2,
+      "same_process_ids_across_rounds": {
+        "host": 250940,
+        "guest": 251058
+      },
+      "summary": {
+        "path": "target/network-reentry-20261007/native-complete/summary.json",
+        "sha256": "501b2cfb444d0d421328e862f01925f33c1b2ca143a41ad2370fbd3208a204aa"
+      }
+    },
+    {
+      "scenario": "reenter-before-ready",
+      "status": "PASS",
+      "rounds": 2,
+      "same_process_ids_across_rounds": {
+        "host": 252153,
+        "guest": 252595
+      },
+      "summary": {
+        "path": "target/network-reentry-20261007/native-before-ready/summary.json",
+        "sha256": "a815ebe460dfea64b9309fd1dd288c03c1384465135e9a9d3f1355e1d0741e55"
+      }
+    },
+    {
+      "scenario": "reenter-after-hit",
+      "status": "PASS",
+      "rounds": 2,
+      "same_process_ids_across_rounds": {
+        "host": 254154,
+        "guest": 254655
+      },
+      "summary": {
+        "path": "target/network-reentry-20261007/native-after-hit/summary.json",
+        "sha256": "f0b67438fdc507d70684e6c3c44a93f802f62953a235dad978230afd99a96ebe"
+      }
+    }
+  ],
+  "recovery_observations": [
+    "Host cancellation stops the actual owned worker; production polling or sending enters Fault, while the peer observes a real closed endpoint or connection loss",
+    "Before-ready failure preserves host epoch 16976648688465135617 while the guest has no initialized network epoch; fresh round epoch 2596176103460343383 completes and the guest receives the previously absent package",
+    "After-hit failure epoch 9622702167906490570 preserves unequal observed prefixes: host [19,21], guest [19,24]; no authority Replay or invented EOF watermark is produced",
+    "After-hit fresh round epoch 14593983555289769555 completes on both sides, preserves the received package bytes, joins the existing package and resets each player hit sequence to [0,1,2]",
+    "Old local Replay and network evidence remain byte-identical across fresh rounds; both network and decoder workers stop before production menu availability permits reentry",
+    "Runtime tests cover held keyboard, gamepad and mixed-input release barriers, unavailable next-round actions, decoder completion, failed Replay saves and existing bad/file/symlink package rejection; these are software input checks"
+  ],
+  "build_identity": {
+    "production_game": {
+      "path": "target/software-integration-20261007/bin/cocobeat-game",
+      "sha256": "e73539d3a6a36ab36b055f5411f15a40ecd5f4d22126e9a3a944f372ae6d461e"
+    },
+    "game_build": {
+      "path": "target/software-integration-20261007/game-build.jsonl",
+      "sha256": "8af3b24cb7ee3c6508a645313e404f2fdeca3b08c8a116142ad5f3028dc35f36"
+    },
+    "source_inputs": {
+      "count": 419,
+      "build_pre_equals_build_post": true,
+      "run_pre_verified": true,
+      "run_post_equals_build_inputs": true,
+      "continuous_immutability_claimed": false,
+      "before": {
+        "path": "target/software-integration-20261007/game-inputs-before.json",
+        "sha256": "e1e698ee783ab312e764e9b22ff74070ab1ac33b1a2e36a0d69c4bdfaab02c91"
+      },
+      "after": {
+        "path": "target/software-integration-20261007/game-inputs-after.json",
+        "sha256": "e1e698ee783ab312e764e9b22ff74070ab1ac33b1a2e36a0d69c4bdfaab02c91"
+      }
+    },
+    "copied_dependency_artifacts": {
+      "count": 414,
+      "pre_post_equal": true,
+      "receipt": {
+        "path": "target/network-reentry-20261007/artifact-copy.json",
+        "sha256": "13a9b3f13bb86aee0ace00f7318096b4d3faf4c22c8b62e9a1d4ed87f17687ee"
+      }
+    },
+    "driver": {
+      "source_and_binary_pre_post_equal": true,
+      "receipt": {
+        "path": "target/network-reentry-20261007/current-driver/build.json",
+        "sha256": "18fe75901ce4be565e0786bd5f3d76f55c1e5b070f91968b1900db4c2f75e954"
+      }
+    },
+    "runtime_source_sha256": {
+      "crates/cocobeat-runtime/src/app.rs": "e6080bdac9dad542b075a39fb5808f4feb31d09b3f998740fa4247e249c0b839",
+      "crates/cocobeat-runtime/src/input.rs": "5d069f74f8e11b29e749c58c94800a473cf29af3d20ae73ca1e530ab210ef029",
+      "crates/cocobeat-runtime/src/live_observation.rs": "3c49a8ae2fa5c7bf954c40e933cef38342072a83f2e4c6ffd1f615370e01185b",
+      "crates/cocobeat-runtime/src/online.rs": "97a4760983e65fb7b78933430adef0cdf6a3f8521c5848b5a270f87911e7afbb"
+    },
+    "qa_tool_sha256": {
+      "tools/quic-live-check/driver.rs": "c7b0c5be75b10ea6323371e3a3b00312cdfe1c1e0450870723d89d9e9d3967e5",
+      "tools/quic-live-check/check.py": "7bf648e98d90ad45111142e1c4d33508e266922e6e74d785a67f1e8ea9ba69ee",
+      "tools/quic-live-check/README.md": "f27971a2e2c2a4e38587b7ff9f87786eb339398d818e478f2c29f45c54a63a6e",
+      "tools/quic-live-check/native.py": "9da0d804ab90a14a66ebc6d2d5de2765ade177be267acfb004ec3b85c89e7938"
+    }
+  },
+  "visual_review": {
+    "agent_actual_nonempty_pngs": 22,
+    "root_independently_reviewed_chosen_pngs": 6,
+    "reserved_empty_before_ready_running_files": 2,
+    "resolution": [
+      1280,
+      800
+    ],
+    "findings": [
+      "Role, state, scene and action rows are readable",
+      "Long Fault details extend beneath the existing scroll viewport; scroll interaction was not tested",
+      "After-hit initial Fault captures precede cleanup availability; subsequent production menu recovery and fresh completion passed"
+    ],
+    "all_png_sha256_receipt": "target/network-reentry-20261007/final-validation.json"
+  },
+  "locale_timeline": {
+    "during_run": "13 audition.help catalogs were temporarily edited and then restored before the final 419-input sample; the fixed binary retained its embedded original catalogs",
+    "restoration": {
+      "path": "target/workbench-audition-20261007/label-edit-restored-for-network-freeze.json",
+      "sha256": "acb7b9e97c1a957cb0f92a488d075825c9f8e964846749316d897fd654a3368a"
+    },
+    "after_freeze_release": "The 13 audition.help catalogs were subsequently updated to left-face-button wording; current catalogs differ from this tested build and are not covered by its embedded-catalog proof",
+    "current_catalog_sampled_at_utc": "2026-10-07T10:47:53.288606+00:00",
+    "current_catalog_sha256": {
+      "assets/i18n/en-US.json": "ff02e7263982ec4f5cb4645141b9e19273aa60f86ac268c360f658c3ca39a06f",
+      "assets/i18n/en-GB.json": "ff02e7263982ec4f5cb4645141b9e19273aa60f86ac268c360f658c3ca39a06f",
+      "assets/i18n/zh-CN.json": "dc70bbbeee6e7abc4eeace237e0ca68569fc314515eff842c3500c84fca11389",
+      "assets/i18n/zh-TW.json": "e944fe2c516585316f000f7c7bc285f71b64ae1176fc73044de9938bd081b335",
+      "assets/i18n/zh-HK.json": "6a3db951d14fa8ea9759b43b3a85031506cd7adbb0ee392c764eef89349a8773",
+      "assets/i18n/ja.json": "bb0a1e49ff27f99b96ffb98db26f4e640f72854169ec4437a5d3a62b7e18211e",
+      "assets/i18n/ko.json": "82fa1081f570b77fc2465206651e1177c82248dd543a8bd55b2b0f9af4fc9b50",
+      "assets/i18n/es-419.json": "85a4e31f89a6c71392c2117d6bea8ad788a7080a408db47e52ac313a75632e30",
+      "assets/i18n/pt-BR.json": "32aa7db48ddc2effb83f5cabb046a2e338dac01a8f5a14c2b5ae3a2f203250e5",
+      "assets/i18n/fr.json": "892c4afc3e78c8f8de2c12c798b1af1c8a0cf4ac22e5358911c1434a8021e914",
+      "assets/i18n/de.json": "84d49e65ef1bd4f5b201efa3df75018e8504d7507989efaf4fc16b3d5b645858",
+      "assets/i18n/ru.json": "292abac9d519a57e1d14ae8bf16667992120dcc9cf5374234a6fbb400c44d6d6",
+      "assets/i18n/uk.json": "4904a4f5ea2437634cb437be9de276e023596a411cc3d3b51ed82a4c58495c91"
+    }
+  },
+  "not_run": [
+    "physical keyboard/controller interactions",
+    "speaker/audio hardware timing",
+    "two-machine network",
+    "human gameplay/visual acceptance",
+    "production encoder or MIR admission from legacy QA fixture"
+  ],
+  "later_changes_scope": "This record identifies the fixed tested build, not a continuously immutable workspace or a later commit; post-freeze Watch Replay integration and subsequent catalog changes require their own verification"
+}

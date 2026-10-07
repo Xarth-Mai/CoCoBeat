@@ -10,6 +10,9 @@ struct Observation {
     rounds: Vec<serde_json::Value>,
     current: RoundObservation,
     restart_sent: bool,
+    scenario: &'static str,
+    cancel_host: bool,
+    fault_injected: bool,
 }
 
 struct RoundObservation {
@@ -27,12 +30,19 @@ struct RoundObservation {
 }
 
 impl RoundObservation {
-    fn new(directory: PathBuf, number: usize, output_info: &str) -> Result<Self, String> {
+    fn new(
+        directory: PathBuf,
+        number: usize,
+        output_info: &str,
+        scenario: &str,
+    ) -> Result<Self, String> {
         let file = |name| File::create_new(directory.join(name)).map_err(|error| error.to_string());
         let mut metadata = file("metadata.json")?;
         serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
             "build_id": env!("COCOBEAT_BUILD_ID"),
             "entrypoint": "native DefaultPlugins, AudioOutput, update_game",
+            "process_id": std::process::id(),
+            "scenario": scenario,
             "controls": "synthetic CapturedControl at software-observed monotonic timestamps",
             "audio": "actual Kira source cursor, no speaker latency measurement",
             "output_info": output_info,
@@ -62,6 +72,19 @@ impl RoundObservation {
 
 impl Observation {
     fn new(directory: &Path, round_count: usize, output_info: &str) -> Result<Self, String> {
+        let selected = std::env::var("COCOBEAT_LIVE_OBSERVATION_SCENARIO")
+            .unwrap_or_else(|_| "complete".into());
+        let (scenario, cancel_host) = match selected.as_str() {
+            "complete" => ("complete", false),
+            "reenter-before-ready-host" => ("reenter-before-ready", true),
+            "reenter-before-ready-guest" => ("reenter-before-ready", false),
+            "reenter-after-hit-host" => ("reenter-after-hit", true),
+            "reenter-after-hit-guest" => ("reenter-after-hit", false),
+            _ => return Err("Unknown live observation scenario".into()),
+        };
+        if scenario != "complete" && round_count != 2 {
+            return Err("Recovery observation requires exactly two declared rounds".into());
+        }
         std::fs::create_dir(directory)
             .map_err(|error| format!("Observation directory: {error}"))?;
         let first = if round_count > 1 {
@@ -75,8 +98,11 @@ impl Observation {
             directory: directory.to_path_buf(),
             round_count,
             rounds: Vec::new(),
-            current: RoundObservation::new(first, 1, output_info)?,
+            current: RoundObservation::new(first, 1, output_info, scenario)?,
             restart_sent: false,
+            scenario,
+            cancel_host,
+            fault_injected: false,
         })
     }
 
@@ -93,7 +119,7 @@ impl Observation {
             let number = self.current.number + 1;
             let directory = self.directory.join(format!("round-{number}"));
             std::fs::create_dir(&directory).map_err(|error| error.to_string())?;
-            self.current = RoundObservation::new(directory, number, output_info)?;
+            self.current = RoundObservation::new(directory, number, output_info, self.scenario)?;
             self.restart_sent = false;
         }
         Ok(())
@@ -105,17 +131,23 @@ impl Observation {
         }
         let complete = error.is_none()
             && self.rounds.len() == self.round_count
-            && self
-                .rounds
-                .iter()
-                .all(|round| round["status"] == "COMPLETE");
+            && self.rounds.iter().enumerate().all(|(index, round)| {
+                round["status"]
+                    == if self.scenario != "complete" && index == 0 {
+                        "FAILED"
+                    } else {
+                        "COMPLETE"
+                    }
+            });
         let mut file = File::create_new(self.directory.join("summary.json"))
             .map_err(|error| error.to_string())?;
         serde_json::to_writer_pretty(
             &mut file,
             &serde_json::json!({
                 "round_count": self.round_count,
-                "status": if complete { "COMPLETE" } else { "FAILED" },
+                "status": if !complete { "FAILED" } else if self.scenario == "complete" { "COMPLETE" } else { "RECOVERED" },
+                "scenario": self.scenario,
+                "process_id": std::process::id(),
                 "error": error,
                 "rounds": self.rounds,
             }),
@@ -159,6 +191,9 @@ fn record_result(
     let result = serde_json::json!({
         "status": if game.phase == Phase::Finished && error.is_none() { "COMPLETE" } else { "FAILED" },
         "phase": format!("{:?}", game.phase), "error": error.or(game.fault_details.as_deref()),
+        "process_id": std::process::id(), "scenario": observation.scenario,
+        "local_worker_cancel_requested": observation.fault_injected && observation.current.number == 1,
+        "owned_workers_finished": online.is_finished(),
         "epoch": game.session.epoch().0, "content_id": game.content.content_id,
         "canonical_frames": game.content.end.frames(), "frames_observed": observation.current.frame,
         "local_player": online.player.map(|player| format!("{player:?}")),
@@ -260,6 +295,29 @@ fn observe(
                 observation.current.hits_sent += 1;
             }
         }
+        if observation.cancel_host && !observation.fault_injected && observation.current.number == 1
+        {
+            let cancel = match observation.scenario {
+                "reenter-before-ready" => {
+                    game.phase == Phase::Connecting && game.notice.key == "network.listening"
+                }
+                "reenter-after-hit" => {
+                    game.phase == Phase::Running
+                        && observation.current.captures[0].is_some()
+                        && !game.session.diagnostics.is_empty()
+                        && online.player.is_some_and(|local| {
+                            game.session.replay.facts().iter().any(
+                                |fact| matches!(fact, DuoInput::Hit(hit) if hit.player != local),
+                            )
+                        })
+                }
+                _ => false,
+            };
+            if cancel {
+                online.cancel_worker();
+                observation.fault_injected = true;
+            }
+        }
         if let Some(error) = observation
             .current
             .captures
@@ -309,9 +367,13 @@ fn observe(
         }
         if observation.current.captures[1].is_some()
             && (!observation.current.requested[0] || observation.current.captures[0].is_some())
+            && online.is_finished()
         {
             record_result(&mut observation, &game, &online, None)?;
-            if game.phase == Phase::Finished && online.remaining_rounds() > 0 {
+            let expected_fault = observation.scenario != "complete"
+                && observation.current.number == 1
+                && game.phase == Phase::Fault;
+            if (game.phase == Phase::Finished || expected_fault) && online.remaining_rounds() > 0 {
                 if !observation.restart_sent
                     && online.can_start_next()
                     && input.can_start_next_round()

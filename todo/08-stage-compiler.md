@@ -15,6 +15,8 @@
 
 runtime 共享一次编译的 Arc，以固定九张动态网格、两个装饰拱门和真实终点表现舞台；地面、Anchor 与段落提示共享三轴相对位置，画质和 Resonance 不修改计划。建筑避让最大弯道，桥坡反馈贴合切线并保留净空；Precise / Good 仍使用相同运动时长和不同强度
 
-`cocobeat-lab inspect-stage PACKAGE FRAME` 可验证包并检查整数采样；开发歌曲保留既有手写场景。257 个横断面优先保留歌曲首尾与长特征接缝，密集短 Plaza 才使用基础条带近似，完整计划保留；舞台身份为完整内容身份加 compiler version，当前 Replay v1 只保证 core 回放，跨版本视觉重放仍待 09 接线
+`cocobeat-lab inspect-stage PACKAGE FRAME` 可验证包并检查整数采样；开发歌曲保留既有手写场景。257 个横断面优先保留歌曲首尾与长特征接缝，密集短 Plaza 才使用基础条带近似，完整计划保留；舞台身份为完整内容身份加 compiler version，Replay v1 缺版本保持未知，v2 保存实际 StagePlan 版本；`inspect-replay-stage` 可按明确版本重建整数几何，runtime 的 `--replay` 仍只校验 core，完整动画 / shader 视觉重放继续在 09 接线
 
 v2 的 121 项相关测试和独立有理数参考的 60,480 字段比对通过，Clippy、格式、依赖边界与 game/lab 构建通过；42 项真实包 CPU 用例及最终 16 张静态 GPU 图通过，原拱门遮挡的失败图、修复与定向补验均保留，见 [验证策略](../docs/testing.md#缓弯低桥与同一轨道上的预告)。完整自动编排、跨版本视觉 Replay、设备性能与真人预告可读性继续保留，软件实现不替代阶段退出
+
+2026-10-07 · 明确几何版本接线：支持按版本 1 / 2 确定性编译，Session 记录实际 StagePlan getter，Replay v1 缺失版本保持未知、v2 严格记录；网络身份在握手、资源完成与实际解码前后核对，未知版本不 Ready。184 项相关测试、Clippy、12 个真实 wire 拒绝及 3 个实际完整 PCM 控制通过，见[持久观察](../testdata/synthetic/stage-version-observations-20261007.json)。`inspect-replay-stage` 为整数几何重建，完整视觉观看仍待接线

@@ -14,7 +14,13 @@ use std::{
 };
 
 const RULES_ID: &str = "duo-watermark-v1";
-const REPORT_VERSION: u32 = 1;
+fn report_version(replay: &Replay) -> u32 {
+    if replay.identity().stage_compiler_version.is_some() {
+        2
+    } else {
+        1
+    }
+}
 const MAX_REPORT_BYTES: usize = 128 * 1024 * 1024;
 const MAX_LINE_BYTES: usize = 8 * 1024;
 const MAX_REPORT_LINES: usize = 2 + MAX_FACTS + 3 * MAX_CONTENT_ITEMS + MAX_FACTS / 2;
@@ -36,7 +42,7 @@ pub fn inspect(source: &Path, replay_path: &Path, destination: &Path) -> Result<
     println!(
         "{}",
         json!({
-            "report_version": REPORT_VERSION,
+            "report_version": report_version(&replay),
             "content_id": replay.identity().content_id,
             "fact_count": replay.facts().len(),
             "event_count": engine.events().len(),
@@ -157,8 +163,8 @@ pub(crate) fn header(
     engine: &DuoEngine,
     rules: DuoRules,
 ) -> Value {
-    json!({
-        "type": "header", "format": "CoCoBeat Replay Diagnostic", "report_version": REPORT_VERSION,
+    let mut value = json!({
+        "type": "header", "format": "CoCoBeat Replay Diagnostic", "report_version": report_version(replay),
         "content_id": replay.identity().content_id, "rules_id": replay.identity().rules_id,
         "build_id": replay.identity().build_id, "epoch": replay.epoch().0,
         "canonical_frames": package.manifest.canonical_frames,
@@ -173,7 +179,11 @@ pub(crate) fn header(
             "resonance_window_frames": rules.resonance_window_frames,
             "resonance_full_pairs": rules.resonance_full_pairs,
         },
-    })
+    });
+    if let Some(version) = replay.identity().stage_compiler_version {
+        value["stage_compiler_version"] = version.into();
+    }
+    value
 }
 
 pub(crate) fn fact_row(index: usize, fact: DuoInput) -> Value {
@@ -426,6 +436,7 @@ mod tests {
                     content_id: format!("package-blake3:{hash}"),
                     rules_id: RULES_ID.into(),
                     build_id: "test\0é".into(),
+                    stage_compiler_version: None,
                 },
                 SessionEpoch(17),
             )
@@ -494,6 +505,41 @@ mod tests {
             watermark(PlayerId::P2, 25_681),
             watermark(PlayerId::P1, 25_681),
         ]
+    }
+
+    #[test]
+    fn explicit_stage_reports_preserve_core_rows_and_reconstruct_geometry() {
+        let fixture = Fixture::new();
+        let legacy = fixture.replay(&complete_facts());
+        let (_, legacy_rows) = fixture.run("stage-legacy", &legacy);
+        assert_eq!(legacy_rows[0]["report_version"], 1);
+        assert!(legacy_rows[0].get("stage_compiler_version").is_none());
+        assert!(
+            crate::stage::inspect_replay(
+                &fixture.source,
+                &fixture.root.join("stage-legacy.replay"),
+                "0"
+            )
+            .unwrap_err()
+            .contains("no Stage compiler identity")
+        );
+        for version in [1, 2] {
+            let mut identity = legacy.identity().clone();
+            identity.stage_compiler_version = Some(version);
+            let mut recording = Replay::new(identity, legacy.epoch()).unwrap();
+            for fact in legacy.facts() {
+                recording.record(*fact).unwrap();
+            }
+            let name = format!("stage-{version}");
+            let (_, rows) = fixture.run(&name, &recording);
+            assert_eq!(rows[0]["report_version"], 2);
+            assert_eq!(rows[0]["stage_compiler_version"], version);
+            assert_eq!(rows[1..], legacy_rows[1..]);
+            let path = fixture.root.join(format!("{name}.replay"));
+            crate::stage::inspect_replay(&fixture.source, &path, "0").unwrap();
+            crate::stage::inspect_replay(&fixture.source, &path, "4800").unwrap();
+            assert!(crate::stage::inspect_replay(&fixture.source, &path, "4801").is_err());
+        }
     }
 
     #[test]

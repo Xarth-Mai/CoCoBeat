@@ -155,13 +155,20 @@ enum MenuAction {
 }
 
 impl MenuAction {
-    fn label(self, locale: Locale, network_player: Option<PlayerId>) -> String {
+    fn label(
+        self,
+        locale: Locale,
+        network_player: Option<PlayerId>,
+        network_spent: bool,
+    ) -> String {
         let (key, player) = match self {
             Self::Start => ("menu.start", None),
             Self::Resume => ("menu.resume", None),
             Self::Players => ("menu.players", None),
             Self::Settings => ("menu.settings", None),
-            Self::Restart if network_player.is_some() => ("network.next_round", None),
+            Self::Restart if network_player.is_some() || network_spent => {
+                ("network.next_round", None)
+            }
             Self::Restart => ("menu.restart", None),
             Self::SaveReplay => ("menu.save_replay", None),
             Self::MainMenu => ("menu.main", None),
@@ -555,7 +562,7 @@ impl InputState {
             .iter()
             .enumerate()
             .map(|(index, action)| MenuRow {
-                text: action.label(locale, self.network_player),
+                text: action.label(locale, self.network_player, self.network_spent),
                 role: if index == 0
                     && matches!(
                         action,
@@ -733,7 +740,13 @@ impl InputState {
             PLAYERS_MENU.to_vec()
         } else {
             match self.menu_phase {
-                MenuPhase::Ready => MENU.to_vec(),
+                MenuPhase::Ready => {
+                    let mut actions = MENU.to_vec();
+                    if self.network_spent {
+                        actions[0] = MenuAction::Restart;
+                    }
+                    actions
+                }
                 MenuPhase::Paused => vec![
                     MenuAction::Resume,
                     MenuAction::Players,
@@ -760,7 +773,10 @@ impl InputState {
                 MenuAction::Restart if self.network_player.is_some() || self.network_spent => {
                     self.network_spent
                         && self.network_next_round
-                        && self.menu_phase == MenuPhase::Finished
+                        && matches!(
+                            self.menu_phase,
+                            MenuPhase::Ready | MenuPhase::Finished | MenuPhase::Fault
+                        )
                 }
                 _ => true,
             })
@@ -1458,7 +1474,7 @@ mod tests {
     }
 
     #[test]
-    fn network_next_round_requires_finished_spent_and_available_for_menu_and_f5() {
+    fn network_next_round_requires_terminal_or_ready_spent_and_available_for_menu_and_f5() {
         for phase in [
             MenuPhase::Ready,
             MenuPhase::Paused,
@@ -1473,7 +1489,12 @@ mod tests {
                     input.set_menu_phase(phase, true);
                     input.set_network_spent(spent);
                     input.set_network_next_round(available);
-                    let expected = spent && available && phase == MenuPhase::Finished;
+                    let expected = spent
+                        && available
+                        && matches!(
+                            phase,
+                            MenuPhase::Ready | MenuPhase::Finished | MenuPhase::Fault
+                        );
                     let actions = input.menu_actions();
                     assert_eq!(actions.contains(&MenuAction::Restart), expected);
                     assert_eq!(input.can_start_next_round(), expected);
@@ -1487,7 +1508,11 @@ mod tests {
                     if expected {
                         assert_eq!(input.queued[0].control, Control::Restart);
                         assert_eq!(
-                            actions[0].label(Locale::EnUs, input.network_player),
+                            actions[0].label(
+                                Locale::EnUs,
+                                input.network_player,
+                                input.network_spent
+                            ),
                             Locale::EnUs.text("network.next_round")
                         );
                     }
@@ -1508,7 +1533,7 @@ mod tests {
         offline.key(KeyCode::F5, true, false, 0, &mut scroll);
         assert_eq!(offline.queued[0].control, Control::Restart);
         assert_eq!(
-            MenuAction::Restart.label(Locale::EnUs, None),
+            MenuAction::Restart.label(Locale::EnUs, None, false),
             "Restart song"
         );
     }
@@ -1517,12 +1542,15 @@ mod tests {
     fn next_round_menu_changes_keep_held_barriers_and_consume_one_confirmation() {
         let mut world = World::new();
         let pad = world.spawn_empty().id();
-        for use_pad in [false, true] {
+        for (phase, use_pad) in [MenuPhase::Ready, MenuPhase::Finished, MenuPhase::Fault]
+            .into_iter()
+            .flat_map(|phase| [false, true].map(|pad| (phase, pad)))
+        {
             let mut input = controlled_input();
             let mut scroll = MenuScroll::default();
             input.set_network_player(Some(PlayerId::P1));
             input.set_network_spent(true);
-            input.set_menu_phase(MenuPhase::Finished, true);
+            input.set_menu_phase(phase, true);
             if use_pad {
                 input.claim_menu(InputSource::Pad(pad));
                 input.pad_button(pad, GamepadButton::South, true, 0, &mut scroll);
@@ -2463,7 +2491,7 @@ mod tests {
             assert_eq!(input.menu_actions()[input.selection], after);
             assert_eq!(
                 presentation.rows[input.selection].text,
-                after.label(Locale::EnUs, None)
+                after.label(Locale::EnUs, None, false)
             );
             assert_eq!(
                 presentation.rows.iter().filter(|row| row.selected).count(),

@@ -30,7 +30,7 @@
 
 本批相关包共 169 项测试、Clippy / 构建通过，1280×800 和 640×480 的源码副本 helper 各核对 76 条记录并生成 5 张原生 GPU PNG，合计 10 张图目检通过；正式 CLI 的两份报告与 stdout 保持旧版原字节，命令、冻结源码与合成输入边界见 [Replay 诊断验证](../docs/replay-diagnostics.md#软件验证)和[本批观察清单](../testdata/synthetic/session-diagnostics-observations-20261007.json)
 
-该里程碑不包含试听、物理计时或真实设备验收，Replay v1 也没有视觉版本，当前诊断不承诺历史画面复现；软件交付完成后等待用户真实验收，长期 V1 的设备计时关联和试听校准范围保留
+该里程碑不包含试听、物理计时或真实设备验收，Replay v1 也没有视觉版本，当前诊断不承诺历史画面复现；v2 几何版本记录与 `inspect-replay-stage` 保留此边界，完整动画回放仍待实施；软件交付完成后等待用户真实验收，长期 V1 的设备计时关联和试听校准范围保留
 
 2026-10-07 完成 `workbench-candidates PACKAGE REPORT [--locale CODE]` 只读候选审阅，共用 CLI 的报告版本、完整源包身份、规则与策略校验及候选重编；逐条显示精确帧、原始评分、零起始索引及阻挡关系，beat／section／energy 上下文来自原 analysis，提案与原 chart 分开显示，采用仍由明确选择 CLI 完成
 

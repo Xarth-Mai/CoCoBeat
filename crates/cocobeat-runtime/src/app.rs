@@ -864,22 +864,8 @@ fn poll_network(
                         [("path", invite.display().to_string())],
                     );
                 }
-                LiveEvent::Prepared {
-                    epoch,
-                    player,
-                    package_path,
-                    content_id,
-                    canonical_frames,
-                    final_through,
-                } => {
-                    online.load(
-                        epoch,
-                        player,
-                        package_path,
-                        content_id,
-                        canonical_frames,
-                        final_through,
-                    )?;
+                event @ LiveEvent::Prepared { .. } => {
+                    online.load(event)?;
                     game.notice = Message::new("network.loading");
                 }
                 LiveEvent::Scheduled {
@@ -946,7 +932,7 @@ fn poll_network(
                     game.notice = Message::new("network.complete");
                     game.save()?;
                     input.set_menu_open(true);
-                    online.complete();
+                    online.stop();
                 }
                 LiveEvent::Failed(error) => return Err(error),
             },
@@ -1197,7 +1183,9 @@ fn update_game(
                 }
                 Control::Restart => {
                     if online.enabled() {
-                        if game.phase != Phase::Finished || !online.can_start_next() {
+                        if !matches!(game.phase, Phase::Ready | Phase::Finished | Phase::Fault)
+                            || !online.can_start_next()
+                        {
                             continue;
                         }
                         game.main_menu()?;
@@ -1323,14 +1311,21 @@ fn update_game(
         input.set_menu_open(true);
         menu_scroll.reset();
     }
-    if game.phase == Phase::Finished {
+    if matches!(game.phase, Phase::Ready | Phase::Finished) {
         if online.waiting_for_next_invite() {
             game.notice = Message::new("network.waiting_next_invite");
         } else if game.notice.key == "network.waiting_next_invite" {
-            game.notice = Message::new("network.complete");
+            game.notice = Message::new(if game.phase == Phase::Finished {
+                "network.complete"
+            } else {
+                "network.round_closed"
+            });
         }
     }
-    input.set_network_next_round(game.phase == Phase::Finished && online.can_start_next());
+    input.set_network_next_round(
+        matches!(game.phase, Phase::Ready | Phase::Finished | Phase::Fault)
+            && online.can_start_next(),
+    );
     visual.transitioning = matches!(
         game.phase,
         Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing

@@ -13,7 +13,8 @@ use std::{
 };
 
 const FORMAT: &str = "CoCoBeat Replay";
-const VERSION: u32 = 1;
+const CORE_VERSION: u32 = 1;
+const STAGE_VERSION: u32 = 2;
 // Ten minutes of 10 ms player watermarks leave room for 39,996 hits
 // The byte bound also fits every fact and identity at their maximum encoded width
 pub const MAX_FILE_BYTES: u64 = 20 * 1024 * 1024;
@@ -26,6 +27,8 @@ pub struct ReplayIdentity {
     pub content_id: String,
     pub rules_id: String,
     pub build_id: String,
+    /// None preserves legacy core histories without inferring a historical stage
+    pub stage_compiler_version: Option<u32>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -43,6 +46,13 @@ struct Document {
     content_id: String,
     rules_id: String,
     build_id: String,
+    // The outer option distinguishes a missing field from an explicit null
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        deserialize_with = "stage_field"
+    )]
+    stage_compiler_version: Option<Option<u32>>,
     epoch: u64,
     facts: Vec<Fact>,
 }
@@ -61,6 +71,12 @@ enum Fact {
         player: u8,
         through_frames: i64,
     },
+}
+
+fn stage_field<'de, D: serde::Deserializer<'de>>(
+    deserializer: D,
+) -> Result<Option<Option<u32>>, D::Error> {
+    Option::<u32>::deserialize(deserializer).map(Some)
 }
 
 fn invalid(message: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> io::Error {
@@ -90,6 +106,12 @@ impl Replay {
                     "Replay identities must contain 1 to 256 UTF-8 bytes",
                 ));
             }
+        }
+        if identity
+            .stage_compiler_version
+            .is_some_and(|version| !matches!(version, 1 | 2))
+        {
+            return Err(invalid("Unsupported Stage compiler version"));
         }
         Ok(Self {
             identity,
@@ -123,10 +145,15 @@ impl Replay {
     pub fn encode(&self) -> io::Result<Vec<u8>> {
         let document = Document {
             format: FORMAT.into(),
-            version: VERSION,
+            version: if self.identity.stage_compiler_version.is_some() {
+                STAGE_VERSION
+            } else {
+                CORE_VERSION
+            },
             content_id: self.identity.content_id.clone(),
             rules_id: self.identity.rules_id.clone(),
             build_id: self.identity.build_id.clone(),
+            stage_compiler_version: self.identity.stage_compiler_version.map(Some),
             epoch: self.epoch.0,
             facts: self
                 .facts
@@ -164,7 +191,12 @@ impl Replay {
             return Err(invalid("Replay byte limit exceeded"));
         }
         let document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
-        if document.format != FORMAT || document.version != VERSION {
+        let stage_compiler_version = match (document.version, document.stage_compiler_version) {
+            (CORE_VERSION, None) => None,
+            (STAGE_VERSION, Some(Some(version @ (1 | 2)))) => Some(version),
+            _ => return Err(invalid("Invalid Replay version or Stage compiler identity")),
+        };
+        if document.format != FORMAT {
             return Err(invalid("Invalid Replay header or unsupported version"));
         }
         if document.facts.len() > MAX_FACTS {
@@ -175,6 +207,7 @@ impl Replay {
                 content_id: document.content_id,
                 rules_id: document.rules_id,
                 build_id: document.build_id,
+                stage_compiler_version,
             },
             SessionEpoch(document.epoch),
         )?;
@@ -276,6 +309,7 @@ mod tests {
                 content_id: "fixture-64s-v1".into(),
                 rules_id: "duo-v1".into(),
                 build_id: "test-build".into(),
+                stage_compiler_version: None,
             },
             SessionEpoch(7),
         )
@@ -317,6 +351,49 @@ mod tests {
         assert!(text.contains("-9223372036854775808"));
         assert!(text.contains("9223372036854775807"));
         assert!(text.contains("18446744073709551615"));
+    }
+
+    #[test]
+    fn stage_identity_requires_explicit_v2_and_keeps_legacy_bytes() {
+        let legacy = empty();
+        let legacy_bytes = legacy.encode().unwrap();
+        assert_eq!(legacy_bytes, br#"{"format":"CoCoBeat Replay","version":1,"content_id":"fixture-64s-v1","rules_id":"duo-v1","build_id":"test-build","epoch":7,"facts":[]}"#);
+        assert_eq!(
+            Replay::decode(legacy_bytes.as_slice())
+                .unwrap()
+                .identity()
+                .stage_compiler_version,
+            None
+        );
+        for version in [1, 2] {
+            let mut identity = legacy.identity().clone();
+            identity.stage_compiler_version = Some(version);
+            let explicit = Replay::new(identity, legacy.epoch()).unwrap();
+            let bytes = explicit.encode().unwrap();
+            let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(value["version"], 2);
+            assert_eq!(value["stage_compiler_version"], version);
+            assert_eq!(Replay::decode(bytes.as_slice()).unwrap(), explicit);
+        }
+        let original: serde_json::Value = serde_json::from_slice(&legacy_bytes).unwrap();
+        for (document_version, field) in [
+            (1, Some(serde_json::json!(null))),
+            (1, Some(serde_json::json!(1))),
+            (2, None),
+            (2, Some(serde_json::json!(null))),
+            (2, Some(serde_json::json!(0))),
+            (2, Some(serde_json::json!(3))),
+        ] {
+            let mut value = original.clone();
+            value["version"] = document_version.into();
+            if let Some(field) = field {
+                value["stage_compiler_version"] = field;
+            }
+            assert!(Replay::decode(serde_json::to_vec(&value).unwrap().as_slice()).is_err());
+        }
+        let mut identity = legacy.identity().clone();
+        identity.stage_compiler_version = Some(3);
+        assert!(Replay::new(identity, legacy.epoch()).is_err());
     }
 
     #[test]
@@ -369,6 +446,7 @@ mod tests {
                 content_id: "\0".repeat(MAX_IDENTITY_BYTES),
                 rules_id: "\0".repeat(MAX_IDENTITY_BYTES),
                 build_id: "\0".repeat(MAX_IDENTITY_BYTES),
+                stage_compiler_version: None,
             },
             SessionEpoch(u64::MAX),
         )

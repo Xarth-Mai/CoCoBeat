@@ -64,3 +64,5 @@
 2026-10-07 · 09 候选工作台：`workbench-candidates` 共用 Anchor 报告来源与重新编译校验，逐项显示原始 index、未知评分、拒绝原因和阻挡关系；正式 lab 28 项测试、Clippy / 格式 / 依赖边界通过，三组源码副本原生窗口 11 PNG 目检通过，修正前失败和精确证据范围见[观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)。只读查看已完成，试听与设备计时关联继续保留
 
 2026-10-07 · 06 模型研究：Beat This! small0 与 BSD DBN 已完成源 / 严格 canonical 回读各 120 行 CPU 数值对照，官方与 ORT 数值通过；变速、6/8 和摇摆质量继续 FAIL，`production_admission=false`，完整前处理、原生加载、分析能力与独立人工标签待后续，见[研究摘要](../tools/beat-model-probe/results-2026-10-07.json)
+
+2026-10-07 · 08 / 10 舞台身份与故障新局：明确 Stage 1 / 2 编译、Replay v2 实际版本及 protocol v5 的完整身份已接线；184 项 Stage 相关测试、12 个真实 wire 拒绝及 3 个完整 PCM 控制通过。故障后新邀请恢复另取得 127 项 runtime、9 组 worker 和 3 组原生双轮证据，固定构建 / 文案范围见[Stage 观察](../testdata/synthetic/stage-version-observations-20261007.json)与[网络观察](../testdata/synthetic/network-reentry-observations-20261007.json)。旧前缀不补齐，旧 Replay 保留，完整视觉观看、同 epoch 续演及真实双机另推进

@@ -2,7 +2,7 @@
 
 `cocobeat-net` 提供受邀请的双端会话，游戏通过有界 `LiveSession` worker 使用实时输入与实际 Kira 音频，lab 的 `host` / `join` / `join_receive` 继续验证加速历史；双方使用完整验证的同一个 [SongPackage](song-package.md)，客机可以预装，也可以接收主机的四个原始对象，运行同一 DuoEngine 并保存实际录制结果
 
-当前支持可直达端点，每份邀请只用于一局；正常完成后可以在同一窗口进入预先声明的新一局，逐局使用新邀请和独立输出路径。Fault 后重入、断线重连和声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
+当前支持可直达端点，每份邀请只用于一局；正常完成或故障终止后可以在同一窗口进入预先声明的新一局，逐局使用新邀请和独立输出路径。同 epoch 断线续演与声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
 
 ## 实时游戏
 
@@ -11,7 +11,7 @@ cargo run --locked -p cocobeat-game -- --package PACKAGE --net-host 127.0.0.1:0 
 cargo run --locked -p cocobeat-game -- --package PACKAGE --net-join INVITE.json GUEST_OUTPUT
 # 客机没有内容包时
 cargo run --locked -p cocobeat-game -- --net-receive INVITE.json NEW_PACKAGE GUEST_OUTPUT
-# 正常完成后在同一窗口继续第二局，可重复追加 --next-round
+# 正常完成或故障终止后在同一窗口开启新局，可重复追加 --next-round
 cargo run --locked -p cocobeat-game -- --package PACKAGE --net-host 127.0.0.1:0 INVITE.json HOST_OUTPUT --next-round NEXT_INVITE.json NEXT_HOST_OUTPUT
 cargo run --locked -p cocobeat-game -- --package PACKAGE --net-join INVITE.json GUEST_OUTPUT --next-round NEXT_INVITE.json NEXT_GUEST_OUTPUT
 ```
@@ -24,9 +24,9 @@ Scheduled 在未来 deadline 之前交给窗口，Kira 用原生 `start_time(Dur
 
 本地 Hit 立即反馈，并可靠发送已经接受的整数事实；每端只关闭自己玩家的历史，伙伴 Hit 与水位收到后才进入同一 core / Replay 入口，共享确认可以延迟。输入数量无需预声明，End 必须匹配实际接收计数及本玩家最终水位，随后沿用权威 Replay 校验和 FinishAck
 
-窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待线程完成保存后退出。完成或失败后可以保存、调整设置和退出；Fault 不消费后续配置，也不能通过下一局菜单重入
+窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待网络及拥有的 PCM 解码线程结束后退出。完成或失败后可以保存、调整设置和退出；Ready、Finished 或 Fault 在线程结束及新配置可用后提供下一局，确认时先成功保存旧录制再消费新配置
 
-每对 `--next-round NEW_INVITE NEW_OUTPUT` 声明一份后续配置；主机沿用原包与 bind，客机沿用原包，首局使用 `--net-receive` 的客机后续改用 Join 读取已成功发布的包。Finished 菜单仅在正常 COMPLETE、本地 Replay 保存成功、当前 worker 已退出且仍有后续配置时提供下一局；客机还需等新邀请路径出现，缺失时显示等待，已有的坏邀请仍交给完整校验并明确失败。路径继续经过排他检查，旧邀请和旧输出不复用
+每对 `--next-round NEW_INVITE NEW_OUTPUT` 声明一份后续配置；主机沿用原包与 bind，客机沿用原包，首局使用 `--net-receive` 的客机在确认新局时检查目标：尚不存在则继续 Receive，已发布的真实目录则使用 Join 完整复核，文件、符号链接及其他错误拒绝覆盖。Ready、Finished 或 Fault 菜单在当前网络及 PCM 解码线程已结束且仍有后续配置时提供下一局，确认时先成功保存本地 Replay 再消费新配置；客机还需等新邀请路径出现，缺失时显示等待，已有的坏邀请仍交给完整校验并明确失败。路径继续经过排他检查，旧邀请和旧输出不复用
 
 确认下一局后整体替换 OnlineRound，清除音乐、反馈、Results、source clock、seq 和水位；新 Prepared 建立新 epoch，主机生成新的证书与邀请能力。一次确认只消费一份配置，按住或同批第二次确认不能穿透过渡阶段；最后一局完成后不再显示下一局入口
 
@@ -49,7 +49,7 @@ cargo run --locked -p cocobeat-lab -- net-receive NEW_PACKAGE GUEST_REPLAY.json 
 
 host 在写好邀请后输出 `INVITING`，包含实际端口、公开证书指纹与新 epoch；本机命令允许端口 0 自动分配，跨机器需选择可直达的本机单播地址及实际可用端口，当前没有 NAT 穿透或中继
 
-模板必须使用现有 Replay v1、完整包身份和 `duo-watermark-v1`，先经原 core 校验；host 取 P1 子序列，join 取 P2 子序列，保留原 seq、整数 SongTime 与玩家内顺序，明确绑定到此次邀请的新 epoch。Hit 限定 `[0, canonical_frames)`，选中玩家最后一项必须是 `canonical_frames + confirmation_delay_frames + 1` 的显式水位；不在断线或 EOF 时补水位
+模板可以使用 Replay v1 / v2、完整包身份和 `duo-watermark-v1`，先经原 core 校验；host 取 P1 子序列，join 取 P2 子序列，保留原 seq、整数 SongTime 与玩家内顺序，明确绑定到此次邀请的新 epoch。Hit 限定 `[0, canonical_frames)`，选中玩家最后一项必须是 `canonical_frames + confirmation_delay_frames + 1` 的显式水位；不在断线或 EOF 时补水位
 
 双方完成时钟探测、Ready 和未来 ScheduleStart 屏障，等待各自预约的进程单调时间后加速发送历史，本入口不等待歌曲实际时长，也不把模板时间解释为网络抵达时间。双方预检并协商事实计数，合计最多 160,000 项；每玩家可靠有序流携带 Hit 和关闭此前历史的水位，主机负责权威结算
 
@@ -73,9 +73,13 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/4`，旧 v1 / v2 / v3 邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/5`，旧 v1 / v2 / v3 / v4 邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
 邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，每次 host 只接受一次连接尝试，失败后重新运行会生成新邀请
+
+协议 v5 的完整会话身份包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
+
+实时 Replay v2 从实际原生 StagePlan 记录版本，开发歌曲与 headless 没有 StagePlan，因此输出保持 core-only v1；headless 模板即便带明确视觉版本也只提供经过校验的事实，不把模板版本或新 epoch 解释为已经渲染历史舞台
 
 每端输出目录保留实际 `live.replay.json` 和 `status.json`；主机在两侧完整历史结束后生成 `authority.replay.json`，客户端核对长度、哈希、身份、epoch、完整逐玩家子序列和全部 core 结果，保存成功后才发送应用 `FinishAck`
 
@@ -92,3 +96,11 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 这些限制约束协议字节、事实与异步等待，不能抢占同步文件访问、哈希、音频解码或 core 运算，也不代表达到最大事实量时仍有合理帧时；网络压力、平台设备和人体体验须按各自证据评估。包发布复用同文件系统 staging → 校验 → rename，已有目标包括符号链接拒绝，失败只清理当前调用创建的对象；本地其他进程在最终存在性检查后创建空目录的竞态仍沿用现有发布实现，rename 不提供平台专用的排他替换保证
 
 net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识 Quinn；runtime 依赖 net 的同步有界 worker 入口，Tokio 和 QUIC I/O 留在其拥有的线程
+
+## 故障后的新轮次软件验证
+
+协议 v5 / Replay v2 接线完成后，127 项 runtime 测试、9 组实际 LiveSession loopback 及 3 组原生双轮检查通过；每组使用两个持续运行的游戏进程，分别覆盖正常完成、Ready 前本地 worker 取消和命中后本地取消 / 伙伴连接丢失，再使用新邀请完成第二局
+
+Ready 前失败时客机尚未初始化网络 epoch，主机已有邀请 epoch；命中后两侧只保存各自实际收到的不同前缀，没有权威 Replay、补造 EOF 水位或假报 COMPLETE。第二局使用新 epoch、从 seq 0 开始，缺失包重新 Receive，已发布包完整校验后 Join 复用，旧文件保持，线程和保存屏障由生产路径消费
+
+[网络观察清单](../testdata/synthetic/network-reentry-observations-20261007.json)绑定固定 debug 游戏二进制、419 项构建输入及独立依赖图谱，保留 22 张 agent 目检图和 6 张主线程补审；构建含当时未提交的音频 API / catalog，后续文案变更与源码临时改复分别记录，不声称最终提交不可变或连续源码未改。此结果是合成输入和 loopback 的原生软件验证，同 epoch 续演、物理输入 / 扬声器、双机与真人仍另验

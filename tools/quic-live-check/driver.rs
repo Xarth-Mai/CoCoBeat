@@ -127,13 +127,7 @@ fn play(path: &Path, package: &Path) -> cocobeat_core::DuoEngine {
         .unwrap()
 }
 
-fn main() {
-    let args: Vec<_> = std::env::args().collect();
-    if args.len() > 1 && fixture(&args) {
-        return;
-    }
-    assert_eq!(args.len(), 4, "driver SCENARIO PACKAGE NEW_OUTPUT");
-    let scenario = &args[1];
+fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
     assert!(
         [
             "installed",
@@ -144,11 +138,11 @@ fn main() {
             "wrong-player",
             "wrong-epoch"
         ]
-        .contains(&scenario.as_str())
+        .contains(&scenario)
     );
     let success = scenario == "installed" || scenario == "receive";
-    let package = PathBuf::from(&args[2]);
-    let output = PathBuf::from(&args[3]);
+    let package = package.to_path_buf();
+    let output = output.to_path_buf();
     fs::create_dir(&output).unwrap();
     let invite = output.join("invite.json");
     let received = output.join("received");
@@ -356,8 +350,64 @@ fn main() {
             }
         }
     }
-    println!(
-        "{}",
-        serde_json::json!({"status":"PASS","scenario":scenario,"started":started,"queued_facts":[accepted[0].len(), accepted[1].len()],"peer_facts":[peer[0].len(),peer[1].len()],"owned_workers_finished":true,"scope":"public production network worker, software loopback only; no PCM scheduling, physical input, audio device or two-machine proof"})
-    );
+    serde_json::json!({"status":"PASS","scenario":scenario,"epoch":prepared[0].map(|value| value.0.0),"started":started,"queued_facts":[accepted[0].len(), accepted[1].len()],"peer_facts":[peer[0].len(),peer[1].len()],"owned_workers_finished":true,"scope":"public production network worker, software loopback only; no PCM scheduling, physical input, audio device or two-machine proof"})
+}
+
+fn main() {
+    let args: Vec<_> = std::env::args().collect();
+    if args.len() > 1 && fixture(&args) {
+        return;
+    }
+    assert_eq!(args.len(), 4, "driver SCENARIO PACKAGE NEW_OUTPUT");
+    let scenario = &args[1];
+    let package = PathBuf::from(&args[2]);
+    let output = PathBuf::from(&args[3]);
+    let report = if scenario == "reenter-before-ready" || scenario == "reenter-after-hit" {
+        fs::create_dir(&output).unwrap();
+        let first = run(
+            if scenario == "reenter-before-ready" {
+                "cancel-before-ready"
+            } else {
+                "cancel-after-hit"
+            },
+            &package,
+            &output.join("round-1"),
+        );
+        let paths = [
+            "invite.json",
+            "host/live.replay.json",
+            "host/status.json",
+            "guest/live.replay.json",
+            "guest/status.json",
+        ];
+        let old: Vec<_> = paths
+            .iter()
+            .map(|path| fs::read(output.join("round-1").join(path)).unwrap())
+            .collect();
+        let second = run("installed", &package, &output.join("round-2"));
+        assert_ne!(first["epoch"], second["epoch"]);
+        assert_ne!(
+            fs::read(output.join("round-1/invite.json")).unwrap(),
+            fs::read(output.join("round-2/invite.json")).unwrap()
+        );
+        for (path, bytes) in paths.iter().zip(old) {
+            assert_eq!(fs::read(output.join("round-1").join(path)).unwrap(), bytes);
+        }
+        let replay = Replay::load(output.join("round-2/host/authority.replay.json")).unwrap();
+        for player in [PlayerId::P1, PlayerId::P2] {
+            let seq: Vec<_> = replay
+                .facts()
+                .iter()
+                .filter_map(|fact| match fact {
+                    DuoInput::Hit(hit) if hit.player == player => Some(hit.seq),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(seq, (0..seq.len() as u64).collect::<Vec<_>>());
+        }
+        serde_json::json!({"status":"PASS", "scenario":scenario, "same_process":true, "rounds":[first,second], "old_files_unchanged":true, "fresh_invitation":true, "fresh_epoch":true, "seq_reset":true})
+    } else {
+        run(scenario, &package, &output)
+    };
+    println!("{report}");
 }

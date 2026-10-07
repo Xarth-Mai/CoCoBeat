@@ -77,6 +77,7 @@ pub enum LiveEvent {
         package_path: PathBuf,
         content_id: String,
         canonical_frames: u64,
+        stage_compiler_version: u32,
         final_through: i64,
     },
     Scheduled {
@@ -251,6 +252,7 @@ fn validate_identity(identity: &Identity) -> Result<(), String> {
     resource::package_hash(identity)?;
     if identity.ruleset_id != RULESET
         || identity.content_schema != CONTENT_SCHEMA_VERSION
+        || identity.stage_compiler_version != Some(cocobeat_schema::STAGE_COMPILER_VERSION)
         || !(1..=MAX_CANONICAL_FRAMES).contains(&identity.canonical_frames)
     {
         return Err("host content identity or ruleset is invalid".into());
@@ -264,12 +266,9 @@ fn live_session(
     invitation: &Invitation,
     output: PathBuf,
 ) -> Result<Session, String> {
-    let mut session = Session::new(
-        session::prepare_package(package)?,
-        player,
-        invitation,
-        output,
-    )?;
+    let mut prepared = session::prepare_package(package)?;
+    prepared.identity.stage_compiler_version = Some(cocobeat_schema::STAGE_COMPILER_VERSION);
+    let mut session = Session::new(prepared, player, invitation, output)?;
     session.declared = [None; 2];
     session.summary.mode = "live";
     Ok(session)
@@ -398,7 +397,7 @@ async fn run(
     };
     let session = state.as_mut().ok_or("live preparation disappeared")?;
     let result = async {
-        emit(events, LiveEvent::Prepared { epoch: session.epoch, player: session.player, package_path, content_id: session.prepared.identity.content_id.clone(), canonical_frames: session.prepared.identity.canonical_frames, final_through: session.prepared.final_through })?;
+        emit(events, LiveEvent::Prepared { epoch: session.epoch, player: session.player, package_path, content_id: session.prepared.identity.content_id.clone(), canonical_frames: session.prepared.identity.canonical_frames, stage_compiler_version: cocobeat_schema::STAGE_COMPILER_VERSION, final_through: session.prepared.final_through })?;
         let ready = tokio::time::timeout(PREPARE_TIMEOUT, async {
             tokio::select! {
                 biased;
@@ -836,6 +835,7 @@ mod tests {
                 canonical_frames: 48_000,
                 content_schema: 1,
                 ruleset_id: RULESET.into(),
+                stage_compiler_version: Some(cocobeat_schema::STAGE_COMPILER_VERSION),
             },
             anchors: vec![Anchor {
                 id: 1,

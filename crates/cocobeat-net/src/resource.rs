@@ -212,6 +212,7 @@ mod tests {
             canonical_frames: 1,
             content_schema: 1,
             ruleset_id: "duo-watermark-v1".into(),
+            stage_compiler_version: None,
         };
         assert_eq!(package_hash(&identity).unwrap(), [7; 32]);
         let valid = PACKAGE_OBJECT_LIMITS.map(|bytes| ResourceObject {

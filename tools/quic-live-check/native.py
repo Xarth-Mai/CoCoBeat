@@ -30,8 +30,11 @@ def file_hashes(directory):
     return {str(path.relative_to(directory)): digest(path) for path in sorted(directory.rglob("*")) if path.is_file()}
 
 
-def check(game, package, output, compositor, rounds=1):
+def check(game, package, output, compositor, rounds=1, scenario="complete"):
     assert rounds >= 1, "round count must be positive"
+    assert scenario == "complete" or rounds == 2, "recovery cases require two rounds"
+    game_sha256 = digest(game)
+    original = {name: digest(package / name) for name in OBJECTS}
     output.mkdir()
     invites = [output / ("invite.json" if number == 1 else f"invite-{number}.json") for number in range(1, rounds + 1)]
     invite = invites[0]
@@ -52,9 +55,13 @@ def check(game, package, output, compositor, rounds=1):
             stdout = (output / f"{side}.stdout").open("wb")
             stderr = (output / f"{side}.stderr").open("wb")
             streams.extend([stdout, stderr])
-            process = subprocess.Popen(command, cwd=work, stdout=stdout, stderr=stderr, start_new_session=True)
+            environment = os.environ.copy()
+            selected = "complete" if scenario == "complete" else f"{scenario}-{side}"
+            environment["COCOBEAT_LIVE_OBSERVATION_SCENARIO"] = selected
+            assert digest(game) == game_sha256, "game changed between launches"
+            process = subprocess.Popen(command, cwd=work, stdout=stdout, stderr=stderr, start_new_session=True, env=environment)
             processes.append(process)
-            records.append({"side": side, "command": command, "cwd": str(work)})
+            records.append({"side": side, "command": command, "cwd": str(work), "wrapper_pid": process.pid, "qa_scenario": selected})
             if side == "host":
                 deadline = time.monotonic() + 125
                 while not invite.exists():
@@ -62,6 +69,7 @@ def check(game, package, output, compositor, rounds=1):
                     assert time.monotonic() < deadline, "host invitation timeout"
                     time.sleep(0.05)
         preserved = {}
+        preserved_local = {}
         deadline = time.monotonic() + 130 * rounds
         while True:
             codes = [process.poll() for process in processes]
@@ -76,8 +84,12 @@ def check(game, package, output, compositor, rounds=1):
                             result = json.loads((directory / "result.json").read_text())
                         except json.JSONDecodeError:
                             continue
-                        if status["status"] == result["status"] == "COMPLETE":
+                        expected = "FAILED" if scenario != "complete" and number == 1 else "COMPLETE"
+                        if status["status"] == result["status"] == expected:
                             preserved[key] = file_hashes(network)
+                            replay_dir = output / f"{side}-cwd" / "replays"
+                            preserved_local[key] = {str(path.relative_to(output)): digest(path) for path in replay_dir.glob("*.json")
+                                                    if json.loads(path.read_text())["epoch"] == result["epoch"]}
             assert all(code in (None, 0) for code in codes), "native process failed; inspect stderr and round results"
             if all(code is not None for code in codes):
                 break
@@ -85,8 +97,9 @@ def check(game, package, output, compositor, rounds=1):
             time.sleep(0.05)
         for record, process in zip(records, processes):
             record["exit_code"] = process.returncode
-        assert len(preserved) == 2 * rounds, "each completed round must be observed before process exit"
+        assert len(preserved) == 2 * rounds, "each expected terminal round must be observed before process exit"
         all_reports = []
+        process_ids = {"host": set(), "guest": set()}
         epochs = []
         certificates = []
         for number in range(1, rounds + 1):
@@ -98,14 +111,49 @@ def check(game, package, output, compositor, rounds=1):
                 result = json.loads((directory / "result.json").read_text())
                 status = json.loads((network / "status.json").read_text())
                 assert file_hashes(network) == preserved[(side, number)], "earlier round evidence changed"
-                assert result["status"] == status["status"] == "COMPLETE"
+                expected = "FAILED" if scenario != "complete" and number == 1 else "COMPLETE"
+                assert status["mode"] == "live" and status["protocol_version"] == 5
+                assert result["status"] == status["status"] == expected
+                assert result["scenario"] == scenario and result["owned_workers_finished"]
+                process_ids[side].add(result["process_id"])
+                assert result["terminal_capture"]["Ok"] == [1280, 800]
+                for path, sha256 in preserved_local[(side, number)].items():
+                    assert digest(output / path) == sha256, "old local Replay changed"
+                for replay_name in ("live.replay.json", "authority.replay.json"):
+                    replay_path = network / replay_name
+                    if replay_path.exists():
+                        replay = json.loads(replay_path.read_text())
+                        assert replay["version"] == 2 and replay["stage_compiler_version"] == 2
+                        assert replay["epoch"] == status["epoch"]
+                rows = list(csv.DictReader((directory / "frames.csv").open()))
+                if expected == "FAILED":
+                    assert result["phase"] == "Fault" and result["error"] and status["error"]
+                    assert result["local_worker_cancel_requested"] == (side == "host")
+                    assert "Fault" in {row["phase"] for row in rows}
+                    assert not result["local_ended"] and status.get("authority_replay_blake3") is None
+                    assert not (network / "authority.replay.json").exists()
+                    if scenario == "reenter-before-ready":
+                        assert not result["network_started"] and result["synthetic_hits_requested"] == 0
+                        assert status["facts"] == [0, 0] and not result["capture_diagnostics"]
+                        assert "Running" not in {row["phase"] for row in rows}
+                    else:
+                        assert result["network_started"] and result["capture_diagnostics"]
+                        assert result["running_capture"]["Ok"] == [1280, 800]
+                        assert sum(status["facts"]) > 0
+                        assert (network / "live.replay.json").exists()
+                        assert result["epoch"] == status["epoch"]
+                    prefix_path = network / "live.replay.json"
+                    if prefix_path.exists():
+                        prefix = json.loads(prefix_path.read_text())
+                        assert all(fact["through_frames"] < result["canonical_frames"] for fact in prefix["facts"] if fact["type"] == "watermark"), "failed prefix must not invent an EOF watermark"
+                    reports.append({"side": side, "runtime": result, "network": status})
+                    continue
                 assert result["network_started"] and result["local_ended"]
                 assert result["synthetic_hits_requested"] == len(result["capture_diagnostics"]) == 3
                 assert result["facts"] == sum(status["facts"])
                 assert result["events"] == status["event_count"]
                 assert result["epoch"] == status["epoch"] and result["content_id"] == status["content_id"]
                 assert result["running_capture"]["Ok"] == result["terminal_capture"]["Ok"] == [1280, 800]
-                rows = list(csv.DictReader((directory / "frames.csv").open()))
                 phases = {"Connecting", "Starting", "Running", "Finishing", "Finished"}
                 if number == 1:
                     phases.add("Ready")
@@ -120,20 +168,41 @@ def check(game, package, output, compositor, rounds=1):
                 authority = json.loads((network / "authority.replay.json").read_text())
                 assert all(fact["epoch"] == result["epoch"] for fact in authority["facts"])
                 reports.append({"side": side, "runtime": result, "network": status})
+            if scenario != "complete" and number == 1:
+                # An unprepared receiver has no initialized epoch/content session yet
+                if scenario == "reenter-after-hit":
+                    assert reports[0]["network"]["epoch"] == reports[1]["network"]["epoch"]
+                epochs.append(reports[0]["network"]["epoch"])
+                certificates.append(reports[0]["network"]["cert_blake3"])
+                all_reports.append(reports)
+                continue
             assert reports[0]["network"]["facts"] == reports[1]["network"]["facts"]
             assert reports[0]["network"]["event_count"] == reports[1]["network"]["event_count"]
             assert reports[0]["network"]["epoch"] == reports[1]["network"]["epoch"]
             assert (network_directory(output, "host", number) / "authority.replay.json").read_bytes() == (network_directory(output, "guest", number) / "authority.replay.json").read_bytes()
-            assert reports[1]["network"]["package_received"] == (number == 1)
+            assert reports[1]["network"]["package_received"] == (number == 1 or (scenario == "reenter-before-ready" and number == 2))
             epochs.append(reports[0]["network"]["epoch"])
             certificates.append(reports[0]["network"]["cert_blake3"])
             all_reports.append(reports)
         assert len(set(epochs)) == len(set(certificates)) == rounds, "new rounds must use fresh invitation and epoch"
-        original = {name: digest(package / name) for name in OBJECTS}
+        assert {name: digest(package / name) for name in OBJECTS} == original
+        assert digest(game) == game_sha256
+        assert all(len(ids) == 1 for ids in process_ids.values()) and len(set().union(*process_ids.values())) == 2
+        for side in ("host", "guest"):
+            if rounds > 1:
+                aggregate = json.loads((output / f"{side}-observation" / "summary.json").read_text())
+                assert aggregate["status"] == ("COMPLETE" if scenario == "complete" else "RECOVERED")
+            local = list((output / f"{side}-cwd" / "replays").glob("*.json"))
+            assert local, "successful round must save local Replay"
+            for path in local:
+                replay = json.loads(path.read_text())
+                assert replay["version"] == 2 and replay["stage_compiler_version"] == 2
+                assert replay["epoch"] in epochs
         assert original == {name: digest(output / "received" / name) for name in OBJECTS}
-        summary = {"status": "PASS", "commands": records, "game_sha256": digest(game), "package_objects_sha256": original,
+        summary = {"status": "PASS", "commands": records, "game_sha256": game_sha256, "scenario": scenario, "native_process_ids": {side: next(iter(ids)) for side, ids in process_ids.items()}, "package_objects_sha256": original,
                    "reports": all_reports[0], "round_count": rounds, "rounds": all_reports,
                    "preserved_network_sha256": {f"{side}/round-{number}": hashes for (side, number), hashes in preserved.items()},
+                   "preserved_local_replay_sha256": {f"{side}/round-{number}": hashes for (side, number), hashes in preserved_local.items()},
                    "evidence_sha256": {str(path.relative_to(output)): digest(path) for path in sorted(output.glob("**/*"))
                                        if path.is_file() and path not in invites},
                    "scope": f"two native Linux game processes, separate {compositor} displays, actual Kira source cursors, synthetic controls, real loopback; physical input, speakers, two machines and human acceptance NOT RUN"}
@@ -157,5 +226,6 @@ if __name__ == "__main__":
     parser.add_argument("new_output", type=Path)
     parser.add_argument("--compositor", choices=("xvfb", "gamescope"), default="xvfb")
     parser.add_argument("--rounds", type=int, default=1)
+    parser.add_argument("--scenario", choices=("complete", "reenter-before-ready", "reenter-after-hit"), default="complete")
     args = parser.parse_args()
-    check(args.game.resolve(), args.package.resolve(), args.new_output.resolve(), args.compositor, args.rounds)
+    check(args.game.resolve(), args.package.resolve(), args.new_output.resolve(), args.compositor, args.rounds, args.scenario)
