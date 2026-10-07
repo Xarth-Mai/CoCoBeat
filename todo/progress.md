@@ -25,7 +25,7 @@
 | 13 | 真人双人体验与规则反馈 · 03 | root + 测试参与者 | NOT RUN | 10/11/12 | 对照顺序、实际行为、访谈、沉默/模仿/连点与打乱输入对照；失败返回 02 |
 | 14 | 雨夜霓虹表现完善 · 04 | neon_next + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 已交付双耳/单冠角色、街道纵深、五种反馈及 Precise/Good 强度；9 张静态样例和 240 张真实 core 驱动连续 GPU 帧取证通过，Resonance 仅改变独立招牌；真实性能及真人体验继续保留 |
 | 15 | 唯一标准音频导入与编码回读 · 05 | media agents + root | IN PROGRESS | 软件按用户批准并行，完整退出需 13 | 源解码、High 重采样、严格最终读回和音频 staging 已接入 lab；原生 vorbis_rs 编码软件入口已交付，39 项 media 测试、14 项完整双回读、38 项质量控制与修补后 11 项 Sanitizer，四目标准入继续推进；全频带固定 19 例及新增 4 例数值域组合均保留双路读回、正式 guard 拒绝与局部质量退步，编码准入、曲库及听感继续推进 |
-| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；完整 MIR/Anchor/Stage 输出及游戏曲库仍待后续 |
+| 16 | SongPackage 身份与原子 Ready · 05 | root + media agents | IN PROGRESS | 15 | 初始四对象包、有界 Postcard、版本头、BLAKE3 和原子目录发布已实现；能量从严格读回的同一 staging 副本测量，运行时已消费最终 PCM、实际长度、手工 Anchor、SectionCue 和完整包 Replay 身份；段落批次 103 项 runtime 测试、13 项 CLI 与 10 张 GPU 图通过，先前 152 项 workspace 检查独立保留；Ready 手工包曲库另已补六项原生软件与 42 图指定范围检查，完整 MIR/Anchor/Stage 输出仍待后续 |
 | 17 | MIR 基准与人工标注 · 06 | MIR agents + root，标注参与者待落实 | IN PROGRESS | 原始 PCM 基准先行，最终回读对照需 15 | 背景门控质量仍 FAIL（20 PASS / 11 FAIL），停止单分数修补链；原创曲目已准备 438 个声部起点 / 200 条来源候选及原 7 个 Anchor 引用，人工字段全部 pending，来源校验与复现通过，所有旧失败保留 |
 | 18 | 精度优先的 AnchorCompiler · 07 | editor_core + stage_curve_plan + section_qa + root | IN PROGRESS | 现有分析结构可先行；生产策略依赖 17 | 纯 AnchorProposal、逐项证据、完整重编及明确采用 CLI 已交付；41 项相关测试和 32 项真实包 CPU 检查通过，原音频/分析/cue 保真，core 与 Replay 一致；音乐置信度校准、标注与试听继续保留 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | v2 已接直道/广场/缓弯/低桥、固定拱门和同轨道预告；121 项相关测试、5 项场景补验、42 项 CPU 与最终 16 张 GPU 图通过，原拱门遮挡已修并保留失败图；完整自动编排、跨版本视觉 Replay、设备性能与真人可读性仍待完成 |
@@ -76,3 +76,5 @@
 2026-10-07 · 02b 小窗口标签：两个身份提示改为独立区域并随窗口高度定位；实际字体布局与确切静态帧软件验证通过，原重叠 / 遮脸失败保留，完整设备体验未据此退出
 
 2026-10-07 · AudioFlux MIT 原生 C onset 研究完成：内置 FFT / 原 Matcher / 12 项边界控制及 29 原 PCM 恢复通过，原 34 项质量仍 2 PASS / 28 FAIL / 1 不支持 / 3 不评分；宿主同二进制同参数 sanitizer 无诊断，原 sandbox 失败保留。无 Python 产品后端或 GPL 分析依赖，未接入生产，见[观察记录](../testdata/synthetic/native-onset-observations-20261007.json)
+
+2026-10-07 · Ready 曲库生产选择：已制作四对象包经后台完整验证才换歌，取消 / 三类拒绝保留原歌曲与 Replay，成功后停 Ready 等新确认；5 项行为检查、焦点反馈窄测、Clippy / 格式及六项原生 case 通过，42 张指定范围截图通过，旧小窗口视觉失败保留。自动 MIR 和游戏内原始源导入继续推进，见[曲库验证](../docs/testing.md#生产曲库选择与小窗口反馈)

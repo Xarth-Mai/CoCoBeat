@@ -1,6 +1,6 @@
 # 初始 SongPackage 契约
 
-当前交付覆盖最终音频、实测能量、手工 Anchor / SectionCue 与四文件包的构建、校验和 Anchor 编辑导出，lab 入口为 `build-authored-package`、`verify-package` 与 `edit-anchors`；runtime 可通过 `--package DIR` 加载包中的音频、实际长度、Anchor 与 SectionCue，并从真实分析区间编译直道 / 广场 / 缓弯 / 低桥 StagePlan，仍未接入自动 MIR、AnchorCompiler、完整 StageCompiler 或生产编码器
+当前交付覆盖唯一生产编码器、最终音频、实测能量、手工 Anchor / SectionCue、四文件包事务与 Anchor 提案 / 编辑导出，lab 入口包括 `import-authored-package`、`build-authored-package`、`verify-package` 与 `edit-anchors`；runtime 可通过 `--package DIR` 或 Ready 曲库加载包，并从真实分析区间编译直道 / 广场 / 缓弯 / 低桥 StagePlan，自动 MIR、完整音乐策略和舞台自动编排继续按各自准入推进
 
 字段与校验以 [schema/content.rs](../crates/cocobeat-schema/src/content.rs)、[content_codec.rs](../crates/cocobeat-media/src/content_codec.rs)、[media/package.rs](../crates/cocobeat-media/src/package.rs) 和 [lab/package.rs](../tools/cocobeat-lab/src/package.rs) 为准，运行时适配见 [runtime/content.rs](../crates/cocobeat-runtime/src/content.rs)，当前 `CONTENT_SCHEMA_VERSION` 为 `1`
 
@@ -115,6 +115,23 @@ runtime 在创建游戏和音频输出前完成 `media::read_package`，检查�
 `SongContent` 取 manifest 的 `canonical_frames` 作为实际结束时刻，取 chart 的 Anchor 构造 Session，音频游标、Hit 边界、结束确认与进度显示使用该长度；Replay 的内容身份为 `package-blake3:` 加完整 64 个十六进制字符的 `package_hash`，绑定整个规范 manifest 及其对象引用，同一音频配不同谱面也使用不同身份，校验拒绝内容身份不匹配和歌曲范围外的 Hit
 
 无参数正常启动继续使用确定性生成的 64 秒开发歌曲，原有不带包的 Replay 与视觉诊断入口也保留开发内容；正常包启动完整播放品牌开场，结束后保持 Ready，用户显式选择 Start 才开始歌曲，开场期间按住的控制不能穿透到演奏
+
+## Ready 曲库选择
+
+本地正常游戏的 Ready 菜单提供曲库，默认目录在 Linux 为绝对 `XDG_DATA_HOME/cocobeat/songs`，缺少有效 XDG 路径时使用 `HOME/.local/share/cocobeat/songs`；Windows 使用绝对 `LOCALAPPDATA/CoCoBeat/Songs`，也可用 `--library DIR` 指定目录，与 `--package DIR` 组合时保留该包为初始歌曲
+
+将每个已制作的四对象包放在曲库的一个直接子目录中，再选择刷新；目录扫描只列候选，不声称其已经验证，不递归或跟随符号链接，最多检查 512 个直接目录项、保留 128 个候选。缺少目录时显示实际路径与放置说明，不自动创建目录或导入原始音乐
+
+选中歌曲后，单个自有后台 worker 复用完整包验证、严格 PCM 读回与 Stage 编译；新 Session 成功创建且旧 Replay 保存成功后才一起替换歌曲、PCM 与舞台，保留玩家绑定并停在 Ready，需新确认才演奏。损坏音频、额外对象、未知规则、取消或失焦保持旧歌曲与历史，关闭窗口等待自有 worker 结束；取消丢弃结果，不中断已经进行的解码
+
+曲库复用既有键盘 / 手柄主控、焦点滚动及持键释放屏障，状态与拒绝原因跟随焦点行显示；联网、只读观看、暂停与故障阶段不提供歌曲切换。游戏内原始音乐导入和自动分析另按内容准入交付，当前原始源导入使用 [lab 手工制作入口](source-import.md)
+
+```sh
+cargo run --locked -p cocobeat-game -- --library /path/to/songs
+cargo run --locked -p cocobeat-game -- --package /path/to/song-package --library /path/to/songs
+```
+
+## 手工段落提示
 
 `SongContent` 同时保留 chart 的 `sections`，按 Session 的整数游标查询最近 `time <= 当前帧` 的 cue 和严格未来 `time > 当前帧` 的下一 cue，同一时点多项统一选择 ID 最大的一项；HUD 优先显示下一提示，没有下一项才显示最近提示，不把下一 cue 当成当前 cue 的结束帧，也不从分析区间的空隙推断段落或置信度
 

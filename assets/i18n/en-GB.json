@@ -217,5 +217,19 @@
   "audition.cursor": "Audio {state} · ~{frame} frames · cue {target}",
   "audition.help": "Space / left face button: play/pause · Seek: use selected frame · Audio cursor describes rendered PCM, not speaker or input latency",
   "replay.watching": "Read-only Replay playback",
-  "replay.progress": "Showing {consumed} / {total} recorded facts"
+  "replay.progress": "Showing {consumed} / {total} recorded facts",
+  "library.open": "Choose song",
+  "library.title": "Music library",
+  "library.refresh": "Refresh library",
+  "library.development": "Original development song",
+  "library.candidate": "{name} · Not verified",
+  "library.place": "Place prepared song folders in this library, then refresh; raw music import is not available yet",
+  "library.scanning": "Scanning library…",
+  "library.loading": "Verifying and loading… Current song is preserved",
+  "library.missing": "Library folder does not exist yet",
+  "library.empty": "No song package folders found",
+  "library.failed": "Current song is preserved · {error}",
+  "library.folder": "Library folder · {path}",
+  "library.path": "Song folder · {path}",
+  "library.current": "Current · {song} · {seconds} s"
 }

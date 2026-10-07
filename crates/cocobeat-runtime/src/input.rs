@@ -23,6 +23,7 @@ pub enum Control {
     Restart,
     MainMenu,
     Settings(SettingsAction),
+    Library(LibraryAction),
     SaveReplay,
     Quit,
     FocusLost,
@@ -55,6 +56,14 @@ pub fn menu_access(
     } else {
         MenuAccess::Ignored
     }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LibraryAction {
+    Open,
+    Refresh,
+    Select(usize),
+    Back,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -151,6 +160,10 @@ enum MenuAction {
     Quit,
     Bind(Binding),
     UnassignPad(PlayerId),
+    Library,
+    LibraryRefresh,
+    Song(usize),
+    LibraryBack,
     Back,
 }
 
@@ -166,6 +179,10 @@ impl MenuAction {
             Self::Resume => ("menu.resume", None),
             Self::Players => ("menu.players", None),
             Self::Settings => ("menu.settings", None),
+            Self::Library => ("library.open", None),
+            Self::LibraryRefresh => ("library.refresh", None),
+            Self::LibraryBack => ("settings.back", None),
+            Self::Song(_) => ("library.development", None),
             Self::Restart if network_player.is_some() || network_spent => {
                 ("network.next_round", None)
             }
@@ -197,10 +214,11 @@ pub(crate) enum MenuPhase {
     Transition,
 }
 
-const MENU: [MenuAction; 4] = [
+const MENU: [MenuAction; 5] = [
     MenuAction::Start,
     MenuAction::Players,
     MenuAction::Settings,
+    MenuAction::Library,
     MenuAction::Quit,
 ];
 
@@ -228,6 +246,9 @@ pub struct InputState {
     watch_replay: bool,
     menu_transitioning: bool,
     players_open: bool,
+    library_available: bool,
+    library_rows: Option<Vec<String>>,
+    library_busy: bool,
     network_player: Option<PlayerId>,
     network_spent: bool,
     network_next_round: bool,
@@ -260,6 +281,9 @@ impl Default for InputState {
             watch_replay: false,
             menu_transitioning: false,
             players_open: false,
+            library_available: false,
+            library_rows: None,
+            library_busy: false,
             network_player: None,
             network_spent: false,
             network_next_round: false,
@@ -275,7 +299,7 @@ impl Default for InputState {
             controls_enabled: true,
             capture_transitioned: false,
             selection: 0,
-            menu_row_count: MENU.len(),
+            menu_row_count: MENU.len() - 1,
             binding: None,
         }
     }
@@ -370,13 +394,53 @@ impl InputState {
         }
     }
 
+    pub(crate) fn set_library_available(&mut self, available: bool) {
+        if self.library_available != available {
+            self.library_available = available;
+            self.menu_row_count = self.menu_actions().len().max(1);
+            self.selection = self.selection.min(self.menu_row_count - 1);
+            self.queued
+                .retain(|event| event.control == Control::FocusLost);
+            self.reset_edges();
+        }
+    }
+
+    pub(crate) fn library_open(&self) -> bool {
+        self.library_rows.is_some()
+    }
+
+    pub(crate) fn show_library(&mut self, rows: Vec<String>, busy: bool) {
+        if self.library_rows.as_ref() == Some(&rows) && self.library_busy == busy {
+            return;
+        }
+        self.library_rows = Some(rows);
+        self.library_busy = busy;
+        self.players_open = false;
+        self.settings_open = false;
+        self.menu_open = true;
+        self.selection = 0;
+        self.menu_row_count = self.menu_actions().len().max(1);
+        self.queued
+            .retain(|event| event.control == Control::FocusLost);
+        self.reset_edges();
+    }
+
+    pub(crate) fn library_selection(&self) -> Option<usize> {
+        match self.menu_actions().get(self.selection) {
+            Some(MenuAction::Song(index)) => Some(*index),
+            _ => None,
+        }
+    }
+
     pub fn open_main_menu(&mut self) {
         self.menu_phase = MenuPhase::Ready;
         self.replay_unsaved = false;
         self.menu_open = true;
         self.settings_open = false;
         self.players_open = false;
-        self.menu_row_count = MENU.len();
+        self.library_rows = None;
+        self.library_busy = false;
+        self.menu_row_count = self.menu_actions().len().max(1);
         self.selection = 0;
         self.queued.clear();
         self.reset_edges();
@@ -393,6 +457,7 @@ impl InputState {
         if self.menu_phase != phase || self.replay_unsaved != replay_unsaved {
             if self.menu_phase != phase && matches!(phase, MenuPhase::Finished | MenuPhase::Fault) {
                 self.players_open = false;
+                self.library_rows = None;
                 self.selection = 0;
                 self.reset_edges();
             }
@@ -571,7 +636,15 @@ impl InputState {
             .iter()
             .enumerate()
             .map(|(index, action)| MenuRow {
-                text: action.label(locale, self.network_player, self.network_spent),
+                text: if let MenuAction::Song(song) = action {
+                    self.library_rows
+                        .as_ref()
+                        .and_then(|rows| rows.get(*song))
+                        .cloned()
+                        .unwrap_or_default()
+                } else {
+                    action.label(locale, self.network_player, self.network_spent)
+                },
                 role: if index == 0
                     && matches!(
                         action,
@@ -648,6 +721,7 @@ impl InputState {
                 | Control::Restart
                 | Control::MainMenu
                 | Control::FocusLost
+                | Control::Library(_)
         ) || (control == Control::SaveReplay && self.menu_open)
         {
             self.capture_transitioned = true;
@@ -756,7 +830,16 @@ impl InputState {
     }
 
     fn menu_actions(&self) -> Vec<MenuAction> {
-        let actions = if self.players_open {
+        let actions = if let Some(rows) = &self.library_rows {
+            if self.library_busy {
+                vec![MenuAction::LibraryBack]
+            } else {
+                (0..rows.len())
+                    .map(MenuAction::Song)
+                    .chain([MenuAction::LibraryRefresh, MenuAction::LibraryBack])
+                    .collect()
+            }
+        } else if self.players_open {
             PLAYERS_MENU.to_vec()
         } else {
             match self.menu_phase {
@@ -789,6 +872,12 @@ impl InputState {
         actions
             .into_iter()
             .filter(|action| match action {
+                MenuAction::Library => {
+                    self.library_available
+                        && !self.watch_replay
+                        && self.network_player.is_none()
+                        && !self.network_spent
+                }
                 MenuAction::Start | MenuAction::Resume => !self.network_spent,
                 MenuAction::Restart if self.network_player.is_some() || self.network_spent => {
                     self.network_spent
@@ -852,6 +941,12 @@ impl InputState {
             MenuAction::MainMenu => self.emit(Control::MainMenu, now),
             MenuAction::Quit => self.emit(Control::Quit, now),
             MenuAction::Players => self.players_page(true, scroll),
+            MenuAction::Library => self.emit(Control::Library(LibraryAction::Open), now),
+            MenuAction::LibraryRefresh => self.emit(Control::Library(LibraryAction::Refresh), now),
+            MenuAction::Song(index) => {
+                self.emit(Control::Library(LibraryAction::Select(index)), now)
+            }
+            MenuAction::LibraryBack => self.emit(Control::Library(LibraryAction::Back), now),
             MenuAction::Back => self.players_page(false, scroll),
             MenuAction::Settings => {
                 // Route the rest of this capture batch through the settings gate
@@ -984,12 +1079,16 @@ impl InputState {
             return;
         }
         match key {
+            KeyCode::Escape if self.menu_open && self.library_open() => {
+                self.emit(Control::Library(LibraryAction::Back), now)
+            }
             KeyCode::Escape if self.menu_open && self.players_open => {
                 self.players_page(false, scroll)
             }
             KeyCode::Escape => self.emit(Control::TogglePause(InputSource::Keyboard), now),
             KeyCode::F5
                 if !self.players_open
+                    && !self.library_open()
                     && if self.menu_open {
                         self.menu_actions().contains(&MenuAction::Restart)
                     } else {
@@ -998,7 +1097,7 @@ impl InputState {
             {
                 self.emit(Control::Restart, now)
             }
-            KeyCode::F6 if !self.players_open && self.replay_unsaved => {
+            KeyCode::F6 if !self.players_open && !self.library_open() && self.replay_unsaved => {
                 self.emit(Control::SaveReplay, now)
             }
             KeyCode::Enter if self.menu_open => self.activate(None, now, scroll),
@@ -1160,10 +1259,14 @@ impl InputState {
             }
             GamepadButton::Select
                 if !self.players_open
+                    && !self.library_open()
                     && self.replay_unsaved
                     && (self.menu_open || self.pads.contains(&Some(pad))) =>
             {
                 self.emit(Control::SaveReplay, now)
+            }
+            GamepadButton::East | GamepadButton::Start if self.menu_open && self.library_open() => {
+                self.emit(Control::Library(LibraryAction::Back), now)
             }
             GamepadButton::East if self.menu_open && self.players_open => {
                 self.players_page(false, scroll)
@@ -1734,6 +1837,106 @@ mod tests {
             .iter()
             .position(|candidate| *candidate == action)
             .unwrap();
+    }
+
+    #[test]
+    fn library_navigation_is_stable_and_selection_needs_a_new_press_to_start() {
+        let mut world = World::new();
+        let first = world.spawn_empty().id();
+        let second = world.spawn_empty().id();
+        for use_pad in [false, true] {
+            let mut input = controlled_input();
+            let mut scroll = MenuScroll::default();
+            input.set_library_available(true);
+            input.join_pad(PlayerId::P1, first);
+            input.join_pad(PlayerId::P2, second);
+            if use_pad {
+                input.claim_menu(InputSource::Pad(first));
+            }
+            let rows = vec!["dev".into(), "candidate".into()];
+            input.show_library(rows.clone(), false);
+            next_frame(&mut input);
+            input.navigate_menu(SettingsAction::Down, &mut scroll);
+            assert_eq!(input.library_selection(), Some(1));
+            if use_pad {
+                input.pad_button(first, GamepadButton::South, true, 1, &mut scroll);
+            } else {
+                input.key(KeyCode::Enter, true, false, 1, &mut scroll);
+            }
+            input.show_library(rows.clone(), false);
+            assert_eq!(input.library_selection(), Some(1));
+            assert_eq!(input.queued.len(), 1);
+            assert_eq!(
+                input.queued[0].control,
+                Control::Library(LibraryAction::Select(1))
+            );
+            input.pad_button(second, GamepadButton::South, true, 2, &mut scroll);
+            assert_eq!(input.queued.len(), 1);
+            input.open_main_menu();
+            next_frame(&mut input);
+            if use_pad {
+                input.pad_button(first, GamepadButton::South, true, 3, &mut scroll);
+            } else {
+                input.key(KeyCode::Enter, true, false, 3, &mut scroll);
+            }
+            assert!(input.queued.is_empty());
+            if use_pad {
+                input.pad_button(first, GamepadButton::South, false, 4, &mut scroll);
+                input.pad_button(first, GamepadButton::South, true, 5, &mut scroll);
+            } else {
+                input.key(KeyCode::Enter, false, false, 4, &mut scroll);
+                input.key(KeyCode::Enter, true, false, 5, &mut scroll);
+            }
+            assert_eq!(input.queued[0].control, Control::Start);
+            input.show_library(rows, true);
+            next_frame(&mut input);
+            input.pad_button(second, GamepadButton::Start, true, 6, &mut scroll);
+            assert_eq!(input.menu_owner, Some(InputSource::Pad(second)));
+            assert!(input.queued.is_empty());
+            next_frame(&mut input);
+            input.pad_button(second, GamepadButton::East, true, 7, &mut scroll);
+            assert_eq!(
+                input.queued[0].control,
+                Control::Library(LibraryAction::Back)
+            );
+            assert_eq!(input.menu_actions(), vec![MenuAction::LibraryBack]);
+        }
+    }
+
+    #[test]
+    fn library_entry_is_local_ready_only_and_busy_page_does_not_restart_or_save() {
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        assert!(!input.menu_actions().contains(&MenuAction::Library));
+        input.set_library_available(true);
+        assert!(input.menu_actions().contains(&MenuAction::Library));
+        for phase in [
+            MenuPhase::Paused,
+            MenuPhase::Finished,
+            MenuPhase::Fault,
+            MenuPhase::Transition,
+        ] {
+            input.set_menu_phase(phase, true);
+            assert!(!input.menu_actions().contains(&MenuAction::Library));
+        }
+        input.set_menu_phase(MenuPhase::Ready, true);
+        input.set_watch_replay(true);
+        assert!(!input.menu_actions().contains(&MenuAction::Library));
+        input.set_watch_replay(false);
+        input.set_network_player(Some(PlayerId::P1));
+        assert!(!input.menu_actions().contains(&MenuAction::Library));
+        input.set_network_player(None);
+        input.show_library(vec!["candidate".into()], true);
+        next_frame(&mut input);
+        input.key(KeyCode::F5, true, false, 0, &mut scroll);
+        input.key(KeyCode::F6, true, false, 1, &mut scroll);
+        input.key(KeyCode::KeyF, true, false, 2, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.key(KeyCode::Escape, true, false, 3, &mut scroll);
+        assert_eq!(
+            input.queued[0].control,
+            Control::Library(LibraryAction::Back)
+        );
     }
 
     #[test]

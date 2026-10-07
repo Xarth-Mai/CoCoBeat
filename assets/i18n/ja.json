@@ -217,5 +217,19 @@
   "audition.cursor": "試聴 {state} · 約 {frame} フレーム · 開始 {target}",
   "audition.help": "Space / パッド左側フェイスボタン：再生・一時停止 · 移動：選択フレームへ · 音声カーソルは描画済み PCM の位置で、出力や入力の遅延ではありません",
   "replay.watching": "読み取り専用 Replay 再生",
-  "replay.progress": "記録された事実 {consumed} / {total} 件を表示"
+  "replay.progress": "記録された事実 {consumed} / {total} 件を表示",
+  "library.open": "曲を選ぶ",
+  "library.title": "楽曲ライブラリ",
+  "library.refresh": "ライブラリを更新",
+  "library.development": "オリジナル開発用楽曲",
+  "library.candidate": "{name} · 未検証",
+  "library.place": "作成済みの楽曲フォルダーをここに置いて更新してください；音楽ファイルの直接取り込みは未対応です",
+  "library.scanning": "ライブラリを検索中…",
+  "library.loading": "検証して読み込み中… 現在の曲は保持されます",
+  "library.missing": "ライブラリのフォルダーはまだありません",
+  "library.empty": "楽曲パッケージのフォルダーが見つかりません",
+  "library.failed": "現在の曲は保持されます · {error}",
+  "library.folder": "ライブラリのフォルダー · {path}",
+  "library.path": "楽曲フォルダー · {path}",
+  "library.current": "現在 · {song} · {seconds} 秒"
 }

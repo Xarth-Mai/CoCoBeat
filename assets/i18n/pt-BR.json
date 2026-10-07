@@ -217,5 +217,19 @@
   "audition.cursor": "Áudio {state} · ~{frame} quadros · início {target}",
   "audition.help": "Espaço / botão frontal esquerdo: reproduzir ou pausar · Ir: usar quadro selecionado · O cursor indica PCM renderizado, não latência de saída ou entrada",
   "replay.watching": "Reprodução de Replay somente leitura",
-  "replay.progress": "Exibindo {consumed} / {total} fatos registrados"
+  "replay.progress": "Exibindo {consumed} / {total} fatos registrados",
+  "library.open": "Escolher música",
+  "library.title": "Biblioteca de músicas",
+  "library.refresh": "Atualizar biblioteca",
+  "library.development": "Música original de desenvolvimento",
+  "library.candidate": "{name} · Não verificado",
+  "library.place": "Coloque aqui as pastas de músicas preparadas e atualize; importar músicas originais ainda não está disponível",
+  "library.scanning": "Buscando músicas…",
+  "library.loading": "Verificando e carregando… A música atual é mantida",
+  "library.missing": "A pasta da biblioteca ainda não existe",
+  "library.empty": "Nenhuma pasta de música encontrada",
+  "library.failed": "A música atual é mantida · {error}",
+  "library.folder": "Pasta da biblioteca · {path}",
+  "library.path": "Pasta da música · {path}",
+  "library.current": "Atual · {song} · {seconds} s"
 }

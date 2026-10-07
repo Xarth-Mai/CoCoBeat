@@ -217,5 +217,19 @@
   "audition.cursor": "Звук {state} · ~{frame} кадрів · ціль {target}",
   "audition.help": "Пробіл / ліва лицьова кнопка: відтворення або пауза · Перехід: вибраний кадр · Курсор показує оброблений PCM, а не затримку виводу чи вводу",
   "replay.watching": "Перегляд Replay без змін",
-  "replay.progress": "Показано {consumed} / {total} записаних фактів"
+  "replay.progress": "Показано {consumed} / {total} записаних фактів",
+  "library.open": "Вибрати пісню",
+  "library.title": "Музична бібліотека",
+  "library.refresh": "Оновити бібліотеку",
+  "library.development": "Оригінальна пісня для розробки",
+  "library.candidate": "{name} · Не перевірено",
+  "library.place": "Помістіть сюди папки підготовлених пісень і оновіть; імпорт вихідної музики поки недоступний",
+  "library.scanning": "Пошук пісень…",
+  "library.loading": "Перевірка й завантаження… Поточна пісня зберігається",
+  "library.missing": "Папка бібліотеки ще не існує",
+  "library.empty": "Папок пакетів пісень не знайдено",
+  "library.failed": "Поточна пісня зберігається · {error}",
+  "library.folder": "Папка бібліотеки · {path}",
+  "library.path": "Папка пісні · {path}",
+  "library.current": "Поточна · {song} · {seconds} с"
 }

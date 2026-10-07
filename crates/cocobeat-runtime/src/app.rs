@@ -9,9 +9,10 @@ use crate::{
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
     input::{
-        self, Control, InputSource, InputState, MenuPhase, MenuPresentation, MenuRowRole,
-        MenuScroll, SettingsAction,
+        self, Control, InputSource, InputState, LibraryAction, MenuPhase, MenuPresentation,
+        MenuRowRole, MenuScroll, SettingsAction,
     },
+    library::{self, Candidate, Library, LoadedSong, Update as LibraryUpdate},
     online::{OnlineRound, Update as NetworkUpdate},
     replay_playback::ReplayPlayback,
     session::{Session, SessionResults},
@@ -132,6 +133,8 @@ impl SmokeViewport {
 
 #[derive(Resource)]
 struct Game {
+    song_id: Option<String>,
+    package_path: Option<PathBuf>,
     content: SongContent,
     session: Session,
     playback: Option<ReplayPlayback>,
@@ -154,6 +157,8 @@ impl Game {
 
     fn with_content(content: SongContent) -> Result<Self, String> {
         Ok(Self {
+            song_id: None,
+            package_path: None,
             session: Session::for_content(SessionEpoch(0), &content)?,
             content,
             playback: None,
@@ -167,6 +172,28 @@ impl Game {
             closing: false,
             closing_error: false,
         })
+    }
+
+    fn install_library_song(
+        &mut self,
+        audio: &mut AudioOutput,
+        song: LoadedSong,
+    ) -> Result<(), String> {
+        let session = Session::for_content(self.session.epoch(), &song.content)?;
+        self.save()?;
+        audio.replace_song(song.sound);
+        self.content = song.content;
+        self.song_id = song.song_id;
+        self.package_path = song.path;
+        self.session = session;
+        self.playback = None;
+        self.phase = Phase::Ready;
+        self.saved_facts = 0;
+        self.replay_status = Message::default();
+        self.fault_details = None;
+        self.results = None;
+        self.notice = Message::new("game.ready");
+        Ok(())
     }
 
     fn watching(content: SongContent, replay: Replay) -> Result<Self, String> {
@@ -401,6 +428,146 @@ impl Game {
     }
 }
 
+struct LibraryBrowser {
+    loader: Option<Library>,
+    entries: Vec<Candidate>,
+    notice: Message,
+}
+
+impl LibraryBrowser {
+    fn new(root: Option<PathBuf>) -> Self {
+        let root = root.map_or_else(library::default_root, Ok);
+        match root {
+            Ok(root) => Self {
+                loader: Some(Library::new(root)),
+                entries: vec![],
+                notice: Message::new("library.place"),
+            },
+            Err(error) => Self {
+                loader: None,
+                entries: vec![],
+                notice: Message::with("library.failed", [("error", error)]),
+            },
+        }
+    }
+
+    fn busy(&self) -> bool {
+        self.loader.as_ref().is_some_and(Library::busy)
+    }
+
+    fn is_finished(&self) -> bool {
+        self.loader.as_ref().is_none_or(Library::is_finished)
+    }
+
+    fn cancel(&mut self) {
+        if let Some(loader) = &mut self.loader {
+            loader.cancel();
+        }
+    }
+
+    fn error(&mut self, error: String) {
+        self.notice = Message::with("library.failed", [("error", error)]);
+    }
+
+    fn show(&self, input: &mut InputState, locale: Locale) {
+        let rows = if self.loader.is_some() {
+            std::iter::once(locale.text("library.development").to_string())
+                .chain(self.entries.iter().map(|entry| {
+                    Message::with(
+                        "library.candidate",
+                        [(
+                            "name",
+                            display_library_text(
+                                &entry.path.file_name().unwrap_or_default().to_string_lossy(),
+                            ),
+                        )],
+                    )
+                    .render(locale)
+                }))
+                .collect()
+        } else {
+            vec![]
+        };
+        input.show_library(rows, self.busy());
+    }
+
+    fn presentation(
+        &self,
+        game: &Game,
+        input: &mut InputState,
+        locale: Locale,
+    ) -> Option<MenuPresentation> {
+        let mut information = vec![];
+        if let Some(loader) = &self.loader {
+            information.push(
+                Message::with(
+                    "library.folder",
+                    [(
+                        "path",
+                        display_library_text(&loader.root().to_string_lossy()),
+                    )],
+                )
+                .render(locale),
+            );
+        }
+        if let Some(index) = input
+            .library_selection()
+            .and_then(|index| index.checked_sub(1))
+            && let Some(entry) = self.entries.get(index)
+        {
+            information.push(
+                Message::with(
+                    "library.path",
+                    [("path", display_library_text(&entry.path.to_string_lossy()))],
+                )
+                .render(locale),
+            );
+        }
+        information.push(current_song_label(game, locale));
+        let mut menu =
+            input.menu_presentation(locale, locale.text("library.title").into(), information)?;
+        // Keep loader feedback in the focused row so measured scrolling exposes it
+        if let Some(row) = menu.rows.iter_mut().find(|row| row.selected) {
+            row.text.push('\n');
+            row.text.push_str(&self.notice.render(locale));
+        }
+        Some(menu)
+    }
+}
+
+fn display_library_text(text: &str) -> String {
+    text.chars()
+        .map(|c| if c.is_control() { ' ' } else { c })
+        .collect()
+}
+
+fn current_song_label(game: &Game, locale: Locale) -> String {
+    let song = game
+        .song_id
+        .as_deref()
+        .map(display_library_text)
+        .unwrap_or_else(|| {
+            if game.content.stage.is_some() {
+                game.content.content_id.clone()
+            } else {
+                locale.text("library.development").into()
+            }
+        });
+    Message::with(
+        "library.current",
+        [
+            ("song", song),
+            (
+                "seconds",
+                format!("{:.1}", game.content.end.as_seconds_f64()),
+            ),
+        ],
+    )
+    .render(locale)
+}
+
+#[path = "library_observation.rs"]
+mod library_observation;
 #[path = "live_observation.rs"]
 mod live_observation;
 #[path = "watch_observation.rs"]
@@ -460,6 +627,10 @@ pub fn run() -> ExitCode {
     let result = match args.as_slice() {
         [] => run_game(None, None),
         [flag, directory] if flag == "--package" => run_game(Some(Path::new(directory)), None),
+        [flag, root] if flag == "--library" => run_library_game(None, root),
+        [flag, directory, library, root] if flag == "--package" && library == "--library" => {
+            run_library_game(Some(Path::new(directory)), root)
+        }
         [flag, directory, net, bind, invite, output]
             if flag == "--package" && net == "--net-host" =>
         {
@@ -570,7 +741,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local or invited online duet\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --library DIR         browse authored package folders from one local song library\n  --package DIR --library DIR  load a package initially and browse the selected library\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -699,34 +870,67 @@ fn run_game(package: Option<&Path>, network: Option<LiveConfig>) -> Result<(), S
     run_game_observed(package, network, None, Vec::new())
 }
 
+fn run_library_game(package: Option<&Path>, root: &str) -> Result<(), String> {
+    if root.is_empty() {
+        return Err("Song library directory must not be empty".into());
+    }
+    let path = PathBuf::from(root);
+    let path = if path.is_absolute() {
+        path
+    } else {
+        std::env::current_dir()
+            .map_err(|error| error.to_string())?
+            .join(path)
+    };
+    match std::fs::symlink_metadata(&path) {
+        Ok(metadata) if !metadata.is_dir() => {
+            return Err("Song library must be a directory, not a symlink".into());
+        }
+        Err(error) if error.kind() != std::io::ErrorKind::NotFound => {
+            return Err(format!("Inspect song library: {error}"));
+        }
+        _ => {}
+    }
+    run_game_configured(package, None, None, Vec::new(), Some(path))
+}
+
 fn run_game_observed(
     package: Option<&Path>,
     network: Option<LiveConfig>,
     observation: Option<&Path>,
     next_rounds: Vec<(PathBuf, PathBuf)>,
 ) -> Result<(), String> {
+    run_game_configured(package, network, observation, next_rounds, None)
+}
+
+fn run_game_configured(
+    package: Option<&Path>,
+    network: Option<LiveConfig>,
+    observation: Option<&Path>,
+    next_rounds: Vec<(PathBuf, PathBuf)>,
+    library_root: Option<PathBuf>,
+) -> Result<(), String> {
     let receiving = matches!(
         network.as_ref().map(|config| &config.role),
         Some(LiveRole::Receive { .. })
     );
-    let (content, sound) = if let Some(path) = package {
-        let (content, sound) = content::load_package(path)?;
-        (content, Some(sound))
+    let (content, sound, song_id) = if let Some(path) = package {
+        let (content, sound, song_id) =
+            content::load_package_named(path, cocobeat_stage::COMPILER_VERSION)?;
+        (content, Some(sound), Some(song_id))
     } else if receiving {
-        (SongContent::development(), None)
+        (SongContent::development(), None, None)
     } else {
         (
             SongContent::development(),
             Some(content::development_sound()),
+            None,
         )
     };
-    run_loaded_game(
-        Game::with_content(content)?,
-        sound,
-        network,
-        observation,
-        next_rounds,
-    )
+    let mut game = Game::with_content(content)?;
+    game.song_id = song_id;
+    game.package_path = package.map(Path::to_path_buf);
+    run_loaded_game(game, sound, network, observation, next_rounds, library_root)
 }
 
 fn run_watcher(package: &Path, path: &Path) -> Result<(), String> {
@@ -734,14 +938,11 @@ fn run_watcher(package: &Path, path: &Path) -> Result<(), String> {
     let version = replay.identity().stage_compiler_version.ok_or(
         "Legacy Replay has no recorded Stage version; core validation is available with --replay",
     )?;
-    let (content, sound) = content::load_package_version(package, version)?;
-    run_loaded_game(
-        Game::watching(content, replay)?,
-        Some(sound),
-        None,
-        None,
-        Vec::new(),
-    )
+    let (content, sound, song_id) = content::load_package_named(package, version)?;
+    let mut game = Game::watching(content, replay)?;
+    game.song_id = Some(song_id);
+    game.package_path = Some(package.to_path_buf());
+    run_loaded_game(game, Some(sound), None, None, Vec::new(), None)
 }
 
 fn run_loaded_game(
@@ -750,6 +951,7 @@ fn run_loaded_game(
     network: Option<LiveConfig>,
     observation: Option<&Path>,
     next_rounds: Vec<(PathBuf, PathBuf)>,
+    library_root: Option<PathBuf>,
 ) -> Result<(), String> {
     let network_player = network.as_ref().map(|config| match &config.role {
         LiveRole::Host { .. } => PlayerId::P1,
@@ -776,12 +978,16 @@ fn run_loaded_game(
     app.world_mut()
         .resource_mut::<InputState>()
         .set_watch_replay(watching);
+    app.world_mut()
+        .resource_mut::<InputState>()
+        .set_library_available(!watching && network_player.is_none());
     brand_intro::install(&mut app);
     app.world_mut()
         .resource_mut::<InputState>()
         .set_controls_enabled(false);
     install_window_icon(&mut app)?;
-    app.insert_non_send(audio)
+    app.insert_non_send(LibraryBrowser::new(library_root))
+        .insert_non_send(audio)
         .insert_non_send(online)
         .insert_resource(game)
         .add_systems(Update, suspend_intro.before(BrandIntroSystems::Advance))
@@ -792,6 +998,7 @@ fn run_loaded_game(
                 .after(DisplaySystems::Sync),
         )
         .add_systems(Update, reconcile_audio.after(update_game));
+    library_observation::install_if_requested(&mut app)?;
     watch_observation::install_if_requested(&mut app)?;
     if let Some(path) = observation {
         live_observation::install(&mut app, path)?;
@@ -989,6 +1196,8 @@ fn poll_network(
                     return Err("Network final boundary differs from the runtime rules".into());
                 }
                 audio.replace_song(song.sound);
+                game.song_id = None;
+                game.package_path = None;
                 game.content = song.content;
                 game.session = session;
                 game.saved_facts = 0;
@@ -1110,7 +1319,11 @@ fn decay_feedback(visual: &mut VisualState, delta: f32) {
 fn update_game(
     mut game: ResMut<Game>,
     mut input: ResMut<InputState>,
-    (mut audio, mut online): (NonSendMut<AudioOutput>, NonSendMut<OnlineRound>),
+    (mut audio, mut online, mut library): (
+        NonSendMut<AudioOutput>,
+        NonSendMut<OnlineRound>,
+        Option<NonSendMut<LibraryBrowser>>,
+    ),
     mut visual: ResMut<VisualState>,
     (time, mut settings, mut display, mut menu_scroll): (
         Res<Time>,
@@ -1135,9 +1348,13 @@ fn update_game(
         game.closing = true;
     }
     if game.closing {
+        if let Some(library) = library.as_deref_mut() {
+            library.cancel();
+            let _ = library.loader.as_mut().map(Library::poll);
+        }
         online.stop();
         audio.stop();
-        if online.is_finished() {
+        if online.is_finished() && library.as_deref().is_none_or(LibraryBrowser::is_finished) {
             close_game(&mut game, &mut audio, &mut exit);
         }
         input.queued.clear();
@@ -1197,10 +1414,64 @@ fn update_game(
     }
     let delta = time.delta_secs().min(1.0);
     decay_feedback(&mut visual, delta);
+    let pending_audio_error = audio.take_error();
+
+    if let Some(browser) = library.as_deref_mut() {
+        if input.library_open()
+            && (!input.is_focused()
+                || input
+                    .queued
+                    .iter()
+                    .any(|event| event.control == Control::Library(LibraryAction::Back)))
+        {
+            browser.cancel();
+            input.open_main_menu();
+            menu_scroll.reset();
+        }
+        let loaded = browser.loader.as_mut().map(Library::poll);
+        match loaded {
+            Some(Ok(Some(LibraryUpdate::Discovered(discovery)))) if input.library_open() => {
+                browser.entries = discovery.candidates;
+                browser.notice = Message::new(if discovery.missing {
+                    "library.missing"
+                } else if browser.entries.is_empty() {
+                    "library.empty"
+                } else {
+                    "library.place"
+                });
+            }
+            Some(Ok(Some(LibraryUpdate::Loaded(song))))
+                if pending_audio_error.is_none()
+                    && input.library_open()
+                    && input.is_focused()
+                    && game.phase == Phase::Ready
+                    && game.playback.is_none()
+                    && !online.enabled() =>
+            {
+                if let Err(error) = game.install_library_song(&mut audio, *song) {
+                    browser.error(error);
+                } else {
+                    if let Some(stage) = &game.content.stage {
+                        commands.insert_resource(crate::scene::StageScene(stage.clone()));
+                    } else {
+                        commands.remove_resource::<crate::scene::StageScene>();
+                    }
+                    reset_feedback(&mut visual);
+                    input.open_main_menu();
+                    menu_scroll.reset();
+                }
+            }
+            Some(Err(error)) => browser.error(error),
+            _ => {}
+        }
+        if input.library_open() {
+            browser.show(&mut input, visual.locale);
+        }
+    }
 
     let mut fault_message = "game.stopped";
     let result = (|| -> Result<(), String> {
-        if let Some(error) = audio.take_error() {
+        if let Some(error) = pending_audio_error {
             let _ = game.session.clock.device_lost(observed);
             fault_message = "game.audio_failed";
             return Err(error);
@@ -1248,6 +1519,64 @@ fn update_game(
             if matches!(game.phase, Phase::Starting | Phase::Pausing)
                 && !matches!(event.control, Control::TogglePause(_) | Control::FocusLost)
             {
+                continue;
+            }
+            if let Control::Library(action) = event.control {
+                if game.phase != Phase::Ready || game.playback.is_some() || online.enabled() {
+                    continue;
+                }
+                let Some(browser) = library.as_deref_mut() else {
+                    continue;
+                };
+                match action {
+                    LibraryAction::Open | LibraryAction::Refresh => {
+                        if action == LibraryAction::Open || input.library_open() {
+                            let result = browser
+                                .loader
+                                .as_mut()
+                                .ok_or("Song library data directory is unavailable".to_string())
+                                .and_then(Library::scan);
+                            match result {
+                                Ok(()) => browser.notice = Message::new("library.scanning"),
+                                Err(error) => browser.error(error),
+                            }
+                            browser.show(&mut input, visual.locale);
+                            menu_scroll.reset();
+                        }
+                    }
+                    LibraryAction::Select(index) if input.library_open() => {
+                        let path = if index == 0 {
+                            Some(None)
+                        } else {
+                            browser
+                                .entries
+                                .get(index - 1)
+                                .map(|entry| Some(entry.path.clone()))
+                        };
+                        if let Some(path) = path {
+                            let result = browser
+                                .loader
+                                .as_mut()
+                                .ok_or("Song library data directory is unavailable".to_string())
+                                .and_then(|loader| loader.load(path));
+                            match result {
+                                Ok(()) => browser.notice = Message::new("library.loading"),
+                                Err(error) => browser.error(error),
+                            }
+                            browser.show(&mut input, visual.locale);
+                            menu_scroll.reset();
+                        }
+                    }
+                    LibraryAction::Back => {
+                        browser.cancel();
+                        input.open_main_menu();
+                        menu_scroll.reset();
+                    }
+                    _ => {}
+                }
+                break;
+            }
+            if input.library_open() && event.control != Control::FocusLost {
                 continue;
             }
             if let Control::Settings(action) = event.control {
@@ -1395,9 +1724,14 @@ fn update_game(
                 }
                 Control::Quit => {
                     game.closing = true;
+                    if let Some(browser) = library.as_deref_mut() {
+                        browser.cancel();
+                    }
                     online.stop();
                     audio.stop();
-                    if online.is_finished() {
+                    if online.is_finished()
+                        && library.as_deref().is_none_or(LibraryBrowser::is_finished)
+                    {
                         close_game(&mut game, &mut audio, &mut exit);
                     }
                     return Ok(());
@@ -1462,6 +1796,10 @@ fn update_game(
         Ok(())
     })();
     if let Err(error) = result {
+        if let Some(browser) = library.as_deref_mut() {
+            browser.cancel();
+        }
+        input.open_main_menu();
         let _ = game.session.clock.invalidate_calibration(observed);
         online.stop();
         game.fault(&mut audio, error, fault_message);
@@ -1501,7 +1839,13 @@ fn update_game(
         menu_phase(game.phase),
         game.playback.is_none() && game.saved_facts != game.session.replay.facts().len(),
     );
-    visual.menu = runtime_menu(&game, &mut input, &settings, settings_now, &display);
+    visual.menu = if input.library_open() {
+        library
+            .as_deref()
+            .and_then(|browser| browser.presentation(&game, &mut input, locale))
+    } else {
+        runtime_menu(&game, &mut input, &settings, settings_now, &display)
+    };
     update_section_visuals(
         &game.content,
         game.session.current,
@@ -1592,7 +1936,16 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
     if game.playback.is_some() {
         title = format!("{} · {title}", locale.text("replay.watching"));
     }
-    let mut details = Vec::new();
+    let mut details = vec![current_song_label(game, locale)];
+    if let Some(path) = &game.package_path {
+        details.push(
+            Message::with(
+                "library.path",
+                [("path", display_library_text(&path.to_string_lossy()))],
+            )
+            .render(locale),
+        );
+    }
     if let Some(playback) = &game.playback {
         details.push(
             Message::with(
@@ -2588,6 +2941,30 @@ fn visual_smoke_for_content(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn library_feedback_follows_focus_for_measured_scrolling() {
+        let game = Game::new().unwrap();
+        let mut input = InputState::default();
+        let mut browser = LibraryBrowser::new(Some(PathBuf::from("unused-library")));
+        browser.error("Unsupported song rules".into());
+        browser.show(&mut input, Locale::EnUs);
+        for _ in 0..3 {
+            let menu = browser
+                .presentation(&game, &mut input, Locale::EnUs)
+                .unwrap();
+            let selected = menu.rows.iter().find(|row| row.selected).unwrap();
+            assert!(selected.text.contains("Unsupported song rules"));
+            assert_eq!(
+                menu.rows
+                    .iter()
+                    .filter(|row| row.text.contains("Unsupported song rules"))
+                    .count(),
+                1
+            );
+            input.navigate_menu(SettingsAction::Down, &mut MenuScroll::default());
+        }
+    }
     use crate::content::CONTENT_ID;
     use bevy::{
         input::{

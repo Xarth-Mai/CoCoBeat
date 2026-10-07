@@ -217,5 +217,19 @@
   "audition.cursor": "Звук {state} · ~{frame} кадров · цель {target}",
   "audition.help": "Пробел / левая лицевая кнопка: воспроизведение или пауза · Переход: выбранный кадр · Курсор показывает обработанный PCM, а не задержку вывода или ввода",
   "replay.watching": "Просмотр Replay без изменений",
-  "replay.progress": "Показано {consumed} / {total} записанных фактов"
+  "replay.progress": "Показано {consumed} / {total} записанных фактов",
+  "library.open": "Выбрать песню",
+  "library.title": "Музыкальная библиотека",
+  "library.refresh": "Обновить библиотеку",
+  "library.development": "Оригинальная песня для разработки",
+  "library.candidate": "{name} · Не проверено",
+  "library.place": "Поместите сюда папки подготовленных песен и обновите; импорт исходной музыки пока недоступен",
+  "library.scanning": "Поиск песен…",
+  "library.loading": "Проверка и загрузка… Текущая песня сохранена",
+  "library.missing": "Папка библиотеки ещё не существует",
+  "library.empty": "Папки пакетов песен не найдены",
+  "library.failed": "Текущая песня сохранена · {error}",
+  "library.folder": "Папка библиотеки · {path}",
+  "library.path": "Папка песни · {path}",
+  "library.current": "Текущая · {song} · {seconds} с"
 }

@@ -60,6 +60,13 @@ pub(crate) fn load_package_version(
     path: &Path,
     version: u32,
 ) -> Result<(SongContent, StaticSoundData), String> {
+    load_package_named(path, version).map(|(content, sound, _)| (content, sound))
+}
+
+pub(crate) fn load_package_named(
+    path: &Path,
+    version: u32,
+) -> Result<(SongContent, StaticSoundData, String), String> {
     let mut pcm = Vec::new();
     let package = cocobeat_media::read_package(path, |block| {
         pcm.try_reserve(block.len())
@@ -92,6 +99,7 @@ pub(crate) fn load_package_version(
             stage: Some(Arc::new(stage)),
         },
         sound_data(pcm),
+        package.manifest.song_id,
     ))
 }
 
@@ -215,6 +223,30 @@ mod tests {
             assert!(content.sections.is_empty());
         }
         assert!(load_package_version(&path, 3).is_err());
+    }
+
+    #[test]
+    fn library_named_load_uses_the_same_validated_manifest_and_pcm() {
+        let root = TestDirectory::new();
+        let path = root.package("named", RULES_ID, 1_200, vec![]);
+        let (content, sound, song_id) =
+            load_package_named(&path, cocobeat_stage::COMPILER_VERSION).unwrap();
+        let (ordinary, ordinary_sound) = load_package(&path).unwrap();
+        assert_eq!(song_id, "runtime-stereo-fixture");
+        assert_eq!(content.content_id, ordinary.content_id);
+        assert_eq!(content.end, ordinary.end);
+        assert_eq!(sound.frames, ordinary_sound.frames);
+        assert!(load_package_named(&path, 3).is_err());
+        let unknown = root.package("unknown-named", "unknown-rules-v1", 1_200, vec![]);
+        assert!(
+            load_package_named(&unknown, cocobeat_stage::COMPILER_VERSION)
+                .unwrap_err()
+                .contains("Unsupported song ruleset")
+        );
+        let mut bytes = fs::read(path.join("song.audio.ogg")).unwrap();
+        bytes.pop();
+        fs::write(path.join("song.audio.ogg"), bytes).unwrap();
+        assert!(load_package_named(&path, cocobeat_stage::COMPILER_VERSION).is_err());
     }
 
     #[test]

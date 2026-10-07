@@ -217,5 +217,19 @@
   "audition.cursor": "試聽 {state} · 約 {frame} 幀 · 定位 {target}",
   "audition.help": "空白鍵 / 手掣左側面鍵：播放暫停 · 定位：使用所選幀 · 試聽游標是渲染 PCM 位置，不代表揚聲器或輸入延遲",
   "replay.watching": "唯讀 Replay 觀看",
-  "replay.progress": "已顯示 {consumed} / {total} 筆原始記錄"
+  "replay.progress": "已顯示 {consumed} / {total} 筆原始記錄",
+  "library.open": "選擇歌曲",
+  "library.title": "曲庫",
+  "library.refresh": "重新整理曲庫",
+  "library.development": "原創開發歌曲",
+  "library.candidate": "{name} · 未驗證",
+  "library.place": "將已製作的歌曲資料夾放入此曲庫後重新整理；原始音樂匯入尚未提供",
+  "library.scanning": "正在掃描曲庫…",
+  "library.loading": "正在驗證並載入… 目前歌曲保持不變",
+  "library.missing": "曲庫資料夾尚不存在",
+  "library.empty": "未找到歌曲包資料夾",
+  "library.failed": "目前歌曲保持不變 · {error}",
+  "library.folder": "曲庫資料夾 · {path}",
+  "library.path": "歌曲資料夾 · {path}",
+  "library.current": "目前 · {song} · {seconds} 秒"
 }

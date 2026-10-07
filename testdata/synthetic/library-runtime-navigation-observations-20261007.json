@@ -1,0 +1,1577 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SOFTWARE_AND_SCOPED_VISUAL",
+  "scope": "New frozen Linux production library debug graph with focused-row feedback and native keyboard scrolling; actual native Kira/GPU, not formal hardware/release acceptance",
+  "build": {
+    "source_inputs": 443,
+    "inputs_unchanged": true,
+    "full_source_snapshot_hashes_match": true,
+    "game_sha256": "315cd33518d379fdc05039d0eba464cd10c25e1e66ad1fddefb5f46e6d9d82bd",
+    "lab_sha256": "3e984d5b0a72cfcd4e6191c2a27f628393d6f141307c1e699176f2ace9d44fcd",
+    "build_id": "0.1.0-6e3930251e7a-local",
+    "compiled_source_receipt": "Frozen build before/after and source copies only; current mutable workspace including concurrent networking changes is not asserted equal"
+  },
+  "fixtures": {
+    "canonical_frames": 3072000,
+    "A": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+    "B": "package-blake3:132b6e05b45ae9d75bc2ccde0ffa7129912919914f39a23033a3f84af27c14d8",
+    "unsupported_rules": "library-qa-unsupported-v1",
+    "unsupported_rules_structural_validation": "PASS",
+    "generation": "Fixed production lab build-authored-package; reused exact final A Ogg and original manual frame coordinates; no encoding/binary patch"
+  },
+  "current_cases": [
+    {
+      "name": "complete-1280x800-zh-CN",
+      "status": "PASS",
+      "actual_game_pid": 646202,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": false,
+      "close_requested_while_owned": false,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "zh-CN",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 646202,
+        "scenario": "complete",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      "navigation": {
+        "library-back": {
+          "index": 7,
+          "role": "Action",
+          "selected": true,
+          "text": "返回\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        },
+        "library-information": {
+          "index": 8,
+          "role": "Information",
+          "selected": true,
+          "text": "曲库文件夹 · /home/lzzz/MyProjects/CoCoBeat/target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/songs\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        },
+        "library-refresh": {
+          "index": 6,
+          "role": "Action",
+          "selected": true,
+          "text": "刷新曲库\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        }
+      },
+      "snapshots": {
+        "paused_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Paused",
+          "facts": 30,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.5546666666666666,
+          "acknowledged_frame": 26624,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 6944103,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10677747,
+            "previous_frames": 512,
+            "sequence": 1785
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5546666666666666,
+            "publication_age_lower_ns": 6944873,
+            "publication_age_upper_ns": 6947693,
+            "publication_interval_width_ns": 2820,
+            "sequence": 136,
+            "source_id": 1
+          }
+        },
+        "ready_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 0,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 1345307,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10598537,
+            "previous_frames": 512,
+            "sequence": 1563
+          },
+          "source_observation": null
+        },
+        "ready_b": {
+          "content_id": "package-blake3:132b6e05b45ae9d75bc2ccde0ffa7129912919914f39a23033a3f84af27c14d8",
+          "song_id": "cocobeat-library-qa-b-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 5061781,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10708936,
+            "previous_frames": 512,
+            "sequence": 2008
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Running",
+          "facts": 28,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.512,
+          "acknowledged_frame": 24576,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 1089189,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10698537,
+            "previous_frames": 512,
+            "sequence": 1698
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.512,
+            "publication_age_lower_ns": 1089859,
+            "publication_age_upper_ns": 1093769,
+            "publication_interval_width_ns": 3910,
+            "sequence": 49,
+            "source_id": 1
+          }
+        }
+      },
+      "rejections": [
+        {
+          "name": "bad-audio",
+          "error": [
+            [
+              "error",
+              "Object identity mismatch: song.audio.ogg"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "extra-file",
+          "error": [
+            [
+              "error",
+              "Package directory must contain only its four declared objects"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "unknown-rules",
+          "error": [
+            [
+              "error",
+              "Unsupported song ruleset: library-qa-unsupported-v1"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        }
+      ],
+      "cancel_song_and_history_unchanged": true,
+      "original_replay_saved_before_switch": true
+    },
+    {
+      "name": "complete-1280x800-en-US",
+      "status": "PASS",
+      "actual_game_pid": 647161,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": false,
+      "close_requested_while_owned": false,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "en-US",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 647161,
+        "scenario": "complete",
+        "size": [
+          1280,
+          800
+        ]
+      },
+      "navigation": {
+        "library-back": {
+          "index": 7,
+          "role": "Action",
+          "selected": true,
+          "text": "Back\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        },
+        "library-information": {
+          "index": 8,
+          "role": "Information",
+          "selected": true,
+          "text": "Library folder · /home/lzzz/MyProjects/CoCoBeat/target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/songs\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        },
+        "library-refresh": {
+          "index": 6,
+          "role": "Action",
+          "selected": true,
+          "text": "Refresh library\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        }
+      },
+      "snapshots": {
+        "paused_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Paused",
+          "facts": 30,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.5546666666666666,
+          "acknowledged_frame": 26624,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 6405970,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10736459,
+            "previous_frames": 512,
+            "sequence": 1718
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5546666666666666,
+            "publication_age_lower_ns": 6406350,
+            "publication_age_upper_ns": 6407730,
+            "publication_interval_width_ns": 1380,
+            "sequence": 136,
+            "source_id": 1
+          }
+        },
+        "ready_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 0,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 5573297,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10618681,
+            "previous_frames": 512,
+            "sequence": 1495
+          },
+          "source_observation": null
+        },
+        "ready_b": {
+          "content_id": "package-blake3:132b6e05b45ae9d75bc2ccde0ffa7129912919914f39a23033a3f84af27c14d8",
+          "song_id": "cocobeat-library-qa-b-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 5467349,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10668910,
+            "previous_frames": 512,
+            "sequence": 1943
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Running",
+          "facts": 28,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.5013333333333333,
+          "acknowledged_frame": 24064,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 6640717,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10681860,
+            "previous_frames": 512,
+            "sequence": 1630
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5013333333333333,
+            "publication_age_lower_ns": 6641117,
+            "publication_age_upper_ns": 6642747,
+            "publication_interval_width_ns": 1630,
+            "sequence": 48,
+            "source_id": 1
+          }
+        }
+      },
+      "rejections": [
+        {
+          "name": "bad-audio",
+          "error": [
+            [
+              "error",
+              "Object identity mismatch: song.audio.ogg"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "extra-file",
+          "error": [
+            [
+              "error",
+              "Package directory must contain only its four declared objects"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "unknown-rules",
+          "error": [
+            [
+              "error",
+              "Unsupported song ruleset: library-qa-unsupported-v1"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        }
+      ],
+      "cancel_song_and_history_unchanged": true,
+      "original_replay_saved_before_switch": true
+    },
+    {
+      "name": "complete-640x480-zh-CN",
+      "status": "PASS",
+      "actual_game_pid": 648542,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": false,
+      "close_requested_while_owned": false,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "zh-CN",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 648542,
+        "scenario": "complete",
+        "size": [
+          640,
+          480
+        ]
+      },
+      "navigation": {
+        "library-back": {
+          "index": 7,
+          "role": "Action",
+          "selected": true,
+          "text": "返回\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        },
+        "library-information": {
+          "index": 8,
+          "role": "Information",
+          "selected": true,
+          "text": "曲库文件夹 · /home/lzzz/MyProjects/CoCoBeat/target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/songs\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        },
+        "library-refresh": {
+          "index": 6,
+          "role": "Action",
+          "selected": true,
+          "text": "刷新曲库\n将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供"
+        }
+      },
+      "snapshots": {
+        "paused_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Paused",
+          "facts": 30,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.544,
+          "acknowledged_frame": 26112,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 9374734,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10671612,
+            "previous_frames": 512,
+            "sequence": 1390
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.544,
+            "publication_age_lower_ns": 9375144,
+            "publication_age_upper_ns": 9376544,
+            "publication_interval_width_ns": 1400,
+            "sequence": 81,
+            "source_id": 1
+          }
+        },
+        "ready_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 0,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 774773,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10678202,
+            "previous_frames": 512,
+            "sequence": 1275
+          },
+          "source_observation": null
+        },
+        "ready_b": {
+          "content_id": "package-blake3:132b6e05b45ae9d75bc2ccde0ffa7129912919914f39a23033a3f84af27c14d8",
+          "song_id": "cocobeat-library-qa-b-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 2913113,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10687742,
+            "previous_frames": 512,
+            "sequence": 1616
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Running",
+          "facts": 28,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.5013333333333333,
+          "acknowledged_frame": 24064,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 900412,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10641183,
+            "previous_frames": 512,
+            "sequence": 1357
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5013333333333333,
+            "publication_age_lower_ns": 901112,
+            "publication_age_upper_ns": 904222,
+            "publication_interval_width_ns": 3110,
+            "sequence": 48,
+            "source_id": 1
+          }
+        }
+      },
+      "rejections": [
+        {
+          "name": "bad-audio",
+          "error": [
+            [
+              "error",
+              "Object identity mismatch: song.audio.ogg"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "extra-file",
+          "error": [
+            [
+              "error",
+              "Package directory must contain only its four declared objects"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "unknown-rules",
+          "error": [
+            [
+              "error",
+              "Unsupported song ruleset: library-qa-unsupported-v1"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        }
+      ],
+      "cancel_song_and_history_unchanged": true,
+      "original_replay_saved_before_switch": true
+    },
+    {
+      "name": "complete-640x480-en-US",
+      "status": "PASS",
+      "actual_game_pid": 649330,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": false,
+      "close_requested_while_owned": false,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "en-US",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 649330,
+        "scenario": "complete",
+        "size": [
+          640,
+          480
+        ]
+      },
+      "navigation": {
+        "library-back": {
+          "index": 7,
+          "role": "Action",
+          "selected": true,
+          "text": "Back\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        },
+        "library-information": {
+          "index": 8,
+          "role": "Information",
+          "selected": true,
+          "text": "Library folder · /home/lzzz/MyProjects/CoCoBeat/target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/songs\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        },
+        "library-refresh": {
+          "index": 6,
+          "role": "Action",
+          "selected": true,
+          "text": "Refresh library\nPlace prepared song folders in this library, then refresh; raw music import is not available yet"
+        }
+      },
+      "snapshots": {
+        "paused_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Paused",
+          "facts": 30,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.544,
+          "acknowledged_frame": 26112,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 8198647,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10663204,
+            "previous_frames": 512,
+            "sequence": 1398
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.544,
+            "publication_age_lower_ns": 8199037,
+            "publication_age_upper_ns": 8200457,
+            "publication_interval_width_ns": 1420,
+            "sequence": 81,
+            "source_id": 1
+          }
+        },
+        "ready_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 0,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 5175583,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10662545,
+            "previous_frames": 512,
+            "sequence": 1283
+          },
+          "source_observation": null
+        },
+        "ready_b": {
+          "content_id": "package-blake3:132b6e05b45ae9d75bc2ccde0ffa7129912919914f39a23033a3f84af27c14d8",
+          "song_id": "cocobeat-library-qa-b-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Ready",
+          "facts": 0,
+          "events": 0,
+          "audio_started": false,
+          "source_position_seconds": null,
+          "acknowledged_frame": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 9481395,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10573496,
+            "previous_frames": 512,
+            "sequence": 1625
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "song_id": "cocobeat-development-duet-v1",
+          "canonical_frames": 3072000,
+          "epoch": 1,
+          "phase": "Running",
+          "facts": 28,
+          "events": 0,
+          "audio_started": true,
+          "source_position_seconds": 0.5013333333333333,
+          "acknowledged_frame": 24064,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 1425317,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10694134,
+            "previous_frames": 512,
+            "sequence": 1365
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5013333333333333,
+            "publication_age_lower_ns": 1426157,
+            "publication_age_upper_ns": 1429487,
+            "publication_interval_width_ns": 3330,
+            "sequence": 48,
+            "source_id": 1
+          }
+        }
+      },
+      "rejections": [
+        {
+          "name": "bad-audio",
+          "error": [
+            [
+              "error",
+              "Object identity mismatch: song.audio.ogg"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "extra-file",
+          "error": [
+            [
+              "error",
+              "Package directory must contain only its four declared objects"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        },
+        {
+          "name": "unknown-rules",
+          "error": [
+            [
+              "error",
+              "Unsupported song ruleset: library-qa-unsupported-v1"
+            ]
+          ],
+          "song_and_history_unchanged": true
+        }
+      ],
+      "cancel_song_and_history_unchanged": true,
+      "original_replay_saved_before_switch": true
+    },
+    {
+      "name": "close-scan-640x480-en-US",
+      "status": "PASS",
+      "actual_game_pid": 649976,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": false,
+      "close_requested_while_owned": true,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "en-US",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 649976,
+        "scenario": "close-scan",
+        "size": [
+          640,
+          480
+        ]
+      },
+      "navigation": {},
+      "snapshots": {}
+    },
+    {
+      "name": "close-load-640x480-en-US",
+      "status": "PASS",
+      "actual_game_pid": 650340,
+      "actual_game_exit_code": 0,
+      "wrapper_exit_code": 0,
+      "owned_workers_finished": true,
+      "worker_unfinished_at_close": true,
+      "close_requested_while_owned": true,
+      "metadata": {
+        "audio": "acknowledged Kira source position, not speaker output",
+        "audio_observations": "Independent historical main-mix and source publication snapshots; not a paired callback, CPAL entry or device latency",
+        "build_id": "0.1.0-6e3930251e7a-local",
+        "disable_gamescope_wsi": "1",
+        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
+        "locale": "en-US",
+        "not_run": [
+          "physical keyboard",
+          "physical gamepads",
+          "physical mixed input",
+          "speaker timing",
+          "human acceptance"
+        ],
+        "process_id": 650340,
+        "scenario": "close-load",
+        "size": [
+          640,
+          480
+        ]
+      },
+      "navigation": {},
+      "snapshots": {}
+    }
+  ],
+  "visual_review": {
+    "status": "PASS_SCOPED",
+    "total_images_viewed_individually": 42,
+    "images": [
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/cancelled.png",
+        "sha256": "97eeef7f6b2a8db56dbe1dba3a4852bc3df29f1f026c90ddd37f58732cacee1c",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library.png",
+        "sha256": "24418e393b1edf3c3acb3997276d408f5c79216217b7fe23aef016b67bbce1f3",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-back.png",
+        "sha256": "0eac8e98d6ab8bbcedc67feb5db70860bc33ae8851b868bd7cc4083e89b42746",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-information.png",
+        "sha256": "738583bd887b198444901912454c337cf9360d7d2bc86ae04b14d6edfd2cc9cd",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-refresh.png",
+        "sha256": "1f7f4681a72a94db07b04883df0d12a4b892cfde2b17a2a80ac915cce34027a8",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/loading.png",
+        "sha256": "b98144b6d2ee35b9c5b4bb61fbb4652e62961b662cb9b5fdd29727503be28783",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/ready-a.png",
+        "sha256": "18a57d987ddb179369b8514a99cd13c073c60264239394574903e1f44a7496bf",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/ready-b.png",
+        "sha256": "5a24bcb54772b2f78d963ee13d0bf9f3f8cf889823f199b952e082ed3c905a2a",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/rejected.png",
+        "sha256": "792c276df91eae5bc97c603106bcbaad05b9d7409bfcf18379c73829f0eaf512",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/running-a.png",
+        "sha256": "a16d3bd0add0b624fcaf5707382447164d0b0559195725f0772de128095b811c",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/cancelled.png",
+        "sha256": "a371a8145c29ce65087a0bce94c5510e157bc237fb7a9c6d79fc958627de1330",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library.png",
+        "sha256": "7ac32cb3d3e7ced34bf096eb60f5873d8a03c2e201e97c3f37857af1a8778676",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-back.png",
+        "sha256": "b8615a4463a24d7269c5ecf5af054cf5ff3bdc7094119aad421e3df1aa99dd95",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-information.png",
+        "sha256": "b4d4d2341ab4de5648c7f90309b202c294c5f03732b43bcd061863a754150c61",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-refresh.png",
+        "sha256": "cd21cf1c2b86942a4818c55a18438b843be51968fcd9e0a2a3ac8b8bf73a466d",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/loading.png",
+        "sha256": "c89d2d19600f82b1d2ed2b00f99b25a03477f188248e58af6b8baf4db50d302d",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/ready-a.png",
+        "sha256": "f27bddf4dcee49d4cb2a11d1e0ae3e4a8b9fbfb298467cc16da2c1f88a5c90ac",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/ready-b.png",
+        "sha256": "2822ad524eaca23c845a040369b58608a6eaf4242b17c0219d3677e474d7b80e",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/rejected.png",
+        "sha256": "263bc6b9e574787d3106272fd971d1eddb34fa988201be40926c8aa217b5c232",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/running-a.png",
+        "sha256": "a2fef0fa8d4f54ab0930971bb86eeb997a9902508e2e084a7e8a0b4f714fb782",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/cancelled.png",
+        "sha256": "eb0c529d666baf09c335674e2d4ce396f0252ed008df5b2459f0c29001fe87fd",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library.png",
+        "sha256": "9fa069bba03b6d45f0401195fc5a6b30deddea9fc41aac56cad8c36391d447f3",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-back.png",
+        "sha256": "a9e66ab679a081b598c8e31cc71459c1028c51d8c0d88e22826cd91cea2bede6",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-information.png",
+        "sha256": "ccf38173494d83ac3d498d1e395bd6165ed48066b9cc656d071b55c72ae7ddbc",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-refresh.png",
+        "sha256": "8d1e2e057aaec1284018651bdca3c8486457f2e9831a601df0ae0bf449bf927e",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/loading.png",
+        "sha256": "1ca28c827146a224c7c239f53ba1306f4f908c467a296e244af395d28b6bf57e",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/ready-a.png",
+        "sha256": "85795b799e1c78212c762cb31d80c5ac829d1ad9e13c47ec9e4cf0be3da4ed73",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/ready-b.png",
+        "sha256": "e8e69dcd79f0cd99106e2191fa29340fc488454f682f3a0ab42d87389fc56376",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/rejected.png",
+        "sha256": "9f29de6680b5ef0712086d0a9636f2bf25f22c5203bf3a93f44ee4dfb65ae142",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/running-a.png",
+        "sha256": "a3178203965d8444fe5c3756c2515d0afbec3575615025a87e0445e2c948747a",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/cancelled.png",
+        "sha256": "a4871574126d22172921be0004b0293db401c5daf156bde4a50f46e95b13ceba",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library.png",
+        "sha256": "016d3af7ae15d88793e0fb39da31e47db32622a8417633475605c9cf0ed7263d",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-back.png",
+        "sha256": "e531435990a833f413b412c303af4fc14d06287fbe60495145f0b5011ff9d5e1",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-information.png",
+        "sha256": "de3e340f80b5452212e8723739e1dc384182da22851f329897a3da7b2cc3f1d9",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-refresh.png",
+        "sha256": "49ff82b19cbd019bdeba4b6694b567d3a75aee96a6d3423f33417851585dfd63",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/loading.png",
+        "sha256": "c75da9d0114f53e6abdc4df013aa29bf7dcbfaa9d071729206eca3fbd2059960",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/ready-a.png",
+        "sha256": "95c6fb8d321a9cc8f7f8c645e7c3b3723fb1eb7b49891d092efc156cf3d0e74e",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/ready-b.png",
+        "sha256": "5501704eef1ea7f62cf82fdcb68ffb3018a94bddc6e708d82d804697f427ffc0",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/rejected.png",
+        "sha256": "7f5bec0f1ad1ff6a097ebfdb09227ebdce4521ce983db80dba4606e34595aa16",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Focused row and attached library notice fully visible; lower rows reached through real keyboard scrolling"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/running-a.png",
+        "sha256": "40971782f0b4e04c7d3caac03ee0f56f1b4c48cde2f67d96c72d96004629aafd",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/library.png",
+        "sha256": "be77dedc9472e00ad4dc5589880262742a03c0a9a84cff3a2329ab8ffd211686",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      },
+      {
+        "path": "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/loading.png",
+        "sha256": "0825d0634b2b8de7fdf6641bdeae6f860b876daa00f06816f2e6b17cf1d5df33",
+        "viewed_individually": true,
+        "status": "PASS_SCOPED",
+        "finding": "Current focus, notice or Running HUD readable; nonfocused offscreen content is scroll layout, not all-rows-visible acceptance"
+      }
+    ],
+    "scope": "Four complete cases: actual Refresh/Back/first Information focus reachable and fully visible; rejection reason now visible with selected row; owner/cards and gameplay HUD separately reviewed. Does not require every menu row simultaneously on screen or general all-locale/DPI acceptance",
+    "root_independent_visual": {
+      "status": "PASS_SCOPED",
+      "images": [
+        "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/rejected.png",
+        "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/rejected.png",
+        "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-back.png",
+        "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-information.png"
+      ],
+      "scope": "Only these four screenshots were independently viewed by root, not all 42"
+    }
+  },
+  "audio_publication_check": {
+    "status": "PASS_NATIVE_HISTORICAL",
+    "callback_count": 16,
+    "source_count": 8,
+    "callback_samples": [
+      {
+        "generation": 1,
+        "observation_age_ns": 6944103,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10677747,
+        "previous_frames": 512,
+        "sequence": 1785
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 1345307,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10598537,
+        "previous_frames": 512,
+        "sequence": 1563
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 5061781,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10708936,
+        "previous_frames": 512,
+        "sequence": 2008
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 1089189,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10698537,
+        "previous_frames": 512,
+        "sequence": 1698
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 6405970,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10736459,
+        "previous_frames": 512,
+        "sequence": 1718
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 5573297,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10618681,
+        "previous_frames": 512,
+        "sequence": 1495
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 5467349,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10668910,
+        "previous_frames": 512,
+        "sequence": 1943
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 6640717,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10681860,
+        "previous_frames": 512,
+        "sequence": 1630
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 9374734,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10671612,
+        "previous_frames": 512,
+        "sequence": 1390
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 774773,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10678202,
+        "previous_frames": 512,
+        "sequence": 1275
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 2913113,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10687742,
+        "previous_frames": 512,
+        "sequence": 1616
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 900412,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10641183,
+        "previous_frames": 512,
+        "sequence": 1357
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 8198647,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10663204,
+        "previous_frames": 512,
+        "sequence": 1398
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 5175583,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10662545,
+        "previous_frames": 512,
+        "sequence": 1283
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 9481395,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10573496,
+        "previous_frames": 512,
+        "sequence": 1625
+      },
+      {
+        "generation": 1,
+        "observation_age_ns": 1425317,
+        "output_sample_rate": 48000,
+        "previous_callback_interval_ns": 10694134,
+        "previous_frames": 512,
+        "sequence": 1365
+      }
+    ],
+    "source_samples": [
+      {
+        "generation": 1,
+        "position_seconds": 0.5546666666666666,
+        "publication_age_lower_ns": 6944873,
+        "publication_age_upper_ns": 6947693,
+        "publication_interval_width_ns": 2820,
+        "sequence": 136,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.512,
+        "publication_age_lower_ns": 1089859,
+        "publication_age_upper_ns": 1093769,
+        "publication_interval_width_ns": 3910,
+        "sequence": 49,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.5546666666666666,
+        "publication_age_lower_ns": 6406350,
+        "publication_age_upper_ns": 6407730,
+        "publication_interval_width_ns": 1380,
+        "sequence": 136,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.5013333333333333,
+        "publication_age_lower_ns": 6641117,
+        "publication_age_upper_ns": 6642747,
+        "publication_interval_width_ns": 1630,
+        "sequence": 48,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.544,
+        "publication_age_lower_ns": 9375144,
+        "publication_age_upper_ns": 9376544,
+        "publication_interval_width_ns": 1400,
+        "sequence": 81,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.5013333333333333,
+        "publication_age_lower_ns": 901112,
+        "publication_age_upper_ns": 904222,
+        "publication_interval_width_ns": 3110,
+        "sequence": 48,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.544,
+        "publication_age_lower_ns": 8199037,
+        "publication_age_upper_ns": 8200457,
+        "publication_interval_width_ns": 1420,
+        "sequence": 81,
+        "source_id": 1
+      },
+      {
+        "generation": 1,
+        "position_seconds": 0.5013333333333333,
+        "publication_age_lower_ns": 1426157,
+        "publication_age_upper_ns": 1429487,
+        "publication_interval_width_ns": 3330,
+        "sequence": 48,
+        "source_id": 1
+      }
+    ],
+    "boundary": "Callback and source are independent historical publications; observed ages are measured after read. Not CPAL entry, paired callback, DAC/underrun/device latency or future scheduling guarantee"
+  },
+  "retained_prior_run": {
+    "artifact": "target/library-runtime-20261007/native-final/library-runtime-observations-20261007.json",
+    "sha256": "f2426e8a69ca4c7b49f5ec8d70aaa383321da51702735a7f9493730b594c72ce",
+    "status": "PASS_SOFTWARE_FAIL_VISUAL",
+    "build": {
+      "source_inputs": 443,
+      "inputs_unchanged": true,
+      "full_source_snapshot_hashes_match": true,
+      "game_sha256": "e0f34de143027512c901f17467ebca069d8b0ca4ce6bfd810e931d80276e1d8e",
+      "lab_sha256": "265173dfcb8121698318896f89c2d78a1b53ac38456b4e362cf9571e47d2537e",
+      "head": "b2ef278ffb2fd6302ba79a552c73bdcacf02e0fc",
+      "build_id": "0.1.0-b2ef278ffb2f-local"
+    },
+    "native_game_exits": [
+      {
+        "case": "complete-1280x800-zh-CN",
+        "game_pid": 515556,
+        "exit_code": 0
+      },
+      {
+        "case": "complete-1280x800-en-US",
+        "game_pid": 515773,
+        "exit_code": 0
+      },
+      {
+        "case": "complete-640x480-zh-CN",
+        "game_pid": 529006,
+        "exit_code": 0
+      },
+      {
+        "case": "complete-640x480-en-US",
+        "game_pid": 532798,
+        "exit_code": 0
+      },
+      {
+        "case": "close-scan-640x480-en-US",
+        "game_pid": 533219,
+        "exit_code": 0
+      },
+      {
+        "case": "close-load-640x480-en-US",
+        "game_pid": 533298,
+        "exit_code": 0
+      }
+    ],
+    "visual": "All 30 old PNG retained; actual 640 rejection reason hidden. Default offscreen actions/footer alone did not prove navigation unavailable; new actual focus captures supply that missing evidence",
+    "audio_publications": "Original 16 callback and 8 source snapshots retained in artifact and immutable raw reports; not overwritten or pooled across builds"
+  },
+  "retained_environment_failure": [
+    {
+      "directory": "target/library-runtime-20261007/native-final/observations",
+      "status": "FAIL_ENVIRONMENT",
+      "reason": "Sandbox Gamescope could not find physical device; game never spawned"
+    }
+  ],
+  "owned_processes": {
+    "status": "PASS",
+    "owned_pids": [
+      646202,
+      646179,
+      647161,
+      647122,
+      648542,
+      648519,
+      649330,
+      649306,
+      649976,
+      649947,
+      650340,
+      650311
+    ],
+    "owned_remaining": [],
+    "native_window": "Returned CPU/GPU/CPAL: all owned native/wrapper exited",
+    "software_status": "PASS",
+    "close_scan_worker_unfinished": false,
+    "close_load_worker_unfinished": true
+  },
+  "not_run": [
+    "physical keyboard/gamepads/mixed input",
+    "speaker/DAC timing",
+    "human acceptance",
+    "native in-flight scan cancellation (scan completed before request)",
+    "forced save/installation failure from a synthetic Ready state",
+    "backend loss/recreation under native library flow",
+    "other three runtime platform graphics",
+    "shipping release build"
+  ],
+  "evidence_sha256": {
+    "target/library-20261007/build-navigation-final/cocobeat-game-build-result.json": "f365aa24dba1a256117b6d0fe854289215a48dfd235516b31fe90ff6837e009d",
+    "target/library-20261007/build-navigation-final/cocobeat-lab-build-result.json": "af36d5402c0e3ed6cb1d398c801c6415ee82fda6aff8521c2d091ef563b5038d",
+    "target/library-20261007/build-navigation-final/inputs-before.json": "8a596a53566b8c0ffbf14964ef37661c1aac566495592f09dd35184157efee2e",
+    "target/library-20261007/build-navigation-final/inputs-after.json": "8a596a53566b8c0ffbf14964ef37661c1aac566495592f09dd35184157efee2e",
+    "target/library-runtime-20261007/final-navigation-freeze.json": "2bfd5b2b732bb30290b9c7c877090e4e410c6d40ec5f1378b633821d9f843286",
+    "tools/library-runtime-check/check.py": "e1be7a8cc8fe9c551703d3d6265b7a25dbc485a811a8701d7d04f0aec6331a9f",
+    "tools/library-runtime-check/README.md": "db009b741a92e09b9906b3a3b3496287b2b6a0cfadce94386e05db64ddbce12d",
+    "target/library-runtime-20261007/native-final/library-runtime-observations-20261007.json": "f2426e8a69ca4c7b49f5ec8d70aaa383321da51702735a7f9493730b594c72ce",
+    "target/library-runtime-20261007/navigation-final-observations/stage-0.stdout": "19bc0116beb4613d3d0d0d1f0fbd78bd7410cc5e1bd58cb6e071b1fa5a3a7563",
+    "target/library-runtime-20261007/navigation-final-observations/stage-0.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/summary.json": "1cd759fafce77c196e155501496f90d295a41c7079ce6a643e814baa39516ee3",
+    "target/library-runtime-20261007/navigation-final-observations/stage-1.stdout": "14309df189fea0e69b3af7dfbe07e39c902de8d2f036cebb3502f860439e021d",
+    "target/library-runtime-20261007/navigation-final-observations/stage-1.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/stage-2.stdout": "903204c9852f025c72c484a369439e1b547985ecc7992306056d69ddc10ff612",
+    "target/library-runtime-20261007/navigation-final-observations/stage-2.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/unknown-rules-structural.stdout": "f2c102331c5d210b7d3b5cb0f7ff339ef118c116d27e9791616727ec94720a99",
+    "target/library-runtime-20261007/navigation-final-observations/unknown-rules-structural.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/window-return.json": "b3991ddeddbcd98e46f248a04c547ad836630d8bfdb228c4f5d0c6015108b635",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/stderr": "af34b5ea20ac5480af7c272d0b9e482ed50af0c74f7cdf81bf20820e70c20eb1",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/game.stderr": "ef4deb815f477432f7299acff5bb4f35195c50a13eb788051308f85108970bc5",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/game-launch.json": "00956a05285bc66b0cad7be59dfe643758bbccc8bf5e0eb195fba108e35052b0",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/child-exit.json": "e5d52085490cdb0f7354adfccca052a8cc80b9120bf1405e289d129f16ab1bd0",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/stderr": "137cbda9c1b96318e1a4a3381f9d987d911ae2066edc09b6f56fce4d3fd49933",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/game.stderr": "8e05a738519236bf3d7f481dcd41ecac1245e0cba92107849f4df51a62b80b1b",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/game-launch.json": "79408f86bc6226499328cc632359ef1422744e12dd3d59a7e537c5c496b42637",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/child-exit.json": "f0725437a971d39ef2683eb4311ac1e00f3fb3e1c4b3b44916db2f4dc8f62447",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/stderr": "7255dd6923ba22ba2602f215d01efb81bb5ec5c8da8631df54a82cc520eff9da",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/game.stderr": "69f95a9ab6d7ce7d7ae8b16103ad538403c1e6db5b2f3695b14c6d36bf3ba4aa",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/game-launch.json": "fcce4a21ec04c673b6c53671dcfeb2c01aba54b871b67d13b2b36aaaef752254",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/child-exit.json": "d3d18cd8b187ae13e5e4e809fab3feac5e1b1ce246d9d1c92a75816c285f82d6",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/stderr": "b911703ee28caa9f4424ac28f2592cb5f59e7a52154d1cd80842149d8f2ef8ae",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/game.stderr": "03b405a414770ad7a7a44f938000f9417fb1b941e4a135add27be4c8243572ec",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/game-launch.json": "88937746c63cd4226a0f372db4e1a046d43300197c38b094724abc282619dba1",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/child-exit.json": "36a4fc290cc746e4aba19a1adfddc591b385f0df2531b601ef01d4b3154f6560",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/stderr": "8dfb6637114983b848a8fd5b4b924a247d16460666b072cb44b83511cb0ad2b0",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/game.stderr": "9f37330976c11327fff53a5d7aa00940b77e2b66f6edb6d3e38cbd126da4ea15",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/game-launch.json": "bca94db5d2c395a583e6aa4ecc60b72267022ed2a4e4a4e4c99c5adf67194619",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/child-exit.json": "a934d31ed8f1ac8bf66c21391df369b026babd7dbd01d00cc3f90d79b6733a9c",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/stderr": "dc5376fa48a6414c5854d76779996ad3c07ea95a0bc616b750bbeba94bc23cbf",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/game.stderr": "84bbddfb305c546038630411dbeb9317364e4c4e2fb1ce2d2c5a560dcc420830",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/game-launch.json": "9dcfd5bbed7b17ab65276cc2d0623beaa036f9135a5ca43d408bed1f1e96b6cb",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/child-exit.json": "31ee344dcde46db1982552e8fd6dcb88233641f7003e4a62f95536562402e995",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/metadata.json": "9a6600850ce7a1921dcfcf0cf6a5efae3eacbeb6e942f9924ac813c614b3c7f5",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/frames.csv": "a82e8a65dad57092cb8c5d5f18cdb275bbfa3966b4534a9d125b85754321bf7a",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/library.png": "be77dedc9472e00ad4dc5589880262742a03c0a9a84cff3a2329ab8ffd211686",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/loading.png": "0825d0634b2b8de7fdf6641bdeae6f860b876daa00f06816f2e6b17cf1d5df33",
+    "target/library-runtime-20261007/navigation-final-observations/close-load-640x480-en-US/observation/result.json": "a446a85235117ce6a6dbf6f9ee883c08ae64f6db2dbbae5f4cf94ad1d98df22c",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/observation/metadata.json": "f2b4ad2ded57b7b6727f0168a178ae06b458806d9e70e7c8ebda9230a26542eb",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/observation/frames.csv": "53597d6d5b2bfeb61c639acc8952eec5cca2617857db41d212afb4123d5d1efa",
+    "target/library-runtime-20261007/navigation-final-observations/close-scan-640x480-en-US/observation/result.json": "2afc0dbc6b33ee430ec691a274458676cab6838105bdff9c2970f45e51771b36",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/metadata.json": "6841aefd976708fb92a3525cfab2eda4dab60c51c774c32a70fcce1c8e56d81d",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/frames.csv": "43bdf7455a439ac49194cb3b3ca6c9b504f80d689e9748c182254b23372b2702",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library.png": "016d3af7ae15d88793e0fb39da31e47db32622a8417633475605c9cf0ed7263d",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-refresh.png": "49ff82b19cbd019bdeba4b6694b567d3a75aee96a6d3423f33417851585dfd63",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-back.png": "e531435990a833f413b412c303af4fc14d06287fbe60495145f0b5011ff9d5e1",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/library-information.png": "de3e340f80b5452212e8723739e1dc384182da22851f329897a3da7b2cc3f1d9",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/loading.png": "c75da9d0114f53e6abdc4df013aa29bf7dcbfaa9d071729206eca3fbd2059960",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/ready-a.png": "95c6fb8d321a9cc8f7f8c645e7c3b3723fb1eb7b49891d092efc156cf3d0e74e",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/running-a.png": "40971782f0b4e04c7d3caac03ee0f56f1b4c48cde2f67d96c72d96004629aafd",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/ready-b.png": "5501704eef1ea7f62cf82fdcb68ffb3018a94bddc6e708d82d804697f427ffc0",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/rejected.png": "7f5bec0f1ad1ff6a097ebfdb09227ebdce4521ce983db80dba4606e34595aa16",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/cancelled.png": "a4871574126d22172921be0004b0293db401c5daf156bde4a50f46e95b13ceba",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/observation/result.json": "c8531e0d3b3d4e9bd59413add008975b4176877a6bbf05c25aa2c2857f67fad1",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/cwd/replays/session-1-1791383141986217811.json": "f976cda3b25f014abb52ca0f684c98bbfe1931efb3ee26b267a78f5fdcb39296",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-en-US/cwd/replays/session-1-1791383141986217811.csv": "39e65858b8755d2d1efeea808ab5dc4eb2865a2e8d8da09bc21678f328b0f0cd",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/metadata.json": "f30086f23e5f87455bfd06f87e75c2079ad502e0d7f51262f532743f3b56d86c",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/frames.csv": "f71a4eb9374840631f6d9a527d827446a4c030603e17e0b4acc3c4da934dcf27",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library.png": "9fa069bba03b6d45f0401195fc5a6b30deddea9fc41aac56cad8c36391d447f3",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-refresh.png": "8d1e2e057aaec1284018651bdca3c8486457f2e9831a601df0ae0bf449bf927e",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-back.png": "a9e66ab679a081b598c8e31cc71459c1028c51d8c0d88e22826cd91cea2bede6",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/library-information.png": "ccf38173494d83ac3d498d1e395bd6165ed48066b9cc656d071b55c72ae7ddbc",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/loading.png": "1ca28c827146a224c7c239f53ba1306f4f908c467a296e244af395d28b6bf57e",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/ready-a.png": "85795b799e1c78212c762cb31d80c5ac829d1ad9e13c47ec9e4cf0be3da4ed73",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/running-a.png": "a3178203965d8444fe5c3756c2515d0afbec3575615025a87e0445e2c948747a",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/ready-b.png": "e8e69dcd79f0cd99106e2191fa29340fc488454f682f3a0ab42d87389fc56376",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/rejected.png": "9f29de6680b5ef0712086d0a9636f2bf25f22c5203bf3a93f44ee4dfb65ae142",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/cancelled.png": "eb0c529d666baf09c335674e2d4ce396f0252ed008df5b2459f0c29001fe87fd",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/observation/result.json": "8137cca01a1893da4eeb40b7182f6e581804209ab1abdb904b0750f1ad22e035",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/cwd/replays/session-1-1791383112973120480.json": "5a4f2f2e6005f8fcc47fa5bf53659636295f946e9fc0f71b7404d969aecf1830",
+    "target/library-runtime-20261007/navigation-final-observations/complete-640x480-zh-CN/cwd/replays/session-1-1791383112973120480.csv": "28520c1e7df0de9350c748b24dca8504c6bc19b6c6176524f656fc9005f03c2c",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/metadata.json": "ca83011e4ac197c3a397daf55e15c1dbc895a5dbece3c5c01de60d4db83a2281",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/frames.csv": "dadb540466e24b60202d9f3a92bd7530ef5c109ca4578bcfe242b59e00cef38f",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library.png": "7ac32cb3d3e7ced34bf096eb60f5873d8a03c2e201e97c3f37857af1a8778676",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-refresh.png": "cd21cf1c2b86942a4818c55a18438b843be51968fcd9e0a2a3ac8b8bf73a466d",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-back.png": "b8615a4463a24d7269c5ecf5af054cf5ff3bdc7094119aad421e3df1aa99dd95",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/library-information.png": "b4d4d2341ab4de5648c7f90309b202c294c5f03732b43bcd061863a754150c61",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/loading.png": "c89d2d19600f82b1d2ed2b00f99b25a03477f188248e58af6b8baf4db50d302d",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/ready-a.png": "f27bddf4dcee49d4cb2a11d1e0ae3e4a8b9fbfb298467cc16da2c1f88a5c90ac",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/running-a.png": "a2fef0fa8d4f54ab0930971bb86eeb997a9902508e2e084a7e8a0b4f714fb782",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/ready-b.png": "2822ad524eaca23c845a040369b58608a6eaf4242b17c0219d3677e474d7b80e",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/rejected.png": "263bc6b9e574787d3106272fd971d1eddb34fa988201be40926c8aa217b5c232",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/cancelled.png": "a371a8145c29ce65087a0bce94c5510e157bc237fb7a9c6d79fc958627de1330",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/observation/result.json": "ee890e3b85c3f5ffd928c3b3cede07f689f5fcc22c769056797c07e04bb72213",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/cwd/replays/session-1-1791383082324281779.json": "842bfacae9acfb91735456934955fbecafebce997c95d1de29ef5e0d682a7412",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-en-US/cwd/replays/session-1-1791383082324281779.csv": "416bf0673b6a39c2d4453cb4444d7ada9f910e08724b73755eb714af2f0ba2e8",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/metadata.json": "584cfbdd4a29eaedfa76601fae5981036b1008dea2fa7f7a0ce59920431ed500",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/frames.csv": "de38e46a5f01c7c73f4e98b5b37ece53e7881f7504e235b3f5f359040d379737",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library.png": "24418e393b1edf3c3acb3997276d408f5c79216217b7fe23aef016b67bbce1f3",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-refresh.png": "1f7f4681a72a94db07b04883df0d12a4b892cfde2b17a2a80ac915cce34027a8",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-back.png": "0eac8e98d6ab8bbcedc67feb5db70860bc33ae8851b868bd7cc4083e89b42746",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/library-information.png": "738583bd887b198444901912454c337cf9360d7d2bc86ae04b14d6edfd2cc9cd",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/loading.png": "b98144b6d2ee35b9c5b4bb61fbb4652e62961b662cb9b5fdd29727503be28783",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/ready-a.png": "18a57d987ddb179369b8514a99cd13c073c60264239394574903e1f44a7496bf",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/running-a.png": "a16d3bd0add0b624fcaf5707382447164d0b0559195725f0772de128095b811c",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/ready-b.png": "5a24bcb54772b2f78d963ee13d0bf9f3f8cf889823f199b952e082ed3c905a2a",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/rejected.png": "792c276df91eae5bc97c603106bcbaad05b9d7409bfcf18379c73829f0eaf512",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/cancelled.png": "97eeef7f6b2a8db56dbe1dba3a4852bc3df29f1f026c90ddd37f58732cacee1c",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/observation/result.json": "1f5b27d2a077b42d109018c700910e7208e6631f5b4fba2f28cbbd068d7ba9e4",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/cwd/replays/session-1-1791383048362412326.json": "53e4f5c1f7b737c3868fe20a355412cc23cec63c859e332c16fe8f997b18a052",
+    "target/library-runtime-20261007/navigation-final-observations/complete-1280x800-zh-CN/cwd/replays/session-1-1791383048362412326.csv": "e2e92b1bec9fdb92fe7bbdfe2f775b586c71b84602965cd589cf53ede7f94598"
+  },
+  "review": "Local raw receipt/source snapshot/publication arithmetic and 42 visual checks PASS_SCOPED; independent final correctness/ponytail review pending"
+}

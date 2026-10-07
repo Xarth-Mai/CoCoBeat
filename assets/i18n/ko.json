@@ -217,5 +217,19 @@
   "audition.cursor": "오디오 {state} · 약 {frame} 프레임 · 시작 {target}",
   "audition.help": "Space / 패드 전면 버튼 중 왼쪽 버튼: 재생·일시 정지 · 이동: 선택 프레임 사용 · 오디오 커서는 렌더링된 PCM 위치이며 스피커나 입력 지연이 아닙니다",
   "replay.watching": "읽기 전용 Replay 재생",
-  "replay.progress": "기록된 사실 {consumed} / {total}개 표시"
+  "replay.progress": "기록된 사실 {consumed} / {total}개 표시",
+  "library.open": "곡 선택",
+  "library.title": "음악 라이브러리",
+  "library.refresh": "라이브러리 새로 고침",
+  "library.development": "오리지널 개발용 곡",
+  "library.candidate": "{name} · 검증 안 됨",
+  "library.place": "준비된 곡 폴더를 여기에 넣고 새로 고침하세요; 원본 음악 가져오기는 아직 지원하지 않습니다",
+  "library.scanning": "라이브러리 검색 중…",
+  "library.loading": "검증 및 로딩 중… 현재 곡은 유지됩니다",
+  "library.missing": "라이브러리 폴더가 아직 없습니다",
+  "library.empty": "곡 패키지 폴더를 찾지 못했습니다",
+  "library.failed": "현재 곡은 유지됩니다 · {error}",
+  "library.folder": "라이브러리 폴더 · {path}",
+  "library.path": "곡 폴더 · {path}",
+  "library.current": "현재 · {song} · {seconds}초"
 }

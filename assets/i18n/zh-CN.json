@@ -217,5 +217,19 @@
   "audition.cursor": "试听 {state} · 约 {frame} 帧 · 定位 {target}",
   "audition.help": "空格 / 手柄左侧面键：播放暂停 · 定位：使用选中帧 · 试听游标是渲染 PCM 位置，不代表扬声器或输入延迟",
   "replay.watching": "只读 Replay 观看",
-  "replay.progress": "已显示 {consumed} / {total} 条原始事实"
+  "replay.progress": "已显示 {consumed} / {total} 条原始事实",
+  "library.open": "选择歌曲",
+  "library.title": "曲库",
+  "library.refresh": "刷新曲库",
+  "library.development": "原创开发歌曲",
+  "library.candidate": "{name} · 未验证",
+  "library.place": "将已制作的歌曲文件夹放入此曲库后刷新；原始音乐导入尚未提供",
+  "library.scanning": "正在扫描曲库…",
+  "library.loading": "正在验证并加载… 当前歌曲保持不变",
+  "library.missing": "曲库文件夹尚不存在",
+  "library.empty": "未找到歌曲包文件夹",
+  "library.failed": "当前歌曲保持不变 · {error}",
+  "library.folder": "曲库文件夹 · {path}",
+  "library.path": "歌曲文件夹 · {path}",
+  "library.current": "当前 · {song} · {seconds} 秒"
 }

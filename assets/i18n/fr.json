@@ -217,5 +217,19 @@
   "audition.cursor": "Audio {state} · ~{frame} trames · repère {target}",
   "audition.help": "Espace / bouton de façade gauche : lecture ou pause · Aller : trame sélectionnée · Le curseur indique le PCM rendu, pas la latence de sortie ou de saisie",
   "replay.watching": "Lecture du Replay en lecture seule",
-  "replay.progress": "Affichage de {consumed} / {total} faits enregistrés"
+  "replay.progress": "Affichage de {consumed} / {total} faits enregistrés",
+  "library.open": "Choisir un morceau",
+  "library.title": "Bibliothèque musicale",
+  "library.refresh": "Actualiser la bibliothèque",
+  "library.development": "Morceau original de développement",
+  "library.candidate": "{name} · Non vérifié",
+  "library.place": "Placez ici les dossiers des morceaux préparés puis actualisez ; l’import de musique brute n’est pas encore disponible",
+  "library.scanning": "Recherche des morceaux…",
+  "library.loading": "Vérification et chargement… Le morceau actuel est conservé",
+  "library.missing": "Le dossier de la bibliothèque n’existe pas encore",
+  "library.empty": "Aucun dossier de morceau trouvé",
+  "library.failed": "Le morceau actuel est conservé · {error}",
+  "library.folder": "Dossier de la bibliothèque · {path}",
+  "library.path": "Dossier du morceau · {path}",
+  "library.current": "Actuel · {song} · {seconds} s"
 }

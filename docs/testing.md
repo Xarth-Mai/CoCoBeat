@@ -729,3 +729,15 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 冻结 debug game 的 443 项输入前后相同，实际 Linux / CPAL ALSA 曲库四个 complete case 中，16 份 main-mix 快照报告 48 kHz / 前一完整 callback 512 帧，8 份 Running / Paused source 快照保持真实游标和一致的发布年龄区间，Ready / 换歌 Ready 无 source，真实游戏均 exit 0；小窗口曲库 footer 的同期视觉 FAIL 独立保留，不影响这里的历史发布观测，见[观察记录](../testdata/synthetic/audio-publication-observations-20261007.json)
 
 观测代次代表应用生命周期，观察到后端错误或采样率改变后永久失效；使用者仍须检查发布年龄和 source 身份。这些是历史软件边界，不提供未来 callback 上界、CPAL 入口、DAC / 扬声器延迟或长期漂移保证；loopback、真实输入与其他平台观测仍 NOT RUN
+
+## 生产曲库选择与小窗口反馈
+
+2026-10-07，生产 Ready 曲库复用完整四对象 loader 与单个后台 worker；`cargo test --locked -p cocobeat-runtime library` 的 5 项行为检查和随后焦点反馈窄测通过，正式 game / lab debug build、runtime 全目标 Clippy 与格式检查通过。13 份 catalog 各 233 key 和占位符一致，使用与原菜单相同的主控和释放屏障
+
+冻结 game `315cd33518d379fdc05039d0eba464cd10c25e1e66ad1fddefb5f46e6d9d82bd` 与 lab `3e984d5b0a72cfcd4e6191c2a27f628393d6f141307c1e699176f2ace9d44fcd`，443 个列明构建输入前后相同且完整源码副本匹配；这证明实际冻结构建，不将同期修改的联网源码当成该二进制输入。六项实际 Linux / CPAL / GPU case 的 game 与 wrapper 均 exit 0，四 complete 覆盖中英和 1280×800 / 640×480，另两项关闭扫描 / 装载窗口
+
+完整开场后保持 Ready，独立确认才播放；实际 Kira 游标推进、双人软件 Hit、旧 Replay 保存、切换不同内容的歌曲包、损坏音频 / 额外对象 / 未知规则三类拒绝与取消均保持实际内容和历史。真实 KeyboardInput 导航至 Refresh / Back / Information 并截图，反馈随焦点行滚动，修复旧 e0 构建 640 拒绝原因被裁剪的问题；旧六项软件 PASS / 30 图视觉 FAIL 与 sandbox GPU 启动失败保留原结果
+
+新 42 张 PNG 由曲库线程逐张目检通过指定范围，主线程独立查看其中 640 中英拒绝、英文 Back 和中文 Information 四张，四张范围内通过；不要求所有低位信息同时显示。16 个 callback / 8 个 source 快照另外通过历史 publication 区间检查，不等同声学计时
+
+关闭装载时实际 worker 未完成且退出前已回收；关闭扫描时 worker 已完成，进行中的扫描取消仍 NOT RUN。所有自有进程退出，真实键盘 / 双手柄 / 混合输入、扬声器计时、真人、其他三平台 runtime 图形和发行 release 构建仍 NOT RUN。完整命令、源码 / 图片 / 日志身份和旧失败见[持久曲库记录](../testdata/synthetic/library-runtime-navigation-observations-20261007.json)，复现使用[曲库检查工具](../tools/library-runtime-check/README.md)

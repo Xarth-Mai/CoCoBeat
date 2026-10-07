@@ -217,5 +217,19 @@
   "audition.cursor": "Audio {state} · ~{frame} Frames · Ziel {target}",
   "audition.help": "Leertaste / linke Fronttaste: Wiedergabe oder Pause · Sprung: gewählter Frame · Der Cursor zeigt gerendertes PCM, keine Ausgabe- oder Eingabelatenz",
   "replay.watching": "Schreibgeschützte Replay-Wiedergabe",
-  "replay.progress": "{consumed} / {total} aufgezeichnete Fakten angezeigt"
+  "replay.progress": "{consumed} / {total} aufgezeichnete Fakten angezeigt",
+  "library.open": "Song auswählen",
+  "library.title": "Musikbibliothek",
+  "library.refresh": "Bibliothek aktualisieren",
+  "library.development": "Originaler Entwicklungssong",
+  "library.candidate": "{name} · Nicht geprüft",
+  "library.place": "Vorbereitete Songordner hier ablegen und aktualisieren; der Import roher Musikdateien ist noch nicht verfügbar",
+  "library.scanning": "Bibliothek wird durchsucht…",
+  "library.loading": "Prüfung und Laden… Der aktuelle Song bleibt erhalten",
+  "library.missing": "Der Bibliotheksordner existiert noch nicht",
+  "library.empty": "Keine Songpaketordner gefunden",
+  "library.failed": "Der aktuelle Song bleibt erhalten · {error}",
+  "library.folder": "Bibliotheksordner · {path}",
+  "library.path": "Songordner · {path}",
+  "library.current": "Aktuell · {song} · {seconds} s"
 }
