@@ -183,6 +183,7 @@
   "network.scheduled": "Both players are ready · Music starts shortly",
   "network.listening": "Invitation saved to {path} · Waiting for your partner",
   "network.running": "Playing together online",
+  "network.recovering": "Reconnecting this round and checking sync… Esc ends the round",
   "network.finishing": "Waiting for both players to confirm the finish…",
   "network.complete": "Online performance complete",
   "network.failed": "Online performance interrupted",

@@ -220,6 +220,12 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
                         assert!(summary.authority_replay_blake3.is_some());
                         terminal[index] = true;
                     }
+                    LiveEvent::RecoveryPausing { .. }
+                    | LiveEvent::RecoveryScheduled { .. }
+                    | LiveEvent::RecoverySampling { .. }
+                    | LiveEvent::RecoveryReady { .. } => {
+                        panic!("unexpected recovery in baseline scenario")
+                    }
                     LiveEvent::Failed(_) => {
                         assert!(!success, "unexpected production worker failure: {scenario}");
                         terminal[index] = true;
@@ -353,6 +359,730 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
     serde_json::json!({"status":"PASS","scenario":scenario,"epoch":prepared[0].map(|value| value.0.0),"started":started,"queued_facts":[accepted[0].len(), accepted[1].len()],"peer_facts":[peer[0].len(),peer[1].len()],"owned_workers_finished":true,"scope":"public production network worker, software loopback only; no PCM scheduling, physical input, audio device or two-machine proof"})
 }
 
+#[derive(Clone, Default)]
+struct RelayCounts {
+    received: [u64; 2],
+    sent: [u64; 2],
+    dropped: [u64; 2],
+    unknown: u64,
+    clients: u64,
+}
+impl RelayCounts {
+    fn json(&self) -> serde_json::Value {
+        serde_json::json!({"received":self.received,"sent":self.sent,"dropped":self.dropped,"unknown":self.unknown,"clients":self.clients})
+    }
+}
+#[derive(Default)]
+struct RelayState {
+    dropping: bool,
+    counts: RelayCounts,
+    transitions: Vec<serde_json::Value>,
+}
+struct UdpRelay {
+    endpoint: std::net::SocketAddr,
+    origin: Instant,
+    state: std::sync::Arc<std::sync::Mutex<RelayState>>,
+    stop: std::sync::Arc<std::sync::atomic::AtomicBool>,
+    thread: Option<thread::JoinHandle<()>>,
+    raw_path: PathBuf,
+}
+impl UdpRelay {
+    fn new(server: std::net::SocketAddr, raw_path: PathBuf) -> Self {
+        let socket = std::sync::Arc::new(std::net::UdpSocket::bind("127.0.0.1:0").unwrap());
+        socket
+            .set_read_timeout(Some(Duration::from_millis(20)))
+            .unwrap();
+        let endpoint = socket.local_addr().unwrap();
+        let origin = Instant::now();
+        let state = std::sync::Arc::new(std::sync::Mutex::new(RelayState::default()));
+        let stop = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let (thread_state, thread_stop) = (state.clone(), stop.clone());
+        let thread = thread::spawn(move || {
+            let mut backends = Vec::new();
+            let mut responses = Vec::new();
+            let mut buffer = [0_u8; 65_535];
+            while !thread_stop.load(std::sync::atomic::Ordering::Relaxed) {
+                let (length, client) = match socket.recv_from(&mut buffer) {
+                    Ok(packet) => packet,
+                    Err(error)
+                        if matches!(
+                            error.kind(),
+                            std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
+                        ) =>
+                    {
+                        continue;
+                    }
+                    Err(error) => panic!("UDP relay receive failed: {error}"),
+                };
+                if !client.ip().is_loopback() {
+                    thread_state.lock().unwrap().counts.unknown += 1;
+                    continue;
+                }
+                if !backends.iter().any(|(address, _)| *address == client) {
+                    if backends.len() == 2 {
+                        thread_state.lock().unwrap().counts.unknown += 1;
+                        continue;
+                    }
+                    let backend =
+                        std::sync::Arc::new(std::net::UdpSocket::bind("127.0.0.1:0").unwrap());
+                    backend
+                        .set_read_timeout(Some(Duration::from_millis(20)))
+                        .unwrap();
+                    backends.push((client, backend.clone()));
+                    thread_state.lock().unwrap().counts.clients += 1;
+                    let (front, state, stop) =
+                        (socket.clone(), thread_state.clone(), thread_stop.clone());
+                    responses.push(thread::spawn(move || {
+                        let mut buffer = [0_u8; 65_535];
+                        while !stop.load(std::sync::atomic::Ordering::Relaxed) {
+                            let (length, source) = match backend.recv_from(&mut buffer) {
+                                Ok(packet) => packet,
+                                Err(error)
+                                    if matches!(
+                                        error.kind(),
+                                        std::io::ErrorKind::WouldBlock
+                                            | std::io::ErrorKind::TimedOut
+                                    ) =>
+                                {
+                                    continue;
+                                }
+                                Err(error) => panic!("UDP backend receive failed: {error}"),
+                            };
+                            let mut state = state.lock().unwrap();
+                            if source != server {
+                                state.counts.unknown += 1;
+                                continue;
+                            }
+                            state.counts.received[1] += 1;
+                            if state.dropping {
+                                state.counts.dropped[1] += 1;
+                            } else {
+                                assert_eq!(
+                                    front.send_to(&buffer[..length], client).unwrap(),
+                                    length
+                                );
+                                state.counts.sent[1] += 1;
+                            }
+                        }
+                    }));
+                }
+                let mut state = thread_state.lock().unwrap();
+                state.counts.received[0] += 1;
+                // The same lock brackets send completion and blackhole transitions
+                if state.dropping {
+                    state.counts.dropped[0] += 1;
+                } else {
+                    let backend = &backends
+                        .iter()
+                        .find(|(address, _)| *address == client)
+                        .unwrap()
+                        .1;
+                    assert_eq!(backend.send_to(&buffer[..length], server).unwrap(), length);
+                    state.counts.sent[0] += 1;
+                }
+            }
+            for response in responses {
+                response.join().unwrap();
+            }
+        });
+        Self {
+            endpoint,
+            origin,
+            state,
+            stop,
+            thread: Some(thread),
+            raw_path,
+        }
+    }
+    fn blackhole(&self, dropping: bool) {
+        let mut state = self.state.lock().unwrap();
+        assert_ne!(state.dropping, dropping);
+        state.dropping = dropping;
+        let event = serde_json::json!({"dropping":dropping,"at_ns":self.origin.elapsed().as_nanos() as u64,"counts":state.counts.json()});
+        state.transitions.push(event);
+        self.save(&state);
+    }
+    fn save(&self, state: &RelayState) {
+        fs::write(
+            &self.raw_path,
+            serde_json::to_vec_pretty(
+                &serde_json::json!({"transitions":state.transitions,"counts":state.counts.json()}),
+            )
+            .unwrap(),
+        )
+        .unwrap();
+    }
+    fn event_ns(&self, time: Instant) -> u64 {
+        time.duration_since(self.origin).as_nanos() as u64
+    }
+    fn finish(mut self) -> serde_json::Value {
+        self.stop.store(true, std::sync::atomic::Ordering::Relaxed);
+        self.thread.take().unwrap().join().unwrap();
+        let state = self.state.lock().unwrap();
+        self.save(&state);
+        assert_eq!(state.counts.clients, 2);
+        assert_eq!(state.counts.unknown, 0);
+        assert_eq!(state.transitions.len(), 2);
+        let begin = &state.transitions[0];
+        let end = &state.transitions[1];
+        assert_eq!(begin["dropping"], true);
+        assert_eq!(end["dropping"], false);
+        assert!(
+            end["at_ns"].as_u64().unwrap() - begin["at_ns"].as_u64().unwrap() >= 29_000_000_000
+        );
+        assert_eq!(begin["counts"]["sent"], end["counts"]["sent"]);
+        for direction in 0..2 {
+            assert!(
+                end["counts"]["dropped"][direction].as_u64().unwrap()
+                    > begin["counts"]["dropped"][direction].as_u64().unwrap()
+            );
+        }
+        serde_json::json!({"direction_order":["client_to_server","server_to_client"],"transitions":state.transitions,"final":state.counts.json()})
+    }
+}
+impl Drop for UdpRelay {
+    fn drop(&mut self) {
+        self.stop.store(true, std::sync::atomic::Ordering::Relaxed);
+        if let Some(thread) = self.thread.take() {
+            let _ = thread.join();
+            if let Ok(state) = self.state.lock() {
+                self.save(&state);
+            }
+        }
+    }
+}
+
+fn relay_invitation(original: &Path, relay: &UdpRelay, copied: &Path) {
+    let bytes = fs::read(original).unwrap();
+    let value: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
+    let old = format!(
+        "\"endpoint\":{}",
+        serde_json::to_string(&value["endpoint"]).unwrap()
+    );
+    let new = format!(
+        "\"endpoint\":{}",
+        serde_json::to_string(&relay.endpoint.to_string()).unwrap()
+    );
+    let text = String::from_utf8(bytes.clone()).unwrap();
+    assert_eq!(text.matches(&old).count(), 1);
+    let modified = text.replacen(&old, &new, 1);
+    assert_eq!(modified.replacen(&new, &old, 1).as_bytes(), bytes);
+    let mut parsed: serde_json::Value = serde_json::from_str(&modified).unwrap();
+    parsed["endpoint"] = value["endpoint"].clone();
+    assert_eq!(parsed, value);
+    let mut options = fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let mut file = options.open(copied).unwrap();
+    file.write_all(modified.as_bytes()).unwrap();
+    file.sync_all().unwrap();
+}
+
+// The oscillator below is declared QA input, not a PCM/device acknowledgment
+fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
+    use cocobeat_net::{RecoveryFrozen, RecoveryObserved, RecoveryPublication};
+    use cocobeat_replay::ReplayIdentity;
+    let udp = scenario == "recovery-udp-blackhole";
+    let mut relay: Option<UdpRelay> = None;
+    let mut pausing_times = [None, None];
+    let mut frozen = [false; 2];
+    let mut last_original_watermark = [None, None];
+    let valid = matches!(
+        scenario,
+        "recovery-model"
+            | "recovery-unauth-candidate"
+            | "recovery-immediate-end"
+            | "recovery-udp-blackhole"
+    );
+    let mut candidate: Option<LiveSession> = None;
+    let mut candidate_failed = scenario != "recovery-unauth-candidate";
+    let mut second_loss = false;
+    let mut cancelled = false;
+    fs::create_dir(output).unwrap();
+    let invite = output.join("invite.json");
+    let mut workers = vec![
+        LiveSession::spawn(LiveConfig {
+            role: LiveRole::Host {
+                package: package.into(),
+                bind: "127.0.0.1:0".parse().unwrap(),
+                invite: invite.clone(),
+            },
+            output: output.join("host"),
+        })
+        .unwrap(),
+    ];
+    let mut prepared = [None, None];
+    let mut identities = [None, None];
+    let mut initial_deadline = [None, None];
+    let mut started = [false; 2];
+    let mut terminal = [false; 2];
+    let mut accepted: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
+    let mut peer: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
+    let mut paused = [0_i64; 2];
+    let mut resume = [None, None];
+    let mut verify = [None, None];
+    let mut sampling = [false; 2];
+    let mut ready = [false; 2];
+    let mut progress = [None, None];
+    let mut observations: [Vec<RecoveryPublication>; 2] = [Vec::new(), Vec::new()];
+    let mut snapshot_bytes: [Option<Vec<Vec<u8>>>; 2] = [None, None];
+    let mut publication_seq = [0_u64; 2];
+    let mut observed_sent = [false; 2];
+    let mut final_sent = [false; 2];
+    let mut request = false;
+    let limit = Instant::now() + Duration::from_secs(if udp { 110 } else { 40 });
+    while !terminal.iter().all(|done| *done) {
+        assert!(Instant::now() < limit, "bounded recovery model timeout");
+        for index in 0..workers.len() {
+            while let Ok(event) = workers[index].try_recv() {
+                println!("{} {event:?}", if index == 0 { "host" } else { "guest" });
+                match event {
+                    LiveEvent::Listening { .. } => {}
+                    LiveEvent::Prepared {
+                        epoch,
+                        player,
+                        content_id,
+                        canonical_frames,
+                        stage_compiler_version,
+                        final_through,
+                        ..
+                    } => {
+                        assert!(
+                            canonical_frames >= 57_600,
+                            "model requires a declared long QA fixture"
+                        );
+                        if udp {
+                            assert!(
+                                canonical_frames >= 3_072_000,
+                                "UDP blackout needs an unchanged source lasting at least 64 seconds"
+                            );
+                        }
+                        prepared[index] = Some((epoch, player, final_through));
+                        identities[index] = Some(ReplayIdentity {
+                            content_id,
+                            rules_id: "duo-watermark-v1".into(),
+                            build_id: "software-oscillator-QA".into(),
+                            stage_compiler_version: Some(stage_compiler_version),
+                        });
+                        workers[index].try_send(LiveCommand::Ready).unwrap();
+                    }
+                    LiveEvent::Scheduled {
+                        epoch, deadline, ..
+                    } => {
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        initial_deadline[index] = Some(deadline);
+                        workers[index].try_send(LiveCommand::Armed).unwrap();
+                    }
+                    LiveEvent::Started { epoch } => {
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        started[index] = true;
+                        let input = hit(epoch, prepared[index].unwrap().1, 0);
+                        workers[index].try_send(LiveCommand::Fact(input)).unwrap();
+                        accepted[index].push(input);
+                    }
+                    LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
+                    LiveEvent::RecoveryPausing { epoch, attempt } => {
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        assert_eq!(attempt, 1);
+                        let now = Instant::now();
+                        frozen[index] = true;
+                        if let Some(relay) = &relay {
+                            pausing_times[index] = Some(relay.event_ns(now));
+                            if pausing_times.iter().filter(|time| time.is_some()).count() == 1 {
+                                relay.blackhole(false);
+                            }
+                        }
+                        paused[index] = (now
+                            .duration_since(initial_deadline[index].unwrap())
+                            .as_nanos()
+                            * 48_000
+                            / 1_000_000_000) as i64
+                            + index as i64 * 500;
+                        let mut replay =
+                            Replay::new(identities[index].clone().unwrap(), epoch).unwrap();
+                        for input in accepted[index].iter().chain(&peer[index]) {
+                            replay.record(*input).unwrap();
+                        }
+                        workers[index]
+                            .try_send(LiveCommand::RecoveryFrozen {
+                                epoch,
+                                attempt,
+                                snapshot: Box::new(RecoveryFrozen {
+                                    replay,
+                                    paused_frame: SongTime::from_frames(paused[index]),
+                                    source_generation: 1,
+                                    source_id: index as u64 + 1,
+                                    paused_at: now,
+                                }),
+                            })
+                            .unwrap();
+                    }
+                    LiveEvent::RecoveryScheduled {
+                        epoch,
+                        attempt,
+                        deadline,
+                        verify_at,
+                        ..
+                    } => {
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        assert_eq!(attempt, 1);
+                        assert!(
+                            deadline.saturating_duration_since(Instant::now())
+                                >= Duration::from_millis(100)
+                        );
+                        snapshot_bytes[index] = Some(
+                            [
+                                "worker-prefix.replay.json",
+                                "gui-prefix.replay.json",
+                                "metadata.json",
+                            ]
+                            .map(|name| {
+                                fs::read(
+                                    output
+                                        .join(if index == 0 { "host" } else { "guest" })
+                                        .join("recovery-1")
+                                        .join(name),
+                                )
+                                .unwrap()
+                            })
+                            .to_vec(),
+                        );
+                        resume[index] = Some(deadline);
+                        verify[index] = Some(verify_at);
+                        workers[index]
+                            .try_send(LiveCommand::RecoveryArmed { epoch, attempt })
+                            .unwrap();
+                        if scenario == "recovery-cancel" && !cancelled {
+                            workers[0].cancel();
+                            cancelled = true;
+                        }
+                    }
+                    LiveEvent::RecoverySampling {
+                        epoch,
+                        attempt,
+                        not_before,
+                    } => {
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        assert_eq!(attempt, 1);
+                        assert!(not_before <= Instant::now());
+                        sampling[index] = true;
+                    }
+                    LiveEvent::RecoveryReady { epoch, attempt } => {
+                        assert!(
+                            valid || scenario == "recovery-second-loss",
+                            "negative model must not unlock input"
+                        );
+                        assert_eq!(epoch, prepared[index].unwrap().0);
+                        assert_eq!(attempt, 1);
+                        ready[index] = true;
+                    }
+                    LiveEvent::Complete(summary) => {
+                        assert!(valid);
+                        assert_eq!(summary.status, "COMPLETE");
+                        assert_eq!(summary.epoch, prepared[index].unwrap().0.0);
+                        terminal[index] = true;
+                    }
+                    LiveEvent::Failed(error) => {
+                        assert!(!valid, "unexpected continuation failure: {error}");
+                        terminal[index] = true;
+                    }
+                }
+            }
+        }
+        if workers.len() == 1 && invite.exists() {
+            let guest_invite = if udp {
+                let original: serde_json::Value =
+                    serde_json::from_slice(&fs::read(&invite).unwrap()).unwrap();
+                let proxy = UdpRelay::new(
+                    original["endpoint"].as_str().unwrap().parse().unwrap(),
+                    output.join("udp-relay-raw.json"),
+                );
+                let copied = output.join("relay-invite.json");
+                relay_invitation(&invite, &proxy, &copied);
+                relay = Some(proxy);
+                copied
+            } else {
+                invite.clone()
+            };
+            workers.push(
+                LiveSession::spawn(LiveConfig {
+                    role: LiveRole::Join {
+                        package: package.into(),
+                        invite: guest_invite,
+                    },
+                    output: output.join("guest"),
+                })
+                .unwrap(),
+            );
+        }
+        if let Some(worker) = candidate.as_ref() {
+            while let Ok(event) = worker.try_recv() {
+                assert!(
+                    matches!(event, LiveEvent::Failed(_)),
+                    "unauthenticated candidate must not become Prepared"
+                );
+                candidate_failed = true;
+            }
+        }
+        if scenario == "recovery-unauth-candidate" && candidate.is_none() && started == [true; 2] {
+            candidate = Some(
+                LiveSession::spawn(LiveConfig {
+                    role: LiveRole::Join {
+                        package: package.into(),
+                        invite: invite.clone(),
+                    },
+                    output: output.join("unauth-candidate"),
+                })
+                .unwrap(),
+            );
+        }
+        if !request
+            && candidate_failed
+            && started == [true; 2]
+            && peer.iter().all(|facts| !facts.is_empty())
+            && initial_deadline.iter().all(|deadline| {
+                Instant::now().duration_since(deadline.unwrap()) >= Duration::from_millis(120)
+            })
+        {
+            if udp {
+                relay.as_ref().unwrap().blackhole(true);
+            } else {
+                workers[0]
+                    .try_send(LiveCommand::RequestRecovery {
+                        epoch: prepared[0].unwrap().0,
+                    })
+                    .unwrap();
+            }
+            request = true;
+        }
+        for index in 0..workers.len() {
+            if terminal[index] || final_sent[index] {
+                continue;
+            }
+            if udp
+                && started[index]
+                && !frozen[index]
+                && last_original_watermark[index]
+                    .is_none_or(|last: Instant| last.elapsed() >= Duration::from_millis(50))
+            {
+                let now = Instant::now();
+                let frame = (now
+                    .duration_since(initial_deadline[index].unwrap())
+                    .as_nanos()
+                    * 48_000
+                    / 1_000_000_000) as i64
+                    + index as i64 * 500;
+                let (epoch, player, _) = prepared[index].unwrap();
+                let input = watermark(epoch, player, frame - 2_400);
+                workers[index].try_send(LiveCommand::Fact(input)).unwrap();
+                accepted[index].push(input);
+                last_original_watermark[index] = Some(now);
+            }
+            if let Some(deadline) = resume[index] {
+                let now = Instant::now();
+                if now > deadline {
+                    let frame = paused[index]
+                        + (now.duration_since(deadline).as_nanos() * 48_000 / 1_000_000_000) as i64;
+                    publication_seq[index] += 1;
+                    let row = RecoveryPublication {
+                        sequence: publication_seq[index],
+                        frame: SongTime::from_frames(frame),
+                        published_between: [now; 2],
+                    };
+                    if progress[index].is_none() {
+                        progress[index] = Some(row);
+                    } else if sampling[index] && !observed_sent[index] {
+                        observations[index].push(row);
+                        assert!(observations[index].len() <= 64);
+                    }
+                    let (epoch, player, final_through) = prepared[index].unwrap();
+                    let input = watermark(epoch, player, frame - 2_400);
+                    match workers[index].try_send(LiveCommand::Fact(input)) {
+                        Ok(()) => accepted[index].push(input),
+                        Err(cocobeat_net::LiveSendError::Closed) if !valid => continue,
+                        Err(error) => panic!("model owner fact was not accepted: {error:?}"),
+                    }
+                    if sampling[index]
+                        && !observed_sent[index]
+                        && now > verify[index].unwrap() + Duration::from_millis(50)
+                    {
+                        assert!(observations[index].len() >= 2);
+                        workers[index]
+                            .try_send(LiveCommand::RecoveryObserved {
+                                epoch,
+                                attempt: 1,
+                                evidence: RecoveryObserved {
+                                    generation: 1,
+                                    source_id: if scenario == "recovery-bad-source" && index == 1 {
+                                        999
+                                    } else {
+                                        index as u64 + 1
+                                    },
+                                    progress: progress[index].unwrap(),
+                                    publications: observations[index].clone(),
+                                },
+                            })
+                            .unwrap();
+                        observed_sent[index] = true;
+                    }
+                    if ready == [true; 2] && scenario == "recovery-second-loss" && !second_loss {
+                        workers[0]
+                            .try_send(LiveCommand::RequestRecovery { epoch })
+                            .unwrap();
+                        second_loss = true;
+                    }
+                    if valid
+                        && (ready == [true; 2]
+                            || scenario == "recovery-immediate-end" && ready[index])
+                    {
+                        let input = DuoInput::Hit(Hit {
+                            epoch,
+                            player,
+                            seq: 1,
+                            song_time: SongTime::from_frames(frame),
+                        });
+                        workers[index].try_send(LiveCommand::Fact(input)).unwrap();
+                        accepted[index].push(input);
+                        let input = watermark(epoch, player, final_through);
+                        workers[index].try_send(LiveCommand::Fact(input)).unwrap();
+                        accepted[index].push(input);
+                        workers[index].try_send(LiveCommand::End).unwrap();
+                        final_sent[index] = true;
+                    }
+                }
+            }
+        }
+        thread::sleep(Duration::from_millis(5));
+    }
+    let stop = Instant::now() + Duration::from_secs(3);
+    while !workers.iter().all(LiveSession::is_finished) {
+        assert!(Instant::now() < stop);
+        thread::sleep(Duration::from_millis(1));
+    }
+    if let Some(candidate) = candidate {
+        assert!(candidate_failed);
+        assert!(candidate.is_finished());
+    }
+    assert_eq!(prepared[0].unwrap().0, prepared[1].unwrap().0);
+    for side in ["host", "guest"] {
+        let directory = output.join(side);
+        assert!(
+            directory
+                .join("recovery-1/worker-prefix.replay.json")
+                .exists()
+        );
+        assert!(directory.join("recovery-1/gui-prefix.replay.json").exists());
+        let replay = Replay::load(directory.join("live.replay.json")).unwrap();
+        if let Some(bytes) = &snapshot_bytes[if side == "host" { 0 } else { 1 }] {
+            for (name, expected) in [
+                "worker-prefix.replay.json",
+                "gui-prefix.replay.json",
+                "metadata.json",
+            ]
+            .iter()
+            .zip(bytes)
+            {
+                assert_eq!(
+                    fs::read(directory.join("recovery-1").join(name)).unwrap(),
+                    *expected
+                );
+            }
+        }
+        for name in ["worker-prefix.replay.json", "gui-prefix.replay.json"] {
+            let prefix = Replay::load(directory.join("recovery-1").join(name)).unwrap();
+            for player in [PlayerId::P1, PlayerId::P2] {
+                let tape = |replay: &Replay| {
+                    replay
+                        .facts()
+                        .iter()
+                        .filter(|input| match input {
+                            DuoInput::Hit(hit) => hit.player == player,
+                            DuoInput::Watermark { player: actual, .. } => *actual == player,
+                        })
+                        .copied()
+                        .collect::<Vec<_>>()
+                };
+                assert!(tape(&replay).starts_with(&tape(&prefix)));
+            }
+        }
+        assert_eq!(replay.epoch(), prepared[0].unwrap().0);
+        assert_eq!(directory.join("authority.replay.json").exists(), valid);
+        for player in [PlayerId::P1, PlayerId::P2] {
+            let sequences: Vec<_> = replay
+                .facts()
+                .iter()
+                .filter_map(|input| match input {
+                    DuoInput::Hit(hit) if hit.player == player => Some(hit.seq),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(sequences, (0..sequences.len() as u64).collect::<Vec<_>>());
+        }
+    }
+    if valid {
+        assert_eq!(ready, [true; 2]);
+        assert_eq!(peer[0], accepted[1]);
+        assert_eq!(peer[1], accepted[0]);
+        let authority = output.join("host/authority.replay.json");
+        assert_eq!(
+            fs::read(&authority).unwrap(),
+            fs::read(output.join("guest/authority.replay.json")).unwrap()
+        );
+        assert_eq!(
+            play(&authority, package).events(),
+            play(&output.join("host/live.replay.json"), package).events()
+        );
+    } else {
+        assert_eq!(
+            ready,
+            if scenario == "recovery-second-loss" {
+                [true; 2]
+            } else {
+                [false; 2]
+            }
+        );
+    }
+    let udp_receipt = relay.map(UdpRelay::finish);
+    let causes: Vec<_> = if udp {
+        ["host", "guest"]
+            .iter()
+            .map(|side| {
+                serde_json::from_slice::<serde_json::Value>(
+                    &fs::read(output.join(side).join("recovery-1/metadata.json")).unwrap(),
+                )
+                .unwrap()["cause"]
+                    .clone()
+            })
+            .collect()
+    } else {
+        Vec::new()
+    };
+    if udp {
+        assert!(causes.iter().any(|cause| matches!(
+            cause.as_str(),
+            Some(
+                "QUIC idle timeout" | "reliable peer progress deadline" | "reliable frame deadline"
+            )
+        )));
+        assert!(
+            !causes
+                .iter()
+                .any(|cause| cause == "explicit local connection maintenance")
+        );
+        let raw = serde_json::json!({"relay":udp_receipt,"pausing_event_ns":pausing_times,"frozen_frames":paused,"metadata_causes":causes,"request_recovery_commands":0,"invitation_only_endpoint_changed":true,"original_watermark_interval_ms":50,"scope":"real UDP blackhole and production recovery; unchanged monotonic software oscillator, no CPAL/DAC"});
+        fs::write(
+            output.join("udp-loss.json"),
+            serde_json::to_vec_pretty(&raw).unwrap(),
+        )
+        .unwrap();
+    }
+    serde_json::json!({"status":"PASS","scenario":scenario,"same_epoch":true,"snapshots_unchanged":true,"player_tape_prefix_preserved":true,"recovery_ready":ready,"owned_workers_finished":true,"queued_facts":accepted.map(|facts|facts.len()),"unauth_candidate_rejected":scenario == "recovery-unauth-candidate" && candidate_failed,"second_recovery_terminal":second_loss,"cancel_requested":cancelled,"actual_udp_blackhole":udp,"scope":if udp { "actual UDP blackhole and typed reliable-input deadline triggered same-epoch production worker recovery; unchanged declared integer monotonic software source model; no Kira, original SoundHandle, PCM/device or two-machine acceptance" } else { "actual TLS/QUIC production worker with declared integer monotonic software source model; controlled active connection rebuilding; no Kira, original SoundHandle, PCM/device, UDP loss, or two-machine acceptance" }})
+}
+
 fn main() {
     let args: Vec<_> = std::env::args().collect();
     if args.len() > 1 && fixture(&args) {
@@ -362,7 +1092,9 @@ fn main() {
     let scenario = &args[1];
     let package = PathBuf::from(&args[2]);
     let output = PathBuf::from(&args[3]);
-    let report = if scenario == "reenter-before-ready" || scenario == "reenter-after-hit" {
+    let report = if scenario.starts_with("recovery-") {
+        recovery_model(scenario, &package, &output)
+    } else if scenario == "reenter-before-ready" || scenario == "reenter-after-hit" {
         fs::create_dir(&output).unwrap();
         let first = run(
             if scenario == "reenter-before-ready" {

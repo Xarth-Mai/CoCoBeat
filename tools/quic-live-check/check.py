@@ -10,7 +10,9 @@ import subprocess
 
 CRATES = ("cocobeat_net", "cocobeat_media", "cocobeat_schema", "cocobeat_core", "cocobeat_replay", "serde_json")
 OBJECTS = ("song.audio.ogg", "analysis.bin", "chart.bin", "song.package")
-SCENARIOS = ("installed", "receive", "cancel-before-ready", "cancel-after-hit", "missing-armed", "wrong-player", "wrong-epoch", "reenter-before-ready", "reenter-after-hit")
+UDP_SCENARIO = "recovery-udp-blackhole"
+RECOVERY_SCENARIOS = ("recovery-model", "recovery-bad-source", "recovery-unauth-candidate", "recovery-second-loss", "recovery-cancel", "recovery-immediate-end")
+SCENARIOS = ("installed", "receive", "cancel-before-ready", "cancel-after-hit", "missing-armed", "wrong-player", "wrong-epoch", "reenter-before-ready", "reenter-after-hit") + RECOVERY_SCENARIOS
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -39,8 +41,11 @@ def build(cargo_json, output):
     copied.write_bytes(source.read_bytes())
     driver = output / "driver"
     dependencies = {path.parent for path in artifacts.values()}
-    assert len(dependencies) == 1, "one Cargo graph is required"
-    command = ["rustc", "--edition=2024", "--crate-name", "quic_live_probe", str(copied), "-o", str(driver), "-L", f"dependency={next(iter(dependencies))}"]
+    dependency_dirs = [path for path in dependencies if path.name == "deps"]
+    assert len(dependency_dirs) == 1, "one Cargo graph is required"
+    dependency_dir = dependency_dirs[0]
+    assert dependencies <= {dependency_dir, dependency_dir.parent}, "one Cargo target profile is required"
+    command = ["rustc", "--edition=2024", "--crate-name", "quic_live_probe", str(copied), "-o", str(driver), "-L", f"dependency={dependency_dir}"]
     for name, path in artifacts.items():
         command.extend(["--extern", f"{name}={path}"])
     result = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=90)
@@ -60,7 +65,7 @@ def build(cargo_json, output):
     print(json.dumps({"status": "PASS", "driver": str(driver), "build": str(output / "build.json")}))
 
 
-def run(driver, package, output):
+def run(driver, package, output, scenarios=SCENARIOS):
     build_record = json.loads((driver.parent / "build.json").read_text())
     assert digest(driver) == build_record["driver_sha256"], "driver differs from recorded build"
     for path, expected in build_record["source_sha256"].items():
@@ -68,10 +73,10 @@ def run(driver, package, output):
     output.mkdir()
     original = {name: digest(package / name) for name in OBJECTS}
     records = []
-    for scenario in SCENARIOS:
+    for scenario in scenarios:
         destination = output / scenario
         command = [str(driver), scenario, str(package), str(destination)]
-        result = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=44 if scenario.startswith("reenter-") else 22)
+        result = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=120 if scenario == UDP_SCENARIO else 44 if scenario.startswith(("reenter-", "recovery-")) else 22)
         (output / f"{scenario}.stdout").write_bytes(result.stdout)
         (output / f"{scenario}.stderr").write_bytes(result.stderr)
         record = {"scenario": scenario, "command": command, "exit_code": result.returncode}
@@ -79,13 +84,74 @@ def run(driver, package, output):
         save(output / "commands.json", records)
         assert result.returncode == 0, f"{scenario}: {(output / f'{scenario}.stderr').read_text()}"
         report = json.loads(result.stdout.decode().splitlines()[-1])
+        if scenario in RECOVERY_SCENARIOS or scenario == UDP_SCENARIO:
+            statuses = [json.loads((destination / side / "status.json").read_text()) for side in ("host", "guest")]
+            success = scenario in ("recovery-model", "recovery-unauth-candidate", "recovery-immediate-end", UDP_SCENARIO)
+            assert report["same_epoch"] and report["snapshots_unchanged"] and report["player_tape_prefix_preserved"]
+            assert report["owned_workers_finished"]
+            assert all(status["mode"] == "live" and status["protocol_version"] == 6 for status in statuses)
+            assert statuses[0]["epoch"] == statuses[1]["epoch"]
+            assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
+            expected_ready = [True, True] if success or scenario == "recovery-second-loss" else [False, False]
+            assert report["recovery_ready"] == expected_ready
+            for index, side in enumerate(("host", "guest")):
+                assert statuses[index]["facts"][index] == report["queued_facts"][index], "retain every accepted owner fact"
+                replay = json.loads((destination / side / "live.replay.json").read_text())
+                assert replay["epoch"] == statuses[index]["epoch"]
+                for player in (1, 2):
+                    hits = [fact["seq"] for fact in replay["facts"] if fact["type"] == "hit" and fact["player"] == player]
+                    assert hits == ([0, 1] if success else [0])
+                    final_tape = [fact for fact in replay["facts"] if fact["player"] == player]
+                    for name in ("worker-prefix.replay.json", "gui-prefix.replay.json"):
+                        prefix = json.loads((destination / side / "recovery-1" / name).read_text())
+                        assert prefix["epoch"] == replay["epoch"]
+                        tape = [fact for fact in prefix["facts"] if fact["player"] == player]
+                        assert final_tape[:len(tape)] == tape
+                assert (destination / side / "recovery-1" / "metadata.json").exists()
+            if success:
+                assert all(status["facts"] == report["queued_facts"] for status in statuses)
+                assert statuses[0]["event_count"] == statuses[1]["event_count"]
+                assert (destination / "host/authority.replay.json").read_bytes() == (destination / "guest/authority.replay.json").read_bytes()
+            else:
+                assert all(status["authority_replay_blake3"] is None for status in statuses)
+                assert not any((destination / side / "authority.replay.json").exists() for side in ("host", "guest"))
+            if scenario == "recovery-unauth-candidate":
+                assert report["unauth_candidate_rejected"]
+                assert json.loads((destination / "unauth-candidate/status.json").read_text())["status"] == "FAILED"
+            if scenario == UDP_SCENARIO:
+                raw = json.loads((destination / "udp-loss.json").read_text())
+                assert report["actual_udp_blackhole"] and raw["request_recovery_commands"] == 0
+                assert raw["invitation_only_endpoint_changed"]
+                original_invite = json.loads((destination / "invite.json").read_text())
+                copied_invite = json.loads((destination / "relay-invite.json").read_text())
+                assert copied_invite["endpoint"] != original_invite["endpoint"]
+                copied_invite["endpoint"] = original_invite["endpoint"]
+                assert copied_invite == original_invite
+                begin, end = raw["relay"]["transitions"]
+                assert begin["dropping"] and not end["dropping"]
+                assert end["at_ns"] - begin["at_ns"] >= 29_000_000_000
+                assert begin["counts"]["sent"] == end["counts"]["sent"]
+                assert all(end["counts"]["dropped"][direction] > begin["counts"]["dropped"][direction] for direction in (0, 1))
+                assert min(raw["pausing_event_ns"]) >= begin["at_ns"]
+                assert any(cause in ("QUIC idle timeout", "reliable peer progress deadline", "reliable frame deadline") for cause in raw["metadata_causes"])
+                assert "explicit local connection maintenance" not in raw["metadata_causes"]
+                record["udp_loss"] = raw
+            if scenario == "recovery-second-loss":
+                assert report["second_recovery_terminal"]
+            if scenario == "recovery-cancel":
+                assert report["cancel_requested"]
+            record["report"] = report
+            record["statuses"] = statuses
+            record["evidence_sha256"] = {str(path.relative_to(output)): digest(path) for path in sorted(destination.glob("**/*")) if path.is_file() and path.name != "invite.json"}
+            save(output / "commands.json", records)
+            continue
         if scenario.startswith("reenter-"):
             assert report["same_process"] and report["old_files_unchanged"] and report["fresh_invitation"] and report["fresh_epoch"] and report["seq_reset"]
             rounds = []
             for index, expected_status in enumerate(("FAILED", "COMPLETE"), start=1):
                 directory = destination / f"round-{index}"
                 statuses = [json.loads((directory / side / "status.json").read_text()) for side in ("host", "guest")]
-                assert all(status["mode"] == "live" and status["protocol_version"] == 5 and status["status"] == expected_status for status in statuses)
+                assert all(status["mode"] == "live" and status["protocol_version"] == 6 and status["status"] == expected_status for status in statuses)
                 expected = [93, 27] if index == 2 else [1, 0] if scenario == "reenter-after-hit" else [0, 0]
                 assert all(status["facts"] == expected for status in statuses)
                 assert report["rounds"][index - 1]["owned_workers_finished"]
@@ -109,7 +175,7 @@ def run(driver, package, output):
         record["report"] = report
         record["statuses"] = statuses
         success = scenario in ("installed", "receive")
-        assert all(status["mode"] == "live" and status["protocol_version"] == 5 for status in statuses)
+        assert all(status["mode"] == "live" and status["protocol_version"] == 6 for status in statuses)
         assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
         expected = [93, 27] if success else [1, 0] if scenario == "cancel-after-hit" else [0, 0]
         assert all(status["facts"] == expected for status in statuses), scenario
@@ -173,6 +239,7 @@ if __name__ == "__main__":
     running.add_argument("driver", type=Path)
     running.add_argument("package", type=Path)
     running.add_argument("new_output", type=Path)
+    running.add_argument("--scenario", choices=SCENARIOS + (UDP_SCENARIO,), help="run one explicitly selected scenario")
     generating = sub.add_parser("fixture", help="repeat original synthetic PCM and use explicit QA libvorbis encoding with production full readback")
     generating.add_argument("driver", type=Path)
     generating.add_argument("source", type=Path)
@@ -182,6 +249,6 @@ if __name__ == "__main__":
     if args.action == "build":
         build(args.cargo_json.resolve(), args.new_output.resolve())
     elif args.action == "run":
-        run(args.driver.resolve(), args.package.resolve(), args.new_output.resolve())
+        run(args.driver.resolve(), args.package.resolve(), args.new_output.resolve(), (args.scenario,) if args.scenario else SCENARIOS)
     else:
         fixture(args.driver.resolve(), args.source.resolve(), args.new_output.resolve(), args.repeat)

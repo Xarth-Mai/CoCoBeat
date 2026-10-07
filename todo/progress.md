@@ -1,6 +1,6 @@
 # 工作进度
 
-更新：2026-10-07，用户恢复完整项目推进并允许 subagent 并行，本批已完成 QUIC 四对象接收、网络时钟、原生游戏接线、正常结束后同进程新局及只读 Replay 图形诊断，继续故障生命周期和内容路线。第一批规则、时钟、Replay、原创内容和 runtime 已通过完整软件检查，GPU 离屏截图已检查；品牌模块已交付、主线程已接线，品牌细节仍持续迭代，共享文件由主线程统一集成，实际证据统一记录在 [验证策略](../docs/testing.md)
+更新：2026-10-08，用户恢复完整项目推进并允许 subagent 并行，本批已完成 QUIC 四对象接收、网络时钟、原生游戏接线、正常结束后同进程新局及只读 Replay 图形诊断，同 epoch 原音源软件恢复已取得新证据，继续漂移 / 故障矩阵、生产源入口与内容路线。第一批规则、时钟、Replay、原创内容和 runtime 已通过完整软件检查，GPU 离屏截图已检查；品牌模块已交付、主线程已接线，品牌细节仍持续迭代，共享文件由主线程统一集成，实际证据统一记录在 [验证策略](../docs/testing.md)
 
 本表记录分工与证据，阶段范围仍以 [00–12 路线图](README.md) 为准；研究报告提供设计来源，不代表库兼容性、硬件精度或真人体验已验证
 
@@ -30,8 +30,8 @@
 | 18 | 精度优先的 AnchorCompiler · 07 | editor_core + stage_curve_plan + section_qa + root | IN PROGRESS | 现有分析结构可先行；生产策略依赖 17 | 纯 AnchorProposal、逐项证据、完整重编及明确采用 CLI 已交付；41 项相关测试和 32 项真实包 CPU 检查通过，原音频/分析/cue 保真，core 与 Replay 一致；音乐置信度校准、标注与试听继续保留 |
 | 19 | 确定性 StageCompiler · 08 | stage_plan + stage_scene + root | IN PROGRESS | 手工包软件基础可并行；完整退出需 18 | v2 已接直道/广场/缓弯/低桥、固定拱门和同轨道预告；121 项相关测试、5 项场景补验、42 项 CPU 与最终 16 张 GPU 图通过，原拱门遮挡已修并保留失败图；完整自动编排、跨版本视觉 Replay、设备性能与真人可读性仍待完成 |
 | 20 | 内容编辑器与 Replay 诊断 · 09 | editor_core + section_qa + root | IN PROGRESS | 现有包与 Replay 契约可先行；完整体验依赖 18/19 | 原生波形工作台、精确编辑、保真导出和 Replay JSONL 已接通；2026-10-05 重跑 35 项测试、10 条 CLI 命令和 8 张原生 GPU 图通过，详情裁切和底部滚动已补验；历史 GUI 编辑 / 恢复独立记录，本批只读 Replay 图形诊断已补两尺寸 10 张原生 GPU 图、76 条记录浏览与详情底部滚动，候选、计时、试听和完整退出继续推进 |
-| 21 | QUIC 会话、时钟同步与可靠历史 · 10 | stage_curve_plan + net_wire + net_tls + root | IN PROGRESS | 20 | 预装同包的真实 QUIC 历史会话已接 lab；11 项相关测试、13 项 loopback 场景 / 30 命令通过，断线前缀和应用 Ack 有实际证据；有界原字节接收已补 25 项单元测试、16 条 loopback 命令和 6 类恶意传输通过，进程 ClockSync / 未来起点已补 13 项 net 测试、16 条命令和 11 项时钟故障 / 资源回归通过，单局音频和生产接线已补 134 项定向测试、7 组 live loopback、两个原生游戏进程和 16 条 headless 回归；真实双方 71 条事实 / 5 个事件相同，本批 169 项测试及两个原生进程连续两局通过，每局新 epoch、独立记录和相同权威结果，故障重入及设备验收继续保留 |
-| 22 | 网络模拟与故障验证 · 11 | section_qa + root | IN PROGRESS | 21 | loopback 实际进程及受控 peer 的延迟水位、中途断线、身份/TLS/Ack 拒绝已验证；两机、丢包/非对称路径/漂移与音频同步继续保留 |
+| 21 | QUIC 会话、时钟同步与可靠历史 · 10 | stage_curve_plan + net_wire + net_tls + root | IN PROGRESS | 20 | 预装同包的真实 QUIC 历史会话已接 lab；11 项相关测试、13 项 loopback 场景 / 30 命令通过，断线前缀和应用 Ack 有实际证据；有界原字节接收已补 25 项单元测试、16 条 loopback 命令和 6 类恶意传输通过，进程 ClockSync / 未来起点已补 13 项 net 测试、16 条命令和 11 项时钟故障 / 资源回归通过，单局音频和生产接线已补 134 项定向测试、7 组 live loopback、两个原生游戏进程和 16 条 headless 回归；真实双方 71 条事实 / 5 个事件相同，本批 169 项测试及两个原生进程连续两局通过，每局新 epoch、独立记录和相同权威结果；随后故障新局和同 epoch 原音源软件恢复已有证据，长期漂移、容量与设备验收继续保留 |
+| 22 | 网络模拟与故障验证 · 11 | section_qa + root | IN PROGRESS | 21 | loopback 实际进程及受控 peer 的延迟水位、中途断线、身份/TLS/Ack 拒绝已验证；真实 UDP 黑洞 / deadline 软件模型已补证据；两机、非对称路径 / 漂移完整矩阵与实际声学同步继续保留 |
 | 23 | 两台真实机器验收 · 11 | 待分配 + 设备测试 | NOT RUN | 11/12/21/22 | 两端 Replay、真实音频偏移、伙伴反馈延迟、重启/断线与双人体验记录 |
 | 24 | 四目标发行与 V1 加固 · 12 | root | NOT RUN | 01/14–23/26–29 | 干净机器、GPU/音频/手柄、帧时间/underrun/内存、许可台账与已知限制 |
 | 25 | 品牌资产、启动动画与发行图标 · 用户新增需求 | 品牌线程 + root | IN PROGRESS | 独立资产和模块交付、08/09 | 品牌 67962a3 已在固定源码 2329c19 完成生产软件补验，59 项测试、Clippy、格式、依赖边界、构建和 GPU 截图视觉检查通过，详见验证策略；输入仍等待 Complete 与新确认；真实音画同步、物理输入和平台图标显示未验收 |
@@ -80,3 +80,7 @@
 2026-10-07 · Ready 曲库生产选择：已制作四对象包经后台完整验证才换歌，取消 / 三类拒绝保留原歌曲与 Replay，成功后停 Ready 等新确认；5 项行为检查、焦点反馈窄测、Clippy / 格式及六项原生 case 通过，42 张指定范围截图通过，旧小窗口视觉失败保留。自动 MIR 和游戏内原始源导入继续推进，见[曲库验证](../docs/testing.md#生产曲库选择与小窗口反馈)
 
 2026-10-07 · BTT MIT 原生 tempo 研究：native / sanitizer 各 16 项边界控制及原 40 条 source / strict canonical 软件观察完成，40 对输出逐字节一致且无 sanitizer 诊断；变速误差与 13/20 编码前后曲线变化完整保留，质量 UNSCORED、生产分析未准入，见[方法与边界](../docs/mir-onset-probe.md#btt-原生-tempo-研究)
+
+2026-10-08 · 10 同 epoch 原音源软件续演：27 项 net、另 2 项实际 host loopback、160 项 runtime、3 项 sampler、Clippy / 格式和冻结 game 构建通过；实际 UDP 黑洞 / reliable deadline 的整数源模型与实际 Kira 双进程主动维护分别 PASS，原 epoch / source generation / source_id / 完整历史保持，恢复期负向 Hit 被过滤。最终双方各 3393 条事实 / 17 个 core 事件及权威 Replay 一致，完整命令 / PID / exit 清单和四 PID / 进程组退出已核对，见[恢复观察](../testdata/synthetic/same-epoch-recovery-observations-20261008.json)
+
+原 50ms guard FAIL、QA 开场 flag 误断言和首次 sampler 运行的命令清单 INCOMPLETE 保留，最终 manifest 修正后重新实际运行才计 PASS；四张 Running / Finished 图的角色、状态、时钟和标签由 agent / 主线程逐张指定范围检查，长 CID 溢出仍归 02b，Recovering 图未取得。工作包 21 / 22 保持 IN PROGRESS，下一批继续共享生产源导入、优化 release 性能矩阵和原生许可宽松分析；无 GPL 或 Python 产品后端，实体输入 / DAC / 长期漂移 / 双机 / 真人验收保持 NOT RUN

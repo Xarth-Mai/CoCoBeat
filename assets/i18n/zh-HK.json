@@ -183,6 +183,7 @@
   "network.scheduled": "雙方已準備 · 音樂即將開始",
   "network.listening": "邀請已寫入 {path} · 等待伙伴加入",
   "network.running": "連線演奏中",
+  "network.recovering": "正在重新連線本局並檢查同步…按 Esc 結束本局",
   "network.finishing": "等待雙方確認演奏結束…",
   "network.complete": "連線演奏已完成",
   "network.failed": "連線演奏已中斷",

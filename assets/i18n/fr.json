@@ -183,6 +183,7 @@
   "network.scheduled": "Les deux joueurs sont prêts · La musique va commencer",
   "network.listening": "Invitation enregistrée dans {path} · En attente de votre partenaire",
   "network.running": "Vous jouez ensemble en ligne",
+  "network.recovering": "Reconnexion à cette partie et vérification de la synchronisation… Échap termine la partie",
   "network.finishing": "En attente de la confirmation de fin des deux joueurs…",
   "network.complete": "Interprétation en ligne terminée",
   "network.failed": "Interprétation en ligne interrompue",

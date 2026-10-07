@@ -51,6 +51,7 @@ enum Phase {
     Running,
     Pausing,
     Paused,
+    Recovering,
     Finished,
     Finishing,
     Fault,
@@ -420,6 +421,13 @@ impl Game {
             input
                 .queued
                 .retain(|event| event.control == Control::FocusLost);
+        } else if self.phase == Phase::Recovering {
+            input.queued.retain(|event| {
+                matches!(
+                    event.control,
+                    Control::TogglePause(_) | Control::FocusLost | Control::Quit
+                )
+            });
         } else if self.phase == Phase::Starting {
             input.queued.retain(|event| {
                 matches!(event.control, Control::TogglePause(_) | Control::FocusLost)
@@ -1249,6 +1257,44 @@ fn poll_network(
                     }
                     online.started = true;
                 }
+                event @ (LiveEvent::RecoveryPausing { .. }
+                | LiveEvent::RecoveryScheduled { .. }
+                | LiveEvent::RecoverySampling { .. }
+                | LiveEvent::RecoveryReady { .. }) => {
+                    if matches!(event, LiveEvent::RecoveryPausing { .. }) {
+                        if game.phase != Phase::Running || !online.started || online.local_ended {
+                            return Err("Recovery requires the original running round".into());
+                        }
+                    } else if game.phase != Phase::Recovering {
+                        return Err("Unexpected recovery event outside the paused round".into());
+                    }
+                    let end = game.content.end;
+                    let ready = online.recovery_event(
+                        event,
+                        &mut game.session,
+                        audio,
+                        end,
+                        input.origin,
+                    )?;
+                    game.phase = if ready {
+                        Phase::Running
+                    } else {
+                        Phase::Recovering
+                    };
+                    game.notice = Message::new(if ready {
+                        "network.running"
+                    } else {
+                        "network.recovering"
+                    });
+                    input.queued.retain(|event| {
+                        matches!(
+                            event.control,
+                            Control::TogglePause(_) | Control::FocusLost | Control::Quit
+                        )
+                    });
+                    input.set_menu_open(!ready);
+                    input.reset_edges();
+                }
                 LiveEvent::PeerFacts(facts) => {
                     let local = online
                         .player
@@ -1476,6 +1522,16 @@ fn update_game(
             fault_message = "game.audio_failed";
             return Err(error);
         }
+        if game.phase == Phase::Recovering {
+            game.filter_transition_controls(&mut input);
+            if input
+                .queued
+                .iter()
+                .any(|event| matches!(event.control, Control::TogglePause(_) | Control::FocusLost))
+            {
+                return Err("Recovery stopped by focus loss or cancellation".into());
+            }
+        }
         if online.enabled() {
             fault_message = "network.failed";
             poll_network(
@@ -1486,6 +1542,14 @@ fn update_game(
                 &mut visual,
                 &mut commands,
             )?;
+        }
+        if game.phase == Phase::Recovering {
+            if !online.recovering() {
+                return Err("Presentation recovery lost its original network state".into());
+            }
+            let origin = input.origin;
+            let events = online.update_recovery(&mut game.session, &mut audio, origin)?;
+            feedback(events, &mut audio, &mut visual)?;
         }
         game.filter_transition_controls(&mut input);
         if matches!(
@@ -1585,7 +1649,11 @@ fn update_game(
                     if input.menu_open
                         && !matches!(
                             game.phase,
-                            Phase::Running | Phase::Starting | Phase::Connecting | Phase::Finishing
+                            Phase::Running
+                                | Phase::Starting
+                                | Phase::Connecting
+                                | Phase::Finishing
+                                | Phase::Recovering
                         )
                     {
                         if !settings.is_open() {
@@ -1697,7 +1765,11 @@ fn update_game(
                     if online.enabled()
                         && matches!(
                             game.phase,
-                            Phase::Connecting | Phase::Starting | Phase::Running | Phase::Finishing
+                            Phase::Connecting
+                                | Phase::Starting
+                                | Phase::Running
+                                | Phase::Finishing
+                                | Phase::Recovering
                         )
                     {
                         return Err("Online round stopped by focus loss or pause request".into());
@@ -1823,9 +1895,10 @@ fn update_game(
     );
     visual.transitioning = matches!(
         game.phase,
-        Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing
+        Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing | Phase::Recovering
     );
     input.set_menu_transitioning(visual.transitioning);
+    input.set_recovery_cancel(game.phase == Phase::Recovering);
     visual.song_time = game.session.current;
     visual.song_seconds = visual.song_time.as_seconds_f64();
     visual.next_anchor_time = game.next_anchor();
@@ -1924,6 +1997,7 @@ fn game_text(game: &Game, settings: &SettingsMenu) -> (String, Vec<String>) {
             Phase::Running => "phase.running",
             Phase::Pausing => "phase.pausing",
             Phase::Paused => "phase.paused",
+            Phase::Recovering => "network.recovering",
             Phase::Finishing => "network.finishing",
             Phase::Finished => "phase.finished",
             Phase::Fault => "phase.fault",
@@ -2059,9 +2133,11 @@ fn menu_phase(phase: Phase) -> MenuPhase {
         Phase::Running | Phase::Paused => MenuPhase::Paused,
         Phase::Finished => MenuPhase::Finished,
         Phase::Fault => MenuPhase::Fault,
-        Phase::Connecting | Phase::Starting | Phase::Pausing | Phase::Finishing => {
-            MenuPhase::Transition
-        }
+        Phase::Connecting
+        | Phase::Starting
+        | Phase::Pausing
+        | Phase::Finishing
+        | Phase::Recovering => MenuPhase::Transition,
     }
 }
 
@@ -4067,6 +4143,52 @@ mod tests {
         );
         assert_eq!(game.phase, Phase::Running);
         assert!(game.session.clock.last_observation().is_some());
+
+        // A nonzero original handle cannot bypass the same-epoch recovery gate
+        game.phase = Phase::Recovering;
+        let original_observation = game.session.clock.last_observation();
+        assert!(
+            !game
+                .observe_playback(
+                    handle.position(),
+                    handle.state(),
+                    MonotonicTime::from_nanos(11_000_000)
+                )
+                .unwrap()
+        );
+        assert_eq!(game.phase, Phase::Recovering);
+        assert_eq!(game.session.clock.last_observation(), original_observation);
+        let mut recovery_input = InputState::default();
+        recovery_input.queued = [
+            Control::Start,
+            Control::Hit(PlayerId::P1),
+            Control::Hit(PlayerId::P2),
+            Control::Restart,
+            Control::SaveReplay,
+            Control::TogglePause(InputSource::Keyboard),
+            Control::FocusLost,
+            Control::Quit,
+        ]
+        .into_iter()
+        .map(|control| input::CapturedControl {
+            control,
+            monotonic_ns: 11_000_000,
+        })
+        .collect();
+        game.filter_transition_controls(&mut recovery_input);
+        assert_eq!(
+            recovery_input
+                .queued
+                .iter()
+                .map(|event| event.control)
+                .collect::<Vec<_>>(),
+            [
+                Control::TogglePause(InputSource::Keyboard),
+                Control::FocusLost,
+                Control::Quit
+            ]
+        );
+        game.phase = Phase::Running;
 
         let pad = World::new().spawn_empty().id();
         let mut input = InputState::default();

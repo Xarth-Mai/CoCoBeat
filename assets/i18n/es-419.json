@@ -183,6 +183,7 @@
   "network.scheduled": "Ambos están listos · La música comienza pronto",
   "network.listening": "Invitación guardada en {path} · Esperando a tu compañero",
   "network.running": "Tocando juntos en línea",
+  "network.recovering": "Reconectando esta ronda y comprobando la sincronización… Esc termina la ronda",
   "network.finishing": "Esperando que ambos confirmen el final…",
   "network.complete": "Interpretación en línea completada",
   "network.failed": "Interpretación en línea interrumpida",

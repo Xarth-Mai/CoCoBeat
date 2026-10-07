@@ -188,6 +188,7 @@ struct SourceShared {
     after_ns: AtomicU64,
 }
 
+#[derive(Clone)]
 pub(super) struct SourceReader(Arc<SourceShared>);
 
 impl SourceReader {

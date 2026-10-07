@@ -7,7 +7,10 @@ mod session;
 mod sync;
 mod wire;
 
-pub use live::{LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSendError, LiveSession};
+pub use live::{
+    LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSendError, LiveSession, RecoveryFrozen,
+    RecoveryObserved, RecoveryPublication,
+};
 pub use session::{SessionSummary, host, join, join_receive};
 pub use sync::{ClockSample, NetworkTiming};
 
@@ -27,13 +30,13 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 5;
+pub(crate) const PROTOCOL_VERSION: u32 = 6;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/5";
+const ALPN: &[u8] = b"cocobeat-session/6";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Invitation {
     pub invite_version: u32,
@@ -147,6 +150,15 @@ fn transport(host: bool) -> Arc<TransportConfig> {
         .datagram_receive_buffer_size(Some(4 * 1024))
         .datagram_send_buffer_size(4 * 1024);
     Arc::new(transport)
+}
+
+pub(crate) fn continuation_capability() -> Result<[u8; 32], String> {
+    let mut capability = [0; 32];
+    rustls::crypto::ring::default_provider()
+        .secure_random
+        .fill(&mut capability)
+        .map_err(|_| "continuation secure random generation failed")?;
+    Ok(capability)
 }
 
 pub(crate) fn listen(bind: SocketAddr) -> Result<(Endpoint, Invitation), String> {

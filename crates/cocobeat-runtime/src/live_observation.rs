@@ -13,6 +13,22 @@ struct Observation {
     scenario: &'static str,
     cancel_host: bool,
     fault_injected: bool,
+    same_epoch: Option<SameEpochObservation>,
+}
+
+#[derive(Default)]
+struct SameEpochObservation {
+    request_sent: bool,
+    seen: bool,
+    ready: bool,
+    identity: Option<(u64, u64, SessionEpoch)>,
+    prefix: Vec<DuoInput>,
+    recovering_hits: Option<usize>,
+    probe_requested_ns: Option<u64>,
+    probe_cleared_observed_ns: Option<u64>,
+    probe_dropped_before_ready: bool,
+    last_stage: Option<String>,
+    records: Vec<serde_json::Value>,
 }
 
 struct RoundObservation {
@@ -52,7 +68,7 @@ impl RoundObservation {
         file("running.png")?;
         file("screenshot.png")?;
         let mut frames = file("frames.csv")?;
-        writeln!(frames, "frame,monotonic_ns,phase,controls_enabled,brand_complete,cursor_seconds,source_song_frames,estimated_song_frames,epoch,local_player,facts,events,synthetic_hits,network_started")
+        writeln!(frames, "frame,monotonic_ns,phase,controls_enabled,brand_complete,cursor_seconds,source_song_frames,estimated_song_frames,epoch,local_player,facts,events,synthetic_hits,network_started,online_recovering,source_generation,source_id,source_sequence,audio_state")
             .map_err(|error| error.to_string())?;
         Ok(Self {
             number,
@@ -80,9 +96,14 @@ impl Observation {
             "reenter-before-ready-guest" => ("reenter-before-ready", false),
             "reenter-after-hit-host" => ("reenter-after-hit", true),
             "reenter-after-hit-guest" => ("reenter-after-hit", false),
+            "same-epoch-active-host" => ("same-epoch-active", true),
+            "same-epoch-active-guest" => ("same-epoch-active", false),
             _ => return Err("Unknown live observation scenario".into()),
         };
-        if scenario != "complete" && round_count != 2 {
+        if scenario == "same-epoch-active" && round_count != 1 {
+            return Err("Same epoch observation requires one original round".into());
+        }
+        if scenario.starts_with("reenter-") && round_count != 2 {
             return Err("Recovery observation requires exactly two declared rounds".into());
         }
         std::fs::create_dir(directory)
@@ -103,6 +124,7 @@ impl Observation {
             scenario,
             cancel_host,
             fault_injected: false,
+            same_epoch: (scenario == "same-epoch-active").then(SameEpochObservation::default),
         })
     }
 
@@ -193,6 +215,15 @@ fn record_result(
         "phase": format!("{:?}", game.phase), "error": error.or(game.fault_details.as_deref()),
         "process_id": std::process::id(), "scenario": observation.scenario,
         "local_worker_cancel_requested": observation.fault_injected && observation.current.number == 1,
+        "same_epoch": observation.same_epoch.as_ref().map(|recovery| serde_json::json!({
+            "request_sent": recovery.request_sent, "recovering_seen": recovery.seen,
+            "ready_after_gate": recovery.ready, "records": recovery.records,
+            "probe_requested_ns": recovery.probe_requested_ns,
+            "probe_cleared_observed_ns": recovery.probe_cleared_observed_ns,
+            "probe_dropped_before_ready": recovery.probe_dropped_before_ready,
+            "cause": "explicit active QUIC maintenance request, not packet loss or speaker evidence",
+        })),
+        "core_events": format!("{:?}", game.session.engine.events()),
         "owned_workers_finished": online.is_finished(),
         "epoch": game.session.epoch().0, "content_id": game.content.content_id,
         "canonical_frames": game.content.end.frames(), "frames_observed": observation.current.frame,
@@ -251,11 +282,13 @@ fn observe(
             .position()
             .map(|position| position.to_string())
             .unwrap_or_default();
+        let actual_source = audio.source_observation();
+        let source_read_after = Instant::now();
         let frame = observation.current.frame;
         let hits_sent = observation.current.hits_sent;
         writeln!(
             observation.current.frames,
-            "{},{now},{:?},{},{},{cursor},{source},{},{},{},{},{},{},{}",
+            "{},{now},{:?},{},{},{cursor},{source},{},{},{},{},{},{},{},{},{},{},{},{:?}",
             frame,
             game.phase,
             input.controls_enabled(),
@@ -269,9 +302,122 @@ fn observe(
             game.session.replay.facts().len(),
             game.session.engine.events().len(),
             hits_sent,
-            online.started
+            online.started,
+            online.recovering(),
+            actual_source
+                .map(|source| source.generation.to_string())
+                .unwrap_or_default(),
+            actual_source
+                .map(|source| source.source_id.to_string())
+                .unwrap_or_default(),
+            actual_source
+                .map(|source| source.sequence.to_string())
+                .unwrap_or_default(),
+            audio.state(),
         )
         .map_err(|error| error.to_string())?;
+        if let Some(recovery) = &mut observation.same_epoch {
+            if let Some(requested) = recovery.probe_requested_ns
+                && now > requested
+                && recovery.probe_cleared_observed_ns.is_none()
+                && !input
+                    .queued
+                    .iter()
+                    .any(|event| matches!(event.control, Control::Hit(_)))
+            {
+                recovery.probe_cleared_observed_ns = Some(now);
+            }
+            if game.phase == Phase::Recovering && !recovery.seen {
+                recovery.seen = true;
+                recovery.recovering_hits = Some(game.session.diagnostics.len());
+                if recovery.identity.is_none() {
+                    let source =
+                        actual_source.ok_or("Recovery observation lacks the original source")?;
+                    recovery.identity =
+                        Some((source.generation, source.source_id, game.session.epoch()));
+                    recovery.prefix = game.session.replay.facts().to_vec();
+                }
+            }
+            if game.phase == Phase::Recovering {
+                if recovery.recovering_hits != Some(game.session.diagnostics.len()) {
+                    return Err("Recovery accepted a performing Hit while input was gated".into());
+                }
+                if online.recovering() && recovery.probe_requested_ns.is_none() {
+                    input.queued.push(input::CapturedControl {
+                        control: Control::Hit(
+                            online.player.ok_or("Recovery probe lacks a player")?,
+                        ),
+                        monotonic_ns: now,
+                    });
+                    recovery.probe_requested_ns = Some(now);
+                }
+            } else if recovery.seen && game.phase == Phase::Running && !online.recovering() {
+                if !recovery.ready {
+                    if recovery.probe_requested_ns.is_none()
+                        || recovery.probe_cleared_observed_ns.is_none()
+                        || recovery.recovering_hits != Some(game.session.diagnostics.len())
+                        || game
+                            .session
+                            .replay
+                            .facts()
+                            .iter()
+                            .filter(|fact| matches!(fact, DuoInput::Hit(hit) if Some(hit.player) == online.player))
+                            .count()
+                            != 2
+                        || input
+                            .queued
+                            .iter()
+                            .any(|event| matches!(event.control, Control::Hit(_)))
+                    {
+                        return Err("Recovery probe survived the real input gate".into());
+                    }
+                    recovery.probe_dropped_before_ready = true;
+                }
+                recovery.ready = true;
+            }
+            if let Some(identity) = recovery.identity {
+                if game.session.epoch() != identity.2
+                    || !game.session.replay.facts().starts_with(&recovery.prefix)
+                {
+                    return Err(
+                        "Recovery replaced the original epoch or ordered GUI history prefix".into(),
+                    );
+                }
+                if matches!(game.phase, Phase::Recovering | Phase::Running)
+                    && let Some(source) = actual_source
+                    && (source.generation, source.source_id) != (identity.0, identity.1)
+                {
+                    return Err("Recovery replaced the original Kira source instance".into());
+                }
+            }
+            let stage = format!(
+                "{:?}:{:?}:{}",
+                game.phase,
+                audio.state(),
+                online.recovering()
+            );
+            if recovery.last_stage.as_ref() != Some(&stage) {
+                if recovery.records.len() >= 32 {
+                    return Err("Recovery stage observation exceeded its bound".into());
+                }
+                recovery.records.push(serde_json::json!({
+                    "stage": stage, "phase": format!("{:?}", game.phase),
+                    "epoch": game.session.epoch().0, "content_id": game.content.content_id,
+                    "facts": game.session.replay.encode().map_err(|error| error.to_string())?,
+                    "core_events": format!("{:?}", game.session.engine.events()),
+                    "controls_enabled": input.controls_enabled(), "online_recovering": online.recovering(),
+                    "local_hits": game.session.diagnostics.len(), "ready_after_gate": recovery.ready,
+                    "source": actual_source.map(|source| serde_json::json!({
+                        "generation": source.generation, "source_id": source.source_id,
+                        "sequence": source.sequence, "position_seconds": source.position_seconds,
+                        "publication_width_ns": source.published_between[1].checked_duration_since(source.published_between[0]).map(|duration| duration.as_nanos()),
+                        "publication_age_lower_ns": source_read_after.checked_duration_since(source.published_between[1]).map(|duration| duration.as_nanos()),
+                        "publication_age_upper_ns": source_read_after.checked_duration_since(source.published_between[0]).map(|duration| duration.as_nanos()),
+                    })),
+                }));
+                recovery.last_stage = Some(stage);
+            }
+        }
         if !observation.current.start_sent
             && brand.is_complete()
             && input.controls_enabled()
@@ -284,8 +430,15 @@ fn observe(
             observation.current.start_sent = true;
         }
         if game.phase == Phase::Running && observation.current.hits_sent < 3 {
-            let threshold =
-                game.content.end.frames() * (observation.current.hits_sent as i64 + 1) / 4;
+            let threshold = if let Some(recovery) = &observation.same_epoch {
+                if observation.current.hits_sent == 2 && !recovery.ready {
+                    i64::MAX
+                } else {
+                    [48_000, 72_000, 192_000][observation.current.hits_sent]
+                }
+            } else {
+                game.content.end.frames() * (observation.current.hits_sent as i64 + 1) / 4
+            };
             if game.session.current.frames() >= threshold {
                 let player = online.player.unwrap_or(PlayerId::P1);
                 input.queued.push(input::CapturedControl {
@@ -294,6 +447,30 @@ fn observe(
                 });
                 observation.current.hits_sent += 1;
             }
+        }
+        if observation.cancel_host
+            && game.phase == Phase::Running
+            && game.session.current.frames() >= 96_000
+            && actual_source.is_some_and(|source| source.position_seconds >= 2.0)
+            && let Some(recovery) = &mut observation.same_epoch
+            && !recovery.request_sent
+            && [PlayerId::P1, PlayerId::P2].into_iter().all(|player| {
+                game.session
+                    .replay
+                    .facts()
+                    .iter()
+                    .filter(|fact| matches!(fact, DuoInput::Hit(hit) if hit.player == player))
+                    .count()
+                    >= 2
+            })
+        {
+            let source = actual_source.ok_or("Recovery request lacks actual source publication")?;
+            recovery.identity = Some((source.generation, source.source_id, game.session.epoch()));
+            recovery.prefix = game.session.replay.facts().to_vec();
+            online.send(LiveCommand::RequestRecovery {
+                epoch: game.session.epoch(),
+            })?;
+            recovery.request_sent = true;
         }
         if observation.cancel_host && !observation.fault_injected && observation.current.number == 1
         {
@@ -369,8 +546,18 @@ fn observe(
             && (!observation.current.requested[0] || observation.current.captures[0].is_some())
             && online.is_finished()
         {
+            if observation
+                .same_epoch
+                .as_ref()
+                .is_some_and(|recovery| !recovery.seen || !recovery.ready)
+                && game.phase == Phase::Finished
+            {
+                return Err(
+                    "Same epoch observation finished without a real gated continuation".into(),
+                );
+            }
             record_result(&mut observation, &game, &online, None)?;
-            let expected_fault = observation.scenario != "complete"
+            let expected_fault = observation.scenario.starts_with("reenter-")
                 && observation.current.number == 1
                 && game.phase == Phase::Fault;
             if (game.phase == Phase::Finished || expected_fault) && online.remaining_rounds() > 0 {

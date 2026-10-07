@@ -7,7 +7,8 @@
 - [x] datagram 仅用于可丢时钟探测；控制、输入历史、水位与资源使用可靠 stream
 - [x] ClockSync、ScheduleStart、epoch、Finish/FinishAck 与正常完成后同进程新一局的软件闭环
 - [x] Fault 后通过新邀请 / epoch 开启新轮次的软件恢复
-- [ ] 同 epoch 断线续演与声卡漂移校正
+- [x] 同 epoch 原进程、原音源与原历史的软件续演
+- [ ] 长期声卡漂移测量与校正
 - [x] 每位玩家可靠输入流与进度水位：水位关闭前不能把未到达当作未按键
 - [x] 权威 DuoEngine 与 Replay 走同一规则入口；共享确认可延迟，本地 Hit 不等待
 
@@ -15,7 +16,7 @@
 
 2026-10-03：预装同包的 headless 会话已由 lab 的 `net-host` / `net-join` 消费，7 项 net 与 4 项边界测试、Clippy、构建和 13 项真实 loopback 场景通过；30 条进程命令覆盖真实 TLS、能力与内容身份、单条/64条批次、断线前缀和应用 Ack，135 条完整事实得到相同 16 个事件。断线时真实前缀保留且不补 Miss，错误/缺失 FinishAck 不报告 COMPLETE；入口与边界见 [网络会话](../docs/network-sessions.md)
 
-可靠历史、四对象资源接收、进程单调 ClockSync / 未来 ScheduleStart、生产输入 / 音频 / 伙伴表现及正常完成后同进程新一局已完成软件闭环，Fault 后新轮次恢复已有软件证据，同 epoch 断线续演及漂移继续开发；实际双机、LAN/WAN、防火墙、物理设备和最大容量性能为 NOT RUN，软件通过不等同于真实验收
+可靠历史、四对象资源接收、进程单调 ClockSync / 未来 ScheduleStart、生产输入 / 音频 / 伙伴表现及正常完成后同进程新一局已完成软件闭环，Fault 后新轮次恢复已有软件证据，同 epoch 软件续演已有独立 UDP 模型与原生主动维护证据，长期漂移继续开发；实际双机、LAN/WAN、防火墙、物理设备和最大容量性能为 NOT RUN，软件通过不等同于真实验收
 
 2026-10-07：新增 `net-receive`，protocol / ALPN v2，以固定顺序和原始字节接收四对象，完整媒体校验与包身份成功后经 Installed / InstalledAck 进入 Ready；25 项定向单元测试、16 条实际 loopback 命令及 6 类恶意资源传输通过，失败无 Ready、坏包无发布且 staging 清理，证据见 [验证策略](../docs/testing.md#quic-四对象资源接收)
 
@@ -28,3 +29,7 @@
 两个原生游戏进程已在同进程生命周期内连续完成两局，epoch 为 `3124893908200008438` / `1601151596960184129`，两局事实计数为 `[35, 36]` / `[36, 36]`，每局双方均有 5 个事件；新证书、seq 重置、Receive → Join、独立输出和旧局文件保真检查 PASS，见 [综合软件观测](../testdata/synthetic/session-diagnostics-observations-20261007.json)。本批为 loopback、实际 Kira source cursor 和合成输入的软件验证，真实键盘 / 手柄、扬声器同步、双机、LAN/WAN 与真人体验仍待验收
 
 2026-10-07 · 协议 v5 纳入明确 Stage 编译身份，Replay v2 记录实际版本；旧 v1 原字节保持，12 个真实早期身份拒绝与 3 个实际 PCM 版本检查通过，见[Stage 观察](../testdata/synthetic/stage-version-observations-20261007.json)。故障后新邀请重入取得 127 项 runtime、9 组 worker 与 3 组原生双轮证据；旧前缀 / 文件保留，等待 worker 与 decoder 结束及录制保存，再明确消费新配置，见[网络观察](../testdata/synthetic/network-reentry-observations-20261007.json)。同 epoch 续演与真实设备 / 双机验收继续保留
+
+2026-10-08 · 同 epoch 软件恢复：protocol / ALPN v6 保留原 epoch、原 PCM / Kira 句柄和完整事实前缀，仅完成一次有界续演；27 项 net 测试、另 2 项实际 host loopback、160 项 runtime、3 项 sampler 窄测、Clippy / 格式与固定 game 构建通过。真实 UDP 黑洞由可靠 deadline 触发恢复，source 为整数 48kHz 模型；独立的实际 Kira 双进程主动维护恢复保持 source generation / source_id `1 / 1`，恢复期负向 Hit 被过滤，终局双方各 3393 条事实 / 17 个 core 事件及权威 Replay 一致
+
+原 50ms guard 失败、QA 开场 flag 误断言和首次 sampler 运行的命令清单 INCOMPLETE 保留，最终重新原生运行补齐完整 PID / 命令 / exit 证据，固定二进制和完整源码身份见[同 epoch 恢复观察](../testdata/synthetic/same-epoch-recovery-observations-20261008.json)及[验证策略](../docs/testing.md#同-epoch-原音源软件恢复)。同 epoch 软件项 PASS 不关闭长期声卡漂移、实际 Kira 丢包场景、最大容量、物理设备和双机 / 真人验收

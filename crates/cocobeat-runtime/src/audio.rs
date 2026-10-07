@@ -2,6 +2,7 @@
 
 use std::{
     f32::consts::TAU,
+    sync::{Arc, Mutex, TryLockError},
     time::{Duration, Instant},
 };
 
@@ -32,7 +33,7 @@ pub use observation::{CallbackObservation, SourceObservation};
 pub struct AudioOutput {
     manager: AudioManager<DefaultBackend>,
     song: Option<StaticSoundData>,
-    music: Option<ControlledSound>,
+    music: Option<Arc<Mutex<ControlledSound>>>,
     observations: AudioObservations,
     music_source: Option<SourceReader>,
     hits: [Option<StaticSoundData>; 2],
@@ -113,7 +114,7 @@ impl AudioOutput {
 
     fn play_music(&mut self, song: StaticSoundData) -> Result<(), kira::PlaySoundError<()>> {
         let (handle, source) = self.manager.play(self.observations.sound(song))?;
-        self.music = Some(ControlledSound::new(handle));
+        self.music = Some(Arc::new(Mutex::new(ControlledSound::new(handle))));
         self.music_source = Some(source);
         Ok(())
     }
@@ -142,23 +143,47 @@ impl AudioOutput {
 
     /// Records the final frame intent; `reconcile_playback` enqueues it after control processing
     pub fn pause(&mut self) {
-        if let Some(music) = &mut self.music {
+        if let Some(music) = &self.music
+            && let Ok(mut music) = music.lock()
+        {
             music.paused = true;
         }
     }
 
     /// Records the final frame intent; inspect `state` for callback acknowledgment
     pub fn resume(&mut self) {
-        if let Some(music) = &mut self.music {
+        if let Some(music) = &self.music
+            && let Ok(mut music) = music.lock()
+        {
             music.paused = false;
         }
+    }
+
+    /// Enqueues one delayed resume on the existing, acknowledged Paused source
+    /// The caller verifies stable source publications and keeps input gated until RecoveryReady
+    /// Kira counts the delay from command consumption; this is not a device-time guarantee
+    /// Canceling an armed resume requires terminal stop, not another pause request
+    pub fn resume_at(&mut self, deadline: Instant) -> Result<(), String> {
+        self.source_observation()
+            .ok_or("Scheduled resume requires an available current source observation")?;
+        self.music
+            .as_mut()
+            .ok_or("No music is playing")?
+            .lock()
+            .map_err(|_| "Music control lock is poisoned")?
+            .resume_at(deadline)
     }
 
     /// Enqueues a stop and discards the handle; the audio callback applies it asynchronously
     pub fn stop(&mut self) {
         self.music_source = None;
-        if let Some(mut music) = self.music.take() {
-            music.handle.stop(immediate());
+        if let Some(music) = self.music.take() {
+            // Poisoned state can only be used to enqueue terminal cleanup
+            music
+                .lock()
+                .unwrap_or_else(|error| error.into_inner())
+                .handle
+                .stop(immediate());
         }
         self.stop_brand();
     }
@@ -206,11 +231,12 @@ impl AudioOutput {
 
     /// Call once after all frame controls so only their final intent reaches the callback
     pub fn reconcile_playback(&mut self) {
-        for sound in self
-            .music
-            .iter_mut()
-            .chain(self.brand_handles.iter_mut().flatten())
+        if let Some(music) = &self.music
+            && let Ok(mut music) = music.lock()
         {
+            music.reconcile();
+        }
+        for sound in self.brand_handles.iter_mut().flatten() {
             sound.reconcile();
         }
     }
@@ -218,7 +244,7 @@ impl AudioOutput {
     /// Source seconds last published by an audio callback, with unknown device buffering
     /// Natural completion can leave the last cursor short of the content length; inspect `state`
     pub fn position(&self) -> Option<f64> {
-        self.music.as_ref().map(|music| music.handle.position())
+        Some(self.music.as_ref()?.lock().ok()?.handle.position())
     }
 
     /// Last coherent main-mix observation, unavailable before its first hook or during a write
@@ -234,13 +260,28 @@ impl AudioOutput {
     pub fn source_observation(&self) -> Option<SourceObservation> {
         self.music_source
             .as_ref()?
-            .read(&self.music.as_ref()?.handle)
+            .read(&self.music.as_ref()?.try_lock().ok()?.handle)
+    }
+
+    pub(crate) fn source_sampler(&self) -> Result<SourceSampler, String> {
+        Ok(SourceSampler {
+            music: self
+                .music
+                .as_ref()
+                .ok_or("No original music handle")?
+                .clone(),
+            source: self
+                .music_source
+                .as_ref()
+                .ok_or("No original source reader")?
+                .clone(),
+        })
     }
 
     /// Includes pending control intent as Pausing/Resuming until the callback acknowledges it
     /// Stopped always takes precedence over any remaining intent
     pub fn state(&self) -> Option<PlaybackState> {
-        self.music.as_ref().map(ControlledSound::state)
+        Some(self.music.as_ref()?.lock().ok()?.state())
     }
 
     pub fn hit(&mut self, player: PlayerId) -> Result<(), String> {
@@ -259,6 +300,11 @@ impl AudioOutput {
 
     /// Every backend error invalidates the caller's timing calibration, including recovered errors
     pub fn take_error(&mut self) -> Option<String> {
+        if self.music.as_ref().is_some_and(|music| music.is_poisoned()) {
+            self.observations.invalidate();
+            self.stop();
+            return Some("Music control lock is poisoned; timing is invalid".into());
+        }
         let backend = self.manager.backend_mut();
         if let Some(error) = backend.pop_error() {
             self.observations.invalidate();
@@ -276,6 +322,57 @@ impl AudioOutput {
         }
         None
     }
+}
+
+/// Read-only worker access; raw state is independent of the coherent source publication
+#[derive(Clone)]
+pub(crate) struct SourceSampler {
+    music: Arc<Mutex<ControlledSound>>,
+    source: SourceReader,
+}
+
+impl SourceSampler {
+    #[cfg(test)]
+    pub(crate) fn music_owners(&self) -> usize {
+        Arc::strong_count(&self.music)
+    }
+
+    pub(crate) fn read(&self) -> Result<Option<(SourceObservation, PlaybackState)>, String> {
+        match self.music.try_lock() {
+            Ok(music) => Ok(self
+                .source
+                .read(&music.handle)
+                .map(|row| (row, music.handle.state()))),
+            Err(TryLockError::WouldBlock) => Ok(None),
+            Err(TryLockError::Poisoned(_)) => Err("Music sampler control lock is poisoned".into()),
+        }
+    }
+}
+
+#[cfg(test)]
+pub(crate) fn mock_source_sampler() -> (
+    AudioManager<kira::backend::mock::MockBackend>,
+    SourceSampler,
+) {
+    let mut observations = AudioObservations::new();
+    let mut audio = AudioManager::new(AudioManagerSettings {
+        backend_settings: kira::backend::mock::MockBackendSettings {
+            sample_rate: 48_000,
+        },
+        main_track_builder: observations.main_track(),
+        ..Default::default()
+    })
+    .unwrap();
+    let (handle, source) = audio
+        .play(observations.sound(sound_data(vec![Frame::ZERO; 48_000])))
+        .unwrap();
+    (
+        audio,
+        SourceSampler {
+            music: Arc::new(Mutex::new(ControlledSound::new(handle))),
+            source,
+        },
+    )
 }
 
 fn schedule_delay(deadline: Instant, now: Instant) -> Result<Duration, String> {
@@ -306,6 +403,25 @@ impl ControlledSound {
         } else {
             PlaybackState::Playing
         }
+    }
+
+    fn resume_at(&mut self, deadline: Instant) -> Result<(), String> {
+        if !self.paused
+            || self.handle.state() != PlaybackState::Paused
+            || self
+                .pending
+                .is_some_and(|pending| pending != PlaybackState::Paused)
+        {
+            return Err(
+                "Scheduled resume requires acknowledged Paused music with no pending resume".into(),
+            );
+        }
+        let delay = schedule_delay(deadline, Instant::now())?;
+        self.handle.resume_at(delay.into(), immediate());
+        self.paused = false;
+        // WaitingToResume is not the final ACK, so reconcile must retain this delayed command
+        self.pending = Some(PlaybackState::Playing);
+        Ok(())
     }
 
     fn state(&self) -> PlaybackState {
@@ -527,6 +643,175 @@ mod tests {
             callback(&mut audio);
             assert_eq!(sound.handle.state(), settled);
             assert_eq!(sound.state(), settled);
+        }
+    }
+
+    #[test]
+    fn shared_music_sampler_reads_the_original_future_resume_without_control_access() {
+        let (mut audio, sampler) = mock_source_sampler();
+        callback(&mut audio);
+        callback(&mut audio);
+        let (initial, _) = sampler.read().unwrap().unwrap();
+        {
+            let mut music = sampler.music.lock().unwrap();
+            music.paused = true;
+            music.reconcile();
+        }
+        callback(&mut audio);
+        callback(&mut audio);
+        let (frozen, state) = sampler.read().unwrap().unwrap();
+        assert_eq!(state, PlaybackState::Paused);
+        sampler
+            .music
+            .lock()
+            .unwrap()
+            .resume_at(Instant::now() + Duration::from_secs(1))
+            .unwrap();
+        for _ in 0..100 {
+            sampler.music.lock().unwrap().reconcile();
+            callback(&mut audio);
+            let (row, state) = sampler.read().unwrap().unwrap();
+            assert_eq!(row.position_seconds, frozen.position_seconds);
+            assert_eq!(state, PlaybackState::WaitingToResume);
+        }
+        for _ in 0..300 {
+            sampler.music.lock().unwrap().reconcile();
+            callback(&mut audio);
+        }
+        let (resumed, state) = sampler.read().unwrap().unwrap();
+        assert_eq!(state, PlaybackState::Playing);
+        assert_eq!(
+            (resumed.generation, resumed.source_id),
+            (initial.generation, initial.source_id)
+        );
+        assert!(resumed.sequence > frozen.sequence);
+        assert!(resumed.position_seconds > frozen.position_seconds);
+        let guard = sampler.music.lock().unwrap();
+        assert!(sampler.read().unwrap().is_none());
+        drop(guard);
+    }
+
+    #[test]
+    fn delayed_resume_keeps_the_original_source_and_reconcile_preserves_its_delay() {
+        let mut observations = AudioObservations::new();
+        let mut audio = AudioManager::<MockBackend>::new(AudioManagerSettings {
+            backend_settings: MockBackendSettings {
+                sample_rate: 48_000,
+            },
+            main_track_builder: observations.main_track(),
+            ..Default::default()
+        })
+        .unwrap();
+        let (handle, source) = audio
+            .play(observations.sound(sound_data(vec![Frame::ZERO; 48_000])))
+            .unwrap();
+        let mut sound = ControlledSound::new(handle);
+        callback(&mut audio);
+        callback(&mut audio);
+        sound.paused = true;
+        sound.reconcile();
+        callback(&mut audio);
+        callback(&mut audio);
+        let frozen = source.read(&sound.handle).unwrap();
+        assert!(frozen.position_seconds > 0.0);
+        assert_eq!(sound.handle.state(), PlaybackState::Paused);
+
+        // An acknowledged pending pause does not need another UI frame to be cleared
+        assert_eq!(sound.pending, Some(PlaybackState::Paused));
+        sound
+            .resume_at(Instant::now() + Duration::from_secs(1))
+            .unwrap();
+        assert_eq!(sound.pending, Some(PlaybackState::Playing));
+        assert_eq!(sound.state(), PlaybackState::Resuming);
+        assert!(
+            sound
+                .resume_at(Instant::now() + Duration::from_secs(1))
+                .is_err()
+        );
+        for _ in 0..100 {
+            sound.reconcile();
+            callback(&mut audio);
+            assert_eq!(sound.handle.state(), PlaybackState::WaitingToResume);
+            assert_eq!(sound.state(), PlaybackState::Resuming);
+            assert_eq!(sound.handle.position(), frozen.position_seconds);
+        }
+        for _ in 0..300 {
+            sound.reconcile();
+            callback(&mut audio);
+        }
+        sound.reconcile();
+        let resumed = source.read(&sound.handle).unwrap();
+        assert_eq!(sound.state(), PlaybackState::Playing);
+        assert_eq!(sound.pending, None);
+        assert_eq!(resumed.generation, frozen.generation);
+        assert_eq!(resumed.source_id, frozen.source_id);
+        assert!(resumed.sequence > frozen.sequence);
+        assert!(resumed.position_seconds > frozen.position_seconds);
+    }
+
+    #[test]
+    fn delayed_resume_rejects_unacknowledged_controls_and_late_deadlines() {
+        let mut audio = mock_audio();
+        let mut sound =
+            ControlledSound::new(audio.play(sound_data(vec![Frame::ZERO; 48_000])).unwrap());
+        let deadline = || Instant::now() + Duration::from_secs(1);
+        callback(&mut audio);
+        assert!(sound.resume_at(deadline()).is_err());
+        sound.paused = true;
+        sound.reconcile();
+        assert!(sound.resume_at(deadline()).is_err());
+        callback(&mut audio);
+        assert_eq!(sound.handle.state(), PlaybackState::Paused);
+        for deadline in [
+            Instant::now() - Duration::from_secs(1),
+            Instant::now(),
+            Instant::now() + Duration::from_millis(99),
+        ] {
+            assert!(sound.resume_at(deadline).is_err());
+            assert!(sound.paused);
+            assert_eq!(sound.pending, Some(PlaybackState::Paused));
+        }
+        // A queued immediate resume remains pending even if a later pause restores the intent
+        sound.paused = false;
+        sound.reconcile();
+        sound.paused = true;
+        assert_eq!(sound.handle.state(), PlaybackState::Paused);
+        assert!(sound.resume_at(deadline()).is_err());
+        assert_eq!(sound.pending, Some(PlaybackState::Playing));
+    }
+
+    #[test]
+    fn terminal_stop_cancels_delayed_resume_before_and_after_callback_ack() {
+        for consume_resume in [false, true] {
+            let mut audio = mock_audio();
+            let mut sound =
+                ControlledSound::new(audio.play(sound_data(vec![Frame::ZERO; 48_000])).unwrap());
+            callback(&mut audio);
+            sound.paused = true;
+            sound.reconcile();
+            callback(&mut audio);
+            sound
+                .resume_at(Instant::now() + Duration::from_secs(1))
+                .unwrap();
+            if consume_resume {
+                callback(&mut audio);
+                assert_eq!(sound.handle.state(), PlaybackState::WaitingToResume);
+            }
+            sound.handle.stop(immediate());
+            callback(&mut audio);
+            let stopped_at = sound.handle.position();
+            for _ in 0..400 {
+                sound.reconcile();
+                callback(&mut audio);
+            }
+            assert_eq!(sound.state(), PlaybackState::Stopped);
+            assert_eq!(sound.pending, None);
+            assert_eq!(sound.handle.position(), stopped_at);
+            assert!(
+                sound
+                    .resume_at(Instant::now() + Duration::from_secs(1))
+                    .is_err()
+            );
         }
     }
 

@@ -183,6 +183,7 @@
   "network.scheduled": "Ihr seid beide bereit · Die Musik beginnt gleich",
   "network.listening": "Einladung unter {path} gespeichert · Warten auf deinen Partner",
   "network.running": "Gemeinsam online spielen",
+  "network.recovering": "Diese Runde wird neu verbunden und synchronisiert… Esc beendet die Runde",
   "network.finishing": "Warten auf die Abschlussbestätigung von euch beiden…",
   "network.complete": "Online-Auftritt abgeschlossen",
   "network.failed": "Online-Auftritt unterbrochen",

@@ -26,7 +26,7 @@ const COMPLETE_CODE: u32 = 0x4342;
 const COMPLETE_REASON: &[u8] = b"session complete";
 pub(crate) const IDLE: Duration = Duration::from_secs(30);
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct SessionSummary {
     pub status: &'static str,
     pub mode: &'static str,
@@ -49,6 +49,7 @@ pub struct SessionSummary {
     pub error: Option<String>,
 }
 
+#[derive(Clone)]
 pub(crate) struct Prepared {
     pub(crate) identity: Identity,
     pub(crate) anchors: Vec<Anchor>,
@@ -220,6 +221,7 @@ pub(crate) fn write_new(path: &Path, bytes: &[u8]) -> Result<(), String> {
     Ok(())
 }
 
+#[derive(Clone)]
 pub(crate) struct Session {
     pub(crate) prepared: Prepared,
     pub(crate) player: PlayerId,
@@ -350,6 +352,110 @@ impl Session {
         }
         self.last[index] = Some(fact);
         Ok(())
+    }
+
+    pub(crate) fn player_tape(&self, player: PlayerId) -> Vec<Fact> {
+        self.replay
+            .facts()
+            .iter()
+            .filter(|input| seat(**input) == player)
+            .map(|input| Fact::from_input(*input))
+            .collect()
+    }
+
+    pub(crate) fn append_owner_tape(
+        &mut self,
+        player: PlayerId,
+        tape: &[Fact],
+    ) -> Result<Vec<DuoInput>, String> {
+        if tape.len() > MAX_FACTS {
+            return Err("recovery owner tape exceeds Replay capacity".into());
+        }
+        let accepted = self.player_tape(player);
+        if !tape.starts_with(&accepted) {
+            return Err("accepted player history is not an exact prefix of its owner tape".into());
+        }
+        let suffix = &tape[accepted.len()..];
+        if suffix.is_empty() {
+            return Ok(Vec::new());
+        }
+        let mut staged = self.clone();
+        for fact in suffix {
+            staged.ingest(player, *fact)?;
+        }
+        drop(staged);
+        for fact in suffix {
+            self.ingest(player, *fact)?;
+        }
+        Ok(suffix
+            .iter()
+            .map(|fact| fact.into_input(self.epoch, player))
+            .collect())
+    }
+
+    pub(crate) fn check_presented_peer(
+        &self,
+        peer: PlayerId,
+        presented: &[DuoInput],
+    ) -> Result<Vec<DuoInput>, String> {
+        if peer != other(self.player) || presented.len() > MAX_FACTS {
+            return Err("recovery presentation must be the bounded peer tape".into());
+        }
+        let accepted: Vec<_> = self
+            .replay
+            .facts()
+            .iter()
+            .filter(|input| seat(**input) == peer)
+            .copied()
+            .collect();
+        if !accepted.starts_with(presented) {
+            return Err("presented peer history is not an exact prefix of worker history".into());
+        }
+        Ok(accepted[presented.len()..].to_vec())
+    }
+
+    pub(crate) fn begin_recovery(
+        &self,
+        gui_replay: &Replay,
+        metadata: serde_json::Value,
+    ) -> Result<(), String> {
+        if self.summary.mode != "live"
+            || self.ended.iter().any(|ended| *ended)
+            || gui_replay.epoch() != self.epoch
+            || gui_replay.identity().stage_compiler_version
+                != self.prepared.identity.stage_compiler_version
+        {
+            return Err("recovery snapshot session, epoch or stage identity differs".into());
+        }
+        gui_replay
+            .replay(
+                &self.prepared.identity.content_id,
+                RULESET,
+                self.prepared.anchors.clone(),
+                DuoRules::default(),
+            )
+            .map_err(|_| "recovery GUI Replay identity or history is invalid")?;
+        for input in gui_replay.facts() {
+            validate_fact(
+                Fact::from_input(*input),
+                self.prepared.end,
+                self.prepared.final_through,
+            )?;
+        }
+        let worker_bytes = self
+            .replay
+            .encode()
+            .map_err(|_| "encode worker recovery Replay failed")?;
+        let gui_bytes = gui_replay
+            .encode()
+            .map_err(|_| "encode GUI recovery Replay failed")?;
+        let metadata_bytes =
+            serde_json::to_vec_pretty(&metadata).map_err(|_| "encode recovery metadata failed")?;
+        let output = self.output.join("recovery-1");
+        fs::create_dir(&output).map_err(|error| format!("create recovery evidence: {error}"))?;
+        write_new(&output.join("worker-prefix.replay.json"), &worker_bytes)?;
+        write_new(&output.join("gui-prefix.replay.json"), &gui_bytes)?;
+        write_new(&output.join("metadata.json"), &metadata_bytes)
     }
 
     pub(crate) fn end_live(
@@ -1141,6 +1247,207 @@ mod tests {
         Session::new(prepared, PlayerId::P1, &invitation, PathBuf::new()).unwrap()
     }
 
+    fn live_fixture() -> Session {
+        let mut session = fixture();
+        session.summary.mode = "live";
+        session.declared = [None; 2];
+        session
+    }
+
+    fn temporary_root() -> PathBuf {
+        std::env::temp_dir().join(format!(
+            "cocobeat-net-paths-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ))
+    }
+
+    #[test]
+    fn recovery_owner_requires_exact_prefix_and_preflights_the_whole_suffix() {
+        let mut session = live_fixture();
+        let prefix = [
+            Fact::Hit { seq: 0, frame: 10 },
+            Fact::Watermark { through: 10 },
+        ];
+        for fact in prefix {
+            session.ingest(PlayerId::P1, fact).unwrap();
+        }
+        session
+            .ingest(PlayerId::P2, Fact::Watermark { through: 10 })
+            .unwrap();
+        let before = session.clone();
+        let bytes = before.replay.encode().unwrap();
+        for tape in [
+            vec![prefix[0]],
+            vec![prefix[0], Fact::Hit { seq: 1, frame: 20 }],
+            vec![prefix[1], prefix[0]],
+            vec![Fact::Hit { seq: 0, frame: 11 }, prefix[1]],
+            vec![
+                prefix[0],
+                prefix[1],
+                Fact::Hit { seq: 1, frame: 20 },
+                Fact::Hit {
+                    seq: 2,
+                    frame: 48_000,
+                },
+            ],
+        ] {
+            assert!(session.append_owner_tape(PlayerId::P1, &tape).is_err());
+            assert_eq!(session.replay.encode().unwrap(), bytes);
+            assert_eq!(session.counts, before.counts);
+            assert_eq!(session.next_seq, before.next_seq);
+            assert_eq!(session.last, before.last);
+            assert_eq!(session.ended, before.ended);
+            assert_eq!(session.engine.events(), before.engine.events());
+            assert_eq!(session.engine.resonance(), before.engine.resonance());
+        }
+        let tape = [
+            prefix[0],
+            prefix[1],
+            Fact::Hit { seq: 1, frame: 20 },
+            Fact::Watermark { through: 20 },
+        ];
+        assert_eq!(
+            session.append_owner_tape(PlayerId::P1, &tape).unwrap(),
+            tape[2..]
+                .iter()
+                .map(|fact| fact.into_input(session.epoch, PlayerId::P1))
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(session.player_tape(PlayerId::P1), tape);
+        assert_eq!(session.counts, [4, 1]);
+        assert_eq!(session.next_seq, [2, 0]);
+        let mut old_prefix = Replay::new(before.replay.identity().clone(), before.epoch).unwrap();
+        for input in &session.replay.facts()[..before.replay.facts().len()] {
+            old_prefix.record(*input).unwrap();
+        }
+        assert_eq!(old_prefix.encode().unwrap(), bytes);
+        let complete = session.replay.clone();
+        assert!(
+            session
+                .append_owner_tape(PlayerId::P1, &tape)
+                .unwrap()
+                .is_empty()
+        );
+        assert_eq!(session.replay, complete);
+    }
+
+    #[test]
+    fn recovery_presentation_returns_only_the_exact_unpresented_peer_suffix() {
+        let mut session = live_fixture();
+        let tape = [
+            Fact::Hit { seq: 0, frame: 10 },
+            Fact::Watermark { through: 10 },
+            Fact::Hit { seq: 1, frame: 20 },
+            Fact::Watermark { through: 20 },
+        ];
+        for fact in tape {
+            session.ingest(PlayerId::P2, fact).unwrap();
+        }
+        let inputs: Vec<_> = tape
+            .iter()
+            .map(|fact| fact.into_input(session.epoch, PlayerId::P2))
+            .collect();
+        let before = session.replay.clone();
+        assert_eq!(
+            session
+                .check_presented_peer(PlayerId::P2, &inputs[..2])
+                .unwrap(),
+            inputs[2..]
+        );
+        assert!(
+            session
+                .check_presented_peer(PlayerId::P2, &inputs)
+                .unwrap()
+                .is_empty()
+        );
+        for presented in [
+            vec![inputs[0], inputs[2]],
+            vec![inputs[1], inputs[0]],
+            vec![Fact::Hit { seq: 0, frame: 11 }.into_input(session.epoch, PlayerId::P2)],
+            vec![tape[0].into_input(SessionEpoch(session.epoch.0 + 1), PlayerId::P2)],
+            vec![tape[0].into_input(session.epoch, PlayerId::P1)],
+            inputs.iter().copied().chain([inputs[3]]).collect(),
+        ] {
+            assert!(
+                session
+                    .check_presented_peer(PlayerId::P2, &presented)
+                    .is_err()
+            );
+        }
+        assert!(session.check_presented_peer(PlayerId::P1, &[]).is_err());
+        assert_eq!(session.replay, before);
+    }
+
+    #[test]
+    fn recovery_snapshots_are_verbatim_new_evidence_without_finishing_the_session() {
+        let root = temporary_root();
+        fs::create_dir(&root).unwrap();
+        let mut session = live_fixture();
+        session.output = root.clone();
+        session
+            .ingest(PlayerId::P1, Fact::Watermark { through: -123 })
+            .unwrap();
+        let mut gui_identity = session.replay.identity().clone();
+        gui_identity.build_id = "runtime-build".into();
+        let mut gui = Replay::new(gui_identity.clone(), session.epoch).unwrap();
+        gui.record(session.replay.facts()[0]).unwrap();
+        gui.record(Fact::Hit { seq: 0, frame: 10 }.into_input(session.epoch, PlayerId::P1))
+            .unwrap();
+        let before = session.replay.clone();
+        let before_summary = serde_json::to_vec(&session.summary).unwrap();
+        gui_identity.stage_compiler_version = Some(2);
+        let wrong = Replay::new(gui_identity, session.epoch).unwrap();
+        assert!(
+            session
+                .begin_recovery(&wrong, serde_json::json!({}))
+                .is_err()
+        );
+        assert!(!root.join("recovery-1").exists());
+        let metadata = serde_json::json!({"attempt": 1, "frame": 10});
+        session.begin_recovery(&gui, metadata.clone()).unwrap();
+        let recovery = root.join("recovery-1");
+        assert_eq!(
+            fs::read(recovery.join("worker-prefix.replay.json")).unwrap(),
+            before.encode().unwrap()
+        );
+        assert_eq!(
+            fs::read(recovery.join("gui-prefix.replay.json")).unwrap(),
+            gui.encode().unwrap()
+        );
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(
+                &fs::read(recovery.join("metadata.json")).unwrap()
+            )
+            .unwrap(),
+            metadata
+        );
+        assert!(
+            session
+                .begin_recovery(&gui, serde_json::json!({"attempt": 2}))
+                .is_err()
+        );
+        assert_eq!(
+            fs::read(recovery.join("worker-prefix.replay.json")).unwrap(),
+            before.encode().unwrap()
+        );
+        assert_eq!(session.replay, before);
+        assert_eq!(
+            serde_json::to_vec(&session.summary).unwrap(),
+            before_summary
+        );
+        assert!(!root.join("live.replay.json").exists());
+        assert!(!root.join("status.json").exists());
+        let absent = root.join("absent/output");
+        session.output = absent;
+        assert!(session.begin_recovery(&gui, serde_json::json!({})).is_err());
+        assert_eq!(session.replay, before);
+        fs::remove_dir_all(root).unwrap();
+    }
+
     #[test]
     fn peer_binding_and_intake_fail_before_core_or_recorder_change() {
         let mut session = fixture();
@@ -1256,14 +1563,7 @@ mod tests {
 
     #[test]
     fn output_aliases_cannot_add_a_fifth_package_file_or_replace_existing_evidence() {
-        let root = std::env::temp_dir().join(format!(
-            "cocobeat-net-paths-{}-{}",
-            std::process::id(),
-            std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
-        ));
+        let root = temporary_root();
         fs::create_dir(&root).unwrap();
         let package = root.join("package");
         fs::create_dir(&package).unwrap();

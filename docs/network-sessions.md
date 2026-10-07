@@ -2,7 +2,7 @@
 
 `cocobeat-net` 提供受邀请的双端会话，游戏通过有界 `LiveSession` worker 使用实时输入与实际 Kira 音频，lab 的 `host` / `join` / `join_receive` 继续验证加速历史；双方使用完整验证的同一个 [SongPackage](song-package.md)，客机可以预装，也可以接收主机的四个原始对象，运行同一 DuoEngine 并保存实际录制结果
 
-当前支持可直达端点，每份邀请只用于一局；正常完成或故障终止后可以在同一窗口进入预先声明的新一局，逐局使用新邀请和独立输出路径。同 epoch 断线续演与声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
+当前支持可直达端点，每份邀请只用于一局；正常完成或故障终止后可以在同一窗口进入预先声明的新一局，逐局使用新邀请和独立输出路径。实时局内支持一次有界的同 epoch 续演，长期声卡漂移校正继续在 [10](../todo/10-quic-network.md) 推进，真实双机与网络环境验收见 [11](../todo/11-two-pc-validation.md)
 
 ## 实时游戏
 
@@ -24,7 +24,7 @@ Scheduled 在未来 deadline 之前交给窗口，Kira 用原生 `start_time(Dur
 
 本地 Hit 立即反馈，并可靠发送已经接受的整数事实；每端只关闭自己玩家的历史，伙伴 Hit 与水位收到后才进入同一 core / Replay 入口，共享确认可以延迟。输入数量无需预声明，End 必须匹配实际接收计数及本玩家最终水位，随后沿用权威 Replay 校验和 FinishAck
 
-窗口失焦、暂停请求、音频错误、断线、队列满或非法输入会终止当前联网局并保存真实前缀；不会仅暂停单端继续演奏。关闭窗口先取消 worker，再通过帧循环等待网络及拥有的 PCM 解码线程结束后退出。完成或失败后可以保存、调整设置和退出；Ready、Finished 或 Fault 在线程结束及新配置可用后提供下一局，确认时先成功保存旧录制再消费新配置
+窗口失焦、暂停请求、音频错误、队列满或非法输入会终止当前联网局并保存真实前缀；可恢复的传输中断进入下述同 epoch 续演，超过期限或恢复失败后也终止当前局。关闭窗口先取消 worker，再通过帧循环等待网络及拥有的 PCM 解码线程结束后退出。完成或失败后可以保存、调整设置和退出；Ready、Finished 或 Fault 在线程结束及新配置可用后提供下一局，确认时先成功保存旧录制再消费新配置
 
 每对 `--next-round NEW_INVITE NEW_OUTPUT` 声明一份后续配置；主机沿用原包与 bind，客机沿用原包，首局使用 `--net-receive` 的客机在确认新局时检查目标：尚不存在则继续 Receive，已发布的真实目录则使用 Join 完整复核，文件、符号链接及其他错误拒绝覆盖。Ready、Finished 或 Fault 菜单在当前网络及 PCM 解码线程已结束且仍有后续配置时提供下一局，确认时先成功保存本地 Replay 再消费新配置；客机还需等新邀请路径出现，缺失时显示等待，已有的坏邀请仍交给完整校验并明确失败。路径继续经过排他检查，旧邀请和旧输出不复用
 
@@ -73,11 +73,11 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/5`，旧 v1 / v2 / v3 / v4 邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/6`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
-邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，每次 host 只接受一次连接尝试，失败后重新运行会生成新邀请
+邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，首次连接仍只接受一次尝试；已开始的实时局另有下述独立续演能力，初始握手失败后重新运行会生成新邀请
 
-协议 v5 的完整会话身份包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
+协议 v6 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
 
 实时 Replay v2 从实际原生 StagePlan 记录版本，开发歌曲与 headless 没有 StagePlan，因此输出保持 core-only v1；headless 模板即便带明确视觉版本也只提供经过校验的事实，不把模板版本或新 epoch 解释为已经渲染历史舞台
 
@@ -91,11 +91,27 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 消息使用 4 字节大端长度和严格 JSON，单条最多 16 KiB，每批 1–64 个事实，单玩家输入累计最多 32 MiB；加速历史队列最多 4 批，实时命令 / 事件队列各最多 256 项，可靠流采用背压，队列压力不能静默丢输入。资源流采用固定 16 字节类型 / epoch 头和固定顺序的四个原始对象，不接受对端文件名；单对象上限依次为 512 MiB、16 MiB、4 MiB、64 KiB，总量最多 532 MiB + 64 KiB，传输缓冲为 64 KiB。权威 Replay 沿用现有 20 MiB 上限，收发窗口与固定 stream 数另有限制，datagram 只承载时钟探测，收发缓冲各 4 KiB
 
-首次等待 guest 最多 120 秒，TLS / capability 阶段绝对限时 10 秒，资源传输异步等待最多 5 分钟，单次读写进展各 30 秒；ClockSync / Ready / ScheduleStart 屏障合计最多 30 秒、无输入进展各 30 秒，从预约起点开始的加速会话最多 15 分钟，最终 Replay 传输校验 60 秒、Ack 30 秒、端点关闭最多再等 5 秒。超时终止当前会话，不续用取消读取后的半条消息
+首次等待 guest 最多 120 秒，TLS / capability 阶段绝对限时 10 秒，资源传输异步等待最多 5 分钟，单次读写进展各 30 秒；ClockSync / Ready / ScheduleStart 屏障合计最多 30 秒、无输入进展各 30 秒，从预约起点开始的加速会话最多 15 分钟，最终 Replay 传输校验 60 秒、Ack 30 秒、端点关闭最多再等 5 秒。初始握手、资源与结束阶段超时终止当前会话；实时局的可恢复 Deadline 进入一次续演，原连接的半条消息不迁移到新连接
 
 这些限制约束协议字节、事实与异步等待，不能抢占同步文件访问、哈希、音频解码或 core 运算，也不代表达到最大事实量时仍有合理帧时；网络压力、平台设备和人体体验须按各自证据评估。包发布复用同文件系统 staging → 校验 → rename，已有目标包括符号链接拒绝，失败只清理当前调用创建的对象；本地其他进程在最终存在性检查后创建空目录的竞态仍沿用现有发布实现，rename 不提供平台专用的排他替换保证
 
 net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识 Quinn；runtime 依赖 net 的同步有界 worker 入口，Tokio 和 QUIC I/O 留在其拥有的线程
+
+## 同 epoch 续演
+
+协议 v6 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset 和可靠输入帧 / 伙伴进展 Deadline 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
+
+恢复先冻结本地演奏输入，暂停同一个 Kira SoundHandle，保留 PCM、source generation / id、Session、core、seq 和全部原 Replay。两个实际 Paused publication 的前进 sequence 与相同 frame 确认稳定暂停后，worker 在独占 `recovery-1/` 保存自己的已接受 tape、GUI 全历史和恢复元数据；原录制文件保持，token 不进入日志。两端对账完整逐玩家历史，原 owner 前缀必须逐项相同，只有真正缺失的尾部经原 ingest 入口补入一次，重复 seq、倒退水位、改写与重排均终止
+
+双方暂停帧为 `s_i`，共同目标 `R=max(s_i)`；在原进程时钟坐标的未来 `T`，各端以 `T-(R-s_i)/48000` 预约原句柄恢复。Armed 只证明预约入队，真实 Playing acknowledgment 且 frame 大于暂停帧后才恢复本地 AudioClockBridge，继续发送实际 catch-up 水位。新的 ClockSync 与原 source 连续 publication 围住固定的过去检查点 `T+100ms`，每端位置区间需在预计位置的 ±2400 帧内，跨端最坏区间相差最多 2400 帧；缺样本、过期、倒退、换源或回到 Paused 都失败，检查点不能延后以迁就结果
+
+恢复期间一个拥有生命周期的只读线程每约 2ms 尝试读取同一音乐句柄的真实 source publication，独立校验所有读取的 sequence、位置、身份与时间区间；收到 RecoverySampling 的真实 `not_before` 后才保留最多 64 条门槛样本，避免提前 catch-up 耗尽窗口容量。音乐控制与读采样共享短锁，音频 callback 不取得此锁，品牌音效保持原控制路径；锁忙或 source 发布忙返回不可读，超过原 50ms 年龄、窗口超容量或线程失败均终止。线程固定在检查点后 80ms 完成，成功、取消、故障和窗口关闭都回收并 join；主线程继续检查当前源与状态并处理原时钟和事实，历史门槛样本不代替当前音乐状态。raw PlaybackState 与 coherent source snapshot 是独立读取，不宣称原子配对
+
+只有双方真实 publication 验证与可靠 Live 确认通过后，窗口才从 Recovering 返回 Running。恢复期间仍接收原伙伴事实，屏蔽 Hit、歌曲和设置操作；菜单主控的 Esc / 手柄 East / Start 可以终止，关闭窗口仍有效，失焦也终止。恢复完成重建键盘与手柄释放屏障，按住的键不能穿透；`controls_enabled` 仍表示品牌开场总开关，恢复输入门控由阶段、菜单过渡与取消路由共同完成
+
+原流与续接流各自每方向最多 32 MiB，长度前缀在 body 分配或发送前预留预算；只能续接一次，因此每方向累计最多 64 MiB。候选认证最多四次，未认证候选失败不损坏仍可用的原连接，已认证续演失败或 30 秒耗尽则终止。单条消息、队列、事实、Replay 和历史对账沿用有界限制；跨 QUIC 流的控制 Live 与 peer Facts / End 在 gate 完成前按可靠输入流顺序保留，不能提前结束或丢弃已经接受的事实
+
+这次 gate 约束的是过去的软件 source publication 区间，尚不提供未来 callback 上界、声卡漂移补偿或扬声器同步保证；真实双机、物理输入、输出设备及长期漂移继续单独验收
 
 ## 故障后的新轮次软件验证
 

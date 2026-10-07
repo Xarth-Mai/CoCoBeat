@@ -245,6 +245,7 @@ pub struct InputState {
     replay_unsaved: bool,
     watch_replay: bool,
     menu_transitioning: bool,
+    recovery_cancel: bool,
     players_open: bool,
     library_available: bool,
     library_rows: Option<Vec<String>>,
@@ -280,6 +281,7 @@ impl Default for InputState {
             replay_unsaved: false,
             watch_replay: false,
             menu_transitioning: false,
+            recovery_cancel: false,
             players_open: false,
             library_available: false,
             library_rows: None,
@@ -473,6 +475,13 @@ impl InputState {
     pub(crate) fn set_menu_transitioning(&mut self, transitioning: bool) {
         if self.menu_transitioning != transitioning {
             self.menu_transitioning = transitioning;
+            self.reset_edges();
+        }
+    }
+
+    pub(crate) fn set_recovery_cancel(&mut self, enabled: bool) {
+        if self.recovery_cancel != enabled {
+            self.recovery_cancel = enabled;
             self.reset_edges();
         }
     }
@@ -1004,7 +1013,8 @@ impl InputState {
             || !self.focused
             || !self.controls_enabled
             || self.capture_transitioned
-            || self.menu_transitioning
+            || (self.menu_transitioning
+                && !(self.recovery_cancel && matches!(key, KeyCode::Escape | KeyCode::Enter)))
         {
             return;
         }
@@ -1030,6 +1040,12 @@ impl InputState {
             {
                 return;
             }
+        }
+        if self.menu_transitioning && self.recovery_cancel {
+            if key == KeyCode::Escape {
+                self.emit(Control::TogglePause(InputSource::Keyboard), now);
+            }
+            return;
         }
         if self.settings_open {
             let action = match key {
@@ -1130,7 +1146,9 @@ impl InputState {
             || !self.focused
             || !self.controls_enabled
             || self.capture_transitioned
-            || self.menu_transitioning
+            || (self.menu_transitioning
+                && !(self.recovery_cancel
+                    && matches!(button, GamepadButton::East | GamepadButton::Start)))
         {
             return;
         }
@@ -1169,6 +1187,10 @@ impl InputState {
             {
                 return;
             }
+        }
+        if self.menu_transitioning && self.recovery_cancel {
+            self.emit(Control::TogglePause(InputSource::Pad(pad)), now);
+            return;
         }
         if self.settings_open {
             let action = match button {
@@ -1821,6 +1843,54 @@ mod tests {
         input.capture_transitioned = false;
     }
 
+    #[test]
+    fn recovery_cancel_uses_the_owner_and_preserves_held_input_barriers() {
+        let mut input = controlled_input();
+        let mut scroll = MenuScroll::default();
+        let pad = World::new().spawn_empty().id();
+        input.set_menu_phase(MenuPhase::Transition, false);
+        input.set_menu_transitioning(true);
+        input.set_recovery_cancel(true);
+        next_frame(&mut input);
+        let hit_key = input.keys[0];
+        input.key(hit_key, true, false, 1, &mut scroll);
+        input.key(KeyCode::Enter, true, false, 2, &mut scroll);
+        input.pad_button(pad, GamepadButton::East, true, 3, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.pad_button(pad, GamepadButton::Start, true, 4, &mut scroll);
+        assert_eq!(input.menu_owner, Some(InputSource::Pad(pad)));
+        assert!(input.queued.is_empty());
+        next_frame(&mut input);
+        input.pad_button(pad, GamepadButton::Start, false, 5, &mut scroll);
+        input.pad_button(pad, GamepadButton::Start, true, 6, &mut scroll);
+        assert_eq!(
+            input.queued[0].control,
+            Control::TogglePause(InputSource::Pad(pad))
+        );
+        input.queued.clear();
+        next_frame(&mut input);
+        input.key(KeyCode::Enter, false, false, 7, &mut scroll);
+        input.key(KeyCode::Enter, true, false, 8, &mut scroll);
+        assert_eq!(input.menu_owner, Some(InputSource::Keyboard));
+        assert!(input.queued.is_empty());
+        next_frame(&mut input);
+        input.key(KeyCode::Escape, true, false, 9, &mut scroll);
+        assert_eq!(
+            input.queued[0].control,
+            Control::TogglePause(InputSource::Keyboard)
+        );
+        input.queued.clear();
+        input.set_recovery_cancel(false);
+        input.set_menu_transitioning(false);
+        input.set_menu_open(false);
+        next_frame(&mut input);
+        input.key(hit_key, true, false, 10, &mut scroll);
+        assert!(input.queued.is_empty());
+        input.key(hit_key, false, false, 11, &mut scroll);
+        input.key(hit_key, true, false, 12, &mut scroll);
+        assert_eq!(input.queued[0].control, Control::Hit(PlayerId::P1));
+    }
+
     fn capture_app() -> App {
         let mut app = App::new();
         install(&mut app);
@@ -2445,6 +2515,7 @@ mod tests {
         let mut world = World::new();
         let pad = world.spawn_empty().id();
         let mut scroll = MenuScroll::default();
+        let action_count = input.menu_actions().len();
         for locale in Locale::ALL {
             let presentation = input
                 .menu_presentation(
@@ -2456,22 +2527,22 @@ mod tests {
             assert_eq!(presentation.title, "Ready");
             assert_eq!(presentation.rows[0].text, locale.text("menu.start"));
             assert_eq!(
-                presentation.rows[MENU.len() - 1].text,
+                presentation.rows[action_count - 1].text,
                 locale.text("menu.quit")
             );
             assert_eq!(
-                presentation.rows[MENU.len() + 2].text,
+                presentation.rows[action_count + 2].text,
                 locale.text("menu.controls")
             );
-            assert!(presentation.rows[MENU.len() + 3].text.contains("P1"));
-            assert!(presentation.rows[MENU.len() + 4].text.contains("P2"));
-            assert_eq!(presentation.rows[MENU.len() + 1].text, "notice");
+            assert!(presentation.rows[action_count + 3].text.contains("P1"));
+            assert!(presentation.rows[action_count + 4].text.contains("P2"));
+            assert_eq!(presentation.rows[action_count + 1].text, "notice");
             assert_eq!(
                 presentation.rows.iter().filter(|row| row.selected).count(),
                 1
             );
         }
-        input.selection = MENU.len();
+        input.selection = action_count;
         input.key(KeyCode::Enter, true, false, 1, &mut scroll);
         input.pad_button(pad, GamepadButton::South, true, 2, &mut scroll);
         assert!(input.queued.is_empty());
@@ -2483,16 +2554,16 @@ mod tests {
         next_frame(&mut input);
         scroll.can_down = true;
         input.key(KeyCode::ArrowDown, true, false, 4, &mut scroll);
-        assert_eq!(input.selection, MENU.len());
+        assert_eq!(input.selection, action_count);
         assert_eq!(scroll.request, 1);
         input.key(KeyCode::ArrowDown, false, false, 5, &mut scroll);
         scroll.can_down = false;
         scroll.can_up = true;
         input.key(KeyCode::ArrowDown, true, false, 6, &mut scroll);
-        assert_eq!(input.selection, MENU.len() + 1);
+        assert_eq!(input.selection, action_count + 1);
         assert!(!scroll.can_up && !scroll.can_down);
         input.key(KeyCode::ArrowUp, true, false, 7, &mut scroll);
-        assert_eq!(input.selection, MENU.len());
+        assert_eq!(input.selection, action_count);
         assert!(input.queued.is_empty());
         input.selection = input.menu_row_count - 1;
         let before = input.selection;
@@ -2508,7 +2579,7 @@ mod tests {
             .menu_presentation(Locale::EnUs, String::new(), vec![])
             .unwrap();
         assert_eq!(input.selection, presentation.rows.len() - 1);
-        assert!(input.selection >= MENU.len());
+        assert!(input.selection >= action_count);
     }
 
     #[test]

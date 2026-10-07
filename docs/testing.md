@@ -741,3 +741,27 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 新 42 张 PNG 由曲库线程逐张目检通过指定范围，主线程独立查看其中 640 中英拒绝、英文 Back 和中文 Information 四张，四张范围内通过；不要求所有低位信息同时显示。16 个 callback / 8 个 source 快照另外通过历史 publication 区间检查，不等同声学计时
 
 关闭装载时实际 worker 未完成且退出前已回收；关闭扫描时 worker 已完成，进行中的扫描取消仍 NOT RUN。所有自有进程退出，真实键盘 / 双手柄 / 混合输入、扬声器计时、真人、其他三平台 runtime 图形和发行 release 构建仍 NOT RUN。完整命令、源码 / 图片 / 日志身份和旧失败见[持久曲库记录](../testdata/synthetic/library-runtime-navigation-observations-20261007.json)，复现使用[曲库检查工具](../tools/library-runtime-check/README.md)
+
+## 同 epoch 原音源软件恢复
+
+2026-10-08，protocol / ALPN v6 在原进程、原 epoch、原音源和原历史上恢复一次连接，持久记录见[同 epoch 恢复观察](../testdata/synthetic/same-epoch-recovery-observations-20261008.json)，复现入口见[实时 QUIC 检查](../tools/quic-live-check/README.md)；原始记录位于 `target/same-epoch-delivery-20261007/`，各次冻结构建与失败分别保留
+
+`cargo test --locked -p cocobeat-net --lib` 通过 27 项，另 2 项实际 host loopback 测试在显式设置 `COCOBEAT_RECOVERY_QA_PACKAGE` / `COCOBEAT_RECOVERY_QA_OUTPUT` 后用 `-- --ignored --nocapture` 通过；真实 TLS 历史对账覆盖改写前缀、重复 seq、倒退水位和重排四类拒绝，原 accepted 前缀保持，原可靠流上的 End / EOF 在恢复门槛期间按顺序处理
+
+最终 `cargo test --locked -p cocobeat-runtime --lib` 通过 160 项；其中 `cargo test --locked -p cocobeat-runtime --lib sampler` 的 3 项直接检查原句柄读取、慢消费者保留实际发布与线程回收，以及长追赶只存储明确采样窗口且维持容量上限。net / runtime 全目标 Clippy `-D warnings`、workspace 格式与实际 game debug 构建通过，444 项构建输入前后相同，完整源码副本 SHA 匹配；该冻结工作区还含尚未提交的性能 QA 注册，记录绑定实际编译图，不把里程碑提交当成完全相同的 binary 身份
+
+同 epoch 门槛使用原 Kira 句柄的未来 resume 预约、实际 Playing 且游标推进确认、真实过去点发布区间与固定 50ms guard；独立有界 sampler 读取原 source 发布，真实 callback 不获取该控制锁。Ready 前保持恢复阶段输入门控，取消、窗口退出及错误等待自有 worker / sampler 收尾；此处的过去点检查不提供未来 callback 或声卡漂移保证
+
+真实 UDP 检查使用两个有界客户端映射的 loopback relay，实际黑洞持续 `29,985,547,633ns`，双向转发均为 0 且分别丢弃 95 / 96 个原数据包，未发送 RequestRecovery。双方由真实 reliable frame / peer progress deadline 进入恢复，保留同 epoch、原前缀和快照，最终权威 Replay 字节及 16 个 core 事件一致，自有 worker 全部退出；该轮 source 是整数 48kHz 软件模型，不是实际 Kira。此运行绑定当时冻结 net 源，后续仅删除冗余累计预算检查及补充 guard 错误诊断，最终源的单元与实际 host loopback 检查另列，不将旧 UDP 运行标成最终二进制结果
+
+原生补验使用固定 game SHA-256 `ca8c6c0f53110837f18a789a0a392e195886c37096dfa3df941f2aca02eed97f`、正式 Cargo receipt 与原 64 秒生产手工包，在两个独立 gamescope 显示上运行实际 Linux / CPAL ALSA / GPU 游戏。双方完整开场后 Ready，经明确确认开始，host 在原 source 至少 2 秒且双方各已有两个真实捕获 Hit 后请求一次主动维护恢复；原 epoch `9016302045734243529`、source generation / source_id `1 / 1`、PCM、音源句柄和各自完整 GUI 有序前缀保持
+
+每端在真实 Recovering 阶段追加一次 CapturedControl Hit 负向探针，下一次实际观察记录队列已清的时间上界，accepted diagnostics / local Replay Hit 仍为 2；门槛 Ready 后首次 Running 在第三次正常 Hit 排队前再次确认计数不变。终局双方各 3393 条事实 / 17 个 core 事件，权威 Replay 字节及事件一致，每玩家 Hit seq 精确为 `[0,1,2]`；GUI 到达交错顺序仅要求保留本进程全局有序前缀，逐玩家历史另作精确前缀核对
+
+生产包、固定 binary、harness、receipt 及双方 `recovery-1` 三份快照均通过前后身份 / 稳定性检查。最终 manifest 有完整两条实际启动命令、wrapper PID 与 game PID / exit code，双方真实 game、wrapper 均 exit 0，四个 PID 和进程组全部已退出；sampler rows 在生产 join 后才交付，实际 RecoveryReady 与终局联证正常收尾，未记录独立 join 时间戳
+
+agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PNG，角色、状态、时间、标签、终局菜单、Hit3 与 Replay 保存提示在指定范围内 PASS；长 package CID 超出卡片仍是 [02b](../todo/02b-runtime-ui.md) 的未解决可读性项，没有 Recovering 阶段 PNG，不据此报告完整 UI 或恢复提示视觉验收通过
+
+历史结果保持原状态：全局开场 flag 被误用为恢复输入门控的 QA 断言为 FAIL，旧 frame-driven 稀疏采样触发实际 50ms guard 为 FAIL，首次 sampler 原生运行虽完成实际游戏恢复但启动记录变量被 stage 数据遮蔽，命令清单证据为 INCOMPLETE；修复 wrapper 后重新运行所得 `recovery-native-manifest-final` 才是最终 PASS。缺少 host loopback QA 环境的首次运行、先前 test-only Clippy 失败和 sampler 窗口修正前的审阅记录也保留，未放宽门槛或覆盖旧记录
+
+本批 PASS 是原音源主动维护的原生软件恢复与独立真实 UDP deadline 软件模型两组证据；尚未合并为实际 Kira 的 UDP 黑洞场景。两台机器、LAN / WAN / 非对称路径完整矩阵、实体键盘 / 双手柄 / 混合输入、DAC / 扬声器偏移、长期声卡漂移、最大容量、其他三目标原生图形、优化 release 性能与真人验收均 NOT RUN，软件目标继续推进

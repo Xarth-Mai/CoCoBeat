@@ -183,6 +183,7 @@
   "network.scheduled": "両者の準備が完了 · まもなく音楽が始まります",
   "network.listening": "招待を {path} に保存しました · パートナーの参加を待っています",
   "network.running": "オンラインで演奏中",
+  "network.recovering": "このラウンドに再接続して同期を確認中…Esc でラウンドを終了",
   "network.finishing": "両者の演奏終了確認を待っています…",
   "network.complete": "オンライン演奏が完了しました",
   "network.failed": "オンライン演奏が中断されました",

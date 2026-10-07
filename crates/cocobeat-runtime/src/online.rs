@@ -1,10 +1,15 @@
 //! Network I/O and package decoding stay off the presentation thread
 
 use crate::content::{self, SongContent};
+use crate::{audio::AudioOutput, session::Session};
 use cocobeat_net::{LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSession};
-use cocobeat_schema::{PlayerId, SessionEpoch};
+use cocobeat_schema::{DuoEvent, PlayerId, SessionEpoch, SongTime};
 use kira::sound::static_sound::StaticSoundData;
 use std::{collections::VecDeque, path::PathBuf, sync::mpsc, time::Instant};
+
+#[path = "recovery.rs"]
+mod recovery;
+use recovery::Recovery;
 
 pub(crate) struct PreparedSong {
     pub epoch: SessionEpoch,
@@ -32,6 +37,7 @@ pub(crate) struct OnlineRound {
     pub local_ended: bool,
     pub deadline: Option<Instant>,
     terminal: bool,
+    recovery: Option<Recovery>,
 }
 
 impl OnlineRound {
@@ -149,6 +155,95 @@ impl OnlineRound {
             .map_err(|error| error.to_string())
     }
 
+    pub fn recovering(&self) -> bool {
+        self.recovery.as_ref().is_some_and(Recovery::active)
+    }
+
+    /// Only RecoveryReady releases the presentation/input gate
+    pub fn recovery_event(
+        &mut self,
+        event: LiveEvent,
+        session: &mut Session,
+        audio: &mut AudioOutput,
+        end: SongTime,
+        input_origin: Instant,
+    ) -> Result<bool, String> {
+        if !self.started || self.local_ended || self.terminal || self.player.is_none() {
+            return Err("Recovery requires a started, unfinished network round".into());
+        }
+        let (epoch, attempt) = match &event {
+            LiveEvent::RecoveryPausing { epoch, attempt }
+            | LiveEvent::RecoveryScheduled { epoch, attempt, .. }
+            | LiveEvent::RecoverySampling { epoch, attempt, .. }
+            | LiveEvent::RecoveryReady { epoch, attempt } => (*epoch, *attempt),
+            _ => return Err("Expected a network recovery event".into()),
+        };
+        if epoch != session.epoch() || attempt != 1 {
+            return Err("Recovery epoch or attempt differs from the live session".into());
+        }
+        if matches!(event, LiveEvent::RecoveryPausing { .. }) {
+            if self.recovery.is_some() {
+                return Err("This network round already attempted recovery".into());
+            }
+            let source = audio.source_observation();
+            let now = Instant::now();
+            if audio.state() != Some(kira::sound::PlaybackState::Playing) {
+                return Err("Recovery requires acknowledged Playing music".into());
+            }
+            self.recovery = Some(Recovery::begin(session, end, source, now, input_origin)?);
+            audio.pause();
+            return Ok(false);
+        }
+        let recovery = self.recovery.as_mut().ok_or("Recovery has not paused")?;
+        match event {
+            LiveEvent::RecoveryScheduled {
+                deadline,
+                verify_at,
+                common_frame,
+                ..
+            } => {
+                let source = audio.source_observation();
+                let now = Instant::now();
+                let state = audio.state();
+                recovery.schedule(source, state, now, deadline, verify_at, common_frame)?;
+                audio.resume_at(deadline)?;
+                recovery.start_sampler(audio.source_sampler()?)?;
+                self.send(LiveCommand::RecoveryArmed { epoch, attempt })?;
+                Ok(false)
+            }
+            LiveEvent::RecoverySampling { not_before, .. } => {
+                recovery.sampling(not_before, Instant::now())?;
+                Ok(false)
+            }
+            LiveEvent::RecoveryReady { .. } => {
+                let source = audio.source_observation();
+                let now = Instant::now();
+                recovery.ready(source, audio.state(), now)?;
+                Ok(true)
+            }
+            _ => unreachable!("recovery event was checked above"),
+        }
+    }
+
+    /// Catchup records only real source-driven watermarks through the original fact FIFO
+    pub fn update_recovery(
+        &mut self,
+        session: &mut Session,
+        audio: &mut AudioOutput,
+        input_origin: Instant,
+    ) -> Result<Vec<DuoEvent>, String> {
+        let player = self.player.ok_or("Recovery has no local player")?;
+        let recovery = self.recovery.as_mut().ok_or("Recovery has not paused")?;
+        let source = audio.source_observation();
+        let now = Instant::now();
+        let (events, commands) =
+            recovery.update(session, player, source, audio.state(), now, input_origin)?;
+        for command in commands {
+            self.send(command)?;
+        }
+        Ok(events)
+    }
+
     pub fn poll(&mut self) -> Result<Option<Update>, String> {
         if self.terminal {
             return Ok(None);
@@ -222,6 +317,9 @@ impl OnlineRound {
     }
 
     pub fn cancel_worker(&mut self) {
+        if let Some(recovery) = &mut self.recovery {
+            recovery.stop_sampling();
+        }
         if let Some(worker) = &mut self.worker {
             worker.cancel();
         }

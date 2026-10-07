@@ -183,6 +183,7 @@
   "network.scheduled": "Os dois estão prontos · A música começa em breve",
   "network.listening": "Convite salvo em {path} · Aguardando seu parceiro",
   "network.running": "Tocando juntos online",
+  "network.recovering": "Reconectando esta rodada e verificando a sincronização… Esc encerra a rodada",
   "network.finishing": "Aguardando a confirmação de término dos dois…",
   "network.complete": "Apresentação online concluída",
   "network.failed": "Apresentação online interrompida",
