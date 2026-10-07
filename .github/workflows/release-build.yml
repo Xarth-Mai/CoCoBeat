@@ -64,30 +64,56 @@ jobs:
           restore-keys: |
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-
-      - name: Build optimized game
-        run: cargo build --locked --release --package cocobeat-game --target $env:BUILD_TARGET
+      - name: Build optimized game and Lab
+        run: cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target $env:BUILD_TARGET
+      - name: Fetch the fixed official CPU SDK
+        run: |
+          $sdkName, $sdkSha = if ($env:BUILD_TARGET -eq 'aarch64-pc-windows-msvc') {
+            @('onnxruntime-win-arm64-1.30.0', 'e53db8a50b23ae35be901cc93428baf997dc8d420333b097b2eae53d3ea9f2d3')
+          } else {
+            @('onnxruntime-win-x64-1.30.0', 'c6ba983baf5681af108599675d2a89c2d145512d02de28aed0bff177cd0ba949')
+          }
+          $archive = Join-Path $env:RUNNER_TEMP "$sdkName.zip"
+          Invoke-WebRequest "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/$sdkName.zip" -OutFile $archive
+          if ((Get-FileHash $archive -Algorithm SHA256).Hash.ToLower() -ne $sdkSha) { throw 'SDK archive identity mismatch' }
+          $zip = [System.IO.Compression.ZipFile]::OpenRead($archive)
+          try {
+            foreach ($name in @('LICENSE', 'ThirdPartyNotices.txt', 'VERSION_NUMBER', 'GIT_COMMIT_ID', 'lib/onnxruntime.dll', 'lib/onnxruntime_providers_shared.dll')) {
+              $entries = @($zip.Entries | Where-Object FullName -eq "$sdkName/$name")
+              if ($entries.Count -ne 1) { throw "Missing or duplicate SDK member: $name" }
+              $dest = "target/native-sdk/$sdkName/$name"
+              New-Item -ItemType Directory -Path (Split-Path $dest) -Force | Out-Null
+              [System.IO.Compression.ZipFileExtensions]::ExtractToFile($entries[0], $dest, $false)
+            }
+          } finally { $zip.Dispose() }
+          "NATIVE_SDK_ROOT=target/native-sdk/$sdkName" >> $env:GITHUB_ENV
       - name: Verify architecture and prepare artifact
         run: |
           $exe = "target/$env:BUILD_TARGET/release/cocobeat-game.exe"
-          $reader = [System.IO.BinaryReader]::new([System.IO.File]::OpenRead($exe))
-          try {
-            if ($reader.ReadUInt16() -ne 0x5A4D) { throw 'Missing DOS header' }
-            $reader.BaseStream.Position = 0x3C
-            $peOffset = $reader.ReadInt32()
-            $reader.BaseStream.Position = $peOffset
-            if ($reader.ReadUInt32() -ne 0x4550) { throw 'Missing PE header' }
-            $machine = $reader.ReadUInt16()
-            $expected = if ($env:BUILD_TARGET -eq 'aarch64-pc-windows-msvc') { 0xAA64 } else { 0x8664 }
-            if ($machine -ne $expected) { throw "Unexpected PE machine: $machine" }
-          } finally {
-            $reader.Dispose()
+          $lab = "target/$env:BUILD_TARGET/release/cocobeat-lab.exe"
+          foreach ($binary in @($exe, $lab)) {
+            $reader = [System.IO.BinaryReader]::new([System.IO.File]::OpenRead($binary))
+            try {
+              if ($reader.ReadUInt16() -ne 0x5A4D) { throw 'Missing DOS header' }
+              $reader.BaseStream.Position = 0x3C
+              $peOffset = $reader.ReadInt32()
+              $reader.BaseStream.Position = $peOffset
+              if ($reader.ReadUInt32() -ne 0x4550) { throw 'Missing PE header' }
+              $machine = $reader.ReadUInt16()
+              $expected = if ($env:BUILD_TARGET -eq 'aarch64-pc-windows-msvc') { 0xAA64 } else { 0x8664 }
+              if ($machine -ne $expected) { throw "Unexpected PE machine: $machine" }
+            } finally {
+              $reader.Dispose()
+            }
           }
           New-Item -ItemType Directory -Path dist/package/assets/brand/icons -Force | Out-Null
-          Copy-Item $exe, LICENSE, README.md, Cargo.lock -Destination dist/package
+          Copy-Item $exe, $lab, LICENSE, README.md, Cargo.lock -Destination dist/package
           Copy-Item licenses -Destination dist/package -Recurse
           Copy-Item assets/brand/README.md, assets/brand/PROVENANCE.csv -Destination dist/package/assets/brand
           Copy-Item assets/brand/icons/symbol-256.png -Destination dist/package/assets/brand/icons
           Copy-Item assets/fonts, assets/flags -Destination dist/package/assets -Recurse
+          cargo run --locked -p xtask -- prepare-model-assets $env:BUILD_TARGET $env:NATIVE_SDK_ROOT dist/package
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           @(
             "commit=$env:GITHUB_SHA"
             "target=$env:BUILD_TARGET"
@@ -95,8 +121,70 @@ jobs:
             "rustc=$(rustc --version)"
             "cargo=$(cargo --version)"
             "sha256=$((Get-FileHash $exe -Algorithm SHA256).Hash)"
+            "lab_sha256=$((Get-FileHash $lab -Algorithm SHA256).Hash)"
           ) | Set-Content dist/package/BUILD-INFO.txt
           Compress-Archive -Path dist/package/* -DestinationPath "dist/cocobeat-$env:BUILD_TARGET.zip"
+      - name: Run experimental native software smoke from the unpacked ZIP
+        run: |
+          $work = Join-Path $env:RUNNER_TEMP 'cocobeat-native-smoke'
+          New-Item -ItemType Directory -Path $work -Force | Out-Null
+          "target=$env:BUILD_TARGET`ncommit=$env:GITHUB_SHA" | Set-Content "$work/smoke-start.txt"
+          Expand-Archive "dist/cocobeat-$env:BUILD_TARGET.zip" dist/smoke
+          Copy-Item dist/smoke/BUILD-INFO.txt, dist/smoke/NATIVE-ASSETS.json -Destination $work
+          $lab = (Resolve-Path dist/smoke/cocobeat-lab.exe).Path
+          $authoring = (Resolve-Path assets/dev/vertical_slice/authoring.json).Path
+          function Invoke-Lab([string] $label, [string[]] $arguments) {
+            $start = [System.Diagnostics.ProcessStartInfo]::new($lab)
+            $start.WorkingDirectory = (Get-Location).Path
+            $start.UseShellExecute = $false
+            $start.RedirectStandardOutput = $true
+            $start.RedirectStandardError = $true
+            $start.StandardOutputEncoding = [System.Text.Encoding]::UTF8
+            $start.StandardErrorEncoding = [System.Text.Encoding]::UTF8
+            foreach ($argument in $arguments) { $start.ArgumentList.Add($argument) }
+            @{ executable = $lab; arguments = $arguments; cwd = (Get-Location).Path } | ConvertTo-Json -Depth 3 | Set-Content "$work/$label-argv.json"
+            $process = [System.Diagnostics.Process]::new()
+            $process.StartInfo = $start
+            try {
+              $process.Start() | Out-Null
+              $process.Id | Set-Content "$work/$label-pid.txt"
+              $stdout = $process.StandardOutput.ReadToEndAsync()
+              $stderr = $process.StandardError.ReadToEndAsync()
+              $process.WaitForExit()
+              [System.IO.File]::WriteAllText("$work/$label-stdout.txt", $stdout.Result)
+              [System.IO.File]::WriteAllText("$work/$label-stderr.txt", $stderr.Result)
+              $process.ExitCode | Set-Content "$work/$label-exit.txt"
+              Write-Host $stdout.Result
+              Write-Host $stderr.Result
+              return $process.ExitCode
+            } finally { $process.Dispose() }
+          }
+          if ((Invoke-Lab 'generate' @('generate-dev', "$work/source")) -ne 0) { throw 'Source generation failed' }
+          foreach ($channel in @('left', 'right')) {
+            if ((Invoke-Lab "$channel-import" @('import-experimental-beat', "$work/source/cocobeat-64.wav", $authoring, $channel, "$work/$channel")) -ne 0) { throw 'Experimental import failed' }
+            if ((Invoke-Lab "$channel-verify" @('verify-package', "$work/$channel/package")) -ne 0) { throw 'Package verification failed' }
+            $report = Get-Content "$work/$channel-verify-stdout.txt" -Raw
+            if ($report -notmatch '(?<![a-z])beat: AnalysisCapability \{ state: Candidate, source: Algorithm, confidence: None \}') { throw 'Missing Candidate beat capability' }
+            if ($report -notmatch 'downbeat: AnalysisCapability \{ state: Candidate, source: Algorithm, confidence: None \}') { throw 'Missing Candidate downbeat capability' }
+            if ((Invoke-Lab "$channel-stage" @('inspect-stage', "$work/$channel/package", '0')) -ne 0) { throw 'Stage inspection failed' }
+          }
+          $resource = (Resolve-Path dist/smoke/assets/models/beat-this/small0.onnx).Path
+          Move-Item $resource "$resource.missing-control"
+          try {
+            $exitCode = Invoke-Lab 'missing-model' @('import-experimental-beat', "$work/source/cocobeat-64.wav", $authoring, 'left', "$work/missing-model")
+            if ($exitCode -eq 0 -or (Test-Path "$work/missing-model/package")) { throw 'Missing model must reject without package publication' }
+            if ((Invoke-Lab 'manual-import' @('import-authored-package', "$work/source/cocobeat-64.wav", $authoring, "$work/manual")) -ne 0) { throw 'Manual import failed' }
+            if ((Invoke-Lab 'manual-verify' @('verify-package', "$work/manual")) -ne 0) { throw 'Manual package verification failed' }
+          } finally { Move-Item "$resource.missing-control" $resource }
+      - name: Preserve native smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-smoke-evidence-${{ inputs.target }}-${{ github.sha }}
+          path: ${{ runner.temp }}/cocobeat-native-smoke/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
       - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}
@@ -134,23 +222,38 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y g++ pkg-config libasound2-dev libudev-dev libx11-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
-      - name: Build optimized game
-        run: cargo build --locked --release --package cocobeat-game --target "$BUILD_TARGET"
+      - name: Build optimized game and Lab
+        run: cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target "$BUILD_TARGET"
+      - name: Fetch the fixed official CPU SDK
+        run: |
+          case "$BUILD_TARGET" in
+            x86_64-unknown-linux-gnu) sdk=onnxruntime-linux-x64-1.30.0; digest=a5ed5a3cac51fbb2e90da632ae43d19212faaa20e76484e62bcb7c23ddb3b3fd ;;
+            aarch64-unknown-linux-gnu) sdk=onnxruntime-linux-aarch64-1.30.0; digest=e16a27a8ed330bbc698df7330b0cf56e722f354e3bcc92118682c74ef3c3e3da ;;
+          esac
+          archive="$RUNNER_TEMP/$sdk.tgz"
+          curl --fail --location --retry 3 "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/$sdk.tgz" --output "$archive"
+          test "$(sha256sum "$archive" | cut -d ' ' -f 1)" = "$digest"
+          mkdir -p target/native-sdk
+          tar -xzf "$archive" -C target/native-sdk "$sdk/LICENSE" "$sdk/ThirdPartyNotices.txt" "$sdk/VERSION_NUMBER" "$sdk/GIT_COMMIT_ID" "$sdk/lib/libonnxruntime.so.1.30.0" "$sdk/lib/libonnxruntime_providers_shared.so"
+          echo "NATIVE_SDK_ROOT=target/native-sdk/$sdk" >> "$GITHUB_ENV"
       - name: Verify architecture and prepare artifact
         run: |
           binary="target/$BUILD_TARGET/release/cocobeat-game"
-          python3 - "$binary" "$BUILD_TARGET" <<'PY'
+          lab="target/$BUILD_TARGET/release/cocobeat-lab"
+          python3 - "$binary" "$lab" "$BUILD_TARGET" <<'PY'
           import pathlib
           import struct
           import sys
-          with pathlib.Path(sys.argv[1]).open('rb') as binary:
-              header = binary.read(20)
-          expected = {'x86_64-unknown-linux-gnu': 62, 'aarch64-unknown-linux-gnu': 183}[sys.argv[2]]
-          if header[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', header, 18)[0] != expected:
-              raise SystemExit('Unexpected ELF class, byte order, or machine')
+          expected = {'x86_64-unknown-linux-gnu': 62, 'aarch64-unknown-linux-gnu': 183}[sys.argv[3]]
+          for name in sys.argv[1:3]:
+              with pathlib.Path(name).open('rb') as binary:
+                  header = binary.read(20)
+              if header[:6] != b'\x7fELF\x02\x01' or struct.unpack_from('<H', header, 18)[0] != expected:
+                  raise SystemExit('Unexpected ELF class, byte order, or machine')
           PY
           mkdir -p dist/package/{bin,share/applications,assets/brand/icons}
           install -m755 "$binary" dist/package/bin/cocobeat-game
+          install -m755 "$lab" dist/package/bin/cocobeat-lab
           cp LICENSE README.md Cargo.lock dist/package/
           cp -R licenses dist/package/
           cp packaging/linux/README.md dist/package/INSTALL-LINUX.md
@@ -158,6 +261,7 @@ jobs:
           cp assets/brand/README.md assets/brand/PROVENANCE.csv dist/package/assets/brand/
           cp assets/brand/icons/symbol-256.png dist/package/assets/brand/icons/
           cp -R assets/fonts assets/flags dist/package/assets/
+          cargo run --locked -p xtask -- prepare-model-assets "$BUILD_TARGET" "$NATIVE_SDK_ROOT" dist/package
           for size in 16 32 48 64 128 256 512 1024; do
             install -Dm644 "assets/brand/icons/symbol-$size.png" "dist/package/share/icons/hicolor/${size}x${size}/apps/cocobeat.png"
           done
@@ -168,9 +272,59 @@ jobs:
             echo "rustc=$(rustc --version)"
             echo "cargo=$(cargo --version)"
             echo "sha256=$(sha256sum "$binary" | cut -d ' ' -f 1)"
+            echo "lab_sha256=$(sha256sum "$lab" | cut -d ' ' -f 1)"
           } > dist/package/BUILD-INFO.txt
           # Tar retains the executable bit; artifact ZIP alone does not.
           tar -czf "dist/cocobeat-$BUILD_TARGET.tar.gz" -C dist/package .
+      - name: Run experimental native software smoke from the unpacked TAR
+        run: |
+          work="$RUNNER_TEMP/cocobeat-native-smoke"
+          mkdir -p "$work"
+          printf 'target=%s\ncommit=%s\n' "$BUILD_TARGET" "$GITHUB_SHA" > "$work/smoke-start.txt"
+          mkdir dist/smoke
+          tar -xzf "dist/cocobeat-$BUILD_TARGET.tar.gz" -C dist/smoke
+          cp dist/smoke/BUILD-INFO.txt dist/smoke/NATIVE-ASSETS.json "$work/"
+          lab="$PWD/dist/smoke/bin/cocobeat-lab"
+          authoring="$PWD/assets/dev/vertical_slice/authoring.json"
+          run_lab() {
+            local label="$1" pid code
+            shift
+            printf '%s\0' "$lab" "$@" > "$work/$label-argv.nul"
+            printf '%s\n' "$PWD" > "$work/$label-cwd.txt"
+            "$lab" "$@" > "$work/$label-stdout.txt" 2> "$work/$label-stderr.txt" &
+            pid=$!
+            printf '%s\n' "$pid" > "$work/$label-pid.txt"
+            if wait "$pid"; then code=0; else code=$?; fi
+            printf '%s\n' "$code" > "$work/$label-exit.txt"
+            cat "$work/$label-stdout.txt" "$work/$label-stderr.txt"
+            return "$code"
+          }
+          run_lab generate generate-dev "$work/source"
+          for channel in left right; do
+            run_lab "$channel-import" import-experimental-beat "$work/source/cocobeat-64.wav" "$authoring" "$channel" "$work/$channel"
+            run_lab "$channel-verify" verify-package "$work/$channel/package"
+            grep -F ' beat: AnalysisCapability { state: Candidate, source: Algorithm, confidence: None }' "$work/$channel-verify-stdout.txt"
+            grep -F 'downbeat: AnalysisCapability { state: Candidate, source: Algorithm, confidence: None }' "$work/$channel-verify-stdout.txt"
+            run_lab "$channel-stage" inspect-stage "$work/$channel/package" 0
+          done
+          resource="$PWD/dist/smoke/assets/models/beat-this/small0.onnx"
+          mv "$resource" "$resource.missing-control"
+          trap 'mv "$resource.missing-control" "$resource"' EXIT
+          if run_lab missing-model import-experimental-beat "$work/source/cocobeat-64.wav" "$authoring" left "$work/missing-model"; then exit 1; fi
+          test ! -e "$work/missing-model/package"
+          run_lab manual-import import-authored-package "$work/source/cocobeat-64.wav" "$authoring" "$work/manual"
+          run_lab manual-verify verify-package "$work/manual"
+          mv "$resource.missing-control" "$resource"
+          trap - EXIT
+      - name: Preserve native smoke evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-smoke-evidence-${{ inputs.target }}-${{ github.sha }}
+          path: ${{ runner.temp }}/cocobeat-native-smoke/
+          include-hidden-files: true
+          if-no-files-found: warn
+          retention-days: 14
       - uses: actions/upload-artifact@v7
         with:
           name: cocobeat-${{ inputs.target }}-${{ github.sha }}

@@ -37,6 +37,7 @@ tokio = { version = "1", default-features = false, features = ["rt", "net", "tim
 symphonia = { version = "0", default-features = false, features = ["wav", "pcm", "flac", "mp3", "ogg", "vorbis", "all-meta"] }
 oximedia-audio = { version = "0", default-features = false }
 oximedia-core = "0"
+ort = { version = "2.0.0-rc", default-features = false, features = ["load-dynamic", "api-28"] }
 vorbis_rs = { version = "0", default-features = false }
 blake3 = "1"
 postcard = { version = "1", default-features = false, features = ["alloc"] }

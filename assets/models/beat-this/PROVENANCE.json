@@ -1,0 +1,20 @@
+{
+  "asset": "small0.onnx",
+  "license": "MIT",
+  "copyright": "2024 Institute of Computational Perception, JKU Linz, Austria",
+  "official_source": "https://github.com/CPJKU/beat_this",
+  "checkpoint_url": "https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/small0.ckpt",
+  "checkpoint_sha256": "6074be2c4d490c5f6101fcc374a1ec72ae93456e23bb6019783b849f5dc7d47b",
+  "onnx_bytes": 10555597,
+  "onnx_sha256": "6873aa76f8753eefdcb1414d0663caaf26a2f78591a4a46ba911b768e03f0eba",
+  "onnx_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+  "export": "Project export from official checkpoint, float32/opset17/dynamic time, spect -> beat/downbeat; not an official directly published ONNX",
+  "export_recipe": "tools/beat-model-probe/probe.py export",
+  "export_recipe_sha256": "2f81001d20485591618872c32fef05e8c1b6ee37c896f5744725bb9c65a42258",
+  "export_reference_receipt": "target/mir-model-20261007/export-run.json",
+  "status": "EXPERIMENTAL_CANDIDATE",
+  "music_quality": "Historical FAIL preserved",
+  "confidence": null,
+  "product_python_backend": false,
+  "new_model_download_or_training_data_added": false
+}

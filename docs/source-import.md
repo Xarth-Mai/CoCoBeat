@@ -46,3 +46,7 @@ Anchor / 段落坐标是最终音频的 48 kHz 整数帧，工具不将源采样
 本机固定 lab / game 副本另通过 10 条成功 CLI、5 条预期拒绝及两组实际生产 package loader / GPU 图；短源 4410 帧真实输出 4800 帧，64 秒原创输入输出 3072000 帧，完整 Stage 整数采样与 lab 一致。原始源身份误用和 sandbox GPU 失败保留，固定二进制、437 / 419 项构建输入及主线程目检记录见[持久观察](../testdata/synthetic/source-import-observations-20261007.json)，复现见[软件工具](../tools/source-import-check/README.md)
 
 游戏入口在创建并完整验证四对象之后调用现有 package loader；loader 会拒绝未知规则，即使该手工包已经合法发布，也不能将运行失败解释为包未创建，原已发布对象仍保留
+
+## 显式实验 beat 导入
+
+Lab 的 `import-experimental-beat SOURCE_AUDIO AUTHORING_JSON left|right NEW_BUNDLE` 复用本页源导入事务，并仅对最终 canonical 音频运行固定 CPU 模型；输出为 `NEW_BUNDLE/package/` 四对象和独立 `evidence/`，手工 Anchor / 段落保留，beat / downbeat 为 confidence=None 的 Candidate。普通手工 CLI 与 Ready 导入保持原行为，实验入口的资源布局、失败证据和质量 FAIL 见[原生候选](native-beat-candidate.md)

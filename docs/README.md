@@ -13,6 +13,7 @@
 | [editor.md](editor.md) | 原生波形、歌曲试听、Replay / 候选证据与精确 Anchor 编辑 |
 | [independent-labels.md](independent-labels.md) | 来源绑定的人工标签导入、双人分歧与验收边界 |
 | [source-import.md](source-import.md) | 有界源快照、唯一生产编码器、手工内容四对象导入 |
+| [native-beat-candidate.md](native-beat-candidate.md) | 显式原生 beat / downbeat 候选、固定资源及未准入边界 |
 | [network-sessions.md](network-sessions.md) | 邀请、四对象接收与 Ready、QUIC 可靠历史、断线前缀与应用完成确认 |
 | [testing.md](testing.md) | 自动检查、硬件实验和真人测试各自证明什么 |
 | [canonical-audio-probe.md](canonical-audio-probe.md) | 编码候选的失败、适配与有限回读证据，以及复现入口 |

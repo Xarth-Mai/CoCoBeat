@@ -65,7 +65,9 @@ CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/
 四个目标都是 64 位，不提供 32 位选项。一次手动运行只构建选择的目标；另一平台的 job 会跳过；下述 tag 发布通过矩阵分别调用四个目标。Linux 固定 Ubuntu 24.04 作为构建基线，x86-64 本地容器和四目标原生 runner 的构建结果见下文
 
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
-成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含可执行文件、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Windows 显式生成 ZIP，Linux 打包 tar.gz 保留执行权限；单目标手动构建只上传 Actions artifact，不发布 GitHub Release
+成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含 Game 与 Lab、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Windows 显式生成 ZIP，Linux 打包 tar.gz 保留执行权限；单目标手动构建只上传 Actions artifact，不发布 GitHub Release
+
+四目标工作流核验固定官方 CPU SDK 归档 SHA，并通过 `cargo xtask prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT` 验证和复制匹配的 SDK / provider / small0 模型与完整许可 notices；Linux 可执行文件在 `bin/`，Windows 在包根目录，资源路径见[原生候选](native-beat-candidate.md)。打包后从实际解包目录运行左右候选导入 / verify / Stage、缺失模型拒绝及普通手工导入回归，QA 命令记录独立于游戏设备验收；本次这套新工作流的四目标原生 run 和新 tag Release 尚未运行
 
 Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及完整的 `assets/fonts/`、`assets/flags/`；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及 OFL/MIT 许可一起分发，来源文件的原字节哈希按资源总台账核验，运行时多语言的软件验证见 [验证策略](testing.md#国际化与字体里程碑)，四平台首次构建与下载包核验结果见下文，真实游戏设备的运行验收仍需分别执行
 

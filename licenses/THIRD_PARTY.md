@@ -1,6 +1,6 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-07 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 589 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-08 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 595 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
@@ -10,8 +10,9 @@
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
 | [oximedia-audio](https://github.com/cool-japan/oximedia) | 0.2.1 | media：High 窗化 sinc 重采样，关闭默认 codec features | Apache-2.0 |
 | [oximedia-core](https://github.com/cool-japan/oximedia) | 0.2.1 | media：重采样适配器内部的 PCM 格式 | Apache-2.0 |
+| [ort](https://github.com/pykeio/ort) | 2.0.0-rc.13 | media/Lab：显式实验性 beat/downbeat 的安全动态 CPU SDK 封装，关闭默认下载/provider features，使用 API 28 | MIT OR Apache-2.0 |
 | [vorbis_rs](https://github.com/ComunidadAylas/vorbis-rs) | 0.5.6 | media：静态内嵌 aoTuV/Lancer Vorbis 编码候选，关闭默认 RNG feature，sys 回移三项官方修补并恢复 libogg 位打包，软件准入独立验证 | BSD-3-Clause |
-| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：内容对象身份；net：证书、模板和实际 Replay 的字节哈希 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
+| [blake3](https://github.com/BLAKE3-team/BLAKE3) | 1.8.7 | media：内容对象身份；net：证书、模板和实际 Replay 的字节哈希；xtask：固定发行 SDK/model 资源核验 | CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception |
 | [serde](https://github.com/serde-rs/serde) | 1.0.229 | replay：事实序列化；runtime：设置持久化；media/lab：私有内容格式和创作输入；net：邀请、严格消息与摘要 | MIT OR Apache-2.0 |
 | [postcard](https://github.com/jamesmunns/postcard) | 1.1.3 | media：有界且带独立版本头的内容对象编码，schema 保持标准库类型 | MIT OR Apache-2.0 |
 | [serde_json](https://github.com/serde-rs/json) | 1.0.151 | replay/runtime/lab/net：JSON 编解码；xtask：Cargo metadata 检查 | MIT OR Apache-2.0 |
@@ -26,6 +27,12 @@
 
 Vorbis 路径的 Rust binding BSD、Vorbis / libogg COPYING 以及编译路径中的 LPC 独立 notice 原文与实际归档身份保留在 [vorbis-rs 来源目录](vorbis-rs/README.md)，随现有 licenses 目录进入发行包；Vorbis sys 四文件修补和 libogg sys 两文件官方修补及原归档身份分别见 [Vorbis UPSTREAM](../vendor/aotuv_lancer_vorbis_sys/UPSTREAM.md) 与 [libogg UPSTREAM](../vendor/ogg_next_sys/UPSTREAM.md)；完整文本收录不替代编码器及四目标发行验证
 
+新增解析包为 ort / ort-sys 2.0.0-rc.13、libloading 0.9.0、ndarray 0.17.2、matrixmultiply 0.3.11 和 rawpointer 0.2.1，原 589 行的 name/version/license/repository 保持一致；新增包与既有 cfg-if / smallvec / windows-link 的原始版权和许可文本见 [ort-rs 目录](ort-rs/README.md)，逐文件身份与 registry 原包 checksum 对齐
+
+本次完整 metadata 的 ort features 为 api-17 至 api-28、load-dynamic、preload-dylibs、std，ort-sys 为 api-17 至 api-28、disable-linking、std；未启用 default、download-binaries、fetch-models 或 provider features；完整 resolve 图仍列出 ndarray / tracing 可选边，其 std 弱依赖和全解析条目不能充当该平台实际 compile/link 清单，四目标实际 offline/locked 过滤 metadata 的第三方包数分别为 Linux x64 443、Linux ARM64 442、Windows x64 418、Windows ARM64 417，四图的 ort / ort-sys feature 集合相同，libloading 在 Linux 的解析依赖为 cfg-if、Windows 为 windows-link；过滤图仅证明 resolver 配置，发行二进制链接、解包许可交付和 SDK Run 需独立证据
+
+原生 SDK 的原 MIT LICENSE、完整 70 项声明 notices、version/commit 与 [Eigen 对应源说明](onnxruntime/SOURCE-AVAILABILITY.md) 单独保留；small0 模型和官方 minimal 移植共用 [Beat This 原 MIT 许可及 JKU 2024 版权](beat-this/LICENSE)，来源、导出和受信模型身份见 [模型说明](../assets/models/beat-this/README.md)，开发 Python reference/export 不进入产品分析 runtime；完整 Rust/native/source 对齐与四目标最终包许可验收尚未完成
+
 CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`、`repository`，缺失的 repository 保留空值。声明许可证不代表发行许可审查已通过；发行前需核对实际分发组件及资源，准备适用的许可文本与 notices
 
 独立音频和 MIR 研究工具的依赖另见 [CANONICAL_PROBE_DEPENDENCIES.csv](CANONICAL_PROBE_DEPENDENCIES.csv)：2026-10-03 对 `tools/canonical-audio-probe/` 的五个工具包、`tools/mir-onset-probe/`、`tools/mir-onset-diagnostic/`、`tools/mir-spectral-probe/`、`tools/mir-flux-probe/` 与 `tools/mir-flux-gate-probe/` 分别执行 `cargo metadata --offline --locked --format-version 1 --manifest-path <工具包>/Cargo.toml`，按 name/version 合并得到 88 个第三方包，`used_by` 记录使用包；各解析闭包与独立 Cargo.lock 一致，五个 MIR 工具分别解析相同的 37 个第三方包，使用 Apache-2.0 的 OxiMedia MIR 0.2.1，谱候选另将已有的 Apache-2.0 `oxifft 0.4.2` 列为直接依赖并开启 `std`、`streaming`，第三方包版本集合不变；产品未启用该分析库，该研究台账不扩充产品 Cargo.lock 或发行组件清单
@@ -33,6 +40,8 @@ CSV 按包名和版本记录上游 manifest 的 `name`、`version`、`license`�
 `cocobeat-rusty-candidate` 的独立闭包包含 64 个 registry 包和一个 patched vendor。`rusty_vorbis 0.1.1` 的 name/version 台账记录许可元数据，其发布版与修补版的代码身份分别保存；候选 vendor 从官方 crate archive 提取，仅修改 `forward_couple`，完整 Apache-2.0 LICENSE、原 README 与上游说明保留，来源、14 个文件身份与唯一补丁见 [UPSTREAM.md](../tools/canonical-audio-probe/rusty-candidate/UPSTREAM.md)。该副本用于复现编码候选，未进入产品或游戏发行包
 
 依赖采用最新稳定版本，manifest 使用主版本范围；更新 `Cargo.lock` 后同步 CSV 和直接依赖表，精确版本用于记录实际解析结果
+
+ORT 为本次显式记录的预发布依赖，manifest 使用 `2.0.0-rc` 系列范围，由 Cargo.lock 固定实际 rc.13 与 API 28；固定 SDK / 模型身份分别作为发行资源核验
 
 工作流使用 `actions/checkout@v7`、`actions/cache@v6`、`actions/upload-artifact@v7`、`actions/download-artifact@v8`（均 MIT），跟随各主版本的稳定更新，不属于 Cargo 解析图或游戏运行时依赖
 

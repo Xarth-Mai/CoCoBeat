@@ -6,6 +6,13 @@ mod authored;
 mod content_codec;
 mod decode;
 mod encode;
+#[cfg(any(
+    all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"),
+    all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"),
+    all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"),
+    all(target_os = "windows", target_arch = "aarch64", target_env = "msvc")
+))]
+mod native_beat;
 mod package;
 mod resample;
 
@@ -14,7 +21,9 @@ pub use anchors::{
     compile_anchor_proposal,
 };
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
-pub use authored::{build_authored_package, import_authored_package};
+pub use authored::{
+    build_authored_package, import_authored_package, import_experimental_beat_package,
+};
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use encode::{CANONICAL_ENCODER_PROFILE, MAX_ENCODER_PCM_PEAK, encode_canonical_audio};
 pub use package::{

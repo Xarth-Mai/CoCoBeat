@@ -53,3 +53,7 @@
 - [x] AudioFlux 原生 C 软件研究前置：构建、原输入按 SHA 恢复、原 Matcher 与边界控制、完整原质量矩阵及失败证据
 - [x] AudioFlux 短矩阵 sanitizer 验证：保留环境失败，宿主同二进制同参数完整执行，无诊断，质量仍 FAIL
 - [x] BTT MIT 原生 tempo 软件研究：固定 48 kHz、native / sanitizer 各 16 项边界控制与原 source / canonical 两声道各 40 条完整记录通过软件检查；原始输出一致，质量未设准入门槛，13/20 编码前后曲线有变化，精确 onset / beat 与完整分析继续未准入，见[研究结果](../tools/native-tempo-check/results-2026-10-07.json)
+
+- [x] 显式原生 beat / downbeat 候选软件入口：最终 canonical 音频、固定 CPU SDK / 模型、MusicAnalysis v2 Candidate / confidence=None、四对象包加原始 evidence 已由 Lab 消费；media 46 / xtask 5、12 条成功命令、四组同实际 spect 数值对照及 13 项事务 / 资源控制通过，普通手工导入四对象保持，见[原生候选](../docs/native-beat-candidate.md)
+
+旧前处理 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）和音乐质量 FAIL 保留，本批同输入 logits / q 一致不构成前处理等价或生产 MIR 准入；独立真人标签、置信校准、四目标 native run 与十分钟成本 / 取消仍未完成

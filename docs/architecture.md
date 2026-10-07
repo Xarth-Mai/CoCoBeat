@@ -6,7 +6,7 @@
 game ───────────────→ runtime
 runtime ────────────→ schema / core / replay / media / stage / net
 replay ─────────────→ schema / core
-media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象）
+media ──────────────→ schema / Symphonia（源解码与严格读回）/ OxiMedia（重采样）/ Postcard（内容对象） / ort（显式 Lab CPU 候选）
 stage ──────────────→ schema / std
 editor ─────────────→ schema / std
 net ────────────────→ schema / core / replay / media / Quinn / Tokio / rcgen
@@ -49,6 +49,8 @@ runtime 将计划适配成九个固定动态地面 / 桥体网格、两个固定
 StagePlan 身份由完整内容身份与 `compiler_version` 组成，计划不写入歌曲包，四对象目录形状不变；analysis 独立支持 v1 / v2，chart / manifest 仍为 v1。Replay v2 记录实际舞台编译版本并支持现有 Stage 1 / 2 的只读观看，历史 Replay v1 保持 core-only，缺少版本时不能重构未记录的几何
 
 `ui_assets` 复用既有六份 Noto Sans 字体，通过 Bevy 的 fontique 字体集合配置原生脚本回退；每个文本仍以 locale 对应的地区字体为首选，回退处理其缺少的拉丁 / 西里尔 / 希腊 / 汉字 / 假名 / 韩文字形，不引入系统字体依赖或任意 Unicode 覆盖承诺，字体类型止于 runtime 表现适配层
+
+media 的实验 beat 适配器仅由 lab 的显式 `import-experimental-beat` 消费，复用最终 canonical 音频和四对象事务，输出 MusicAnalysis v2 的未知置信度 Candidate；固定 CPU SDK / 模型的原始证据置于包外 `evidence/`。schema 不依赖 ORT，core 与游戏菜单不运行模型，手工 Anchor 保留，数值对照和音乐准入边界见[原生候选](native-beat-candidate.md)
 
 ## 模块职责与引入状态
 

@@ -11,6 +11,7 @@ cocobeat-schema.workspace = true
 symphonia.workspace = true
 oximedia-audio.workspace = true
 oximedia-core.workspace = true
+ort.workspace = true
 vorbis_rs.workspace = true
 blake3.workspace = true
 serde.workspace = true

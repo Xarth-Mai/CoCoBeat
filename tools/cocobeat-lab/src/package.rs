@@ -35,6 +35,36 @@ pub fn import_authored(
     Ok(())
 }
 
+pub fn import_experimental_beat(
+    source: &Path,
+    authoring_path: &Path,
+    channel: &str,
+    destination: &Path,
+) -> Result<(), String> {
+    let channel = match channel {
+        "left" => 0,
+        "right" => 1,
+        _ => return Err("Explicit experimental channel must be left or right".into()),
+    };
+    let validated = cocobeat_media::import_experimental_beat_package(
+        source,
+        authoring_path,
+        channel,
+        destination,
+        &format!("cocobeat-lab/{}", env!("CARGO_PKG_VERSION")),
+    )?;
+    summary(&validated);
+    println!(
+        "Experimental Candidate/Algorithm, confidence=None; frontend and music quality FAIL preserved"
+    );
+    println!(
+        "Package: {}; evidence: {}",
+        destination.join("package").display(),
+        destination.join("evidence").display()
+    );
+    Ok(())
+}
+
 pub fn verify(path: &Path) -> Result<(), String> {
     let validated = cocobeat_media::validate_package(path)?;
     summary(&validated);

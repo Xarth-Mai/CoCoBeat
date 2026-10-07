@@ -1,3 +1,5 @@
+mod native_assets;
+
 use serde_json::Value;
 use std::{
     path::Path,
@@ -15,11 +17,14 @@ fn main() -> ExitCode {
         [command] if command == "doctor" => doctor(),
         [command] if command == "boundaries" => boundaries(),
         [command] if command == "check" => check(),
+        [command, target, sdk, package] if command == "prepare-model-assets" => {
+            native_assets::prepare(target, Path::new(sdk), Path::new(package))
+        }
         [] => {
-            println!("Usage: cargo xtask <doctor|boundaries|check>");
+            println!("Usage: cargo xtask <doctor|boundaries|check|prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT>");
             Ok(())
         }
-        _ => Err("Unknown arguments. Available commands: doctor, boundaries, check".into()),
+        _ => Err("Unknown arguments. Available commands: doctor, boundaries, check, prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT".into()),
     };
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -152,7 +157,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                 ],
                 true,
             ),
-            "xtask" => (&["serde_json"], false),
+            "xtask" => (&["serde_json", "blake3"], false),
             _ => {
                 return Err(format!(
                     "New workspace member {name}: define its dependency boundary first"

@@ -1,0 +1,2764 @@
+{
+  "schema_version": 1,
+  "status": "PASS_COMPLETE_INDEXED_RAW_SHA_SIZE",
+  "scope": "Every indexed actual raw/notice/frozen compiler-source/candidate reference fully hashed; big binaries/SDK/model identities separately bound to immutable producer receipts; excludes unownedmemory and oldsealedraw mutation",
+  "file_count": 633,
+  "total_indexed_bytes": 51040125,
+  "evidence_sha256": {
+    "target/native-beat-delivery-20261008/C-production-review.json": {
+      "sha256": "4062401a890223874c7619333729a98dd8f42e6555ecfeedde503e7e952f69b9",
+      "bytes": 15300
+    },
+    "target/native-beat-delivery-20261008/cargo-metadata.json": {
+      "sha256": "307dd39c91d859f04f43b37c112b4a428463992cdabf1f20eb2656c20dc40984",
+      "bytes": 3356997
+    },
+    "target/native-beat-delivery-20261008/cargo-metadata.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/clippy-recheck-result.json": {
+      "sha256": "5121cfca8371bc0160b935e8903d630f2a37e7512b39c0afe0d8965ee8477249",
+      "bytes": 276
+    },
+    "target/native-beat-delivery-20261008/clippy-recheck.log": {
+      "sha256": "a3cf7976fc2c2d6a0f5073cec58b8cfd723d86e0c8618cd88efb16d9162b9d9a",
+      "bytes": 427
+    },
+    "target/native-beat-delivery-20261008/clippy-result.json": {
+      "sha256": "d4c1996f9e4ab7abe3a3dd32e0289959473e1184bc6cf5945c77c2bb9a0f86ce",
+      "bytes": 278
+    },
+    "target/native-beat-delivery-20261008/clippy.log": {
+      "sha256": "fd5ace08863ba0a28f64f752ffaaa5839fca80c607523b9d576804c44941e09a",
+      "bytes": 2040
+    },
+    "target/native-beat-delivery-20261008/initial-check-result.json": {
+      "sha256": "a65778d750c3edc42f4b01a75e40ac98b0877bbc4c517a0ee4b407585d138a55",
+      "bytes": 293
+    },
+    "target/native-beat-delivery-20261008/initial-check.log": {
+      "sha256": "d2234db606bfb9537722cd55e94fe4bcafe3295d07356442cb09e486f37e5377",
+      "bytes": 1367
+    },
+    "target/native-beat-delivery-20261008/license-promote.json": {
+      "sha256": "0e411a2af4b68b48515eb99014a430fb6cfe25a58bb41ac2ecd6be35d5bc8df3",
+      "bytes": 1175
+    },
+    "target/native-beat-delivery-20261008/media-xtask-tests-result.json": {
+      "sha256": "eafb4faee632cc503baf59170dd9c08a765e69e871cf82278236ebc5d69ffa01",
+      "bytes": 188
+    },
+    "target/native-beat-delivery-20261008/media-xtask-tests.log": {
+      "sha256": "d2ccf53fd77172e9cf1b09fd2394adcc9cae14e9e46c9722a7421e0dbf47042f",
+      "bytes": 6039
+    },
+    "target/native-beat-delivery-20261008/metadata-result.json": {
+      "sha256": "796fdc0503227542683f2e941e096cdb38bd115eb5ccb4ccb8b3814e9cc40956",
+      "bytes": 276
+    },
+    "target/native-beat-delivery-20261008/native-tests-recheck-result.json": {
+      "sha256": "e9bca5e173fcd3530e9deb6523d102457cb0b0ab7038f588bf948b357d198d30",
+      "bytes": 185
+    },
+    "target/native-beat-delivery-20261008/native-tests-recheck.log": {
+      "sha256": "f93c6a579c1c74b3abdfbeafcc849bc0be9efdc9ca4cb576e9bbb9965151904d",
+      "bytes": 656
+    },
+    "target/native-beat-delivery-20261008/prepare-assets-result.json": {
+      "sha256": "545f86f4026a62e0e587171e4efc4664102f331a0e37e35e07ec1eac0fdde7e6",
+      "bytes": 318
+    },
+    "target/native-beat-delivery-20261008/prepare-assets.log": {
+      "sha256": "254e6f1763c122903fa0417ca0aa10b3f794834aa34781c8d6fa856327d472a6",
+      "bytes": 242
+    },
+    "target/native-beat-delivery-20261008/resource-promote.json": {
+      "sha256": "954e3655a8ee60e951a3a51bb10631e33b0ed022443d638f394667ebed34572f",
+      "bytes": 611
+    },
+    "target/native-beat-delivery-20261008/run_controls.py": {
+      "sha256": "327414a01e6801589862d3584dc9aa920c6c10e2f48df5f8a1cd8f205a5455dd",
+      "bytes": 5723
+    },
+    "target/native-beat-delivery-20261008/run_positive.py": {
+      "sha256": "045a405a6cc3ffcd8846a97e9c6ced9a97685dcf4d6d134db9b628160024c54b",
+      "bytes": 3250
+    },
+    "target/native-beat-delivery-20261008/run_reference.py": {
+      "sha256": "91a095cd39657078d670f0e7537ae4b361646b0a2e77eefb602d540d404cb520",
+      "bytes": 1752
+    },
+    "target/native-beat-delivery-20261008/positive-01/commands.json": {
+      "sha256": "ed414ab493a543c09b5d1c3633a0cdba484e95e1fda36cfc9ea18a49ef041d98",
+      "bytes": 13397
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/aggregate-beat.f32": {
+      "sha256": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/aggregate-coverage.bin": {
+      "sha256": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+      "bytes": 1601
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/aggregate-downbeat.f32": {
+      "sha256": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/analysis-complete.json": {
+      "sha256": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+      "bytes": 121
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk-starts.json": {
+      "sha256": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+      "bytes": 15
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk000-beat.f32": {
+      "sha256": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk000-beat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk000-downbeat.f32": {
+      "sha256": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk000-downbeat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk000-spect.f32": {
+      "sha256": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+      "bytes": 768000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk001-beat.f32": {
+      "sha256": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk001-beat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk001-downbeat.f32": {
+      "sha256": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk001-downbeat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/chunk001-spect.f32": {
+      "sha256": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+      "bytes": 768000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/evidence-summary.json": {
+      "sha256": "7eb46ccaa5e76ff86d3c8176d5370b1005300f18ce08e8d682357d7d78a1e637",
+      "bytes": 1244
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/final-canonical-identity.json": {
+      "sha256": "f8051b377c9d48b04cdfe8c7ced25dc602a2288c62329eb73a7e1bf555a2c552",
+      "bytes": 277
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/final-canonical.ogg": {
+      "sha256": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+      "bytes": 292807
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/minimal-alignment.json": {
+      "sha256": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+      "bytes": 8235
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/minimal-raw-groups.json": {
+      "sha256": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+      "bytes": 13520
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/native-shape.json": {
+      "sha256": "e85f60addfc6ec53061f37587f0ed1ee5a9b2390d853cbe745cce464d5ea95a7",
+      "bytes": 322
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/native-spect.f32": {
+      "sha256": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+      "bytes": 819712
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/package-complete.json": {
+      "sha256": "376f6fdf2a1e520108e542979138cb41199a663d77bb13ff6d8f9a5f775e5e0b",
+      "bytes": 258
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/resampled-stereo.f32": {
+      "sha256": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+      "bytes": 5644800
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/resampler-output.bin": {
+      "sha256": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+      "bytes": 5644800
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/resampler-output.jsonl": {
+      "sha256": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+      "bytes": 198110
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/session-metadata.json": {
+      "sha256": "ad249b6e80f7a073002844790d15ee93bfda02e9cb78446214154bc3cebc0ccd",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence/started.json": {
+      "sha256": "361c1e62fa105ea0f05b79bf9bdb8f0394fb95dc0f9823bbb632c89ef9d5a4bb",
+      "bytes": 388
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/analysis.bin": {
+      "sha256": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+      "bytes": 33742
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/chart.bin": {
+      "sha256": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+      "bytes": 83
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/song.audio.ogg": {
+      "sha256": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+      "bytes": 292807
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/song.package": {
+      "sha256": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5",
+      "bytes": 335
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-result.json": {
+      "sha256": "8161cd1c95cfa58c74f6140ce844994f53277ed792c1a8acfe02a99d126e6d9f",
+      "bytes": 1121
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-stage-result.json": {
+      "sha256": "c5f0818fd5a11c73edd37032b53d8bafb55eb0d106e58dddd5c4104082c0bbbf",
+      "bytes": 935
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-stage.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-stage.stdout": {
+      "sha256": "f590d9e331435f00a4be082f06779122dbda335ac31714e0049fe6602646dea0",
+      "bytes": 298
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-verify-result.json": {
+      "sha256": "dffae63e47daba50011d0f50a03aee3ba1069497c3de0e3c5a9514310a59d0d3",
+      "bytes": 930
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left-verify.stdout": {
+      "sha256": "43308484e9cc70b79ececd1cb22c805d3d8d79a120be4c48cff9a7a06abec602",
+      "bytes": 994
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left.stdout": {
+      "sha256": "b2e8733690b565f290b6cd2bcb318f2b752bf1290318c4e1b0bd5b86cf222513",
+      "bytes": 1312
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/aggregate-beat.f32": {
+      "sha256": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/aggregate-coverage.bin": {
+      "sha256": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+      "bytes": 1601
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/aggregate-downbeat.f32": {
+      "sha256": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/analysis-complete.json": {
+      "sha256": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+      "bytes": 121
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk-starts.json": {
+      "sha256": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+      "bytes": 15
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk000-beat.f32": {
+      "sha256": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk000-beat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk000-downbeat.f32": {
+      "sha256": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk000-downbeat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk000-spect.f32": {
+      "sha256": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+      "bytes": 768000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk001-beat.f32": {
+      "sha256": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk001-beat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk001-downbeat.f32": {
+      "sha256": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk001-downbeat.metadata.json": {
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+      "bytes": 137
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/chunk001-spect.f32": {
+      "sha256": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+      "bytes": 768000
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/evidence-summary.json": {
+      "sha256": "c1fdfb3df5ae526df237ecb89ff5938778a73dd005601b1bf384c73c2ccea2b1",
+      "bytes": 1244
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/final-canonical-identity.json": {
+      "sha256": "036daa49c1650691f96957dc0cd0c5e458614dd43f358926baecac3141647aad",
+      "bytes": 277
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/final-canonical.ogg": {
+      "sha256": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+      "bytes": 292807
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/minimal-alignment.json": {
+      "sha256": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+      "bytes": 8235
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/minimal-raw-groups.json": {
+      "sha256": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+      "bytes": 13520
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/native-shape.json": {
+      "sha256": "f24133aa18e2b29069ce3c9b900919fc07baa404b6f900ede624665566a08d20",
+      "bytes": 322
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/native-spect.f32": {
+      "sha256": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+      "bytes": 819712
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/package-complete.json": {
+      "sha256": "0b4effdecc77a93732623ef633cfdea1f5d1810d63bf012987cb62605ce7cf4c",
+      "bytes": 258
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/resampled-stereo.f32": {
+      "sha256": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+      "bytes": 5644800
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/resampler-output.bin": {
+      "sha256": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+      "bytes": 5644800
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/resampler-output.jsonl": {
+      "sha256": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+      "bytes": 198110
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/session-metadata.json": {
+      "sha256": "7e6d84282da773224b40075f4f3d083063d777f40c15fc8251047a5291d622cd",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence/started.json": {
+      "sha256": "482f3077c255053b4e3e1a9f9e8350aef4738d9eff67873162aba29ecbf8e690",
+      "bytes": 388
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/package/analysis.bin": {
+      "sha256": "265c637b8d8a323d2fc373c38c89fe7570dce2c9409b3d78112f461d1087ecd7",
+      "bytes": 33742
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/package/chart.bin": {
+      "sha256": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+      "bytes": 83
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/package/song.audio.ogg": {
+      "sha256": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+      "bytes": 292807
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right/package/song.package": {
+      "sha256": "f313f820aedc8335cec7c18e6eed261c496e2c9dee4f9fdd982c8f0772baa7b2",
+      "bytes": 335
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-result.json": {
+      "sha256": "0bda9c6aa6e9ec4a0a09166ff1b9c3889a82f5a0e30ffde4b2873b796019a6b2",
+      "bytes": 1126
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-stage-result.json": {
+      "sha256": "51892dea83bbf08df4cc889e531d381ab10d1ba0bb28217df49d874c53487c37",
+      "bytes": 939
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-stage.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-stage.stdout": {
+      "sha256": "a268e1c7de59ba27e070d795ab3ff89e9459d47e3633ddee3b09b0ab267b76ba",
+      "bytes": 298
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-verify-result.json": {
+      "sha256": "9d660565aa53d8f3c74041f1780a8ed11450b02a18d2d5de5bc555d8c07495fb",
+      "bytes": 934
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right-verify.stdout": {
+      "sha256": "0da7857ef9d440136bf055acf0b0620e6aafc345fc640da70ee138d942ca8fb1",
+      "bytes": 994
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-right.stdout": {
+      "sha256": "115a534d3117daf8f77e38ebcd79be86ead4d98c86d2fdd50c2e86cf2f57ca5e",
+      "bytes": 1314
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/aggregate-beat.f32": {
+      "sha256": "dbefef1ac633a22e9c848f05c608372f659f1a7b51d2e3e1ec1c1587830c90c4",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/aggregate-coverage.bin": {
+      "sha256": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+      "bytes": 6
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/aggregate-downbeat.f32": {
+      "sha256": "af05ea19684837a7ce77dfa624266b61dc92fc445961c83eced7894592696c72",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/analysis-complete.json": {
+      "sha256": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+      "bytes": 119
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk-starts.json": {
+      "sha256": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+      "bytes": 8
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk000-beat.f32": {
+      "sha256": "739ee0409d1e6a0f36b709ca67cbc2cac07020276867f9fc7d4e2ee8215c0feb",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk000-beat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk000-downbeat.f32": {
+      "sha256": "57c9766d42e9ce22428de173b0be719137d7b6018583d874f8f2bdf919a2719a",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk000-downbeat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/chunk000-spect.f32": {
+      "sha256": "7e12551aea37c8406d0abdbf29464382c7d3fe64dc4bbc07497dda81df9df1b2",
+      "bytes": 9216
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/evidence-summary.json": {
+      "sha256": "51e9d9d0deef5cd6e801bd56837f2f5008ed6f9f6da0272ea2ad3d4b05e0bd69",
+      "bytes": 1233
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/final-canonical-identity.json": {
+      "sha256": "856d9b69fd6932f4dfff32aa8088216ab054de0f9eb0c84601d8f4a6e61aa0b7",
+      "bytes": 270
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/final-canonical.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/minimal-alignment.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/minimal-raw-groups.json": {
+      "sha256": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+      "bytes": 121
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/native-shape.json": {
+      "sha256": "050490023be95392b6927b5ae9201fa85a09d5a3be20fcdcf3049b88cfddf65f",
+      "bytes": 311
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/native-spect.f32": {
+      "sha256": "84ef24494319c1a59625d47099878ae0618c9745c6359c720aac3ab0acb44786",
+      "bytes": 3072
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/package-complete.json": {
+      "sha256": "eff1a34e7a53eed89bb50801841f164d749030eb8b1d8d20830bd7a155ca67d2",
+      "bytes": 258
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/resampled-stereo.f32": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/resampler-output.bin": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/resampler-output.jsonl": {
+      "sha256": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+      "bytes": 682
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/session-metadata.json": {
+      "sha256": "54ef4c8c5a765724f02b3725594870afaccefb93dce0266cea7337497bb5b394",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/started.json": {
+      "sha256": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/package/analysis.bin": {
+      "sha256": "ca79634d06c8163ae21ec996e6323a6b4bd3d934d457888d33379ce20f714e15",
+      "bytes": 1003
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/package/chart.bin": {
+      "sha256": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+      "bytes": 82
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/package/song.audio.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left/package/song.package": {
+      "sha256": "9cd28223f0490aa21011c56764c94ad8bae8dc0f3fea76e80a9332a4e470c3ba",
+      "bytes": 331
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-result.json": {
+      "sha256": "33063450412196a1a263f3adc4411f674d709bb0198228d72daf96cfbdcb6d43",
+      "bytes": 1116
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-stage-result.json": {
+      "sha256": "b31a420ce068a5364a03c79ed3652785a1f25fbb8fb3dbf09bbb39eba0703b84",
+      "bytes": 929
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-stage.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-stage.stdout": {
+      "sha256": "1892b0dce065729f934ab987ec57f45eacf5e0197f0f04092dd270beb647a2d5",
+      "bytes": 295
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-verify-result.json": {
+      "sha256": "28378bff2a039b963259609d4bd941e8eeb54fb9abe5cc6dec63ecf6bfd8f2c1",
+      "bytes": 924
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left-verify.stdout": {
+      "sha256": "4a6c7d385116a9686b068515edc22d23aca3623517644aa449d97bb1964e5487",
+      "bytes": 988
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-left.stdout": {
+      "sha256": "3947152e041379340e1dd21a0ec799a8765cb0fc4c980088b98ba40c009a1812",
+      "bytes": 1304
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/aggregate-beat.f32": {
+      "sha256": "dba4c639ee4d69bf2d80344308dec2267f0faf4e59dfc98b1240bc53416aeb4a",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/aggregate-coverage.bin": {
+      "sha256": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+      "bytes": 6
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/aggregate-downbeat.f32": {
+      "sha256": "ffeba63eff16c86e180796fc8d78c2d4303f2a7f00f5d60a146bc0fd3f24f392",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/analysis-complete.json": {
+      "sha256": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+      "bytes": 119
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk-starts.json": {
+      "sha256": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+      "bytes": 8
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk000-beat.f32": {
+      "sha256": "3c43d4954e7688073e338b37b49ea9ab22667bda85022ea2d64b15782cf2e774",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk000-beat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk000-downbeat.f32": {
+      "sha256": "662074c00b1991278455bde8179529e8d015235085bca9d02a1918b328e2f103",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk000-downbeat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/chunk000-spect.f32": {
+      "sha256": "74bea6a91ab5ed099021b85650645afa92f43a001be7fd406e8d2d6ae50b4a71",
+      "bytes": 9216
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/evidence-summary.json": {
+      "sha256": "b026c555a3070e33774d6d325d77e841d6905cc754d52efb7ba6bd50c8a057c1",
+      "bytes": 1233
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/final-canonical-identity.json": {
+      "sha256": "ad1554f303d2def00f2e315351645c3a42d9068d11cd265792798822503aba8c",
+      "bytes": 270
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/final-canonical.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/minimal-alignment.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/minimal-raw-groups.json": {
+      "sha256": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+      "bytes": 121
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/native-shape.json": {
+      "sha256": "f486d9c6fb388b6fa5111cd211009a91837e334cfcc2dfa9c50fd69299dedd6a",
+      "bytes": 311
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/native-spect.f32": {
+      "sha256": "f2e04f9afcfdcbb2203eb3127b4cff1134a1b3f2693d719cbac1b335da72ad11",
+      "bytes": 3072
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/package-complete.json": {
+      "sha256": "4d197688af8d4b87df4a75566c19e113d48c88b3644d95b6617632a82e6e2d79",
+      "bytes": 258
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/resampled-stereo.f32": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/resampler-output.bin": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/resampler-output.jsonl": {
+      "sha256": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+      "bytes": 682
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/session-metadata.json": {
+      "sha256": "45e3c1047485efbc074fd373a4ca52eae29604c3760a27d0c7c7a40bdb89d079",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/evidence/started.json": {
+      "sha256": "edd6c81b31ef5b141c4b14c5963e92201f406f62b9537e22ef57f898ef68c722",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/package/analysis.bin": {
+      "sha256": "58009369339af7f58e74f71191ce8505bc1eca540f0f60dc4374673ec3598b81",
+      "bytes": 1003
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/package/chart.bin": {
+      "sha256": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+      "bytes": 82
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/package/song.audio.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right/package/song.package": {
+      "sha256": "e8c834f698a4a052d9ec9645ba18fd20b7a7cb80435b33820721a5374ad34952",
+      "bytes": 331
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-result.json": {
+      "sha256": "2841cfd01da02caf3d8fe0abe5bbaecdffd26d4fbb0ca30d418d78ebc038d1df",
+      "bytes": 1122
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-stage-result.json": {
+      "sha256": "7872bc836ee8ffda023eb20473b4b5dcdd14cc81aea72c96e7723003fd474a75",
+      "bytes": 933
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-stage.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-stage.stdout": {
+      "sha256": "1f37f72af4751daf654afd23cf39bfecc8719b55f113ab1c39fba2b14c468eb6",
+      "bytes": 295
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-verify-result.json": {
+      "sha256": "f1dbfe58ee736837dcc1a9d343c6f75425c2506205b4f9dafbcdc63cd30c8c44",
+      "bytes": 928
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right-verify.stdout": {
+      "sha256": "520768f0e9f7acf332c2dbad529a0d65553c99dbff17b71db4b407850a113583",
+      "bytes": 988
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixture-right.stdout": {
+      "sha256": "1ec0cdc259e425cea59aa3343fd1495965705327ee3976cbcf88038c75d48f69",
+      "bytes": 1306
+    },
+    "target/native-beat-delivery-20261008/reference-01/commands.json": {
+      "sha256": "8b165eb72965141ab2a8340545c26f9851fa2904e03e7c32987555fe3e21664a",
+      "bytes": 4363
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/aggregate-beat.f32": {
+      "sha256": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/aggregate-downbeat.f32": {
+      "sha256": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/chunk000-beat.f32": {
+      "sha256": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/chunk000-downbeat.f32": {
+      "sha256": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/chunk001-beat.f32": {
+      "sha256": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/chunk001-downbeat.f32": {
+      "sha256": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/python_reference_aggregate-q.json": {
+      "sha256": "b22d076c236932a9ae338869a86cbd5fe8cc91240fc848ec2b8d1798a82824dd",
+      "bytes": 2757
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/receipt.json": {
+      "sha256": "811fcc4d84bdc00aa42d0999b9596349509f81d1e93f0aa477960b1a00135c3e",
+      "bytes": 7737
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left/same_native_aggregate-q.json": {
+      "sha256": "b22d076c236932a9ae338869a86cbd5fe8cc91240fc848ec2b8d1798a82824dd",
+      "bytes": 2757
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left-result.json": {
+      "sha256": "7ea2622ce8012633bd78d24fe7a51aff0ef3f2c6616abafad62e9974ad144ddc",
+      "bytes": 934
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left.stderr": {
+      "sha256": "bf9d6e82158801b493fe4426fb36781325c19c4003cf7485abeab902d7fb1d2c",
+      "bytes": 162
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-left.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/aggregate-beat.f32": {
+      "sha256": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/aggregate-downbeat.f32": {
+      "sha256": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+      "bytes": 6404
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/chunk000-beat.f32": {
+      "sha256": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/chunk000-downbeat.f32": {
+      "sha256": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/chunk001-beat.f32": {
+      "sha256": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/chunk001-downbeat.f32": {
+      "sha256": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+      "bytes": 6000
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/python_reference_aggregate-q.json": {
+      "sha256": "b22d076c236932a9ae338869a86cbd5fe8cc91240fc848ec2b8d1798a82824dd",
+      "bytes": 2757
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/receipt.json": {
+      "sha256": "6c2575440e6bf66536f31b4f9547877c023507d7891a823d3c721cfa2812174c",
+      "bytes": 7737
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right/same_native_aggregate-q.json": {
+      "sha256": "b22d076c236932a9ae338869a86cbd5fe8cc91240fc848ec2b8d1798a82824dd",
+      "bytes": 2757
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right-result.json": {
+      "sha256": "681e693aff517d56f45b880ef82b65b70e9c2a7056b0bf15bd026d65b2115c22",
+      "bytes": 937
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right.stderr": {
+      "sha256": "f1f00c7924dec83fc5f987174e48c65ae14feb3b1b65a07aa71f0b5a9b4c76d0",
+      "bytes": 162
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixed120-right.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/aggregate-beat.f32": {
+      "sha256": "dbefef1ac633a22e9c848f05c608372f659f1a7b51d2e3e1ec1c1587830c90c4",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/aggregate-downbeat.f32": {
+      "sha256": "af05ea19684837a7ce77dfa624266b61dc92fc445961c83eced7894592696c72",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/chunk000-beat.f32": {
+      "sha256": "739ee0409d1e6a0f36b709ca67cbc2cac07020276867f9fc7d4e2ee8215c0feb",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/chunk000-downbeat.f32": {
+      "sha256": "57c9766d42e9ce22428de173b0be719137d7b6018583d874f8f2bdf919a2719a",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/python_reference_aggregate-q.json": {
+      "sha256": "728cf72c6e629347089dbae83f4b9148c881ed19b5df85a1dd6e486dc85abb77",
+      "bytes": 127
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/receipt.json": {
+      "sha256": "fb4176099f9c3c6ac9381e03daab3b69081346584a0b140715d090689a8b709c",
+      "bytes": 6160
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left/same_native_aggregate-q.json": {
+      "sha256": "728cf72c6e629347089dbae83f4b9148c881ed19b5df85a1dd6e486dc85abb77",
+      "bytes": 127
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left-result.json": {
+      "sha256": "5ce361dc89fc2fc5eb5299a34c1680d186adea6f08f91d514eb8d3ce0230d74c",
+      "bytes": 929
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left.stderr": {
+      "sha256": "e5945f3c3ed4122c129a0604b73de99936f45b523f05ee296edc970fa2289057",
+      "bytes": 162
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-left.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/aggregate-beat.f32": {
+      "sha256": "dba4c639ee4d69bf2d80344308dec2267f0faf4e59dfc98b1240bc53416aeb4a",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/aggregate-downbeat.f32": {
+      "sha256": "ffeba63eff16c86e180796fc8d78c2d4303f2a7f00f5d60a146bc0fd3f24f392",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/chunk000-beat.f32": {
+      "sha256": "3c43d4954e7688073e338b37b49ea9ab22667bda85022ea2d64b15782cf2e774",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/chunk000-downbeat.f32": {
+      "sha256": "662074c00b1991278455bde8179529e8d015235085bca9d02a1918b328e2f103",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/python_reference_aggregate-q.json": {
+      "sha256": "728cf72c6e629347089dbae83f4b9148c881ed19b5df85a1dd6e486dc85abb77",
+      "bytes": 127
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/receipt.json": {
+      "sha256": "12b012a47a11115fcfb4205d70178c98f424128cb6c4b3125722cfb00150e0cf",
+      "bytes": 6160
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right/same_native_aggregate-q.json": {
+      "sha256": "728cf72c6e629347089dbae83f4b9148c881ed19b5df85a1dd6e486dc85abb77",
+      "bytes": 127
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right-result.json": {
+      "sha256": "92a72e843ae38da8af77090b1e98f810f3ae679394959a9245a53555e227392b",
+      "bytes": 933
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right.stderr": {
+      "sha256": "21cc583dbc7984530de06e4788358475d473f4716750b39719969bf7637aa6de",
+      "bytes": 162
+    },
+    "target/native-beat-delivery-20261008/reference-01/fixture-right.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-12-0/evidence/artifact-core.json": {
+      "sha256": "d27980ceea7210f733864ffcdc8b836ba47c4a52f994ba34f6d9797eeb8b0b12",
+      "bytes": 391
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-12-0/evidence/artifact-provider.json": {
+      "sha256": "891f3ac187fdf5289c763876726ae7c347e8225f2800624c5988ac50dd74e8ce",
+      "bytes": 395
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-12-0/evidence/failed.json": {
+      "sha256": "0f96176db02ef688afd9b0a249ccc0b22928c1ee6b4e77b02c223fab16285aaf",
+      "bytes": 322
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-12-0/evidence/started.json": {
+      "sha256": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-15-0/evidence/artifact-core.json": {
+      "sha256": "9c07f5c635353f723e370f4455f6aaa9fbaaf07c9862f5ff79b937febc60203e",
+      "bytes": 391
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-15-0/evidence/artifact-model.json": {
+      "sha256": "1fe6992b8ad5c9520e1991042d51a2ae86aadf5ac8d2a0f87271d7e26e016d6b",
+      "bytes": 386
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-15-0/evidence/artifact-provider.json": {
+      "sha256": "e9cd5df19aac2771108a171f9a9235e755de2c774ab6dc137df2a7977fcb6e95",
+      "bytes": 395
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-15-0/evidence/failed.json": {
+      "sha256": "2ff26fecf1f6d6cf0e0b7fed1e0655ccc00ae218384989b6a47fddd2c6ee0afb",
+      "bytes": 292
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-15-0/evidence/started.json": {
+      "sha256": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-16-0/evidence/artifact-core.json": {
+      "sha256": "e1cd7646a1959352190be734afe6c10101c202f850e8d38debf9776024c39cfd",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-16-0/evidence/failed.json": {
+      "sha256": "3875f28fb5bcbb6b641d57d95947db7483c089fd492367be3ab44505cc7c6317",
+      "bytes": 296
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-16-0/evidence/started.json": {
+      "sha256": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-17-0/evidence/artifact-core.json": {
+      "sha256": "1dc8c689b0497442d6307104057edddb449ca956d8e29b01ab345737fbc2eb54",
+      "bytes": 394
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-17-0/evidence/failed.json": {
+      "sha256": "7b3124c847d6a43ef570da985257922042c6b01f0b541094d0864de8568b8039",
+      "bytes": 340
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-17-0/evidence/started.json": {
+      "sha256": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622",
+      "bytes": 390
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/failed.json": {
+      "sha256": "1b3f9a7c60e2bb546448f18b87f6f7456718eefc4a6ac274f2ff3072520c5304",
+      "bytes": 195
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/final-canonical-identity.json": {
+      "sha256": "cc172c34d802b9a019e848b550250a1bb0abbcdbe8874c2007a9588effa0a87e",
+      "bytes": 270
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/final-canonical.ogg": {
+      "sha256": "f98b3f84c5343f97f61de794691a720fb9bfb4ab69bd5202da84e0b4ba644cee",
+      "bytes": 4107
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/resampled-stereo.f32": {
+      "sha256": "fd709eb99dc19d3106e3a34942a0b560982d88168b96525a684385a6ad913f02",
+      "bytes": 3768
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/resampler-output.bin": {
+      "sha256": "fd709eb99dc19d3106e3a34942a0b560982d88168b96525a684385a6ad913f02",
+      "bytes": 3768
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/resampler-output.jsonl": {
+      "sha256": "e07025fa4875564f5463e52bc1b3ce5f3e88c13aa8ca0f78e4d04960cd5b1d04",
+      "bytes": 290
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/session-metadata.json": {
+      "sha256": "19c4ec3c020b88e8a97aadfab0fee1284472f3ef3438243662627499e123e796",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-4-0/evidence/started.json": {
+      "sha256": "15dd75420b22964a516361578636d9f08ab816c94f7d1059b25a3952f57764d7",
+      "bytes": 394
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/aggregate-beat.f32": {
+      "sha256": "dbefef1ac633a22e9c848f05c608372f659f1a7b51d2e3e1ec1c1587830c90c4",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/aggregate-coverage.bin": {
+      "sha256": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+      "bytes": 6
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/aggregate-downbeat.f32": {
+      "sha256": "af05ea19684837a7ce77dfa624266b61dc92fc445961c83eced7894592696c72",
+      "bytes": 24
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/analysis-complete.json": {
+      "sha256": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+      "bytes": 119
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/artifact-core.json": {
+      "sha256": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+      "bytes": 367
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/artifact-model.json": {
+      "sha256": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+      "bytes": 362
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/artifact-provider.json": {
+      "sha256": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+      "bytes": 371
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk-starts.json": {
+      "sha256": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+      "bytes": 8
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk000-beat.f32": {
+      "sha256": "739ee0409d1e6a0f36b709ca67cbc2cac07020276867f9fc7d4e2ee8215c0feb",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk000-beat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk000-downbeat.f32": {
+      "sha256": "57c9766d42e9ce22428de173b0be719137d7b6018583d874f8f2bdf919a2719a",
+      "bytes": 72
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk000-downbeat.metadata.json": {
+      "sha256": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+      "bytes": 133
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/chunk000-spect.f32": {
+      "sha256": "7e12551aea37c8406d0abdbf29464382c7d3fe64dc4bbc07497dda81df9df1b2",
+      "bytes": 9216
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/evidence-summary.json": {
+      "sha256": "51e9d9d0deef5cd6e801bd56837f2f5008ed6f9f6da0272ea2ad3d4b05e0bd69",
+      "bytes": 1233
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/failed.json": {
+      "sha256": "bb2c0b08197d509b25fff5d0b006884190e3001a96589bec92615cd0fe0b8f50",
+      "bytes": 178
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/final-canonical-identity.json": {
+      "sha256": "5dd9a86214369842616dedac2ffe935575e22423d3a75dbf05ccdb9dfe23a844",
+      "bytes": 270
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/final-canonical.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/minimal-alignment.json": {
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "bytes": 2
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/minimal-raw-groups.json": {
+      "sha256": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+      "bytes": 121
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/native-shape.json": {
+      "sha256": "050490023be95392b6927b5ae9201fa85a09d5a3be20fcdcf3049b88cfddf65f",
+      "bytes": 311
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/native-spect.f32": {
+      "sha256": "84ef24494319c1a59625d47099878ae0618c9745c6359c720aac3ab0acb44786",
+      "bytes": 3072
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/resampled-stereo.f32": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/resampler-output.bin": {
+      "sha256": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+      "bytes": 17640
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/resampler-output.jsonl": {
+      "sha256": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+      "bytes": 682
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/session-metadata.json": {
+      "sha256": "a18c15493d2fb0df0ade7a59d4fe8c9edd58567dd14b4b7a5f9b486a21ed4b12",
+      "bytes": 954
+    },
+    "target/native-beat-delivery-20261008/controls-01/.cocobeat-native-beat-7-0/evidence/started.json": {
+      "sha256": "69e06e265037a550c8750ff8466eb7aa797c29bc27bb1ae9843b99b62723fa12",
+      "bytes": 384
+    },
+    "target/native-beat-delivery-20261008/controls-01/bad-author-result.json": {
+      "sha256": "59902df6a9337e9aa42836fba0fc52f05db34c567a43dce0abfbc5e8f221fdd7",
+      "bytes": 1084
+    },
+    "target/native-beat-delivery-20261008/controls-01/bad-author.stderr": {
+      "sha256": "eac19c8cdde6ec849d823d5d8fb9afaa063af4411d64d3f341f71faed28c5732",
+      "bytes": 335
+    },
+    "target/native-beat-delivery-20261008/controls-01/bad-author.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/core-corrupt-result.json": {
+      "sha256": "f9a76424a9a33927c83132436b5417e6d7ee3a6c1abef7c7fe4a409e5ad9032b",
+      "bytes": 1120
+    },
+    "target/native-beat-delivery-20261008/controls-01/core-corrupt.stderr": {
+      "sha256": "4fe267488976a2e8e7863065a1d3c8cb544129ed3e2724855ddee0080e006da4",
+      "bytes": 455
+    },
+    "target/native-beat-delivery-20261008/controls-01/core-corrupt.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/existing/sentinel": {
+      "sha256": "df08cfc107e81920344612dfe428e1ccdc0024d2c4e5d1f9f5cfac83a5efed35",
+      "bytes": 27
+    },
+    "target/native-beat-delivery-20261008/controls-01/existing-result.json": {
+      "sha256": "0daeb4b3e513d6175552a727a0abe0897de9c76cae03ed5d8eb618d616a3975e",
+      "bytes": 857
+    },
+    "target/native-beat-delivery-20261008/controls-01/existing.stderr": {
+      "sha256": "4e4eae2117674d7092113035ed2036f3c0ac58be1a90c1b6ed176dd23295b7d3",
+      "bytes": 35
+    },
+    "target/native-beat-delivery-20261008/controls-01/existing.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/invalid-channel-result.json": {
+      "sha256": "5ab1d61b6bc3527bd38a405a87a1c90eb485c345eed31d553438f8a5800d2550",
+      "bytes": 869
+    },
+    "target/native-beat-delivery-20261008/controls-01/invalid-channel.stderr": {
+      "sha256": "3855a17a13573ab93baf78e1f27325d3e348a12c5978689d6388276ada6f3e99",
+      "bytes": 52
+    },
+    "target/native-beat-delivery-20261008/controls-01/invalid-channel.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-package/analysis.bin": {
+      "sha256": "b87076ae8719c5f402b08cb6aa9e50d01cc8b02b66e52691472d9495f4d2ebd2",
+      "bytes": 623
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-package/chart.bin": {
+      "sha256": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+      "bytes": 82
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-package/song.audio.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-package/song.package": {
+      "sha256": "a3beed556b47a8d6f32f7c9aa9214847f201d16b9a875e22dea4e41256a932c8",
+      "bytes": 301
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-result.json": {
+      "sha256": "b63f2a6552f5dde154ce7143b65347d44bb8f80f07b528c929c20a1637c1d198",
+      "bytes": 898
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-verify-result.json": {
+      "sha256": "6b4d8a2c45a9baaf40bf0182db4e95c1573554d00fe29ba7bdaa0ba5f144b3e4",
+      "bytes": 697
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual-verify.stdout": {
+      "sha256": "40b14e48b2ca4e1efe4b2f67d3360c519ff8b39ede61d830c242ac718657574f",
+      "bytes": 977
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-manual.stdout": {
+      "sha256": "e361af447066343087b918a1bbeed03def152b9d2413d47b81ab1b54212b8ceb",
+      "bytes": 1105
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model-result.json": {
+      "sha256": "e6336b6baf09a377e24986bc3ee545c4ec80cba6f6db25f43e0d41f0cf516ca8",
+      "bytes": 1123
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model.stderr": {
+      "sha256": "c8d58e3bc3e48ecb900b5a30f59a3fd2a7be014818d33d6878a7bb550dc9ca20",
+      "bytes": 481
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-model.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-provider-result.json": {
+      "sha256": "897004822713bff264ad4dafbbf5906bd5d0c8cc0d6af1e403a2bc835612f88e",
+      "bytes": 1131
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-provider.stderr": {
+      "sha256": "da7c5a5afd92ef621f9fb4cb2aef293cad8423196e061c5c5065fe852251ff26",
+      "bytes": 499
+    },
+    "target/native-beat-delivery-20261008/controls-01/missing-provider.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/model-corrupt-result.json": {
+      "sha256": "b01779b8338511a4e8feb45f7af778aa7bf14f50828f4f06af1cb02608da74f6",
+      "bytes": 1123
+    },
+    "target/native-beat-delivery-20261008/controls-01/model-corrupt.stderr": {
+      "sha256": "ec4873c43c24a03aa4af610ee970d1cb15b3f3c2ee43d3840a93439e3703b97e",
+      "bytes": 451
+    },
+    "target/native-beat-delivery-20261008/controls-01/model-corrupt.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-package/analysis.bin": {
+      "sha256": "b87076ae8719c5f402b08cb6aa9e50d01cc8b02b66e52691472d9495f4d2ebd2",
+      "bytes": 623
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-package/chart.bin": {
+      "sha256": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+      "bytes": 82
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-package/song.audio.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-package/song.package": {
+      "sha256": "a3beed556b47a8d6f32f7c9aa9214847f201d16b9a875e22dea4e41256a932c8",
+      "bytes": 301
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-result.json": {
+      "sha256": "0e5136992ab7353cf9d9610cd832ec80bff76d4a34b359cfa4b0b3a719df57c0",
+      "bytes": 854
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-verify-result.json": {
+      "sha256": "98b59e13f19f39160d661973d61ac40833b9e59a00bb3b644e5948158019650e",
+      "bytes": 655
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-verify.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual-verify.stdout": {
+      "sha256": "40b14e48b2ca4e1efe4b2f67d3360c519ff8b39ede61d830c242ac718657574f",
+      "bytes": 977
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/new-manual.stdout": {
+      "sha256": "f811c5ac434ad9f76bc98aea59f7f98f64933d28067fb150fc6d16baabe43cdd",
+      "bytes": 1095
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual-package/analysis.bin": {
+      "sha256": "b87076ae8719c5f402b08cb6aa9e50d01cc8b02b66e52691472d9495f4d2ebd2",
+      "bytes": 623
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual-package/chart.bin": {
+      "sha256": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+      "bytes": 82
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual-package/song.audio.ogg": {
+      "sha256": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+      "bytes": 5661
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual-package/song.package": {
+      "sha256": "a3beed556b47a8d6f32f7c9aa9214847f201d16b9a875e22dea4e41256a932c8",
+      "bytes": 301
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual-result.json": {
+      "sha256": "97a643a908baa5e9e9fc0b432ff4ca0ada0c514414df0e02bc07aa40824b24fa",
+      "bytes": 858
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/old-manual.stdout": {
+      "sha256": "5a4fa3eaa0d4bfd97042c8b178d343c5efacd283bf8ccf05e1c870a1c4c6f283",
+      "bytes": 1095
+    },
+    "target/native-beat-delivery-20261008/controls-01/short-result.json": {
+      "sha256": "848feca2f91de9b76c62886687411a9a33a3f95dfe66fc2fa7d1fd870d1b9b05",
+      "bytes": 1084
+    },
+    "target/native-beat-delivery-20261008/controls-01/short.stderr": {
+      "sha256": "78593612b6eabc44232eeead1a2b4ea02295a88e93527551dfcb5c5111de1a5b",
+      "bytes": 352
+    },
+    "target/native-beat-delivery-20261008/controls-01/short.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/controls-01/short.wav": {
+      "sha256": "b363609677a1ee4585b74bed6b125b998ba2e9fada81e2d5c110b47b372f6c3d",
+      "bytes": 4140
+    },
+    "target/native-beat-delivery-20261008/controls-01/summary.json": {
+      "sha256": "4c61322243b6502844121a2f24fd9c05253e2149447c6db684e09ae30add3b04",
+      "bytes": 14886
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/aarch64-pc-windows-msvc.json": {
+      "sha256": "93b0af8efcd9b552546a00b95cf01de5a9a1228a3603152e78e56aa5dc026b47",
+      "bytes": 2326232
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/aarch64-pc-windows-msvc.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/aarch64-unknown-linux-gnu.json": {
+      "sha256": "08762a002579a7d4debb10e2deb7f80dda5edb56e3d629f5eeb876553acff048",
+      "bytes": 2451393
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/aarch64-unknown-linux-gnu.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/result.json": {
+      "sha256": "9bf98c1e0ae4f0d53b5567009d3db43038ff5a8aa19f364b2c41fc1a850f20e2",
+      "bytes": 2221
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/x86_64-pc-windows-msvc.json": {
+      "sha256": "328729f6703cf4afe75d07daf911e404c320a27e358972b5e2e20af7ca30ca89",
+      "bytes": 2329556
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/x86_64-pc-windows-msvc.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/x86_64-unknown-linux-gnu.json": {
+      "sha256": "5a485fd91c932716a095a6dacdb2c52c4cf92948ec1e803819fa4d1c295f78a3",
+      "bytes": 2454362
+    },
+    "target/native-beat-delivery-20261008/filtered-metadata/x86_64-unknown-linux-gnu.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-delivery-20261008/sdk-01/GIT_COMMIT_ID": {
+      "sha256": "1ce8cf52729994702252471f0598ac50b16ceac507fa4f50290ea3042b804f6f",
+      "bytes": 41
+    },
+    "target/native-beat-delivery-20261008/sdk-01/LICENSE": {
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "bytes": 1073
+    },
+    "target/native-beat-delivery-20261008/sdk-01/ThirdPartyNotices.txt": {
+      "sha256": "143764b952fdb1a7c69ce653bfba74a7744d6a8a573bfb73e235fba356c83de3",
+      "bytes": 338088
+    },
+    "target/native-beat-delivery-20261008/sdk-01/VERSION_NUMBER": {
+      "sha256": "59ed8e11070a3db06654dc5a21ddccd8ca160b8040544b800ff19253ddefb978",
+      "bytes": 7
+    },
+    "target/native-beat-delivery-20261008/sdk-01/extraction-receipt.json": {
+      "sha256": "c5088d380cf7da9485baadee4a849242f3e8d294ddf860f5b6486435cb91f141",
+      "bytes": 1154
+    },
+    "target/native-beat-delivery-20261008/build-01/NATIVE-ASSETS.json": {
+      "sha256": "64b43f5a926fe25741d39a98ae01f28e6c03c49098c65c64bb5a02d4416583b3",
+      "bytes": 706
+    },
+    "target/native-beat-delivery-20261008/build-01/build-result.json": {
+      "sha256": "9886ce6fa0408bfd6a3e1670bd91bc9a0e877a9c741c203e61141145cad81f1a",
+      "bytes": 140847
+    },
+    "target/native-beat-delivery-20261008/build-01/build.jsonl": {
+      "sha256": "2c6c294485dc9c876bc75349a912eb34a8bd948bf82017516c531ac4687029a4",
+      "bytes": 401400
+    },
+    "target/native-beat-delivery-20261008/build-01/build.py": {
+      "sha256": "5deeacd4ea22cae6ab45af1d80224b351b7d443b8a4cad4856910b34b75f7106",
+      "bytes": 2759
+    },
+    "target/native-beat-delivery-20261008/build-01/build.stderr": {
+      "sha256": "86d0e17d16837e5d89dfae8ad928d5214cbedbc2ba3f79f40e73c7fc32fa922c",
+      "bytes": 458
+    },
+    "target/native-beat-delivery-20261008/build-01/cocobeat-lab-build-result.json": {
+      "sha256": "a81c5731fe2f377e01ad8d2b41c1ec128d3f02a05ce27dbd039bfdc8f2cecf05",
+      "bytes": 141117
+    },
+    "target/native-beat-delivery-20261008/build-01/inputs-after.json": {
+      "sha256": "f8a99937c5a4c19d5f23a419e69b974da2441c8eaf104265785858d5170bf2dc",
+      "bytes": 57251
+    },
+    "target/native-beat-delivery-20261008/build-01/inputs-before.json": {
+      "sha256": "f8a99937c5a4c19d5f23a419e69b974da2441c8eaf104265785858d5170bf2dc",
+      "bytes": 57251
+    },
+    "target/native-beat-adapter-candidate-20261008/DELIVERY.md": {
+      "sha256": "c7114c37834556aec36acb6795ba180eab9b88ad981d354405d1204d81988933",
+      "bytes": 3209
+    },
+    "target/native-beat-adapter-candidate-20261008/HANDOFF.md": {
+      "sha256": "6c07c21963b2c6994f854a8c907e63b67c5f183d96e1eab06b975d2a822ac3a1",
+      "bytes": 5174
+    },
+    "target/native-beat-adapter-candidate-20261008/base/crates/cocobeat-media/src/authored.rs": {
+      "sha256": "2e410c169163fba45ab28a1e1f2f45c461c8eb180244a058705ad1bfb2966044",
+      "bytes": 22493
+    },
+    "target/native-beat-adapter-candidate-20261008/base/crates/cocobeat-media/src/lib.rs": {
+      "sha256": "301104eb4a32ff8a07376cce1bb093b18f930d5bbb49c4cca9dc2f5c575a43dd",
+      "bytes": 943
+    },
+    "target/native-beat-adapter-candidate-20261008/base/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "9765f5121c201f2aba1ed327ac0ada776d0ccab41d6e66882179b8c8fdecd7bf",
+      "bytes": 11124
+    },
+    "target/native-beat-adapter-candidate-20261008/base/tools/cocobeat-lab/src/package.rs": {
+      "sha256": "2ede4ec5eec494068b8392f4104efa0d1b78fadfb4987e7ce90d91cb78e1c108",
+      "bytes": 1960
+    },
+    "target/native-beat-adapter-candidate-20261008/base-sources.json": {
+      "sha256": "3894b2fdb5b966c15a7d1416b501ddb27babef75abcd8bee2a5cf3b5d9df6fa4",
+      "bytes": 588
+    },
+    "target/native-beat-adapter-candidate-20261008/candidate-review-final.json": {
+      "sha256": "8bb1df23a465cae79c3989da3d059735d82eb60aa2918c9dc231af70c34d8277",
+      "bytes": 9631
+    },
+    "target/native-beat-adapter-candidate-20261008/candidate-review.json": {
+      "sha256": "a08bf75f65deb663274515fd91ee20e58117821203b2eeda7cdfcdbc40c9519c",
+      "bytes": 7936
+    },
+    "target/native-beat-adapter-candidate-20261008/candidate-sources.json": {
+      "sha256": "36b949d5825ab015f28aed3b765443c77902844a65bc0e2f7ccea48cc603f31f",
+      "bytes": 1590
+    },
+    "target/native-beat-adapter-candidate-20261008/candidate.patch": {
+      "sha256": "034b4ede45d1d3b567f78f5131d28c645217a56d0bfa64242ce78acfbedcd6db",
+      "bytes": 64744
+    },
+    "target/native-beat-adapter-candidate-20261008/checks-01.json": {
+      "sha256": "14a729e9ec543893e7e39fd09345c6629054f946ef9da0fbbd22afa4691107dc",
+      "bytes": 795
+    },
+    "target/native-beat-adapter-candidate-20261008/fix_review.py": {
+      "sha256": "2fae6f1cdae1f428f5c43afef7a525d9b15ccb94ce87fc63199031beb21f28ef",
+      "bytes": 6103
+    },
+    "target/native-beat-adapter-candidate-20261008/frontend-port.json": {
+      "sha256": "20dd1392c1f23692e04de63ce97f014eb476c2b6473401c8fce12d3bdc2126f0",
+      "bytes": 568
+    },
+    "target/native-beat-adapter-candidate-20261008/frozen-frontend.rs": {
+      "sha256": "dd806dd9aa1c355029eb4ec65c93686d9fbc9ceae1aa7ace76191539cb525442",
+      "bytes": 11618
+    },
+    "target/native-beat-adapter-candidate-20261008/index.json": {
+      "sha256": "fa7253daf7410a83e937fcf94e249440efb91815b93962dbebbfc40e450a2ab5",
+      "bytes": 4218
+    },
+    "target/native-beat-adapter-candidate-20261008/prepare_frontend.py": {
+      "sha256": "2a3c94dd5a59c78a2f60e8d37c6fb6e22b8ade56fe87d19a9a6c9eca0f1e9225",
+      "bytes": 5747
+    },
+    "target/native-beat-adapter-candidate-20261008/prepare_integration.py": {
+      "sha256": "6c5578bd487d2e02a0ceb602a99fee29504017ac9838fe745241cf01e9ac3889",
+      "bytes": 9822
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/crates/cocobeat-media/src/authored.rs": {
+      "sha256": "d3b8665bb0d8b188778f5f4f11d92d3abd80c5359d7c5f7d8b40a73ae0ff9aa4",
+      "bytes": 29773
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/crates/cocobeat-media/src/lib.rs": {
+      "sha256": "aeee8a795a35fd96bb68bf0ec1df266dfea52dd219de6441023e06306de0fa29",
+      "bytes": 1319
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/crates/cocobeat-media/src/native_beat.rs": {
+      "sha256": "bb882319e3502b5c612fc5159d7eb1c0039b60446dc9c8a9ca8cc7b95e2ef03b",
+      "bytes": 43494
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/crates/cocobeat-media/src/native_beat_assets.rs": {
+      "sha256": "738424a3e75d259e8b372c6ab16fb701c70158eb258b0026da736abba2b4f00c",
+      "bytes": 4410
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "09c861aacc639fc38e88ab9f33f992647037c779cde1fd2fb469d48a3c1a130e",
+      "bytes": 11523
+    },
+    "target/native-beat-adapter-candidate-20261008/proposed/tools/cocobeat-lab/src/package.rs": {
+      "sha256": "3b28951e2371a4b0c03292c9d33a57b3e443b23388514a6a5c7d4a54392dc1f6",
+      "bytes": 2814
+    },
+    "target/native-beat-adapter-candidate-20261008/source-drift.json": {
+      "sha256": "e9310d1d0b686925722fcc9160496dd8a19d206ff15ca7109c5c0eb2ae679fcf",
+      "bytes": 1370
+    },
+    "target/native-beat-adapter-candidate-20261008/source-graph.json": {
+      "sha256": "7085564bb17a144a041d8fced59cda6d924b2fed901cd847adde4ba9f5a43a22",
+      "bytes": 2566
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/DELIVERY.md": {
+      "sha256": "5dc841c5364ad9772426dc3ed52d645a6467af20fd28bf217caf2bb3e431b673",
+      "bytes": 2701
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/PLAN.md": {
+      "sha256": "f02bef2e9dc8cffb98f79865bfa02dd61acf8ce898280805e7a99c49f6740668",
+      "bytes": 8935
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/compare_native.py": {
+      "sha256": "9471eb1faaabd84628b51022a1057afcc6fc1fb15ed8d57284ae737d4177a1cd",
+      "bytes": 11444
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/fixed120-authoring.json": {
+      "sha256": "cf2c5515bca8f80bc795b94dcc6436d7b1b158d61f393b6c78714be0b99937bb",
+      "bytes": 369
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/fixture-authoring.json": {
+      "sha256": "def73722280d1a02af106c16f48111f57bc68b5f3f204c0555e5ed990d9ada59",
+      "bytes": 363
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/index.json": {
+      "sha256": "12d665d8b397171cfd109ec106df169765fbc05c721bce857964f8dd20bdc1f1",
+      "bytes": 1806
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/main-only.patch": {
+      "sha256": "4f378dabfd8f1a96fc4e9d1c008780ecf6186a9cdacd1b16a861722c29e4e8f7",
+      "bytes": 4158
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/main-source.json": {
+      "sha256": "87975477cff48bfb0a2bfe8af2583148ebda410dc2d6e6d178152ed76edc60cd",
+      "bytes": 481
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/main-with-labels.rs": {
+      "sha256": "439a236a2beb7ac82102cf2234c58d9324b2e1f8bb2b8eb099f95422f1702598",
+      "bytes": 12340
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/planned-cases.json": {
+      "sha256": "8de419f31eb58f3f5de1e5b40c0beeaf581e95afe14a2dcca0ecaccd90c9730b",
+      "bytes": 9544
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/short-authoring.json": {
+      "sha256": "e70630c09ad7192803022a70d4122917b27dde70643b685ea7b8ad1052016169",
+      "bytes": 360
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/static-review.json": {
+      "sha256": "5b95818e788b921c4519694e5f4d438264711cf480dd6e28712508eb2b58f7a1",
+      "bytes": 906
+    },
+    "target/native-beat-release-plan-20261008/DELIVERY.json": {
+      "sha256": "577513c0aa4ef4e9cea429973d75743fae869a7c7e634a00dcda1454e75d0152",
+      "bytes": 5516
+    },
+    "target/native-beat-release-plan-20261008/NOTES.md": {
+      "sha256": "b8bd75e2151e0ba1b88b332b3ef3239ffceb77a864aabde1f7436fe07750a971",
+      "bytes": 4623
+    },
+    "target/native-beat-release-plan-20261008/hash": {
+      "sha256": "37a5a6629d6ee8f492bed4475bf1f905d3697badab18099e1bdfb2eb43a58fe3",
+      "bytes": 1117104
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/model.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/model.stdout": {
+      "sha256": "77674aa4f61271629beb2707f785b72e1f601ba9c5ebe42533289a8f8c61db07",
+      "bytes": 74
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-arm64-1.30.0-onnxruntime.dll.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-arm64-1.30.0-onnxruntime.dll.stdout": {
+      "sha256": "62943578543c75ff36d6e378f09d29664e3c75dac4bd701584060bf3ac9d88ab",
+      "bytes": 74
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-arm64-1.30.0-onnxruntime_providers_shared.dll.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-arm64-1.30.0-onnxruntime_providers_shared.dll.stdout": {
+      "sha256": "aa4d5f4fc588a9a4a3bced13e85b82b1575151ed41bc218f47c88ebbf513f3b1",
+      "bytes": 71
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-x64-1.30.0-onnxruntime.dll.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-x64-1.30.0-onnxruntime.dll.stdout": {
+      "sha256": "10616c304abbc4d9b0bbb0f0a7a5af282b356400aec918b0b4ba29073142cdc5",
+      "bytes": 74
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-x64-1.30.0-onnxruntime_providers_shared.dll.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-win-x64-1.30.0-onnxruntime_providers_shared.dll.stdout": {
+      "sha256": "e46ff8777563b7ff63ee0883eb59cd0493e478c4643031b1d67163ca29fb3f25",
+      "bytes": 71
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/record.json": {
+      "sha256": "9dd01d00b744b175bdd0ab96ef139090f57bab9e9b915a8677e65f76b3986064",
+      "bytes": 8586
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/rustc.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash-run-01/rustc.stdout": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/native-beat-release-plan-20261008/hash.rs": {
+      "sha256": "0f20f3b184eb148c22c8a3b351a76d9e7ded114358a287dd951c2a6eca07f14e",
+      "bytes": 426
+    },
+    "target/native-beat-release-plan-20261008/history/pre-output-scope-note-01/DELIVERY.json": {
+      "sha256": "8c220854c3675704d5a6582b26a72572e6a50cfb43e110d33e3b6ebf6bab2012",
+      "bytes": 5270
+    },
+    "target/native-beat-release-plan-20261008/history/pre-output-scope-note-01/NOTES.md": {
+      "sha256": "ca88de2d6c02cdef39422efa34aa56c40256d4fbc94a799f31bf02f73cd0db42",
+      "bytes": 4445
+    },
+    "target/native-beat-release-plan-20261008/history/pre-output-scope-note-01/archive-map.json": {
+      "sha256": "649c6d341613c5334751e0725fbd4f7159a81cb4a6a293c4597764354312f3e7",
+      "bytes": 591
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/DELIVERY.json": {
+      "sha256": "fdbc19bab785e7265942dc209608c190834d7e28077e56ee52b8f97042de9a14",
+      "bytes": 4278
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/NOTES.md": {
+      "sha256": "4708e69cc20443eb32a855a0e7a654f96ee00b039cf1f8ef63a14c4bb06fc061",
+      "bytes": 3469
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/archive-map.json": {
+      "sha256": "788786f91fd6be87974e98816e63505548396bdd2d8d3c0ef192fb36a9255cd1",
+      "bytes": 1881
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/patch-base.json": {
+      "sha256": "a5dd08b9e49c18f35c564d9fd1015f4a19a4274dbd64cc3ca3fc7f204e9065c4",
+      "bytes": 1233
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/proposed/.github/workflows/release-build.yml": {
+      "sha256": "6ad6d6103b8f25d03872984b957150a9fc8216690a9b72974b09e32e56e67d91",
+      "bytes": 15264
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/release-native-assets.patch": {
+      "sha256": "ff30e3d101261726f80f6c8d0c1f115b4c45e8fd1d41431c93dc8e765f113b5b",
+      "bytes": 28199
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/resource-pack.json": {
+      "sha256": "00f7c6a59112a935ad341bc66656a9b7f577bffc61602dac6857ac053bfddc27",
+      "bytes": 8486
+    },
+    "target/native-beat-release-plan-20261008/history/pre-smoke-evidence-01/static-checks.json": {
+      "sha256": "253e65912c3a54bd1ccf6cee1070fc22ca7bc3c39aed14b786344b8dd056b31b",
+      "bytes": 2796
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/DELIVERY.json": {
+      "sha256": "c65e7f394475f5b3f7303a4e4d6aa8f7ae7c1f0f4da43401944611ff0618243f",
+      "bytes": 4841
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/archive-map.json": {
+      "sha256": "659a18b07d2c50245fd2a4fd361dc544a541be5fc477cf093821f6f717425858",
+      "bytes": 1901
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/patch-base.json": {
+      "sha256": "dac937e30849d2f6b57d8bd2cec23bb031ce65e0d95776d605f4052cf56c5ae1",
+      "bytes": 1233
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/proposed/.github/workflows/release-build.yml": {
+      "sha256": "b45a20387964c46ef813d87390187fa4726e99132d7c94dd821cb85b0000867c",
+      "bytes": 18618
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/release-native-assets.patch": {
+      "sha256": "f13371e7a739185cd56c7b41ba15c9b34b4f12d82745ee9dbc02f72b9d59796a",
+      "bytes": 31608
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/resource-pack.json": {
+      "sha256": "d22ea99878f5b1b1b636c3ea5793e5bfd84c61ea4ca5642d58ccb6234ef9a74d",
+      "bytes": 8486
+    },
+    "target/native-beat-release-plan-20261008/history/pre-windows-raw-fix-01/static-checks.json": {
+      "sha256": "1a8003949f2b4e60f89e21e7daf571414a6155546858a5f1870336f545cf64da",
+      "bytes": 2899
+    },
+    "target/native-beat-release-plan-20261008/native_beat_assets.rs": {
+      "sha256": "3dd32fb2ea80884c83e91a1b831b84f7f332e349d6d75e61361a1390079beb50",
+      "bytes": 4293
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-aarch64-1.30.0/GIT_COMMIT_ID": {
+      "sha256": "1ce8cf52729994702252471f0598ac50b16ceac507fa4f50290ea3042b804f6f",
+      "bytes": 41
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-aarch64-1.30.0/LICENSE": {
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "bytes": 1073
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-aarch64-1.30.0/ThirdPartyNotices.txt": {
+      "sha256": "143764b952fdb1a7c69ce653bfba74a7744d6a8a573bfb73e235fba356c83de3",
+      "bytes": 338088
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-aarch64-1.30.0/VERSION_NUMBER": {
+      "sha256": "59ed8e11070a3db06654dc5a21ddccd8ca160b8040544b800ff19253ddefb978",
+      "bytes": 7
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-x64-1.30.0/GIT_COMMIT_ID": {
+      "sha256": "1ce8cf52729994702252471f0598ac50b16ceac507fa4f50290ea3042b804f6f",
+      "bytes": 41
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-x64-1.30.0/LICENSE": {
+      "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c",
+      "bytes": 1073
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-x64-1.30.0/ThirdPartyNotices.txt": {
+      "sha256": "143764b952fdb1a7c69ce653bfba74a7744d6a8a573bfb73e235fba356c83de3",
+      "bytes": 338088
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-linux-x64-1.30.0/VERSION_NUMBER": {
+      "sha256": "59ed8e11070a3db06654dc5a21ddccd8ca160b8040544b800ff19253ddefb978",
+      "bytes": 7
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-arm64-1.30.0/GIT_COMMIT_ID": {
+      "sha256": "11bbfd0b31d39a2c06f699ed0620fd5aa9d70870cd7d863f62224a7cd20de3cf",
+      "bytes": 43
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-arm64-1.30.0/LICENSE": {
+      "sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674",
+      "bytes": 1094
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-arm64-1.30.0/ThirdPartyNotices.txt": {
+      "sha256": "c53a76501ef60db6f865f20599f220761201ac4057683acefdab37d861b86622",
+      "bytes": 344457
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-arm64-1.30.0/VERSION_NUMBER": {
+      "sha256": "170c8de7b3538c9633cbfe5a3e544b94e2c456aae96a9258cd553af20fc1242d",
+      "bytes": 8
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-x64-1.30.0/GIT_COMMIT_ID": {
+      "sha256": "11bbfd0b31d39a2c06f699ed0620fd5aa9d70870cd7d863f62224a7cd20de3cf",
+      "bytes": 43
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-x64-1.30.0/LICENSE": {
+      "sha256": "c250d6278f0b47a6439fb7592b08b58a55eb9f535aa49a1db63211c3f982b674",
+      "bytes": 1094
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-x64-1.30.0/ThirdPartyNotices.txt": {
+      "sha256": "c53a76501ef60db6f865f20599f220761201ac4057683acefdab37d861b86622",
+      "bytes": 344457
+    },
+    "target/native-beat-release-plan-20261008/notice-samples/onnxruntime-win-x64-1.30.0/VERSION_NUMBER": {
+      "sha256": "170c8de7b3538c9633cbfe5a3e544b94e2c456aae96a9258cd553af20fc1242d",
+      "bytes": 8
+    },
+    "target/native-beat-release-plan-20261008/patch-base.json": {
+      "sha256": "6e260a25c2f70d01fda1e73610b395b7786c8b3d85399842794110278b6a821f",
+      "bytes": 1233
+    },
+    "target/native-beat-release-plan-20261008/preserve-windows-output.py": {
+      "sha256": "4edee914f5059357320a8aaa828c48cb3355b9fd7df1588833e4263747c88639",
+      "bytes": 4256
+    },
+    "target/native-beat-release-plan-20261008/proposed/.github/workflows/release-build.yml": {
+      "sha256": "6e5006f12e669879e74dff7f5346fa04ff23e90266772bc2423618609e3d76a8",
+      "bytes": 18801
+    },
+    "target/native-beat-release-plan-20261008/proposed/.github/workflows/release.yml": {
+      "sha256": "42c45d03be053b038f8aa01755bc086c12f1c6ee9046c67208978d9d73b08da1",
+      "bytes": 6946
+    },
+    "target/native-beat-release-plan-20261008/proposed/assets/models/beat-this/PROVENANCE.json": {
+      "sha256": "141da1db38b55a52ea15932a1862f6c4f2647c31ccc15088ab1f4463d246af5f",
+      "bytes": 1148
+    },
+    "target/native-beat-release-plan-20261008/proposed/assets/models/beat-this/README.md": {
+      "sha256": "90b2f5b266133e454042e8556d94e07d03831afef02dc5c7cbb070ac99c3a3d7",
+      "bytes": 1302
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/ASSET_PROVENANCE.csv": {
+      "sha256": "d5b89b9475290291ec513d24de7c6022da08ae7d1df3930b2fc4eb98806d3f78",
+      "bytes": 31559
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/beat-this/LICENSE": {
+      "sha256": "909ab6549794a18e9bb243aacfadda4a5f308436fc2846f350755c53c4f06ae1",
+      "bytes": 1113
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/onnxruntime/SOURCE-AVAILABILITY.md": {
+      "sha256": "3c9de27422ce8428976784a82c0f76887b14a178f58fc08202a9c610c7c4b7af",
+      "bytes": 3243
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/onnxruntime/eigen-patches/deps.txt": {
+      "sha256": "880edacbd7954c32b8bff34959e6fc5bbae0dc402f8f99861c1c3f057b976c0d",
+      "bytes": 8188
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/onnxruntime/eigen-patches/eigen.cmake": {
+      "sha256": "9db439c44f215186d3e8bde7970affd03d8fa911d89cac19adc30ed681ff32a2",
+      "bytes": 788
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/onnxruntime/eigen-patches/s390x-build-werror.patch": {
+      "sha256": "a1a7b0ca8382cb00542587b6bc725f59abd59ad5bb491825f7876ad6e344ef0b",
+      "bytes": 610
+    },
+    "target/native-beat-release-plan-20261008/proposed/licenses/onnxruntime/eigen-patches/s390x-build.patch": {
+      "sha256": "6d41f4504f665bc591336c668a1aa16ffc5e0f02fe9c2f9c46c6f5660b54c849",
+      "bytes": 17794
+    },
+    "target/native-beat-release-plan-20261008/proposed/xtask/Cargo.toml": {
+      "sha256": "7c53e9cb89ab635fec8b9f3c72893aaa9fda784da7ff5f9d2dcd3b300cd403b5",
+      "bytes": 247
+    },
+    "target/native-beat-release-plan-20261008/proposed/xtask/src/main.rs": {
+      "sha256": "43d8f7d709866de64b690101eb3365edf5eb5db41e2e53863554387f2541f39f",
+      "bytes": 10048
+    },
+    "target/native-beat-release-plan-20261008/proposed/xtask/src/native_assets.rs": {
+      "sha256": "b5d4aea6f343ba715ac2ef4f8c829d41cb53dfbb346b6ff50053a5b0cc1c2190",
+      "bytes": 6427
+    },
+    "target/native-beat-release-plan-20261008/release-native-assets.patch": {
+      "sha256": "d60662ccd9d72b6ed1112444d129483142147e737afc3b44cf7199c932bd63fd",
+      "bytes": 31793
+    },
+    "target/native-beat-release-plan-20261008/repair-smoke-evidence.py": {
+      "sha256": "c6d82b40c91e0992e44e6c08642692842c463b31856db67040c89c72c921767d",
+      "bytes": 8324
+    },
+    "target/native-beat-release-plan-20261008/resource-pack.json": {
+      "sha256": "0402e3748aa6da03133814e9571bf3d65fc207261913b08cd811770fc4bf3cc8",
+      "bytes": 8486
+    },
+    "target/native-beat-release-plan-20261008/review/final-smoke-evidence-review.json": {
+      "sha256": "80e85cefbaa38cfbe0de5453e2631cb77a8ab8026540e826554376ada2442135",
+      "bytes": 12188
+    },
+    "target/native-beat-release-plan-20261008/review/final-smoke-evidence-review.md": {
+      "sha256": "30469f8e8e7ca6a694ef26ff539ee08e5b8069e40a2fbdbd942aff0951d41f61",
+      "bytes": 1855
+    },
+    "target/native-beat-release-plan-20261008/review/independent-review.json": {
+      "sha256": "72fa6f9f7fd7973281920cd67ab454e9232cb16e1bb73247c2b1c3a6b0da5a89",
+      "bytes": 11021
+    },
+    "target/native-beat-release-plan-20261008/review/independent-review.md": {
+      "sha256": "ab6c16982b28ba9b127c4a8575a2c6af7a7cd2d20d8ca2375d3102fed7908b3f",
+      "bytes": 3782
+    },
+    "target/native-beat-release-plan-20261008/seal-smoke-evidence.py": {
+      "sha256": "c135f44baa29374a0f5f916c6324cb800ed03313859655f88c5b988288bc93bd",
+      "bytes": 7339
+    },
+    "target/native-beat-release-plan-20261008/static-checks.json": {
+      "sha256": "7d6b24ead4f09a89dcf459a386ab1f38d221dc691a757d281ecc406c8d54f3c7",
+      "bytes": 3104
+    },
+    "target/native-beat-release-plan-20261008/workflow-draft.py": {
+      "sha256": "c9ed41dc50a6ad421c67fb78ae7e595afacabb4177e8dcaaae45b811834fd9cf",
+      "bytes": 14246
+    },
+    "target/native-beat-dependency-ledger-20261008/DELIVERY.json": {
+      "sha256": "32fbb9edb4a2d8de33d43c78536e005cfc1fb4e59c0635ede93fc2bbb2c82697",
+      "bytes": 1852
+    },
+    "target/native-beat-dependency-ledger-20261008/candidate-files.json": {
+      "sha256": "bde37ac33d20da742960aed4f20332af2bb86186c8e1ed026c1a4a78f0994519",
+      "bytes": 6068
+    },
+    "target/native-beat-dependency-ledger-20261008/checks.json": {
+      "sha256": "0d4876b24b82a0257fd12e3acd45b0bac228170cfeacf5b9f8327e893d5b6eaf",
+      "bytes": 618
+    },
+    "target/native-beat-dependency-ledger-20261008/filtered-revision-01/DELIVERY.json": {
+      "sha256": "24fa8640ccaa69148050fbb7a6f548af6239686e3149a63946433bf427c73137",
+      "bytes": 1843
+    },
+    "target/native-beat-dependency-ledger-20261008/filtered-revision-01/filtered-feature-record.json": {
+      "sha256": "9901f4805e20037e8c33d4e0d4bbf68154a45e47297a9a2abf2bef7f2c416889",
+      "bytes": 36328
+    },
+    "target/native-beat-dependency-ledger-20261008/filtered-revision-01/filtered-ledger.patch": {
+      "sha256": "5400f8bb3cd0d3def96578f346142a94fa9530d45a52f4717c80d71a53253269",
+      "bytes": 2145
+    },
+    "target/native-beat-dependency-ledger-20261008/filtered-revision-01/proposed/licenses/THIRD_PARTY.md": {
+      "sha256": "3c3be2513b0b1659a71c95efc25ef3d44e1f84372c95213f8882903a6015c5d7",
+      "bytes": 11079
+    },
+    "target/native-beat-dependency-ledger-20261008/patch-base.json": {
+      "sha256": "9eedb52b396e92a11191c99ec63d54d6da4cb7dbe3b24ae64139a12795815c32",
+      "bytes": 430
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/THIRD_PARTY.csv": {
+      "sha256": "fa87f5c694db3f6c7baf895dc87a65b9f5aad54ae869e566c0373bbb8b087364",
+      "bytes": 43553
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/THIRD_PARTY.md": {
+      "sha256": "c8a530c65d5b284f178aaa6e39c14e9fb4ed6e2e2afbf0d593e795d6044e84d6",
+      "bytes": 10760
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/README.md": {
+      "sha256": "833c02ecb404fbe640136eb82a57bfb213753d4fdfcd8ac28c72750ddc195dec",
+      "bytes": 2050
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/cfg-if-1.0.5/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/cfg-if-1.0.5/LICENSE-MIT": {
+      "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "bytes": 1057
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/libloading-0.9.0/LICENSE": {
+      "sha256": "b29f8b01452350c20dd1af16ef83b598fea3053578ccc1c7a0ef40e57be2620f",
+      "bytes": 736
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/matrixmultiply-0.3.11/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/matrixmultiply-0.3.11/LICENSE-MIT": {
+      "sha256": "792d075c7bad6dac258a44e799eb64cbf465e24d9932d27669be08c5ec957e27",
+      "bytes": 1159
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ndarray-0.17.2/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ndarray-0.17.2/LICENSE-MIT": {
+      "sha256": "1fd6747d2c8e80f9fa766f57c5888864774621deb85cc2838ccaed727db32d45",
+      "bytes": 1119
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ort-2.0.0-rc.13/LICENSE-APACHE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ort-2.0.0-rc.13/LICENSE-MIT": {
+      "sha256": "6bba08de46289c40986a2e6b310e2da61fcea33b3c112c8320f6093f8f9cb71b",
+      "bytes": 1107
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ort-sys-2.0.0-rc.13/LICENSE-APACHE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/ort-sys-2.0.0-rc.13/LICENSE-MIT": {
+      "sha256": "6bba08de46289c40986a2e6b310e2da61fcea33b3c112c8320f6093f8f9cb71b",
+      "bytes": 1107
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/rawpointer-0.2.1/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/rawpointer-0.2.1/LICENSE-MIT": {
+      "sha256": "7576269ea71f767b99297934c0b2367532690f8c4badc695edf8e04ab6a1e545",
+      "bytes": 1043
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/smallvec-1.16.2/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/smallvec-1.16.2/LICENSE-MIT": {
+      "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9",
+      "bytes": 1072
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/windows-link-0.2.1/license-apache-2.0": {
+      "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+      "bytes": 11351
+    },
+    "target/native-beat-dependency-ledger-20261008/proposed/licenses/ort-rs/windows-link-0.2.1/license-mit": {
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+      "bytes": 1141
+    },
+    "target/native-beat-dependency-ledger-20261008/registry-license-record.json": {
+      "sha256": "6e2a5c2c1d3fab0fd972ee347801b2c66110c6712609a9502db0d0c3bf7123cd",
+      "bytes": 20063
+    },
+    "target/native-beat-dependency-ledger-20261008/third-party-ledger.patch": {
+      "sha256": "29751a7c3836bfeb5bf3344bed04a80306a5e8538b725f3bc3f3cd2fa8bd435c",
+      "bytes": 7939
+    },
+    "target/native-beat-delivery-20261008/build-01/source/Cargo.lock": {
+      "sha256": "8ddfe4053b94dd861d47018b21cef2cd347e1dc7d09551950da85d01e8bea2ac",
+      "bytes": 160074
+    },
+    "target/native-beat-delivery-20261008/build-01/source/Cargo.toml": {
+      "sha256": "c844d474309f7c6645e26b77c650e2c95c5f07ee915b68b612b73c69a6a80019",
+      "bytes": 2929
+    },
+    "target/native-beat-delivery-20261008/build-01/source/apps/cocobeat-game/Cargo.toml": {
+      "sha256": "d58948f5559284dc68f2fb1390e312cce35637d899986bdb8e5ed7ee763e5b0b",
+      "bytes": 313
+    },
+    "target/native-beat-delivery-20261008/build-01/source/apps/cocobeat-game/build.rs": {
+      "sha256": "81de396f2a1f8a71c68f45770d94f4fcd37df01cacb64fe861a87fc90723c961",
+      "bytes": 306
+    },
+    "target/native-beat-delivery-20261008/build-01/source/apps/cocobeat-game/src/main.rs": {
+      "sha256": "6857c4b544686ce6bcfa992238c4ca2eb44ebe236336384215d7da809c1e2466",
+      "bytes": 68
+    },
+    "target/native-beat-delivery-20261008/build-01/source/assets/brand/validation/Cargo.lock": {
+      "sha256": "e9d6937210e8e1d08425465ad702fe97555f02d823df77a4ab5126516e5e26f5",
+      "bytes": 135715
+    },
+    "target/native-beat-delivery-20261008/build-01/source/assets/brand/validation/Cargo.toml": {
+      "sha256": "a2e1e78d21bb8a0aa9312729a6ab19e5fa21377fa28b7d016b31fc85965a023a",
+      "bytes": 593
+    },
+    "target/native-beat-delivery-20261008/build-01/source/assets/brand/validation/main.rs": {
+      "sha256": "ec3055d55da738329d44f5244684734fc3cf6678bdd79419e9f6ffcd94e275eb",
+      "bytes": 9325
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-core/Cargo.toml": {
+      "sha256": "97953d32f3820f005fdefe43a7ff7d8693424be78b9f0c655a83959a026ec8b1",
+      "bytes": 236
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-core/src/lib.rs": {
+      "sha256": "b40e2cc325ea009b94cd09476c99ed435dbf8b88aa00c43b009caea91e39a7a4",
+      "bytes": 29328
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-editor/Cargo.toml": {
+      "sha256": "83549c0857e31f7d2250b7c944094ab3cf6ea8c437db321b83429465a7ad80bf",
+      "bytes": 238
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-editor/src/lib.rs": {
+      "sha256": "7aa3670d806a23072f338b190dc3a2a8625817c0bf29c6dc5a8dd4fc1874b537",
+      "bytes": 10440
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/Cargo.toml": {
+      "sha256": "350514a44be51b35331b062c944985f0cd376134697b1e227a9f0520dcbdc046",
+      "bytes": 665
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/anchors.rs": {
+      "sha256": "696d78496c649bb6dabbe7b24a77d551388084f08c0a5316375bab3c21ae9949",
+      "bytes": 16220
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/audio_asset.rs": {
+      "sha256": "c291812b00b2ab50e0fcf0027ca7f5ae71b7d17f971b336a2a7a0bb3946b0792",
+      "bytes": 7999
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/authored.rs": {
+      "sha256": "d3b8665bb0d8b188778f5f4f11d92d3abd80c5359d7c5f7d8b40a73ae0ff9aa4",
+      "bytes": 29773
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/content_codec.rs": {
+      "sha256": "bf3c37315553cdf49479ce111fb5433603e3416f949434ba80ae46c6279cb266",
+      "bytes": 31378
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/decode.rs": {
+      "sha256": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714",
+      "bytes": 26262
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/encode.rs": {
+      "sha256": "d287697d1c5292bddd5d1541c0c88f60b0a9dee567b5a11be8e41522c6e05093",
+      "bytes": 9657
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/lib.rs": {
+      "sha256": "aeee8a795a35fd96bb68bf0ec1df266dfea52dd219de6441023e06306de0fa29",
+      "bytes": 1319
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat.rs": {
+      "sha256": "5dd0cc9a268450cfa59c55dd0802ab012380f8f85c3d440dd6acf2c0e9d55e2f",
+      "bytes": 43690
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat_assets.rs": {
+      "sha256": "738424a3e75d259e8b372c6ab16fb701c70158eb258b0026da736abba2b4f00c",
+      "bytes": 4410
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/package.rs": {
+      "sha256": "1d62a85638ace493612e3fde66f60683b5850449539df9b284012fd9ea05f225",
+      "bytes": 61986
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-media/src/resample.rs": {
+      "sha256": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78",
+      "bytes": 12233
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/Cargo.toml": {
+      "sha256": "e328736eadc27a4fd28cc995c17dbd21f89dae695b3b0204002380be46f58891",
+      "bytes": 475
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/clock.rs": {
+      "sha256": "73d3e39f48f8cf165c54ed8aa2c14e1da7f85457a4663683ac2d1949b07f20c5",
+      "bytes": 16777
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/lib.rs": {
+      "sha256": "4043aa85b02bf34bac08e1912879c3c9ff039c96411d59a3ba841ad0f413bb02",
+      "bytes": 14454
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/live.rs": {
+      "sha256": "9833e1f3ca7b4a2a765714b50902bb0dfc9b378b687c8248a07db8b5e8514ee4",
+      "bytes": 98894
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/resource.rs": {
+      "sha256": "a292e4b26a187d7c0c1abc7bdcefcf024c0eb5b728ebc4893d9b0e01ee8c6f58",
+      "bytes": 9227
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/session.rs": {
+      "sha256": "a2cca34cc047924eed9daf9a9d135045784ed7ed595cb48ca841cba99cb5dc7f",
+      "bytes": 60910
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/sync.rs": {
+      "sha256": "b8d4e757b9aaa611ca40fb7232e8827aa08d4dfc5e18255fd3f3e5d798a089dd",
+      "bytes": 38523
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-net/src/wire.rs": {
+      "sha256": "0c0a09a0dafa654dccb4d146a62959b3502d7331e161bbe14d42fe6abf15e510",
+      "bytes": 33444
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-replay/Cargo.toml": {
+      "sha256": "987689a4fa9130be947a11d08fc576de3f322db9b74f90cf80bf49ff1f416da9",
+      "bytes": 344
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-replay/src/lib.rs": {
+      "sha256": "2bcbb301149df44c21ffc5b49d09a3037e18e3aaf11fc7b81b60061bbdcb39b2",
+      "bytes": 24345
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-replay/src/timing.rs": {
+      "sha256": "074007085a5cd3bae9dcb30f8c8289161c9349355392991519024800d02b718b",
+      "bytes": 28878
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/Cargo.toml": {
+      "sha256": "40654b858ecc13d3e1a5ff857153928228086a06a50d17c9d51bb4738a1cb59b",
+      "bytes": 705
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/build.rs": {
+      "sha256": "6c948a5e384b709de42eee8b5cef80d0a2d53cd9771bea605468c0d52abb5b86",
+      "bytes": 816
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/app.rs": {
+      "sha256": "5877dc132d573f64c18ec829db139579f5973f3fcaa50ec213233b93f6e5d47f",
+      "bytes": 190305
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/audio.rs": {
+      "sha256": "77701cf6b369f4d2e2fe9c711c1039a459169ed83b016da9c367d6274e123ecd",
+      "bytes": 34192
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/audio_observation.rs": {
+      "sha256": "8d41f748da88134c6cfe29a4f604b7810ed0e71f2fbb622639f3b064c98a814d",
+      "bytes": 15361
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/brand_audio.rs": {
+      "sha256": "b69cff85a37aa6c43b477b975cb1704206df679b89272af5b0bedddf8acab590",
+      "bytes": 3613
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/brand_intro.rs": {
+      "sha256": "ab4b4c0e8ce63daa7368b8d1e23ed1a4e5dfa445abf788ebeba59191404a87a2",
+      "bytes": 35658
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/clock.rs": {
+      "sha256": "715e1b02b4e07290d6f0c9cad5949fbb4d85ab52e4be37c4412916a17d2f65cc",
+      "bytes": 24744
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/content.rs": {
+      "sha256": "8b60e82ff8de9850aac873bdbd66e75a3cb2391beb7cd6e91114f4681a1d4ba5",
+      "bytes": 19250
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/dev_song.rs": {
+      "sha256": "3a14a6d09bf72be411cc952e93cae3284b38669ec3b1072ba0dd9f99ee89e09c",
+      "bytes": 3544
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/display.rs": {
+      "sha256": "a7253d51f4b4d95b149f5754d4154d4c31fac1dcef396fd4845f2226f789ee3c",
+      "bytes": 42050
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/display_area.rs": {
+      "sha256": "27a85d9d07263b6dbb0cd5788c8f4f8d5dbd80b37dbcd929b63c7d233afe58f4",
+      "bytes": 15804
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/i18n.rs": {
+      "sha256": "0a8f6d242b6573050b24314a644173f0c37668b6946c6723fb3950973299cb92",
+      "bytes": 12035
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/input.rs": {
+      "sha256": "f30e7b2520b32f64d4fe7da80915e5409590846136c262ec30846388fc945105",
+      "bytes": 140669
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/lib.rs": {
+      "sha256": "7fddb4400ccc30347f1f6e412564598ca29f45fa2dd4c1c89bf659f459a39576",
+      "bytes": 649
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/library.rs": {
+      "sha256": "3b6f67b9305e17178761cb1f1e809a8f1769a8161af995a898873b06aff08f39",
+      "bytes": 19025
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/library_observation.rs": {
+      "sha256": "d819dc6effeeee6703ec43e577441d21f4e755b85a91f8cad89d38aa6cee70f5",
+      "bytes": 48705
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/live_observation.rs": {
+      "sha256": "a838ed2f946ba45ca4231b2b89e190826eb60b7318e2b6f480d2386b22a76437",
+      "bytes": 30434
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/online.rs": {
+      "sha256": "0970d13720fea13b6a772e3c4690f5f540f4f8564e7ca96e990599cca6c31f6a",
+      "bytes": 25993
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/performance_probe.rs": {
+      "sha256": "96e09153cff853135b6c316766b73714acb32a500026031a4a66d736f1f0d207",
+      "bytes": 29544
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/probe.rs": {
+      "sha256": "65622a49e316eb27dbe528f2b1d14f426be62db4728df1bd5b14fe03b9f4cc6b",
+      "bytes": 12636
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/recovery.rs": {
+      "sha256": "44abd206a72e4adaf8b8392cc4c3ae53f96e887fb903b9427f765bb52a4cab83",
+      "bytes": 39173
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/replay_playback.rs": {
+      "sha256": "eb01359c5db1da31f76834129aa27071f0482a94eb8357042e23368e997d047d",
+      "bytes": 6434
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/scene.rs": {
+      "sha256": "7e06c73955f3e149f32f18bec027e4a199bf6a41d16f313148753a7a6ee707eb",
+      "bytes": 90955
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/session.rs": {
+      "sha256": "c426f45d210d9b97734c9eb94cb76a83c02b828cfdcad1145188888dfb014162",
+      "bytes": 42126
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/settings.rs": {
+      "sha256": "80af1dd0c40ddba44532c21ccc1de41fd7f61e51513505705696044c3c0b8ff3",
+      "bytes": 14308
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/settings_menu.rs": {
+      "sha256": "ebc971c6e3936063dfb609e4ff589c0abf5e17409b1f917d3a0a4f008fe8775e",
+      "bytes": 53383
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/timing_diagnostic.rs": {
+      "sha256": "442d05d497995d7d8e55a0cfe1d76d816fc13dd98b34083a7805fcc5eacdf3d2",
+      "bytes": 9553
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/ui_assets.rs": {
+      "sha256": "f8c5d5cd4ba65d2bcce0d729cb29ad58966c5ee1018c3444df837fdeb47e894e",
+      "bytes": 12801
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/view.rs": {
+      "sha256": "7b37a89814ffecfc45ac6c061b469be6366672ef81be4abf92d209330e86c168",
+      "bytes": 73873
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-runtime/src/watch_observation.rs": {
+      "sha256": "47eb6e2f54a519ac819bbb6d7a44a0a164c9a50296ec4d0b7def963c16d26092",
+      "bytes": 15282
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/Cargo.toml": {
+      "sha256": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418",
+      "bytes": 189
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/src/asset.rs": {
+      "sha256": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe",
+      "bytes": 212
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/src/content.rs": {
+      "sha256": "4cc6c5f64794fb669423dbcdad02ba5bb868bc25bac8f30fb977131bd513ed84",
+      "bytes": 22498
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/src/gameplay.rs": {
+      "sha256": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+      "bytes": 3328
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/src/lib.rs": {
+      "sha256": "5f118404beaa4173934062e6af96af70d2d2dfd06ff8e188c0ce7493f447878f",
+      "bytes": 938
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-schema/src/time.rs": {
+      "sha256": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024",
+      "bytes": 5114
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-stage/Cargo.toml": {
+      "sha256": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c",
+      "bytes": 237
+    },
+    "target/native-beat-delivery-20261008/build-01/source/crates/cocobeat-stage/src/lib.rs": {
+      "sha256": "4c2ed3afbc61b0b11a40a913d1d9eabfa9a5fd71a3d7356f29b48f698032cc5f",
+      "bytes": 25289
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "ad2e28bae893079ea6f55ab0f1989014b0be714642ead361bf255f0b2150e8bd",
+      "bytes": 579
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/content.rs": {
+      "sha256": "5e0a1a40ad3f98f1f44ca389b7bfe6f4980697fdd654849b2c930cd76aea9214",
+      "bytes": 3979
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/editor.rs": {
+      "sha256": "91a3419eda668d8cf3d9a077fe4a12bd682591ad949325dfd26525ffc70fc662",
+      "bytes": 10262
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "439a236a2beb7ac82102cf2234c58d9324b2e1f8bb2b8eb099f95422f1702598",
+      "bytes": 12340
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/media.rs": {
+      "sha256": "3334bb94e8d365a1a8ef1d2d593a9749284802ec3b5058a739e535fa9c690568",
+      "bytes": 3164
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/package.rs": {
+      "sha256": "3b28951e2371a4b0c03292c9d33a57b3e443b23388514a6a5c7d4a54392dc1f6",
+      "bytes": 2814
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/stage.rs": {
+      "sha256": "1f2d262bed5b15929693f44cdadca2e1d9b1d2dcd409559066e63a80b1b78707",
+      "bytes": 2710
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/timing.rs": {
+      "sha256": "2f0078eb67d8b85a4ac58e90bdaa1b20e8fe20301156ac9bb1c86496232ec401",
+      "bytes": 8736
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "db10ec79bc9481878ad7aed1d9241020b506f69add62d7ea481569712ec85ca2",
+      "bytes": 25504
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/input.rs": {
+      "sha256": "92179eba2256d2edd5d8dec601ecbafb9654dfb9fe1e45a40c93f2b63cbef3d7",
+      "bytes": 52405
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/native-beat-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/ui.rs": {
+      "sha256": "b385ac73103341c9d6a016e86338cc1361f8eedcb678b7788508417deef0f4c0",
+      "bytes": 48576
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/aotuv_lancer_vorbis_sys/Cargo.lock": {
+      "sha256": "a8906499d7a52fdf65208441e8f0608a5eeff1f903d04e9d304e33ecb865bcf4",
+      "bytes": 6814
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/aotuv_lancer_vorbis_sys/Cargo.toml": {
+      "sha256": "d1be10a42abbff5ea1b5eac65f15c08ea80fd38537acfb0844232320a121a8e5",
+      "bytes": 2079
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/aotuv_lancer_vorbis_sys/build.rs": {
+      "sha256": "d45bb5998d4e3b5783969e8eb6ef91f5a8b75c867afef6c3f256bbc4319c5a12",
+      "bytes": 4006
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/aotuv_lancer_vorbis_sys/src/bindings.rs": {
+      "sha256": "c7dc462ce48a4f3b5c8a5258652e1e09ee3c8053634e4ed0b1f0b97404907b48",
+      "bytes": 26379
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/aotuv_lancer_vorbis_sys/src/lib.rs": {
+      "sha256": "d0b8821a5982932661a5aa09ea8980b277c9785c412bd2b0cda2663ac7759cbd",
+      "bytes": 8155
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/ogg_next_sys/Cargo.lock": {
+      "sha256": "fab14f644d22669ed47bdb8bb0170c6377e22f7f11630b648fe17de5aa191fbb",
+      "bytes": 6564
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/ogg_next_sys/Cargo.toml": {
+      "sha256": "9e3683b02a826e5e90830e0244475be57990f65cc020cb83527f3142f8c8a102",
+      "bytes": 1580
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/ogg_next_sys/build.rs": {
+      "sha256": "2131f73c90a136a1d57f3c9a28a72a07791d41abaf6a598b0bd35a875b1101bc",
+      "bytes": 1147
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/ogg_next_sys/src/bindings.rs": {
+      "sha256": "872f0cc5b26a64b28c569e1cc6f78e1c69148c3f711d91369ccd0defb2e593a8",
+      "bytes": 9876
+    },
+    "target/native-beat-delivery-20261008/build-01/source/vendor/ogg_next_sys/src/lib.rs": {
+      "sha256": "0e8d9ee73f72fd34e02dcd1f98057339d64b1debca322f151572b01fc4ee71cb",
+      "bytes": 58
+    },
+    "target/native-beat-delivery-20261008/build-01/source/xtask/Cargo.toml": {
+      "sha256": "7c53e9cb89ab635fec8b9f3c72893aaa9fda784da7ff5f9d2dcd3b300cd403b5",
+      "bytes": 247
+    },
+    "target/native-beat-delivery-20261008/build-01/source/xtask/src/main.rs": {
+      "sha256": "43d8f7d709866de64b690101eb3365edf5eb5db41e2e53863554387f2541f39f",
+      "bytes": 10048
+    },
+    "target/native-beat-delivery-20261008/build-01/source/xtask/src/native_assets.rs": {
+      "sha256": "b5d4aea6f343ba715ac2ef4f8c829d41cb53dfbb346b6ff50053a5b0cc1c2190",
+      "bytes": 6427
+    },
+    "licenses/ort-rs/cfg-if-1.0.5/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "licenses/ort-rs/cfg-if-1.0.5/LICENSE-MIT": {
+      "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397",
+      "bytes": 1057
+    },
+    "licenses/ort-rs/libloading-0.9.0/LICENSE": {
+      "sha256": "b29f8b01452350c20dd1af16ef83b598fea3053578ccc1c7a0ef40e57be2620f",
+      "bytes": 736
+    },
+    "licenses/ort-rs/matrixmultiply-0.3.11/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "licenses/ort-rs/matrixmultiply-0.3.11/LICENSE-MIT": {
+      "sha256": "792d075c7bad6dac258a44e799eb64cbf465e24d9932d27669be08c5ec957e27",
+      "bytes": 1159
+    },
+    "licenses/ort-rs/ndarray-0.17.2/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "licenses/ort-rs/ndarray-0.17.2/LICENSE-MIT": {
+      "sha256": "1fd6747d2c8e80f9fa766f57c5888864774621deb85cc2838ccaed727db32d45",
+      "bytes": 1119
+    },
+    "licenses/ort-rs/ort-2.0.0-rc.13/LICENSE-APACHE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "licenses/ort-rs/ort-2.0.0-rc.13/LICENSE-MIT": {
+      "sha256": "6bba08de46289c40986a2e6b310e2da61fcea33b3c112c8320f6093f8f9cb71b",
+      "bytes": 1107
+    },
+    "licenses/ort-rs/ort-sys-2.0.0-rc.13/LICENSE-APACHE": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "licenses/ort-rs/ort-sys-2.0.0-rc.13/LICENSE-MIT": {
+      "sha256": "6bba08de46289c40986a2e6b310e2da61fcea33b3c112c8320f6093f8f9cb71b",
+      "bytes": 1107
+    },
+    "licenses/ort-rs/rawpointer-0.2.1/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "licenses/ort-rs/rawpointer-0.2.1/LICENSE-MIT": {
+      "sha256": "7576269ea71f767b99297934c0b2367532690f8c4badc695edf8e04ab6a1e545",
+      "bytes": 1043
+    },
+    "licenses/ort-rs/smallvec-1.16.2/LICENSE-APACHE": {
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "bytes": 10847
+    },
+    "licenses/ort-rs/smallvec-1.16.2/LICENSE-MIT": {
+      "sha256": "0b28172679e0009b655da42797c03fd163a3379d5cfa67ba1f1655e974a2a1a9",
+      "bytes": 1072
+    },
+    "licenses/ort-rs/windows-link-0.2.1/license-apache-2.0": {
+      "sha256": "c16f8dcf1a368b83be78d826ea23de4079fe1b4469a0ab9ee20563f37ff3d44b",
+      "bytes": 11351
+    },
+    "licenses/ort-rs/windows-link-0.2.1/license-mit": {
+      "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383",
+      "bytes": 1141
+    },
+    "target/native-beat-front-end-20261008/same-pcm-first/summary.json": {
+      "sha256": "5728c0d246d76120a320134eeb0ade36f8d1f6180b34f98c82d63d5b413027cb",
+      "bytes": 408705
+    },
+    "target/native-beat-front-end-20261008/same-pcm-f32/summary.json": {
+      "sha256": "defbbad2036202b70329401f1b31fc0eba46103f2bc1e865324f0c2896b59fe6",
+      "bytes": 408533
+    },
+    "target/native-beat-front-end-20261008/same-pcm-fma/summary.json": {
+      "sha256": "30cff6c6152f1934ec5f898b79ca1350bfa5c7bc32eb7edb31b380ae495a86ce",
+      "bytes": 334107
+    },
+    "target/native-beat-front-end-20261008/same-pcm-f32fft/summary.json": {
+      "sha256": "0444e69c4d16e4d01cbad11c211f93f345ba9a14f94ac48e67b0e57c1a0ce5d7",
+      "bytes": 343980
+    }
+  },
+  "excluded_files_no_content_rehash": [
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/core-corrupt-layout/assets/models/beat-this/small0.onnx",
+      "bytes": 10555597,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/core-corrupt-layout/bin/cocobeat-lab",
+      "bytes": 1483486664,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/core-corrupt-layout/lib/onnxruntime/libonnxruntime.so.1.30.0",
+      "bytes": 28985152,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/core-corrupt-layout/lib/onnxruntime/libonnxruntime_providers_shared.so",
+      "bytes": 14632,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-model-layout/bin/cocobeat-lab",
+      "bytes": 1483486664,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-model-layout/lib/onnxruntime/libonnxruntime.so.1.30.0",
+      "bytes": 28985152,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-model-layout/lib/onnxruntime/libonnxruntime_providers_shared.so",
+      "bytes": 14632,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-provider-layout/assets/models/beat-this/small0.onnx",
+      "bytes": 10555597,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-provider-layout/bin/cocobeat-lab",
+      "bytes": 1483486664,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/missing-provider-layout/lib/onnxruntime/libonnxruntime.so.1.30.0",
+      "bytes": 28985152,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/model-corrupt-layout/assets/models/beat-this/small0.onnx",
+      "bytes": 10555597,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/model-corrupt-layout/bin/cocobeat-lab",
+      "bytes": 1483486664,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/model-corrupt-layout/lib/onnxruntime/libonnxruntime.so.1.30.0",
+      "bytes": 28985152,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/controls-01/model-corrupt-layout/lib/onnxruntime/libonnxruntime_providers_shared.so",
+      "bytes": 14632,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/sdk-01/lib/libonnxruntime.so.1.30.0",
+      "bytes": 28985152,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-delivery-20261008/sdk-01/lib/libonnxruntime_providers_shared.so",
+      "bytes": 14632,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-aarch64-1.30.0-libonnxruntime.so.1.30.0.stderr",
+      "bytes": 0,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-aarch64-1.30.0-libonnxruntime.so.1.30.0.stdout",
+      "bytes": 74,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-aarch64-1.30.0-libonnxruntime_providers_shared.so.stderr",
+      "bytes": 0,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-aarch64-1.30.0-libonnxruntime_providers_shared.so.stdout",
+      "bytes": 72,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-x64-1.30.0-libonnxruntime.so.1.30.0.stderr",
+      "bytes": 0,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-x64-1.30.0-libonnxruntime.so.1.30.0.stdout",
+      "bytes": 74,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-x64-1.30.0-libonnxruntime_providers_shared.so.stderr",
+      "bytes": 0,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/hash-run-01/onnxruntime-linux-x64-1.30.0-libonnxruntime_providers_shared.so.stdout",
+      "bytes": 71,
+      "content_rehashed": false
+    },
+    {
+      "path": "target/native-beat-release-plan-20261008/proposed/assets/models/beat-this/small0.onnx",
+      "bytes": 10555597,
+      "content_rehashed": false
+    }
+  ],
+  "excluded_binary_identity": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/build-01/bin/cocobeat-lab",
+    "sha256": "217d2c987b7dd3c2501abced6ae0f337f712ac79ea33f74784e538b8bf662f68",
+    "bytes": 1483486664,
+    "identity_evidence": "Actual compiler/copy receipt and terminal CLI binary before/after identity; executable contents not rehashed by formal preparer"
+  },
+  "resource_identity_receipts": {
+    "sdk_prepare": "target/native-beat-delivery-20261008/prepare-assets-result.json",
+    "selected_sdk_extraction": {
+      "receipt": "target/native-beat-delivery-20261008/sdk-01/extraction-receipt.json",
+      "status": "PASS_EXACT_ARCHIVE_SELECTED_MEMBERS",
+      "archive": "target/ort-sdk-license-20261008/onnxruntime-linux-x64-1.30.0.tgz",
+      "archive_sha256": "a5ed5a3cac51fbb2e90da632ae43d19212faaa20e76484e62bcb7c23ddb3b3fd",
+      "files": {
+        "LICENSE": {
+          "bytes": 1073,
+          "sha256": "2f07c72751aed99790b8a4869cf2311df85a860b22ded05fa22803587a48922c"
+        },
+        "ThirdPartyNotices.txt": {
+          "bytes": 338088,
+          "sha256": "143764b952fdb1a7c69ce653bfba74a7744d6a8a573bfb73e235fba356c83de3"
+        },
+        "VERSION_NUMBER": {
+          "bytes": 7,
+          "sha256": "59ed8e11070a3db06654dc5a21ddccd8ca160b8040544b800ff19253ddefb978"
+        },
+        "GIT_COMMIT_ID": {
+          "bytes": 41,
+          "sha256": "1ce8cf52729994702252471f0598ac50b16ceac507fa4f50290ea3042b804f6f"
+        },
+        "lib/libonnxruntime.so.1.30.0": {
+          "bytes": 28985152,
+          "sha256": "245a6f8c38127551057a1cd1ffd59f0a186a227ade4f3492dea2494eb565542e"
+        },
+        "lib/libonnxruntime_providers_shared.so": {
+          "bytes": 14632,
+          "sha256": "086ec1d5388f64153d9c63470d126693db9a182c8ce236d3a1119068471b8a0d"
+        }
+      },
+      "scope": "Static selected byte extraction, not SDK/model Run",
+      "content_rehash_scope": "Small notice/version members independently hashed; core SDK28MB and archive identity bound to existing extraction receipt, not reopened"
+    },
+    "prepared_byte_identity": {
+      "receipt": "target/native-beat-delivery-20261008/build-01/NATIVE-ASSETS.json",
+      "core": {
+        "blake3": "1237b3b4730080f918c40b05f5553875e928df450eebae760cf6a4a883a72409",
+        "bytes": 28985152,
+        "path": "lib/onnxruntime/libonnxruntime.so.1.30.0"
+      },
+      "model": {
+        "blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+        "bytes": 10555597,
+        "path": "assets/models/beat-this/small0.onnx"
+      },
+      "provider": {
+        "blake3": "e575eac21c52ff35f67d0179df4f76f0a953638a3448b982cf106112501df6b3",
+        "bytes": 14632,
+        "path": "lib/onnxruntime/libonnxruntime_providers_shared.so"
+      },
+      "scope": "Byte-validated resource preparation; not a native model Run or music quality result",
+      "sdk_version": "1.30.0",
+      "target": "x86_64-unknown-linux-gnu"
+    },
+    "actual_native_artifact_identities": {
+      "model": {
+        "receipt": "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-model.json",
+        "actual_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+        "actual_bytes": 10555597,
+        "expected_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+        "expected_bytes": 10555597,
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/build-01/assets/models/beat-this/small0.onnx",
+        "content_rehashed_here": false
+      },
+      "core": {
+        "receipt": "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-core.json",
+        "actual_blake3": "1237b3b4730080f918c40b05f5553875e928df450eebae760cf6a4a883a72409",
+        "actual_bytes": 28985152,
+        "expected_blake3": "1237b3b4730080f918c40b05f5553875e928df450eebae760cf6a4a883a72409",
+        "expected_bytes": 28985152,
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/build-01/lib/onnxruntime/libonnxruntime.so.1.30.0",
+        "content_rehashed_here": false
+      },
+      "provider": {
+        "receipt": "target/native-beat-delivery-20261008/positive-01/fixture-left/evidence/artifact-provider.json",
+        "actual_blake3": "e575eac21c52ff35f67d0179df4f76f0a953638a3448b982cf106112501df6b3",
+        "actual_bytes": 14632,
+        "expected_blake3": "e575eac21c52ff35f67d0179df4f76f0a953638a3448b982cf106112501df6b3",
+        "expected_bytes": 14632,
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/build-01/lib/onnxruntime/libonnxruntime_providers_shared.so",
+        "content_rehashed_here": false
+      }
+    },
+    "resources_promote": "target/native-beat-delivery-20261008/resource-promote.json",
+    "model_sha256_reference_receipt": "6873aa76f8753eefdcb1414d0663caaf26a2f78591a4a46ba911b768e03f0eba",
+    "content_rehash_boundary": "Big model/SDK resources retained by exact producer SHA/BLAKE3/size receipts; no claim that formal preparer rehashed all bigfiles"
+  }
+}

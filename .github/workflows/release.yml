@@ -82,6 +82,8 @@ jobs:
       - name: Verify and name all four archives
         run: |
           python3 - <<'PY'
+          import hashlib
+          import json
           import os
           import pathlib
           import tarfile
@@ -97,15 +99,42 @@ jobs:
           expected = {f'cocobeat-{target}.{extension}' for target, extension in targets.items()}
           if {path.name for path in root.iterdir()} != expected:
               raise SystemExit('Expected exactly four platform archives')
+          core_sha = {
+              'x86_64-pc-windows-msvc': '7e39e2bdbba836d98071ef28620735ba36a47c554cf794585269aecc50fab0da',
+              'aarch64-pc-windows-msvc': '46b7ec24a6ee2932bb315edb39d26d6b2d51eef21f02c8e1ceafe801fe991a89',
+              'x86_64-unknown-linux-gnu': '245a6f8c38127551057a1cd1ffd59f0a186a227ade4f3492dea2494eb565542e',
+              'aarch64-unknown-linux-gnu': '64e903a43a041240fd6bcffe0ac6d4fea47ef87bf24b9d097801bd00a9612a4b',
+          }
+          provider_sha = {
+              'x86_64-pc-windows-msvc': 'b9b7ab9e2a8b08ee7ae4a7ac1c8bfd44a741f17ad8d0f764953140a57de0b796',
+              'aarch64-pc-windows-msvc': 'aa6a5f21b054a909a980f8b1e231d201eb2c5bf96c9c65b151ee1e3ef8196a43',
+              'x86_64-unknown-linux-gnu': '086ec1d5388f64153d9c63470d126693db9a182c8ce236d3a1119068471b8a0d',
+              'aarch64-unknown-linux-gnu': '3b6be288fbfb7dff8770d08a23defdde18e8f7e0f5a2b344a0e5e238c999ea88',
+          }
           for target, extension in targets.items():
               path = root / f'cocobeat-{target}.{extension}'
-              if extension == 'zip':
-                  with zipfile.ZipFile(path) as archive:
-                      info = archive.read('BUILD-INFO.txt').decode('utf-8-sig')
-              else:
-                  with tarfile.open(path) as archive:
-                      info = archive.extractfile('./BUILD-INFO.txt').read().decode()
+              windows = extension == 'zip'
+              lab = 'cocobeat-lab.exe' if windows else 'bin/cocobeat-lab'
+              core = 'lib/onnxruntime/onnxruntime.dll' if windows else 'lib/onnxruntime/libonnxruntime.so.1.30.0'
+              provider = 'lib/onnxruntime/onnxruntime_providers_shared.dll' if windows else 'lib/onnxruntime/libonnxruntime_providers_shared.so'
+              required = [lab, core, provider, 'assets/models/beat-this/small0.onnx', 'assets/models/beat-this/PROVENANCE.json', 'licenses/beat-this/LICENSE', 'licenses/onnxruntime/sdk/LICENSE', 'licenses/onnxruntime/sdk/ThirdPartyNotices.txt', 'licenses/onnxruntime/SOURCE-AVAILABILITY.md', 'licenses/onnxruntime/eigen-patches/s390x-build.patch', 'licenses/onnxruntime/eigen-patches/s390x-build-werror.patch', 'NATIVE-ASSETS.json']
+              with zipfile.ZipFile(path) if windows else tarfile.open(path) as archive:
+                  def read(name):
+                      return archive.read(name) if windows else archive.extractfile('./' + name).read()
+                  for name in required:
+                      read(name)
+                  info = read('BUILD-INFO.txt').decode('utf-8-sig')
+                  native = json.loads(read('NATIVE-ASSETS.json'))
+                  if native['target'] != target or native['sdk_version'] != '1.30.0':
+                      raise SystemExit('Native resource target/version mismatch')
+                  if hashlib.sha256(read(core)).hexdigest() != core_sha[target] or hashlib.sha256(read(provider)).hexdigest() != provider_sha[target]:
+                      raise SystemExit('Native SDK bytes mismatch')
+                  if hashlib.sha256(read('assets/models/beat-this/small0.onnx')).hexdigest() != '6873aa76f8753eefdcb1414d0663caaf26a2f78591a4a46ba911b768e03f0eba':
+                      raise SystemExit('Model bytes mismatch')
+                  lab_sha = hashlib.sha256(read(lab)).hexdigest()
               fields = dict(line.split('=', 1) for line in info.splitlines())
+              if fields['lab_sha256'].lower() != lab_sha:
+                  raise SystemExit('Lab build identity mismatch')
               if fields['commit'] != os.environ['SOURCE_COMMIT'] or fields['target'] != target:
                   raise SystemExit(f'Build identity mismatch: {path.name}')
               path.rename(root / f'cocobeat-{os.environ["RELEASE_TAG"]}-{target}.{extension}')

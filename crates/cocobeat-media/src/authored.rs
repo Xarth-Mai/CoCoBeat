@@ -1,4 +1,6 @@
-use crate::{PackageBuildInput, ValidatedPackage, decode::MAX_SOURCE_BYTES};
+use crate::{
+    PackageBuildInput, PreparedCanonicalAudio, ValidatedPackage, decode::MAX_SOURCE_BYTES,
+};
 use cocobeat_schema::{
     Anchor, SongTime,
     content::{
@@ -64,6 +66,7 @@ pub fn build_authored_package(
         destination,
         importer_version,
         None,
+        |_, _, _| Ok(None),
     )
 }
 
@@ -94,11 +97,16 @@ fn build_authored(
     destination: &Path,
     importer_version: &str,
     provenance: Option<String>,
+    enrich: impl FnOnce(
+        &Path,
+        &PreparedCanonicalAudio,
+        &mut MusicAnalysis,
+    ) -> Result<Option<String>, String>,
 ) -> Result<ValidatedPackage, String> {
     crate::build_package(audio, frames, destination, |staged, prepared| {
         let audio_hash = prepared.asset.blake3;
         let energy = measure_energy(staged, prepared.canonical_frames)?;
-        let analysis = MusicAnalysis {
+        let mut analysis = MusicAnalysis {
             capabilities: Some(AnalysisCapabilities::authored()),
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),
@@ -126,6 +134,8 @@ fn build_authored(
                 }
             ),
         };
+        let analysis_version = enrich(staged, prepared, &mut analysis)?
+            .unwrap_or_else(|| "canonical-rms-1024-v2".into());
         let chart = CompiledChart {
             schema_version: CONTENT_SCHEMA_VERSION,
             audio_hash,
@@ -151,7 +161,7 @@ fn build_authored(
         Ok(PackageBuildInput {
             song_id: authoring.song_id,
             importer_version: importer_version.into(),
-            analysis_version: "canonical-rms-1024-v2".into(),
+            analysis_version,
             chart_version: "manual-anchors-v1".into(),
             analysis,
             chart,
@@ -167,6 +177,26 @@ pub fn import_authored_package(
     authoring_path: &Path,
     destination: &Path,
     importer_version: &str,
+) -> Result<ValidatedPackage, String> {
+    import_authored_package_with_analysis(
+        source,
+        authoring_path,
+        destination,
+        importer_version,
+        |_, _, _| Ok(None),
+    )
+}
+
+pub(crate) fn import_authored_package_with_analysis(
+    source: &Path,
+    authoring_path: &Path,
+    destination: &Path,
+    importer_version: &str,
+    enrich: impl FnOnce(
+        &Path,
+        &PreparedCanonicalAudio,
+        &mut MusicAnalysis,
+    ) -> Result<Option<String>, String>,
 ) -> Result<ValidatedPackage, String> {
     if importer_version.is_empty() {
         return Err("Importer version must identify the calling tool".into());
@@ -224,6 +254,7 @@ pub fn import_authored_package(
             destination,
             &format!("{importer_version}/{}", crate::CANONICAL_ENCODER_PROFILE),
             Some(provenance),
+            enrich,
         )
     })();
     let mut cleanup = Vec::new();
@@ -247,6 +278,134 @@ pub fn import_authored_package(
             "{error}; import staging cleanup failed: {}",
             cleanup.join("; ")
         )),
+    }
+}
+
+/// Explicit Candidate bundle; original hand-authored Anchors and measured energy remain
+pub fn import_experimental_beat_package(
+    source: &Path,
+    authoring_path: &Path,
+    channel: usize,
+    destination: &Path,
+    importer_version: &str,
+) -> Result<ValidatedPackage, String> {
+    #[cfg(not(any(
+        all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"),
+        all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"),
+        all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"),
+        all(target_os = "windows", target_arch = "aarch64", target_env = "msvc")
+    )))]
+    {
+        let _ = (
+            source,
+            authoring_path,
+            channel,
+            destination,
+            importer_version,
+        );
+        Err("Unsupported experimental native beat platform; manual import remains available".into())
+    }
+    #[cfg(any(
+        all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"),
+        all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"),
+        all(target_os = "windows", target_arch = "x86_64", target_env = "msvc"),
+        all(target_os = "windows", target_arch = "aarch64", target_env = "msvc")
+    ))]
+    {
+        if channel > 1 || importer_version.is_empty() {
+            return Err(
+                "Experimental import requires explicit channel 0/1 and importer identity".into(),
+            );
+        }
+        match fs::symlink_metadata(destination) {
+            Ok(_) => return Err("Experimental output already exists".into()),
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+            Err(e) => return Err(format!("Inspect experimental output: {e}")),
+        }
+        if destination.file_name().is_none() {
+            return Err("Experimental output must name a new directory".into());
+        }
+        let parent = fs::canonicalize(
+            destination
+                .parent()
+                .filter(|p| !p.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new(".")),
+        )
+        .map_err(|e| format!("Resolve experimental parent: {e}"))?;
+        let stage = (0..32)
+            .find_map(|_| {
+                let stage = parent.join(format!(
+                    ".cocobeat-native-beat-{}-{}",
+                    std::process::id(),
+                    NEXT_IMPORT.fetch_add(1, Ordering::Relaxed)
+                ));
+                match fs::create_dir(&stage) {
+                    Ok(()) => Some(Ok(stage)),
+                    Err(e) if e.kind() == std::io::ErrorKind::AlreadyExists => None,
+                    Err(e) => Some(Err(format!("Create experimental staging: {e}"))),
+                }
+            })
+            .ok_or("Allocate experimental staging after32 attempts")??;
+        let evidence = stage.join("evidence");
+        let package = stage.join("package");
+        let result = (|| {
+            fs::create_dir(&evidence).map_err(|e| format!("Create experimental evidence: {e}"))?;
+            crate::native_beat::write_json(
+                &evidence.join("started.json"),
+                &serde_json::json!({"status":"RUNNING","source":source,"authoring":authoring_path,"channel":channel,"analysis_version":crate::native_beat::ANALYSIS_VERSION,"confidence":null,"production_admission":false}),
+            )?;
+            let mut session = crate::native_beat::load_session(&evidence)?;
+            let validated = import_authored_package_with_analysis(
+                source,
+                authoring_path,
+                &package,
+                importer_version,
+                |staged, prepared, analysis| {
+                    crate::native_beat::analyze_staged(
+                        &mut session,
+                        staged,
+                        prepared,
+                        channel,
+                        &evidence,
+                        analysis,
+                    )?;
+                    Ok(Some(crate::native_beat::ANALYSIS_VERSION.into()))
+                },
+            )?;
+            drop(session);
+            crate::native_beat::write_json(
+                &evidence.join("package-complete.json"),
+                &serde_json::json!({"status":"CANDIDATE_ONLY","package_hash":blake3::Hash::from(validated.manifest.package_hash).to_hex().to_string(),"confidence":null,"production_admission":false,"old_frontend_numeric":"FAIL_PRESERVED","old_music_quality":"FAIL_PRESERVED"}),
+            )?;
+            match fs::symlink_metadata(destination) {
+                Ok(_) => return Err("Experimental output appeared before publication".into()),
+                Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                Err(e) => return Err(format!("Inspect final experimental output: {e}")),
+            }
+            fs::rename(&stage, destination)
+                .map_err(|e| format!("Publish experimental bundle: {e}"))?;
+            Ok(validated)
+        })();
+        result.map_err(|mut failure:String| {
+            // Only the four objects produced by this owned inner transaction are removed
+            if package.is_dir() {
+                for name in crate::PACKAGE_OBJECT_NAMES {
+                    let path=package.join(name);
+                    match fs::symlink_metadata(&path) {
+                        Ok(metadata) if metadata.is_file() => { if let Err(e)=fs::remove_file(&path) {failure.push_str(&format!("; remove owned object {}: {e}",path.display()));} },
+                        Err(e) if e.kind()==std::io::ErrorKind::NotFound => {},
+                        Ok(_) => failure.push_str(&format!("; preserve unexpected object {}",path.display())),
+                        Err(e) => failure.push_str(&format!("; inspect owned object {}: {e}",path.display())),
+                    }
+                }
+                if let Err(e)=fs::remove_dir(&package) {failure.push_str(&format!("; remove owned package directory: {e}"));}
+            }
+            if let Err(e)=crate::native_beat::write_json(&evidence.join("failed.json"), &serde_json::json!({"status":"FAIL","reason":failure,"remaining_steps":"NOT_RUN","confidence":null,"production_admission":false})) {
+                failure.push_str(&format!("; failure receipt incomplete: {e}"));
+            }
+            failure.push_str(&format!("; owned staging path {}; evidence path {}; evidence may be partial",stage.display(),evidence.display()));
+            failure
+        })
     }
 }
 
