@@ -25,6 +25,9 @@ impl CandidateView {
             "proposed_anchor_count": report.anchors.len(),
             "source_chart_anchor_count": package.chart.anchors.len(),
             "analysis_diagnostics": package.analysis.diagnostics,
+            "analysis_capabilities": package.analysis.capabilities.map(|capabilities| format!("{capabilities:?}")),
+            "tempo_region_count": package.analysis.tempo_regions.len(),
+            "repetition_count": package.analysis.repetitions.len(),
         });
         Ok(Self {
             report,

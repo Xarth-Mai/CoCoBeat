@@ -405,7 +405,10 @@ mod tests {
                 song_id: "replay-diagnostic-test".into(), importer_version: "test-v1".into(),
                 analysis_version: "test-v1".into(), chart_version: "test-v1".into(),
                 analysis: MusicAnalysis {
-                    schema_version: 1, audio_hash: prepared.asset.blake3,
+                    capabilities: None,
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
+            schema_version: 1, audio_hash: prepared.asset.blake3,
                     beats: vec![], onsets: vec![], sections: vec![],
                     energy: vec![EnergySample { start: SongTime::ZERO, frames: 4_800, rms: [0.0; 2], peak: [0.0; 2] }],
                     diagnostics: "Constructed rule fixture with placeholder energy, not measured music evidence".into(),

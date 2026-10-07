@@ -130,6 +130,9 @@ mod tests {
 
     fn analysis(frames: u32, points: &[(i64, Option<f32>)]) -> MusicAnalysis {
         MusicAnalysis {
+            capabilities: None,
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
             schema_version: 1,
             audio_hash: [7; 32],
             beats: Vec::new(),

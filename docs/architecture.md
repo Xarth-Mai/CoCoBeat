@@ -46,7 +46,7 @@ stage 的 `compile` 把短于 16 秒的真实分析区间编为 Plaza，长区�
 
 runtime 将计划适配成九个固定动态地面 / 桥体网格、两个固定装饰拱门和终点标线，显示窗口为前 42 m、后 12 m，最多 257 个横断面；基础 64 条带、曲首 / EOF 和长特征起点 / 中点 / 终点优先保留，剩余预算补短 Plaza，极密短段按基础采样近似，有限网格不保证每个短片段轮廓都精确；曲外基础宽度地面只作场景衬底，Anchor / cue 的原四秒 / 六秒预告窗口不变，Resonance 与画质不改变计划或关键采样
 
-StagePlan 身份由完整内容身份与 `compiler_version = 2` 组成，计划不写入歌曲包，四对象 content v1 和 Replay v1 保持原格式；相同内容和编译版本的计划 / 整数采样可复现，当前 Replay 仍只校验内容与规则身份，不能据此声称跨舞台编译版本的视觉重放已实现
+StagePlan 身份由完整内容身份与 `compiler_version` 组成，计划不写入歌曲包，四对象目录形状不变；analysis 独立支持 v1 / v2，chart / manifest 仍为 v1。Replay v2 记录实际舞台编译版本并支持现有 Stage 1 / 2 的只读观看，历史 Replay v1 保持 core-only，缺少版本时不能重构未记录的几何
 
 `ui_assets` 复用既有六份 Noto Sans 字体，通过 Bevy 的 fontique 字体集合配置原生脚本回退；每个文本仍以 locale 对应的地区字体为首选，回退处理其缺少的拉丁 / 西里尔 / 希腊 / 汉字 / 假名 / 韩文字形，不引入系统字体依赖或任意 Unicode 覆盖承诺，字体类型止于 runtime 表现适配层
 

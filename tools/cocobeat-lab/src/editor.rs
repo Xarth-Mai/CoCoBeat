@@ -187,6 +187,9 @@ mod tests {
                 analysis_version: "test-v1".into(),
                 chart_version: "test-v1".into(),
                 analysis: MusicAnalysis {
+                    capabilities: None,
+                    tempo_regions: Vec::new(),
+                    repetitions: Vec::new(),
                     schema_version: 1,
                     audio_hash: prepared.asset.blake3,
                     beats: Vec::new(),

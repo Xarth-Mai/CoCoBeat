@@ -74,7 +74,10 @@ fn fixture(args: &[String]) -> bool {
             Ok(cocobeat_media::PackageBuildInput {
                 song_id: "live-original-synthetic-repeated".into(), importer_version: "qa-libvorbis-production-readback-v1".into(),
                 analysis_version: "whole-file-measured-energy-v1".into(), chart_version: "manual-single-anchor-v1".into(),
-                analysis: MusicAnalysis { schema_version: CONTENT_SCHEMA_VERSION, audio_hash: audio.asset.blake3, beats: vec![], onsets: vec![], sections: vec![],
+                analysis: MusicAnalysis { capabilities: None,
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
+            schema_version: CONTENT_SCHEMA_VERSION, audio_hash: audio.asset.blake3, beats: vec![], onsets: vec![], sections: vec![],
                     energy: vec![EnergySample { start: SongTime::from_frames(0), frames: frames as u32, rms: squared.map(|sum| (sum / frames as f64).sqrt() as f32), peak }],
                     diagnostics: "Original synthetic stereo PCM repeated, QA libvorbis encoding, measured whole-file energy; no MIR inference or production encoder admission".into() },
                 chart: CompiledChart { schema_version: CONTENT_SCHEMA_VERSION, audio_hash: audio.asset.blake3, ruleset_id: "duo-watermark-v1".into(),

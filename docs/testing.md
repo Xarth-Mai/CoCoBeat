@@ -793,3 +793,11 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 ## 完整 CID 文本换行
 
 2026-10-08 · 完整 CID 行换行：共用 RowPrefix 使用 Bevy WordOrCharacter 后备，完整身份文本保留；实际 Noto 字体布局检查覆盖 zh-CN 1280×800、en-US 640×480 和 de 2×DPI，同一文本切旧 WordBoundary 必须越界，恢复新值必须重新通过。1 项窄测、runtime 全目标 Clippy 和格式通过，见[换行记录](../testdata/synthetic/menu-cid-wrap-observations-20261008.json)；本批没有新的联网 CID GPU 图或设备 / 真人可读性结论
+
+## analysis v2 能力与旧包兼容
+
+2026-10-08 · analysis v2 软件交付：schema / media / lab 共 80 项检查、runtime 内容 8 项、真实 v2 字节拒绝窄测、四包全目标 Clippy、格式和冻结 lab 构建通过。14 条真实 CLI 保留旧 v1 四对象与原 Replay 身份，新 final Ogg / 原 WAV 制作默认 v2，音频 / chart 字节不变，analysis / hash 按版本变化；两次旧 Replay 对新身份的拒绝符合预期，见[能力格式观察](../testdata/synthetic/analysis-v2-observations-20261008.json)。完整 MIR 算法仍未准入，继续 Ready 手工源导入、许可宽松原生分析与内容路线；CID 修复 `9018cc1` 的 [Lightweight CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37668513677)已通过
+
+新 metadata 明确固定七项能力的状态、来源与未知置信度，实际手工 producer 只验证最终 PCM 的能量，未运行的段落算法保留 Authored 来源；tempo / repetition 为 Unsupported，onset / beat / downbeat 为 NotRun。版本更新不会将历史研究或空列表解释为完整音乐分析，旧 v1 capability 为未知且读入时不自动升级
+
+本批仅 CPU 软件、真实包事务与格式兼容；没有新原生 GPU / 音频播放、完整算法质量、四目标新入口或人工标签验收，前述历史失败与相应 NOT RUN 保留

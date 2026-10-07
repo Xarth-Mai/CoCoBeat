@@ -33,7 +33,8 @@
 该批仅交付研究工具与结果摘要，Python 依赖、官方 MIT 模型、BSD 源码副本和完整输出留在 `target/`，未接入产品；madmom 非商用模型未取得或加载，生产原生前处理与 ORT C API、四目标完整归档校验及加载仍 NOT_RUN，真实音乐、人工标签和可玩性验收另行完成
 
 - [x] Beat This! small0 导出与三组后处理窄研究：源 PCM / canonical 回读数值对照及失败质量、短输入、坐标边界和来源证据已保留，研究完成不代表生产准入
-- [ ] 完整 MusicAnalysis 与 MIR 生产适配：初始自有类型已区分 onset、beat/downbeat、section、可未知置信度与真实能量，由手工内容包消费；TempoRegion、重复结构、算法产生的字段与置信度校准仍待实际实现
+- [x] MusicAnalysis v2 数据契约与手工制作接线：analysis 独立 v2，chart / manifest / authoring 仍 v1；固定七项 capability、四状态、三来源、可未知置信度与有界 TempoRegion / repetition 载荷已实现，新手工包为 `canonical-rms-1024-v2`，energy 为实测、sections 为手工，旧 analysis v1 保留未知 capability 与原字节导出身份，见 [包契约](../docs/song-package.md#分析版本与谱面)
+- [ ] 完整 MIR 生产算法与质量准入：默认 tempo / repetition 算法为 `Unsupported`、onset / beat / downbeat 为 `NotRun`，尚未产出对应自动音乐事实；候选准入、置信度校准、自动 Anchor 策略与真人标签仍按各自门槛验收
 - [ ] 合成固定/非整数 BPM、变速、3/4、6/8、弱起、静默、切分、摇摆和立体声边界。
 - [ ] 原始 PCM 与编码回读分别评估，至少部分帧真值独立手工核对。
 - [ ] 明确外部数据集版本、获取方式和许可后再引入适配器。

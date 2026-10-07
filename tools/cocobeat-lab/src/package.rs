@@ -56,6 +56,12 @@ fn summary(package: &ValidatedPackage) {
         package.chart.sections.len()
     );
     println!("Package BLAKE3: {hash}");
+    println!("Analysis capabilities: {:?}", package.analysis.capabilities);
+    println!(
+        "Tempo regions: {}, repetition relations: {}",
+        package.analysis.tempo_regions.len(),
+        package.analysis.repetitions.len()
+    );
     println!(
         "Object integrity and initial content schema verified; automatic MIR, stage compilation and encoder quality remain separate gates."
     );

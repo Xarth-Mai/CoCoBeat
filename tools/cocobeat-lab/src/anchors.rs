@@ -345,7 +345,10 @@ pub(crate) mod tests {
                 analysis_version: "constructed-onsets-test-v1".into(),
                 chart_version: "manual-test-v1".into(),
                 analysis: MusicAnalysis {
-                    schema_version: 1,
+                    capabilities: None,
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
+            schema_version: 1,
                     audio_hash: audio.asset.blake3,
                     beats: vec![],
                     onsets: [

@@ -2,8 +2,8 @@ use crate::{PackageBuildInput, ValidatedPackage, decode::MAX_SOURCE_BYTES};
 use cocobeat_schema::{
     Anchor, SongTime,
     content::{
-        CONTENT_SCHEMA_VERSION, CompiledChart, EnergySample, MAX_CANONICAL_FRAMES, MusicAnalysis,
-        SectionCue, SectionFeature,
+        ANALYSIS_SCHEMA_VERSION, AnalysisCapabilities, CONTENT_SCHEMA_VERSION, CompiledChart,
+        EnergySample, MAX_CANONICAL_FRAMES, MusicAnalysis, SectionCue, SectionFeature,
     },
 };
 use serde::Deserialize;
@@ -99,7 +99,10 @@ fn build_authored(
         let audio_hash = prepared.asset.blake3;
         let energy = measure_energy(staged, prepared.canonical_frames)?;
         let analysis = MusicAnalysis {
-            schema_version: CONTENT_SCHEMA_VERSION,
+            capabilities: Some(AnalysisCapabilities::authored()),
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
+            schema_version: ANALYSIS_SCHEMA_VERSION,
             audio_hash,
             beats: Vec::new(),
             onsets: Vec::new(),
@@ -148,7 +151,7 @@ fn build_authored(
         Ok(PackageBuildInput {
             song_id: authoring.song_id,
             importer_version: importer_version.into(),
-            analysis_version: "canonical-rms-1024-v1".into(),
+            analysis_version: "canonical-rms-1024-v2".into(),
             chart_version: "manual-anchors-v1".into(),
             analysis,
             chart,
@@ -461,6 +464,15 @@ mod tests {
         assert_eq!(package.chart.anchors[0].song_time.frames(), 2400);
         let actual_energy = measure_energy(&destination.join("song.audio.ogg"), 4800).unwrap();
         assert_eq!(package.analysis.energy, actual_energy);
+        assert_eq!(package.analysis.schema_version, ANALYSIS_SCHEMA_VERSION);
+        assert_eq!(
+            package.analysis.capabilities,
+            Some(AnalysisCapabilities::authored())
+        );
+        assert_eq!(package.manifest.analysis_version, "canonical-rms-1024-v2");
+        assert!(package.analysis.tempo_regions.is_empty());
+        assert!(package.analysis.repetitions.is_empty());
+
         let original_audio = fs::read(destination.join("song.audio.ogg")).unwrap();
         assert!(import_authored_package(&source, &authoring, &destination, IMPORTER).is_err());
         assert_eq!(

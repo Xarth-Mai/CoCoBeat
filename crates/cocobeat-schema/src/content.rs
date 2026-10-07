@@ -4,6 +4,7 @@ use crate::{Anchor, AssetRef, CANONICAL_SAMPLE_RATE, SongTime};
 use std::collections::BTreeSet;
 
 pub const CONTENT_SCHEMA_VERSION: u32 = 1;
+pub const ANALYSIS_SCHEMA_VERSION: u32 = 2;
 pub const MAX_CONTENT_ITEMS: usize = 100_000;
 pub const MAX_CONTENT_TEXT_BYTES: usize = 256;
 pub const MAX_CONTENT_DIAGNOSTICS_BYTES: usize = 4_096;
@@ -13,11 +14,103 @@ pub const MAX_CANONICAL_FRAMES: u64 = 28_800_000;
 pub struct MusicAnalysis {
     pub schema_version: u32,
     pub audio_hash: [u8; 32],
+    pub capabilities: Option<AnalysisCapabilities>,
+    pub tempo_regions: Vec<TempoRegion>,
+    pub repetitions: Vec<RepetitionFeature>,
     pub beats: Vec<BeatFeature>,
     pub onsets: Vec<OnsetFeature>,
     pub sections: Vec<SectionFeature>,
     pub energy: Vec<EnergySample>,
     pub diagnostics: String,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AnalysisState {
+    NotRun,
+    Unsupported,
+    Candidate,
+    Validated,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum AnalysisSource {
+    Algorithm,
+    Authored,
+    Measured,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AnalysisCapability {
+    pub state: AnalysisState,
+    pub source: AnalysisSource,
+    pub confidence: Option<f32>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct AnalysisCapabilities {
+    pub tempo: AnalysisCapability,
+    pub onset: AnalysisCapability,
+    pub beat: AnalysisCapability,
+    pub downbeat: AnalysisCapability,
+    pub sections: AnalysisCapability,
+    pub repetition: AnalysisCapability,
+    pub energy: AnalysisCapability,
+}
+
+impl AnalysisCapabilities {
+    /// Metadata for final PCM energy and manual sections, without automatic MIR admission
+    pub fn authored() -> Self {
+        let not_run = AnalysisCapability {
+            state: AnalysisState::NotRun,
+            source: AnalysisSource::Algorithm,
+            confidence: None,
+        };
+        let unsupported = AnalysisCapability {
+            state: AnalysisState::Unsupported,
+            ..not_run
+        };
+        Self {
+            tempo: unsupported,
+            onset: not_run,
+            beat: not_run,
+            downbeat: not_run,
+            sections: AnalysisCapability {
+                source: AnalysisSource::Authored,
+                ..not_run
+            },
+            repetition: unsupported,
+            energy: AnalysisCapability {
+                state: AnalysisState::Validated,
+                source: AnalysisSource::Measured,
+                confidence: None,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum TempoBeatUnit {
+    Quarter,
+    Eighth,
+    DottedQuarter,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct TempoRegion {
+    pub start: SongTime,
+    pub end: SongTime,
+    pub bpm: f32,
+    pub beat_unit: Option<TempoBeatUnit>,
+    pub confidence: Option<f32>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RepetitionFeature {
+    pub source_start: SongTime,
+    pub source_end: SongTime,
+    pub target_start: SongTime,
+    pub target_end: SongTime,
+    pub confidence: Option<f32>,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -131,12 +224,53 @@ fn validate_strength(value: f32) -> Result<(), String> {
 
 impl MusicAnalysis {
     pub fn validate(&self, canonical_frames: u64) -> Result<(), String> {
-        validate_header(self.schema_version, canonical_frames)?;
+        match (self.schema_version, self.capabilities) {
+            (CONTENT_SCHEMA_VERSION, None)
+                if self.tempo_regions.is_empty() && self.repetitions.is_empty() => {}
+            (ANALYSIS_SCHEMA_VERSION, Some(capabilities)) => {
+                for (capability, has_payload) in [
+                    (capabilities.tempo, !self.tempo_regions.is_empty()),
+                    (capabilities.onset, !self.onsets.is_empty()),
+                    (capabilities.beat, !self.beats.is_empty()),
+                    (
+                        capabilities.downbeat,
+                        self.beats
+                            .iter()
+                            .any(|beat| beat.downbeat_probability.is_some()),
+                    ),
+                    (capabilities.sections, !self.sections.is_empty()),
+                    (capabilities.repetition, !self.repetitions.is_empty()),
+                    (capabilities.energy, !self.energy.is_empty()),
+                ] {
+                    validate_probability(capability.confidence)?;
+                    if matches!(
+                        capability.state,
+                        AnalysisState::NotRun | AnalysisState::Unsupported
+                    ) && (capability.confidence.is_some()
+                        || (has_payload && capability.source != AnalysisSource::Authored))
+                    {
+                        return Err("Unavailable algorithm capability cannot contain measured output or confidence".into());
+                    }
+                }
+                if capabilities.energy.source != AnalysisSource::Measured
+                    || !matches!(
+                        capabilities.energy.state,
+                        AnalysisState::Candidate | AnalysisState::Validated
+                    )
+                {
+                    return Err("Analysis energy must describe measured PCM output".into());
+                }
+            }
+            _ => return Err("Analysis version and capability metadata do not match".into()),
+        }
+        validate_header(CONTENT_SCHEMA_VERSION, canonical_frames)?;
         for count in [
             self.beats.len(),
             self.onsets.len(),
             self.sections.len(),
             self.energy.len(),
+            self.tempo_regions.len(),
+            self.repetitions.len(),
         ] {
             validate_items(count)?;
         }
@@ -179,6 +313,48 @@ impl MusicAnalysis {
             .any(|pair| pair[0].end > pair[1].start)
         {
             return Err("Analysis sections must be ordered and non-overlapping".into());
+        }
+        for region in &self.tempo_regions {
+            validate_time(region.start, canonical_frames)?;
+            if region.end <= region.start
+                || region.end.frames() as u64 > canonical_frames
+                || !region.bpm.is_finite()
+                || region.bpm <= 0.0
+            {
+                return Err(
+                    "Tempo regions require finite positive BPM and bounded nonempty intervals"
+                        .into(),
+                );
+            }
+            validate_probability(region.confidence)?;
+        }
+        if self
+            .tempo_regions
+            .windows(2)
+            .any(|pair| pair[0].end > pair[1].start)
+        {
+            return Err("Tempo regions must be ordered and non-overlapping".into());
+        }
+        for repetition in &self.repetitions {
+            validate_time(repetition.source_start, canonical_frames)?;
+            validate_time(repetition.target_start, canonical_frames)?;
+            if repetition.source_end <= repetition.source_start
+                || repetition.source_end > repetition.target_start
+                || repetition.target_end <= repetition.target_start
+                || repetition.target_end.frames() as u64 > canonical_frames
+            {
+                return Err(
+                    "Repetition spans require two ordered nonempty intervals within the audio"
+                        .into(),
+                );
+            }
+            validate_probability(repetition.confidence)?;
+        }
+        if self.repetitions.windows(2).any(|pair| {
+            (pair[0].source_start, pair[0].target_start)
+                >= (pair[1].source_start, pair[1].target_start)
+        }) {
+            return Err("Repetition relations must be ordered and unique".into());
         }
         let mut through = 0u64;
         for energy in &self.energy {
@@ -277,6 +453,9 @@ mod tests {
 
     fn analysis() -> MusicAnalysis {
         MusicAnalysis {
+            capabilities: None,
+            tempo_regions: Vec::new(),
+            repetitions: Vec::new(),
             schema_version: CONTENT_SCHEMA_VERSION,
             audio_hash: [0; 32],
             beats: vec![BeatFeature {

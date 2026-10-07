@@ -100,3 +100,11 @@ HFC 完全复现原 13 PASS / 5 FAIL，Flux 为 11 PASS / 7 FAIL；新增 6 项�
 native / sanitizer 各 16 项边界控制及原 source / strict canonical 两声道共 40 条记录完成，40 对原始输出逐字节相同，无 sanitizer 诊断；矩阵实际耗时 56.933 / 110.965 秒，仅记录同期有其他 Cargo 活动的短研究成本。热身后 34 条非静默声道有参考区间的估计覆盖率为 100%，六条静默声道没有非零估计，变速误差 P50 / P95 为 4.571% / 5.496%，完整尾静默清空仍未验明
 
 源与编码回读的 20 对 BPM 曲线中 13 对有变化，不能因汇总分位数相同声称逐点一致；参考保留原拍单位与区间，质量为 `UNSCORED_NO_ADMISSION_THRESHOLD`，`production_admission=false`。它不提供精确 onset、beat 坐标、可靠拍号或完整 TempoRegion，原 onset FAIL 不变；四目标、十分钟成本与真实音乐另验，完整版本、原始输入和统计见[小型结果索引](../tools/native-tempo-check/results-2026-10-07.json)
+
+## 生产分析能力契约
+
+生产 `MusicAnalysis` 已按独立 analysis v2 记录七项 capability、算法 / 手工 / 实测来源及可未知置信度，并提供有界 TempoRegion 与 repetition 载荷；chart、manifest、authoring 仍为 v1，具体版本、边界和默认状态见 [SongPackage 契约](song-package.md#分析版本与谱面)
+
+新手工包使用 `canonical-rms-1024-v2`：energy 为 `Validated/Measured`，sections 为 `NotRun/Authored`，onset / beat / downbeat 为 `NotRun/Algorithm`，tempo / repetition 为 `Unsupported/Algorithm`，各项 confidence 保持 `None`；此处能量测量与数据契约不使本页研究候选自动通过质量准入，也不生成自动 Anchor
+
+旧 analysis v1 的 `capabilities = None` 表示能力 metadata 未知，不能改写成 `NotRun`；读取和保留分析原字节的编辑导出不自动升级旧分析或改变其引用身份，原研究版本、原始 FAIL / UNSCORED 与真人标签边界继续保留

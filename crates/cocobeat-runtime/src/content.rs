@@ -165,6 +165,9 @@ mod tests {
                         analysis_version: "measured-energy-v1".into(),
                         chart_version: "hand-authored-v1".into(),
                         analysis: MusicAnalysis {
+                            capabilities: None,
+                            tempo_regions: Vec::new(),
+                            repetitions: Vec::new(),
                             schema_version: CONTENT_SCHEMA_VERSION,
                             audio_hash: prepared.asset.blake3,
                             beats: vec![],
