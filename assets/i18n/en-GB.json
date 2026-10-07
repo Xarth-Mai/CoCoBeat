@@ -232,5 +232,18 @@
   "library.failed": "Current song is preserved · {error}",
   "library.folder": "Library folder · {path}",
   "library.path": "Song folder · {path}",
-  "library.current": "Current · {song} · {seconds} s"
+  "library.current": "Current · {song} · {seconds} s",
+  "import.open": "Import authored song",
+  "import.title": "Import authored song",
+  "import.mode": "Authored Anchors and sections · Automatic analysis not run",
+  "import.confirm": "Import into a new package",
+  "import.source": "Source audio: {path}",
+  "import.authoring": "Authoring file: {path}",
+  "import.destination": "New package: {path}",
+  "import.choose": "Select a paired audio and authoring file",
+  "import.place": "Place song.wav and song.authoring.json in the imports folder",
+  "import.working": "Importing; returning will not select the result, but import continues; Start waits for completion",
+  "import.background_back": "Back · import continues",
+  "import.background": "Import continues in the background; Start waits for completion",
+  "import.background_done": "Background import finished; refresh the library to find saved packages"
 }

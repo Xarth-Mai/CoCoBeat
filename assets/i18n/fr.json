@@ -232,5 +232,18 @@
   "library.failed": "Le morceau actuel est conservé · {error}",
   "library.folder": "Dossier de la bibliothèque · {path}",
   "library.path": "Dossier du morceau · {path}",
-  "library.current": "Actuel · {song} · {seconds} s"
+  "library.current": "Actuel · {song} · {seconds} s",
+  "import.open": "Importer un morceau créé à la main",
+  "import.title": "Importer un morceau créé à la main",
+  "import.mode": "Anchors et sections de l’auteur · Analyse automatique non exécutée",
+  "import.confirm": "Importer dans un nouveau paquet",
+  "import.source": "Audio source : {path}",
+  "import.authoring": "Fichier de l’auteur : {path}",
+  "import.destination": "Nouveau paquet : {path}",
+  "import.choose": "Sélectionnez un audio et son fichier d’auteur",
+  "import.place": "Placez song.wav et song.authoring.json dans le dossier imports",
+  "import.working": "Importation en cours ; revenir ne sélectionnera pas le résultat, mais le traitement continue ; attendez la fin pour commencer",
+  "import.background_back": "Retour · l’importation continue",
+  "import.background": "L’importation continue en arrière-plan ; attendez la fin pour commencer",
+  "import.background_done": "L’importation est terminée ; actualisez la bibliothèque pour voir les paquets enregistrés"
 }

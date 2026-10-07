@@ -38,7 +38,7 @@ def child(arguments):
     removed_enable = environment.pop("ENABLE_GAMESCOPE_WSI", None) is not None
     environment["DISABLE_GAMESCOPE_WSI"] = "1"
     names = ("DISPLAY", "WAYLAND_DISPLAY", "XDG_SESSION_TYPE", "WGPU_BACKEND", "XDG_RUNTIME_DIR",
-             "PIPEWIRE_RUNTIME_DIR", "XDG_CONFIG_HOME", "ENABLE_GAMESCOPE_WSI", "DISABLE_GAMESCOPE_WSI", "VK_INSTANCE_LAYERS",
+             "PIPEWIRE_RUNTIME_DIR", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "ENABLE_GAMESCOPE_WSI", "DISABLE_GAMESCOPE_WSI", "VK_INSTANCE_LAYERS",
              "COCOBEAT_LIBRARY_OBSERVATION_DIR", "COCOBEAT_LIBRARY_OBSERVATION_SIZE",
              "COCOBEAT_LIBRARY_OBSERVATION_LOCALE", "COCOBEAT_LIBRARY_OBSERVATION_SCENARIO")
     with (case / "game.stdout").open("xb") as stdout, (case / "game.stderr").open("xb") as stderr:
@@ -191,8 +191,9 @@ def check(game, receipt, lab, lab_receipt, package_a, package_b, unknown_rules, 
             assert all(digest(Path(path)) == sha for path, sha in copied.items()), "Library package objects changed"
             if scenario == "complete":
                 navigation = report["navigation"]
-                for name, index, role in (("library-refresh", 6, "Action"), ("library-back", 7, "Action"),
-                                           ("library-information", 8, "Information")):
+                for name, offset, role in (("library-refresh", 2, "Action"), ("library-back", 3, "Action"),
+                                           ("library-information", 4, "Information")):
+                    index = navigation[name]["candidate_count"] + offset
                     assert navigation[name]["selected"] and navigation[name]["index"] == index
                     assert navigation[name]["role"] == role and navigation[name]["text"]
                 snapshots = report["snapshots"]

@@ -232,5 +232,18 @@
   "library.failed": "当前歌曲保持不变 · {error}",
   "library.folder": "曲库文件夹 · {path}",
   "library.path": "歌曲文件夹 · {path}",
-  "library.current": "当前 · {song} · {seconds} 秒"
+  "library.current": "当前 · {song} · {seconds} 秒",
+  "import.open": "导入手工歌曲",
+  "import.title": "导入手工歌曲",
+  "import.mode": "作者标注落点与段落 · 未运行自动分析",
+  "import.confirm": "确认导入新歌曲包",
+  "import.source": "来源音频：{path}",
+  "import.authoring": "作者文件：{path}",
+  "import.destination": "新歌曲包：{path}",
+  "import.choose": "请选择配对的音频与作者文件",
+  "import.place": "将 song.wav 和 song.authoring.json 放入 imports 文件夹",
+  "import.working": "正在导入；返回后不自动选中新包，后台仍继续，完成前不能开始歌曲",
+  "import.background_back": "返回 · 导入继续",
+  "import.background": "导入在后台继续，完成前不能开始歌曲",
+  "import.background_done": "后台导入已结束；刷新曲库查看保存的歌曲包"
 }

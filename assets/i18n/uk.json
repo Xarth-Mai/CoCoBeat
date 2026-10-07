@@ -232,5 +232,18 @@
   "library.failed": "Поточна пісня зберігається · {error}",
   "library.folder": "Папка бібліотеки · {path}",
   "library.path": "Папка пісні · {path}",
-  "library.current": "Поточна · {song} · {seconds} с"
+  "library.current": "Поточна · {song} · {seconds} с",
+  "import.open": "Імпортувати авторську пісню",
+  "import.title": "Імпортувати авторську пісню",
+  "import.mode": "Anchors і розділи автора · Автоматичний аналіз не виконувався",
+  "import.confirm": "Імпортувати в новий пакет",
+  "import.source": "Вихідне аудіо: {path}",
+  "import.authoring": "Авторський файл: {path}",
+  "import.destination": "Новий пакет: {path}",
+  "import.choose": "Виберіть аудіо з відповідним авторським файлом",
+  "import.place": "Помістіть song.wav і song.authoring.json у теку imports",
+  "import.working": "Триває імпорт; повернення скасує вибір результату, але не імпорт; почати можна після завершення",
+  "import.background_back": "Назад · імпорт триватиме",
+  "import.background": "Імпорт триває у фоні; почати можна після завершення",
+  "import.background_done": "Фоновий імпорт завершено; оновіть бібліотеку для перегляду збережених пакетів"
 }

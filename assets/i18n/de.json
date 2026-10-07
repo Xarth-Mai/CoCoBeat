@@ -232,5 +232,18 @@
   "library.failed": "Der aktuelle Song bleibt erhalten · {error}",
   "library.folder": "Bibliotheksordner · {path}",
   "library.path": "Songordner · {path}",
-  "library.current": "Aktuell · {song} · {seconds} s"
+  "library.current": "Aktuell · {song} · {seconds} s",
+  "import.open": "Manuell erstellten Song importieren",
+  "import.title": "Manuell erstellten Song importieren",
+  "import.mode": "Anchors und Abschnitte vom Autor · Automatische Analyse nicht ausgeführt",
+  "import.confirm": "In ein neues Songpaket importieren",
+  "import.source": "Quellaudio: {path}",
+  "import.authoring": "Autorendatei: {path}",
+  "import.destination": "Neues Paket: {path}",
+  "import.choose": "Audio mit zugehöriger Autorendatei auswählen",
+  "import.place": "song.wav und song.authoring.json im Ordner imports ablegen",
+  "import.working": "Import läuft; Zurück wählt das Ergebnis nicht aus, der Import läuft weiter; Start erst nach Abschluss",
+  "import.background_back": "Zurück · Import läuft weiter",
+  "import.background": "Import läuft im Hintergrund; Start erst nach Abschluss",
+  "import.background_done": "Hintergrundimport beendet; Bibliothek aktualisieren, um gespeicherte Pakete zu sehen"
 }

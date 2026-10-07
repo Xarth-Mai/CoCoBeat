@@ -232,5 +232,18 @@
   "library.failed": "目前歌曲保持不變 · {error}",
   "library.folder": "曲庫資料夾 · {path}",
   "library.path": "歌曲資料夾 · {path}",
-  "library.current": "目前 · {song} · {seconds} 秒"
+  "library.current": "目前 · {song} · {seconds} 秒",
+  "import.open": "匯入手工歌曲",
+  "import.title": "匯入手工歌曲",
+  "import.mode": "作者標註落點與段落 · 尚未執行自動分析",
+  "import.confirm": "確認匯入新歌曲包",
+  "import.source": "來源音訊：{path}",
+  "import.authoring": "作者檔案：{path}",
+  "import.destination": "新歌曲包：{path}",
+  "import.choose": "請選擇配對的音訊與作者檔案",
+  "import.place": "將 song.wav 和 song.authoring.json 放入 imports 資料夾",
+  "import.working": "正在匯入；返回後不自動選取新包，背景仍繼續，完成前不能開始歌曲",
+  "import.background_back": "返回 · 匯入繼續",
+  "import.background": "匯入在背景繼續，完成前不能開始歌曲",
+  "import.background_done": "背景匯入已結束；重新整理曲庫查看儲存的歌曲包"
 }

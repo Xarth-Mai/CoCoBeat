@@ -9,10 +9,10 @@ use crate::{
     display::{self, DisplayState, DisplaySystems, PresentationCamera},
     i18n::{Locale, Message},
     input::{
-        self, Control, InputSource, InputState, LibraryAction, MenuPhase, MenuPresentation,
-        MenuRowRole, MenuScroll, SettingsAction,
+        self, Control, InputSource, InputState, LibraryAction, LibraryMenu, MenuPhase,
+        MenuPresentation, MenuRowRole, MenuScroll, SettingsAction,
     },
-    library::{self, Candidate, Library, LoadedSong, Update as LibraryUpdate},
+    library::{self, Candidate, Library, LoadedSong, SourceCandidate, Update as LibraryUpdate},
     online::{OnlineRound, Update as NetworkUpdate},
     replay_playback::ReplayPlayback,
     session::{Session, SessionResults},
@@ -438,6 +438,9 @@ impl Game {
 
 struct LibraryBrowser {
     loader: Option<Library>,
+    page: LibraryMenu,
+    sources: Vec<SourceCandidate>,
+    pending_source: Option<(SourceCandidate, PathBuf)>,
     entries: Vec<Candidate>,
     notice: Message,
 }
@@ -448,11 +451,17 @@ impl LibraryBrowser {
         match root {
             Ok(root) => Self {
                 loader: Some(Library::new(root)),
+                page: LibraryMenu::Packages,
+                sources: vec![],
+                pending_source: None,
                 entries: vec![],
                 notice: Message::new("library.place"),
             },
             Err(error) => Self {
                 loader: None,
+                page: LibraryMenu::Packages,
+                sources: vec![],
+                pending_source: None,
                 entries: vec![],
                 notice: Message::with("library.failed", [("error", error)]),
             },
@@ -467,8 +476,34 @@ impl LibraryBrowser {
         self.loader.as_ref().is_none_or(Library::is_finished)
     }
 
+    fn importing(&self) -> bool {
+        self.loader.as_ref().is_some_and(Library::importing)
+    }
+
+    fn back(&mut self, input: &mut InputState, locale: Locale) {
+        if self.busy() || self.page == LibraryMenu::Packages {
+            let importing = self.importing();
+            self.cancel();
+            input.open_main_menu();
+            if importing {
+                self.notice = Message::new("import.background");
+            }
+        } else {
+            self.page = if self.page == LibraryMenu::Confirm {
+                LibraryMenu::Sources
+            } else {
+                LibraryMenu::Packages
+            };
+            self.pending_source = None;
+            self.show(input, locale);
+        }
+    }
+
     fn cancel(&mut self) {
-        if let Some(loader) = &mut self.loader {
+        if self.importing() {
+            // Source publication continues; only abandon automatic selection, retain errors
+            self.pending_source = None;
+        } else if let Some(loader) = &mut self.loader {
             loader.cancel();
         }
     }
@@ -478,6 +513,26 @@ impl LibraryBrowser {
     }
 
     fn show(&self, input: &mut InputState, locale: Locale) {
+        if self.page != LibraryMenu::Packages {
+            let rows = if self.page == LibraryMenu::Sources {
+                self.sources
+                    .iter()
+                    .map(|source| {
+                        display_library_text(
+                            &source
+                                .source
+                                .file_name()
+                                .unwrap_or_default()
+                                .to_string_lossy(),
+                        )
+                    })
+                    .collect()
+            } else {
+                vec![]
+            };
+            input.show_library_page(rows, self.busy(), self.page);
+            return;
+        }
         let rows = if self.loader.is_some() {
             std::iter::once(locale.text("library.development").to_string())
                 .chain(self.entries.iter().map(|entry| {
@@ -506,7 +561,38 @@ impl LibraryBrowser {
         locale: Locale,
     ) -> Option<MenuPresentation> {
         let mut information = vec![];
-        if let Some(loader) = &self.loader {
+        if self.page != LibraryMenu::Packages {
+            information.push(locale.text("import.mode").into());
+            if let Some((source, destination)) = &self.pending_source {
+                for (key, path) in [
+                    ("import.source", &source.source),
+                    ("import.authoring", &source.authoring),
+                    ("import.destination", destination),
+                ] {
+                    information.push(
+                        Message::with(
+                            key,
+                            [("path", display_library_text(&path.to_string_lossy()))],
+                        )
+                        .render(locale),
+                    );
+                }
+            } else if let Some(loader) = &self.loader {
+                information.push(
+                    Message::with(
+                        "library.folder",
+                        [(
+                            "path",
+                            display_library_text(&loader.root().join("imports").to_string_lossy()),
+                        )],
+                    )
+                    .render(locale),
+                );
+            }
+        }
+        if self.page == LibraryMenu::Packages
+            && let Some(loader) = &self.loader
+        {
             information.push(
                 Message::with(
                     "library.folder",
@@ -518,9 +604,10 @@ impl LibraryBrowser {
                 .render(locale),
             );
         }
-        if let Some(index) = input
-            .library_selection()
-            .and_then(|index| index.checked_sub(1))
+        if self.page == LibraryMenu::Packages
+            && let Some(index) = input
+                .library_selection()
+                .and_then(|index| index.checked_sub(1))
             && let Some(entry) = self.entries.get(index)
         {
             information.push(
@@ -532,8 +619,17 @@ impl LibraryBrowser {
             );
         }
         information.push(current_song_label(game, locale));
-        let mut menu =
-            input.menu_presentation(locale, locale.text("library.title").into(), information)?;
+        let mut menu = input.menu_presentation(
+            locale,
+            locale
+                .text(if self.page == LibraryMenu::Packages {
+                    "library.title"
+                } else {
+                    "import.title"
+                })
+                .into(),
+            information,
+        )?;
         // Keep loader feedback in the focused row so measured scrolling exposes it
         if let Some(row) = menu.rows.iter_mut().find(|row| row.selected) {
             row.text.push('\n');
@@ -1475,17 +1571,25 @@ fn update_game(
     let pending_audio_error = audio.take_error();
 
     if let Some(browser) = library.as_deref_mut() {
-        if input.library_open()
-            && (!input.is_focused()
-                || input
-                    .queued
-                    .iter()
-                    .any(|event| event.control == Control::Library(LibraryAction::Back)))
-        {
+        let was_importing = browser.importing();
+        if input.library_open() && !input.is_focused() {
             browser.cancel();
             input.open_main_menu();
+            if was_importing {
+                browser.notice = Message::new("import.background");
+            }
+            menu_scroll.reset();
+        } else if input.library_open()
+            && input
+                .queued
+                .iter()
+                .any(|event| event.control == Control::Library(LibraryAction::Back))
+        {
+            browser.back(&mut input, visual.locale);
             menu_scroll.reset();
         }
+        let background_import = was_importing && browser.pending_source.is_none();
+        let mut completed_error = false;
         let loaded = browser.loader.as_mut().map(Library::poll);
         match loaded {
             Some(Ok(Some(LibraryUpdate::Discovered(discovery)))) if input.library_open() => {
@@ -1498,13 +1602,22 @@ fn update_game(
                     "library.place"
                 });
             }
+            Some(Ok(Some(LibraryUpdate::Sources(discovery)))) if input.library_open() => {
+                browser.sources = discovery.candidates;
+                browser.notice = Message::new(if discovery.missing || browser.sources.is_empty() {
+                    "import.place"
+                } else {
+                    "import.choose"
+                });
+            }
             Some(Ok(Some(LibraryUpdate::Loaded(song))))
                 if pending_audio_error.is_none()
                     && input.library_open()
                     && input.is_focused()
                     && game.phase == Phase::Ready
                     && game.playback.is_none()
-                    && !online.enabled() =>
+                    && !online.enabled()
+                    && (!was_importing || browser.pending_source.is_some()) =>
             {
                 if let Err(error) = game.install_library_song(&mut audio, *song) {
                     browser.error(error);
@@ -1519,8 +1632,20 @@ fn update_game(
                     menu_scroll.reset();
                 }
             }
-            Some(Err(error)) => browser.error(error),
+            Some(Err(error)) => {
+                browser.error(error);
+                completed_error = true;
+            }
             _ => {}
+        }
+        input.set_source_import_busy(browser.importing());
+        if background_import {
+            if !browser.importing() && !completed_error {
+                browser.notice = Message::new("import.background_done");
+            }
+            if game.phase == Phase::Ready {
+                game.notice = browser.notice.clone();
+            }
         }
         if input.library_open() {
             browser.show(&mut input, visual.locale);
@@ -1592,6 +1717,11 @@ fn update_game(
         }
 
         for event in std::mem::take(&mut input.queued) {
+            if library.as_deref().is_some_and(LibraryBrowser::importing)
+                && matches!(event.control, Control::Start | Control::Restart)
+            {
+                continue;
+            }
             if matches!(game.phase, Phase::Starting | Phase::Pausing)
                 && !matches!(event.control, Control::TogglePause(_) | Control::FocusLost)
             {
@@ -1605,13 +1735,63 @@ fn update_game(
                     continue;
                 };
                 match action {
-                    LibraryAction::Open | LibraryAction::Refresh => {
-                        if action == LibraryAction::Open || input.library_open() {
+                    LibraryAction::Imports if input.library_open() && !browser.busy() => {
+                        browser.page = LibraryMenu::Sources;
+                        browser.pending_source = None;
+                        let result = browser
+                            .loader
+                            .as_mut()
+                            .ok_or("Song library data directory is unavailable".to_string())
+                            .and_then(Library::scan_sources);
+                        match result {
+                            Ok(()) => browser.notice = Message::new("library.scanning"),
+                            Err(error) => browser.error(error),
+                        }
+                        browser.show(&mut input, visual.locale);
+                        menu_scroll.reset();
+                    }
+                    LibraryAction::ImportConfirm
+                        if input.library_open()
+                            && browser.page == LibraryMenu::Confirm
+                            && !browser.busy() =>
+                    {
+                        if let Some((source, destination)) = browser.pending_source.clone() {
                             let result = browser
                                 .loader
                                 .as_mut()
                                 .ok_or("Song library data directory is unavailable".to_string())
-                                .and_then(Library::scan);
+                                .and_then(|loader| loader.import_authored(source, destination));
+                            match result {
+                                Ok(()) => browser.notice = Message::new("import.working"),
+                                Err(error) => browser.error(error),
+                            }
+                            input.set_source_import_busy(browser.importing());
+                            browser.show(&mut input, visual.locale);
+                            menu_scroll.reset();
+                        }
+                    }
+                    LibraryAction::Open | LibraryAction::Refresh => {
+                        if action == LibraryAction::Open || input.library_open() {
+                            if action == LibraryAction::Open {
+                                browser.page = LibraryMenu::Packages;
+                            }
+                            if browser.importing() {
+                                browser.notice = Message::new("import.background");
+                                browser.show(&mut input, visual.locale);
+                                menu_scroll.reset();
+                                break;
+                            }
+                            let result = browser
+                                .loader
+                                .as_mut()
+                                .ok_or("Song library data directory is unavailable".to_string())
+                                .and_then(|loader| {
+                                    if browser.page == LibraryMenu::Sources {
+                                        loader.scan_sources()
+                                    } else {
+                                        loader.scan()
+                                    }
+                                });
                             match result {
                                 Ok(()) => browser.notice = Message::new("library.scanning"),
                                 Err(error) => browser.error(error),
@@ -1620,7 +1800,30 @@ fn update_game(
                             menu_scroll.reset();
                         }
                     }
-                    LibraryAction::Select(index) if input.library_open() => {
+                    LibraryAction::Select(index) if input.library_open() && !browser.busy() => {
+                        if browser.page == LibraryMenu::Sources {
+                            if let Some(source) = browser.sources.get(index).cloned() {
+                                match browser
+                                    .loader
+                                    .as_ref()
+                                    .ok_or("Song library data directory is unavailable".to_string())
+                                    .and_then(Library::new_import_destination)
+                                {
+                                    Ok(destination) => {
+                                        browser.pending_source = Some((source, destination));
+                                        browser.page = LibraryMenu::Confirm;
+                                        browser.notice = Message::new("import.choose");
+                                    }
+                                    Err(error) => browser.error(error),
+                                }
+                                browser.show(&mut input, visual.locale);
+                                menu_scroll.reset();
+                            }
+                            break;
+                        }
+                        if browser.page != LibraryMenu::Packages {
+                            break;
+                        }
                         let path = if index == 0 {
                             Some(None)
                         } else {
@@ -1644,8 +1847,7 @@ fn update_game(
                         }
                     }
                     LibraryAction::Back => {
-                        browser.cancel();
-                        input.open_main_menu();
+                        browser.back(&mut input, visual.locale);
                         menu_scroll.reset();
                     }
                     _ => {}

@@ -801,3 +801,21 @@ agent 和主线程分别逐张查看最终四张 1280×800 Running / Finished PN
 新 metadata 明确固定七项能力的状态、来源与未知置信度，实际手工 producer 只验证最终 PCM 的能量，未运行的段落算法保留 Authored 来源；tempo / repetition 为 Unsupported，onset / beat / downbeat 为 NotRun。版本更新不会将历史研究或空列表解释为完整音乐分析，旧 v1 capability 为未知且读入时不自动升级
 
 本批仅 CPU 软件、真实包事务与格式兼容；没有新原生 GPU / 音频播放、完整算法质量、四目标新入口或人工标签验收，前述历史失败与相应 NOT RUN 保留
+
+## Ready 手工源导入与后台门控
+
+2026-10-08，正常无参数入口在完整品牌开场后停 Ready，从曲库的手工导入页选择现有 `songs/imports` 中的配对源与 `authoring.json`，确认页展示源、标注和新目标三条路径；明确确认后单个真实 worker 复用共享 q10 importer，再经完整四对象 loader 与 Stage 验证，成功后仍需新 Start 才播放，操作约束见[源导入](source-import.md)，身份与原始索引见[持久观察](../testdata/synthetic/ready-source-import-observations-20261008.json)
+
+`cargo test --locked -j 2 -p cocobeat-runtime --lib` 通过 164 项，实际配对源 worker 测试另窄跑 1 项且已包含在 164 项中；全目标 Clippy、workspace 格式与 `cargo run --locked -j 2 -p xtask -- boundaries` 通过。早期 163 项测试 PASS 与首次 `needless_bool` Clippy FAIL 保留，修正后才记录最终结果；13 个语言变体各 13 条新文案通过内置 Noto 字形检查，不据此完成翻译审阅
+
+固定 game SHA-256 `e536a97307c438796d0e70f9e40d31ce2e57b9ed67beaccffcb4abb6b3a41af0` 与 lab `0074e504892d131e52ed3b8fec063c051c2f867bfc9fcaaff0fcf69465b832eb` 来自相同 445 项冻结 debug 输入，源码副本和当前输入逐项相同。七项实际 Linux / Vulkan / CPAL case 覆盖成功导入、返回、失焦、坏标注、未知 rules、后台错误和关闭；原 64 秒 WAV 与手工 authoring 身份保持，实际创建四对象、结构验证及 3,072,000 帧 canonical 完整读回通过
+
+成功 case 在新包 Ready 时没有歌曲音源或事实，新确认后原 Kira 游标推进，短 Running / Pause 的 Replay 有 P1 / P2 各一 Hit、34 条事实与 0 个 core 事件，游戏正常保存 Replay；这是短实际软件接线，不是完整歌曲、同步等级或听感验收。未知 rules 的合法四对象发布后被运行时拒绝，已发布目标和原歌曲 / Replay 保留，错误展示实际目标与 rules 名称
+
+返回与失焦 case 各实际覆盖尚未完成编码时的重新打开与 Ready 确认门控，后台完成后保留原歌曲而不自动选择。后台错误 case 刻意等完成才重开，忙时确认 / 重开两项 NOT RUN；坏 JSON 在首次观察时 worker 已完成但尚未 poll，in-flight 子项 NOT RUN，实际拒绝仍 PASS。关闭 case 确实遇到未完成编码并等待原 worker join，不声称返回会终止编码或回滚目标
+
+同一 fixed binary 对旧包入口另运行六项回归：1280×800 / 640×480 × zh-CN / en-US 的四项完整菜单、换包、独立 Start、坏 audio / 额外对象 / 未知 rules 拒绝与取消，以及扫描 / 加载时两项正常关闭全部通过。扫描关闭时 worker 已完成，in-flight 取消 NOT RUN；加载关闭确实未完成且原 join 收尾。七项导入和六项回归共 13 个 game / 13 个 wrapper 均 exit 0，实际 host postflight 核对全部 26 个 PID 与自有进程组已退出
+
+源导入共 22 张、旧曲库回归共 42 张实际 PNG callback 与尺寸检查通过，主线程只目检五张 1280×800 zh-CN 的确认、新包 Ready、坏 JSON、后台错误和短 Running 图，在路径 / 错误 / 状态可读性范围 PASS；其余图目检、动画观看和母语检查 NOT RUN。正式 `tools/library-runtime-check/source.py` 仅把记录的 target runner 根路径查找改为永久位置，通过 AST / `--help` 静态检查，实际 native 证据继续绑定原 runner SHA，不算正式文件又跑过一轮
+
+物理键盘 / 双手柄 / 混合设备菜单主次、DAC / 扬声器计时、完整新曲播放、真人体验、其他三目标新 UI 和本批优化 release 性能仍 NOT RUN；手工 source / authoring 入口消费 analysis v2 的已知能力状态，不代表完整 MIR 质量、自动 Anchor 或自动舞台编排已准入

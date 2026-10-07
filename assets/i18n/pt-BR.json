@@ -232,5 +232,18 @@
   "library.failed": "A música atual é mantida · {error}",
   "library.folder": "Pasta da biblioteca · {path}",
   "library.path": "Pasta da música · {path}",
-  "library.current": "Atual · {song} · {seconds} s"
+  "library.current": "Atual · {song} · {seconds} s",
+  "import.open": "Importar música feita à mão",
+  "import.title": "Importar música feita à mão",
+  "import.mode": "Anchors e seções do autor · Sem análise automática",
+  "import.confirm": "Importar para um novo pacote",
+  "import.source": "Áudio original: {path}",
+  "import.authoring": "Arquivo do autor: {path}",
+  "import.destination": "Novo pacote: {path}",
+  "import.choose": "Selecione o áudio e seu arquivo de autoria",
+  "import.place": "Coloque song.wav e song.authoring.json na pasta imports",
+  "import.working": "Importando; voltar não selecionará o resultado, mas a importação continuará; aguarde a conclusão para iniciar",
+  "import.background_back": "Voltar · a importação continua",
+  "import.background": "A importação continua em segundo plano; aguarde a conclusão para iniciar",
+  "import.background_done": "A importação terminou; atualize a biblioteca para ver os pacotes salvos"
 }

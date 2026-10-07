@@ -232,5 +232,18 @@
   "library.failed": "현재 곡은 유지됩니다 · {error}",
   "library.folder": "라이브러리 폴더 · {path}",
   "library.path": "곡 폴더 · {path}",
-  "library.current": "현재 · {song} · {seconds}초"
+  "library.current": "현재 · {song} · {seconds}초",
+  "import.open": "수작업 곡 가져오기",
+  "import.title": "수작업 곡 가져오기",
+  "import.mode": "제작자가 지정한 Anchor와 구간 · 자동 분석 미실행",
+  "import.confirm": "새 곡 패키지로 가져오기",
+  "import.source": "원본 오디오: {path}",
+  "import.authoring": "제작자 파일: {path}",
+  "import.destination": "새 패키지: {path}",
+  "import.choose": "짝이 맞는 오디오와 제작자 파일을 선택하세요",
+  "import.place": "song.wav와 song.authoring.json을 imports 폴더에 넣으세요",
+  "import.working": "가져오는 중입니다. 돌아가면 결과를 선택하지 않지만 작업은 계속됩니다. 완료 전에는 시작할 수 없습니다",
+  "import.background_back": "돌아가기 · 가져오기 계속",
+  "import.background": "백그라운드에서 가져오는 중입니다. 완료 전에는 시작할 수 없습니다",
+  "import.background_done": "백그라운드 작업이 끝났습니다. 곡 목록을 새로 고쳐 저장된 패키지를 확인하세요"
 }

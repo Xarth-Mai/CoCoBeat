@@ -142,7 +142,7 @@ runtime 在创建游戏和音频输出前完成 `media::read_package`，检查�
 
 选中歌曲后，单个自有后台 worker 复用完整包验证、严格 PCM 读回与 Stage 编译；新 Session 成功创建且旧 Replay 保存成功后才一起替换歌曲、PCM 与舞台，保留玩家绑定并停在 Ready，需新确认才演奏。损坏音频、额外对象、未知规则、取消或失焦保持旧歌曲与历史，关闭窗口等待自有 worker 结束；取消丢弃结果，不中断已经进行的解码
 
-曲库复用既有键盘 / 手柄主控、焦点滚动及持键释放屏障，状态与拒绝原因跟随焦点行显示；联网、只读观看、暂停与故障阶段不提供歌曲切换。游戏内原始音乐导入和自动分析另按内容准入交付，当前原始源导入使用 [lab 手工制作入口](source-import.md)
+曲库复用既有键盘 / 手柄主控、焦点滚动及持键释放屏障，状态与拒绝原因跟随焦点行显示；联网、只读观看、暂停与故障阶段不提供歌曲切换。本地 Ready 可从曲库进入 `imports` 配对源音频与手工 authoring，经显式确认和完整 worker / loader 后停 Ready 等新开始，操作见[手工源导入](source-import.md#正常启动的-ready-导入)；完整自动分析与 Anchor 策略继续按内容准入推进
 
 ```sh
 cargo run --locked -p cocobeat-game -- --library /path/to/songs

@@ -21,6 +21,8 @@ struct Observation {
     navigation_step: u8,
     navigation: BTreeMap<&'static str, serde_json::Value>,
     scenario: String,
+    source_records: Vec<serde_json::Value>,
+    source_not_run: Vec<&'static str>,
     captures: BTreeMap<&'static str, Option<Result<[u32; 2], String>>>,
     snapshots: BTreeMap<&'static str, serde_json::Value>,
     rejections: Vec<serde_json::Value>,
@@ -53,7 +55,19 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
     };
     let scenario = std::env::var("COCOBEAT_LIBRARY_OBSERVATION_SCENARIO")
         .map_err(|error| error.to_string())?;
-    if !matches!(scenario.as_str(), "complete" | "close-scan" | "close-load") {
+    if !matches!(
+        scenario.as_str(),
+        "complete"
+            | "close-scan"
+            | "close-load"
+            | "source-complete"
+            | "source-back"
+            | "source-focus"
+            | "source-bad-json"
+            | "source-unknown-rules"
+            | "source-background-error"
+            | "source-close"
+    ) {
         return Err("Unknown library observation scenario".into());
     }
     let directory = PathBuf::from(directory);
@@ -66,7 +80,7 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         File::create_new(directory.join("metadata.json")).map_err(|error| error.to_string())?;
     serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
         "process_id": std::process::id(), "build_id": env!("COCOBEAT_BUILD_ID"),
-        "entrypoint": "--library DIR with native DefaultPlugins and AudioOutput",
+        "entrypoint": if scenario.starts_with("source-") { "normal local Ready runtime with existing data-root library and native DefaultPlugins / AudioOutput" } else { "--library DIR with native DefaultPlugins and AudioOutput" },
         "scenario": scenario, "locale": locale.code(), "size": size,
         "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
         "audio": "acknowledged Kira source position, not speaker output",
@@ -109,6 +123,8 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         navigation_step: 0,
         navigation: BTreeMap::new(),
         scenario,
+        source_records: vec![],
+        source_not_run: vec![],
         captures: BTreeMap::new(),
         snapshots: BTreeMap::new(),
         rejections: vec![],
@@ -235,6 +251,7 @@ fn record(
         "snapshots": observation.snapshots, "rejections": observation.rejections,
         "cancel": observation.cancel, "capture": observation.captures,
         "navigation": observation.navigation,
+        "source_records": observation.source_records, "source_not_run": observation.source_not_run,
     })).map_err(|error| error.to_string())?;
     observation
         .frames
@@ -318,6 +335,29 @@ fn observe(
                 focused: true,
             });
         }
+        if observation.scenario.starts_with("source-") {
+            let settled = observation.step_at.elapsed().as_millis() > 150;
+            if observe_source(
+                &mut observation,
+                &game,
+                &input,
+                &brand,
+                &visual,
+                &audio,
+                &browser,
+                &online,
+                &mut commands,
+                &mut keys,
+                &mut focus,
+                &mut close,
+                window,
+                settled,
+            )? {
+                observation.step += 1;
+                observation.step_at = Instant::now();
+            }
+            return Ok(());
+        }
         if game.closing && !browser.busy() && browser.is_finished() && online.is_finished() {
             if (observation.scenario == "complete" && step != 22)
                 || (observation.scenario != "complete" && !observation.close_requested_while_owned)
@@ -339,7 +379,7 @@ fn observe(
                 0 if input.library_open() && !browser.busy() && settled => {
                     snapshot(&mut observation, "library", &mut commands)?;
                     if observation.captures["library"].is_some() {
-                        for _ in 0..6 {
+                        for _ in 0..browser.entries.len() + 2 {
                             key(&mut keys, window, KeyCode::ArrowDown);
                         }
                         true
@@ -349,9 +389,9 @@ fn observe(
                 }
                 navigation @ 1..=3 if input.library_open() && !browser.busy() && settled => {
                     let (name, index) = match navigation {
-                        1 => ("library-refresh", 6),
-                        2 => ("library-back", 7),
-                        _ => ("library-information", 8),
+                        1 => ("library-refresh", browser.entries.len() + 2),
+                        2 => ("library-back", browser.entries.len() + 3),
+                        _ => ("library-information", browser.entries.len() + 4),
                     };
                     let row = visual
                         .menu
@@ -367,6 +407,7 @@ fn observe(
                         serde_json::json!({
                             "index": index, "selected": row.selected,
                             "role": format!("{:?}", row.role), "text": row.text,
+                            "candidate_count": browser.entries.len(),
                         }),
                     );
                     snapshot(&mut observation, name, &mut commands)?;
@@ -598,4 +639,395 @@ fn observe(
             close.write(WindowCloseRequested { window });
         }
     }
+}
+
+fn source_probe(
+    observation: &mut Observation,
+    label: &'static str,
+    game: &Game,
+    input: &InputState,
+    browser: &LibraryBrowser,
+) {
+    observation.source_records.push(serde_json::json!({
+        "label": label, "emit_or_observe_input_relative_ns": input.origin.elapsed().as_nanos(),
+        "step": observation.step, "phase": format!("{:?}", game.phase),
+        "library_open": input.library_open(), "focused": input.is_focused(),
+        "busy": browser.busy(), "importing": browser.importing(),
+        "worker_finished": browser.is_finished(), "page": format!("{:?}", browser.page),
+        "pending_destination": browser.pending_source.as_ref().map(|(_, path)| path),
+        "notice_key": browser.notice.key, "notice_args": browser.notice.args,
+        "content_id": game.content.content_id, "facts": game.session.replay.facts().len(),
+        "events": game.session.engine.events().len(),
+    }));
+}
+
+fn activate_label(
+    visual: &VisualState,
+    label: &str,
+    keys: &mut MessageWriter<KeyboardInput>,
+    window: Entity,
+) -> Result<(), String> {
+    let menu = visual.menu.as_ref().ok_or("Missing actual menu")?;
+    let target = menu
+        .rows
+        .iter()
+        .position(|row| row.text.lines().next() == Some(label))
+        .ok_or_else(|| format!("Actual menu has no action {label:?}"))?;
+    let selected = menu
+        .rows
+        .iter()
+        .position(|row| row.selected)
+        .ok_or("Missing actual focus")?;
+    for _ in 0..(target + menu.rows.len() - selected) % menu.rows.len() {
+        key(keys, window, KeyCode::ArrowDown);
+    }
+    key(keys, window, KeyCode::Enter);
+    Ok(())
+}
+
+#[allow(clippy::too_many_arguments)]
+fn observe_source(
+    observation: &mut Observation,
+    game: &Game,
+    input: &InputState,
+    brand: &BrandIntroStatus,
+    visual: &VisualState,
+    audio: &AudioOutput,
+    browser: &LibraryBrowser,
+    online: &OnlineRound,
+    commands: &mut Commands,
+    keys: &mut MessageWriter<KeyboardInput>,
+    focus: &mut MessageWriter<WindowFocused>,
+    close: &mut MessageWriter<WindowCloseRequested>,
+    window: Entity,
+    settled: bool,
+) -> Result<bool, String> {
+    let scenario = observation.scenario.clone();
+    if game.closing {
+        if !browser.busy() && browser.is_finished() && online.is_finished() {
+            if observation.step != 15 && scenario != "source-close" {
+                return Err("Source observation closed before its completed checks".into());
+            }
+            source_probe(
+                observation,
+                "owned-workers-finished-at-close",
+                game,
+                input,
+                browser,
+            );
+            record(observation, game, browser, online, None)?;
+            observation.recorded = true;
+        }
+        return Ok(false);
+    }
+    let preserved = |observation: &Observation| -> Result<(), String> {
+        let before = observation
+            .snapshots
+            .get("before_import")
+            .ok_or("Missing original song baseline")?;
+        if !same_song(before, &state(game, audio)?) {
+            return Err("Source import changed the original song or history after selection was abandoned or rejected".into());
+        }
+        Ok(())
+    };
+    let advance = match observation.step {
+        0 if brand.is_complete() && input.controls_enabled() && game.phase == Phase::Ready => {
+            observation
+                .snapshots
+                .insert("before_import", state(game, audio)?);
+            key(keys, window, KeyCode::Enter);
+            true
+        }
+        1 if settled => {
+            activate_label(visual, visual.locale.text("library.open"), keys, window)?;
+            true
+        }
+        2 if input.library_open() && !browser.busy() && settled => {
+            activate_label(visual, visual.locale.text("import.open"), keys, window)?;
+            true
+        }
+        3 if input.library_open()
+            && browser.page == LibraryMenu::Sources
+            && !browser.busy()
+            && settled =>
+        {
+            if browser.sources.len() != 1
+                || browser.sources[0].source.file_name().unwrap_or_default() != "00-source.wav"
+            {
+                return Err(
+                    "Source fixture did not discover exactly its one paired candidate".into(),
+                );
+            }
+            snapshot(observation, "source-list", commands)?;
+            if observation.captures["source-list"].is_some() {
+                activate_label(visual, "00-source.wav", keys, window)?;
+                true
+            } else {
+                false
+            }
+        }
+        4 if browser.page == LibraryMenu::Confirm && !browser.busy() && settled => {
+            let (source, destination) = browser
+                .pending_source
+                .as_ref()
+                .ok_or("Missing actual source confirmation")?;
+            observation.source_records.push(serde_json::json!({
+                "label": "actual-source-confirmation", "source": source.source,
+                "authoring": source.authoring, "destination": destination,
+                "destination_exists_before_confirmation": destination.exists(),
+            }));
+            if destination.exists() {
+                return Err("Confirmation target was already created".into());
+            }
+            snapshot(observation, "source-confirm", commands)?;
+            observation.snapshots.insert("confirm", state(game, audio)?);
+            observation.captures["source-confirm"].is_some()
+        }
+        5 if settled => {
+            source_probe(observation, "emit-import-confirm", game, input, browser);
+            activate_label(visual, visual.locale.text("import.confirm"), keys, window)?;
+            true
+        }
+        6 if browser.importing() => {
+            source_probe(
+                observation,
+                "first-owned-source-worker",
+                game,
+                input,
+                browser,
+            );
+            if browser.is_finished() {
+                observation
+                    .source_not_run
+                    .push("import worker still executing at first observation");
+            }
+            match scenario.as_str() {
+                "source-back" | "source-background-error" => key(keys, window, KeyCode::Escape),
+                "source-focus" => {
+                    focus.write(WindowFocused {
+                        window,
+                        focused: false,
+                    });
+                }
+                "source-close" => {
+                    observation.close_requested_while_owned = true;
+                    observation.worker_unfinished_at_close = !browser.is_finished();
+                    if browser.is_finished() {
+                        observation
+                            .source_not_run
+                            .push("close during unfinished source encoding");
+                    }
+                    close.write(WindowCloseRequested { window });
+                }
+                _ => {}
+            }
+            true
+        }
+        6 if !browser.busy() && settled => {
+            // Never manufacture an in-flight control window if the real worker has already completed
+            observation
+                .source_not_run
+                .push("source worker ownership / cancellation / close control window");
+            if matches!(
+                scenario.as_str(),
+                "source-back" | "source-focus" | "source-background-error" | "source-close"
+            ) {
+                observation.step = 13;
+            }
+            true
+        }
+        7 if scenario == "source-complete"
+            && !input.library_open()
+            && !browser.busy()
+            && game.phase == Phase::Ready =>
+        {
+            let current = state(game, audio)?;
+            if current["audio_started"] != false
+                || current["content_id"] == observation.snapshots["before_import"]["content_id"]
+                || game.package_path.is_none()
+            {
+                return Err("Imported song did not reach distinct validated Ready without automatic playback".into());
+            }
+            observation.snapshots.insert("imported_ready", current);
+            snapshot(observation, "imported-ready", commands)?;
+            true
+        }
+        8 if scenario == "source-complete"
+            && settled
+            && observation.captures["imported-ready"].is_some() =>
+        {
+            source_probe(observation, "emit-fresh-start", game, input, browser);
+            activate_label(visual, visual.locale.text("menu.start"), keys, window)?;
+            true
+        }
+        9 if scenario == "source-complete"
+            && game.phase == Phase::Running
+            && audio.position().is_some_and(|position| position >= 0.5) =>
+        {
+            observation
+                .snapshots
+                .insert("imported_running", state(game, audio)?);
+            source_probe(observation, "emit-two-hits-and-pause", game, input, browser);
+            snapshot(observation, "imported-running", commands)?;
+            key(keys, window, KeyCode::KeyF);
+            key(keys, window, KeyCode::KeyJ);
+            key(keys, window, KeyCode::Escape);
+            true
+        }
+        10 if scenario == "source-complete" && game.phase == Phase::Paused && settled => {
+            if game.session.diagnostics.len() != 2 {
+                return Err("Imported source did not capture both actual software Hits".into());
+            }
+            observation
+                .snapshots
+                .insert("imported_paused", state(game, audio)?);
+            observation.source_records.push(serde_json::json!({ "label": "actual-hit-diagnostics", "captures": game.session.diagnostics.iter().map(|capture| serde_json::json!({
+                "player": format!("{:?}", capture.player), "seq": capture.seq,
+                "observed_ns": capture.observed_ns, "consumed_ns": capture.consumed_ns,
+                "song_frames": capture.song_frames, "uncertainty_frames": capture.uncertainty_frames,
+            })).collect::<Vec<_>>() }));
+            observation.step = 13;
+            true
+        }
+        7 if matches!(
+            scenario.as_str(),
+            "source-bad-json" | "source-unknown-rules"
+        ) && !browser.busy() =>
+        {
+            preserved(observation)?;
+            if browser.notice.key != "library.failed" {
+                return Err("Source rejection lost its actual importer / loader error".into());
+            }
+            observation
+                .snapshots
+                .insert("rejected_source", state(game, audio)?);
+            source_probe(observation, "actual-source-rejection", game, input, browser);
+            snapshot(observation, "source-rejected", commands)?;
+            observation.step = 13;
+            true
+        }
+        7 if matches!(
+            scenario.as_str(),
+            "source-back" | "source-focus" | "source-background-error"
+        ) && !input.library_open() =>
+        {
+            preserved(observation)?;
+            if scenario == "source-background-error" && browser.busy() {
+                return Ok(false);
+            }
+            source_probe(
+                observation,
+                "selection-abandoned-before-reopen",
+                game,
+                input,
+                browser,
+            );
+            if scenario == "source-background-error" {
+                if browser.notice.key != "library.failed" {
+                    return Err("Background importer error was discarded or overwritten".into());
+                }
+                snapshot(observation, "background-error", commands)?;
+            }
+            if !input.is_focused() {
+                focus.write(WindowFocused {
+                    window,
+                    focused: true,
+                });
+            }
+            true
+        }
+        8 if matches!(
+            scenario.as_str(),
+            "source-back" | "source-focus" | "source-background-error"
+        ) && input.is_focused()
+            && settled =>
+        {
+            if browser.importing() && !browser.is_finished() {
+                if visual.menu.as_ref().is_some_and(|menu| {
+                    menu.rows.iter().any(|row| {
+                        row.text.lines().next() == Some(visual.locale.text("menu.start"))
+                    })
+                }) {
+                    return Err(
+                        "Ready exposed Start while the source worker was still owned".into(),
+                    );
+                }
+                source_probe(
+                    observation,
+                    "emit-ready-confirm-while-import-busy",
+                    game,
+                    input,
+                    browser,
+                );
+                key(keys, window, KeyCode::Enter);
+            } else {
+                observation
+                    .source_not_run
+                    .push("Ready confirmation while import worker still executing");
+            }
+            true
+        }
+        9 if matches!(
+            scenario.as_str(),
+            "source-back" | "source-focus" | "source-background-error"
+        ) && settled =>
+        {
+            preserved(observation)?;
+            source_probe(
+                observation,
+                "busy-confirm-did-not-start-song",
+                game,
+                input,
+                browser,
+            );
+            key(keys, window, KeyCode::Escape);
+            true
+        }
+        10 if matches!(
+            scenario.as_str(),
+            "source-back" | "source-focus" | "source-background-error"
+        ) && settled =>
+        {
+            source_probe(observation, "emit-reopen-library", game, input, browser);
+            activate_label(visual, visual.locale.text("library.open"), keys, window)?;
+            true
+        }
+        11 if matches!(
+            scenario.as_str(),
+            "source-back" | "source-focus" | "source-background-error"
+        ) && input.library_open() =>
+        {
+            if !observation
+                .source_records
+                .iter()
+                .any(|record| record["label"] == "actual-reopened-library")
+            {
+                source_probe(observation, "actual-reopened-library", game, input, browser);
+            }
+            if browser.busy() || !settled {
+                return Ok(false);
+            }
+            preserved(observation)?;
+            source_probe(
+                observation,
+                "reopened-library-never-selected-abandoned-result",
+                game,
+                input,
+                browser,
+            );
+            observation
+                .snapshots
+                .insert("after_background", state(game, audio)?);
+            snapshot(observation, "background-preserved", commands)?;
+            observation.step = 13;
+            true
+        }
+        14 if observation.captures.values().all(Option::is_some) => {
+            source_probe(observation, "emit-normal-close", game, input, browser);
+            close.write(WindowCloseRequested { window });
+            true
+        }
+        _ => false,
+    };
+    Ok(advance)
 }

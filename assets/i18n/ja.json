@@ -232,5 +232,18 @@
   "library.failed": "現在の曲は保持されます · {error}",
   "library.folder": "ライブラリのフォルダー · {path}",
   "library.path": "楽曲フォルダー · {path}",
-  "library.current": "現在 · {song} · {seconds} 秒"
+  "library.current": "現在 · {song} · {seconds} 秒",
+  "import.open": "手作業の楽曲をインポート",
+  "import.title": "手作業の楽曲をインポート",
+  "import.mode": "作者による Anchor と区間 · 自動解析は未実行",
+  "import.confirm": "新しい楽曲パッケージにインポート",
+  "import.source": "元の音声：{path}",
+  "import.authoring": "作者ファイル：{path}",
+  "import.destination": "新しいパッケージ：{path}",
+  "import.choose": "対応する音声と作者ファイルを選択",
+  "import.place": "song.wav と song.authoring.json を imports フォルダーに置いてください",
+  "import.working": "インポート中。戻ると結果は選択されませんが処理は続行します。完了まで開始できません",
+  "import.background_back": "戻る · インポートは続行",
+  "import.background": "バックグラウンドでインポート中。完了まで開始できません",
+  "import.background_done": "バックグラウンド処理が終了しました。ライブラリを更新して保存済みパッケージを確認"
 }

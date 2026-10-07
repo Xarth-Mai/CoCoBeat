@@ -232,5 +232,18 @@
   "library.failed": "Текущая песня сохранена · {error}",
   "library.folder": "Папка библиотеки · {path}",
   "library.path": "Папка песни · {path}",
-  "library.current": "Текущая · {song} · {seconds} с"
+  "library.current": "Текущая · {song} · {seconds} с",
+  "import.open": "Импортировать авторскую песню",
+  "import.title": "Импортировать авторскую песню",
+  "import.mode": "Anchors и разделы автора · Автоматический анализ не выполнялся",
+  "import.confirm": "Импортировать в новый пакет",
+  "import.source": "Исходное аудио: {path}",
+  "import.authoring": "Авторский файл: {path}",
+  "import.destination": "Новый пакет: {path}",
+  "import.choose": "Выберите аудио с соответствующим авторским файлом",
+  "import.place": "Поместите song.wav и song.authoring.json в папку imports",
+  "import.working": "Идёт импорт; возврат отменит выбор результата, но не импорт; начать можно после завершения",
+  "import.background_back": "Назад · импорт продолжится",
+  "import.background": "Импорт продолжается в фоне; начать можно после завершения",
+  "import.background_done": "Фоновый импорт завершён; обновите библиотеку для просмотра сохранённых пакетов"
 }
