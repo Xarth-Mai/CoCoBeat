@@ -24,6 +24,15 @@
 
 已准备[原创曲目审阅清单](../testdata/synthetic/dev-song-review/README.md)：现有 64 秒 WAV 的配方枚举 438 个声部起点，合并为 200 条来源候选，另保留 7 个结构边界及原 7 个创作 Anchor；人工 onset / 可玩性全部 pending，不能把触发帧当听觉时间。立体声反相 hat 的下混抵消另作输入边界，来源漂移拒绝、防覆盖和逐字节复现通过；下一步取得独立人工标签再比较新的固定特征路线，外部音乐与编码回读仍单独验收
 
+[Beat This! small0 与 BSD DBN 候选研究](../tools/beat-model-probe/README.md)已完成 Linux x64 CPU 对照：10 项合成源 PCM 与同源真实 Vorbis 编码严格回读各运行 120 行，官方 PyTorch 与 ORT 的 logits 及后处理坐标数值 PASS，编码回读最大 logit 误差为 5.6267e-5；不可变媒体 driver SHA 与 301 项构建输入、模型、源码和原始证据 SHA 均记录在[结果摘要](../tools/beat-model-probe/results-2026-10-07.json)，8 项源关联窄测包含 1 项实际 driver 正向检查与 7 项替换、元数据错误或运行中漂移拒绝
+
+算法质量继续 FAIL，`production_admission=false`：官方 DBN 改善固定节拍和部分 3/4 强拍，变速、6/8 与摇摆仍退步，实验 `[2,3,4]` 未解决这些缺口；编码前后 80/120 行坐标完全相同，其余实际差异与全部越界点保留，未裁剪输出或改变参考拍单位，旧 onset FAIL 基准保持不变
+
+官方前处理拒绝 1 帧与 10 ms 输入，25 ms 可生成谱图；候选含等于 PCM 时长的越界点，后续适配器必须显式报告短输入不足及 `[0, frames)` 越界；beat/downbeat 仅为未校准候选，精确 onset、可靠拍号、TempoRegion、section/repetition 和校准置信度均 Unsupported，不能用空集合代替完整分析能力状态
+
+该批仅交付研究工具与结果摘要，Python 依赖、官方 MIT 模型、BSD 源码副本和完整输出留在 `target/`，未接入产品；madmom 非商用模型未取得或加载，生产原生前处理与 ORT C API、四目标完整归档校验及加载仍 NOT_RUN，真实音乐、人工标签和可玩性验收另行完成
+
+- [x] Beat This! small0 导出与三组后处理窄研究：源 PCM / canonical 回读数值对照及失败质量、短输入、坐标边界和来源证据已保留，研究完成不代表生产准入
 - [ ] 完整 MusicAnalysis 与 MIR 生产适配：初始自有类型已区分 onset、beat/downbeat、section、可未知置信度与真实能量，由手工内容包消费；TempoRegion、重复结构、算法产生的字段与置信度校准仍待实际实现
 - [ ] 合成固定/非整数 BPM、变速、3/4、6/8、弱起、静默、切分、摇摆和立体声边界。
 - [ ] 原始 PCM 与编码回读分别评估，至少部分帧真值独立手工核对。

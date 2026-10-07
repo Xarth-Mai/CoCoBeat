@@ -1,0 +1,582 @@
+{
+  "date": "2026-10-07",
+  "status": "RESEARCH_ONLY",
+  "production_admission": false,
+  "scope": "Synthetic 32 s stereo PCM, per-channel analysis; F1 at 70 ms is not onset accuracy or human music acceptance",
+  "checkpoint": {
+    "source": "https://cloud.cp.jku.at/public.php/dav/files/7ik4RrBKTS273gp/small0.ckpt",
+    "bytes": 8451101,
+    "sha256": "6074be2c4d490c5f6101fcc374a1ec72ae93456e23bb6019783b849f5dc7d47b",
+    "license": "MIT",
+    "license_source": "https://github.com/CPJKU/beat_this/blob/main/LICENSE"
+  },
+  "onnx_sha256": "6873aa76f8753eefdcb1414d0663caaf26a2f78591a4a46ba911b768e03f0eba",
+  "numeric": {
+    "export_status": "PASS",
+    "source_status": "PASS",
+    "dbn_source_status": "PASS",
+    "dbn_rows": 120,
+    "max_abs_logit_error": 6.008148193359375e-05,
+    "minimal_baseline_coordinates_identical": true,
+    "refactored_three_case_coordinates_identical": true
+  },
+  "canonical_readback_status": "PASS",
+  "quality": [
+    {
+      "case": "fixed_120",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.42105263157894735
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        }
+      }
+    },
+    {
+      "case": "fractional_123_45",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9767441860465116,
+          "downbeat": 0.3950617283950617
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9767441860465116,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9767441860465116,
+          "downbeat": 0.6530612244897959
+        }
+      }
+    },
+    {
+      "case": "accelerando_90_150",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9032258064516129,
+          "downbeat": 0.24561403508771928
+        },
+        "official_dbn_3_4": {
+          "beat": 0.7230769230769231,
+          "downbeat": 0.12121212121212122
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.6666666666666666,
+          "downbeat": 0.13333333333333333
+        }
+      }
+    },
+    {
+      "case": "meter_3_4",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.4883720930232558
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.4074074074074074
+        }
+      }
+    },
+    {
+      "case": "meter_6_8",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.4,
+          "downbeat": 0.5411764705882353
+        },
+        "official_dbn_3_4": {
+          "beat": 0.3898305084745763,
+          "downbeat": 0.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.3898305084745763,
+          "downbeat": 0.4067796610169492
+        }
+      }
+    },
+    {
+      "case": "pickup_two_beats",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.379746835443038
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.9375
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.625
+        }
+      }
+    },
+    {
+      "case": "swing_2_to_1",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.05714285714285714
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.0
+        }
+      }
+    },
+    {
+      "case": "silence",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 1.0,
+          "downbeat": 1.0
+        },
+        "official_dbn_3_4": {
+          "beat": 1.0,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 1.0,
+          "downbeat": 1.0
+        }
+      }
+    },
+    {
+      "case": "antiphase",
+      "channel": 0,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.42105263157894735
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        }
+      }
+    },
+    {
+      "case": "right_only",
+      "channel": 1,
+      "f1": {
+        "minimal": {
+          "beat": 0.9682539682539683,
+          "downbeat": 0.42105263157894735
+        },
+        "official_dbn_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        },
+        "experimental_dbn_2_3_4": {
+          "beat": 0.9682539682539683,
+          "downbeat": 1.0
+        }
+      }
+    }
+  ],
+  "raw_out_of_range_points_by_configuration": {
+    "minimal": 7,
+    "official_dbn_3_4": 2,
+    "experimental_dbn_2_3_4": 2
+  },
+  "limitations": {
+    "onset": "UNSUPPORTED: model step is 20 ms, not the 2 ms onset contract",
+    "calibrated_confidence": "UNSUPPORTED: preserve None; raw sigmoid is uncalibrated",
+    "meter_and_tempo_regions": "UNSUPPORTED: no reliable inference established by this matrix",
+    "section_and_repetition": "UNSUPPORTED: not emitted by this model",
+    "beat_and_downbeat": "UNCALIBRATED_CANDIDATE_ONLY: quality gaps in 6/8, tempo change and swing",
+    "native_preprocessing": "NOT_RUN: official Python soxr/torch preprocessing used",
+    "four_target_native_runtime": "NOT_RUN: only Linux x64 Python CPU evaluated",
+    "real_music_or_human_acceptance": "NOT_RUN"
+  },
+  "madmom_source": {
+    "repository": "https://github.com/CPJKU/madmom",
+    "commit": "27f032e8947204902c675e5e341a3faf5dc86dae",
+    "files": [
+      {
+        "path": "LICENSE",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/LICENSE",
+        "bytes": 3103,
+        "sha256": "dbcc5a4d6c0dbc5ecb3d41ef98a5432b356073ee11d97c9c4eef507238ffb56a"
+      },
+      {
+        "path": ".gitmodules",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/.gitmodules",
+        "bytes": 117,
+        "sha256": "cdfa28157ca005a7328d6325803d7ee812438456c25fd8baf0148d7701151854"
+      },
+      {
+        "path": "madmom/ml/hmm.pyx",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/madmom/ml/hmm.pyx",
+        "bytes": 27545,
+        "sha256": "0c1ff63bd9c23e66169246546ac7ba9ad8acc3fdf9b9bab57b42c00e6326500a"
+      },
+      {
+        "path": "madmom/features/beats_hmm.py",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/madmom/features/beats_hmm.py",
+        "bytes": 30735,
+        "sha256": "7155723f2a1965301deee39d77900f9c69db175ad1abdce9df6d53f3d191c4b5"
+      },
+      {
+        "path": "madmom/features/downbeats.py",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/madmom/features/downbeats.py",
+        "bytes": 52950,
+        "sha256": "8ad99f4fe7bda6088ddd45d720a0f27deed9860dc791536ff3e25140f41f4f5f"
+      },
+      {
+        "path": "madmom/features/beats.py",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/madmom/features/beats.py",
+        "bytes": 49605,
+        "sha256": "24b75994ca19a046a47561850b5770d4e838edea02d9c5e473aa2e920559f6fc"
+      },
+      {
+        "path": "madmom/processors.py",
+        "url": "https://raw.githubusercontent.com/CPJKU/madmom/27f032e8947204902c675e5e341a3faf5dc86dae/madmom/processors.py",
+        "bytes": 34517,
+        "sha256": "bf3799cd51bf25b88d3192d222445766f6af2dbff7bc505937419278587e2f47"
+      }
+    ]
+  },
+  "madmom_compatibility_patch": {
+    "replacement": "from numpy.math cimport INFINITY -> from libc.math cimport INFINITY",
+    "source": "https://github.com/CPJKU/madmom/pull/548",
+    "other_algorithm_changes": false,
+    "models_downloaded_or_loaded": false
+  },
+  "resources": {
+    "threads": 2,
+    "dbn_peak_rss_kib": 1894240,
+    "additional_wheel_bytes": 38783864,
+    "dbn_source_elapsed_seconds": 61.90448294399539
+  },
+  "evidence_sha256": {
+    "small0.export.json": "0bb8a3355a8484fdd771626c592478677e02fd58791c3528ea22d014c72485b3",
+    "source-comparison.json": "1240dc6472afd4e7c00e2d0fb8024214709200bf71f06c77782d939cf92a73e8",
+    "dbn-source-comparison.json": "f85893716880e9d7aa5665ae6d4bab2e30733fca0fca9e114b766bea251bc26b",
+    "dbn-import-check.json": "b202a735e18e0dbdab15b5f9ad5bff2bf15d3afd9de6f2f6481f3981ca494cf6",
+    "dbn-subset-check.json": "b78bcd8fa8e93ae3eac6f4206685af5f459a5de6c96940b79d33b3e5f4bd6119",
+    "ort-native-assets.json": "37b01ba277e407fdfc9338c9218a50a6333a5c9fa9e518d66aedc9b04828e5fe",
+    "environment-dbn.txt": "599cc4a147d0701d2ac358821e990bec8af82e321242432d44eca04fba180229",
+    "dbn-refactor-comparison.json": "d750486b4fce2615285a686b3c7f6cf0be13e3d7248b5d7dc9e1086a0efed47b",
+    "bounds-comparison.json": "01e4ff3283b174dd987e63fc3bb589b9581897046d5bec32bb4bf82f9c4dbd26",
+    "short-inputs.json": "2d2e919f13d64de6763bd43ddf10bc58a80192dd0820f268ad423403c1f0225f",
+    "canonical-identity-check/result.json": "83ca7b78045161a644258f11074afe57f05a93ccec4305f87a66a18333f8ab9d",
+    "dbn-canonical-comparison.json": "478de300c5c20c20de4f13841ac5f0dd3586899f75d4c43fccd414cda19642af",
+    "dbn-canonical-comparison-run.json": "8e65cf1989f089db4b54c9385c4897c028e0f31a3eaa2ae083d0dfa82f34c20c",
+    "canonical-matrix/matrix.json": "ddcb0fbc64e094c8a9accd1ed3b76ead95ae8ec1a1953225b49b9d5dbcdec250",
+    "canonical-matrix/readback-receipts.json": "46d463e2b7ee24d59ad17072467717c80e47a67f6e8f913d13a51a7b0da47fc8",
+    "canonical-inputs-before.json": "06cadc335279c3c1938dcc54c0f467e72fc20aab35baa3fdb2c52dab611f34d1",
+    "canonical-inputs-after.json": "06cadc335279c3c1938dcc54c0f467e72fc20aab35baa3fdb2c52dab611f34d1",
+    "canonical-driver-identity/inputs-before.json": "bcaabf0825e99e13b3bd45266dff99076367f359105b0d2282ea9e33aa49c1db",
+    "canonical-driver-identity/result.json": "796226cd3dbef0352c20dd2f26bfca2085a3c23566a58e7926d09af303a0fd7a",
+    "canonical-driver-identity/immutable-binaries.json": "6b1d10ac693d8c3d59b0b3a34be22eff9664652d44a279cce46d10f94360d03f"
+  },
+  "packages": {
+    "torch": "2.14.1+cpu",
+    "torchaudio": "2.11.0+cpu",
+    "onnx": "1.23.2",
+    "onnxruntime": "1.30.0",
+    "beat-this": "1.1.0",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1",
+    "Cython": "3.3.0"
+  },
+  "additional_wheels": [
+    {
+      "package": "scipy",
+      "version": "1.18.1",
+      "filename": "scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "bytes": 35329183,
+      "sha256": "ac0333bdf38309aa3dcbe7e3fa7ea29e7a2c37c6ea306a757b700ded8e4596ad",
+      "url": "https://files.pythonhosted.org/packages/6b/89/2a844506d49651e9aa1af6ef95b6bd8031cb1d5a4375edec6155037e04cf/scipy-1.18.1-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl"
+    },
+    {
+      "package": "Cython",
+      "version": "3.3.0",
+      "filename": "cython-3.3.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "bytes": 3454681,
+      "sha256": "82f94565b6001bab8e31bf52a0911672910b5735910612a2c0f772c719670006",
+      "url": "https://files.pythonhosted.org/packages/9f/57/6d620ebee4fc24d89340427702f6ceaf7b956511d1f2222a88c92c1a72b7/cython-3.3.0-cp314-cp314-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+    }
+  ],
+  "ort_native_release": {
+    "release": "v1.30.0",
+    "assets": [
+      {
+        "name": "onnxruntime-linux-aarch64-1.30.0.tgz",
+        "size": 10269495,
+        "digest": "sha256:e16a27a8ed330bbc698df7330b0cf56e722f354e3bcc92118682c74ef3c3e3da",
+        "browser_download_url": "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/onnxruntime-linux-aarch64-1.30.0.tgz",
+        "http_status": 206,
+        "range": "bytes 0-0/10269495",
+        "first_byte_received": true
+      },
+      {
+        "name": "onnxruntime-linux-x64-1.30.0.tgz",
+        "size": 11306877,
+        "digest": "sha256:a5ed5a3cac51fbb2e90da632ae43d19212faaa20e76484e62bcb7c23ddb3b3fd",
+        "browser_download_url": "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/onnxruntime-linux-x64-1.30.0.tgz",
+        "http_status": 206,
+        "range": "bytes 0-0/11306877",
+        "first_byte_received": true
+      },
+      {
+        "name": "onnxruntime-win-arm64-1.30.0.zip",
+        "size": 83954906,
+        "digest": "sha256:e53db8a50b23ae35be901cc93428baf997dc8d420333b097b2eae53d3ea9f2d3",
+        "browser_download_url": "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/onnxruntime-win-arm64-1.30.0.zip",
+        "http_status": 206,
+        "range": "bytes 0-0/83954906",
+        "first_byte_received": true
+      },
+      {
+        "name": "onnxruntime-win-x64-1.30.0.zip",
+        "size": 82645522,
+        "digest": "sha256:c6ba983baf5681af108599675d2a89c2d145512d02de28aed0bff177cd0ba949",
+        "browser_download_url": "https://github.com/microsoft/onnxruntime/releases/download/v1.30.0/onnxruntime-win-x64-1.30.0.zip",
+        "http_status": 206,
+        "range": "bytes 0-0/82645522",
+        "first_byte_received": true
+      }
+    ],
+    "local_load_status": "NOT_RUN",
+    "full_archive_hash_check": "NOT_RUN",
+    "retrieval_probe": "HTTP Range bytes=0-0, all four completed 2026-10-07"
+  },
+  "canonical_source_identity_checks": {
+    "status": "PASS",
+    "cases": 8,
+    "scope": "WAV/PCM identity and driver metadata, including 7 rejection cases; separate from full canonical model matrix"
+  },
+  "canonical": {
+    "numeric_status": "PASS",
+    "cases": 10,
+    "rows": 120,
+    "driver_sha256": "199953f3115af196bc2262c72a4fc1928341192608cbe726838e569f7c92449a",
+    "driver_build_input_count": 301,
+    "driver_build_inputs_sha256": "bcaabf0825e99e13b3bd45266dff99076367f359105b0d2282ea9e33aa49c1db",
+    "input_identity_unchanged": true,
+    "max_abs_logit_error": 5.626678466796875e-05,
+    "raw_encoded_identical_coordinate_rows": 80,
+    "raw_out_of_range_points_by_configuration": {
+      "minimal": 2,
+      "official_dbn_3_4": 2,
+      "experimental_dbn_2_3_4": 2
+    },
+    "elapsed_seconds": 61.65375551400939,
+    "peak_rss_kib": 1926048,
+    "quality": [
+      {
+        "case": "fixed_120",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.41025641025641024
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          }
+        }
+      },
+      {
+        "case": "fractional_123_45",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9767441860465116,
+            "downbeat": 0.3950617283950617
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9767441860465116,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9767441860465116,
+            "downbeat": 0.6530612244897959
+          }
+        }
+      },
+      {
+        "case": "accelerando_90_150",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9032258064516129,
+            "downbeat": 0.24561403508771928
+          },
+          "official_dbn_3_4": {
+            "beat": 0.7230769230769231,
+            "downbeat": 0.12121212121212122
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.6666666666666666,
+            "downbeat": 0.13333333333333333
+          }
+        }
+      },
+      {
+        "case": "meter_3_4",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.4883720930232558
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.4074074074074074
+          }
+        }
+      },
+      {
+        "case": "meter_6_8",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.4,
+            "downbeat": 0.5411764705882353
+          },
+          "official_dbn_3_4": {
+            "beat": 0.3898305084745763,
+            "downbeat": 0.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.3898305084745763,
+            "downbeat": 0.4067796610169492
+          }
+        }
+      },
+      {
+        "case": "pickup_two_beats",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.379746835443038
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.9375
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.625
+          }
+        }
+      },
+      {
+        "case": "swing_2_to_1",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.05714285714285714
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.0
+          }
+        }
+      },
+      {
+        "case": "silence",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 1.0,
+            "downbeat": 1.0
+          },
+          "official_dbn_3_4": {
+            "beat": 1.0,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 1.0,
+            "downbeat": 1.0
+          }
+        }
+      },
+      {
+        "case": "antiphase",
+        "channel": 0,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.41025641025641024
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          }
+        }
+      },
+      {
+        "case": "right_only",
+        "channel": 1,
+        "f1": {
+          "minimal": {
+            "beat": 0.9682539682539683,
+            "downbeat": 0.41025641025641024
+          },
+          "official_dbn_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          },
+          "experimental_dbn_2_3_4": {
+            "beat": 0.9682539682539683,
+            "downbeat": 1.0
+          }
+        }
+      }
+    ]
+  },
+  "verified_probe_sha256": "2f81001d20485591618872c32fef05e8c1b6ee37c896f5744725bb9c65a42258",
+  "verified_dbn_probe_sha256": "5e7b9ec3aae53b2118b1bc4a66ee1461e790afd55a7a87e7815e6d5d54f24ddf"
+}
