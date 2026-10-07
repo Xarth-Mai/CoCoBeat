@@ -1,0 +1,404 @@
+{
+  "schema_version": 1,
+  "status": "PASS_SOFTWARE_OBSERVATIONS",
+  "scope": "Public Kira main-mix hooks and coherent source publication intervals; independent historical software snapshots, not CPAL entry, future callback bounds or device/speaker latency",
+  "sources_sha256": {
+    "crates/cocobeat-runtime/src/audio.rs": "f09ad8d8ef50f20e6808b29e0c52bd8557a8a4e4e14033dc07db02bfe30e5fd3",
+    "crates/cocobeat-runtime/src/audio_observation.rs": "47b1ce9572cfbd03b3c1b1a1755dbbd72bdb930f02da7e2f649caa88bfed386b"
+  },
+  "mock_tests": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "-p",
+      "cocobeat-runtime",
+      "audio::observation"
+    ],
+    "passed": 4,
+    "failed": 0,
+    "filtered": 140,
+    "first_incorrect_filter_ran_zero_tests": "target/audio-observations-20261007/root-narrow/tests.log"
+  },
+  "native_graph": {
+    "head": "b2ef278ffb2fd6302ba79a552c73bdcacf02e0fc",
+    "source_inputs": 443,
+    "inputs_unchanged": true,
+    "binary_sha256": "e0f34de143027512c901f17467ebca069d8b0ca4ce6bfd810e931d80276e1d8e",
+    "profile": "debug",
+    "platform": "Linux x86-64",
+    "backend": "Kira DefaultBackend / CPAL ALSA; requested stereo F32 48000 Hz",
+    "native_callback_snapshots": 16,
+    "native_source_snapshots": 8,
+    "native_library_visual_status": "FAIL at 640x480; unrelated footer clipping preserved separately",
+    "environment": "Gamescope Wayland with DISABLE_GAMESCOPE_WSI=1"
+  },
+  "cases": [
+    {
+      "case": "complete-1280x800-en-US",
+      "native_game_pid": 515773,
+      "native_game_exit": 0,
+      "snapshots": {
+        "ready_a": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 10159420,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10691248,
+            "previous_frames": 512,
+            "sequence": 1589
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "phase": "Running",
+          "audio_started": true,
+          "source_position_seconds": 0.544,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 7942428,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10673868,
+            "previous_frames": 512,
+            "sequence": 1755
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.544,
+            "publication_age_lower_ns": 7943788,
+            "publication_age_upper_ns": 7948508,
+            "publication_interval_width_ns": 4720,
+            "sequence": 52,
+            "source_id": 1
+          }
+        },
+        "paused_a": {
+          "phase": "Paused",
+          "audio_started": true,
+          "source_position_seconds": 0.6186666666666667,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 1591134,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10654908,
+            "previous_frames": 512,
+            "sequence": 1863
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.6186666666666667,
+            "publication_age_lower_ns": 1592204,
+            "publication_age_upper_ns": 1597524,
+            "publication_interval_width_ns": 5320,
+            "sequence": 160,
+            "source_id": 1
+          }
+        },
+        "ready_b": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 3967914,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10654268,
+            "previous_frames": 512,
+            "sequence": 2186
+          },
+          "source_observation": null
+        }
+      }
+    },
+    {
+      "case": "complete-1280x800-zh-CN",
+      "native_game_pid": 515556,
+      "native_game_exit": 0,
+      "snapshots": {
+        "ready_a": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 10505528,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10658208,
+            "previous_frames": 512,
+            "sequence": 1139
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "phase": "Running",
+          "audio_started": true,
+          "source_position_seconds": 0.512,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 5661488,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10678138,
+            "previous_frames": 512,
+            "sequence": 1274
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.512,
+            "publication_age_lower_ns": 5662078,
+            "publication_age_upper_ns": 5664198,
+            "publication_interval_width_ns": 2120,
+            "sequence": 49,
+            "source_id": 1
+          }
+        },
+        "paused_a": {
+          "phase": "Paused",
+          "audio_started": true,
+          "source_position_seconds": 0.5546666666666666,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 4289663,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10674408,
+            "previous_frames": 512,
+            "sequence": 1361
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5546666666666666,
+            "publication_age_lower_ns": 4290093,
+            "publication_age_upper_ns": 4291653,
+            "publication_interval_width_ns": 1560,
+            "sequence": 136,
+            "source_id": 1
+          }
+        },
+        "ready_b": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 615947,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10654728,
+            "previous_frames": 512,
+            "sequence": 1581
+          },
+          "source_observation": null
+        }
+      }
+    },
+    {
+      "case": "complete-640x480-en-US",
+      "native_game_pid": 532798,
+      "native_game_exit": 0,
+      "snapshots": {
+        "ready_a": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 6485964,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10571469,
+            "previous_frames": 512,
+            "sequence": 1092
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "phase": "Running",
+          "audio_started": true,
+          "source_position_seconds": 0.512,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 2030512,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10661378,
+            "previous_frames": 512,
+            "sequence": 1175
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.512,
+            "publication_age_lower_ns": 2031342,
+            "publication_age_upper_ns": 2034322,
+            "publication_interval_width_ns": 2980,
+            "sequence": 49,
+            "source_id": 1
+          }
+        },
+        "paused_a": {
+          "phase": "Paused",
+          "audio_started": true,
+          "source_position_seconds": 0.5546666666666666,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 6425255,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10599558,
+            "previous_frames": 512,
+            "sequence": 1208
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5546666666666666,
+            "publication_age_lower_ns": 6425565,
+            "publication_age_upper_ns": 6426515,
+            "publication_interval_width_ns": 950,
+            "sequence": 82,
+            "source_id": 1
+          }
+        },
+        "ready_b": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 7547240,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10642968,
+            "previous_frames": 512,
+            "sequence": 1433
+          },
+          "source_observation": null
+        }
+      }
+    },
+    {
+      "case": "complete-640x480-zh-CN",
+      "native_game_pid": 529006,
+      "native_game_exit": 0,
+      "snapshots": {
+        "ready_a": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 2577439,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10657818,
+            "previous_frames": 512,
+            "sequence": 1240
+          },
+          "source_observation": null
+        },
+        "running_a": {
+          "phase": "Running",
+          "audio_started": true,
+          "source_position_seconds": 0.5013333333333333,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 2892799,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10694917,
+            "previous_frames": 512,
+            "sequence": 1322
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.5013333333333333,
+            "publication_age_lower_ns": 2893369,
+            "publication_age_upper_ns": 2897469,
+            "publication_interval_width_ns": 4100,
+            "sequence": 48,
+            "source_id": 1
+          }
+        },
+        "paused_a": {
+          "phase": "Paused",
+          "audio_started": true,
+          "source_position_seconds": 0.544,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 8636866,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10675417,
+            "previous_frames": 512,
+            "sequence": 1355
+          },
+          "source_observation": {
+            "generation": 1,
+            "position_seconds": 0.544,
+            "publication_age_lower_ns": 8637486,
+            "publication_age_upper_ns": 8640786,
+            "publication_interval_width_ns": 3300,
+            "sequence": 81,
+            "source_id": 1
+          }
+        },
+        "ready_b": {
+          "phase": "Ready",
+          "audio_started": false,
+          "source_position_seconds": null,
+          "callback_observation": {
+            "generation": 1,
+            "observation_age_ns": 320899,
+            "output_sample_rate": 48000,
+            "previous_callback_interval_ns": 10680527,
+            "previous_frames": 512,
+            "sequence": 1583
+          },
+          "source_observation": null
+        }
+      }
+    }
+  ],
+  "contract": {
+    "previous_frames": "Sum of actual internal main-mix chunks from the previous sealed callback, not current incomplete frames",
+    "generation": "Application AudioOutput observation lifetime, invalidated by observed backend error or sample-rate change",
+    "source_id": "Unique source instance within its generation including same-song restarts",
+    "publication": "Interval bracketing the original Kira source-position publication; ages read after snapshots",
+    "snapshot_read": "Three bounded SeqCst attempts; unavailable before publication, during contention, after stop or lifetime invalidation",
+    "compatibility": "PCM, controls, original StaticSoundHandle and AudioOutput.position behavior preserved"
+  },
+  "not_run": [
+    "device/speaker latency",
+    "CPAL callback-entry timestamps",
+    "future callback deadline guarantee",
+    "physical input",
+    "Windows/ARM native observations",
+    "hardware loopback",
+    "long-running device drift and recovery"
+  ],
+  "evidence_sha256": {
+    "crates/cocobeat-runtime/src/audio.rs": "f09ad8d8ef50f20e6808b29e0c52bd8557a8a4e4e14033dc07db02bfe30e5fd3",
+    "crates/cocobeat-runtime/src/audio_observation.rs": "47b1ce9572cfbd03b3c1b1a1755dbbd72bdb930f02da7e2f649caa88bfed386b",
+    "target/audio-observations-20261007/root-narrow/tests-observation.log": "aa308acc1dbcd593402ec9ea4886a1e12a65be37d778b91fd957c572723da1a8",
+    "target/library-20261007/build-final/inputs-before.json": "dd3dfa78124982d0a3c1e4943f2432c02e1d68d1296848f9991ef2957a901734",
+    "target/library-20261007/build-final/inputs-after.json": "dd3dfa78124982d0a3c1e4943f2432c02e1d68d1296848f9991ef2957a901734",
+    "target/library-20261007/build-final/cocobeat-game-build-result.json": "6ac9ae423dc0bd1d72d07726675e8e90adeed65747102ef6082d0e8f00f5d10c",
+    "target/library-20261007/build-final/static-validation.json": "39f1368cfa39a517d8cbfe882efec61a6e127fb7bf0f3f535e71061541932601",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/child-exit.json": "83a6cd9eb9e785ee1ec5603704c2e70d8ccd76e46f0e11fdf5f770543d3227ee",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/game-launch.json": "ed39b38ed3246a73a738ddc0db186b02a33c7e65514352f6d855849307d88b62",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/game.stderr": "8a530959254e7d53cd424f73e1d8bb9e66c71d7665fdc6de136feab1f0289aa3",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/observation/result.json": "967e85832452ca3c456004e589df3a94676de2ba59cd6bce27d9d5de70edf436",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-en-US/observation/metadata.json": "b765e50b9c94852c6898088a19679a405b0866e607bf197dba7a0a9fe53a7cdf",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/child-exit.json": "341e9369eabbf67604dd33d8ed9b486f940599b0b9db166dfc9e5cfefc0fcc2f",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/game-launch.json": "562cb0abf574f62b8922df3f2a910b29d9db00942860389b3c2d6a529511de62",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/game.stderr": "c0e63c020b931b60f0ce68e92ecbeacac3b84761579ff5293811a04f6fb9de17",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/observation/result.json": "5fb85964d1e513904543ba447d55844567ba7b310bdd071152588cd01cdc94f8",
+    "target/library-runtime-20261007/native-final/observations-host/complete-1280x800-zh-CN/observation/metadata.json": "a6407bb799c7cda050880c5edfd096a079bb7f5da359f78de697e63516764e0a",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/child-exit.json": "91e1f42ebaa0db3979c237870fbe2b62164e3c6fcbc19341f99f629bf7e993c6",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/game-launch.json": "20cf5c0858a8b7ce2638c31d1dce6d3ed5ccecd041a7e47609e9c0cddb3dc0d2",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/game.stderr": "a8d1508251366b6c3513307cdcaffdd1ad3a62c076b9aa337a0a09780719e871",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/observation/result.json": "4f51844f8f148072e4df60ccb11ae6c3f9d6ed8ec2c4f6193f9ab227076384ba",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-en-US/observation/metadata.json": "42fd9b292809b0210e01994d85e435952528a7659f62bca412fe53e4b99c37f5",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/child-exit.json": "b18043de13e65e3fdbe2d6fccc4ff72a0c8533adcf3e83979006dd27a21e18a9",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/game-launch.json": "a564011bb341fc69ea7494350173c6cf06c1201a6f87f7a3a2062d9966654e75",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/game.stderr": "8ccf931ee87ec7082102f2495cb3c259547dac03fabe300fac38032b217d913d",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/game.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/observation/result.json": "90d36c8a8367646c0dde76bb635394a45125d4fc8a469681ef83dcddc5239781",
+    "target/library-runtime-20261007/native-final/observations-host/complete-640x480-zh-CN/observation/metadata.json": "6ee92fe7d6da90f07306eab9c903da20c1f92f854b87115624dbbd046654fb57"
+  }
+}

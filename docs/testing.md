@@ -719,3 +719,13 @@ Replay 图形诊断使用冻结生产模块副本，只有 target 中的辅助�
 随后这四图仍显示 640 的固定 150px 底距遮到脸部；公共底距改为窗口高度的 18.75%，保留 800 高时的原位置。实际布局窄测检查下方区域与状态面板分离，最终固定 debug 二进制 `913f4a57e6f3dc7c7cfcc10cfec99b48b9b8f3e1a29fe3125e95d9ca4f803c7e` 的 422 项列明输入前后相同，两张英 / 德 640、frame 32 原生静态图目检通过：完整标签位于角色脚下和状态栏上方，见[垂直布局记录](../testdata/synthetic/hud-label-vertical-observations-20261007.json)
 
 本次证据覆盖确切静态帧和真实字体布局，不代表所有动画时刻、DPI、十三语言、双手柄或真人体验通过
+
+## Kira 软件发布观测
+
+2026-10-07，AudioOutput 通过 Kira 公共 Effect / Sound hooks 提供有界只读 callback 与 source publication 观测，保留原 PCM、StaticSoundHandle、控制和 position 行为；前一 callback 的内部 chunk 帧数在下一 hook 才封口，source 位置与原子发布的 Instant 区间一致，两个快照各自独立
+
+`cargo test --locked -p cocobeat-runtime audio::observation` 的 4 项 MockBackend 检查通过，覆盖委托等价、chunk 封口、source 身份、忙写不可用及 sample-rate 失效；首个错误过滤器运行 0 项，日志保留且不计入通过项
+
+冻结 debug game 的 443 项输入前后相同，实际 Linux / CPAL ALSA 曲库四个 complete case 中，16 份 main-mix 快照报告 48 kHz / 前一完整 callback 512 帧，8 份 Running / Paused source 快照保持真实游标和一致的发布年龄区间，Ready / 换歌 Ready 无 source，真实游戏均 exit 0；小窗口曲库 footer 的同期视觉 FAIL 独立保留，不影响这里的历史发布观测，见[观察记录](../testdata/synthetic/audio-publication-observations-20261007.json)
+
+观测代次代表应用生命周期，观察到后端错误或采样率改变后永久失效；使用者仍须检查发布年龄和 source 身份。这些是历史软件边界，不提供未来 callback 上界、CPAL 入口、DAC / 扬声器延迟或长期漂移保证；loopback、真实输入与其他平台观测仍 NOT RUN

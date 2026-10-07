@@ -23,10 +23,18 @@ use kira::{
 
 use crate::{brand_audio, brand_intro::BrandImpact, dev_song};
 
+#[path = "audio_observation.rs"]
+mod observation;
+
+use observation::{AudioObservations, SourceReader};
+pub use observation::{CallbackObservation, SourceObservation};
+
 pub struct AudioOutput {
     manager: AudioManager<DefaultBackend>,
     song: Option<StaticSoundData>,
     music: Option<ControlledSound>,
+    observations: AudioObservations,
+    music_source: Option<SourceReader>,
     hits: [Option<StaticSoundData>; 2],
     brand_sounds: [StaticSoundData; 3],
     brand_handles: [Option<ControlledSound>; 3],
@@ -45,7 +53,7 @@ impl AudioOutput {
             .map_err(|error| format!("Cannot query audio output configuration: {error}"))?;
         let config = supported.config();
         let output_info = format!(
-            "audio_host={:?}\ndevice_id={:?}\ndevice_description={:?}\nrequested_output_sample_rate={}\nrequested_output_channels={}\nrequested_output_buffer={:?}\ndefault_supported_sample_format={:?}\nactual_callback_size=NOT MEASURED\n",
+            "audio_host={:?}\ndevice_id={:?}\ndevice_description={:?}\nrequested_output_sample_rate={}\nrequested_output_channels={}\nrequested_output_buffer={:?}\ndefault_supported_sample_format={:?}\nactual_callback_size=NOT MEASURED AT INITIALIZATION (callback_observation reports previous completed batch)\n",
             host.id(),
             device.id(),
             device.description(),
@@ -54,12 +62,14 @@ impl AudioOutput {
             config.buffer_size,
             supported.sample_format(),
         );
+        let observations = AudioObservations::new();
         let manager = AudioManager::new(AudioManagerSettings {
             backend_settings: CpalBackendSettings {
-                // Pin the selected device so default-device changes cannot silently migrate playback
+                // Fix initial selection; Kira may still rebuild on another device after an error
                 device: Some(device),
                 config: Some(config),
             },
+            main_track_builder: observations.main_track(),
             ..Default::default()
         })
         .map_err(|error| format!("Cannot initialize audio output: {error}"))?;
@@ -67,6 +77,8 @@ impl AudioOutput {
             manager,
             song,
             music: None,
+            observations,
+            music_source: None,
             hits: [None, None],
             brand_sounds: [BrandImpact::Co1, BrandImpact::Co2, BrandImpact::Beat]
                 .map(brand_audio::sound),
@@ -85,12 +97,8 @@ impl AudioOutput {
         let song = self.song.as_ref().ok_or("No song has been loaded")?.clone();
         let song = sound_at(song, position)?;
         self.stop();
-        self.music = Some(ControlledSound::new(
-            self.manager
-                .play(song)
-                .map_err(|error| format!("Cannot start music: {error}"))?,
-        ));
-        Ok(())
+        self.play_music(song)
+            .map_err(|error| format!("Cannot start music: {error}"))
     }
 
     /// Kira starts this delay when its callback consumes the sound, not at a measured device time
@@ -99,10 +107,14 @@ impl AudioOutput {
         schedule_delay(deadline, Instant::now())?;
         self.stop();
         let song = song.start_time(schedule_delay(deadline, Instant::now())?);
-        self.music =
-            Some(ControlledSound::new(self.manager.play(song).map_err(
-                |error| format!("Cannot schedule music: {error}"),
-            )?));
+        self.play_music(song)
+            .map_err(|error| format!("Cannot schedule music: {error}"))
+    }
+
+    fn play_music(&mut self, song: StaticSoundData) -> Result<(), kira::PlaySoundError<()>> {
+        let (handle, source) = self.manager.play(self.observations.sound(song))?;
+        self.music = Some(ControlledSound::new(handle));
+        self.music_source = Some(source);
         Ok(())
     }
 
@@ -123,10 +135,8 @@ impl AudioOutput {
         // ponytail: static PCM is capped at 230 MB; stream only if probes exceed ten minutes
         let data = sound_data((0..frames).map(probe_sample).collect());
         let requested = Instant::now();
-        self.music =
-            Some(ControlledSound::new(self.manager.play(data).map_err(
-                |error| format!("Cannot start audio probe: {error}"),
-            )?));
+        self.play_music(data)
+            .map_err(|error| format!("Cannot start audio probe: {error}"))?;
         Ok(requested)
     }
 
@@ -146,6 +156,7 @@ impl AudioOutput {
 
     /// Enqueues a stop and discards the handle; the audio callback applies it asynchronously
     pub fn stop(&mut self) {
+        self.music_source = None;
         if let Some(mut music) = self.music.take() {
             music.handle.stop(immediate());
         }
@@ -210,6 +221,22 @@ impl AudioOutput {
         self.music.as_ref().map(|music| music.handle.position())
     }
 
+    /// Last coherent main-mix observation, unavailable before its first hook or during a write
+    /// Backend errors or sample-rate changes invalidate this AudioOutput observation lifetime
+    /// These are historical software observations, not future callback or device latency bounds
+    pub fn callback_observation(&self) -> Option<CallbackObservation> {
+        self.observations.callback()
+    }
+
+    /// Source position paired with its publication interval, never an unobserved initial cursor
+    /// Unavailable before publication, during contention, after stop or observation invalidation
+    /// A successful read may be old; consumers must bound publication age for their own policy
+    pub fn source_observation(&self) -> Option<SourceObservation> {
+        self.music_source
+            .as_ref()?
+            .read(&self.music.as_ref()?.handle)
+    }
+
     /// Includes pending control intent as Pausing/Resuming until the callback acknowledges it
     /// Stopped always takes precedence over any remaining intent
     pub fn state(&self) -> Option<PlaybackState> {
@@ -234,11 +261,13 @@ impl AudioOutput {
     pub fn take_error(&mut self) -> Option<String> {
         let backend = self.manager.backend_mut();
         if let Some(error) = backend.pop_error() {
+            self.observations.invalidate();
             self.stop_brand();
             return Some(format!("Audio output error: {error}"));
         }
         let discarded = backend.num_stream_errors_discarded().unwrap_or(0);
         if discarded != self.discarded_errors {
+            self.observations.invalidate();
             self.discarded_errors = discarded;
             self.stop_brand();
             return Some(format!(

@@ -15,3 +15,5 @@
 当前游标 `±50 ms` 与规则窗口是未实测的实验配置；完整软件检查见 [验证策略](../docs/testing.md)，硬件条目保持 NOT RUN
 
 退出条件：有可复现实验命令和带设备/构建信息的真实报告，明确表示分辨率、软件假设与实际精度，再依据测量调整判定窗口
+
+2026-10-07 · Kira 公共 hook 的软件 callback / source publication 已接线：4 项 MockBackend 检查、Linux 原生 16 份 callback / 8 份 source 快照通过，见[观察记录](../testdata/synthetic/audio-publication-observations-20261007.json)。代次、source 身份、发布区间、年龄和失效分开处理，不把前一完整 callback 帧数当未来 deadline、设备延迟或声卡漂移界；原硬件和长期条目保持未完成
