@@ -80,7 +80,7 @@ header 的 `inspection_channel` 是本次谱形诊断声道，`origin_channel` �
 
 首次Clippy的构造测试范围循环FAIL与等价迭代器修复保留。68项控制是原创配方机制oracle，不证明音乐重复语义、变速 / 转调、置信校准或自动舞台编排；600秒成本单独取证，完整MIR与旧wholeSpect / 音乐质量FAIL保持，沿用现有原生依赖，不新增GPL或产品Python分析运行时
 
-600秒 / N28800000同源成本现已独立观察：自动analysis实际成功发布并完整校验，wall310.879648秒 / 单child kernel RSS1593272 KiB；结构编译在62.510735秒 / 65820 KiB返回超过64个支持边界的原Err，零发布；repetition在97.871086秒 / 72360 KiB成功发布18条Candidate关系，独立strict验证与typed内容守恒通过，原audio / N / chart / sections保持。所有源码和输入hash保持、进程组退出，预声明wall / RSS操作预算未触发；后验耗时另列，kernel与/proc采样峰值分别保存。该Linux x86-64 debug单样本不是发行性能或音乐质量准入，结构600秒成功出版成本和600秒SDK证据reader对照仍NOT_RUN，完整收据见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
+600秒 / N28800000同源成本现已独立观察：自动analysis实际成功发布并完整校验，wall310.879648秒 / 单child kernel RSS1593272 KiB；结构编译在62.510735秒 / 65820 KiB返回超过64个支持边界的原Err，零发布；repetition在97.871086秒 / 72360 KiB成功发布18条Candidate关系，独立strict验证与typed内容守恒通过，原audio / N / chart / sections保持。所有源码和输入hash保持、进程组退出，预声明wall / RSS操作预算未触发；后验耗时另列，kernel与/proc采样峰值分别保存。该Linux x86-64 debug单样本不是发行性能或音乐质量准入，该批次当时未做结构600秒成功出版与SDK七资源reader；reader随后由[候选消费者](../testdata/synthetic/candidate-consumers-observations-20261008.json)补验，低边界成功出版由下述新控制补验，完整收据见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
 
 ## 软件观察与成本
 
@@ -105,3 +105,5 @@ header 的 `inspection_channel` 是本次谱形诊断声道，`origin_channel` �
 首次Clippy tuple类型复杂度拒绝与两次85秒Ready窗口FAIL保留：最初QA少了主控接管后的第二次新确认，game / wrapper exit0不能覆盖失败；只补QA输入顺序及类型别名后，冻结新源码 / Game重新实际运行通过，生产输入规则、候选算法和包均未改。实际Mesh读回和PNG不作为逐顶点理论证明，原生日志的ICU4X Chinese/Japanese分段数据警告保留；音乐质量、物理输入 / 音频、600秒成本和新四目标验收继续独立进行
 
 2026-10-08 · 工作台消费者补验：Lab92项、Clippy、格式、边界与构建通过；新版Lab对两份既有重复包的实际谱形回读均exit0，大小两窗经真实输入选择每条关系两侧、显式Seek、Kira源游标推进 / Pause / Stop、详情到底与原bin半开点击 / EOF通过，源码373及源包 / 基准 / 二进制保持，进程组全部释放。相邻source / target会形成连续同色条带，四端点以原详情和行区间保留；原首窗FAIL是QA将点击帧错当选bin后的游标，只修冻结QA的一行预期，生产逻辑保持，声学 / 物理输入 / 音乐质量和当前来源四目标另验
+
+2026-10-08 · 600秒结构成功出版：冻结`c63cf15`与Lab b7，同一原创频谱配方仅一处转场，原PCM与q10 canonical的唯一内部边界均为14401536帧、误差0；8条实际命令exit0，完整compile / 原子出版wall91.763316秒、单child kernel RSS65916 KiB，源码373、输入、原Source及新包四对象保持，原音频 / N / Anchor1024与声明sections / cues之外的typed内容守恒，v2四段计划和边界Curve起点采样通过，见[长曲成功出版观察](../testdata/synthetic/structure-long-publication-observations-20261008.json)。原75转场超过64边界的capErr仍保留，没有调算法 / 阈值 / cap；这是Linux debug低边界控制的完整成功成本，音乐质量、右声道、GPU及发行性能另验

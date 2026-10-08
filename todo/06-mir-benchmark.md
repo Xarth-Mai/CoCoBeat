@@ -74,3 +74,5 @@
 - [x] 原生重复关系软件候选：`compile-repetition-candidate` 固定网格 / 原速原调、完整非零bin、至多64个种子lag及64条非重叠关系，Candidate / Algorithm / None，原音频 / chart / sections / cues / Anchor保持；生产media85 / Lab85、Clippy / 格式 / 边界 / Lab构建已通过，原PCM34 / canonical34项预登记机制控制已PASS，600秒同源repetition实际发布18关系并通过typed守恒，wall97.871086秒 / kernel RSS72360 KiB；结构600秒capErr保留，成功出版成本另验，见[重复候选契约](../docs/native-structure-features.md#显式编译重复关系候选包)，完整MIR / 音乐语义 / 校准退出保持未完成
 
 - [x] 重复关系工作台消费者：同一结构模式展示两侧原端点与双区间、区分origin / inspection声道，显式Seek保持；Lab92项、两份生产回读、大小两窗及6PNG指定目检通过，首QA期望FAIL保留，见[消费者观察](../testdata/synthetic/candidate-consumers-observations-20261008.json)，音乐质量与当前来源四目标另验
+
+- [x] 600秒低边界结构完整成功出版：固定原配方一处转场，原PCM / canonical边界误差0；8步真实命令、typed守恒与Stage v2消费通过，compile wall91.763316秒 / kernel RSS65916 KiB，source373及前后四对象保护、进程退出，见[长曲成功出版](../testdata/synthetic/structure-long-publication-observations-20261008.json)。原密集75转场capErr保持，不扩大音乐质量、right / GPU或发行性能准入

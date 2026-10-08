@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "status": "PASS_SCOPED_600_SECOND_STRUCTURE_PUBLICATION",
+  "source_commit": "c63cf1557d386e63c07839096ce28b14eae0e661",
+  "source_count": 373,
+  "lab_sha256": "b7ce7dd6761bd0f60150f052145ad06d37728afbe604f98dac446326d2cde7d0",
+  "scope": "One predeclared low-boundary 600-second synthetic control, Linux debug software publication and Stage consumer; no source/algorithm/threshold/cap/dependency change",
+  "canonical_frames": 28800000,
+  "recipe": {
+    "original_frequency_palette": "375Hz / 6000Hz, amplitude0.25, original frozen f32 lookup/writer, stereo equal, continuous global phase",
+    "expected_boundary": 14401536,
+    "raw_tolerance_frames": 0,
+    "canonical_tolerance_frames": 24576,
+    "expected_internal_boundaries": 1,
+    "source_wave_sha256": "9d9b1dd10279634d81762df1f2c61694497c187188e11201a5ddfbc5058e80f6",
+    "source_wave_bytes": 230400044
+  },
+  "commands": {
+    "raw": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-raw-build-02/raw-structure-check",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-plan-20261008/inputs/colour-change-600.wav",
+        "left",
+        "28800000",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/raw.json"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 14.325991877994966,
+      "kernel_single_child_peak_rss_kib": 23336,
+      "sampled_peak_rss_kib": 9664,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 180,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "import": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-plan-20261008/inputs/colour-change-600.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-plan-20261008/inputs/colour-change-600.authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-import-01/published"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 98.97362516701105,
+      "kernel_single_child_peak_rss_kib": 60492,
+      "sampled_peak_rss_kib": 60728,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 300,
+      "rss_limit_kib": 1048576,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "verify-source": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "verify-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-import-01/published"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 16.530184264993295,
+      "kernel_single_child_peak_rss_kib": 59012,
+      "sampled_peak_rss_kib": 59236,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 90,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "compile": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "compile-structure-candidate",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-import-01/published",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-compile-01/published"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 91.76331631399808,
+      "kernel_single_child_peak_rss_kib": 65916,
+      "sampled_peak_rss_kib": 66164,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 180,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "verify-candidate": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "verify-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-compile-01/published"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 16.529444273997797,
+      "kernel_single_child_peak_rss_kib": 59372,
+      "sampled_peak_rss_kib": 59512,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 90,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "typed": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/typed-content",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-import-01/published",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-compile-01/published",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/typed-content.json"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 32.75978490500711,
+      "kernel_single_child_peak_rss_kib": 23016,
+      "sampled_peak_rss_kib": 13572,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 90,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "stage-plan": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "inspect-stage-plan",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-compile-01/published"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 16.529650826996658,
+      "kernel_single_child_peak_rss_kib": 58800,
+      "sampled_peak_rss_kib": 59140,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 90,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    },
+    "stage-sample": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+        "inspect-stage",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-long-success-qa-20261008/run-compile-01/published",
+        "14401536"
+      ],
+      "pid": 4,
+      "exit_code": 0,
+      "elapsed_seconds": 16.53009922601632,
+      "kernel_single_child_peak_rss_kib": 59284,
+      "sampled_peak_rss_kib": 59432,
+      "sampled_peak_threads": 1,
+      "owned_child_reaped": true,
+      "owned_group_gone": true,
+      "inputs_equal": true,
+      "timeout_seconds": 90,
+      "rss_limit_kib": 524288,
+      "status": "OBSERVED_EXIT_ZERO"
+    }
+  },
+  "actual": {
+    "boundary": 14401536,
+    "raw_error_frames": 0,
+    "canonical_error_frames": 0,
+    "source_content_id": "bd147f2e1bf7c194555d4366bf1f42b8ba5e7cae2470389e879ab0d0f1f5a221",
+    "candidate_content_id": "439f507dab72e03d6ef8efb0fb9b88bf5be9e07cc0e463a81a84363a0fb50c6d",
+    "audio_blake3": "166e8836d3a808f6beb18f8dbdc7a3411b96398aaa80c2c36dc15235be98986b",
+    "section_count": 2,
+    "cue_count": 2,
+    "original_anchor": "id1@1024 preserved",
+    "typed_content": {
+      "analysis_equal_except_sections_capability_payload_diagnostics": true,
+      "boundary": 14401536,
+      "boundary_error_frames": 0,
+      "candidate_content_id": "439f507dab72e03d6ef8efb0fb9b88bf5be9e07cc0e463a81a84363a0fb50c6d",
+      "candidate_metadata": true,
+      "canonical_frames": 28800000,
+      "chart_equal_except_declared_sections": true,
+      "declared_intervals_cues_match": true,
+      "diagnostics": {
+        "audio_blake3": "166e8836d3a808f6beb18f8dbdc7a3411b96398aaa80c2c36dc15235be98986b",
+        "boundaries_frame_novelty": [
+          [
+            14401536,
+            0.5010970458922397
+          ]
+        ],
+        "canonical_frames": 28800000,
+        "channel": 0,
+        "confidence": null,
+        "original_analysis_version": "canonical-rms-1024-v2",
+        "original_cues": 0,
+        "original_diagnostics_blake3": "02d7feecbcc0d72ba681e704b4f63466f7291b06468fef53232cf90698823b3a",
+        "original_sections": 0,
+        "original_sections_capability": {
+          "confidence": null,
+          "source": "authored",
+          "state": "not_run"
+        },
+        "production_admission": false,
+        "profile": "canonical-logbands-4x4-novelty-v1-candidate",
+        "source_content_id": "bd147f2e1bf7c194555d4366bf1f42b8ba5e7cae2470389e879ab0d0f1f5a221"
+      },
+      "manifest_facts_equal": true,
+      "preserved_anchor1024": true,
+      "source_content_id": "bd147f2e1bf7c194555d4366bf1f42b8ba5e7cae2470389e879ab0d0f1f5a221",
+      "source_metadata": true,
+      "status": "PASS_TYPED_STRUCTURE_CONTENT"
+    },
+    "audio_bytes_equal": true,
+    "stage_plan_and_sample": true,
+    "stage_segments": [
+      [
+        0,
+        7200768,
+        "curve",
+        0
+      ],
+      [
+        7200768,
+        14401536,
+        "bridge",
+        0
+      ],
+      [
+        14401536,
+        21600768,
+        "curve",
+        1
+      ],
+      [
+        21600768,
+        28800000,
+        "bridge",
+        1
+      ]
+    ],
+    "source_protected": true,
+    "raw_eof": {
+      "bins": 1172,
+      "complete_windows": 28125,
+      "last_support": [
+        28778496,
+        28800000
+      ],
+      "last_spectral_frames": 21504,
+      "partial_tail_frames": 0,
+      "padded_frames": 0
+    }
+  },
+  "artifact_scope": {
+    "raw_helper": "Retained original raw-structure binary bca76f16...; nine invoked algorithm/decoder/schema blocks exact to current, whole production module differs after repetition; not a new c63 raw build",
+    "typed_binary_sha256": "9b67f6c9fe0b3f743a59b14b2644a639ca0d57d90b3eb691178531d98dc358a1",
+    "source_and_candidate_four_objects": "Post-publication exact SHA protected before/after every subsequent consumer step",
+    "old_failure": "Original 75-transition 600-second sample still exceeds64 boundaries with zero publication; no overwrite or algorithm retuning",
+    "final_postcheck": "Executed once with exit0; pure readonly checker OS PID not separately observed, eight measured product child PIDs independently recorded"
+  },
+  "not_run_or_not_admitted": [
+    "Music quality / human structure truth / calibrated confidence",
+    "Right-channel publication, ORT/SDK, GPU or real acoustic/device acceptance in this control",
+    "Release performance or current final four-native builds",
+    "Changing the original 75-transition cap behavior"
+  ],
+  "goal_status": "active",
+  "raw_artifacts": [
+    {
+      "path": "target/structure-long-success-qa-20261008/summary.json",
+      "sha256": "f56edd666a98bea5aa19be6796e7d56152e12571c1a3342cd0fa503e2f8da7e8",
+      "bytes": 23249
+    },
+    {
+      "path": "target/structure-long-success-qa-20261008/raw-index.json",
+      "sha256": "6a993ac3068a8ee64b796597475f615e91f81f693b51cb47a111ab8d76d32e11",
+      "bytes": 19962
+    },
+    {
+      "path": "target/structure-long-success-review-20261008/preflight.json",
+      "sha256": "79772100d7b16287f55c5af191976410bad29b1a68e2a377b476797a360a177c",
+      "bytes": 5821
+    },
+    {
+      "path": "target/structure-long-success-plan-20261008/PLAN.md",
+      "sha256": "7a1cd7e7fc966779932c1fc1e8a415552a94093309d63da4dd5222ebfec11da5",
+      "bytes": 4411
+    },
+    {
+      "path": "target/structure-long-success-plan-20261008/recipe.json",
+      "sha256": "117d48833f9595f63244aeed4f1a9acb2847adf3ffd35ee502572519d36c95b5",
+      "bytes": 761
+    },
+    {
+      "path": "target/structure-long-success-plan-20261008/generate.py",
+      "sha256": "0de6087c89347232f45c46fdf459d5f53b9f1aac8391355cdfba0f9d56531423",
+      "bytes": 1646
+    }
+  ]
+}
