@@ -1,0 +1,2611 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "status": "PASS_SCOPED_SOFTWARE_STAGE_PLAN_DIAGNOSTICS",
+  "scope": "Complete read-only current StagePlan provenance plus existing sample CLI cross-checks on five fixed packages; unchanged geometry compiler2, no musical structure production admission",
+  "revision": {
+    "initial_manifest": "target/stage-plan-diagnostics-20261008/MANIFEST.json",
+    "initial_patch": "target/stage-plan-diagnostics-20261008/stage-plan.patch",
+    "revision02_manifest": "target/stage-plan-diagnostics-20261008/revision-02/MANIFEST.json",
+    "revision02_patch": "target/stage-plan-diagnostics-20261008/revision-02/stage-plan.patch",
+    "root_apply": "target/stage-plan-diagnostics-20261008/revision-02/root-apply.json",
+    "revision02_patch_sha256": "d9c97c655feab32d8d02c920fade24c3d05a4dcce38ead05f7d4ab99a78b4aa6",
+    "scope": "Two Lab files only, current compile/helper/kind map reused; revision02 removes immutable mirror/determinism assertions, original candidate retained; production logic unchanged between candidate revisions",
+    "review": "target/stage-plan-diagnostics-20261008/revision-02/review/independent-final.json"
+  },
+  "build": {
+    "receipt": "target/stage-plan-diagnostics-20261008/build-01/cocobeat-lab-build-result.json",
+    "base_commit": "d3b2648cd20ee1d1d538470701d7c8f7018e1b23",
+    "source_inputs": 466,
+    "before_after_equal": true,
+    "inputs_before": "target/stage-plan-diagnostics-20261008/build-01/inputs-before.json",
+    "inputs_after": "target/stage-plan-diagnostics-20261008/build-01/inputs-after.json",
+    "selected_frozen_sources": [
+      "tools/cocobeat-lab/src/main.rs",
+      "tools/cocobeat-lab/src/stage.rs",
+      "tools/cocobeat-lab/Cargo.toml",
+      "Cargo.toml",
+      "Cargo.lock",
+      "crates/cocobeat-stage/src/lib.rs",
+      "crates/cocobeat-media/src/authored.rs"
+    ],
+    "binary": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+      "sha256": "0a99aba9834ed3c98f03ba4ae24e1d7527147133815859b7c74a7e6ce553200a",
+      "bytes": 1543133392,
+      "identity_boundary": "Actual producer/runner/root receipts bind fixed executable; archiver did not rehash large executable/dependency/SDK/model/font contents"
+    },
+    "post_cli_binding": "target/stage-plan-diagnostics-20261008/post-cli-binding.json",
+    "revision_boundary": "Frozen build head d3b2648 plus StagePlan two-file change; docs-only c831a8d subsequently committed; no build input changes",
+    "scope": "Build d3b2648 plus only two StagePlan source edits; later c831a8d docs-only commit is not a new build base, release or acceptance artifact"
+  },
+  "software_checks": {
+    "tests": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab"
+      ],
+      "exit_code": 0,
+      "result": "target/stage-plan-diagnostics-20261008/checks/tests-result.json",
+      "log": "target/stage-plan-diagnostics-20261008/checks/tests.log",
+      "tests_passed": 66,
+      "new_provenance_test": "stage::tests::complete_plan_keeps_section_provenance_and_unknown"
+    },
+    "clippy": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "result": "target/stage-plan-diagnostics-20261008/checks/clippy-result.json",
+      "log": "target/stage-plan-diagnostics-20261008/checks/clippy.log"
+    },
+    "fmt": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "result": "target/stage-plan-diagnostics-20261008/checks/fmt-result.json",
+      "log": "target/stage-plan-diagnostics-20261008/checks/fmt.log"
+    }
+  },
+  "unit_semantics": {
+    "test": "stage::tests::complete_plan_keeps_section_provenance_and_unknown",
+    "actual_result": "PASS inside66Lab tests",
+    "scope": "Validated synthetic analysis: leading/interior/trailing Straight gaps nullsource, shortPlaza, odd-length Curve/Bridge same-source, original labels/confidence, AuthoredNotRun/sectionCandidate/legacyUnknown preserved",
+    "candidate_boundary": "sectionsCandidate is real unit coverage only, not actualCLI/native music truth"
+  },
+  "cli": {
+    "summary": "target/stage-plan-cli-qa-20261008/actual-01/summary.json",
+    "status": "PASS_SOFTWARE_STAGE_PLAN_CONTROLS",
+    "command_count": 30,
+    "package_count": 5,
+    "plan_commands": 5,
+    "sample_commands": 25,
+    "cases": [
+      {
+        "name": "legacy-original-plan",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage-plan",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 3,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067054585000733,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-plan.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-plan.stderr",
+        "stdout_sha256": "808520e66adb8ac321c7d1cfce1ab1f0c4edf2cd5c2ebf556d78db8b82fa1abe",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy-original-sample-0",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+          "0"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 4,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066799569001887,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-0.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-0.stderr",
+        "stdout_sha256": "19bc0116beb4613d3d0d0d1f0fbd78bd7410cc5e1bd58cb6e071b1fa5a3a7563",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy-original-sample-767999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+          "767999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 5,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066852337011369,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-767999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-767999.stderr",
+        "stdout_sha256": "da3b41a6fdbd1d5e8b70724234664a99f23ea94e88e2b11e7c916402f43472c8",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy-original-sample-768000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+          "768000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 6,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066743081988534,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-768000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-768000.stderr",
+        "stdout_sha256": "3314a262d71245b3564e2b577abb457c4064c59b28a456139b85f5bd0fb9a3be",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy-original-sample-3071999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+          "3071999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 7,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067580076982267,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3071999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3071999.stderr",
+        "stdout_sha256": "184532abab9afc0185df105dd0895190d864a2897b45c51682a4c5a98e32749f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "legacy-original-sample-3072000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+          "3072000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 8,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067063007998513,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3072000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3072000.stderr",
+        "stdout_sha256": "a647489050613e4ef3ee645e8deb1f32e551765523118e8e8755d53baca7aa1e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-plan",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage-plan",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 9,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0664023629797157,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-plan.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-plan.stderr",
+        "stdout_sha256": "8b6d725ea6ca90c3fcb556b231b9e3d50b1b45f476a12ec3d5118d5a887857e2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-sample-0",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+          "0"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 10,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0665618339844514,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-0.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-0.stderr",
+        "stdout_sha256": "746d5de5a5a7131b9b08769ee72b050f095e1b9adc0bb7fec081290352e55cc8",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-sample-767999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+          "767999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 11,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066640166012803,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-767999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-767999.stderr",
+        "stdout_sha256": "bd68a59a0a3628af1a7be12651779ebe85280a0fb677267b93179fc35e56656e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-sample-768000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+          "768000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 12,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066404812008841,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-768000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-768000.stderr",
+        "stdout_sha256": "61de19298e1f4547376de233091275ef9209ae21486108840b42ae3ca7f6cbe4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-sample-3071999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+          "3071999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 13,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067206122010248,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3071999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3071999.stderr",
+        "stdout_sha256": "3dae575ec77b6e2ec6729911f8ceef540c5e77153c0a4497e63624c4fb9e3d63",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-selected-sample-3072000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+          "3072000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 14,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067425185989123,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3072000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3072000.stderr",
+        "stdout_sha256": "78b1e1cfe0722210b4ded43ac23c8652f170ce2cebb87186885c5b0d65c2d351",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-plan",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage-plan",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 15,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0667588690121192,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-plan.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-plan.stderr",
+        "stdout_sha256": "294e465c8b66dd464d0771cfca15265d3d9a472a6acbcaabf2bef5ae6fa4d773",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-sample-0",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+          "0"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 16,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0665257220098283,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-0.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-0.stderr",
+        "stdout_sha256": "9f6acd3f641f20780ad21e6eb31ae4487f4448ea803358e2304e550886cbe75f",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-sample-767999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+          "767999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 17,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066465584997786,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-767999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-767999.stderr",
+        "stdout_sha256": "9e5bb3d1a63fa858c8d2bc872f2ce06227286539996cd4ff7ed9cd7c93d5a7f5",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-sample-768000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+          "768000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 18,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066620209021494,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-768000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-768000.stderr",
+        "stdout_sha256": "20232a1a11daf8a88556ec9c451cb87a382d64ca1a6bd531100f1260df3d3b97",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-sample-3071999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+          "3071999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 19,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066628097993089,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3071999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3071999.stderr",
+        "stdout_sha256": "141a7acf1bde72f4582fd8ecf59dfccab9933488d3c58df548fc74583dfb4e4c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "adopted-empty-sample-3072000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+          "3072000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 20,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.066793998994399,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3072000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3072000.stderr",
+        "stdout_sha256": "dc31e5ea88163ac21c750a1c42fba09a3fe8c6b9a48fbb022ec6eabbe31d054d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-plan",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage-plan",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 21,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0664604810008314,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-plan.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-plan.stderr",
+        "stdout_sha256": "d2ecb9b6efdd60fa3549aab38066f016ff9ec410e2fdf3e6304a14af02442210",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-sample-0",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+          "0"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 22,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0665611130243633,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-0.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-0.stderr",
+        "stdout_sha256": "3df6b8fdf927f8e37ac14d5c87f6f5b7809e1e5ce125b3b12fe763cb717b8900",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-sample-767999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+          "767999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 23,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0671014960098546,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-767999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-767999.stderr",
+        "stdout_sha256": "aed730359520c8f0579be63d4399fddc330077573e0f8dd619c180adb68c5a1c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-sample-768000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+          "768000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 24,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.067138751008315,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-768000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-768000.stderr",
+        "stdout_sha256": "24bea87a418b6bae14c0e5f139458d4fba0ca2fa3bacf69d6dc5bbb34645506c",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-sample-3071999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+          "3071999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 25,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0663707350031473,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3071999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3071999.stderr",
+        "stdout_sha256": "5a5dd18429ec08bfacb71f93567bd732d5a195a64b9b668d318c3004c23cfeb0",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "authored-v2-sample-3072000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+          "3072000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 26,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 2.0671745669969823,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3072000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3072000.stderr",
+        "stdout_sha256": "819075ae5b75fce6ed2158f122d9c341f6e9e46f9c7b8dba5606edd17ba5ef26",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-plan",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage-plan",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 27,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.9150906949944329,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-plan.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-plan.stderr",
+        "stdout_sha256": "72e9f5fd1d6f2fd4c5b853d3f5960afae4543f710b7b447282a689e85a84b5ac",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-sample-0",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+          "0"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 28,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.9148656040197238,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-0.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-0.stderr",
+        "stdout_sha256": "f590d9e331435f00a4be082f06779122dbda335ac31714e0049fe6602646dea0",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-sample-767999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+          "767999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 29,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.8648154250113294,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-767999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-767999.stderr",
+        "stdout_sha256": "bb2e7b72d8b6bddb2d2daf942d95c717a325688550d0fecff68712bed0348822",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-sample-768000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+          "768000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 30,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.8653191490157042,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-768000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-768000.stderr",
+        "stdout_sha256": "626ff209af058ff2efbba33c2772d50c54e773afbe53c0c54289fa5af3217ee5",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-sample-1535999",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+          "1535999"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 31,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.9150171810179017,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1535999.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1535999.stderr",
+        "stdout_sha256": "1e02d07558f6ad9edf4c1ea4fb17d4d6105fa9878e47efe1f4a7f7fe3be3958b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      },
+      {
+        "name": "native-beat-candidate-sample-1536000",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-diagnostics-20261008/build-01/bin/cocobeat-lab",
+          "inspect-stage",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+          "1536000"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01",
+        "pid": 32,
+        "exit_code": 0,
+        "process_waited": true,
+        "timed_out": false,
+        "termination_requested": false,
+        "seconds": 0.915040178981144,
+        "binary_stat_before": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_after": [
+          52,
+          180748287,
+          1543133392,
+          1791419744654378874
+        ],
+        "binary_stat_error": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1536000.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1536000.stderr",
+        "stdout_sha256": "e231e8bb02453966746a04fa610fcfb744a9b8c255b3c0c0a55aa5ee081a5b26",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "PASS"
+      }
+    ],
+    "plans": [
+      {
+        "name": "legacy-original",
+        "package": "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package",
+        "plan": {
+          "analysis_schema_version": 1,
+          "analysis_version": "canonical-rms-1024-v1",
+          "compiler_version": 2,
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "end_frames": 3072000,
+          "sections": [
+            {
+              "confidence": null,
+              "end_frames": 384000,
+              "label": "orientation",
+              "section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "confidence": null,
+              "end_frames": 1152000,
+              "label": "free_imitation",
+              "section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "confidence": null,
+              "end_frames": 1920000,
+              "label": "sparse_anchors",
+              "section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2304000,
+              "label": "silence",
+              "section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2880000,
+              "label": "shared_release",
+              "section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "confidence": null,
+              "end_frames": 3072000,
+              "label": "ending",
+              "section_index": 5,
+              "start_frames": 2880000
+            }
+          ],
+          "sections_capability": null,
+          "segments": [
+            {
+              "end_frames": 384000,
+              "kind": "plaza",
+              "source_section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "end_frames": 768000,
+              "kind": "curve",
+              "source_section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "end_frames": 1152000,
+              "kind": "bridge",
+              "source_section_index": 1,
+              "start_frames": 768000
+            },
+            {
+              "end_frames": 1536000,
+              "kind": "curve",
+              "source_section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "end_frames": 1920000,
+              "kind": "bridge",
+              "source_section_index": 2,
+              "start_frames": 1536000
+            },
+            {
+              "end_frames": 2304000,
+              "kind": "plaza",
+              "source_section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "end_frames": 2880000,
+              "kind": "plaza",
+              "source_section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "end_frames": 3072000,
+              "kind": "plaza",
+              "source_section_index": 5,
+              "start_frames": 2880000
+            }
+          ]
+        },
+        "samples": [
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+            "distance_mm": 0,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 0,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+            "distance_mm": 47999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 767999,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": -2,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+            "distance_mm": 48000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 768000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+            "distance_mm": 191999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3071999,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": true,
+            "compiler_version": 2,
+            "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+            "distance_mm": 192000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3072000,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        ]
+      },
+      {
+        "name": "adopted-selected",
+        "package": "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package",
+        "plan": {
+          "analysis_schema_version": 1,
+          "analysis_version": "canonical-rms-1024-v1",
+          "compiler_version": 2,
+          "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+          "end_frames": 3072000,
+          "sections": [
+            {
+              "confidence": null,
+              "end_frames": 384000,
+              "label": "orientation",
+              "section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "confidence": null,
+              "end_frames": 1152000,
+              "label": "free_imitation",
+              "section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "confidence": null,
+              "end_frames": 1920000,
+              "label": "sparse_anchors",
+              "section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2304000,
+              "label": "silence",
+              "section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2880000,
+              "label": "shared_release",
+              "section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "confidence": null,
+              "end_frames": 3072000,
+              "label": "ending",
+              "section_index": 5,
+              "start_frames": 2880000
+            }
+          ],
+          "sections_capability": null,
+          "segments": [
+            {
+              "end_frames": 384000,
+              "kind": "plaza",
+              "source_section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "end_frames": 768000,
+              "kind": "curve",
+              "source_section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "end_frames": 1152000,
+              "kind": "bridge",
+              "source_section_index": 1,
+              "start_frames": 768000
+            },
+            {
+              "end_frames": 1536000,
+              "kind": "curve",
+              "source_section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "end_frames": 1920000,
+              "kind": "bridge",
+              "source_section_index": 2,
+              "start_frames": 1536000
+            },
+            {
+              "end_frames": 2304000,
+              "kind": "plaza",
+              "source_section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "end_frames": 2880000,
+              "kind": "plaza",
+              "source_section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "end_frames": 3072000,
+              "kind": "plaza",
+              "source_section_index": 5,
+              "start_frames": 2880000
+            }
+          ]
+        },
+        "samples": [
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+            "distance_mm": 0,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 0,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+            "distance_mm": 47999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 767999,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": -2,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+            "distance_mm": 48000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 768000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+            "distance_mm": 191999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3071999,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": true,
+            "compiler_version": 2,
+            "content_id": "package-blake3:97fe027ade7a572ca37778d7db8db28ba88cc4d0026624aa403d499b1e174985",
+            "distance_mm": 192000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3072000,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        ]
+      },
+      {
+        "name": "adopted-empty",
+        "package": "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package",
+        "plan": {
+          "analysis_schema_version": 1,
+          "analysis_version": "canonical-rms-1024-v1",
+          "compiler_version": 2,
+          "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+          "end_frames": 3072000,
+          "sections": [
+            {
+              "confidence": null,
+              "end_frames": 384000,
+              "label": "orientation",
+              "section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "confidence": null,
+              "end_frames": 1152000,
+              "label": "free_imitation",
+              "section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "confidence": null,
+              "end_frames": 1920000,
+              "label": "sparse_anchors",
+              "section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2304000,
+              "label": "silence",
+              "section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2880000,
+              "label": "shared_release",
+              "section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "confidence": null,
+              "end_frames": 3072000,
+              "label": "ending",
+              "section_index": 5,
+              "start_frames": 2880000
+            }
+          ],
+          "sections_capability": null,
+          "segments": [
+            {
+              "end_frames": 384000,
+              "kind": "plaza",
+              "source_section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "end_frames": 768000,
+              "kind": "curve",
+              "source_section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "end_frames": 1152000,
+              "kind": "bridge",
+              "source_section_index": 1,
+              "start_frames": 768000
+            },
+            {
+              "end_frames": 1536000,
+              "kind": "curve",
+              "source_section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "end_frames": 1920000,
+              "kind": "bridge",
+              "source_section_index": 2,
+              "start_frames": 1536000
+            },
+            {
+              "end_frames": 2304000,
+              "kind": "plaza",
+              "source_section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "end_frames": 2880000,
+              "kind": "plaza",
+              "source_section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "end_frames": 3072000,
+              "kind": "plaza",
+              "source_section_index": 5,
+              "start_frames": 2880000
+            }
+          ]
+        },
+        "samples": [
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+            "distance_mm": 0,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 0,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+            "distance_mm": 47999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 767999,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": -2,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+            "distance_mm": 48000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 768000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+            "distance_mm": 191999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3071999,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": true,
+            "compiler_version": 2,
+            "content_id": "package-blake3:2559bc0beea07ff44f6ab6eb677b8ab89025d9081f4c2ef91b1aa5bb3466a609",
+            "distance_mm": 192000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3072000,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        ]
+      },
+      {
+        "name": "authored-v2",
+        "package": "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build",
+        "plan": {
+          "analysis_schema_version": 2,
+          "analysis_version": "canonical-rms-1024-v2",
+          "compiler_version": 2,
+          "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+          "end_frames": 3072000,
+          "sections": [
+            {
+              "confidence": null,
+              "end_frames": 384000,
+              "label": "orientation",
+              "section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "confidence": null,
+              "end_frames": 1152000,
+              "label": "free_imitation",
+              "section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "confidence": null,
+              "end_frames": 1920000,
+              "label": "sparse_anchors",
+              "section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2304000,
+              "label": "silence",
+              "section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "confidence": null,
+              "end_frames": 2880000,
+              "label": "shared_release",
+              "section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "confidence": null,
+              "end_frames": 3072000,
+              "label": "ending",
+              "section_index": 5,
+              "start_frames": 2880000
+            }
+          ],
+          "sections_capability": {
+            "confidence": null,
+            "source": "authored",
+            "state": "not_run"
+          },
+          "segments": [
+            {
+              "end_frames": 384000,
+              "kind": "plaza",
+              "source_section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "end_frames": 768000,
+              "kind": "curve",
+              "source_section_index": 1,
+              "start_frames": 384000
+            },
+            {
+              "end_frames": 1152000,
+              "kind": "bridge",
+              "source_section_index": 1,
+              "start_frames": 768000
+            },
+            {
+              "end_frames": 1536000,
+              "kind": "curve",
+              "source_section_index": 2,
+              "start_frames": 1152000
+            },
+            {
+              "end_frames": 1920000,
+              "kind": "bridge",
+              "source_section_index": 2,
+              "start_frames": 1536000
+            },
+            {
+              "end_frames": 2304000,
+              "kind": "plaza",
+              "source_section_index": 3,
+              "start_frames": 1920000
+            },
+            {
+              "end_frames": 2880000,
+              "kind": "plaza",
+              "source_section_index": 4,
+              "start_frames": 2304000
+            },
+            {
+              "end_frames": 3072000,
+              "kind": "plaza",
+              "source_section_index": 5,
+              "start_frames": 2880000
+            }
+          ]
+        },
+        "samples": [
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+            "distance_mm": 0,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 0,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+            "distance_mm": 47999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 767999,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": -2,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+            "distance_mm": 48000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 768000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+            "distance_mm": 191999,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3071999,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": true,
+            "compiler_version": 2,
+            "content_id": "package-blake3:332591488a66069d867797d17958de86bb8b041d89fec2d6e905420ab9ccfc9f",
+            "distance_mm": 192000,
+            "elevation_mm": 0,
+            "end_frames": 3072000,
+            "frame": 3072000,
+            "half_width_mm": 3500,
+            "kind": "plaza",
+            "lateral_mm": 0,
+            "segment_count": 8,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        ]
+      },
+      {
+        "name": "native-beat-candidate",
+        "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+        "plan": {
+          "analysis_schema_version": 2,
+          "analysis_version": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "compiler_version": 2,
+          "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+          "end_frames": 1536000,
+          "sections": [
+            {
+              "confidence": null,
+              "end_frames": 1536000,
+              "label": "test",
+              "section_index": 0,
+              "start_frames": 0
+            }
+          ],
+          "sections_capability": {
+            "confidence": null,
+            "source": "authored",
+            "state": "not_run"
+          },
+          "segments": [
+            {
+              "end_frames": 768000,
+              "kind": "curve",
+              "source_section_index": 0,
+              "start_frames": 0
+            },
+            {
+              "end_frames": 1536000,
+              "kind": "bridge",
+              "source_section_index": 0,
+              "start_frames": 768000
+            }
+          ]
+        },
+        "samples": [
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+            "distance_mm": 0,
+            "elevation_mm": 0,
+            "end_frames": 1536000,
+            "frame": 0,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 2,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+            "distance_mm": 47999,
+            "elevation_mm": 0,
+            "end_frames": 1536000,
+            "frame": 767999,
+            "half_width_mm": 3500,
+            "kind": "curve",
+            "lateral_mm": 0,
+            "segment_count": 2,
+            "slope_x_ppm": -1,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+            "distance_mm": 48000,
+            "elevation_mm": 0,
+            "end_frames": 1536000,
+            "frame": 768000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 2,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": false,
+            "compiler_version": 2,
+            "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+            "distance_mm": 95999,
+            "elevation_mm": 0,
+            "end_frames": 1536000,
+            "frame": 1535999,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 2,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          },
+          {
+            "at_end": true,
+            "compiler_version": 2,
+            "content_id": "package-blake3:967144a815a3695eb26aa751acd03b4ea234b574b778630795c230f9efe5c6e7",
+            "distance_mm": 96000,
+            "elevation_mm": 0,
+            "end_frames": 1536000,
+            "frame": 1536000,
+            "half_width_mm": 3500,
+            "kind": "bridge",
+            "lateral_mm": 0,
+            "segment_count": 2,
+            "slope_x_ppm": 0,
+            "slope_y_ppm": 0
+          }
+        ]
+      }
+    ],
+    "protected_count": 12,
+    "protected_unchanged": true,
+    "packages": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package": {
+        "before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "unchanged": true
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package": {
+        "before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "unchanged": true
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/empty-package": {
+        "before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "4abd66a54e531846b84a30aed6b89e4f38ddaba76dd9e8181dde598bfbadc269",
+          "song.package": "8cc3b2c161f4cb13960cfb0b0f2ed7557eadd20c72afe1ce06573d6f413ad618"
+        },
+        "after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "4abd66a54e531846b84a30aed6b89e4f38ddaba76dd9e8181dde598bfbadc269",
+          "song.package": "8cc3b2c161f4cb13960cfb0b0f2ed7557eadd20c72afe1ce06573d6f413ad618"
+        },
+        "unchanged": true
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/mir-capabilities-delivery-20261008/cli/new-build": {
+        "before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "63b231be7163d30169ed9404c94cc6987118af5b34b66602df707b7dbfe4a90f",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "81991b097997571fb3ebfb46fbfbcb60f5a4d201adf7a5e0ec22fccd1fd8d92d"
+        },
+        "after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "63b231be7163d30169ed9404c94cc6987118af5b34b66602df707b7dbfe4a90f",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "81991b097997571fb3ebfb46fbfbcb60f5a4d201adf7a5e0ec22fccd1fd8d92d"
+        },
+        "unchanged": true
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package": {
+        "before_sha256": {
+          "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+          "analysis.bin": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+          "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+          "song.package": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5"
+        },
+        "after_sha256": {
+          "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+          "analysis.bin": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+          "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+          "song.package": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5"
+        },
+        "unchanged": true
+      }
+    },
+    "packages_unchanged": true,
+    "four_object_total_bytes": 9914144,
+    "binary_before_sha256": "0a99aba9834ed3c98f03ba4ae24e1d7527147133815859b7c74a7e6ce553200a",
+    "binary_after_sha256": "0a99aba9834ed3c98f03ba4ae24e1d7527147133815859b7c74a7e6ce553200a",
+    "binary_unchanged": true,
+    "remaining_children": [],
+    "postflight_errors": [],
+    "process_boundary": "Actual30 CLI children waited, no timeout/termination requested; recorded PIDs are runner namespace observations, not independent host process scan"
+  },
+  "source_semantics": {
+    "legacy_and_adoption": "Three actual wire1 packages retain null/Unknown section capability; no conversion to NotRun or measured zero",
+    "authored_v2": "Actualwire2/new-build64s keeps not_run/authored/null for manual sections",
+    "native_beat_candidate": "Actualwire2 fixed12032s beat/downbeat Candidate package keeps sections not_run/authored/null; unchanged source4objects, no model/SDK reinference",
+    "coverage": "Every segment consecutively covers0..N with original section-index full containment; Curve/Bridge pair shares same source index; original manual authoring intervals/labels/nullconfidence match reports",
+    "samples": "Perpackage0,767999,768000,N-1,N exactly matches plan kind/compiler/CID/end/count/at_end",
+    "adoption_boundary": "Original/selected/empty Stage segments/sections identical despite different full content_id from manual Anchor adoption"
+  },
+  "qa_review": {
+    "receipt": "target/stage-plan-cli-qa-20261008/static-review.json",
+    "scope": "Original static candidate review retains original CLI_NOTRUN timing; actual terminal30CLI results joined here"
+  },
+  "preserved_history": {
+    "candidate01": "Initial and revision02 files retained, no candidate compile failure invented",
+    "wire_correction": "Initial path-name assumption of adoption packages asv2 corrected by actual header1 before any CLI; formalfixture and actualreports use true1/1/1/2/2",
+    "old_music": {
+      "record": "testdata/synthetic/native-beat-observations-20261008.json",
+      "status": "FAIL_PRESERVED",
+      "frontend_rounds": "Existing four frontend failures and None confidence preserved; not rerun or upgraded by Stage diagnostics"
+    }
+  },
+  "not_run": [
+    "Section Candidate CLI fixture: actual stage unit test only",
+    "Automatic musical structure quality or confidence admission",
+    "Native game/GPU/audio/physical devices/human acceptance",
+    "Other native platforms/release",
+    "Full automatic musical section structure/arrangement admission and human Stage/readability/playability acceptance",
+    "Physicalcontrollers/speakerDac/realtimeGPU scene or complete song-session validation",
+    "Finalfour release archives; previous release/binary/performance receipts are separate revisions"
+  ],
+  "evidence_sha256": {
+    "assets/dev/vertical_slice/authoring.json": {
+      "sha256": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+      "bytes": 1069
+    },
+    "target/authored-source-delivery-20261008/cli/original-64s-package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "target/authored-source-delivery-20261008/cli/original-64s-package/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "target/authored-source-delivery-20261008/cli/original-64s-package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/authored-source-delivery-20261008/cli/original-64s-package/song.package": {
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8",
+      "bytes": 319
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/empty-package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/empty-package/chart.bin": {
+      "sha256": "4abd66a54e531846b84a30aed6b89e4f38ddaba76dd9e8181dde598bfbadc269",
+      "bytes": 170
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/empty-package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/empty-package/song.package": {
+      "sha256": "8cc3b2c161f4cb13960cfb0b0f2ed7557eadd20c72afe1ce06573d6f413ad618",
+      "bytes": 318
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/selected-package/analysis.bin": {
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+      "bytes": 65673
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/selected-package/chart.bin": {
+      "sha256": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+      "bytes": 173
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/selected-package/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/label-adoption-cli-qa-20261008/actual-01/selected-package/song.package": {
+      "sha256": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394",
+      "bytes": 318
+    },
+    "target/mir-capabilities-delivery-20261008/cli/new-build/analysis.bin": {
+      "sha256": "63b231be7163d30169ed9404c94cc6987118af5b34b66602df707b7dbfe4a90f",
+      "bytes": 65446
+    },
+    "target/mir-capabilities-delivery-20261008/cli/new-build/chart.bin": {
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+      "bytes": 205
+    },
+    "target/mir-capabilities-delivery-20261008/cli/new-build/song.audio.ogg": {
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+      "bytes": 2330678
+    },
+    "target/mir-capabilities-delivery-20261008/cli/new-build/song.package": {
+      "sha256": "81991b097997571fb3ebfb46fbfbcb60f5a4d201adf7a5e0ec22fccd1fd8d92d",
+      "bytes": 292
+    },
+    "target/native-beat-adapter-c-qa-plan-20261008/fixed120-authoring.json": {
+      "sha256": "cf2c5515bca8f80bc795b94dcc6436d7b1b158d61f393b6c78714be0b99937bb",
+      "bytes": 369
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/analysis.bin": {
+      "sha256": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+      "bytes": 33742
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/chart.bin": {
+      "sha256": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+      "bytes": 83
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/song.audio.ogg": {
+      "sha256": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+      "bytes": 292807
+    },
+    "target/native-beat-delivery-20261008/positive-01/fixed120-left/package/song.package": {
+      "sha256": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5",
+      "bytes": 335
+    },
+    "target/stage-plan-cli-qa-20261008/README.md": {
+      "sha256": "c57f2ef6e31aeadeda77b55e51ae0425115da442882bcd7cc0bb781f76469bda",
+      "bytes": 2070
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-plan.stdout": {
+      "sha256": "294e465c8b66dd464d0771cfca15265d3d9a472a6acbcaabf2bef5ae6fa4d773",
+      "bytes": 1559
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-0.stdout": {
+      "sha256": "9f6acd3f641f20780ad21e6eb31ae4487f4448ea803358e2304e550886cbe75f",
+      "bytes": 298
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3071999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3071999.stdout": {
+      "sha256": "141a7acf1bde72f4582fd8ecf59dfccab9933488d3c58df548fc74583dfb4e4c",
+      "bytes": 309
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3072000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-3072000.stdout": {
+      "sha256": "dc31e5ea88163ac21c750a1c42fba09a3fe8c6b9a48fbb022ec6eabbe31d054d",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-767999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-767999.stdout": {
+      "sha256": "9e5bb3d1a63fa858c8d2bc872f2ce06227286539996cd4ff7ed9cd7c93d5a7f5",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-768000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-empty-sample-768000.stdout": {
+      "sha256": "20232a1a11daf8a88556ec9c451cb87a382d64ca1a6bd531100f1260df3d3b97",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-plan.stdout": {
+      "sha256": "8b6d725ea6ca90c3fcb556b231b9e3d50b1b45f476a12ec3d5118d5a887857e2",
+      "bytes": 1559
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-0.stdout": {
+      "sha256": "746d5de5a5a7131b9b08769ee72b050f095e1b9adc0bb7fec081290352e55cc8",
+      "bytes": 298
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3071999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3071999.stdout": {
+      "sha256": "3dae575ec77b6e2ec6729911f8ceef540c5e77153c0a4497e63624c4fb9e3d63",
+      "bytes": 309
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3072000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-3072000.stdout": {
+      "sha256": "78b1e1cfe0722210b4ded43ac23c8652f170ce2cebb87186885c5b0d65c2d351",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-767999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-767999.stdout": {
+      "sha256": "bd68a59a0a3628af1a7be12651779ebe85280a0fb677267b93179fc35e56656e",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-768000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/adopted-selected-sample-768000.stdout": {
+      "sha256": "61de19298e1f4547376de233091275ef9209ae21486108840b42ae3ca7f6cbe4",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-plan.stdout": {
+      "sha256": "d2ecb9b6efdd60fa3549aab38066f016ff9ec410e2fdf3e6304a14af02442210",
+      "bytes": 1612
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-0.stdout": {
+      "sha256": "3df6b8fdf927f8e37ac14d5c87f6f5b7809e1e5ce125b3b12fe763cb717b8900",
+      "bytes": 298
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3071999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3071999.stdout": {
+      "sha256": "5a5dd18429ec08bfacb71f93567bd732d5a195a64b9b668d318c3004c23cfeb0",
+      "bytes": 309
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3072000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-3072000.stdout": {
+      "sha256": "819075ae5b75fce6ed2158f122d9c341f6e9e46f9c7b8dba5606edd17ba5ef26",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-767999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-767999.stdout": {
+      "sha256": "aed730359520c8f0579be63d4399fddc330077573e0f8dd619c180adb68c5a1c",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-768000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/authored-v2-sample-768000.stdout": {
+      "sha256": "24bea87a418b6bae14c0e5f139458d4fba0ca2fa3bacf69d6dc5bbb34645506c",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-plan.stdout": {
+      "sha256": "808520e66adb8ac321c7d1cfce1ab1f0c4edf2cd5c2ebf556d78db8b82fa1abe",
+      "bytes": 1559
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-0.stdout": {
+      "sha256": "19bc0116beb4613d3d0d0d1f0fbd78bd7410cc5e1bd58cb6e071b1fa5a3a7563",
+      "bytes": 298
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3071999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3071999.stdout": {
+      "sha256": "184532abab9afc0185df105dd0895190d864a2897b45c51682a4c5a98e32749f",
+      "bytes": 309
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3072000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-3072000.stdout": {
+      "sha256": "a647489050613e4ef3ee645e8deb1f32e551765523118e8e8755d53baca7aa1e",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-767999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-767999.stdout": {
+      "sha256": "da3b41a6fdbd1d5e8b70724234664a99f23ea94e88e2b11e7c916402f43472c8",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-768000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/legacy-original-sample-768000.stdout": {
+      "sha256": "3314a262d71245b3564e2b577abb457c4064c59b28a456139b85f5bd0fb9a3be",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-plan.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-plan.stdout": {
+      "sha256": "72e9f5fd1d6f2fd4c5b853d3f5960afae4543f710b7b447282a689e85a84b5ac",
+      "bytes": 602
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-0.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-0.stdout": {
+      "sha256": "f590d9e331435f00a4be082f06779122dbda335ac31714e0049fe6602646dea0",
+      "bytes": 298
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1535999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1535999.stdout": {
+      "sha256": "1e02d07558f6ad9edf4c1ea4fb17d4d6105fa9878e47efe1f4a7f7fe3be3958b",
+      "bytes": 309
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1536000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-1536000.stdout": {
+      "sha256": "e231e8bb02453966746a04fa610fcfb744a9b8c255b3c0c0a55aa5ee081a5b26",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-767999.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-767999.stdout": {
+      "sha256": "bb2e7b72d8b6bddb2d2daf942d95c717a325688550d0fecff68712bed0348822",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-768000.stderr": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/logs/native-beat-candidate-sample-768000.stdout": {
+      "sha256": "626ff209af058ff2efbba33c2772d50c54e773afbe53c0c54289fa5af3217ee5",
+      "bytes": 308
+    },
+    "target/stage-plan-cli-qa-20261008/actual-01/summary.json": {
+      "sha256": "fea2c2eadfa158baef1e3bd3558e0e36af10379dc5650d98fe73f514c94c5a28",
+      "bytes": 75469
+    },
+    "target/stage-plan-cli-qa-20261008/check.py": {
+      "sha256": "069758337dcb431ef804bbedc14e481501694dbe5d7b650ccda337897c142813",
+      "bytes": 11371
+    },
+    "target/stage-plan-cli-qa-20261008/fixture-receipt.json": {
+      "sha256": "d06b9409d2e9c68e45797ddd3de5e28a7dd1c518cc3be3fbb003553ea826cfb3",
+      "bytes": 14864
+    },
+    "target/stage-plan-cli-qa-20261008/static-review.json": {
+      "sha256": "0e34e42c12987456ba39cb7261c36f13cc3229a75cc9d71efdd96c74a67db09f",
+      "bytes": 4638
+    },
+    "target/stage-plan-diagnostics-20261008/MANIFEST.json": {
+      "sha256": "4fb09d53aeebaa2faaf17a0cd60727eb7d9d9e87336fb09f639fad3ab75d86b5",
+      "bytes": 895
+    },
+    "target/stage-plan-diagnostics-20261008/PLAN.md": {
+      "sha256": "31a057146d47c79c52bafdcdbe7eb787759d2edf346b6e86e0cd0ac4bbdb398a",
+      "bytes": 2936
+    },
+    "target/stage-plan-diagnostics-20261008/base/main.rs": {
+      "sha256": "06f5933cae5d22a01ef16b2900e0008269da23040e882ca64924eb30d7e4e73d",
+      "bytes": 12990
+    },
+    "target/stage-plan-diagnostics-20261008/base/stage.rs": {
+      "sha256": "1f2d262bed5b15929693f44cdadca2e1d9b1d2dcd409559066e63a80b1b78707",
+      "bytes": 2710
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/build-result.json": {
+      "sha256": "f7a77ab5b6c9857dce8acc4630ba378c9a130a047e1ccc599bfec6fb33a6c7c9",
+      "bytes": 141507
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/build.jsonl": {
+      "sha256": "d089e316daede13b7f54c504befe28edfcae23f694ad926ac63c136d19b5c973",
+      "bytes": 403064
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/build.py": {
+      "sha256": "391a6321e922fded077232abc75614d9467a0af66b85d6de31a1ac5df153df65",
+      "bytes": 2758
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/build.stderr": {
+      "sha256": "26ed1cbe0536ead6d1e7e6f634f1d92a785cd92e047eaac50de3ca4cdc9a7b4f",
+      "bytes": 158
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/cocobeat-lab-build-result.json": {
+      "sha256": "a4c0f9f801c4ef8549140ae8f6c86424cf598afe31aea6720a0ca912ebd35745",
+      "bytes": 141779
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/inputs-after.json": {
+      "sha256": "c61f8b574b1a161cea401ca2899a89c9d2dd5b5b5c893217ee72a9a47832008d",
+      "bytes": 57601
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/inputs-before.json": {
+      "sha256": "c61f8b574b1a161cea401ca2899a89c9d2dd5b5b5c893217ee72a9a47832008d",
+      "bytes": 57601
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/Cargo.lock": {
+      "sha256": "11e834778655bd2dfef5fe036f218810a59d46e3a356a8a70927f6ff8df1771f",
+      "bytes": 160986
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/Cargo.toml": {
+      "sha256": "c844d474309f7c6645e26b77c650e2c95c5f07ee915b68b612b73c69a6a80019",
+      "bytes": 2929
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/crates/cocobeat-media/src/authored.rs": {
+      "sha256": "d3b8665bb0d8b188778f5f4f11d92d3abd80c5359d7c5f7d8b40a73ae0ff9aa4",
+      "bytes": 29773
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/crates/cocobeat-stage/src/lib.rs": {
+      "sha256": "4c2ed3afbc61b0b11a40a913d1d9eabfa9a5fd71a3d7356f29b48f698032cc5f",
+      "bytes": 25289
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "7cbb7b09ef5365836126b2b5c633a1e80f1e9c4a143a5fc4760c97eb7e299f49",
+      "bytes": 739
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "a1a7fdc4d9f54308212462772949d66ea94a31cb3e211408f1f831e232c9f092",
+      "bytes": 13158
+    },
+    "target/stage-plan-diagnostics-20261008/build-01/source/tools/cocobeat-lab/src/stage.rs": {
+      "sha256": "853a4ba40912cef1aa8bbfb6c2ade29dc51aa8c1351f1b56875fbbad63a588b9",
+      "bytes": 9336
+    },
+    "target/stage-plan-diagnostics-20261008/candidate/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "a1a7fdc4d9f54308212462772949d66ea94a31cb3e211408f1f831e232c9f092",
+      "bytes": 13158
+    },
+    "target/stage-plan-diagnostics-20261008/candidate/tools/cocobeat-lab/src/stage.rs": {
+      "sha256": "b4090378f027acb878a721c2f68d3085e07a9a17eb11388354b6a3e7eaf2d9f0",
+      "bytes": 9557
+    },
+    "target/stage-plan-diagnostics-20261008/checks/clippy-result.json": {
+      "sha256": "982f54340df0f0dc52811e649eb2bbb476212a35115c60cd69d1411c4aed2c7c",
+      "bytes": 206
+    },
+    "target/stage-plan-diagnostics-20261008/checks/clippy.log": {
+      "sha256": "c36963363dc4313b5a939a8d27a261301f757d6e7acbd6379c26be3e6a3f8ac8",
+      "bytes": 251
+    },
+    "target/stage-plan-diagnostics-20261008/checks/fmt-result.json": {
+      "sha256": "cbe15d2900bb8b36c81054b7027cc1822899f6e25cc23664661ca1700015a356",
+      "bytes": 102
+    },
+    "target/stage-plan-diagnostics-20261008/checks/fmt.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/stage-plan-diagnostics-20261008/checks/tests-result.json": {
+      "sha256": "d218393a8a6209e8ff6a25661b16d9614b8fe7629ee3c5d5b402ed0735364bca",
+      "bytes": 147
+    },
+    "target/stage-plan-diagnostics-20261008/checks/tests.log": {
+      "sha256": "9d4097e6828a9e0fdc0dd9a7a04445895bbd6393f728cb262f9205273c2a4159",
+      "bytes": 6801
+    },
+    "target/stage-plan-diagnostics-20261008/post-cli-binding.json": {
+      "sha256": "4f43ce823911367df194932a77d84d1173c28440f224e2f5fa50e600d89c2921",
+      "bytes": 439
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/MANIFEST.json": {
+      "sha256": "f9b3b1f96ac29acf2883031b15473fc834cdc860112a32125213e7340666f743",
+      "bytes": 906
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/PLAN.md": {
+      "sha256": "adf08b289b719334643f03f1458ae5a582a4570f7c651d38af22d0f5d1e14b9d",
+      "bytes": 2897
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/REVISION.md": {
+      "sha256": "308ecc31ae756267d7088fb7e6545649d0c3af62f5c7441a51ee411354209c85",
+      "bytes": 394
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/base/main.rs": {
+      "sha256": "06f5933cae5d22a01ef16b2900e0008269da23040e882ca64924eb30d7e4e73d",
+      "bytes": 12990
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/base/stage.rs": {
+      "sha256": "1f2d262bed5b15929693f44cdadca2e1d9b1d2dcd409559066e63a80b1b78707",
+      "bytes": 2710
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/candidate/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "a1a7fdc4d9f54308212462772949d66ea94a31cb3e211408f1f831e232c9f092",
+      "bytes": 13158
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/candidate/tools/cocobeat-lab/src/stage.rs": {
+      "sha256": "853a4ba40912cef1aa8bbfb6c2ade29dc51aa8c1351f1b56875fbbad63a588b9",
+      "bytes": 9336
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/review/independent-final.json": {
+      "sha256": "7f3a90e0f55b2ef03f2ac047781b176712cbdd0b3480a35331dee726b16dc533",
+      "bytes": 3932
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/root-apply.json": {
+      "sha256": "a3971d769db5b52c9c719dceb5da08881947f75a0a22c8556831bd7c3ffce072",
+      "bytes": 697
+    },
+    "target/stage-plan-diagnostics-20261008/revision-02/stage-plan.patch": {
+      "sha256": "d9c97c655feab32d8d02c920fade24c3d05a4dcce38ead05f7d4ab99a78b4aa6",
+      "bytes": 13280
+    },
+    "target/stage-plan-diagnostics-20261008/stage-plan.patch": {
+      "sha256": "a9277f917774a404c8412a9d12fccbc193e6ba871c380251172ce80f350491b5",
+      "bytes": 13507
+    },
+    "testdata/synthetic/analysis-v2-observations-20261008.json": {
+      "sha256": "96fc2195bc1bf1822edb1fef8d8c63dc659a3b54b9bfd9c4ba8aa5fda230d248",
+      "bytes": 81095
+    },
+    "testdata/synthetic/label-adoption-observations-20261008.json": {
+      "sha256": "fd55f4df1d7f063e3ca8971c99a7821a40fcf1330be239c49ad2b5d2c0987a8b",
+      "bytes": 135271
+    },
+    "testdata/synthetic/native-beat-observations-20261008.json": {
+      "sha256": "c6597d3090afb56d5a413acdc8e2be07bb0f6e139d7a856cca5621281ac9951c",
+      "bytes": 254248
+    }
+  }
+}

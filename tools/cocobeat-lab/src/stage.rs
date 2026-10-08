@@ -1,4 +1,4 @@
-use cocobeat_schema::SongTime;
+use cocobeat_schema::{AnalysisSource, AnalysisState, MusicAnalysis, SongTime};
 use cocobeat_stage::SegmentKind;
 use std::path::Path;
 
@@ -7,18 +7,109 @@ pub fn inspect(path: &Path, frame: &str) -> Result<(), String> {
         .parse::<i64>()
         .map_err(|_| "Stage frame must be a signed integer".to_string())?;
     let package = cocobeat_media::validate_package(path)?;
-    let hash: String = package
-        .manifest
-        .package_hash
-        .iter()
-        .map(|byte| format!("{byte:02x}"))
-        .collect();
-    let plan = cocobeat_stage::compile(
-        &format!("package-blake3:{hash}"),
+    let plan = package_plan(&package)?;
+    print_sample(&plan, frame)
+}
+
+/// Inspect the complete current plan and retain authored or unknown section provenance
+pub fn inspect_plan(path: &Path) -> Result<(), String> {
+    let package = cocobeat_media::validate_package(path)?;
+    let plan = package_plan(&package)?;
+    println!(
+        "{}",
+        plan_report(&plan, &package.analysis, &package.manifest.analysis_version)
+    );
+    Ok(())
+}
+
+fn package_plan(
+    package: &cocobeat_media::ValidatedPackage,
+) -> Result<cocobeat_stage::StagePlan, String> {
+    cocobeat_stage::compile(
+        &format!(
+            "package-blake3:{}",
+            blake3::Hash::from(package.manifest.package_hash)
+        ),
         SongTime::from_frames(package.manifest.canonical_frames as i64),
         &package.analysis.sections,
-    )?;
-    print_sample(&plan, frame)
+    )
+}
+
+fn plan_report(
+    plan: &cocobeat_stage::StagePlan,
+    analysis: &MusicAnalysis,
+    analysis_version: &str,
+) -> serde_json::Value {
+    let capability = analysis.capabilities.map(|capabilities| {
+        let sections = capabilities.sections;
+        serde_json::json!({
+            "state": match sections.state {
+                AnalysisState::NotRun => "not_run",
+                AnalysisState::Unsupported => "unsupported",
+                AnalysisState::Candidate => "candidate",
+                AnalysisState::Validated => "validated",
+            },
+            "source": match sections.source {
+                AnalysisSource::Algorithm => "algorithm",
+                AnalysisSource::Authored => "authored",
+                AnalysisSource::Measured => "measured",
+            },
+            "confidence": sections.confidence,
+        })
+    });
+    let sections: Vec<_> = analysis
+        .sections
+        .iter()
+        .enumerate()
+        .map(|(index, section)| {
+            serde_json::json!({
+                "section_index": index,
+                "start_frames": section.start.frames(),
+                "end_frames": section.end.frames(),
+                "label": section.label,
+                "confidence": section.confidence,
+            })
+        })
+        .collect();
+    let segments: Vec<_> = plan
+        .segments()
+        .iter()
+        .map(|segment| {
+            let index = analysis
+                .sections
+                .partition_point(|section| section.end <= segment.start);
+            let source = analysis
+                .sections
+                .get(index)
+                .filter(|section| section.start <= segment.start && segment.end <= section.end)
+                .map(|_| index);
+            serde_json::json!({
+                "start_frames": segment.start.frames(),
+                "end_frames": segment.end.frames(),
+                "kind": kind_name(segment.kind),
+                "source_section_index": source,
+            })
+        })
+        .collect();
+    serde_json::json!({
+        "content_id": plan.content_id(),
+        "compiler_version": plan.compiler_version(),
+        "end_frames": plan.end().frames(),
+        "analysis_schema_version": analysis.schema_version,
+        "analysis_version": analysis_version,
+        "sections_capability": capability,
+        "sections": sections,
+        "segments": segments,
+    })
+}
+
+fn kind_name(kind: SegmentKind) -> &'static str {
+    match kind {
+        SegmentKind::Straight => "straight",
+        SegmentKind::Plaza => "plaza",
+        SegmentKind::Curve => "curve",
+        SegmentKind::Bridge => "bridge",
+    }
 }
 
 /// Reconstruct only recorded geometry; core validation is shared with diagnostics
@@ -53,12 +144,7 @@ fn print_sample(plan: &cocobeat_stage::StagePlan, frame: i64) -> Result<(), Stri
             "segment_count": plan.segments().len(),
             "end_frames": plan.end().frames(),
             "frame": frame,
-            "kind": match sample.kind {
-                SegmentKind::Straight => "straight",
-                SegmentKind::Plaza => "plaza",
-                SegmentKind::Curve => "curve",
-                SegmentKind::Bridge => "bridge",
-            },
+            "kind": kind_name(sample.kind),
             "distance_mm": sample.distance_mm,
             "half_width_mm": sample.half_width_mm,
             "lateral_mm": sample.lateral_mm,
@@ -69,4 +155,82 @@ fn print_sample(plan: &cocobeat_stage::StagePlan, frame: i64) -> Result<(), Stri
         })
     );
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use cocobeat_schema::{AnalysisCapabilities, EnergySample, SectionFeature};
+
+    #[test]
+    fn complete_plan_keeps_section_provenance_and_unknown() {
+        let end = SongTime::from_frames(960_000);
+        let mut analysis = MusicAnalysis {
+            schema_version: 2,
+            audio_hash: [1; 32],
+            capabilities: Some(AnalysisCapabilities::authored()),
+            tempo_regions: vec![],
+            repetitions: vec![],
+            beats: vec![],
+            onsets: vec![],
+            sections: vec![
+                SectionFeature {
+                    start: SongTime::from_frames(10),
+                    end: SongTime::from_frames(110),
+                    confidence: None,
+                    label: "人工短段".into(),
+                },
+                SectionFeature {
+                    start: SongTime::from_frames(120),
+                    end: SongTime::from_frames(768_121),
+                    confidence: Some(0.5),
+                    label: "manual long".into(),
+                },
+            ],
+            energy: vec![EnergySample {
+                start: SongTime::ZERO,
+                frames: 960_000,
+                rms: [0.0; 2],
+                peak: [0.0; 2],
+            }],
+            diagnostics: "Synthetic provenance control, not music quality evidence".into(),
+        };
+        analysis.validate(end.frames() as u64).unwrap();
+        let plan = cocobeat_stage::compile("mechanism-control", end, &analysis.sections).unwrap();
+        let report = plan_report(&plan, &analysis, "mechanism-control-v1");
+        assert_eq!(report["compiler_version"], cocobeat_stage::COMPILER_VERSION);
+        assert_eq!(
+            report["segments"],
+            serde_json::json!([
+                {"start_frames": 0, "end_frames": 10, "kind": "straight", "source_section_index": null},
+                {"start_frames": 10, "end_frames": 110, "kind": "plaza", "source_section_index": 0},
+                {"start_frames": 110, "end_frames": 120, "kind": "straight", "source_section_index": null},
+                {"start_frames": 120, "end_frames": 384_120, "kind": "curve", "source_section_index": 1},
+                {"start_frames": 384_120, "end_frames": 768_121, "kind": "bridge", "source_section_index": 1},
+                {"start_frames": 768_121, "end_frames": 960_000, "kind": "straight", "source_section_index": null},
+            ])
+        );
+        assert_eq!(
+            report["sections_capability"],
+            serde_json::json!({"state": "not_run", "source": "authored", "confidence": null})
+        );
+        assert_eq!(report["sections"][0]["label"], "人工短段");
+        assert!(report["sections"][0]["confidence"].is_null());
+        assert_eq!(report["sections"][1]["confidence"], 0.5);
+
+        analysis.capabilities.as_mut().unwrap().sections.state = AnalysisState::Candidate;
+        analysis.capabilities.as_mut().unwrap().sections.source = AnalysisSource::Algorithm;
+        analysis.validate(end.frames() as u64).unwrap();
+        let candidate = plan_report(&plan, &analysis, "mechanism-control-v1");
+        assert_eq!(candidate["sections_capability"]["state"], "candidate");
+        assert!(candidate["sections_capability"]["confidence"].is_null());
+        assert_eq!(candidate["segments"], report["segments"]);
+
+        analysis.schema_version = 1;
+        analysis.capabilities = None;
+        analysis.validate(end.frames() as u64).unwrap();
+        let unknown = plan_report(&plan, &analysis, "mechanism-control-v1");
+        assert!(unknown["sections_capability"].is_null());
+        assert_eq!(unknown["segments"], report["segments"]);
+    }
 }

@@ -187,9 +187,16 @@ runtime 固定复用九个动态网格：路面、两侧地面、两条路缘，
 
 窗口在歌曲范围外延伸的地面按基础宽度绘制，只作场景衬底，不增加可演奏帧或 Hit；地面、标线与终点的显示游标夹到 `0..=end`，原始 Session 时间和预告有效性判断保持原样，Anchor / cue 的四秒 / 六秒窗口不变；画质与 Resonance 不修改计划或关键采样，品牌 Ready、手柄组合、输入门控和音频生命周期沿用现有流程
 
+lab 的 `inspect-stage-plan PACKAGE` 先完整验证四对象，再复用当前编译器输出一行完整计划 JSON：`content_id`、`compiler_version`、`end_frames`、`analysis_schema_version`、`analysis_version`、`sections_capability`、`sections` 和 `segments`；每条原 section 保留 `section_index`、半开区间、label 和 confidence，每条 segment 保留半开区间、kind 和 `source_section_index`，空隙来源为 null，Curve / Bridge 两半关联同一原 section，label 和 confidence 不参与几何选择
+
+旧 analysis v1 的 `sections_capability = null` 保持 Unknown；新手工段落的 `not_run / authored / null` 表示作者已提供区间、自动结构算法未运行，不能改写为 validated。Candidate 与未知 confidence 原样保留，beat 候选不会成为 section 来源或自动音乐真值，完整包 CID 和实际 compiler version 继续绑定几何身份
+
+2026-10-08 的固定五包软件对照通过：原始包、选定标签采用包、空选择采用包的实际 analysis wire version 为 1 / 1 / 1，手工 v2 包与原生 beat 候选包为 2 / 2；前三包来源能力保持 Unknown，后两包的 sections 均保持 Authored / NotRun / None，并未生成自动段落。66 项 Lab 测试、Clippy / 格式、466 项冻结输入构建与 30 条真实 CLI（5 条完整计划、25 条采样）通过，五包四对象和原保护输入保持；section Candidate 与首中尾空隙的机制覆盖来自单元窄测，不冒充真实 CLI 或音乐质量。结果见[持久观察](../testdata/synthetic/stage-plan-observations-20261008.json)与[原始证据索引](../testdata/synthetic/stage-plan-raw-index-20261008.json)，本批没有新增平台、原生游戏 / GPU / 音频或真人验收
+
 lab 的 `inspect-stage PACKAGE FRAME` 先完整验证包，再输出一行稳定 JSON，字段为 `content_id`、`compiler_version`、`segment_count`、`end_frames`、`frame`、`kind`、`distance_mm`、`half_width_mm`、`lateral_mm`、`elevation_mm`、`slope_x_ppm`、`slope_y_ppm`、`at_end`；`FRAME` 是 `0..=canonical_frames` 的整数，`kind` 为 `straight`、`plaza`、`curve` 或 `bridge`，结果不含机器路径、当前时间或音频字节，入口见 [lab/stage.rs](../tools/cocobeat-lab/src/stage.rs)
 
 ```sh
+cargo run --locked -p cocobeat-lab -- inspect-stage-plan /path/to/song-package
 cargo run --locked -p cocobeat-lab -- inspect-stage /path/to/song-package 0
 ```
 
@@ -211,7 +218,7 @@ Rust 入口为 `build_package(source_audio, expected_frames, destination, build_
 
 包格式验证成功只证明当前初始契约及最终音频结构通过，不等于编码音质、seek、设备兼容、真人听感或游戏内曲库导入流程已通过；编码候选的独立状态继续见 [canonical 音频实验](canonical-audio-probe.md)
 
-[06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 已有手工区间派生的直道 / 广场 / 缓弯 / 低桥、霓虹拱门和终点，完整自动编排、真人预告可读性和跨版本视觉重放仍待后续，当前包没有持久化舞台对象
+[06 MIR 基准](../todo/06-mir-benchmark.md) 的完整 MusicAnalysis 能力、合格检测器与置信度依据仍待交付；[07 AnchorCompiler](../todo/07-anchor-compiler.md) 的 AnchorEvidence、接受 / 拒绝原因与生成策略尚未由手工 Anchor 替代；[08 StageCompiler](../todo/08-stage-compiler.md) 已有手工区间派生的直道 / 广场 / 缓弯 / 低桥、霓虹拱门和终点，完整自动编排、真人预告可读性仍待后续，当前包没有持久化舞台对象
 
 ## 原始音频的手工内容导入
 
