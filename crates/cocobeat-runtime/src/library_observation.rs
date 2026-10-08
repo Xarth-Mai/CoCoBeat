@@ -14,6 +14,7 @@ use std::{collections::BTreeMap, fs::File, io::Write, time::Instant};
 struct Observation {
     directory: PathBuf,
     frames: File,
+    automatic_frames: Option<File>,
     started: Instant,
     step_at: Instant,
     frame: u32,
@@ -68,6 +69,7 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
             | "source-background-error"
             | "source-close"
             | "timing-short"
+            | "automatic-structure"
     ) {
         return Err("Unknown library observation scenario".into());
     }
@@ -81,7 +83,7 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         File::create_new(directory.join("metadata.json")).map_err(|error| error.to_string())?;
     serde_json::to_writer_pretty(&mut metadata, &serde_json::json!({
         "process_id": std::process::id(), "build_id": env!("COCOBEAT_BUILD_ID"),
-        "entrypoint": if scenario.starts_with("source-") { "normal local Ready runtime with existing data-root library and native DefaultPlugins / AudioOutput" } else if scenario == "timing-short" { "--package PACKAGE with optional explicit --timing-diagnostics, native DefaultPlugins and original input capture" } else { "--library DIR with native DefaultPlugins and AudioOutput" },
+        "entrypoint": if scenario.starts_with("source-") { "normal local Ready runtime with existing data-root library and native DefaultPlugins / AudioOutput" } else if matches!(scenario.as_str(), "timing-short" | "automatic-structure") { "--package PACKAGE with optional explicit --timing-diagnostics, native DefaultPlugins and original input capture" } else { "--library DIR with native DefaultPlugins and AudioOutput" },
         "scenario": scenario, "locale": locale.code(), "size": size,
         "input": "synthetic KeyboardInput and WindowFocused through the production capture system",
         "audio": "acknowledged Kira source position, not speaker output",
@@ -113,10 +115,20 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         File::create_new(directory.join("frames.csv")).map_err(|error| error.to_string())?;
     writeln!(frames, "frame,phase,library_open,busy,worker_finished,content_id,canonical_frames,epoch,facts,events,controls_enabled,audio_state,audio_position,brand_seconds,step")
         .map_err(|error| error.to_string())?;
+    let automatic = scenario == "automatic-structure";
+    let automatic_frames = if automatic {
+        Some(
+            File::create_new(directory.join("structure-frames.jsonl"))
+                .map_err(|error| error.to_string())?,
+        )
+    } else {
+        None
+    };
     let now = Instant::now();
     app.insert_resource(Observation {
         directory,
         frames,
+        automatic_frames,
         started: now,
         step_at: now,
         frame: 0,
@@ -134,8 +146,17 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         close_requested_while_owned: false,
         worker_unfinished_at_close: false,
         recorded: false,
-    })
-    .add_systems(Update, observe.after(update_game));
+    });
+    if automatic {
+        app.add_systems(
+            PostUpdate,
+            observe
+                .after(crate::scene::animate)
+                .after(bevy::ui::UiSystems::Layout),
+        );
+    } else {
+        app.add_systems(Update, observe.after(update_game));
+    }
     Ok(())
 }
 
@@ -275,6 +296,7 @@ fn observe(
         NonSend<OnlineRound>,
     ),
     windows: Query<Entity, With<PrimaryWindow>>,
+    (scene, ground, ground_meshes, meshes): AutomaticScene,
     (mut commands, mut keys, mut focus, mut close): (
         Commands,
         MessageWriter<KeyboardInput>,
@@ -335,6 +357,32 @@ fn observe(
                 window,
                 focused: true,
             });
+        }
+        if observation.scenario == "automatic-structure" {
+            if observe_automatic(
+                &mut observation,
+                &game,
+                &input,
+                &brand,
+                &visual,
+                &audio,
+                &browser,
+                &online,
+                scene.as_deref(),
+                ground.as_deref(),
+                &ground_meshes,
+                meshes
+                    .as_deref()
+                    .ok_or("Automatic scene has no Mesh assets resource")?,
+                &mut commands,
+                &mut keys,
+                &mut close,
+                window,
+            )? {
+                observation.step += 1;
+                observation.step_at = Instant::now();
+            }
+            return Ok(());
         }
         if observation.scenario == "timing-short" {
             if game.closing {
@@ -1161,6 +1209,379 @@ fn observe_source(
         }
         14 if observation.captures.values().all(Option::is_some) => {
             source_probe(observation, "emit-normal-close", game, input, browser);
+            close.write(WindowCloseRequested { window });
+            true
+        }
+        _ => false,
+    };
+    Ok(advance)
+}
+
+type AutomaticScene<'w, 's> = (
+    Option<Res<'w, crate::scene::StageScene>>,
+    Option<Res<'w, crate::scene::StageGround>>,
+    AutomaticGround<'w, 's>,
+    Option<Res<'w, Assets<Mesh>>>,
+);
+
+type AutomaticGround<'w, 's> = Query<
+    'w,
+    's,
+    &'static Mesh3d,
+    (
+        With<crate::scene::SceneEntity>,
+        With<bevy::camera::visibility::NoFrustumCulling>,
+    ),
+>;
+
+fn automatic_sample(
+    game: &Game,
+    stage: Option<&crate::scene::StageScene>,
+) -> Result<serde_json::Value, String> {
+    let stage = stage.ok_or("Automatic structure has no actual StageScene")?;
+    if stage.0.content_id() != game.content.content_id || stage.0.compiler_version() != 2 {
+        return Err("Automatic scene differs from the loaded Stage2 identity".into());
+    }
+    let current = game.session.current.clamp(SongTime::ZERO, game.content.end);
+    let sample = stage
+        .0
+        .sample(current)
+        .ok_or("Automatic stage has no actual sample")?;
+    Ok(serde_json::json!({
+        "song_frame": game.session.current.frames(),
+        "stage_kind": format!("{:?}", sample.kind),
+        "distance_mm": sample.distance_mm,
+        "half_width_mm": sample.half_width_mm,
+        "lateral_mm": sample.lateral_mm,
+        "elevation_mm": sample.elevation_mm,
+        "slope_x_ppm": sample.slope_x_ppm,
+        "slope_y_ppm": sample.slope_y_ppm,
+        "section_cue_id": game.content.section_cues(game.session.current).0.map(|cue| cue.id),
+    }))
+}
+
+fn automatic_geometry(
+    ground: Option<&crate::scene::StageGround>,
+    handles: &AutomaticGround,
+    meshes: &Assets<Mesh>,
+    visual: &VisualState,
+) -> Result<serde_json::Value, String> {
+    use std::hash::Hasher;
+    if ground.is_none() {
+        return Err("Automatic renderer has no actual StageGround".into());
+    }
+    let mut values = Vec::new();
+    for handle in handles {
+        let mesh = meshes
+            .get(&handle.0)
+            .ok_or("Automatic ground Mesh asset is missing")?;
+        let Some(bevy::mesh::VertexAttributeValues::Float32x3(vertices)) =
+            mesh.attribute(Mesh::ATTRIBUTE_POSITION)
+        else {
+            return Err("Automatic ground has no Float32x3 positions".into());
+        };
+        if vertices.len() != 514 {
+            return Err("Automatic NoFrustumCulling ground changed its 257-row shape".into());
+        }
+        let mut minimum = [f32::INFINITY; 3];
+        let mut maximum = [f32::NEG_INFINITY; 3];
+        let mut fingerprint = std::collections::hash_map::DefaultHasher::new();
+        for vertex in vertices {
+            for axis in 0..3 {
+                if !vertex[axis].is_finite() {
+                    return Err("Automatic renderer contains non-finite ground positions".into());
+                }
+                minimum[axis] = minimum[axis].min(vertex[axis]);
+                maximum[axis] = maximum[axis].max(vertex[axis]);
+                fingerprint.write_u32(vertex[axis].to_bits());
+            }
+        }
+        values.push(serde_json::json!({
+            "asset_id": format!("{:?}", handle.0.id()), "vertices": vertices.len(),
+            "minimum": minimum, "maximum": maximum,
+            "position_binary32_fingerprint": format!("{:016x}", fingerprint.finish()),
+        }));
+    }
+    if values.len() != 9 {
+        return Err(
+            "Automatic renderer did not expose exactly nine tagged ground Mesh assets".into(),
+        );
+    }
+    Ok(serde_json::json!({
+        "read_schedule": "PostUpdate after scene::animate and UI Layout",
+        "renderer_song_frame": visual.song_time.frames(), "actual_mesh_count": values.len(),
+        "fingerprint_basis": "std DefaultHasher of all position binary32 bits, not a cryptographic identity",
+        "meshes": values,
+    }))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn automatic_snapshot(
+    observation: &mut Observation,
+    name: &'static str,
+    game: &Game,
+    audio: &AudioOutput,
+    scene: Option<&crate::scene::StageScene>,
+    ground: Option<&crate::scene::StageGround>,
+    handles: &AutomaticGround,
+    meshes: &Assets<Mesh>,
+    visual: &VisualState,
+    commands: &mut Commands,
+) -> Result<(), String> {
+    if observation.snapshots.contains_key(name) {
+        return Ok(());
+    }
+    observation.snapshots.insert(name, serde_json::json!({
+        "observed_at_ns": observation.started.elapsed().as_nanos(),
+        "state": state(game, audio)?, "stage": automatic_sample(game, scene)?,
+        "geometry": automatic_geometry(ground, handles, meshes, visual)?,
+        "capture_basis": "Native Screenshot asynchronous readback requested after actual scene/UI update",
+    }));
+    snapshot(observation, name, commands)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn observe_automatic(
+    observation: &mut Observation,
+    game: &Game,
+    input: &InputState,
+    brand: &BrandIntroStatus,
+    visual: &VisualState,
+    audio: &AudioOutput,
+    browser: &LibraryBrowser,
+    online: &OnlineRound,
+    scene: Option<&crate::scene::StageScene>,
+    ground: Option<&crate::scene::StageGround>,
+    handles: &AutomaticGround,
+    meshes: &Assets<Mesh>,
+    commands: &mut Commands,
+    keys: &mut MessageWriter<KeyboardInput>,
+    close: &mut MessageWriter<WindowCloseRequested>,
+    window: Entity,
+) -> Result<bool, String> {
+    if observation.started.elapsed().as_secs() >= 85 {
+        return Err("Automatic structure exceeded its 85-second observer deadline".into());
+    }
+    let row = serde_json::json!({
+        "frame": observation.frame, "observed_at_ns": observation.started.elapsed().as_nanos(),
+        "step": observation.step, "phase": format!("{:?}", game.phase),
+        "brand_complete": brand.is_complete(), "brand_seconds": brand.elapsed_seconds,
+        "controls_enabled": input.controls_enabled(), "focused": input.is_focused(),
+        "source_position_seconds": audio.position(), "facts": game.session.replay.facts().len(),
+        "stage": automatic_sample(game, scene)?,
+    });
+    let rows = observation
+        .automatic_frames
+        .as_mut()
+        .ok_or("Missing automatic frames file")?;
+    serde_json::to_writer(&mut *rows, &row).map_err(|error| error.to_string())?;
+    writeln!(rows).map_err(|error| error.to_string())?;
+    if game.closing {
+        if observation.step != 8 {
+            return Err("Automatic window closed before its requested actual observations".into());
+        }
+        if !browser.busy() && browser.is_finished() && online.is_finished() {
+            rows.sync_all().map_err(|error| error.to_string())?;
+            record(observation, game, browser, online, None)?;
+            observation.recorded = true;
+        }
+        return Ok(false);
+    }
+    let stage = scene.ok_or("Missing actual automatic StageScene")?;
+    let long = stage
+        .0
+        .segments()
+        .iter()
+        .any(|segment| segment.kind == cocobeat_stage::SegmentKind::Curve);
+    let settled = observation.step_at.elapsed().as_millis() >= 250;
+    if game.phase == Phase::Finished && observation.step < 5 {
+        return Err("Automatic song finished before requested cue/geometry observations".into());
+    }
+    let advance = match observation.step {
+        0 if brand.is_complete() && input.controls_enabled() && game.phase == Phase::Ready => {
+            if game.content.sections.len() != 2 || stage.0.compiler_version() != 2 {
+                return Err(
+                    "Automatic fixture must contain two real section cues and Stage2".into(),
+                );
+            }
+            observation.snapshots.insert("automatic_metadata", serde_json::json!({
+                "process_id": std::process::id(), "build_id": env!("COCOBEAT_BUILD_ID"),
+                "package_path": game.package_path, "content_id": game.content.content_id,
+                "end_frames": game.content.end.frames(), "stage_compiler_version": stage.0.compiler_version(),
+                "stage_segments": stage.0.segments().iter().map(|segment| serde_json::json!({
+                    "start_frame": segment.start.frames(), "end_frame": segment.end.frames(), "kind": format!("{:?}", segment.kind),
+                })).collect::<Vec<_>>(),
+                "section_cues": game.content.sections.iter().map(|cue| serde_json::json!({
+                    "id": cue.id, "song_frame": cue.time.frames(), "label": cue.label,
+                })).collect::<Vec<_>>(),
+                "controls": "Fresh KeyboardInput message through unchanged production menu/capture",
+            }));
+            automatic_snapshot(
+                observation,
+                "automatic-ready",
+                game,
+                audio,
+                scene,
+                ground,
+                handles,
+                meshes,
+                visual,
+                commands,
+            )?;
+            true
+        }
+        1 if observation.step_at.elapsed().as_secs_f64() >= 1.0
+            && observation.captures["automatic-ready"].is_some() =>
+        {
+            let before = &observation.snapshots["automatic-ready"]["state"];
+            if game.phase != Phase::Ready
+                || game.session.current != SongTime::ZERO
+                || state(game, audio)?["audio_started"] != false
+                || state(game, audio)?["facts"] != before["facts"]
+                || audio.position() != before["source_position_seconds"].as_f64()
+            {
+                return Err(
+                    "Automatic Ready started or advanced without fresh confirmation".into(),
+                );
+            }
+            observation.snapshots.insert("automatic_ready_wait", serde_json::json!({
+                "actual_wait_ns": observation.step_at.elapsed().as_nanos(), "state": state(game, audio)?,
+                "menu_owner_hint": input.menu_owner_hint(visual.locale),
+            }));
+            let keyboard_owner = Message::with(
+                "menu.owner",
+                [("device", visual.locale.text("menu.keyboard").to_string())],
+            )
+            .render(visual.locale);
+            if !input.menu_open || input.menu_owner_hint(visual.locale) != keyboard_owner {
+                key(keys, window, KeyCode::Enter);
+            }
+            true
+        }
+        2 if settled && game.phase == Phase::Ready && input.menu_open && visual.menu.is_some() => {
+            observation.snapshots.insert("automatic_confirm", serde_json::json!({
+                "emit_input_relative_ns": input.origin.elapsed().as_nanos(), "state": state(game, audio)?,
+                "menu_owner_hint": input.menu_owner_hint(visual.locale),
+            }));
+            activate_label(visual, visual.locale.text("menu.start"), keys, window)?;
+            true
+        }
+        3 if game.phase == Phase::Running && audio.position().is_some_and(|value| value > 0.05) => {
+            observation
+                .snapshots
+                .insert("automatic_running", state(game, audio)?);
+            true
+        }
+        4 if game.phase == Phase::Running => {
+            let target = if long {
+                let segment = stage
+                    .0
+                    .segments()
+                    .iter()
+                    .find(|v| v.kind == cocobeat_stage::SegmentKind::Curve)
+                    .ok_or("Missing Curve")?;
+                segment.start.frames() + (segment.end.frames() - segment.start.frames()) / 2
+            } else {
+                game.content.sections[1].time.frames() + 48_000
+            };
+            if game.session.current.frames() < target {
+                return Ok(false);
+            }
+            if long
+                && stage
+                    .0
+                    .sample(game.session.current)
+                    .is_none_or(|v| v.kind != cocobeat_stage::SegmentKind::Curve)
+            {
+                return Err("Automatic observer missed the actual Curve capture interval".into());
+            }
+            if game
+                .content
+                .section_cues(game.session.current)
+                .0
+                .map(|cue| cue.id)
+                != Some(game.content.sections[1].id)
+            {
+                return Err(
+                    "Automatic runtime did not select the actual second generated cue".into(),
+                );
+            }
+            automatic_snapshot(
+                observation,
+                if long {
+                    "automatic-curve"
+                } else {
+                    "automatic-second-cue"
+                },
+                game,
+                audio,
+                scene,
+                ground,
+                handles,
+                meshes,
+                visual,
+                commands,
+            )?;
+            true
+        }
+        5 if long && game.phase == Phase::Running => {
+            let segment = stage
+                .0
+                .segments()
+                .iter()
+                .find(|v| v.kind == cocobeat_stage::SegmentKind::Bridge)
+                .ok_or("Missing Bridge")?;
+            let target =
+                segment.start.frames() + (segment.end.frames() - segment.start.frames()) / 2;
+            if game.session.current.frames() < target {
+                return Ok(false);
+            }
+            if stage
+                .0
+                .sample(game.session.current)
+                .is_none_or(|v| v.kind != cocobeat_stage::SegmentKind::Bridge)
+            {
+                return Err("Automatic observer missed the actual Bridge capture interval".into());
+            }
+            automatic_snapshot(
+                observation,
+                "automatic-bridge",
+                game,
+                audio,
+                scene,
+                ground,
+                handles,
+                meshes,
+                visual,
+                commands,
+            )?;
+            true
+        }
+        5 if !long && game.phase == Phase::Finished => {
+            automatic_snapshot(
+                observation,
+                "automatic-finished",
+                game,
+                audio,
+                scene,
+                ground,
+                handles,
+                meshes,
+                visual,
+                commands,
+            )?;
+            true
+        }
+        6 if game.phase == Phase::Finished => {
+            if game.session.current != game.content.end {
+                return Err("Automatic terminal did not reach original EOF".into());
+            }
+            observation
+                .snapshots
+                .insert("automatic_finished", state(game, audio)?);
+            true
+        }
+        7 if observation.captures.values().all(Option::is_some) => {
             close.write(WindowCloseRequested { window });
             true
         }

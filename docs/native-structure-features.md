@@ -56,7 +56,7 @@ cargo run --locked -p cocobeat-lab -- compile-structure-candidate /path/to/packa
 
 本轮预先声明的14组 / 16份原创 WAV 控制按左右声道完成原 PCM 32项和真实编码回读32项，64项机制检查通过，包括预期无支持 / 短输入 / 超限拒绝；这是合成配方 oracle，编码回读容差为24576帧，不是真人段落或音质真值。生产 media83 / Lab85、两包全目标 Clippy、格式、边界和 Lab 构建通过，实际左右候选新包均已生成，左包另经验证及 Stage CLI 消费，见[自动分析软件观察](../testdata/synthetic/automatic-analysis-observations-20261008.json)
 
-本批新 Game / UI、600秒成本及四目标原生运行尚未验收；旧 wholeSpect / 音乐质量 FAIL、未知置信度和独立真人参考边界保持
+上述 CLI 批次当时的新 Game / UI、600秒成本及四目标原生运行尚未验收；旧 wholeSpect / 音乐质量 FAIL、未知置信度和独立真人参考边界保持
 
 ## 软件观察与成本
 
@@ -71,3 +71,11 @@ cargo run --locked -p cocobeat-lab -- compile-structure-candidate /path/to/packa
 报告的有限性、原半开区间、尾部支持、log1p 及全部有效候选的 top4 以预先声明的数值容差复核；CLI 保存 BLAKE3 来自实际 stdout，独立报告字节核验使用 SHA256，未冒充独立 BLAKE3 重算。旧64秒来源总报告的 GPU 不可用 FAIL 与首轮快照失败保留；本批 CPU 诊断不改写旧视觉结果
 
 旧 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）与音乐质量 FAIL 保留，描述符机制检查不关闭完整 MIR、可靠 section / repetition、Anchor 校准或舞台自动编排。新入口四目标原生构建、发行 CPU/RSS 预算、窗口 / 声学 / 设备及独立真人结构参考继续按各自证据验收，既有 `8cdda9d` 四目标结果只覆盖其原功能版本
+
+## 自动候选包的实际游戏接线
+
+2026-10-08，两首真实生成候选包分别以786432 / 1474560帧完成原生窗口软件验收：完整开场后保持Ready至少1秒，先以真实 KeyboardInput 接管菜单主控，再用独立新确认启动；实际 Kira source cursor 推进，原 cue ID / 帧切换、EOF Finished及关闭worker释放通过。短曲经过Plaza，长曲经过Plaza / Curve / Bridge；只读实际9张地面Mesh的514个有限顶点，两个阶段的position指纹改变，与Stage整数采样分别记录
+
+新增 dormant `automatic-structure` 观察场景复用现 library observer，默认游戏不安装；旧场景保持原Update顺序，新场景在scene / UI更新后采样，不写Game / Session / 输入状态。runtime174项、Clippy、Game构建、格式及边界检查通过，6张实际1280×800 zh-CN PNG分别目检，Ready图只展示场景 / HUD，不作为菜单面板证明，见[原生接线观察](../testdata/synthetic/automatic-structure-native-observations-20261008.json)
+
+首次Clippy tuple类型复杂度拒绝与两次85秒Ready窗口FAIL保留：最初QA少了主控接管后的第二次新确认，game / wrapper exit0不能覆盖失败；只补QA输入顺序及类型别名后，冻结新源码 / Game重新实际运行通过，生产输入规则、候选算法和包均未改。实际Mesh读回和PNG不作为逐顶点理论证明，原生日志的ICU4X Chinese/Japanese分段数据警告保留；音乐质量、物理输入 / 音频、600秒成本和新四目标验收继续独立进行

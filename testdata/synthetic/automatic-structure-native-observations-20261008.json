@@ -1,0 +1,600 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "status": "PASS_SCOPED_AUTOMATIC_STRUCTURE_NATIVE_SOFTWARE_AND_VISUAL",
+  "base_head": "4b8253ecddb8c41d9d236ac907e0ca11b3f96a5b",
+  "source": {
+    "count": 373,
+    "observer_sha256": "19bc6d4b135dc02eee688b0430c159d8fbf39f3e826917911a1a9ae5be48c19c",
+    "before_after_equal": true,
+    "binding": "base4b plus exact dormant automatic-structure observer revision03; actual binary build-id is this precommit basis, not a later commit SHA"
+  },
+  "game": {
+    "status": "PASS",
+    "exit_code": 0,
+    "inputs_unchanged": true,
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-game",
+    "binary_sha256": "99fa126db614126c57f6ac7fb6caed677e735ad14c9963e760520d24477335ed",
+    "binary_bytes": 1481878856,
+    "source_record": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-native-build-03/source-before.json",
+    "source_record_sha256": "0e15e10489196737a7f02d73119115f1df5dd8419cff8401926ebe4e8cfcfe78",
+    "scope": "base 4b8253ec plus exact dormant automatic-structure observer revision03; separate fresh input claims keyboard ownership then confirms Start; frozen373-file compilation source; no musical/device/performance admission",
+    "base_head": "4b8253ecddb8c41d9d236ac907e0ca11b3f96a5b",
+    "cargo_json": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-native-build-03/build.jsonl",
+    "actual_commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--lib"
+        ],
+        "pid": 5,
+        "exit_code": 0,
+        "elapsed_seconds": 9.387191003013868,
+        "stdout": "target/automatic-analysis-native-build-03/01.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/01.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 509,
+        "exit_code": 0,
+        "elapsed_seconds": 2.2726011750055477,
+        "stdout": "target/automatic-analysis-native-build-03/02.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/02.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-game",
+          "--message-format=json"
+        ],
+        "pid": 526,
+        "exit_code": 0,
+        "elapsed_seconds": 11.393071356986184,
+        "stdout": "target/automatic-analysis-native-build-03/build.jsonl",
+        "stderr": "target/automatic-analysis-native-build-03/03.stderr"
+      }
+    ],
+    "initial_failure": "build01 runtime174 PASS, Clippy tuple type-complexity FAIL, no game build; fixed type alias only",
+    "initial_native_failure": "run01: two real windows both85s Ready step3 FAIL; initial Enter claimed ownership, no second fresh confirmation; original game/wrapper exit0 does not override FAIL"
+  },
+  "lab": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+    "bytes": 1549363216,
+    "sha256": "0334719c0df3e8335cb8828baed601a1ea315a5af5f9138f2c7dac2693c96fef",
+    "source_record": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/source-before.json",
+    "cargo_json": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/build.jsonl",
+    "actual_command_result": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/result.json",
+    "base_head": "a230cac1ff41642a0d4862fcc542a425180fd8b9",
+    "scope": "Current union automatic sections and onset/interbeat candidate source; no musical quality admission"
+  },
+  "production_checks": {
+    "runtime_tests_passed": 174,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--lib"
+        ],
+        "pid": 5,
+        "exit_code": 0,
+        "elapsed_seconds": 9.387191003013868,
+        "stdout": "target/automatic-analysis-native-build-03/01.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/01.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 509,
+        "exit_code": 0,
+        "elapsed_seconds": 2.2726011750055477,
+        "stdout": "target/automatic-analysis-native-build-03/02.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/02.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-game",
+          "--message-format=json"
+        ],
+        "pid": 526,
+        "exit_code": 0,
+        "elapsed_seconds": 11.393071356986184,
+        "stdout": "target/automatic-analysis-native-build-03/build.jsonl",
+        "stderr": "target/automatic-analysis-native-build-03/03.stderr"
+      }
+    ],
+    "post_commands": [
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 0.858652599999914,
+        "stdout": "target/automatic-analysis-native-build-03/post-0.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/post-0.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 7,
+        "exit_code": 0,
+        "elapsed_seconds": 0.11605265398975462,
+        "stdout": "target/automatic-analysis-native-build-03/post-1.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/post-1.stderr"
+      },
+      {
+        "argv": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "pid": 11,
+        "exit_code": 0,
+        "elapsed_seconds": 0.005256695003481582,
+        "stdout": "target/automatic-analysis-native-build-03/post-2.stdout",
+        "stderr": "target/automatic-analysis-native-build-03/post-2.stderr"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "colour-left",
+      "actual_game_pid": 953819,
+      "actual_game_exit": 0,
+      "wrapper_exit": 0,
+      "owned_group_gone": true,
+      "protected_equal": true,
+      "software_observation": {
+        "status": "PASS_NATIVE_SOFTWARE_OBSERVATION",
+        "process_id": 953819,
+        "frames": 807,
+        "content_id": "package-blake3:fea932057b2e461d268cca54aa4dec4ae99f7395f138649f90490a08c8e92192",
+        "kind_scope": [
+          "Plaza"
+        ],
+        "actual_mesh_readback": true,
+        "PNG_visual_review": "NOT_RUN",
+        "physical_audio_music_acceptance": "NOT_RUN"
+      },
+      "identity_and_original_cues": {
+        "build_id": "0.1.0-4b8253ecddb8-local",
+        "content_id": "package-blake3:fea932057b2e461d268cca54aa4dec4ae99f7395f138649f90490a08c8e92192",
+        "controls": "Fresh KeyboardInput message through unchanged production menu/capture",
+        "end_frames": 786432,
+        "package_path": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/colour-left",
+        "process_id": 953819,
+        "section_cues": [
+          {
+            "id": 0,
+            "label": "structure-candidate-0000",
+            "song_frame": 0
+          },
+          {
+            "id": 1,
+            "label": "structure-candidate-0001",
+            "song_frame": 393216
+          }
+        ],
+        "stage_compiler_version": 2,
+        "stage_segments": [
+          {
+            "end_frame": 393216,
+            "kind": "Plaza",
+            "start_frame": 0
+          },
+          {
+            "end_frame": 786432,
+            "kind": "Plaza",
+            "start_frame": 393216
+          }
+        ]
+      },
+      "ready_wait_ns": 1000461462,
+      "owner_before_claim": "Enter / Start：取得菜单控制",
+      "owner_at_fresh_confirm": "主控：键盘 · 其他设备 Enter / Start 接管",
+      "actual_mesh_readback": "nine tagged ground meshes,514 finite position vertices each; binary32 stdhash fingerprint is not cryptographic identity or per-vertex theoretical correctness",
+      "captures": [
+        {
+          "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-finished.png",
+          "bytes": 1029212,
+          "sha256": "8196e714387034cd3b910401ce26ec9a87b19417399b89706a0742a1ab7de1a5"
+        },
+        {
+          "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-ready.png",
+          "bytes": 1223663,
+          "sha256": "8a0df4596fd3748767da9edfc12c873662d49436a88ea146327d147720972a7f"
+        },
+        {
+          "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-second-cue.png",
+          "bytes": 1213795,
+          "sha256": "4ed39d8e82836fc15124a32bcc91c84b95c5f869d4e168af298bfedc6d188415"
+        }
+      ]
+    },
+    {
+      "name": "stage-long-left",
+      "actual_game_pid": 953974,
+      "actual_game_exit": 0,
+      "wrapper_exit": 0,
+      "owned_group_gone": true,
+      "protected_equal": true,
+      "software_observation": {
+        "status": "PASS_NATIVE_SOFTWARE_OBSERVATION",
+        "process_id": 953974,
+        "frames": 1180,
+        "content_id": "package-blake3:bc1f1ab5c10f0d890f10efb0a4f389ee1b12ac96e5779c075c72eb45132fc18a",
+        "kind_scope": [
+          "Bridge",
+          "Curve",
+          "Plaza"
+        ],
+        "actual_mesh_readback": true,
+        "PNG_visual_review": "NOT_RUN",
+        "physical_audio_music_acceptance": "NOT_RUN"
+      },
+      "identity_and_original_cues": {
+        "build_id": "0.1.0-4b8253ecddb8-local",
+        "content_id": "package-blake3:bc1f1ab5c10f0d890f10efb0a4f389ee1b12ac96e5779c075c72eb45132fc18a",
+        "controls": "Fresh KeyboardInput message through unchanged production menu/capture",
+        "end_frames": 1474560,
+        "package_path": "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-canonical-run-01/stage-long-section/candidate-left",
+        "process_id": 953974,
+        "section_cues": [
+          {
+            "id": 0,
+            "label": "structure-candidate-0000",
+            "song_frame": 0
+          },
+          {
+            "id": 1,
+            "label": "structure-candidate-0001",
+            "song_frame": 491520
+          }
+        ],
+        "stage_compiler_version": 2,
+        "stage_segments": [
+          {
+            "end_frame": 491520,
+            "kind": "Plaza",
+            "start_frame": 0
+          },
+          {
+            "end_frame": 983040,
+            "kind": "Curve",
+            "start_frame": 491520
+          },
+          {
+            "end_frame": 1474560,
+            "kind": "Bridge",
+            "start_frame": 983040
+          }
+        ]
+      },
+      "ready_wait_ns": 1008989504,
+      "owner_before_claim": "Enter / Start：取得菜单控制",
+      "owner_at_fresh_confirm": "主控：键盘 · 其他设备 Enter / Start 接管",
+      "actual_mesh_readback": "nine tagged ground meshes,514 finite position vertices each; binary32 stdhash fingerprint is not cryptographic identity or per-vertex theoretical correctness",
+      "captures": [
+        {
+          "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-bridge.png",
+          "bytes": 1226818,
+          "sha256": "0c48080a20b89199df6e3504f6ae0ca4f23119f80ebf692d3b483c2218c1bbae"
+        },
+        {
+          "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-curve.png",
+          "bytes": 1219335,
+          "sha256": "c9c99861120f5df46ddbf2452a00a14874d589674321b7096a986f13a404bba9"
+        },
+        {
+          "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-ready.png",
+          "bytes": 1223610,
+          "sha256": "0e881138913c99b9f71ac9b763982564e25820007eae4e184ec7946febc1ab54"
+        }
+      ]
+    }
+  ],
+  "root_visual_review": {
+    "path": "target/automatic-analysis-native-run-02/root-visual-review.json",
+    "bytes": 3245,
+    "sha256": "124602670b5d09f8f0a1a4da8afb26b821b88f01172550f2b0c18b82a589bfa0"
+  },
+  "independent_visual_review": {
+    "path": "target/automatic-analysis-native-run-02/independent-visual-review.json",
+    "bytes": 10167,
+    "sha256": "d82f5dba32ef6bdf8847ff7fac372484a718fbc74aa1235555b85b956de0d4f2"
+  },
+  "initial_failures": {
+    "build01": "runtime174PASS; Clippy type-complexity FAIL; Game not built",
+    "fix": "fixed AutomaticScene type alias; no runtime mechanism change",
+    "native01": "both windows85s Ready step3 FAIL; first Enter only claimed initial keyboard owner; actual game/wrapper exit0 does not override observation FAIL",
+    "input_fix": "QA emits a separate fresh Enter to claim/open menu, then settled fresh Start confirmation through original capture; no Game/Session/InputState assignment",
+    "preserved_artifacts": "original summaries, result files, packages, receipts and frozen source/helper revisions retained; target/debug Game72 binary was later intentionally replaced by actual Game99 after the two failures completed"
+  },
+  "visual_limits": [
+    "Ready images are scene/HUD00.0 captures, not menu-panel proof",
+    "Finished main actions readable; complete additional statistic scrolling was not captured",
+    "Curve appearance restrained; actual integer sample and renderer mesh evidence are separate",
+    "ICU4X Chinese/Japanese segmentation-data warnings retained in native stderr"
+  ],
+  "unchanged": [
+    "candidate algorithms and parameters",
+    "production input/ownership rules",
+    "Stage compiler/version",
+    "two source packages and original cue frames",
+    "Cargo/dependencies"
+  ],
+  "not_run": [
+    "physical controllers and keyboard",
+    "acoustic source/DAC latency",
+    "real music quality and confidence calibration",
+    "full per-vertex theoretical geometry oracle",
+    "600-second CPU/RSS or presentation FPS admission",
+    "current-source four native targets",
+    "human playability",
+    "tag Release"
+  ],
+  "goal": "active; full software/project acceptance remains open",
+  "raw_references": [
+    {
+      "path": "target/automatic-analysis-native-build-01/result.json",
+      "bytes": 968,
+      "sha256": "b9f6f97545f0109b8600c4826f0b7dfec425a979edc29417f0b2ecec37055bd1"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-01/02.stderr",
+      "bytes": 3391,
+      "sha256": "95a1756b65ce88d49dc721573a59a0224309ab00c397d6ffc30f5e6c3784387e"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-02/result.json",
+      "bytes": 1357,
+      "sha256": "b601faf96d278d3c36ef205f3216315cfff59ece7933924c89310e7c159cfb6b"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-02/game-receipt.json",
+      "bytes": 2158,
+      "sha256": "933f6d59386da8ce1e5707b17e277a779ac7a32bf8529b03be06130c669f733e"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/result.json",
+      "bytes": 1358,
+      "sha256": "12184ab4708f05bee4697463790badf4f6c4745dedee6fadbd847f1df2846436"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/game-receipt.json",
+      "bytes": 2400,
+      "sha256": "38a19238386c64fad9397c02d232e2b5e0aedbb05006f6fc02cc9da8653717a6"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/source-before.json",
+      "bytes": 43344,
+      "sha256": "0e15e10489196737a7f02d73119115f1df5dd8419cff8401926ebe4e8cfcfe78"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/source-after.json",
+      "bytes": 43344,
+      "sha256": "0e15e10489196737a7f02d73119115f1df5dd8419cff8401926ebe4e8cfcfe78"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/01.stdout",
+      "bytes": 16331,
+      "sha256": "a3843d20f28add14662bbcdaf650172e920483a6f2f4870232d942973025603a"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/02.stderr",
+      "bytes": 2504,
+      "sha256": "c54c502ccadaa4640c3b96daf2c2157cebc0d903422166f5d935b6c9187710e1"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/build.jsonl",
+      "bytes": 403387,
+      "sha256": "717df491beb10cc8010d6192e97aee3f22f10ef29b8eb6680a2d1c4b8f8d0369"
+    },
+    {
+      "path": "target/automatic-analysis-native-build-03/post-checks.json",
+      "bytes": 925,
+      "sha256": "7d2c491adbd0fe37a79c3ccc64ede243e7fc8947194b1d52788f1079a44ab8e3"
+    },
+    {
+      "path": "target/automatic-analysis-native-qa-candidate-20261008-revision-03/FREEZE.json",
+      "bytes": 2164,
+      "sha256": "5afb5e418ed42099a7676724ee1383eb26a59c0e11b7a13d9962cc2339f45a75"
+    },
+    {
+      "path": "target/automatic-analysis-native-review-20261008/static.json",
+      "bytes": 7272,
+      "sha256": "f3fb6ee12ce285c4c7693fb1df085d7dffa03ff9aea3c5f925710f439efe5c1c"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-01/summary.json",
+      "bytes": 206289,
+      "sha256": "2fed873fb9b1916e6eee20829ec28f009dcc2848183d94250eebce7565acc982"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/summary.json",
+      "bytes": 208866,
+      "sha256": "dd962ea1efda54c4a500fff52000b3743f39427ccb8c5508f2effc1b7523fed4"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/root-visual-review.json",
+      "bytes": 3245,
+      "sha256": "124602670b5d09f8f0a1a4da8afb26b821b88f01172550f2b0c18b82a589bfa0"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/independent-visual-review.json",
+      "bytes": 10167,
+      "sha256": "d82f5dba32ef6bdf8847ff7fac372484a718fbc74aa1235555b85b956de0d4f2"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-finished.png",
+      "bytes": 1029212,
+      "sha256": "8196e714387034cd3b910401ce26ec9a87b19417399b89706a0742a1ab7de1a5"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-ready.png",
+      "bytes": 1223663,
+      "sha256": "8a0df4596fd3748767da9edfc12c873662d49436a88ea146327d147720972a7f"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/automatic-second-cue.png",
+      "bytes": 1213795,
+      "sha256": "4ed39d8e82836fc15124a32bcc91c84b95c5f869d4e168af298bfedc6d188415"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/process.json",
+      "bytes": 12476,
+      "sha256": "345888478f7e1d0b1e64024f4ae530f7e8a8ea7b8c5c7da1abe6790783b0ac2a"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/result.json",
+      "bytes": 2207818,
+      "sha256": "e6960c9795c8834d1befa1dd64323f68cdf8f5e81b84e13f756eecc12202550a"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/metadata.json",
+      "bytes": 774,
+      "sha256": "a70164a12075ccd63eddc1543b31adfd7fd2d52d12dabca347a2a4e8dc823fc3"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/probe/structure-frames.jsonl",
+      "bytes": 300884,
+      "sha256": "447b6c22ad9a618564e94d863835e7cd477dc560d115f5065e8b45421dc097a1"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/native/game-launch.json",
+      "bytes": 1156,
+      "sha256": "63919bca5b870c5e2405605930686e187c95c80db83ab6603d48fce74736f1db"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/native/child-exit.json",
+      "bytes": 84,
+      "sha256": "dd48e283225c6a1a7e676a6ad9e82970321a148fd96bba97ed37a25a4980f1e9"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/native/game.stderr",
+      "bytes": 28038,
+      "sha256": "3393d69424257716044201839a2bfb4817d10d25286da03a1c904b6d39b2f8d5"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/colour-left/stage.stdout",
+      "bytes": 728,
+      "sha256": "a139efcf53e10ac83666db5828d6b4c5ac2bf2f23cab99439a7610451d1b2ab7"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-01/colour-left/probe/result.json",
+      "bytes": 19874,
+      "sha256": "b7eb481237c8e16b5e627e92681e79fb22ddebf076225c3f5dacac2bb0c9ac41"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-01/colour-left/native/child-exit.json",
+      "bytes": 84,
+      "sha256": "11f7c1d4a93f7c156bde1b7ceb249855f9d7de80a81c6b07ede7eb95c0d8089b"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-bridge.png",
+      "bytes": 1226818,
+      "sha256": "0c48080a20b89199df6e3504f6ae0ca4f23119f80ebf692d3b483c2218c1bbae"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-curve.png",
+      "bytes": 1219335,
+      "sha256": "c9c99861120f5df46ddbf2452a00a14874d589674321b7096a986f13a404bba9"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/automatic-ready.png",
+      "bytes": 1223610,
+      "sha256": "0e881138913c99b9f71ac9b763982564e25820007eae4e184ec7946febc1ab54"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/process.json",
+      "bytes": 12661,
+      "sha256": "9658ae13e9664c0920654755c87f2e22e4248184abc5e485435b04ee96d0112f"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/result.json",
+      "bytes": 3670005,
+      "sha256": "e3386c05d4074f68822d74b44f29b55c2ca2a2b49a07bdda1c210c85b8a437cc"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/metadata.json",
+      "bytes": 774,
+      "sha256": "ea41f26bf25c35c8dd793a3bddc2e441f653fa834da9aa6cdd76022e4b79fe57"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/probe/structure-frames.jsonl",
+      "bytes": 446282,
+      "sha256": "5ac4c6cb0390df508a0e75980996cbc338540facec128c2598a39d337072a4b7"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/native/game-launch.json",
+      "bytes": 1202,
+      "sha256": "1abf8d886b9cbc40309519db7ba453181101f9392391f3b083e5bae4ab280ae4"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/native/child-exit.json",
+      "bytes": 84,
+      "sha256": "936d4a5971a43ce38fb7a38a332ed4bb7d73faa1ce63d66dea2f5cae97ccda00"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/native/game.stderr",
+      "bytes": 38510,
+      "sha256": "87617bbecae853ed300b6955f6b5c7367610bdbed18eac5286b83c48c858f0b3"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-02/stage-long-left/stage.stdout",
+      "bytes": 816,
+      "sha256": "25603a1e452a365e7677545f2d98faead9da5d20f7bdcbe6039eb6546fd6c150"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-01/stage-long-left/probe/result.json",
+      "bytes": 20163,
+      "sha256": "9df9e17cdb02c3f8d164906036ea7d7fd185993b3a52aee7ccd788532adf6a02"
+    },
+    {
+      "path": "target/automatic-analysis-native-run-01/stage-long-left/native/child-exit.json",
+      "bytes": 84,
+      "sha256": "d3f92be576c6cb3ed6b3b315b16a21797e78316742ce9e3858b8cb7c4a065fdb"
+    }
+  ]
+}

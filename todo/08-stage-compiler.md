@@ -26,3 +26,5 @@ v2 的 121 项相关测试和独立有理数参考的 60,480 字段比对通过�
 2026-10-08 · 独立标签的明确 Anchor 采用复用既有四对象导出与 Stage v2 加载，analysis.sections 保留原字节，几何规则和版本不变；真正改谱生成新 CID，Stage / Replay 继续绑定该身份，旧录制不自动迁移。本批 Stage / Replay 接线的软件对照通过，见[采用验证](../docs/independent-labels.md#明确采用为-anchor)，自动音乐结构、设备性能与真人体验不由手工采用路径准入
 
 2026-10-08 · 完整计划来源诊断：`inspect-stage-plan PACKAGE` 已复用同一 Stage v2 输出全部片段和原 section 索引，旧能力缺失保持 Unknown、人工来源保持 Authored / NotRun / None，原 beat 候选不补造自动段落。66 项 Lab 测试、Clippy / 格式、466 项冻结输入构建与五包 30 条真实 CLI 通过，四对象保持，见[完整计划说明](../docs/song-package.md#内存-stageplan-与整数采样)、[持久观察](../testdata/synthetic/stage-plan-observations-20261008.json)与[原始证据索引](../testdata/synthetic/stage-plan-raw-index-20261008.json)。本批补齐软件诊断，完整自动音乐结构 / 编排、设备性能与真人体验退出继续保留
+
+2026-10-08 · 自动结构候选游戏接线：真实 `compile-structure-candidate` 新包以原SectionCue帧完成两个原生窗口，短曲Plaza与长段Plaza / Curve / Bridge实际经过，9张地面Mesh只读观察和6张PNG分别通过；完整开场、Ready无自启、菜单接管后的新确认、实际Kira cursor和EOF / 关闭通过，见[软件观察](../testdata/synthetic/automatic-structure-native-observations-20261008.json)。首次QA漏独立主控接管导致两次85秒FAIL保留，生产输入 / Stage规则不改；runtime174、Clippy、Game构建通过，音乐编排质量、长曲性能、四目标与真人体验退出继续保留
