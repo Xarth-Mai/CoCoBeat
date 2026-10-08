@@ -58,6 +58,12 @@ cargo run --locked -p cocobeat-lab -- compile-structure-candidate /path/to/packa
 
 上述 CLI 批次当时的新 Game / UI、600秒成本及四目标原生运行尚未验收；旧 wholeSpect / 音乐质量 FAIL、未知置信度和独立真人参考边界保持
 
+## 完整分析流程的无支持结果
+
+`compile-structure-analysis PACKAGE left|right NEW_PACKAGE` 复用相同边界检测、固定参数和原 canonical PCM，将合法不足上下文或无持久边界作为 Unsupported 的分析尝试出版到新四对象包；真实边界仍生成相同候选 sections/cues，损坏输入、宿主错误、非有限计算和超64边界保持错误，`compile-structure-candidate` 的原零出版拒绝契约保持
+
+无支持时原 chart、Anchor、cues、sections 和 chart_version 完整保持；原 analysis sections 为空才设置 sections capability 为 `Unsupported / Algorithm / confidence=None`，已有作者或算法 sections 保持原 capability 和来源。diagnostics 明确记录本次 `detection_state=unsupported`、原因、原来源身份和原 diagnostics hash，不把保留的作者段落当成算法发现，不生成全曲单段；原 audio/N、其余分析事实、UNASSESSED 与 production_admission=false 保持
+
 ## 显式编译重复关系候选包
 
 `compile-repetition-candidate PACKAGE left|right NEW_PACKAGE` 从完整验证的 analysis v2 包生成谱形重复区间，输出父目录须已存在，目标须为源包之外的新目录
@@ -107,3 +113,19 @@ header 的 `inspection_channel` 是本次谱形诊断声道，`origin_channel` �
 2026-10-08 · 工作台消费者补验：Lab92项、Clippy、格式、边界与构建通过；新版Lab对两份既有重复包的实际谱形回读均exit0，大小两窗经真实输入选择每条关系两侧、显式Seek、Kira源游标推进 / Pause / Stop、详情到底与原bin半开点击 / EOF通过，源码373及源包 / 基准 / 二进制保持，进程组全部释放。相邻source / target会形成连续同色条带，四端点以原详情和行区间保留；原首窗FAIL是QA将点击帧错当选bin后的游标，只修冻结QA的一行预期，生产逻辑保持，声学 / 物理输入 / 音乐质量和当前来源四目标另验
 
 2026-10-08 · 600秒结构成功出版：冻结`c63cf15`与Lab b7，同一原创频谱配方仅一处转场，原PCM与q10 canonical的唯一内部边界均为14401536帧、误差0；8条实际命令exit0，完整compile / 原子出版wall91.763316秒、单child kernel RSS65916 KiB，源码373、输入、原Source及新包四对象保持，原音频 / N / Anchor1024与声明sections / cues之外的typed内容守恒，v2四段计划和边界Curve起点采样通过，见[长曲成功出版观察](../testdata/synthetic/structure-long-publication-observations-20261008.json)。原75转场超过64边界的capErr仍保留，没有调算法 / 阈值 / cap；这是Linux debug低边界控制的完整成功成本，音乐质量、右声道、GPU及发行性能另验
+
+## 完整分析流程的重复无支持结果
+
+`compile-repetition-analysis PACKAGE left|right NEW_PACKAGE` 复用原重复关系检测与同一出版守卫，不足两个完整八bin区间或未检测到支持的非静态区间对以 typed Unsupported 出版新四对象；原 `compile-repetition-candidate` 保持原Err/零出版，所有阈值、网格、原速原调、64容量与真实错误处理保持
+
+无支持时原 chart / Anchor / sections / cues / repetition /其余分析事实及chart_version完整保留；仅原relations为空时将repetition capability置Unsupported / Algorithm / None，已有载荷保留原capability/source。本次attempt的状态、原因与原CID/audio/N/diagnostics hash分别保存，不把已有作者关系当成算法发现，不制造重复关系或重选输入；算法支持时输出原候选profile和原关系
+
+## 完整内容路线的软件验证
+
+2026-10-09 · 同一原创输入经正式导入、未标注 Anchor 推断与明确采用、结构 / 重复两项分析尝试、完整包复核和 Stage 检查，18 条 CPU / CLI 命令全部 exit0；本曲两项检测均为 Unsupported，canonical N786432、原音频和采用后的 chart / Anchor 保持，最终 CID 为 `package-blake3:951d7600e1d641ceb928ed60df5ea802dd3fe6741e4c60e7a31864941c2aab66`，见[完整内容路线观察](../testdata/synthetic/full-content-route-observations-20261009.json)
+
+Media13 / Lab2 窄测、Clippy、格式、workspace 边界与实际 Game / Lab 构建通过，379 项源码前后保持；严格候选无支持仍报错且零出版，已有作者载荷 / capability 守恒由独立 typed 对照验证，不用合法无支持掩盖损坏、容量或宿主错误
+
+原整批路线因反复校验大型 debug 二进制耗尽启动前预算而 FAIL，未启动正式 Library；该收据保持，随后复用已冻结曲包、二进制和原有窗口检查，在独立 500 秒预算下完成一次正式 `--library` 验收，实际 wall53.948413秒 / exit0、进程组释放。最终曲包停 Ready 等新确认，随后短时 Kira 播放、暂停、切歌、无效包拒绝和取消加载均通过；这是单窗口软件路线，不是歌曲自然 EOF 或双机验收
+
+640×480 / zh-CN 的曲库、Ready、Running 和拒绝反馈四张指定截图完成目检，Ready 面板底部长路径仍有裁切，继续按 UI 可读性任务处理；其他截图、物理输入 / 声学计时、真人音乐判断与当前源码四目标发行另验。首轮 SDK 环境失败、required source 预检失败、原严格结构 / 重复无支持拒绝和启动前预算 FAIL 均保留；confidence=None、UNASSESSED、production_admission=false 以及旧 MIR / wholeSpect 质量 FAIL 保持

@@ -25,6 +25,7 @@
 - [x] 游戏手工源导入 CLI：`--import-authored SOURCE AUTHORING NEW_PACKAGE` 复用 media 与 lab 的共享包事务，完成校验后进入完整开场与 Ready；独立开始确认和运行验证见[源导入](../docs/source-import.md)
 - [x] 游戏 Ready 手工源导入入口：正常启动后从曲库进入 `imports` 配对音频与 authoring，确认新目标后复用单 worker、唯一编码器、四对象事务和完整 loader，成功后停 Ready 等新确认；返回仅放弃自动选择，后台完成 / 错误与关闭 join 保留，见[操作与边界](../docs/source-import.md#正常启动的-ready-导入)
 - [ ] 将完整 MIR / Anchor 输出和包事务接入游戏曲库 Ready；手工配对导入不替代合格自动分析、Anchor 策略及人工标签
+- [x] 完整内容软件路线：正式导入→未标注 Anchor 推断 / 明确采用→结构与重复分析尝试→四对象复核 / Stage→正式 Library Ready / 新确认播放、暂停、切歌、拒绝和取消；18 条 CPU / CLI 与独立原生窗口通过，合法无支持以 Unsupported 保留完整原 facts，原严格候选拒绝与启动前预算 FAIL 保留，见[路线观察](../testdata/synthetic/full-content-route-observations-20261009.json)。本项不关闭上一项的音乐质量 / 自动 Anchor 策略或设备验收
 
 退出条件：Windows/Linux 编码回读与独立互操作证据通过。失败时阻止导入，在开发期替换实现，不引入 FFmpeg 或运行时备用编码路径。
 

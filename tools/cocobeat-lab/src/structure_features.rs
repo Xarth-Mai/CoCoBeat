@@ -115,6 +115,41 @@ pub(crate) fn compile(package: &Path, channel: &str, destination: &Path) -> Resu
     Ok(())
 }
 
+/// Publishes a complete analysis attempt, including unavailable segmentation
+pub(crate) fn compile_analysis(
+    package: &Path,
+    channel: &str,
+    destination: &Path,
+) -> Result<(), String> {
+    let channel = match channel {
+        "left" => 0,
+        "right" => 1,
+        _ => {
+            return Err("Structure segmentation requires an explicit left or right channel".into());
+        }
+    };
+    let destination = labels_cli::outside_package(package, destination)?;
+    let built = cocobeat_media::compile_structure_analysis_package(package, channel, &destination)?;
+    println!(
+        "{}",
+        serde_json::json!({
+            "content_id": blake3::Hash::from_bytes(built.manifest.package_hash).to_hex().as_str(),
+            "destination": destination,
+            "audio_blake3": blake3::Hash::from_bytes(built.manifest.audio.blake3).to_hex().as_str(),
+            "canonical_frames": built.manifest.canonical_frames,
+            "channel": channel,
+            "section_count": built.analysis.sections.len(),
+            "cue_count": built.chart.sections.len(),
+            "profile": built.manifest.analysis_version,
+            "confidence": null,
+            "production_admission": false,
+            "diagnostics": built.analysis.diagnostics,
+            "scope": "structure_analysis_attempt_not_musical_quality_admission",
+        })
+    );
+    Ok(())
+}
+
 /// Explicitly publishes interval candidates in a new package, preserving the existing chart
 pub(crate) fn compile_repetition(
     package: &Path,
@@ -143,6 +178,39 @@ pub(crate) fn compile_repetition(
             "production_admission": false,
             "diagnostics": built.analysis.diagnostics,
             "scope": "candidate_spectral_interval_relations_not_musical_quality_admission",
+        })
+    );
+    Ok(())
+}
+
+/// Publishes a complete repetition attempt without substituting authored relations
+pub(crate) fn compile_repetition_analysis(
+    package: &Path,
+    channel: &str,
+    destination: &Path,
+) -> Result<(), String> {
+    let channel = match channel {
+        "left" => 0,
+        "right" => 1,
+        _ => return Err("Repetition candidates require an explicit left or right channel".into()),
+    };
+    let destination = labels_cli::outside_package(package, destination)?;
+    let built =
+        cocobeat_media::compile_repetition_analysis_package(package, channel, &destination)?;
+    println!(
+        "{}",
+        serde_json::json!({
+            "content_id": blake3::Hash::from_bytes(built.manifest.package_hash).to_hex().as_str(),
+            "destination": destination,
+            "audio_blake3": blake3::Hash::from_bytes(built.manifest.audio.blake3).to_hex().as_str(),
+            "canonical_frames": built.manifest.canonical_frames,
+            "channel": channel,
+            "repetition_count": built.analysis.repetitions.len(),
+            "profile": built.manifest.analysis_version,
+            "confidence": null,
+            "production_admission": false,
+            "diagnostics": built.analysis.diagnostics,
+            "scope": "repetition_analysis_attempt_not_musical_quality_admission",
         })
     );
     Ok(())

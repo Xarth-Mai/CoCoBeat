@@ -125,6 +125,28 @@ pub fn compile_structure_candidate_package(
     )
 }
 
+/// Publishes sections when supported, otherwise preserves the chart and existing sections
+/// Unsupported detection is analysis metadata, not an authored or whole-song fallback
+pub fn compile_structure_analysis_package(
+    source: impl AsRef<Path>,
+    channel: usize,
+    destination: impl AsRef<Path>,
+) -> Result<ValidatedPackage, String> {
+    compile_structure_features_candidate_package(
+        source.as_ref(),
+        channel,
+        destination.as_ref(),
+        |original, evidence| match section_detection(&evidence.bins, evidence.canonical_frames)? {
+            SectionDetection::Supported(boundaries) => {
+                section_content(original, channel, &boundaries)
+            }
+            SectionDetection::Unsupported(reason) => {
+                unsupported_section_content(original, channel, reason)
+            }
+        },
+    )
+}
+
 /// Publishes fixed-grid spectral repetition candidates without altering chart or sections
 pub fn compile_repetition_candidate_package(
     source: impl AsRef<Path>,
@@ -138,6 +160,31 @@ pub fn compile_repetition_candidate_package(
         |original, evidence| {
             let candidates = repetition_candidates(&evidence.bins, evidence.canonical_frames)?;
             repetition_content(original, channel, &candidates)
+        },
+    )
+}
+
+/// Publishes repetition when supported, otherwise preserves existing relations and chart
+pub fn compile_repetition_analysis_package(
+    source: impl AsRef<Path>,
+    channel: usize,
+    destination: impl AsRef<Path>,
+) -> Result<ValidatedPackage, String> {
+    compile_structure_features_candidate_package(
+        source.as_ref(),
+        channel,
+        destination.as_ref(),
+        |original, evidence| match repetition_detection(&evidence.bins, evidence.canonical_frames)?
+        {
+            RepetitionDetection::Supported(candidates) => {
+                repetition_content(original, channel, &candidates)
+            }
+            RepetitionDetection::Unsupported(reason) => unsupported_feature_content(
+                original,
+                channel,
+                UnsupportedFeature::Repetition,
+                reason.reason(),
+            ),
         },
     )
 }
@@ -227,10 +274,50 @@ fn repetition_bin_supported(bin: &StructureFeatureBin) -> bool {
         && cosine(bin.log_band_power, bin.log_band_power).is_some_and(f64::is_finite)
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RepetitionUnsupported {
+    InsufficientCompleteIntervals,
+    NoNonstaticPair,
+}
+
+impl RepetitionUnsupported {
+    fn reason(self) -> &'static str {
+        match self {
+            Self::InsufficientCompleteIntervals => "insufficient_two_complete_eight_bin_intervals",
+            Self::NoNonstaticPair => "no_supported_nonstatic_interval_pair",
+        }
+    }
+
+    fn candidate_error(self) -> &'static str {
+        match self {
+            Self::InsufficientCompleteIntervals => {
+                "Repetition requires two complete eight-bin intervals"
+            }
+            Self::NoNonstaticPair => "Repetition found no supported nonstatic interval pair",
+        }
+    }
+}
+
+#[derive(Debug)]
+enum RepetitionDetection {
+    Supported(RepetitionCandidates),
+    Unsupported(RepetitionUnsupported),
+}
+
 fn repetition_candidates(
     bins: &[StructureFeatureBin],
     frames: u64,
 ) -> Result<RepetitionCandidates, String> {
+    match repetition_detection(bins, frames)? {
+        RepetitionDetection::Supported(candidates) => Ok(candidates),
+        RepetitionDetection::Unsupported(reason) => Err(reason.candidate_error().into()),
+    }
+}
+
+fn repetition_detection(
+    bins: &[StructureFeatureBin],
+    frames: u64,
+) -> Result<RepetitionDetection, String> {
     if frames == 0 || frames > MAX_CANONICAL_FRAMES || bins.len() > MAX_BINS {
         return Err("Repetition input exceeds the canonical extent limit".into());
     }
@@ -252,7 +339,9 @@ fn repetition_candidates(
     }
     let full = (frames / BIN_FRAMES) as usize;
     if full < 2 * MIN_REPETITION_BINS {
-        return Err("Repetition requires two complete eight-bin intervals".into());
+        return Ok(RepetitionDetection::Unsupported(
+            RepetitionUnsupported::InsufficientCompleteIntervals,
+        ));
     }
     let mut seeds = vec![(0usize, 0.0f64); full];
     for (i, bin) in bins[..full].iter().enumerate() {
@@ -338,15 +427,17 @@ fn repetition_candidates(
         }
     }
     if matches.is_empty() {
-        return Err("Repetition found no supported nonstatic interval pair".into());
+        return Ok(RepetitionDetection::Unsupported(
+            RepetitionUnsupported::NoNonstaticPair,
+        ));
     }
     matches.sort_unstable_by_key(|v| (v.source, v.target));
     matches.dedup_by_key(|v| (v.source, v.target));
-    Ok(RepetitionCandidates {
+    Ok(RepetitionDetection::Supported(RepetitionCandidates {
         seed_lag_count,
         selected_lags: lags,
         matches,
-    })
+    }))
 }
 
 fn accept_repetition(
@@ -495,12 +586,53 @@ fn context(bins: &[StructureFeatureBin]) -> Result<Option<Context>, String> {
     }))
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum SectionUnsupported {
+    InsufficientContext,
+    NoPersistentBoundary,
+}
+
+impl SectionUnsupported {
+    fn reason(self) -> &'static str {
+        match self {
+            Self::InsufficientContext => "insufficient_complete_context_and_minimum_duration",
+            Self::NoPersistentBoundary => "no_supported_persistent_boundary",
+        }
+    }
+
+    fn candidate_error(self) -> &'static str {
+        match self {
+            Self::InsufficientContext => {
+                "Structure segmentation has insufficient complete context and minimum duration"
+            }
+            Self::NoPersistentBoundary => {
+                "Structure segmentation found no supported persistent boundary"
+            }
+        }
+    }
+}
+
+enum SectionDetection {
+    Supported(Vec<Boundary>),
+    Unsupported(SectionUnsupported),
+}
+
 fn section_boundaries(bins: &[StructureFeatureBin], frames: u64) -> Result<Vec<Boundary>, String> {
+    match section_detection(bins, frames)? {
+        SectionDetection::Supported(boundaries) => Ok(boundaries),
+        SectionDetection::Unsupported(reason) => Err(reason.candidate_error().into()),
+    }
+}
+
+fn section_detection(
+    bins: &[StructureFeatureBin],
+    frames: u64,
+) -> Result<SectionDetection, String> {
     let full = (frames / BIN_FRAMES) as usize;
     if full < 16 {
-        return Err(
-            "Structure segmentation has insufficient complete context and minimum duration".into(),
-        );
+        return Ok(SectionDetection::Unsupported(
+            SectionUnsupported::InsufficientContext,
+        ));
     }
     let mut scores = vec![None; full + 1];
     for k in CONTEXT_BINS..=full - CONTEXT_BINS {
@@ -558,10 +690,103 @@ fn section_boundaries(bins: &[StructureFeatureBin], frames: u64) -> Result<Vec<B
         }
     }
     if accepted.is_empty() {
-        return Err("Structure segmentation found no supported persistent boundary".into());
+        return Ok(SectionDetection::Unsupported(
+            SectionUnsupported::NoPersistentBoundary,
+        ));
     }
     accepted.sort_unstable_by_key(|v| v.frame);
-    Ok(accepted)
+    Ok(SectionDetection::Supported(accepted))
+}
+
+#[derive(Clone, Copy)]
+enum UnsupportedFeature {
+    Sections,
+    Repetition,
+}
+
+fn unsupported_section_content(
+    original: &ValidatedPackage,
+    channel: usize,
+    reason: SectionUnsupported,
+) -> Result<crate::PackageBuildInput, String> {
+    unsupported_feature_content(
+        original,
+        channel,
+        UnsupportedFeature::Sections,
+        reason.reason(),
+    )
+}
+
+// Shared only for the two existing no-support analysis attempts
+fn unsupported_feature_content(
+    original: &ValidatedPackage,
+    channel: usize,
+    feature: UnsupportedFeature,
+    reason: &'static str,
+) -> Result<crate::PackageBuildInput, String> {
+    use cocobeat_schema::{AnalysisCapability, AnalysisSource, AnalysisState};
+    let mut analysis = original.analysis.clone();
+    let capabilities = analysis.capabilities.as_mut().ok_or(match feature {
+        UnsupportedFeature::Sections => "Structure segmentation requires original capabilities",
+        UnsupportedFeature::Repetition => "Repetition requires analysis v2 capabilities",
+    })?;
+    let (capability, empty, profile, analysis_version) = match feature {
+        UnsupportedFeature::Sections => (
+            &mut capabilities.sections,
+            analysis.sections.is_empty(),
+            STRUCTURE_SEGMENTATION_PROFILE,
+            "canonical-logbands-4x4-novelty-v1-analysis",
+        ),
+        UnsupportedFeature::Repetition => (
+            &mut capabilities.repetition,
+            analysis.repetitions.is_empty(),
+            REPETITION_CANDIDATE_PROFILE,
+            "canonical-logbands-diagonal-8bin-v1-analysis",
+        ),
+    };
+    let old = *capability;
+    if empty {
+        *capability = AnalysisCapability {
+            state: AnalysisState::Unsupported,
+            source: AnalysisSource::Algorithm,
+            confidence: None,
+        };
+    }
+    let mut diagnostics = serde_json::json!({
+        "profile": profile,
+        "channel": channel,
+        "source_content_id": blake3::Hash::from_bytes(original.manifest.package_hash).to_hex().as_str(),
+        "audio_blake3": blake3::Hash::from_bytes(original.manifest.audio.blake3).to_hex().as_str(),
+        "canonical_frames": original.manifest.canonical_frames,
+        "detection_state": "unsupported",
+        "unsupported_reason": reason,
+        "original_analysis_version": original.manifest.analysis_version,
+        "original_diagnostics_blake3": blake3::hash(original.analysis.diagnostics.as_bytes()).to_hex().as_str(),
+        "confidence": null,
+        "production_admission": false,
+    });
+    let old_capability = serde_json::json!({ "state": format!("{:?}", old.state), "source": format!("{:?}", old.source), "confidence": old.confidence });
+    match feature {
+        UnsupportedFeature::Sections => {
+            diagnostics["original_sections"] = original.analysis.sections.len().into();
+            diagnostics["original_cues"] = original.chart.sections.len().into();
+            diagnostics["original_sections_capability"] = old_capability;
+        }
+        UnsupportedFeature::Repetition => {
+            diagnostics["original_repetition_count"] = original.analysis.repetitions.len().into();
+            diagnostics["original_repetition_capability"] = old_capability;
+        }
+    }
+    analysis.diagnostics = serde_json::to_string(&diagnostics).map_err(|e| e.to_string())?;
+    analysis.validate(original.manifest.canonical_frames)?;
+    Ok(crate::PackageBuildInput {
+        song_id: original.manifest.song_id.clone(),
+        importer_version: original.manifest.importer_version.clone(),
+        analysis_version: analysis_version.into(),
+        chart_version: original.manifest.chart_version.clone(),
+        analysis,
+        chart: original.chart.clone(),
+    })
 }
 
 fn section_content(
@@ -1096,6 +1321,80 @@ mod tests {
         fs::write(&failed, b"keep existing output").unwrap();
         assert!(compile_structure_candidate_package(&destination, 0, &failed).is_err());
         assert_eq!(fs::read(&failed).unwrap(), b"keep existing output");
+        let unsupported = root.join("unsupported-analysis");
+        let published = compile_structure_analysis_package(&destination, 0, &unsupported).unwrap();
+        assert_eq!(published.manifest.audio, expected_package.manifest.audio);
+        assert_eq!(published.manifest.canonical_frames, 4800);
+        assert_eq!(published.chart, expected_package.chart);
+        assert_eq!(
+            published.analysis.sections,
+            expected_package.analysis.sections
+        );
+        assert_eq!(published.analysis.energy, expected_package.analysis.energy);
+        assert_eq!(
+            published.analysis.capabilities.unwrap().sections,
+            cocobeat_schema::AnalysisCapability {
+                state: cocobeat_schema::AnalysisState::Unsupported,
+                source: cocobeat_schema::AnalysisSource::Algorithm,
+                confidence: None,
+            }
+        );
+        assert_eq!(crate::validate_package(&unsupported).unwrap(), published);
+        assert_eq!(
+            protected,
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap())
+        );
+        let no_pair = root.join("strict-no-repetition");
+        assert_eq!(
+            compile_repetition_candidate_package(&unsupported, 0, &no_pair).unwrap_err(),
+            "Repetition requires two complete eight-bin intervals"
+        );
+        assert!(!no_pair.exists());
+        let protected_unsupported =
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(unsupported.join(name)).unwrap());
+        let repetition_attempt = root.join("unsupported-repetition-analysis");
+        let attempted =
+            compile_repetition_analysis_package(&unsupported, 0, &repetition_attempt).unwrap();
+        let mut expected = published.analysis.clone();
+        expected.capabilities.as_mut().unwrap().repetition = cocobeat_schema::AnalysisCapability {
+            state: cocobeat_schema::AnalysisState::Unsupported,
+            source: cocobeat_schema::AnalysisSource::Algorithm,
+            confidence: None,
+        };
+        expected.diagnostics = attempted.analysis.diagnostics.clone();
+        assert_eq!(attempted.analysis, expected);
+        assert_eq!(attempted.chart, published.chart);
+        assert_eq!(attempted.manifest.audio, published.manifest.audio);
+        assert_eq!(
+            attempted.manifest.canonical_frames,
+            published.manifest.canonical_frames
+        );
+        assert_eq!(
+            crate::validate_package(&repetition_attempt).unwrap(),
+            attempted
+        );
+        assert!(
+            compile_repetition_analysis_package(
+                &unsupported,
+                2,
+                root.join("wrong-repetition-channel")
+            )
+            .is_err()
+        );
+        assert!(
+            compile_repetition_analysis_package(&unsupported, 0, unsupported.join("inside"))
+                .is_err()
+        );
+        assert!(compile_repetition_analysis_package(&unsupported, 0, &failed).is_err());
+        assert_eq!(fs::read(&failed).unwrap(), b"keep existing output");
+        assert_eq!(
+            protected,
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap())
+        );
+        assert_eq!(
+            protected_unsupported,
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(unsupported.join(name)).unwrap())
+        );
         let mut constructed = expected_package;
         constructed.manifest.canonical_frames = 32 * BIN_FRAMES + 1;
         constructed.analysis.energy = vec![cocobeat_schema::EnergySample {
@@ -1193,6 +1492,69 @@ mod tests {
         assert_eq!(diagnostic["seed_lag_count"], 1);
         assert_eq!(diagnostic["selected_lags"], serde_json::json!([8]));
         assert_eq!(diagnostic["confidence"], serde_json::Value::Null);
+        assert_eq!(diagnostic["production_admission"], false);
+        constructed.analysis.sections = content.analysis.sections.clone();
+        constructed.chart.sections = content.chart.sections.clone();
+        constructed.analysis.capabilities.as_mut().unwrap().sections =
+            cocobeat_schema::AnalysisCapability {
+                state: cocobeat_schema::AnalysisState::Validated,
+                source: cocobeat_schema::AnalysisSource::Authored,
+                confidence: None,
+            };
+        let unavailable =
+            unsupported_section_content(&constructed, 0, SectionUnsupported::NoPersistentBoundary)
+                .unwrap();
+        assert_eq!(unavailable.chart, constructed.chart);
+        assert_eq!(unavailable.analysis.sections, constructed.analysis.sections);
+        assert_eq!(
+            unavailable.analysis.capabilities,
+            constructed.analysis.capabilities
+        );
+        assert_eq!(
+            unavailable.chart_version,
+            constructed.manifest.chart_version
+        );
+        let diagnostic: serde_json::Value =
+            serde_json::from_str(&unavailable.analysis.diagnostics).unwrap();
+        assert_eq!(diagnostic["detection_state"], "unsupported");
+        assert_eq!(
+            diagnostic["unsupported_reason"],
+            "no_supported_persistent_boundary"
+        );
+        assert_eq!(diagnostic["production_admission"], false);
+        constructed.analysis.repetitions = repetition.analysis.repetitions.clone();
+        constructed
+            .analysis
+            .capabilities
+            .as_mut()
+            .unwrap()
+            .repetition = cocobeat_schema::AnalysisCapability {
+            state: cocobeat_schema::AnalysisState::Validated,
+            source: cocobeat_schema::AnalysisSource::Authored,
+            confidence: None,
+        };
+        let no_new_relations = unsupported_feature_content(
+            &constructed,
+            1,
+            UnsupportedFeature::Repetition,
+            RepetitionUnsupported::NoNonstaticPair.reason(),
+        )
+        .unwrap();
+        let mut expected = constructed.analysis.clone();
+        expected.diagnostics = no_new_relations.analysis.diagnostics.clone();
+        assert_eq!(no_new_relations.analysis, expected);
+        assert_eq!(no_new_relations.chart, constructed.chart);
+        assert_eq!(
+            no_new_relations.chart_version,
+            constructed.manifest.chart_version
+        );
+        let diagnostic: serde_json::Value =
+            serde_json::from_str(&no_new_relations.analysis.diagnostics).unwrap();
+        assert_eq!(
+            diagnostic["unsupported_reason"],
+            "no_supported_nonstatic_interval_pair"
+        );
+        assert_eq!(diagnostic["original_repetition_count"], 1);
         assert_eq!(diagnostic["production_admission"], false);
         fs::remove_dir_all(root).unwrap();
     }
@@ -1322,6 +1684,39 @@ mod tests {
     }
 
     #[test]
+    fn repetition_analysis_distinguishes_unavailable_support_from_invalid_input() {
+        for (kinds, reason) in [
+            (
+                vec![(0, 0.25); 8],
+                RepetitionUnsupported::InsufficientCompleteIntervals,
+            ),
+            (vec![(0, 0.25); 16], RepetitionUnsupported::NoNonstaticPair),
+            (vec![(0, 0.0); 16], RepetitionUnsupported::NoNonstaticPair),
+        ] {
+            let mut bins = segmentation_bins(&kinds);
+            relations(&mut bins).unwrap();
+            let n = kinds.len() as u64 * BIN_FRAMES;
+            assert!(
+                matches!(repetition_detection(&bins, n).unwrap(), RepetitionDetection::Unsupported(actual) if actual == reason)
+            );
+            assert_eq!(
+                repetition_candidates(&bins, n).unwrap_err(),
+                reason.candidate_error()
+            );
+        }
+        let kinds: Vec<_> = (0..24).map(|i| (i % 8, 0.25)).collect();
+        let mut bins = segmentation_bins(&kinds);
+        relations(&mut bins).unwrap();
+        let candidates = repetition_candidates(&bins, 24 * BIN_FRAMES).unwrap();
+        assert!(
+            matches!(repetition_detection(&bins, 24 * BIN_FRAMES).unwrap(), RepetitionDetection::Supported(actual) if actual == candidates)
+        );
+        bins[0].rms = f64::NAN;
+        assert!(repetition_detection(&bins, 24 * BIN_FRAMES).is_err());
+        assert!(repetition_detection(&[], 0).is_err());
+    }
+
+    #[test]
     fn persistent_colour_energy_changes_and_real_tail_follow_independent_oracles() {
         let mut kinds = vec![(0, 0.25); 16];
         kinds.extend(vec![(7, 0.25); 16]);
@@ -1361,6 +1756,39 @@ mod tests {
             kinds[16] = transient;
             assert!(section_boundaries(&segmentation_bins(&kinds), 32 * BIN_FRAMES).is_err());
         }
+    }
+
+    #[test]
+    fn composition_distinguishes_unavailable_detection_without_relaxing_candidate_errors() {
+        for (kinds, expected) in [
+            (
+                vec![(0, 0.25); 32],
+                SectionUnsupported::NoPersistentBoundary,
+            ),
+            (vec![(0, 0.0); 32], SectionUnsupported::NoPersistentBoundary),
+            (vec![(0, 0.25); 8], SectionUnsupported::InsufficientContext),
+        ] {
+            let bins = segmentation_bins(&kinds);
+            let n = kinds.len() as u64 * BIN_FRAMES;
+            assert!(
+                matches!(section_detection(&bins, n).unwrap(), SectionDetection::Unsupported(reason) if reason == expected)
+            );
+            assert_eq!(
+                section_boundaries(&bins, n).unwrap_err(),
+                expected.candidate_error()
+            );
+        }
+        let mut kinds = vec![(0, 0.25); 32];
+        kinds[16] = (7, 1.0);
+        assert!(matches!(
+            section_detection(&segmentation_bins(&kinds), 32 * BIN_FRAMES).unwrap(),
+            SectionDetection::Unsupported(SectionUnsupported::NoPersistentBoundary)
+        ));
+        let mut kinds = vec![(0, 0.25); 16];
+        kinds.extend(vec![(7, 0.25); 16]);
+        assert!(
+            matches!(section_detection(&segmentation_bins(&kinds), 32 * BIN_FRAMES).unwrap(), SectionDetection::Supported(boundaries) if boundaries.len() == 1 && boundaries[0].frame == 16 * BIN_FRAMES)
+        );
     }
 
     #[test]

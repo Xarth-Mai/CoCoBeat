@@ -1,0 +1,1197 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "status": "PASS_SCOPED_SOFTWARE_CONTENT_ROUTE",
+  "scope": "Five S4 files, strict-preserving Unsupported analysis attempts, CLI plus separate bounded formal Library software campaign",
+  "source_scope": [
+    {
+      "path": "crates/cocobeat-media/src/structure_features.rs",
+      "sha256": "858293bcd84147dfa97f27c2a2de691b5812ac8fea87ca2a6740f5856b7346d1",
+      "accepted_build_source_map_match": true
+    },
+    {
+      "path": "crates/cocobeat-media/src/lib.rs",
+      "sha256": "ba8f883ecac97274ac00b93eac6514190ec092dae4bf201e09cc0fc5757d4468",
+      "accepted_build_source_map_match": true
+    },
+    {
+      "path": "tools/cocobeat-lab/src/structure_features.rs",
+      "sha256": "fc79f625c4bca22ad3338feaed7e9a45a807dae79794073d96ee13be0d532edd",
+      "accepted_build_source_map_match": true
+    },
+    {
+      "path": "tools/cocobeat-lab/src/main.rs",
+      "sha256": "563fbabfccacfb38765bf97d7c15192b9da62e10679e0d3cdee032e0e7ec4646",
+      "accepted_build_source_map_match": true
+    },
+    {
+      "path": "docs/native-structure-features.md",
+      "sha256": "d5397814fd2a202f9150cc656bbbfc5f88a628172e5ddef1d50195fa8f066bdd",
+      "accepted_build_source_map_match": "Documentation excluded from Cargo input map; current final doc bytes"
+    }
+  ],
+  "build": {
+    "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+    "base_head": "88c20de49df3f1bf544024d184f470b225e41dc4",
+    "status": "PASS",
+    "checks": 6,
+    "all_exit_codes": 0,
+    "source_count": 379,
+    "source_before_after_equal": true,
+    "source_map_ref": "target/repetition-empty-production-checks-20261009/source-after.json",
+    "media_structure_tests_passed": 13,
+    "lab_structure_tests_passed": 2,
+    "binary_identity": {
+      "game": {
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/repetition-empty-shipping-runtime-20261009/bin/cocobeat-game",
+        "sha256": "6d9a102b7018c3aded09cdbb1e3a86c135a97b3587a002d7c8d001456387761b",
+        "receipt": "/home/lzzz/MyProjects/CoCoBeat/target/full-library-route-run-20261009-revision05/game-receipt.json",
+        "receipt_sha256": "55daba3e0ef104767076ef727b2d4d7659520f1bc2c0d8be2c5df9e9e387dfe1",
+        "scope": "Derived from accepted actual Cargo graph; see S4 build record"
+      },
+      "lab": {
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/repetition-empty-shipping-runtime-20261009/bin/cocobeat-lab",
+        "sha256": "fcafba94ba6a12716f7466fe3dc61d65ec854cdfad96c1056de8eee87dfe4440",
+        "receipt": "/home/lzzz/MyProjects/CoCoBeat/target/full-library-route-run-20261009-revision05/lab-receipt.json",
+        "receipt_sha256": "ac1966001d588f8f3504a09042340f0fff5c0a0219c4fcd3a5e219eeac13a6a4",
+        "scope": "Derived from accepted actual Cargo graph; see S4 build record"
+      }
+    }
+  },
+  "CLI": {
+    "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+    "original_parent_status": "FAIL",
+    "error": "AssertionError: FAIL_STOP insufficient budget before nested formal library campaign",
+    "commands": 18,
+    "all_command_exit_codes": 0,
+    "qualification": "Includes two target witness compilations and two typed package-pair checks; original parent is not relabelled PASS",
+    "formal_library_started_in_this_parent": false,
+    "protected_inputs_unchanged": true,
+    "environment": {
+      "ORT_DISABLE_TELEMETRY": "1"
+    }
+  },
+  "source_chain": {
+    "original": {
+      "content_id": "package-blake3:87ef65368edd89e1dd1949a9702bb021001b14a3985c81e7645514a7cdd2bfd3",
+      "audio_blake3": "f826944a5aa1a4d9716dacc6d32a93a1dbe56d4a1fc66bfcb8d45ea7155b5e3e",
+      "canonical_frames": 786432,
+      "audio_basis": "canonical_decoded"
+    },
+    "adopted": {
+      "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+      "audio_blake3": "f826944a5aa1a4d9716dacc6d32a93a1dbe56d4a1fc66bfcb8d45ea7155b5e3e",
+      "canonical_frames": 786432,
+      "audio_basis": "canonical_decoded"
+    },
+    "structure": {
+      "content_id": "package-blake3:5122dedc76385dd88d62762cc5af3ad7d3a6c15156b9b3673591a99d3a504435",
+      "audio_blake3": "f826944a5aa1a4d9716dacc6d32a93a1dbe56d4a1fc66bfcb8d45ea7155b5e3e",
+      "canonical_frames": 786432,
+      "audio_basis": "canonical_decoded"
+    },
+    "published": {
+      "content_id": "package-blake3:951d7600e1d641ceb928ed60df5ea802dd3fe6741e4c60e7a31864941c2aab66",
+      "audio_blake3": "f826944a5aa1a4d9716dacc6d32a93a1dbe56d4a1fc66bfcb8d45ea7155b5e3e",
+      "canonical_frames": 786432,
+      "audio_basis": "canonical_decoded"
+    }
+  },
+  "canonical_audio_sha256": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+  "canonical_frames": 786432,
+  "adoption": {
+    "anchor_count": 1,
+    "quality_status": "UNASSESSED",
+    "production_admission": false,
+    "explicit_selection_ref": "target/full-library-route-run-20261009-revision05/explicit-qa-selection.json",
+    "chart_preservation_origin": "Explicitly adopted chart; adoption intentionally changes original imported anchors"
+  },
+  "analysis_attempts": {
+    "structure": {
+      "state": "Unsupported",
+      "reason": "no_supported_persistent_boundary",
+      "confidence": null,
+      "production_admission": false,
+      "full_original_facts_and_chart_preserved": true,
+      "original_capability": {
+        "confidence": null,
+        "source": "Authored",
+        "state": "NotRun"
+      },
+      "retained_count": 0,
+      "pair_receipt_ref": "target/full-library-route-run-20261009-revision05/structure-pair.stdout"
+    },
+    "repetition": {
+      "state": "Unsupported",
+      "reason": "no_supported_nonstatic_interval_pair",
+      "confidence": null,
+      "production_admission": false,
+      "full_original_facts_and_chart_preserved": true,
+      "original_capability": {
+        "confidence": null,
+        "source": "Algorithm",
+        "state": "Unsupported"
+      },
+      "retained_count": 0,
+      "pair_receipt_ref": "target/full-library-route-run-20261009-revision05/repetition-pair.stdout"
+    }
+  },
+  "preservation": {
+    "audio_N_unchanged": true,
+    "adoption_analysis_bytes_unchanged": true,
+    "chart_Anchor_cues_equal_from_adopted_through_final": true,
+    "existing_payload_and_capability": "Typed full analysis/chart equality; only diagnostics and empty feature capability Unsupported/Algorithm/None changes allowed; passing Media tests preserve existing authored relations/source/capability",
+    "empty_relation_meaning": "Unsupported/KnownUnavailable, not a fabricated Candidate empty result",
+    "strict_candidates": "Original Err/zero-publication controls retained in actual passing narrow suite",
+    "analysis_changes": "Only declared attempt diagnostics, analysis_version and empty target capability changes; final analysis bytes intentionally differ",
+    "adoption_analysis_bytes_unchanged_scope": "Imported original analysis.bin equals explicitly-adopted analysis.bin; later analysis attempts intentionally change it"
+  },
+  "separate_native": {
+    "receipt": "target/full-library-native-continuation-20261009/result.json",
+    "status": "PASS_SEPARATE_NATIVE_CAMPAIGN",
+    "budget_seconds": 500,
+    "parent_pid": 1050003,
+    "parent_pgid": 1050003,
+    "parent_exit_code": 0,
+    "parent_elapsed_seconds": 53.94841312599601,
+    "parent_owned_group_gone": true,
+    "wrapper_pid": 1050012,
+    "wrapper_exit_code": 0,
+    "game_pid": 1050035,
+    "game_returncode": 0,
+    "exit_scope": "Natural process return0 after bounded software QA; not song natural EOF",
+    "host_release_ref": "target/full-library-native-continuation-20261009/root-exit-corroboration.json",
+    "case": "complete-640x480-zh-CN",
+    "steps": 22,
+    "frames": 516,
+    "snapshots": {
+      "paused_a": {
+        "phase": "Paused",
+        "content_id": "package-blake3:951d7600e1d641ceb928ed60df5ea802dd3fe6741e4c60e7a31864941c2aab66",
+        "canonical_frames": 786432,
+        "epoch": 1,
+        "audio_started": true,
+        "source_position_seconds": 0.544,
+        "acknowledged_frame": 26112,
+        "results": "None"
+      },
+      "ready_a": {
+        "phase": "Ready",
+        "content_id": "package-blake3:951d7600e1d641ceb928ed60df5ea802dd3fe6741e4c60e7a31864941c2aab66",
+        "canonical_frames": 786432,
+        "epoch": 0,
+        "audio_started": false,
+        "source_position_seconds": null,
+        "acknowledged_frame": null,
+        "results": "None"
+      },
+      "ready_b": {
+        "phase": "Ready",
+        "content_id": "package-blake3:87ef65368edd89e1dd1949a9702bb021001b14a3985c81e7645514a7cdd2bfd3",
+        "canonical_frames": 786432,
+        "epoch": 1,
+        "audio_started": false,
+        "source_position_seconds": null,
+        "acknowledged_frame": null,
+        "results": "None"
+      },
+      "running_a": {
+        "phase": "Running",
+        "content_id": "package-blake3:951d7600e1d641ceb928ed60df5ea802dd3fe6741e4c60e7a31864941c2aab66",
+        "canonical_frames": 786432,
+        "epoch": 1,
+        "audio_started": true,
+        "source_position_seconds": 0.5013333333333333,
+        "acknowledged_frame": 24064,
+        "results": "None"
+      }
+    },
+    "flow": "Library Ready, fresh confirmation, Kira source progression to 0.5013333333333333s, Pause, switch to original CID, reject invalid packages, cancel",
+    "rejections": [
+      {
+        "name": "bad-audio",
+        "error": [
+          [
+            "error",
+            "Object identity mismatch: song.audio.ogg"
+          ]
+        ],
+        "active_song_state_unchanged": true
+      },
+      {
+        "name": "extra-file",
+        "error": [
+          [
+            "error",
+            "Package directory must contain only its four declared objects"
+          ]
+        ],
+        "active_song_state_unchanged": true
+      },
+      {
+        "name": "unknown-rules",
+        "error": [
+          [
+            "error",
+            "Unsupported song ruleset: library-qa-unsupported-v1"
+          ]
+        ],
+        "active_song_state_unchanged": true
+      }
+    ],
+    "cancel_worker_finished": true,
+    "owned_workers_finished": true,
+    "protected_inputs_unchanged": true,
+    "formal_helper_guards_unchanged": true,
+    "replay": "Original helper PASS verifies bounded two-player facts and saved Replay identity; original bytes indexed only"
+  },
+  "visual_review": {
+    "original_raw_summary_status": "NOT RUN",
+    "root_later_review": "Exactly four explicit root-reported captures, 640x480 zh-CN; not a whole-layout or other-image acceptance claim",
+    "root_reviewed_png_refs": [
+      "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/library.png",
+      "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/ready-a.png",
+      "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/running-a.png",
+      "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/rejected.png"
+    ],
+    "other_png_manual_review": "NOT CLAIMED",
+    "this_agent_visual_review": "NOT RUN",
+    "observed_issue": "Ready panel bottom long path clipping; scoped existing UI follow-up, not all-layout PASS"
+  },
+  "preserved_failures": [
+    {
+      "revision": "01",
+      "actual_status": "FAIL",
+      "receipt": "target/full-library-route-run-20261009/result.json",
+      "cause": "ORT telemetry environment absent",
+      "status_not_relabelled": true,
+      "stderr": "target/full-library-route-run-20261009/import.stderr",
+      "commands": 1,
+      "commands_exit0": 0
+    },
+    {
+      "revision": "02",
+      "actual_status": "FAIL",
+      "receipt": "target/full-library-route-run-20261009-revision02/result.json",
+      "cause": "Strict structure rejected no supported persistent boundary",
+      "status_not_relabelled": true,
+      "stderr": "target/full-library-route-run-20261009-revision02/structure.stderr",
+      "commands": 8,
+      "commands_exit0": 7
+    },
+    {
+      "revision": "03",
+      "actual_status": "FAIL_PREFLIGHT",
+      "receipt": "target/full-library-route-preflight-failure-20261009-revision03/receipt.json",
+      "cause": "Non-Cargo documentation incorrectly required in source_record",
+      "status_not_relabelled": true,
+      "stderr": "target/full-library-route-preflight-failure-20261009-revision03/tool-terminal.stderr",
+      "tool_session": 28071,
+      "exit_code": 1,
+      "pid": "NOT_RECORDED_BY_TOOL",
+      "cli_native_started": false
+    },
+    {
+      "revision": "04",
+      "actual_status": "FAIL",
+      "receipt": "target/full-library-route-run-20261009-revision04/result.json",
+      "cause": "Strict repetition rejected no supported nonstatic interval pair",
+      "status_not_relabelled": true,
+      "stderr": "target/full-library-route-run-20261009-revision04/repetition.stderr",
+      "commands": 13,
+      "commands_exit0": 12
+    },
+    {
+      "revision": "05",
+      "actual_status": "FAIL",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "cause": "All18 commands succeeded; parent failed pre-native budget check",
+      "status_not_relabelled": true,
+      "commands": 18,
+      "commands_exit0": 18
+    }
+  ],
+  "quality_status": "UNASSESSED",
+  "production_admission": false,
+  "not_run": [
+    "song natural EOF",
+    "musical quality admission",
+    "physical keyboard/gamepads/mixed input",
+    "speaker timing/device latency",
+    "human music truth acceptance",
+    "dual-machine acceptance",
+    "four-platform acceptance",
+    "Release/tag/publishing"
+  ],
+  "original_artifacts": {
+    "target/full-library-route-run-20261009-revision05/auto-bundle/package/song.audio.ogg": {
+      "bytes": 41079,
+      "sha256": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda"
+    },
+    "target/full-library-route-run-20261009-revision05/auto-bundle/package/analysis.bin": {
+      "bytes": 17733,
+      "sha256": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35"
+    },
+    "target/full-library-route-run-20261009-revision05/auto-bundle/package/chart.bin": {
+      "bytes": 75,
+      "sha256": "9ecc08ee96333de1fec218f5d70e39092819f6a3f2584a0056a24d041697da05"
+    },
+    "target/full-library-route-run-20261009-revision05/auto-bundle/package/song.package": {
+      "bytes": 352,
+      "sha256": "59dbd2bb0089cc6bf04c0f48e0d91a4bc0426184bb09e8ac3c15c74ae3128d4a"
+    },
+    "target/full-library-route-run-20261009-revision05/explicitly-adopted/song.audio.ogg": {
+      "bytes": 41079,
+      "sha256": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda"
+    },
+    "target/full-library-route-run-20261009-revision05/explicitly-adopted/analysis.bin": {
+      "bytes": 17733,
+      "sha256": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35"
+    },
+    "target/full-library-route-run-20261009-revision05/explicitly-adopted/chart.bin": {
+      "bytes": 76,
+      "sha256": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee"
+    },
+    "target/full-library-route-run-20261009-revision05/explicitly-adopted/song.package": {
+      "bytes": 351,
+      "sha256": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+    },
+    "target/full-library-route-run-20261009-revision05/structure/song.audio.ogg": {
+      "bytes": 41079,
+      "sha256": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda"
+    },
+    "target/full-library-route-run-20261009-revision05/structure/analysis.bin": {
+      "bytes": 17512,
+      "sha256": "2396658658d4b0c5a10cfad383a7f5210eba03fa4964f353d346e042d0b5de0a"
+    },
+    "target/full-library-route-run-20261009-revision05/structure/chart.bin": {
+      "bytes": 76,
+      "sha256": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee"
+    },
+    "target/full-library-route-run-20261009-revision05/structure/song.package": {
+      "bytes": 349,
+      "sha256": "ee6935bc8c5fd0891b9f8d08bca9939b8a828348056ce258ed607d238d571f3d"
+    },
+    "target/full-library-route-run-20261009-revision05/published/song.audio.ogg": {
+      "bytes": 41079,
+      "sha256": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda"
+    },
+    "target/full-library-route-run-20261009-revision05/published/analysis.bin": {
+      "bytes": 17514,
+      "sha256": "a6a32d28b522130f99ac18d2ad951aa31296b8c26408c41bf235de3dc5c44c39"
+    },
+    "target/full-library-route-run-20261009-revision05/published/chart.bin": {
+      "bytes": 76,
+      "sha256": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee"
+    },
+    "target/full-library-route-run-20261009-revision05/published/song.package": {
+      "bytes": 351,
+      "sha256": "8afb06b5f1b16312693225687bd5b2ff0d8c89d80299845cbaecb0b4cb5eef1d"
+    },
+    "target/repetition-empty-production-checks-20261009/result.json": {
+      "bytes": 3101,
+      "sha256": "440f6897c755d7cea399adb6790a73dc689c33bb1ff866d18c12ea47bb4cded3"
+    },
+    "target/repetition-empty-production-checks-20261009/01.stdout": {
+      "bytes": 1574,
+      "sha256": "4c506ae396ab8bb5a590f3ba7ab8270d7eaa543dd9ffec1885dbb0fa84a34a1e"
+    },
+    "target/repetition-empty-production-checks-20261009/01.stderr": {
+      "bytes": 2587,
+      "sha256": "79dfce2c89e268fd94a593ac9937cb48a07e618f3e08e633e0900417751e99e0"
+    },
+    "target/repetition-empty-production-checks-20261009/02.stdout": {
+      "bytes": 326,
+      "sha256": "8d048d109718f7af3caa21fa32a17a0e91a174f38b57df6d777ec7a8f6d9af7c"
+    },
+    "target/repetition-empty-production-checks-20261009/02.stderr": {
+      "bytes": 2852,
+      "sha256": "13253306a79d8da386d10074695a9e9eb596e35954fcc22c8d743c7cdc261eb8"
+    },
+    "target/repetition-empty-production-checks-20261009/03.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/repetition-empty-production-checks-20261009/03.stderr": {
+      "bytes": 2765,
+      "sha256": "f118bdb0c8ca572f0b72a91d3addb014576c81baee7a9f8cfe3cefecf5ad1ce9"
+    },
+    "target/repetition-empty-production-checks-20261009/04.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/repetition-empty-production-checks-20261009/04.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/repetition-empty-production-checks-20261009/05.stdout": {
+      "bytes": 78,
+      "sha256": "c1dd38d0fcaf97787d833c0ee1ceb0d75c34d1c25ccb7e0f785f00217e8b5ace"
+    },
+    "target/repetition-empty-production-checks-20261009/05.stderr": {
+      "bytes": 117,
+      "sha256": "372584ffaad16c73a503a2929c2e3d1db762c867f73cbfbd6f7041c7b5348d75"
+    },
+    "target/repetition-empty-production-checks-20261009/build.jsonl": {
+      "bytes": 406476,
+      "sha256": "200ee24e89464812df4d81d7b1b3bd50655909b1af21be2000734cbcf49c7eff"
+    },
+    "target/repetition-empty-production-checks-20261009/06.stderr": {
+      "bytes": 2582,
+      "sha256": "bc13208ee7e64c51030b4b48bb51316fff835ae3b1ad67f02bfb03d478e3ec44"
+    },
+    "target/full-library-route-run-20261009-revision05/result.json": {
+      "bytes": 35651,
+      "sha256": "0e54cf5d74a2f3421077c9bb2a7ae15f30edac13ec995f0b1fab82a2c46f9124"
+    },
+    "target/full-library-route-run-20261009-revision05/compile-structure-pair.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/compile-structure-pair.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/compile-repetition-pair.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/compile-repetition-pair.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/import.stdout": {
+      "bytes": 1326,
+      "sha256": "a183afc39ea53c8a781d21c717af34558cf7bafc86e46f3fe0e83d2d630802b7"
+    },
+    "target/full-library-route-run-20261009-revision05/import.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/original-verify.stdout": {
+      "bytes": 1010,
+      "sha256": "6937cf8e6b0e3c622f86d1f1bb5248906ee32d9ce5c1a9ab405c5006017c6ff4"
+    },
+    "target/full-library-route-run-20261009-revision05/original-verify.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/original-source.stdout": {
+      "bytes": 256,
+      "sha256": "64aee52ec609fb5e69ea8e93f64d3301d1d2365b6aa4aea0dcfd19ef1e8a1499"
+    },
+    "target/full-library-route-run-20261009-revision05/original-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/infer.stdout": {
+      "bytes": 741,
+      "sha256": "60f79181976833f524d881aa6864b7f87d3f588cecbf28c0ed46bde9ae9bc25e"
+    },
+    "target/full-library-route-run-20261009-revision05/infer.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/explicit-adopt.stdout": {
+      "bytes": 831,
+      "sha256": "e7cf66a308c3b3f961c2a647217cbc031f6456e35abd75c51dfb3318d3d12759"
+    },
+    "target/full-library-route-run-20261009-revision05/explicit-adopt.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/adopted-verify.stdout": {
+      "bytes": 1010,
+      "sha256": "a9676b33c94efe07a61012ab06bfb41ce83dc98bbe92656beaea9ab3f515c3e3"
+    },
+    "target/full-library-route-run-20261009-revision05/adopted-verify.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/adopted-source.stdout": {
+      "bytes": 256,
+      "sha256": "1fbd32f4d0206a6cb6738c29546869e217431211998cfb1de676c4714d6a0a0e"
+    },
+    "target/full-library-route-run-20261009-revision05/adopted-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/structure.stdout": {
+      "bytes": 1278,
+      "sha256": "e1b51ee917ec2c6c1cb53721647fddb99567825026cac0d9d1e61515918072f6"
+    },
+    "target/full-library-route-run-20261009-revision05/structure.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-verify.stdout": {
+      "bytes": 1016,
+      "sha256": "231bbf4a204e649ac289e1414c2989b2053bf358f66b99e7d2f319fa5310446c"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-verify.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-source.stdout": {
+      "bytes": 256,
+      "sha256": "6f6a0436a334503dceca4b8e21df45efe505f02d17d7d82c6eaadc785ea95e48"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-pair.stdout": {
+      "bytes": 908,
+      "sha256": "04d23e0dbfba1ed89790987fc43e423a26b07bf86a5eec3ca84b88b76e51bcd5"
+    },
+    "target/full-library-route-run-20261009-revision05/structure-pair.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/repetition.stdout": {
+      "bytes": 1270,
+      "sha256": "fb5285db06daab09c66fdea817add77a7ee23f07e1844216f7fa84d042184752"
+    },
+    "target/full-library-route-run-20261009-revision05/repetition.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/published-verify.stdout": {
+      "bytes": 1016,
+      "sha256": "d3affbf7767ffe128ad33580d1b35f4b906ff20d098596427dd3b87af0b067b9"
+    },
+    "target/full-library-route-run-20261009-revision05/published-verify.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/published-source.stdout": {
+      "bytes": 256,
+      "sha256": "19df14010559c9efc037066a573cea32b5ad1613be26280887fe062f2f8da9b5"
+    },
+    "target/full-library-route-run-20261009-revision05/published-source.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/repetition-pair.stdout": {
+      "bytes": 900,
+      "sha256": "3ab98b799fcfa1ff5a5003957f3d0331b16d4656a7b4a25fc5e7d2a1fa718aef"
+    },
+    "target/full-library-route-run-20261009-revision05/repetition-pair.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision05/stage.stdout": {
+      "bytes": 329,
+      "sha256": "015dc79bbabfc21069557bdccc00a806ae7c283351873dc5d16100281aeea506"
+    },
+    "target/full-library-route-run-20261009-revision05/stage.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/result.json": {
+      "bytes": 187952,
+      "sha256": "27d7da2b7d13e50f3bfb8e831748360070d13349b673df970c37668308378ecf"
+    },
+    "target/full-library-native-continuation-20261009/formal-library.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/formal-library.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/repetition-empty-production-checks-20261009/source-before.json": {
+      "bytes": 44005,
+      "sha256": "0d164f9816664dab31d2e2284142ac50079a8d229ffac5729d0efcfe45075559"
+    },
+    "target/repetition-empty-production-checks-20261009/source-after.json": {
+      "bytes": 44005,
+      "sha256": "0d164f9816664dab31d2e2284142ac50079a8d229ffac5729d0efcfe45075559"
+    },
+    "target/repetition-empty-production-checks-20261009/run.py": {
+      "bytes": 2796,
+      "sha256": "47da157e397dbf691ab9cf7538c860d676cc47b329f0bafbaf48e8a589f4d998"
+    },
+    "target/full-library-route-run-20261009-revision05/protected-before.json": {
+      "bytes": 118379,
+      "sha256": "eee21d845a0a1dcad53574a311267b29f0054b0338ba9f2014058678079ebfed"
+    },
+    "target/full-library-route-run-20261009-revision05/protected-after.json": {
+      "bytes": 127478,
+      "sha256": "f8def20e46ccf009df60a5b0a536a79ac9382b41e477871ecbf6b9f9654648e2"
+    },
+    "target/full-library-native-continuation-20261009/protected-before.json": {
+      "bytes": 127804,
+      "sha256": "bcc4d85799b8b53e2dc212028df3269f81d8a3fc843bf00e363adddadf5ca522"
+    },
+    "target/full-library-native-continuation-20261009/protected-after.json": {
+      "bytes": 127804,
+      "sha256": "bcc4d85799b8b53e2dc212028df3269f81d8a3fc843bf00e363adddadf5ca522"
+    },
+    "target/full-library-native-continuation-20261009/run.py": {
+      "bytes": 2784,
+      "sha256": "8d41ba55fbf30fe554c6c9805db335aa2747398372f98adb107070bdc327bb74"
+    },
+    "target/full-library-route-run-20261009-revision05/explicit-qa-selection.json": {
+      "bytes": 672,
+      "sha256": "546434109b25c4a9f64cb7e6a7f2841af8e2f7efdd894eba42e8e7294d2f02c4"
+    },
+    "target/full-library-route-run-20261009-revision05/inferred.json": {
+      "bytes": 42158,
+      "sha256": "b6f3405136052e1ac4c4f40622f807d9c5c0fb2633eeb4402344c165a900c45d"
+    },
+    "target/full-library-route-run-20261009-revision05/game-receipt.json": {
+      "bytes": 232,
+      "sha256": "55daba3e0ef104767076ef727b2d4d7659520f1bc2c0d8be2c5df9e9e387dfe1"
+    },
+    "target/full-library-route-run-20261009-revision05/lab-receipt.json": {
+      "bytes": 232,
+      "sha256": "ac1966001d588f8f3504a09042340f0fff5c0a0219c4fcd3a5e219eeac13a6a4"
+    },
+    "target/full-library-native-continuation-20261009/root-exit-corroboration.json": {
+      "bytes": 258,
+      "sha256": "d31d9ee1860eba2ba800944e7d7d5e6fc787376fc394ebba6133c051295a3dbe"
+    },
+    "target/full-library-native-continuation-20261009/library/summary.json": {
+      "bytes": 166365,
+      "sha256": "c658ecaf25df13f13579d75d0de96c5aa01a535cdfbe6a3e728f979866e91934"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/game-launch.json": {
+      "bytes": 1168,
+      "sha256": "4cd264a87c44e53d5b50287ff41f144264272747bcc94a9fe24ed09d4b78af13"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/child-exit.json": {
+      "bytes": 85,
+      "sha256": "7e4a5b9381cb61528c20f2643a7cedcd79e09adc7a6667b91fe6590cdd3ea13a"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/game.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/game.stderr": {
+      "bytes": 92993,
+      "sha256": "baaf01f4df24c14b8ff6466f07114be13fc1d668682b806f72504a97468e35f5"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/stderr": {
+      "bytes": 6593,
+      "sha256": "e1fa822834a1501a5c0e7eeea7971fae3d20f8a54a9e9557e77d0d1d10f85eaf"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/metadata.json": {
+      "bytes": 708,
+      "sha256": "269c027b2e79f4a2c2b6b6ec66d88a21f12320e29533a420355f17cb586afed9"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/frames.csv": {
+      "bytes": 61946,
+      "sha256": "d522d43b7468ca36ee29495797d928c9ca9b3ce2bf7e5fdb3e8f2275c651d708"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/library.png": {
+      "bytes": 257225,
+      "sha256": "6ced09a595853c94de881ff8a184396c7c8234077a604b5c623021875f4bc5ff"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/library-refresh.png": {
+      "bytes": 250216,
+      "sha256": "905e97d9379764fca74b6d8cda69741227bd4668b5594b88f7067805543ce35e"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/library-back.png": {
+      "bytes": 247374,
+      "sha256": "482d903e77cbdaa8c9e23de0dd206dd4556ee7849104fa0edb968311ad914f28"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/library-information.png": {
+      "bytes": 261910,
+      "sha256": "e73ef4013b43104d5215f638a967c986bf549677c87cdc6200481bc4d32f675e"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/loading.png": {
+      "bytes": 291744,
+      "sha256": "06b5a1a1237af3d9ef107731485fd543f04dd1e841653e9c76e0cdfc67000398"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/ready-a.png": {
+      "bytes": 247074,
+      "sha256": "d9d85968c16ddd9ae820674e7f8b93b4380d2135d3b3eb4945df9d5a8a434d3c"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/running-a.png": {
+      "bytes": 370709,
+      "sha256": "b72b8bc895368609e5433df3eca1fed7d217725c264261da1e8a1b2855b97a95"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/ready-b.png": {
+      "bytes": 232638,
+      "sha256": "a78a44b6338d83ed186380cb97549363468119d918be0ad9177615944b503a3b"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/rejected.png": {
+      "bytes": 253033,
+      "sha256": "16747e9603ab44bd8a4a848261b3bf4f1a0d3a22424b26a617357731df2f6268"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/cancelled.png": {
+      "bytes": 232380,
+      "sha256": "3abd033a8d3620a893c3441d686ccbc39fc2edcd82b2ddc93701a84fdd10a23d"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/observation/result.json": {
+      "bytes": 104724,
+      "sha256": "c66833d44ce35327438fb3251c5d9a04208039809575905dc18d32127c2f1eb2"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-0.stdout": {
+      "bytes": 329,
+      "sha256": "015dc79bbabfc21069557bdccc00a806ae7c283351873dc5d16100281aeea506"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-0.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-1.stdout": {
+      "bytes": 329,
+      "sha256": "db183056aa8b976a0761f2b7131a3baa6a126b91459204be9e7293699762bb4f"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-1.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-2.stdout": {
+      "bytes": 330,
+      "sha256": "9e289006e8629a6fa6f5f28491921616fc4904ee3cc9646f61778d91bcac2d37"
+    },
+    "target/full-library-native-continuation-20261009/library/stage-2.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/unknown-rules-structural.stdout": {
+      "bytes": 383,
+      "sha256": "a86448e6dcc73b58297038e68e9448fc75d1a5b6adeb9c881e485684d029b0e9"
+    },
+    "target/full-library-native-continuation-20261009/library/unknown-rules-structural.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/cwd/replays/session-1-1791487743579268023.json": {
+      "bytes": 2322,
+      "sha256": "ccdff7fddbff19283c87ac89b7b96339ff7034e048b462ac549a43131a96d558"
+    },
+    "target/full-library-native-continuation-20261009/library/complete-640x480-zh-CN/cwd/replays/session-1-1791487743579268023.csv": {
+      "bytes": 144,
+      "sha256": "abc2fd3ffa73ce64c1a6426e4fb3eda74c9c574f3b9d6007f6e4ab6ca10dbdea"
+    },
+    "target/full-library-route-run-20261009/result.json": {
+      "bytes": 3221,
+      "sha256": "1779c78a7bf3b87d77163d5755f1afb25537cef9c7a0f583bc1b719d342ec098"
+    },
+    "target/full-library-route-run-20261009/import.stderr": {
+      "bytes": 712,
+      "sha256": "d32938d9b7deb9233c7a232f12236b2ef255d93ca64155c4ef1e82eccfba1b86"
+    },
+    "target/full-library-route-run-20261009/import.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-run-20261009-revision02/result.json": {
+      "bytes": 12559,
+      "sha256": "bafb1ff96a1ba2f1d28c2a086a83633379665603da315dd6dab5e3b604902847"
+    },
+    "target/full-library-route-run-20261009-revision02/structure.stderr": {
+      "bytes": 62,
+      "sha256": "8c792899d2aae68370e95cc6112029492420716f1329ca5b10755af23988f105"
+    },
+    "target/full-library-route-run-20261009-revision02/structure.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-preflight-failure-20261009-revision03/receipt.json": {
+      "bytes": 959,
+      "sha256": "bc7f4d9e57c35e9e8294a32d8ca29a0129e94689eec04c62ce60dd822e0c5857"
+    },
+    "target/full-library-route-preflight-failure-20261009-revision03/tool-terminal.stderr": {
+      "bytes": 479,
+      "sha256": "4bcf7354b481d29ad2a44475bda9d24657753a90c5f816f9b7ea7e575ddb8f4c"
+    },
+    "target/full-library-route-run-20261009-revision04/result.json": {
+      "bytes": 21252,
+      "sha256": "b49ad84729e9004c152c830551dbba155402c3a7c7848faf73c5325402649927"
+    },
+    "target/full-library-route-run-20261009-revision04/repetition.stderr": {
+      "bytes": 54,
+      "sha256": "d349de4f3e5e52ed7a7045a1469d38f9e0da90615d1df597b98bf7b2788096d2"
+    },
+    "target/full-library-route-run-20261009-revision04/repetition.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "target/full-library-route-plan-20261009-revision05/MANIFEST.json": {
+      "bytes": 2735,
+      "sha256": "e83fa1c10f5341d8b33a639e2d44e2549f31cc949ed0770bebfc4a7ad189567d"
+    },
+    "target/full-library-route-plan-20261009-revision05/BUILD-BINDING.json": {
+      "bytes": 968,
+      "sha256": "191d7b1a433bf24f5aecfc9957db6bb8d984a5fbea5a5d8cf89fe0664af2ed21"
+    },
+    "target/full-library-route-plan-20261009-revision05/structure-pair.rs": {
+      "bytes": 3345,
+      "sha256": "292bf3a696be28bfa1588e43d5ac619a50d9eeedec96d8011d07d01982e069dd"
+    },
+    "target/full-library-route-plan-20261009-revision05/repetition-pair.rs": {
+      "bytes": 3261,
+      "sha256": "e35c327d7762f317071b8a06557cc3ff56509e2fc6c561d6c096df1fdbc292d9"
+    },
+    "target/full-library-route-plan-20261009-revision05/library-one-case.py": {
+      "bytes": 16390,
+      "sha256": "43d7d66f0f70c79cbfa174036ba972b9810b14b127fe47d1a32c909bbe60b1b0"
+    },
+    "target/repetition-empty-route-review-20261009/scope.json": {
+      "bytes": 5482,
+      "sha256": "28e5ca92e0d99639eb08a73ab18a8fbf77ba53bb40ff29799ac24accc189932f"
+    }
+  },
+  "command_records": [
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 0,
+      "name": null,
+      "pid": 6,
+      "pgid": 6,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 4.170426313998178,
+      "stdout": "target/repetition-empty-production-checks-20261009/01.stdout",
+      "stderr": "target/repetition-empty-production-checks-20261009/01.stderr"
+    },
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 1,
+      "name": null,
+      "pid": 305,
+      "pgid": 305,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 34.82822025901987,
+      "stdout": "target/repetition-empty-production-checks-20261009/02.stdout",
+      "stderr": "target/repetition-empty-production-checks-20261009/02.stderr"
+    },
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 2,
+      "name": null,
+      "pid": 1361,
+      "pgid": 1361,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 9.181401137000648,
+      "stdout": "target/repetition-empty-production-checks-20261009/03.stdout",
+      "stderr": "target/repetition-empty-production-checks-20261009/03.stderr"
+    },
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 3,
+      "name": null,
+      "pid": 1396,
+      "pgid": 1396,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 1.0151571710011922,
+      "stdout": "target/repetition-empty-production-checks-20261009/04.stdout",
+      "stderr": "target/repetition-empty-production-checks-20261009/04.stderr"
+    },
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 4,
+      "name": null,
+      "pid": 1399,
+      "pgid": 1399,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.16390343598322943,
+      "stdout": "target/repetition-empty-production-checks-20261009/05.stdout",
+      "stderr": "target/repetition-empty-production-checks-20261009/05.stderr"
+    },
+    {
+      "campaign": "build",
+      "receipt": "target/repetition-empty-production-checks-20261009/result.json",
+      "command_index": 5,
+      "name": null,
+      "pid": 1410,
+      "pgid": 1410,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 22.313585109019186,
+      "stdout": "target/repetition-empty-production-checks-20261009/build.jsonl",
+      "stderr": "target/repetition-empty-production-checks-20261009/06.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 0,
+      "name": "compile-structure-pair",
+      "pid": 1049590,
+      "pgid": 1049590,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.3143574289861135,
+      "stdout": "target/full-library-route-run-20261009-revision05/compile-structure-pair.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/compile-structure-pair.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 1,
+      "name": "compile-repetition-pair",
+      "pid": 1049616,
+      "pgid": 1049616,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.2641859950090293,
+      "stdout": "target/full-library-route-run-20261009-revision05/compile-repetition-pair.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/compile-repetition-pair.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 2,
+      "name": "import",
+      "pid": 1049646,
+      "pgid": 1049646,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 8.527426977001596,
+      "stdout": "target/full-library-route-run-20261009-revision05/import.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/import.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 3,
+      "name": "original-verify",
+      "pid": 1049651,
+      "pgid": 1049651,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.46430832098121755,
+      "stdout": "target/full-library-route-run-20261009-revision05/original-verify.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/original-verify.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 4,
+      "name": "original-source",
+      "pid": 1049653,
+      "pgid": 1049653,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.46436173300025985,
+      "stdout": "target/full-library-route-run-20261009-revision05/original-source.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/original-source.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 5,
+      "name": "infer",
+      "pid": 1049656,
+      "pgid": 1049656,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 3.5688840330112725,
+      "stdout": "target/full-library-route-run-20261009-revision05/infer.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/infer.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 6,
+      "name": "explicit-adopt",
+      "pid": 1049657,
+      "pgid": 1049657,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 4.4197273179888725,
+      "stdout": "target/full-library-route-run-20261009-revision05/explicit-adopt.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/explicit-adopt.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 7,
+      "name": "adopted-verify",
+      "pid": 1049693,
+      "pgid": 1049693,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.4644184180069715,
+      "stdout": "target/full-library-route-run-20261009-revision05/adopted-verify.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/adopted-verify.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 8,
+      "name": "adopted-source",
+      "pid": 1049708,
+      "pgid": 1049708,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.46449640701757744,
+      "stdout": "target/full-library-route-run-20261009-revision05/adopted-source.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/adopted-source.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 9,
+      "name": "structure",
+      "pid": 1049709,
+      "pgid": 1049709,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 2.4170873329858296,
+      "stdout": "target/full-library-route-run-20261009-revision05/structure.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/structure.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 10,
+      "name": "structure-verify",
+      "pid": 1049712,
+      "pgid": 1049712,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.4642936710151844,
+      "stdout": "target/full-library-route-run-20261009-revision05/structure-verify.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/structure-verify.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 11,
+      "name": "structure-source",
+      "pid": 1049715,
+      "pgid": 1049715,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.46486847501364537,
+      "stdout": "target/full-library-route-run-20261009-revision05/structure-source.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/structure-source.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 12,
+      "name": "structure-pair",
+      "pid": 1049716,
+      "pgid": 1049716,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.8650825010263361,
+      "stdout": "target/full-library-route-run-20261009-revision05/structure-pair.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/structure-pair.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 13,
+      "name": "repetition",
+      "pid": 1049719,
+      "pgid": 1049719,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 2.4170865349879023,
+      "stdout": "target/full-library-route-run-20261009-revision05/repetition.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/repetition.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 14,
+      "name": "published-verify",
+      "pid": 1049751,
+      "pgid": 1049751,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.46437595700263046,
+      "stdout": "target/full-library-route-run-20261009-revision05/published-verify.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/published-verify.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 15,
+      "name": "published-source",
+      "pid": 1049752,
+      "pgid": 1049752,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.464370642992435,
+      "stdout": "target/full-library-route-run-20261009-revision05/published-source.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/published-source.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 16,
+      "name": "repetition-pair",
+      "pid": 1049880,
+      "pgid": 1049880,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.865064657991752,
+      "stdout": "target/full-library-route-run-20261009-revision05/repetition-pair.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/repetition-pair.stderr"
+    },
+    {
+      "campaign": "CLI",
+      "receipt": "target/full-library-route-run-20261009-revision05/result.json",
+      "command_index": 17,
+      "name": "stage",
+      "pid": 1049883,
+      "pgid": 1049883,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 0.4644143440236803,
+      "stdout": "target/full-library-route-run-20261009-revision05/stage.stdout",
+      "stderr": "target/full-library-route-run-20261009-revision05/stage.stderr"
+    },
+    {
+      "campaign": "separate-native",
+      "receipt": "target/full-library-native-continuation-20261009/result.json",
+      "command_index": 0,
+      "name": "formal-library",
+      "pid": 1050003,
+      "pgid": 1050003,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 53.94841312599601,
+      "stdout": "target/full-library-native-continuation-20261009/formal-library.stdout",
+      "stderr": "target/full-library-native-continuation-20261009/formal-library.stderr"
+    }
+  ],
+  "root_finalization": "Root read actual production diff and scalar receipts; later four-image scope and OS process release corroboration are separate from unchanged original summary"
+}
