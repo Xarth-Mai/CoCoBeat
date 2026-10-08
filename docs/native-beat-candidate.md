@@ -72,11 +72,11 @@ cargo run --locked -p cocobeat-lab -- workbench-beats /path/to/bundle/package /p
 ORT_DISABLE_TELEMETRY=1 /path/to/release/bin/cocobeat-lab import-experimental-beat /path/to/source.wav /path/to/authoring.json left /path/to/new-bundle
 ```
 
-Linux 直接执行实验导入须在进程启动前设置 `ORT_DISABLE_TELEMETRY=1`，缺少或值不符时在固定 SDK 初始化前拒绝。此保护要求变量在 CreateEnv 前就已设置，SDK 在 CreateEnv 期间读取 flag 并跳过 Microsoft 1DS 本地会话持久化初始化，不把之后的 `.with_telemetry(false)` 当作持久化保护；应用不在运行中修改进程环境。Linux TAR 解包 workflow 已给原生实验 smoke 步骤设置该变量，新的实际发行运行另验；Windows 命令不要求此 Linux guard，控制台取消另验
+Linux 直接执行实验导入须在进程启动前设置 `ORT_DISABLE_TELEMETRY=1`，缺少或值不符时在固定 SDK 初始化前拒绝。此保护要求变量在 CreateEnv 前就已设置，SDK 在 CreateEnv 期间读取 flag 并跳过 Microsoft 1DS 本地会话持久化初始化，不把之后的 `.with_telemetry(false)` 当作持久化保护；应用不在运行中修改进程环境。Linux TAR 解包 workflow 已给原生实验 smoke 步骤设置该变量，固定 `8cdda9d` 两架构解包实验导入通过；Windows 命令不要求此 Linux guard，控制台取消另验
 
 Ctrl+C 只向本次原生 Lab CLI 导入提出取消请求，随后等待真实函数返回和正常资源释放。Ready / 曲库 / 工作台没有新增取消或交互 Retry，不更改模型、profile、推理数学、普通手工导入和唯一编码器。取消在源快照、解码 / 重采样、编码 / 最终读回、能量、文件复制 / 校验、前处理每 q、chunk 和 evidence 写入等消费边界检查；同步 I/O、Ogg 预校验和 SDK 环境初始化仍可能等到前后检查点
 
-本次 CLI 独占 SIGINT，使用 `ctrlc::set_handler` 接管后台 shell 继承的 SIG_IGN；安装失败仍返回原错误，同进程真正重复注册仍被库拒绝。固定 `07830f8` 的 Linux x64 解包 smoke 已实际暴露旧 `try_set_handler` 对继承忽略设置的拒绝，未进入导入；本机相同后台 shell 的旧 / 新 Lab 控制分别复现注册错误和通过注册后在 SDK 初始化前拒绝缺失 telemetry flag，发行修复须以新的四目标运行另验
+本次 CLI 独占 SIGINT，使用 `ctrlc::set_handler` 接管后台 shell 继承的 SIG_IGN；安装失败仍返回原错误，同进程真正重复注册仍被库拒绝。固定 `07830f8` 的 Linux 两架构解包 smoke 已实际暴露旧 `try_set_handler` 对继承忽略设置的拒绝，未进入导入；本机相同后台 shell 的旧 / 新 Lab 控制分别复现注册错误和通过注册后在 SDK 初始化前拒绝缺失 telemetry flag，固定 `8cdda9d` 的解包正常导入通过，不替代新的跨平台取消控制
 
 模型装载用 LoadCanceler 发出 best-effort 请求，每个真实 Run 用独立 RunOptions 发出 termination 请求；请求接受或调用返回 Ok 不等于底层已中断，`backend_registered` 只说明句柄已登记，不证明请求时处于 graph / kernel 计算中。真实 ORT / I/O 错误保留；装载若仍返回 Session，则在后续检查点正常释放，Run 若仍返回输出，则先保留实际 raw 输出再检查取消
 
@@ -90,4 +90,12 @@ stderr 诊断分别记录接受 / late、检查点、backend 请求与真实返�
 
 装载与 Run 分别保留 SDK 原 Err `Graph loading canceled due to user request` 和 `Exiting due to terminate flag being set to true`，之后在同一 namespace PID 13 / 17 下用新句柄、新目标重试成功，完整包校验、no-op 四对象与作者 Anchor / Stage 对照通过。600 秒样本先完成模型装载，SIGINT 在完整 native-shape 标记后发出，最终在 `native chunk preparation` 检查点观察到取消、`backend_requests=[]`、零最终发布；它不证明运行图被中断。请求到观测退出为 35527433 ns，包含 5 ms 轮询，是本次单调时钟观察而非信号响应 SLA
 
-缺失 flag 的独占目录内 29 bytes 哨兵保持，六个设置 flag 的独占 CWD 前后均未产生 SDK 会话缓存；旧 40 项矩阵副产物保留，仓库根未知会话文件未读取或清理，实际网络发送未观测。完整原错误、失败快照、同进程重试和源身份见[取消观察](../testdata/synthetic/native-cancellation-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-cancellation-observations-20261008-raw-index.json)；Windows 控制台、GUI / Ready 取消、graph 占用 / 延迟预算、实体设备 / 真人、同 ref 完整四目标发行和音乐质量仍按各自门槛验收，旧 wholeSpect / 音乐质量 FAIL 与 confidence=None 保持
+缺失 flag 的独占目录内 29 bytes 哨兵保持，六个设置 flag 的独占 CWD 前后均未产生 SDK 会话缓存；旧 40 项矩阵副产物保留，仓库根未知会话文件未读取或清理，实际网络发送未观测。完整原错误、失败快照、同进程重试和源身份见[取消观察](../testdata/synthetic/native-cancellation-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-cancellation-observations-20261008-raw-index.json)；Windows 控制台、GUI / Ready 取消、graph 占用 / 延迟预算、实体设备 / 真人和音乐质量仍按各自门槛验收，旧 wholeSpect / 音乐质量 FAIL 与 confidence=None 保持
+
+## 同提交四目标发行软件验收
+
+固定 `8cdda9d` 通过 CI 后，Windows / Linux × x86-64 / ARM64 四个原生优化 Game / Lab 包及解包软件检查通过，48 条实际 Lab 命令为 44 条成功和 4 条预期缺失模型拒绝，八份左右声道 tempo 报告共 192000 行完成核验；包内源码、资源、许可台账与字体 QA 排除按该提交身份匹配，见[同提交四目标观察](../testdata/synthetic/release-four-target-8cdda9d-observations-20261008.json)及[原始证据索引](../testdata/synthetic/release-four-target-8cdda9d-observations-20261008-raw-index.json)
+
+原 `07830f8` 四目标 FAIL 单独保留：Windows 两架构因未声明的 `random()` 构建失败，Linux 两架构完成构建后在首次实验导入的 Ctrl+C 注册处失败，tempo 和后续命令未运行，见[原 078 四目标失败观察](../testdata/synthetic/release-four-target-07830f8-observations-20261008.json)及[原始证据索引](../testdata/synthetic/release-four-target-07830f8-observations-20261008-raw-index.json)；更早 `0930d17` 三目标与 `d3b2648` 单 ARM 的历史矩阵保持各自源码范围
+
+Linux ARM64 本次 `--jobs 1` 构建的 GNU time wall 为 13:03.42、最大 RSS 11453596 kbytes，属于单次 runner 环境观察，不作为预算或旧失败根因。此矩阵不验收 Game GUI、干净机器 / Windows VC 前置、实体输入 / 音频、真人音乐参考或实际 tag Release；旧 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）与音乐质量 FAIL 保留，tempo 的 beat_unit / meter / confidence 仍为 None、质量 UNSCORED、production_admission=false

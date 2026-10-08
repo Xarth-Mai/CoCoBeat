@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_ORIGINAL_SAME_REF_FOUR_TARGET_SOFTWARE_MATRIX",
+  "fixed_ref": "07830f80f76846eeb98cfdf505fd8e97721502c6",
+  "CI_gate": {
+    "run_id": 37728126814,
+    "status": "PASS_ACTUAL_COMPLETED_SUCCESS_BEFORE_ALL4_DISPATCH",
+    "receipt": {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/ci-dispatch-binding.json",
+      "bytes": 1567,
+      "sha256": "86fbe841cee9e021571c70b0860bf9709766e5a1d30d513f7728f1def506a8e4"
+    }
+  },
+  "targets": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "run_id": 37728486403,
+      "fixed_ref": "07830f80f76846eeb98cfdf505fd8e97721502c6",
+      "actual_run_status": "completed",
+      "actual_run_conclusion": "failure",
+      "event": "workflow_dispatch",
+      "run_attempt": 1,
+      "job_id": 113151994573,
+      "runner_labels": [
+        "windows-latest"
+      ],
+      "runner_name": "GitHub Actions 1000000271",
+      "job_started_at": "2026-10-08T04:38:59Z",
+      "job_completed_at": "2026-10-08T04:41:26Z",
+      "job_wall_seconds": 147.0,
+      "build_step": {
+        "name": "Build optimized game and Lab",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 6,
+        "started_at": "2026-10-08T04:40:31Z",
+        "completed_at": "2026-10-08T04:41:22Z"
+      },
+      "build_step_wall_seconds": 51.0,
+      "optimized_build": "FAIL",
+      "package_prepare_step": "skipped",
+      "downloaded_package_validation": "NOT_RUN_NO_PRODUCT_ARTIFACT",
+      "twelve_command_smoke": "NOT_RUN_BUILD_FAILED",
+      "native_tempo_commands": "NOT_RUN",
+      "failure": "call to undeclared function 'random'",
+      "actual_log": {
+        "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final-02/stdout",
+        "bytes": 39572,
+        "sha256": "1febf5218f17fd93234ecd147c8c60d8ef0378b31fd3eca2c672047f0d3b237a"
+      },
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 14,
+          "start_column": null,
+          "end_line": 14,
+          "end_column": null,
+          "annotation_level": "warning",
+          "title": "",
+          "message": "No files were found with the provided path: D:\\a\\_temp/cocobeat-native-smoke/. No artifacts will be uploaded.",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 203,
+          "start_column": null,
+          "end_line": 203,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "Process completed with exit code 1.",
+          "raw_details": ""
+        }
+      ],
+      "artifact_metadata": [],
+      "product_artifact_count": 0,
+      "actual_failure_lines": [
+        "2026-10-08T04:40:43.6415280Z warning: cocobeat-btt@0.1.0: vendor/btt\\src\\Statistics.c(505,10): error: call to undeclared function 'random'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+        "2026-10-08T04:40:43.7491899Z   cargo:warning=vendor/btt\\src\\Statistics.c(505,10): error: call to undeclared function 'random'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+        "2026-10-08T04:41:22.6458662Z ##[error]Process completed with exit code 1."
+      ],
+      "native_VS_clang_precheck": "PASS_STEP",
+      "actual_clang_version_lines": [
+        "2026-10-08T04:39:38.4485363Z Write-Host \"target=$env:BUILD_TARGET runner_arch=$env:RUNNER_ARCH image=$env:ImageOS/$env:ImageVersion clang_cl=$clang\"",
+        "2026-10-08T04:39:39.2963938Z target=x86_64-pc-windows-msvc runner_arch=X64 image=win25-vs2026/20260925.250.1 clang_cl=C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\LLVM\\x64\\bin\\clang-cl.exe",
+        "2026-10-08T04:39:41.1506306Z clang version 22.1.3 (https://github.com/llvm/llvm-project e9846648fd6183ee6d8cbdb4502213fcf902a211)"
+      ]
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "run_id": 37728489606,
+      "fixed_ref": "07830f80f76846eeb98cfdf505fd8e97721502c6",
+      "actual_run_status": "completed",
+      "actual_run_conclusion": "failure",
+      "event": "workflow_dispatch",
+      "run_attempt": 1,
+      "job_id": 113152003924,
+      "runner_labels": [
+        "windows-11-arm"
+      ],
+      "runner_name": "GitHub Actions 1000000272",
+      "job_started_at": "2026-10-08T04:39:01Z",
+      "job_completed_at": "2026-10-08T04:41:48Z",
+      "job_wall_seconds": 167.0,
+      "build_step": {
+        "name": "Build optimized game and Lab",
+        "status": "completed",
+        "conclusion": "failure",
+        "number": 6,
+        "started_at": "2026-10-08T04:40:51Z",
+        "completed_at": "2026-10-08T04:41:41Z"
+      },
+      "build_step_wall_seconds": 50.0,
+      "optimized_build": "FAIL",
+      "package_prepare_step": "skipped",
+      "downloaded_package_validation": "NOT_RUN_NO_PRODUCT_ARTIFACT",
+      "twelve_command_smoke": "NOT_RUN_BUILD_FAILED",
+      "native_tempo_commands": "NOT_RUN",
+      "failure": "call to undeclared function 'random'",
+      "actual_log": {
+        "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final-02/stdout",
+        "bytes": 41331,
+        "sha256": "6e5df53aafa9471083065d59f86e3bc9caf6ad608fda61359c988d5f54f67aae"
+      },
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 14,
+          "start_column": null,
+          "end_line": 14,
+          "end_column": null,
+          "annotation_level": "warning",
+          "title": "",
+          "message": "No files were found with the provided path: C:\\a\\_temp/cocobeat-native-smoke/. No artifacts will be uploaded.",
+          "raw_details": ""
+        },
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 203,
+          "start_column": null,
+          "end_line": 203,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "Process completed with exit code 1.",
+          "raw_details": ""
+        }
+      ],
+      "artifact_metadata": [],
+      "product_artifact_count": 0,
+      "actual_failure_lines": [
+        "2026-10-08T04:41:07.3304067Z warning: cocobeat-btt@0.1.0: vendor/btt\\src\\Statistics.c(505,10): error: call to undeclared function 'random'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+        "2026-10-08T04:41:07.3544857Z   cargo:warning=vendor/btt\\src\\Statistics.c(505,10): error: call to undeclared function 'random'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]",
+        "2026-10-08T04:41:41.6057855Z ##[error]Process completed with exit code 1."
+      ],
+      "native_VS_clang_precheck": "PASS_STEP",
+      "actual_clang_version_lines": [
+        "2026-10-08T04:39:32.8401754Z Write-Host \"target=$env:BUILD_TARGET runner_arch=$env:RUNNER_ARCH image=$env:ImageOS/$env:ImageVersion clang_cl=$clang\"",
+        "2026-10-08T04:39:34.0457401Z target=aarch64-pc-windows-msvc runner_arch=ARM64 image=win11-vs2026-arm64/20260924.168.1 clang_cl=C:\\Program Files\\Microsoft Visual Studio\\18\\Enterprise\\VC\\Tools\\LLVM\\ARM64\\bin\\clang-cl.exe",
+        "2026-10-08T04:39:36.0820786Z clang version 22.1.3 (https://github.com/llvm/llvm-project e9846648fd6183ee6d8cbdb4502213fcf902a211)"
+      ]
+    },
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "run_id": 37728492508,
+      "fixed_ref": "07830f80f76846eeb98cfdf505fd8e97721502c6",
+      "actual_run_status": "completed",
+      "actual_run_conclusion": "failure",
+      "event": "workflow_dispatch",
+      "run_attempt": 1,
+      "job_id": 113152013876,
+      "runner_labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_name": "GitHub Actions 1000000273",
+      "job_started_at": "2026-10-08T04:39:04Z",
+      "job_completed_at": "2026-10-08T04:45:42Z",
+      "job_wall_seconds": 398.0,
+      "build_step": {
+        "name": "Build optimized game and Lab",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-08T04:39:45Z",
+        "completed_at": "2026-10-08T04:45:24Z"
+      },
+      "build_step_wall_seconds": 339.0,
+      "optimized_build": "PASS_HOSTED_BUILD_STEP_ONLY",
+      "package_prepare_step": "success",
+      "downloaded_package_validation": "NOT_RUN_NO_PRODUCT_ARTIFACT",
+      "twelve_command_smoke": "FAIL_FIRST_LEFT_IMPORT",
+      "native_tempo_commands": "NOT_RUN",
+      "failure": "Ctrl-C signal handler already registered",
+      "actual_log": {
+        "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-log-final/stdout",
+        "bytes": 55086,
+        "sha256": "75bedec9384d9084c55bb8ac520a45155aef00fdddb50abc1b3ebb0787d4b6f5"
+      },
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 50,
+          "start_column": null,
+          "end_line": 50,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "Process completed with exit code 1.",
+          "raw_details": ""
+        }
+      ],
+      "artifact_metadata": [
+        {
+          "id": 11528916882,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUyODkxNjg4Mg==",
+          "name": "native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6",
+          "size_in_bytes": 8377101,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11528916882",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11528916882/zip",
+          "expired": false,
+          "digest": "sha256:6716f23a6237b371e762b2bb3958e2f2d7f5d5809ea08a6c54d2c56408651563",
+          "created_at": "2026-10-08T04:45:39Z",
+          "updated_at": "2026-10-08T04:45:39Z",
+          "expires_at": "2026-10-22T04:45:38Z",
+          "workflow_run": {
+            "id": 37728492508,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "07830f80f76846eeb98cfdf505fd8e97721502c6"
+          }
+        }
+      ],
+      "product_artifact_count": 0,
+      "actual_failure_lines": [
+        "2026-10-08T04:45:38.1550121Z Cannot register native Ctrl+C handler: Ctrl-C error: Ctrl-C signal handler already registered",
+        "2026-10-08T04:45:38.1562730Z ##[error]Process completed with exit code 1."
+      ],
+      "actual_child_receipts": [
+        {
+          "label": "generate",
+          "argv": [
+            "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+            "generate-dev",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3596,
+          "exit_code": 0,
+          "stdout": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stdout.txt",
+            "bytes": 175,
+            "sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1"
+          },
+          "stderr": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "PID_group_postflight": "NOT_CAPTURED_BY_REMOTE_WORKFLOW"
+        },
+        {
+          "label": "left-import",
+          "argv": [
+            "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+            "import-experimental-beat",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "left",
+            "/home/runner/work/_temp/cocobeat-native-smoke/left"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3598,
+          "exit_code": 1,
+          "stdout": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stdout.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stderr.txt",
+            "bytes": 94,
+            "sha256": "af78cdeb331a8024ec605b8e78b69823a660ba13af2eaff3f419b41176372638"
+          },
+          "PID_group_postflight": "NOT_CAPTURED_BY_REMOTE_WORKFLOW"
+        }
+      ],
+      "remaining_10_Lab_commands": "NOT_RUN",
+      "resource_and_binary_identity_declarations": {
+        "BUILD_INFO": {
+          "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/BUILD-INFO.txt",
+          "bytes": 381,
+          "sha256": "b22e0902001386f82dae029b3cb6d7ac01b6223dcfde6cb9179bfb4054b7e7ef"
+        },
+        "NATIVE_ASSETS": {
+          "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/NATIVE-ASSETS.json",
+          "bytes": 706,
+          "sha256": "64b43f5a926fe25741d39a98ae01f28e6c03c49098c65c64bb5a02d4416583b3"
+        },
+        "scope": "Actual workflow producer declarations only; no product package/binary/SDK independent readback or load"
+      },
+      "failure_smoke_raw_scope": "Entire owned downloaded failure artifact, including original WAV, actual SHA256 readback"
+    },
+    {
+      "target": "aarch64-unknown-linux-gnu",
+      "run_id": 37728496441,
+      "fixed_ref": "07830f80f76846eeb98cfdf505fd8e97721502c6",
+      "actual_run_status": "completed",
+      "actual_run_conclusion": "failure",
+      "event": "workflow_dispatch",
+      "run_attempt": 1,
+      "job_id": 113152032319,
+      "runner_labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "runner_name": "GitHub Actions 1000000274",
+      "job_started_at": "2026-10-08T04:39:10Z",
+      "job_completed_at": "2026-10-08T04:53:04Z",
+      "job_wall_seconds": 834.0,
+      "build_step": {
+        "name": "Build optimized game and Lab",
+        "status": "completed",
+        "conclusion": "success",
+        "number": 6,
+        "started_at": "2026-10-08T04:39:54Z",
+        "completed_at": "2026-10-08T04:52:45Z"
+      },
+      "build_step_wall_seconds": 771.0,
+      "optimized_build": "PASS_HOSTED_BUILD_STEP_ONLY",
+      "package_prepare_step": "success",
+      "downloaded_package_validation": "NOT_RUN_NO_PRODUCT_ARTIFACT",
+      "twelve_command_smoke": "FAIL_FIRST_LEFT_IMPORT",
+      "native_tempo_commands": "NOT_RUN",
+      "failure": "Ctrl-C signal handler already registered",
+      "actual_log": {
+        "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-log-final/stdout",
+        "bytes": 58337,
+        "sha256": "9b01860e60908f1352ac8b62f5ce5b2dbc76aeec73aa1dc44140fb54e1f87f3f"
+      },
+      "annotations": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/07830f80f76846eeb98cfdf505fd8e97721502c6/.github",
+          "start_line": 50,
+          "start_column": null,
+          "end_line": 50,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "Process completed with exit code 1.",
+          "raw_details": ""
+        }
+      ],
+      "artifact_metadata": [
+        {
+          "id": 11529297443,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUyOTI5NzQ0Mw==",
+          "name": "arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6",
+          "size_in_bytes": 2906,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11529297443",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11529297443/zip",
+          "expired": false,
+          "digest": "sha256:febc06cb85360feb24c27901a94df77e81b9576eb5107454e66cd2e7f5e5d866",
+          "created_at": "2026-10-08T04:52:46Z",
+          "updated_at": "2026-10-08T04:52:46Z",
+          "expires_at": "2026-10-22T04:52:45Z",
+          "workflow_run": {
+            "id": 37728496441,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "07830f80f76846eeb98cfdf505fd8e97721502c6"
+          }
+        },
+        {
+          "id": 11529212647,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUyOTIxMjY0Nw==",
+          "name": "native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6",
+          "size_in_bytes": 8377103,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11529212647",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11529212647/zip",
+          "expired": false,
+          "digest": "sha256:48bf5606218bc44795dc4a5ca1a69467ecbb709bbfd40da4ba76ae76e5f98eaa",
+          "created_at": "2026-10-08T04:53:02Z",
+          "updated_at": "2026-10-08T04:53:02Z",
+          "expires_at": "2026-10-22T04:53:00Z",
+          "workflow_run": {
+            "id": 37728496441,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "07830f80f76846eeb98cfdf505fd8e97721502c6"
+          }
+        }
+      ],
+      "product_artifact_count": 0,
+      "actual_failure_lines": [
+        "2026-10-08T04:53:00.5993234Z Cannot register native Ctrl+C handler: Ctrl-C error: Ctrl-C signal handler already registered",
+        "2026-10-08T04:53:00.6009009Z ##[error]Process completed with exit code 1."
+      ],
+      "actual_child_receipts": [
+        {
+          "label": "generate",
+          "argv": [
+            "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+            "generate-dev",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3766,
+          "exit_code": 0,
+          "stdout": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stdout.txt",
+            "bytes": 175,
+            "sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1"
+          },
+          "stderr": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stderr.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "PID_group_postflight": "NOT_CAPTURED_BY_REMOTE_WORKFLOW"
+        },
+        {
+          "label": "left-import",
+          "argv": [
+            "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+            "import-experimental-beat",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "left",
+            "/home/runner/work/_temp/cocobeat-native-smoke/left"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3768,
+          "exit_code": 1,
+          "stdout": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stdout.txt",
+            "bytes": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "stderr": {
+            "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stderr.txt",
+            "bytes": 94,
+            "sha256": "af78cdeb331a8024ec605b8e78b69823a660ba13af2eaff3f419b41176372638"
+          },
+          "PID_group_postflight": "NOT_CAPTURED_BY_REMOTE_WORKFLOW"
+        }
+      ],
+      "remaining_10_Lab_commands": "NOT_RUN",
+      "resource_and_binary_identity_declarations": {
+        "BUILD_INFO": {
+          "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/BUILD-INFO.txt",
+          "bytes": 382,
+          "sha256": "95b0960af2a3c6b23945dffff0ad7698967ede5d63d91621d8d892ec0e66d7f9"
+        },
+        "NATIVE_ASSETS": {
+          "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/NATIVE-ASSETS.json",
+          "bytes": 708,
+          "sha256": "37a10c58d5c18271f6ca6b5dcbd5993632f802616e6348b9a16ed7d1ff3d9d82"
+        },
+        "scope": "Actual workflow producer declarations only; no product package/binary/SDK independent readback or load"
+      },
+      "failure_smoke_raw_scope": "Entire owned downloaded failure artifact, including original WAV, actual SHA256 readback",
+      "ARM_build_diagnostics": {
+        "cargo_argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "--release",
+          "--package",
+          "cocobeat-game",
+          "--package",
+          "cocobeat-lab",
+          "--target",
+          "aarch64-unknown-linux-gnu",
+          "--jobs",
+          "1"
+        ],
+        "GNU_time_fields": {
+          "Command being timed": "\"cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target aarch64-unknown-linux-gnu --jobs 1\"",
+          "User time (seconds)": "747.40",
+          "System time (seconds)": "21.82",
+          "Percent of CPU this job got": "99%",
+          "Elapsed (wall clock) time (h:mm:ss or m:ss)": "12:50.34",
+          "Average shared text size (kbytes)": "0",
+          "Average unshared data size (kbytes)": "0",
+          "Average stack size (kbytes)": "0",
+          "Average total size (kbytes)": "0",
+          "Maximum resident set size (kbytes)": "11452076",
+          "Average resident set size (kbytes)": "0",
+          "Major (requiring I/O) page faults": "1530",
+          "Minor (reclaiming a frame) page faults": "10931340",
+          "Voluntary context switches": "5560",
+          "Involuntary context switches": "6203",
+          "Swaps": "0",
+          "File system inputs": "389448",
+          "File system outputs": "1633968",
+          "Socket messages sent": "0",
+          "Socket messages received": "0",
+          "Signals delivered": "0",
+          "Page size (bytes)": "4096",
+          "Exit status": "0"
+        },
+        "command_exit": 0,
+        "tee_exit": 0,
+        "step_shell_pid": 3033,
+        "PID_scope": "Step shell PID, not Cargo/model PID",
+        "evidence": {
+          "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/resources.txt",
+          "bytes": 867,
+          "sha256": "6bbcf9690d3f427460fa4d3c72a527ca7ac6616de181c7c373e04874e5cc5a11"
+        },
+        "scope": "Actual warm/cache-sensitive hosted build only; QA GNU Time not a product dependency; not proof of previous143 cause"
+      }
+    }
+  ],
+  "scope": "Original four dispatched runs only; two Windows BTT C11 build failures and two Linux pre-inference CLI signal-registration failures, no actual tempo report",
+  "raw_index": {
+    "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/observation-draft/release-four-target-07830f8-observations-20261008-raw-index.json",
+    "sha256": "17bc495b11f08f6e9d3237056e0c7e2645bb5cf571440e00a9c832554e572397",
+    "bytes": 44600
+  },
+  "boundaries": {
+    "new_source_fixes": "OUT_OF_SCOPE_SEPARATE_COMMIT_AND_MATRIX",
+    "twelve_command_validator": "NOT_RUN_KNOWN_FAILED_MATRIX_ROOT_DIRECTION",
+    "Game_GUI_human_music_quality_devices": "NOT_RUN",
+    "package_legal_or_four_target_admission": false,
+    "retry_dispatch_tag_Release_push_cancel_by_this_agent": "NONE",
+    "raw_PID_scope": "Actual gh local executor and actual runner child IDs separately; no physical/host namespace postflight claim",
+    "original_failures": "PRESERVED_NO_HEAD_OR_RESULT_REPLACEMENT"
+  }
+}

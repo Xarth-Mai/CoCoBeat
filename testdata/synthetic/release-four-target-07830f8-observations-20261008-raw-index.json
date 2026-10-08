@@ -1,0 +1,867 @@
+{
+  "schema_version": 1,
+  "scope": "Final original078 failed matrix selected actual receipts and complete two downloaded failure artifacts; intermediate polls stay in owned target without duplication",
+  "files": [
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/dispatch-map.json",
+      "bytes": 1099,
+      "sha256": "070b12543593b3964b1237ebbff2eb30c5b41d091b0a1ea7aeb0b0067562d193"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-jobs/result.json",
+      "bytes": 342,
+      "sha256": "e2d805ecff45fb5efa44016ad0bb99035420eb8ade6a1d25011cc7e9bf10d56d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-jobs/started.json",
+      "bytes": 283,
+      "sha256": "b1d8808ecf2ad4cf461d9c0c8fc6179dd8020ee9fa48a262aae2821437034122"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-jobs/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-jobs/stdout",
+      "bytes": 3040,
+      "sha256": "3180b7db8caaf07e4e748755441f81fe9f49b88320e20b008bda2744f5493d2e"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-status-01/result.json",
+      "bytes": 324,
+      "sha256": "847ad4c5663bb530c89cd22a50484811c9df9048c758af2e2216572cb658c991"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-status-01/started.json",
+      "bytes": 265,
+      "sha256": "0b52eea91e9c26c70bd3b15703babaaa87bcbeade70f8249747f1e8e0d3f2277"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-status-01/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/ci-status-01/stdout",
+      "bytes": 11998,
+      "sha256": "6f88f5e800b377433b473e429b2d1832913df4ea2c7532c791af459ceb1102f3"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-pc-windows-msvc/result.json",
+      "bytes": 421,
+      "sha256": "d8bcd88cbae49bd0ade03f9c0499e239df22759770ca41115b312f5d8d4da40c"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-pc-windows-msvc/started.json",
+      "bytes": 362,
+      "sha256": "7f8d60feffca536fc0641ff7195f4b35983ce1a28226d7cf9a0c4fea07e53515"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-pc-windows-msvc/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-pc-windows-msvc/stdout",
+      "bytes": 63,
+      "sha256": "8398e146b3888d363708b1978b553f5090e28de771ad747184a5b13e5cc6a537"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-unknown-linux-gnu/result.json",
+      "bytes": 422,
+      "sha256": "873f0cf2b17dad953bfe029ff37e535be186df60731b1a0843b48af8d29d274a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-unknown-linux-gnu/started.json",
+      "bytes": 364,
+      "sha256": "8976ae8f4e83d914dd3e2e8d70dd85093bd6e690dc69655baa077e52814edfb4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-unknown-linux-gnu/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-aarch64-unknown-linux-gnu/stdout",
+      "bytes": 63,
+      "sha256": "063cb8f7e32d3d9346c8e7e97d996e1dba5d8f549c2f75ada05aea7668250c71"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-pc-windows-msvc/result.json",
+      "bytes": 420,
+      "sha256": "b8ced2297ec81eae88899dbab90712c2ca8aa2bfe05d45f543ea2020a682a151"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-pc-windows-msvc/started.json",
+      "bytes": 361,
+      "sha256": "b0efdb7142d21082a027d979458a13747fdc4b104f6846c442879bea54b5c5fa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-pc-windows-msvc/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-pc-windows-msvc/stdout",
+      "bytes": 63,
+      "sha256": "ec75c707149dc4b525782991956bb370762e69df954fdd2443b29a3070855431"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-unknown-linux-gnu/result.json",
+      "bytes": 422,
+      "sha256": "d5247fd9f065ea67eac4353504e0b549d795db72b20b14037cf3d8d73bde6aaf"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-unknown-linux-gnu/started.json",
+      "bytes": 363,
+      "sha256": "ef6927d494bff115c46ca9f9c671179cafa906a47f17d682a40ae0e0b0fdbbbd"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-unknown-linux-gnu/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/github/dispatch-x86_64-unknown-linux-gnu/stdout",
+      "bytes": 63,
+      "sha256": "4bd9519eadf50f2fea47ab513008f00accfc8bd953cab1b5ff4b3aebb795c4e0"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/all-runs-completed.json",
+      "bytes": 1499,
+      "sha256": "f312f8f15e1feeeada84fb4956a6cf0524bb8dea20d1898bb9caf4c83cf0825e"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/build-output.txt",
+      "bytes": 3672,
+      "sha256": "469366c6d6ad8a9ac70ec48a2530a208089364db22a12d10cf98b642a2890e61"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/cargo-argv.nul",
+      "bytes": 122,
+      "sha256": "b39425d0b804cb465f883f77fc45f0289fdc0cc98b4f46bd9a038a965803fbb7"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/command-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/completed.txt",
+      "bytes": 26,
+      "sha256": "71781d93646627f93cabf1dbb4f8d8d2e80468d262c113200fbcc19db7ccfd85"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/resources.txt",
+      "bytes": 867,
+      "sha256": "6bbcf9690d3f427460fa4d3c72a527ca7ac6616de181c7c373e04874e5cc5a11"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/start.txt",
+      "bytes": 147,
+      "sha256": "280203e3c361747204270fa629f68cd2b4567341e534c3209f969e97eca17e34"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/step-shell-pid.txt",
+      "bytes": 5,
+      "sha256": "eb1d7e994b0bd8e0b82ecacbedde8562560d882b2cdd54cd7414bba458379e9a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/tee-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/time-version.txt",
+      "bytes": 336,
+      "sha256": "a3b64288a651d40a18a243c43c871f7ae2886baa58b7e3c64a1061bfd651245f"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/BUILD-INFO.txt",
+      "bytes": 382,
+      "sha256": "95b0960af2a3c6b23945dffff0ad7698967ede5d63d91621d8d892ec0e66d7f9"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/NATIVE-ASSETS.json",
+      "bytes": 708,
+      "sha256": "37a10c58d5c18271f6ca6b5dcbd5993632f802616e6348b9a16ed7d1ff3d9d82"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-argv.nul",
+      "bytes": 130,
+      "sha256": "0ad7dc0575e941bae55f8483c9d77e81e766a1ad63f741f289baa0f2069e62c4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-cwd.txt",
+      "bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-pid.txt",
+      "bytes": 5,
+      "sha256": "8412f421cfc5d41eae7930ccb99bcfa8d748e033528ebc327c7da19494c2b73c"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stdout.txt",
+      "bytes": 175,
+      "sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-argv.nul",
+      "bytes": 291,
+      "sha256": "6f0b5f7cf01e34049a6f2b717041a1c53f0e7ebb317b79fd865706c2d1ef94cb"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-cwd.txt",
+      "bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-exit.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-pid.txt",
+      "bytes": 5,
+      "sha256": "dd91d449390b3e51623733a20fe7fceb94037aa41e8016ba7feb8ae219c066ed"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stderr.txt",
+      "bytes": 94,
+      "sha256": "af78cdeb331a8024ec605b8e78b69823a660ba13af2eaff3f419b41176372638"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/smoke-start.txt",
+      "bytes": 81,
+      "sha256": "9a4eed164278750e6073e06d77eb0d76f8a57b40487f43e6e8e37af2a4a6fc82"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/source/cocobeat-64.txt",
+      "bytes": 335,
+      "sha256": "d898eb7746d4a5ed70076fdaf37c445542fc60bf08f9637ba42c38b50d31ce03"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/source/cocobeat-64.wav",
+      "bytes": 12288044,
+      "sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/BUILD-INFO.txt",
+      "bytes": 381,
+      "sha256": "b22e0902001386f82dae029b3cb6d7ac01b6223dcfde6cb9179bfb4054b7e7ef"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/NATIVE-ASSETS.json",
+      "bytes": 706,
+      "sha256": "64b43f5a926fe25741d39a98ae01f28e6c03c49098c65c64bb5a02d4416583b3"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-argv.nul",
+      "bytes": 130,
+      "sha256": "0ad7dc0575e941bae55f8483c9d77e81e766a1ad63f741f289baa0f2069e62c4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-cwd.txt",
+      "bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-pid.txt",
+      "bytes": 5,
+      "sha256": "bde1791b1f68bf5f2c356582e5362177353fc224a50b6ea810c31fd51cfbd308"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/generate-stdout.txt",
+      "bytes": 175,
+      "sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-argv.nul",
+      "bytes": 291,
+      "sha256": "6f0b5f7cf01e34049a6f2b717041a1c53f0e7ebb317b79fd865706c2d1ef94cb"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-cwd.txt",
+      "bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-exit.txt",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-pid.txt",
+      "bytes": 5,
+      "sha256": "8ff95b457fe533170017dc4fedc8a71f5e914ab485ee36c41c675aa803f80b7a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stderr.txt",
+      "bytes": 94,
+      "sha256": "af78cdeb331a8024ec605b8e78b69823a660ba13af2eaff3f419b41176372638"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/left-import-stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/smoke-start.txt",
+      "bytes": 80,
+      "sha256": "5198409e97e006a5b50f115e9182805d99470125db8f505642ae07296d2f4aa3"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/source/cocobeat-64.txt",
+      "bytes": 335,
+      "sha256": "d898eb7746d4a5ed70076fdaf37c445542fc60bf08f9637ba42c38b50d31ce03"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/artifacts/linux-x64/native-smoke-evidence-x86_64-unknown-linux-gnu-07830f80f76846eeb98cfdf505fd8e97721502c6/source/cocobeat-64.wav",
+      "bytes": 12288044,
+      "sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/ci-dispatch-binding.json",
+      "bytes": 1567,
+      "sha256": "86fbe841cee9e021571c70b0860bf9709766e5a1d30d513f7728f1def506a8e4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github-command.py",
+      "bytes": 1011,
+      "sha256": "75a7c53f69ccbd08c1a0cbcdde4a16066b54346d7b1706eedaf4220f6a31e227"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-annotations-final/result.json",
+      "bytes": 347,
+      "sha256": "17e8e648d6b7eb851c9c02ba44e841695f3b0d7bb6c50fbcba404883a052248b"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-annotations-final/started.json",
+      "bytes": 288,
+      "sha256": "44133d2f0b1d4572dc3572bab9c3567c286a8f4897500de1de01597ca1f75a3b"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-annotations-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-annotations-final/stdout",
+      "bytes": 299,
+      "sha256": "c4e0cbda6c70269a72e1daefe80471175f93a98763e1b415fd57b153e4ee3d2d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-artifacts-final/result.json",
+      "bytes": 347,
+      "sha256": "5cba654e7f994d7e0fc0e6109f1495b8954b6ef157f6ae7c7311df928cf08a2d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-artifacts-final/started.json",
+      "bytes": 288,
+      "sha256": "c0dceecc551bb9a9bf96a56e31f17d8aafb3ef20220053de853ef96b67798420"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-artifacts-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-artifacts-final/stdout",
+      "bytes": 1536,
+      "sha256": "fb4a19d95ddf831612b35ae837d6574015d5ef21c29d7b19d7182886e9c3f935"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-failure-download/result.json",
+      "bytes": 667,
+      "sha256": "e5bb544c294598622ed4e63c5e9c668544e4148328371317ee3a08ee4776885a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-failure-download/started.json",
+      "bytes": 610,
+      "sha256": "7ca5bd9e97ae93989deed16dd474990b9dc68e30f987ad598e536ec703334ab4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-failure-download/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-failure-download/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-jobs-15/result.json",
+      "bytes": 342,
+      "sha256": "24264019b21e94bcca2035068a479778c637ae121cf5f2edf884d61e8138e3ab"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-jobs-15/started.json",
+      "bytes": 283,
+      "sha256": "b40ff6c9a990f65b061421c816a044778c23941b7f197d55c92362e7c950905a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-jobs-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-jobs-15/stdout",
+      "bytes": 4314,
+      "sha256": "78c21fa877a7e8cdee70326ffff186cbe6835a0829086bd49d61d58a18df3d8c"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-log-final/result.json",
+      "bytes": 361,
+      "sha256": "8c3e7647f3414969c80fd9bbaea8e49b6b6c008b8234d765274f2534a9d07494"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-log-final/started.json",
+      "bytes": 302,
+      "sha256": "e31b58a12e9a020966bb960deb568a9272cf2861b429ff42b533e07095719533"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-log-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-log-final/stdout",
+      "bytes": 58337,
+      "sha256": "9b01860e60908f1352ac8b62f5ce5b2dbc76aeec73aa1dc44140fb54e1f87f3f"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-run-15/result.json",
+      "bytes": 324,
+      "sha256": "94b402000282e6089a44e79900bc311263265b097ff72288c08b6e43718766f4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-run-15/started.json",
+      "bytes": 265,
+      "sha256": "48d79963433fdd3c1aee6b79aec799b3827005b452c7f7f9af2db6832a719890"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-run-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-arm64-run-15/stdout",
+      "bytes": 11984,
+      "sha256": "7af1584146cf176c72acd25abcba12a326743d35bf4d7e93883ea2da4de379b0"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-annotations-final/result.json",
+      "bytes": 348,
+      "sha256": "eebbee498419e7fef5dc7d0bb97a22f601d95de7f562ecf64fb854fec05121d5"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-annotations-final/started.json",
+      "bytes": 289,
+      "sha256": "6049f9f06ffeeecad142dcefe0e2cd13327a05fddd356fc10576d0aac608c528"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-annotations-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-annotations-final/stdout",
+      "bytes": 299,
+      "sha256": "c4e0cbda6c70269a72e1daefe80471175f93a98763e1b415fd57b153e4ee3d2d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-artifacts-final/result.json",
+      "bytes": 347,
+      "sha256": "500ff4af346db3d29ae1218954245a00f840a9fe69bb42909958d25caacbef88"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-artifacts-final/started.json",
+      "bytes": 288,
+      "sha256": "2aa8665c38b3999d665e1540f6bf13d0a68442c9aeecd33032f62e771c2f68a8"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-artifacts-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-artifacts-final/stdout",
+      "bytes": 784,
+      "sha256": "fb776948f8f00c43f80f9f5651451ee0851abee17665aa3b9f95b5d0eb9fccd7"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-failure-smoke-download/result.json",
+      "bytes": 643,
+      "sha256": "b5dfd827371ebb5b57c19b8f00246c85a4806c0c550429de8c5e1a9f2be77427"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-failure-smoke-download/started.json",
+      "bytes": 585,
+      "sha256": "52e9aebc11a4a635a6fb677a1d3b3c97f5bbed0b8440f56d38cfec3fac74a788"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-failure-smoke-download/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-failure-smoke-download/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-jobs-15/result.json",
+      "bytes": 342,
+      "sha256": "cf3c89e6090e9797cd3345ae3296c01f0814d6908362a1d329f75aa3b23eb98b"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-jobs-15/started.json",
+      "bytes": 283,
+      "sha256": "b88f13a957dc1d8f13c2de2a96c25ef4fa0db1f99fcd3d504053d613855ece1e"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-jobs-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-jobs-15/stdout",
+      "bytes": 4310,
+      "sha256": "8d0311698561b3f0b78d60979ad67f897247bb6b2ed332f5a9c4150e97a946f5"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-log-final/result.json",
+      "bytes": 361,
+      "sha256": "477c294fe81dcc275c952248979116152084a170f2f20af3e07f42cd8eaa7171"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-log-final/started.json",
+      "bytes": 303,
+      "sha256": "75fa79909640677bd523ebe69f6effdf7c91928ec18b2d928581657b6849e6fe"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-log-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-log-final/stdout",
+      "bytes": 55086,
+      "sha256": "75bedec9384d9084c55bb8ac520a45155aef00fdddb50abc1b3ebb0787d4b6f5"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-run-15/result.json",
+      "bytes": 324,
+      "sha256": "26f92000649e5d5c200d7726218b820d4dfe39c0c5e71c5fe7542f6860ab8a69"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-run-15/started.json",
+      "bytes": 265,
+      "sha256": "dd450bcab7e69ca4ed9bfedc4b64d9125c481c4e2a45160fa0ffe629217a8a13"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-run-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/linux-x64-run-15/stdout",
+      "bytes": 11984,
+      "sha256": "872f4bb115fdb2a41f993fee0256bb3205a0f33a45ebcdfa040aae4232dc62f3"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-annotations-final/result.json",
+      "bytes": 348,
+      "sha256": "7a92b343b646202cc47cb2ee00cc2fa93a9356c80a47a3b70c4339b25eef1078"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-annotations-final/started.json",
+      "bytes": 289,
+      "sha256": "158ac660a6ceb03cf09d8c158a59dec9a4ec3f207cf85788d7033a617070b9dc"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-annotations-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-annotations-final/stdout",
+      "bytes": 675,
+      "sha256": "c1d01ab479437e014237e5332d50d79e427b72e3b23d65da8184b52c3e501c33"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-artifacts-final/result.json",
+      "bytes": 347,
+      "sha256": "6401b89919b9d43518e4c1a0e4cb2a084ad5e43c67712dc1a792a43342242b2a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-artifacts-final/started.json",
+      "bytes": 288,
+      "sha256": "acc9b2272063e07cbde795b7ef2c2bfc7334dbaf2a86584e16b453cdb7544df9"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-artifacts-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-artifacts-final/stdout",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-jobs-15/result.json",
+      "bytes": 340,
+      "sha256": "974d4aee059b4929c43d5cec1548d18718f869fc3241fca34e5f0a67a8618d8e"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-jobs-15/started.json",
+      "bytes": 282,
+      "sha256": "03f3964158263d632cf96cabf048ababe48101f8f8951d8d963f9ac47c76dd93"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-jobs-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-jobs-15/stdout",
+      "bytes": 4152,
+      "sha256": "ee208906f8a141f593841bf3c9aedc288c4dd19f6aef0b686792f91ceb08335d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final-02/result.json",
+      "bytes": 362,
+      "sha256": "7503434eb5056259d6dd698df5e29c49972447f65fd3bbf6911595e794d93579"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final-02/started.json",
+      "bytes": 303,
+      "sha256": "24044f286b454ccf6db6ed4b652ea972b0560aeca998c2e117f38b74047aa7d1"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final-02/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final-02/stdout",
+      "bytes": 41331,
+      "sha256": "6e5df53aafa9471083065d59f86e3bc9caf6ad608fda61359c988d5f54f67aae"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final/result.json",
+      "bytes": 329,
+      "sha256": "e3a7f324943ac28f258e184c3927583b2d56ab1af1e12a61eb8f56578017a0a2"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final/started.json",
+      "bytes": 271,
+      "sha256": "5a9bf9d19641427197641dfa85e3f1de0c702ea3a8c4a08c11c3d04748012f75"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final/stderr",
+      "bytes": 99,
+      "sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-log-final/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-run-15/result.json",
+      "bytes": 324,
+      "sha256": "b76106f06c668ff57d33497487a34e9abcdecac8fea42cd3dce83fe968b01346"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-run-15/started.json",
+      "bytes": 265,
+      "sha256": "ea0088f59ae4af372624de130c194a6c649384ba37c6503e049e3a6719ba75b9"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-run-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-arm64-run-15/stdout",
+      "bytes": 11984,
+      "sha256": "df28a551683748a3233d9aed282a0352a6dd845b90e71b740040d68cb9f3ea5e"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-annotations-final/result.json",
+      "bytes": 348,
+      "sha256": "8ff579259b4d6a3ab59258337eab20e6c6c4c06bae43346cda59f346564d00a3"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-annotations-final/started.json",
+      "bytes": 289,
+      "sha256": "f2d1c0788cc8a5214ab93fd8aa011bea2bb2a2c57be2d3f2565214f4f4c9869f"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-annotations-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-annotations-final/stdout",
+      "bytes": 675,
+      "sha256": "17375ff3304c539afba0ad23cf5802504651ee541ace24e88493664480d61d41"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-artifacts-final/result.json",
+      "bytes": 346,
+      "sha256": "bb79aa4351f22f6ed47ed698e491fbd8297a45730c3276e3c1a8dbd49182bac8"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-artifacts-final/started.json",
+      "bytes": 287,
+      "sha256": "e345a2ea6390bb8212c98878fc28a676ca65847918fdd003231af171ba04f78a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-artifacts-final/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-artifacts-final/stdout",
+      "bytes": 32,
+      "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-jobs-15/result.json",
+      "bytes": 341,
+      "sha256": "fb6a4d98970802b7c615767700220761b0ecb081ea5dfefbf0dac82b525f8fc1"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-jobs-15/started.json",
+      "bytes": 282,
+      "sha256": "b52e21d0b49571c2f063abeade29330c05c98c859a22295ff390f9d17ca3e611"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-jobs-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-jobs-15/stdout",
+      "bytes": 4152,
+      "sha256": "1c5330045ab30678789cf580a7b97d03eb2228a08cd072c621a18f5754552fa4"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final-02/result.json",
+      "bytes": 361,
+      "sha256": "7dd8f5c762a0ea0aec447957138f9bcbc84ec8d9fd49e91c448de85f47d8bd93"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final-02/started.json",
+      "bytes": 303,
+      "sha256": "ed41217382845faf8b8c78090a9ee5f9961abd50bc7815bfddc21e3d689b534d"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final-02/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final-02/stdout",
+      "bytes": 39572,
+      "sha256": "1febf5218f17fd93234ecd147c8c60d8ef0378b31fd3eca2c672047f0d3b237a"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final/result.json",
+      "bytes": 328,
+      "sha256": "027fd9c289d947e8c9da7e86847b7115a7a7085b086e27619250847bf000a7b9"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final/started.json",
+      "bytes": 270,
+      "sha256": "020478a510dc6c8c9fe4091855d37ba6098de66509c7a4434051155628136ffa"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final/stderr",
+      "bytes": 99,
+      "sha256": "8b6407b2fdbca54bf3d53fb93e79a3560dbe59567fa5044cfee4bed1b5b6e467"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-log-final/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-run-15/result.json",
+      "bytes": 324,
+      "sha256": "d7d0a4fce56b94cc53163c5ffbc0b3b8ece2b5250c01a6efc1ba5d570e9a81b2"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-run-15/started.json",
+      "bytes": 265,
+      "sha256": "85db854c194281b99cb0e0609490c74c8db8377fc86ce4b7356467af6a57bb40"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-run-15/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github/win-x64-run-15/stdout",
+      "bytes": 11984,
+      "sha256": "a8366d866cad730fda018e056e857e275136fa9977f326194b88c8567cfdd153"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/helper.patch",
+      "bytes": 876,
+      "sha256": "d27cd6729d1e64eb1e53ce67b89ac131fb9469846df0fe2d2ede88238489e01f"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/observation-draft/seal.py",
+      "bytes": 10788,
+      "sha256": "918933c1bc2638f1a20a03a26e9a1bf717e76cd747d900405948ae03cb8c6fa2"
+    },
+    {
+      "path": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/watch.py",
+      "bytes": 2979,
+      "sha256": "2a5d6e894ac029dd7bab4165e84e766b6c815830ecfb8c5945d6609b66813dc4"
+    }
+  ],
+  "file_count": 170,
+  "total_bytes": 24905299,
+  "transport_digest_boundary": "GitHub outer artifact ZIP digest declared by REST only, original transportZIP bytes not retained by gh extraction; listed downloaded files independently SHA256 read",
+  "poll_history": {
+    "directory": "target/latest-release-acceptance-07830f8-20261008/platform-fetch/github",
+    "first_round": 1,
+    "final_round": 15,
+    "status_directory": "target/latest-release-acceptance-07830f8-20261008/platform-fetch",
+    "scope": "Original raw polls retained; final/run/jobs/logs/annotations/download receipts selected here"
+  },
+  "binary_SDK_model_assets": "NOT_DOWNLOADED_NO_INDEPENDENT_HASH_OR_EXECUTION_BY_RECORD_SEALER"
+}
