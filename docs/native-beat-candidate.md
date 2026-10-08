@@ -76,6 +76,8 @@ Linux 直接执行实验导入须在进程启动前设置 `ORT_DISABLE_TELEMETRY
 
 Ctrl+C 只向本次原生 Lab CLI 导入提出取消请求，随后等待真实函数返回和正常资源释放。Ready / 曲库 / 工作台没有新增取消或交互 Retry，不更改模型、profile、推理数学、普通手工导入和唯一编码器。取消在源快照、解码 / 重采样、编码 / 最终读回、能量、文件复制 / 校验、前处理每 q、chunk 和 evidence 写入等消费边界检查；同步 I/O、Ogg 预校验和 SDK 环境初始化仍可能等到前后检查点
 
+本次 CLI 独占 SIGINT，使用 `ctrlc::set_handler` 接管后台 shell 继承的 SIG_IGN；安装失败仍返回原错误，同进程真正重复注册仍被库拒绝。固定 `07830f8` 的 Linux x64 解包 smoke 已实际暴露旧 `try_set_handler` 对继承忽略设置的拒绝，未进入导入；本机相同后台 shell 的旧 / 新 Lab 控制分别复现注册错误和通过注册后在 SDK 初始化前拒绝缺失 telemetry flag，发行修复须以新的四目标运行另验
+
 模型装载用 LoadCanceler 发出 best-effort 请求，每个真实 Run 用独立 RunOptions 发出 termination 请求；请求接受或调用返回 Ok 不等于底层已中断，`backend_registered` 只说明句柄已登记，不证明请求时处于 graph / kernel 计算中。真实 ORT / I/O 错误保留；装载若仍返回 Session，则在后续检查点正常释放，Run 若仍返回输出，则先保留实际 raw 输出再检查取消
 
 最终 bundle 发布与取消共用同一门：取消先赢则不执行最终 rename，发布先赢则后续请求记为 late，按 rename 的真实结果返回，不删除已提交目标。注册句柄、Session / outputs 和 encoder 正常释放后才报告最终状态，四对象清理只处理本次拥有的对象，失败 outer staging / evidence 保留，部分目录不作为有效 bundle

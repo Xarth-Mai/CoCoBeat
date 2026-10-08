@@ -48,7 +48,8 @@ pub fn import_experimental_beat(
     };
     let cancel = cocobeat_media::NativeBeatCancellation::default();
     let signal = cancel.clone();
-    ctrlc::try_set_handler(move || {
+    // This CLI owns SIGINT, including SIG_IGN inherited from a background shell
+    ctrlc::set_handler(move || {
         if signal.request() {
             eprintln!("Native import cancellation requested; waiting for owned cleanup");
         } else {

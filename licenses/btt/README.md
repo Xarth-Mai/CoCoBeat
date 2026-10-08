@@ -24,4 +24,6 @@
 
 Windows 使用 clang-cl 编译原有 C99 VLA 并产生目标 MSVC ABI 静态库，不修改数组或 setter；GNU Linux 沿用 gnu99 与 libm，工具链只在构建时需要；x64 / ARM64 的实际编译、链接及运行仍须分别验收，源码和许可收录不作为四目标 PASS
 
+Windows 编译参数将 POSIX `random` 映射为标准 C `rand`，用于编译当前固定 BTT / shim 路径未调用的三个 statistical RNG helper；上游源码字节保持，Linux 不使用此映射，不宣称两种 RNG 的序列等价
+
 histogram certainty 保持原值，confidence、beat unit 和 meter 为未知，报告固定 UNSCORED_NO_ADMISSION_THRESHOLD 与 production_admission=false；已有 Linux 原生研究的结果不替代当前绑定的新软件验证或真实音乐准入

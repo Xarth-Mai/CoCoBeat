@@ -24,7 +24,8 @@ fn main() {
             build.get_compiler().is_like_clang_cl(),
             "BTT requires the Visual Studio C++ Clang compiler component on Windows"
         );
-        build.flag("/clang:-std=c11");
+        // Windows lacks POSIX random; the unused upstream RNG helpers use C rand
+        build.flag("/clang:-std=c11").define("random", "rand");
     } else {
         build.std("gnu99");
     }
