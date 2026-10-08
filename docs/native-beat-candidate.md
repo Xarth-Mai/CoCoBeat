@@ -49,3 +49,19 @@ cargo run --locked -p cocobeat-lab -- workbench-beats /path/to/bundle/package /p
 首轮 std lint、CLI QA 路径错误、辅助程序 E0277 / E0502 和 Unix socket 环境失败、法语图例视觉 FAIL 与定向修复均保留，命令、两版源码 / 二进制与原始结果见[观察记录](../testdata/synthetic/native-beat-workbench-observations-20261008.json)和[原始证据索引](../testdata/synthetic/native-beat-workbench-observations-20261008-raw-index.json)；独立 Labels 逻辑保持，本批未重新进行其原生窗口验证
 
 既有 wholeSpect / 音乐质量 FAIL、未校准 confidence 及 production_admission=false 保留；本入口交付候选复核软件，不扩大 MIR 生产准入、真人盲标、实体手柄、声学试听或设备计时结论
+
+## 40 项导入与证据矩阵
+
+2026-10-08 固定 Linux x86-64 debug Lab 完成十组合成样本 × 源 WAV / 旧 Ogg × 左 / 右声道的 40 次实际导入与 40 次独立 reader API 回读，全部 exit0；覆盖固定 / 非整数 BPM、加速、3/4、6/8、弱起、摇摆、静默、反相及单侧有声。各命令输入与保护文件前后 hash 保持，独占进程组退出；最终回执核对 468 项产品输入和 19 项 native schema 输入仍匹配运行时冻结身份
+
+此矩阵的参考是原合成来源日程，不是新导入最终音频的独立人工真值；每次导入均重新编码，`old_ogg` 分支还包含旧 Ogg 的再次编码。沿用旧 `probe.score` 的 70 ms 闭区间浮点比较与按顺序最早可配对规则，保留有符号误差、未匹配项和原始越界坐标，未平移时间原点或调整质量门槛；三序列的原始累计计数如下
+
+| 候选序列 | TP | FP | FN |
+| --- | ---: | ---: | ---: |
+| beat | 1912 | 314 | 110 |
+| raw downbeat | 488 | 1408 | 100 |
+| 包内 aligned downbeat | 492 | 1392 | 96 |
+
+每个序列都有同样 6 项 `both_empty`：四个静默输入和单侧有声样本的两个左声道输入；其空集合匹配不能代表有声音乐检测成功。软件导入与绑定校验通过，旧 wholeSpect / 音乐质量 FAIL、`Candidate / Algorithm`、confidence=None 和 `production_admission=false` 保持，独立真人参考与置信校准继续另验
+
+本矩阵使用冻结 Lab SHA-256 `7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb`，未应用后续取消或 SDK 初始化修复。40 次会话各保留 51 bytes 的 SDK `.ses` 副产物，固定官方源码静态溯源定位到 ONNX Runtime 1.30.0 的 Microsoft 1DS 会话文件初始化；当前 `with_telemetry(false)` 发生在该初始化之后，不能阻止此工作目录写入。实际网络发送未观测，修复与副产物消失验证尚未运行，本批结果不能作为修复 PASS；完整命令、来源日程、计数、副产物和溯源见[矩阵观察](../testdata/synthetic/native-beat-matrix-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-beat-matrix-observations-20261008-raw-index.json)

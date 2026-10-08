@@ -57,6 +57,7 @@
 
 - [x] 显式原生 beat / downbeat 候选软件入口：最终 canonical 音频、固定 CPU SDK / 模型、MusicAnalysis v2 Candidate / confidence=None、四对象包加原始 evidence 已由 Lab 消费；media 46 / xtask 5、12 条成功命令、四组同实际 spect 数值对照及 13 项事务 / 资源控制通过，普通手工导入四对象保持，见[原生候选](../docs/native-beat-candidate.md)
 - [x] 原生 beat / raw downbeat 候选复核消费者：`workbench-beats` 校验 evidence 与包 analysis 绑定，原 q / frame、成员 raw logit、nearest / aligned 关系和未知 confidence 分开显示，共用 canonical stereo 试听；软件检查、首版三窗口软件控制与修正图例后的新版法语单窗口指定视觉补验分别通过，旧视觉 FAIL 保留，见[原生工作台](../docs/native-beat-candidate.md#原生候选工作台)，完整 MIR 算法 / 音乐质量与置信校准仍未准入
+- [x] 原生候选合成矩阵软件覆盖：十组合成来源 × 源 WAV / 旧 Ogg × 左 / 右声道完成 40 次实际导入与 40 次 reader API 回读，输入 / 保护文件及冻结身份保持；原日程机械匹配保留误报 / 漏检与 6 项静默空集合，旧 Ogg 再编码不作为最终音频独立真值，SDK 会话副产物已定位但未验证修复，见[矩阵观察](../docs/native-beat-candidate.md#40-项导入与证据矩阵)，音乐质量 FAIL 与真人 / 校准门槛保持
 
 旧前处理 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）和音乐质量 FAIL 保留，本批同输入 logits / q 一致不构成前处理等价或生产 MIR 准入；独立真人标签、置信校准、四目标 native run 与十分钟成本 / 取消仍未完成
 
