@@ -89,7 +89,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
             success = scenario in ("recovery-model", "recovery-unauth-candidate", "recovery-immediate-end", UDP_SCENARIO)
             assert report["same_epoch"] and report["snapshots_unchanged"] and report["player_tape_prefix_preserved"]
             assert report["owned_workers_finished"]
-            assert all(status["mode"] == "live" and status["protocol_version"] == 6 for status in statuses)
+            assert all(status["mode"] == "live" and status["protocol_version"] == 7 for status in statuses)
             assert statuses[0]["epoch"] == statuses[1]["epoch"]
             assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
             expected_ready = [True, True] if success or scenario == "recovery-second-loss" else [False, False]
@@ -129,11 +129,26 @@ def run(driver, package, output, scenarios=SCENARIOS):
                 assert copied_invite == original_invite
                 begin, end = raw["relay"]["transitions"]
                 assert begin["dropping"] and not end["dropping"]
-                assert end["at_ns"] - begin["at_ns"] >= 29_000_000_000
+                if raw["maintenance_stale_triggered"]:
+                    assert "clock maintenance sample is stale" in raw["metadata_causes"]
+                    assert raw["clock_sample_max_age_ns"] == 2_000_000_000
+                    for index, cause in enumerate(raw["metadata_causes"]):
+                        sample = raw["last_maintained_at_pause"][index]
+                        assert sample is not None, "missing actual sample cannot stand in for clock freshness"
+                        stamp_key = "host_receive_ns" if index == 0 else "guest_receive_ns"
+                        assert sample["sample"]["epoch"] == statuses[index]["epoch"]
+                        assert sample["local_stamp_key"] == stamp_key
+                        assert sample["local_sample_ns"] == sample["sample"][stamp_key]
+                        assert sample["local_sample_relay_ns"] == sample["scheduled_deadline_relay_ns"] + sample["local_sample_ns"] - sample["local_start_ns"]
+                        assert sample["sample_age_at_pause_ns"] == raw["pausing_event_ns"][index] - sample["local_sample_relay_ns"]
+                        if cause == "clock maintenance sample is stale":
+                            assert sample["sample_age_at_pause_ns"] > raw["clock_sample_max_age_ns"]
+                else:
+                    assert end["at_ns"] - begin["at_ns"] >= 29_000_000_000
                 assert begin["counts"]["sent"] == end["counts"]["sent"]
                 assert all(end["counts"]["dropped"][direction] > begin["counts"]["dropped"][direction] for direction in (0, 1))
                 assert min(raw["pausing_event_ns"]) >= begin["at_ns"]
-                assert any(cause in ("QUIC idle timeout", "reliable peer progress deadline", "reliable frame deadline") for cause in raw["metadata_causes"])
+                assert any(cause in ("QUIC idle timeout", "reliable peer progress deadline", "reliable frame deadline", "clock maintenance sample is stale") for cause in raw["metadata_causes"])
                 assert "explicit local connection maintenance" not in raw["metadata_causes"]
                 record["udp_loss"] = raw
             if scenario == "recovery-second-loss":
@@ -151,7 +166,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
             for index, expected_status in enumerate(("FAILED", "COMPLETE"), start=1):
                 directory = destination / f"round-{index}"
                 statuses = [json.loads((directory / side / "status.json").read_text()) for side in ("host", "guest")]
-                assert all(status["mode"] == "live" and status["protocol_version"] == 6 and status["status"] == expected_status for status in statuses)
+                assert all(status["mode"] == "live" and status["protocol_version"] == 7 and status["status"] == expected_status for status in statuses)
                 expected = [93, 27] if index == 2 else [1, 0] if scenario == "reenter-after-hit" else [0, 0]
                 assert all(status["facts"] == expected for status in statuses)
                 assert report["rounds"][index - 1]["owned_workers_finished"]
@@ -175,7 +190,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
         record["report"] = report
         record["statuses"] = statuses
         success = scenario in ("installed", "receive")
-        assert all(status["mode"] == "live" and status["protocol_version"] == 6 for status in statuses)
+        assert all(status["mode"] == "live" and status["protocol_version"] == 7 for status in statuses)
         assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
         expected = [93, 27] if success else [1, 0] if scenario == "cancel-after-hit" else [0, 0]
         assert all(status["facts"] == expected for status in statuses), scenario

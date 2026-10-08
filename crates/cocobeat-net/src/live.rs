@@ -133,6 +133,12 @@ pub enum LiveEvent {
     Started {
         epoch: SessionEpoch,
     },
+    /// Actual active-connection four-timestamp samples, independent of audio phase
+    ClockMaintained {
+        epoch: SessionEpoch,
+        round: u64,
+        exchange: crate::clock::ClockExchange,
+    },
     PeerFacts(Vec<DuoInput>),
     RecoveryPausing {
         epoch: SessionEpoch,
@@ -523,6 +529,7 @@ async fn host_prepare(
         capability,
         used: false,
         candidates: 0,
+        maintenance_round: 0,
         pending: JoinSet::new(),
     });
     *owned_endpoint = Some(endpoint.clone());
@@ -700,6 +707,7 @@ async fn guest_prepare(
             capability,
             used: false,
             candidates: 0,
+            maintenance_round: 0,
             pending: JoinSet::new(),
         });
         Ok::<_, String>((control, identity))
@@ -830,6 +838,7 @@ struct Continuation {
     capability: [u8; 32],
     used: bool,
     candidates: u8,
+    maintenance_round: u64,
     pending: JoinSet<Result<AuthenticatedContinuation, String>>,
 }
 
@@ -860,6 +869,16 @@ impl From<String> for ExchangeError {
 impl From<&str> for ExchangeError {
     fn from(error: &str) -> Self {
         Self::Terminal(error.into())
+    }
+}
+impl From<crate::clock::ClockError> for ExchangeError {
+    fn from(error: crate::clock::ClockError) -> Self {
+        match error {
+            crate::clock::ClockError::Stale => {
+                Self::Recoverable("clock maintenance sample is stale")
+            }
+            other => Self::Terminal(other.to_string()),
+        }
     }
 }
 impl From<wire::LiveIoError> for ExchangeError {
@@ -1781,6 +1800,16 @@ async fn exchange(
     let mut peer_progressed = Instant::now();
     let mut deferred_peer = Vec::new();
     let mut deferred_end = None;
+    let mut maintenance = if mode.recovering {
+        None
+    } else {
+        Some(sync::ClockMaintenance::new(
+            session.epoch,
+            session.player,
+            continuation.maintenance_round,
+            sync::now_ns(session.origin)?,
+        )?)
+    };
     while !session.ended.iter().all(|ended| *ended) {
         let peer_ended = session.ended[peer.index()];
         let receiving_closed = peer_ended || deferred_end.is_some();
@@ -1795,11 +1824,39 @@ async fn exchange(
             };
             tokio::pin!(receiving);
             loop {
+                let maintenance_deadline = maintenance
+                    .as_ref()
+                    .map(|clock| sync::local_instant(session.origin, clock.next_deadline_ns()?))
+                    .transpose()?
+                    .unwrap_or(mode.deadline);
                 tokio::select! {
                     message = &mut receiving => break Some(message.map_err(ExchangeError::from)?),
                     reason = connection.closed() => return Err(wire::LiveIoError::Transport(reason).into()),
                     error = session::extra_bidi(connection) => return Err(error.into()),
                     _ = tokio::time::sleep_until(mode.deadline) => return Err("live round or recovery exceeded its explicit deadline".into()),
+                    bytes = connection.read_datagram(), if maintenance.is_some() => {
+                        let bytes = bytes.map_err(wire::LiveIoError::Transport)?;
+                        let received_ns = sync::now_ns(session.origin)?;
+                        let clock = maintenance.as_mut().ok_or("clock maintenance state disappeared")?;
+                        clock.check_local_time(received_ns)?;
+                        let result = clock.receive(&bytes, received_ns, sync::now_ns(session.origin)?)?;
+                        continuation.maintenance_round = clock.round();
+                        if let Some(reply) = result.reply {
+                            connection.send_datagram(reply.to_vec().into()).map_err(|_| "send clock maintenance datagram failed")?;
+                        }
+                        if let Some(sample) = result.sample {
+                            emit(events, LiveEvent::ClockMaintained { epoch: sample.estimate.epoch, round: sample.round, exchange: sample.exchange })?;
+                        }
+                    }
+                    _ = tokio::time::sleep_until(maintenance_deadline), if maintenance.is_some() => {
+                        let clock = maintenance.as_mut().ok_or("clock maintenance state disappeared")?;
+                        let now_ns = sync::now_ns(session.origin)?;
+                        clock.check_local_time(now_ns)?;
+                        if let Some(probe) = clock.tick(now_ns)? {
+                            connection.send_datagram(probe.to_vec().into()).map_err(|_| "send clock maintenance probe failed")?;
+                        }
+                        continuation.maintenance_round = clock.round();
+                    }
                     result = async { mode.gate.as_mut().expect("guarded resume gate").await }, if mode.gate.is_some() => {
                         let pause = result?;
                         if Instant::now() >= mode.deadline { return Err("resume Ready missed its fixed deadline".into()); }
@@ -1815,6 +1872,7 @@ async fn exchange(
                         if Instant::now() >= mode.deadline { return Err("deferred peer facts exceeded the fixed recovery deadline".into()); }
                         mode.recovering = false;
                         mode.deadline = mode.running_deadline.checked_add(pause).ok_or("acknowledged pause deadline overflow")?;
+                        maintenance = Some(sync::ClockMaintenance::new(session.epoch, session.player, continuation.maintenance_round, sync::now_ns(session.origin)?)?);
                         emit(events, LiveEvent::RecoveryReady { epoch: session.epoch, attempt: sync::RESUME_ATTEMPT })?;
                     }
                     incoming = endpoint.accept(), if session.player == PlayerId::P1 && !continuation.used
@@ -1981,6 +2039,183 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "explicit real host loopback required"]
+    fn active_clock_maintenance_refreshes_beside_the_original_fact_fifo() {
+        session::runtime().unwrap().block_on(async {
+            tokio::time::timeout(Duration::from_secs(8), async {
+                let (host_endpoint, invitation) = listen("127.0.0.1:0".parse().unwrap()).unwrap();
+                let mut owned_endpoint = None;
+                let guest = connect_owned(&invitation, &mut owned_endpoint);
+                let host = async { host_endpoint.accept().await.unwrap().await.unwrap() };
+                let (guest, host_connection) = tokio::join!(guest, host);
+                let (guest_endpoint, guest_connection) = guest.unwrap();
+                let (host_inputs, guest_inputs) = tokio::join!(
+                    session::open_inputs(&host_connection, PlayerId::P1, 9),
+                    session::open_inputs(&guest_connection, PlayerId::P2, 9)
+                );
+                let mut host_inputs = host_inputs.unwrap();
+                let mut guest_inputs = guest_inputs.unwrap();
+                let mut host_state = fixture();
+                let mut guest_state = fixture();
+                guest_state.player = PlayerId::P2;
+                let (host_sender, mut host_commands) = mpsc::channel(COMMAND_CAPACITY);
+                let (guest_sender, mut guest_commands) = mpsc::channel(COMMAND_CAPACITY);
+                let (host_events, host_receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
+                let (guest_events, guest_receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
+                let deadline = Instant::now() + Duration::from_secs(6);
+                let mut host_mode = ExchangeControl {
+                    gate: None,
+                    signals: None,
+                    deadline,
+                    running_deadline: deadline,
+                    recovering: false,
+                };
+                let mut guest_mode = ExchangeControl {
+                    gate: None,
+                    signals: None,
+                    deadline,
+                    running_deadline: deadline,
+                    recovering: false,
+                };
+                let mut host_continuation = Continuation {
+                    invitation: invitation.clone(),
+                    capability: [0; 32],
+                    used: true,
+                    candidates: 0,
+                    maintenance_round: 0,
+                    pending: JoinSet::new(),
+                };
+                let mut guest_continuation = Continuation {
+                    invitation,
+                    capability: [0; 32],
+                    used: true,
+                    candidates: 0,
+                    maintenance_round: 0,
+                    pending: JoinSet::new(),
+                };
+                let host = exchange(
+                    &mut host_state,
+                    (&host_connection, &host_endpoint),
+                    &mut host_inputs,
+                    &mut host_commands,
+                    &host_events,
+                    &mut host_continuation,
+                    &mut host_mode,
+                );
+                let guest = exchange(
+                    &mut guest_state,
+                    (&guest_connection, &guest_endpoint),
+                    &mut guest_inputs,
+                    &mut guest_commands,
+                    &guest_events,
+                    &mut guest_continuation,
+                    &mut guest_mode,
+                );
+                let producer = async {
+                    for (sender, player) in
+                        [(&host_sender, PlayerId::P1), (&guest_sender, PlayerId::P2)]
+                    {
+                        sender
+                            .send(LiveCommand::Fact(hit(9, player, 0, 10_000)))
+                            .await
+                            .unwrap();
+                        sender
+                            .send(LiveCommand::Fact(DuoInput::Watermark {
+                                epoch: SessionEpoch(9),
+                                player,
+                                through: SongTime::from_frames(-2_400),
+                            }))
+                            .await
+                            .unwrap();
+                    }
+                    // More than the unchanged two-second ClockSync sample age
+                    tokio::time::sleep(Duration::from_millis(3_200)).await;
+                    for (sender, player) in
+                        [(&host_sender, PlayerId::P1), (&guest_sender, PlayerId::P2)]
+                    {
+                        sender
+                            .send(LiveCommand::Fact(DuoInput::Watermark {
+                                epoch: SessionEpoch(9),
+                                player,
+                                through: SongTime::from_frames(68_881),
+                            }))
+                            .await
+                            .unwrap();
+                        sender.send(LiveCommand::End).await.unwrap();
+                    }
+                };
+                let (host, guest, ()) = tokio::join!(host, guest, producer);
+                assert!(matches!(host, Ok(None)), "host: {:?}", host.as_ref().err());
+                assert!(
+                    matches!(guest, Ok(None)),
+                    "guest: {:?}",
+                    guest.as_ref().err()
+                );
+                for (state, receiver, continuation) in [
+                    (&host_state, host_receiver, &host_continuation),
+                    (&guest_state, guest_receiver, &guest_continuation),
+                ] {
+                    assert_eq!(state.epoch, SessionEpoch(9));
+                    assert_eq!(state.ended, [true; 2]);
+                    assert_eq!(state.counts, [3, 3]);
+                    state.verify_replay(&state.replay).unwrap();
+                    for player in [PlayerId::P1, PlayerId::P2] {
+                        let owned: Vec<_> = state
+                            .replay
+                            .facts()
+                            .iter()
+                            .copied()
+                            .filter(|fact| session::seat(*fact) == player)
+                            .collect();
+                        assert_eq!(
+                            owned,
+                            [
+                                hit(9, player, 0, 10_000),
+                                DuoInput::Watermark {
+                                    epoch: SessionEpoch(9),
+                                    player,
+                                    through: SongTime::from_frames(-2_400)
+                                },
+                                DuoInput::Watermark {
+                                    epoch: SessionEpoch(9),
+                                    player,
+                                    through: SongTime::from_frames(68_881)
+                                }
+                            ]
+                        );
+                    }
+                    let samples: Vec<_> = receiver
+                        .try_iter()
+                        .filter_map(|event| match event {
+                            LiveEvent::ClockMaintained {
+                                epoch: SessionEpoch(9),
+                                round,
+                                exchange,
+                            } => Some((round, exchange)),
+                            _ => None,
+                        })
+                        .collect();
+                    assert!(samples.len() >= 3, "actual exchanges: {}", samples.len());
+                    for (index, (round, exchange)) in samples.iter().enumerate() {
+                        assert_eq!(*round, index as u64 + 1);
+                        assert!(exchange.guest_send_ns <= exchange.guest_receive_ns);
+                        assert!(exchange.host_receive_ns <= exchange.host_send_ns);
+                    }
+                    assert_eq!(continuation.maintenance_round, samples.last().unwrap().0);
+                    assert!(
+                        continuation.used,
+                        "refresh does not reset authenticated reconnect budget"
+                    );
+                }
+                host_endpoint.close(0u32.into(), b"QA complete");
+                guest_endpoint.close(0u32.into(), b"QA complete");
+            })
+            .await
+            .expect("bounded active maintenance and fact FIFO");
+        });
+    }
+
+    #[test]
     fn live_intake_has_actual_counts_and_no_fabricated_peer_watermark() {
         let mut session = fixture();
         for input in [
@@ -2048,6 +2283,24 @@ mod tests {
 
     #[test]
     fn recovery_eligibility_uses_typed_transport_and_deadline_not_diagnostic_text() {
+        assert!(matches!(
+            ExchangeError::from(crate::clock::ClockError::Stale),
+            ExchangeError::Recoverable("clock maintenance sample is stale")
+        ));
+        for error in [
+            crate::clock::ClockError::NonMonotonic,
+            crate::clock::ClockError::WrongEpoch,
+            crate::clock::ClockError::Overflow,
+        ] {
+            assert!(matches!(
+                ExchangeError::from(error),
+                ExchangeError::Terminal(_)
+            ));
+        }
+        assert!(matches!(
+            ExchangeError::from("clock maintenance sample is stale"),
+            ExchangeError::Terminal(_)
+        ));
         assert!(matches!(
             ExchangeError::from(wire::LiveIoError::Deadline),
             ExchangeError::Recoverable(_)
@@ -2336,7 +2589,7 @@ mod tests {
                 let (events, receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
                 let (gate_sender, gate_receiver) = oneshot::channel();
                 let mut mode = ExchangeControl { gate: Some(Box::pin(async { gate_receiver.await.map_err(|_| "test gate cancelled".to_owned()) })), signals: None, deadline: Instant::now() + Duration::from_secs(4), running_deadline: Instant::now() + Duration::from_secs(4), recovering: true };
-                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, pending: JoinSet::new() };
+                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, maintenance_round: 0, pending: JoinSet::new() };
                 let exchange = exchange(&mut state, (&host_connection, &host_endpoint), &mut host_inputs, &mut commands, &events, &mut continuation, &mut mode);
                 let peer = async {
                     wire::send_live_input(&mut guest_inputs.send, &mut guest_inputs.written, &Input::Facts { epoch: 9, facts: vec![Fact::Watermark { through: -2400 }] }).await.unwrap();

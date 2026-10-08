@@ -1457,6 +1457,16 @@ fn poll_network(
                     }
                     online.started = true;
                 }
+                LiveEvent::ClockMaintained {
+                    epoch,
+                    round,
+                    exchange,
+                } => {
+                    if epoch != game.session.epoch() {
+                        return Err("Network clock maintenance epoch differs from the game".into());
+                    }
+                    online.maintain_clock(epoch, round, exchange)?;
+                }
                 event @ (LiveEvent::RecoveryPausing { .. }
                 | LiveEvent::RecoveryScheduled { .. }
                 | LiveEvent::RecoverySampling { .. }

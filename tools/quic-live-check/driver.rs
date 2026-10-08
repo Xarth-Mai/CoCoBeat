@@ -130,6 +130,35 @@ fn play(path: &Path, package: &Path) -> cocobeat_core::DuoEngine {
         .unwrap()
 }
 
+fn record_maintained_clock(
+    receipts: &mut Vec<serde_json::Value>,
+    clock: &mut Option<cocobeat_net::clock::ClockSync>,
+    epoch: SessionEpoch,
+    round: u64,
+    exchange: cocobeat_net::clock::ClockExchange,
+) {
+    assert_eq!(exchange.epoch, epoch);
+    assert!(round > 0);
+    if let Some(previous) = receipts.last() {
+        assert!(round > previous["round"].as_u64().unwrap());
+    }
+    let clock = clock.get_or_insert_with(|| {
+        cocobeat_net::clock::ClockSync::new(epoch, Default::default()).unwrap()
+    });
+    let estimate = clock
+        .observe(exchange)
+        .expect("actual maintenance exchange must remain monotonic and bounded");
+    receipts.push(serde_json::json!({
+        "epoch":epoch.0,"round":round,
+        "guest_send_ns":exchange.guest_send_ns,
+        "host_receive_ns":exchange.host_receive_ns,
+        "host_send_ns":exchange.host_send_ns,
+        "guest_receive_ns":exchange.guest_receive_ns,
+        "offset_ns":estimate.offset_ns,"uncertainty_ns":estimate.uncertainty_ns,
+        "round_trip_min_ns":estimate.round_trip_min_ns,"round_trip_max_ns":estimate.round_trip_max_ns
+    }));
+}
+
 fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
     assert!(
         [
@@ -165,6 +194,8 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
     let mut terminal = [false; 2];
     let mut accepted: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
     let mut peer: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
+    let mut maintained_clocks: [Vec<serde_json::Value>; 2] = [Vec::new(), Vec::new()];
+    let mut clock_sync: [Option<cocobeat_net::clock::ClockSync>; 2] = [None, None];
     let mut seq = [0_u64; 2];
     let mut ended = [false; 2];
     let mut action = false;
@@ -213,6 +244,21 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
                         assert_eq!(Some(epoch), prepared[index].map(|value| value.0));
                         assert!(scheduled[index]);
                         started[index] = true;
+                    }
+                    LiveEvent::ClockMaintained {
+                        epoch,
+                        round,
+                        exchange,
+                    } => {
+                        assert_eq!(Some(epoch), prepared[index].map(|value| value.0));
+                        assert!(started[index] && !terminal[index]);
+                        record_maintained_clock(
+                            &mut maintained_clocks[index],
+                            &mut clock_sync[index],
+                            epoch,
+                            round,
+                            exchange,
+                        );
                     }
                     LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
                     LiveEvent::Complete(summary) => {
@@ -359,7 +405,7 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
             }
         }
     }
-    serde_json::json!({"status":"PASS","scenario":scenario,"epoch":prepared[0].map(|value| value.0.0),"started":started,"queued_facts":[accepted[0].len(), accepted[1].len()],"peer_facts":[peer[0].len(),peer[1].len()],"owned_workers_finished":true,"scope":"public production network worker, software loopback only; no PCM scheduling, physical input, audio device or two-machine proof"})
+    serde_json::json!({"status":"PASS","scenario":scenario,"epoch":prepared[0].map(|value| value.0.0),"started":started,"queued_facts":[accepted[0].len(), accepted[1].len()],"peer_facts":[peer[0].len(),peer[1].len()],"owned_workers_finished":true,"clock_maintenance_samples":[maintained_clocks[0].len(),maintained_clocks[1].len()],"clock_maintenance_receipts":maintained_clocks,"scope":"public production network worker, software loopback only; no PCM scheduling, physical input, audio device or two-machine proof"})
 }
 
 #[derive(Clone, Default)]
@@ -516,9 +562,12 @@ impl UdpRelay {
         .unwrap();
     }
     fn event_ns(&self, time: Instant) -> u64 {
-        time.duration_since(self.origin).as_nanos() as u64
+        let elapsed = time
+            .checked_duration_since(self.origin)
+            .expect("event predates relay coordinate origin");
+        u64::try_from(elapsed.as_nanos()).expect("relay coordinate overflow")
     }
-    fn finish(mut self) -> serde_json::Value {
+    fn finish(mut self, maintenance_stale: bool) -> serde_json::Value {
         self.stop.store(true, std::sync::atomic::Ordering::Relaxed);
         self.thread.take().unwrap().join().unwrap();
         let state = self.state.lock().unwrap();
@@ -530,9 +579,11 @@ impl UdpRelay {
         let end = &state.transitions[1];
         assert_eq!(begin["dropping"], true);
         assert_eq!(end["dropping"], false);
-        assert!(
-            end["at_ns"].as_u64().unwrap() - begin["at_ns"].as_u64().unwrap() >= 29_000_000_000
-        );
+        if !maintenance_stale {
+            assert!(
+                end["at_ns"].as_u64().unwrap() - begin["at_ns"].as_u64().unwrap() >= 29_000_000_000
+            );
+        }
         assert_eq!(begin["counts"]["sent"], end["counts"]["sent"]);
         for direction in 0..2 {
             assert!(
@@ -592,6 +643,8 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
     let udp = scenario == "recovery-udp-blackhole";
     let mut relay: Option<UdpRelay> = None;
     let mut pausing_times = [None, None];
+    let mut local_start_ns = [None, None];
+    let mut last_maintained_at_pause: [Option<serde_json::Value>; 2] = [None, None];
     let mut frozen = [false; 2];
     let mut last_original_watermark = [None, None];
     let valid = matches!(
@@ -625,6 +678,8 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
     let mut terminal = [false; 2];
     let mut accepted: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
     let mut peer: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
+    let mut maintained_clocks: [Vec<serde_json::Value>; 2] = [Vec::new(), Vec::new()];
+    let mut clock_sync: [Option<cocobeat_net::clock::ClockSync>; 2] = [None, None];
     let mut paused = [0_i64; 2];
     let mut resume = [None, None];
     let mut verify = [None, None];
@@ -674,10 +729,17 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                         workers[index].try_send(LiveCommand::Ready).unwrap();
                     }
                     LiveEvent::Scheduled {
-                        epoch, deadline, ..
+                        epoch,
+                        deadline,
+                        timing,
                     } => {
                         assert_eq!(epoch, prepared[index].unwrap().0);
                         initial_deadline[index] = Some(deadline);
+                        local_start_ns[index] = Some(
+                            timing
+                                .local_start_ns
+                                .expect("actual scheduled process coordinate is required"),
+                        );
                         workers[index].try_send(LiveCommand::Armed).unwrap();
                     }
                     LiveEvent::Started { epoch } => {
@@ -687,6 +749,21 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                         workers[index].try_send(LiveCommand::Fact(input)).unwrap();
                         accepted[index].push(input);
                     }
+                    LiveEvent::ClockMaintained {
+                        epoch,
+                        round,
+                        exchange,
+                    } => {
+                        assert_eq!(Some(epoch), prepared[index].map(|value| value.0));
+                        assert!(started[index] && !terminal[index]);
+                        record_maintained_clock(
+                            &mut maintained_clocks[index],
+                            &mut clock_sync[index],
+                            epoch,
+                            round,
+                            exchange,
+                        );
+                    }
                     LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
                     LiveEvent::RecoveryPausing { epoch, attempt } => {
                         assert_eq!(epoch, prepared[index].unwrap().0);
@@ -694,6 +771,34 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                         let now = Instant::now();
                         frozen[index] = true;
                         if let Some(relay) = &relay {
+                            let sample = maintained_clocks[index]
+                                .last()
+                                .expect("UDP clock timeout requires an actual maintained sample");
+                            let stamp_key = if index == 0 {
+                                "host_receive_ns"
+                            } else {
+                                "guest_receive_ns"
+                            };
+                            let local_sample_ns = sample[stamp_key].as_u64().unwrap();
+                            let start_ns = local_start_ns[index].unwrap();
+                            let scheduled = initial_deadline[index].unwrap();
+                            let origin = scheduled
+                                .checked_sub(Duration::from_nanos(start_ns))
+                                .expect("process origin mapping overflow");
+                            let sample_at = origin
+                                .checked_add(Duration::from_nanos(local_sample_ns))
+                                .expect("maintained sample mapping overflow");
+                            let age = now
+                                .checked_duration_since(sample_at)
+                                .expect("maintained sample cannot follow pausing");
+                            let age_ns = u64::try_from(age.as_nanos()).unwrap();
+                            let sample_relay_ns = relay.event_ns(sample_at);
+                            last_maintained_at_pause[index] = Some(serde_json::json!({
+                                "sample":sample,"local_stamp_key":stamp_key,"local_sample_ns":local_sample_ns,
+                                "scheduled_deadline_relay_ns":relay.event_ns(scheduled),"local_start_ns":start_ns,
+                                "local_sample_relay_ns":sample_relay_ns,"sample_age_at_pause_ns":age_ns,
+                                "coordinate_policy":"process origin = Scheduled.deadline - timing.local_start_ns; actual role-local maintained t2/t4 mapped to relay origin; software capture only, not kernel or DAC"
+                            }));
                             pausing_times[index] = Some(relay.event_ns(now));
                             if pausing_times.iter().filter(|time| time.is_some()).count() == 1 {
                                 relay.blackhole(false);
@@ -1049,7 +1154,6 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
             }
         );
     }
-    let udp_receipt = relay.map(UdpRelay::finish);
     let causes: Vec<_> = if udp {
         ["host", "guest"]
             .iter()
@@ -1064,11 +1168,30 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
     } else {
         Vec::new()
     };
+    let maintenance_stale = causes
+        .iter()
+        .any(|cause| cause == "clock maintenance sample is stale");
+    let udp_receipt = relay.map(|relay| relay.finish(maintenance_stale));
     if udp {
+        if maintenance_stale {
+            for (index, cause) in causes.iter().enumerate() {
+                if cause == "clock maintenance sample is stale" {
+                    assert!(
+                        last_maintained_at_pause[index].as_ref().unwrap()["sample_age_at_pause_ns"]
+                            .as_u64()
+                            .unwrap()
+                            > cocobeat_net::clock::ClockConfig::default().max_sample_age_ns
+                    );
+                }
+            }
+        }
         assert!(causes.iter().any(|cause| matches!(
             cause.as_str(),
             Some(
-                "QUIC idle timeout" | "reliable peer progress deadline" | "reliable frame deadline"
+                "QUIC idle timeout"
+                    | "reliable peer progress deadline"
+                    | "reliable frame deadline"
+                    | "clock maintenance sample is stale"
             )
         )));
         assert!(
@@ -1076,14 +1199,14 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                 .iter()
                 .any(|cause| cause == "explicit local connection maintenance")
         );
-        let raw = serde_json::json!({"relay":udp_receipt,"pausing_event_ns":pausing_times,"frozen_frames":paused,"metadata_causes":causes,"request_recovery_commands":0,"invitation_only_endpoint_changed":true,"original_watermark_interval_ms":50,"scope":"real UDP blackhole and production recovery; unchanged monotonic software oscillator, no CPAL/DAC"});
+        let raw = serde_json::json!({"relay":udp_receipt,"pausing_event_ns":pausing_times,"frozen_frames":paused,"metadata_causes":causes,"maintenance_stale_triggered":maintenance_stale,"last_maintained_at_pause":last_maintained_at_pause,"clock_sample_max_age_ns":cocobeat_net::clock::ClockConfig::default().max_sample_age_ns,"request_recovery_commands":0,"invitation_only_endpoint_changed":true,"original_watermark_interval_ms":50,"scope":"real UDP blackhole and production recovery; unchanged monotonic software oscillator, no CPAL/DAC"});
         fs::write(
             output.join("udp-loss.json"),
             serde_json::to_vec_pretty(&raw).unwrap(),
         )
         .unwrap();
     }
-    serde_json::json!({"status":"PASS","scenario":scenario,"same_epoch":true,"snapshots_unchanged":true,"player_tape_prefix_preserved":true,"recovery_ready":ready,"owned_workers_finished":true,"queued_facts":accepted.map(|facts|facts.len()),"unauth_candidate_rejected":scenario == "recovery-unauth-candidate" && candidate_failed,"second_recovery_terminal":second_loss,"cancel_requested":cancelled,"actual_udp_blackhole":udp,"scope":if udp { "actual UDP blackhole and typed reliable-input deadline triggered same-epoch production worker recovery; unchanged declared integer monotonic software source model; no Kira, original SoundHandle, PCM/device or two-machine acceptance" } else { "actual TLS/QUIC production worker with declared integer monotonic software source model; controlled active connection rebuilding; no Kira, original SoundHandle, PCM/device, UDP loss, or two-machine acceptance" }})
+    serde_json::json!({"status":"PASS","scenario":scenario,"same_epoch":true,"snapshots_unchanged":true,"player_tape_prefix_preserved":true,"recovery_ready":ready,"owned_workers_finished":true,"clock_maintenance_samples":[maintained_clocks[0].len(),maintained_clocks[1].len()],"clock_maintenance_receipts":maintained_clocks,"queued_facts":accepted.map(|facts|facts.len()),"unauth_candidate_rejected":scenario == "recovery-unauth-candidate" && candidate_failed,"second_recovery_terminal":second_loss,"cancel_requested":cancelled,"actual_udp_blackhole":udp,"scope":if udp { "actual UDP blackhole and typed clock-freshness or reliable-input deadline triggered same-epoch production worker recovery; unchanged declared integer monotonic software source model; no Kira, original SoundHandle, PCM/device or two-machine acceptance" } else { "actual TLS/QUIC production worker with declared integer monotonic software source model; controlled active connection rebuilding; no Kira, original SoundHandle, PCM/device, UDP loss, or two-machine acceptance" }})
 }
 
 fn main() {

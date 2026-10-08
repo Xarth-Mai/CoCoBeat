@@ -8,6 +8,7 @@
 - [x] ClockSync、ScheduleStart、epoch、Finish/FinishAck 与正常完成后同进程新一局的软件闭环
 - [x] Fault 后通过新邀请 / epoch 开启新轮次的软件恢复
 - [x] 同 epoch 原进程、原音源与原历史的软件续演
+- [x] Running 期间有界进程时钟维护与过期样本故障处理
 - [ ] 长期声卡漂移测量与校正
 - [x] 每位玩家可靠输入流与进度水位：水位关闭前不能把未到达当作未按键
 - [x] 权威 DuoEngine 与 Replay 走同一规则入口；共享确认可延迟，本地 Hit 不等待
@@ -33,3 +34,7 @@
 2026-10-08 · 同 epoch 软件恢复：protocol / ALPN v6 保留原 epoch、原 PCM / Kira 句柄和完整事实前缀，仅完成一次有界续演；27 项 net 测试、另 2 项实际 host loopback、160 项 runtime、3 项 sampler 窄测、Clippy / 格式与固定 game 构建通过。真实 UDP 黑洞由可靠 deadline 触发恢复，source 为整数 48kHz 模型；独立的实际 Kira 双进程主动维护恢复保持 source generation / source_id `1 / 1`，恢复期负向 Hit 被过滤，终局双方各 3393 条事实 / 17 个 core 事件及权威 Replay 一致
 
 原 50ms guard 失败、QA 开场 flag 误断言和首次 sampler 运行的命令清单 INCOMPLETE 保留，最终重新原生运行补齐完整 PID / 命令 / exit 证据，固定二进制和完整源码身份见[同 epoch 恢复观察](../testdata/synthetic/same-epoch-recovery-observations-20261008.json)及[验证策略](../docs/testing.md#同-epoch-原音源软件恢复)。同 epoch 软件项 PASS 不关闭长期声卡漂移、实际 Kira 丢包场景、最大容量、物理设备和双机 / 真人验收
+
+2026-10-08 · Running 时钟维护软件：protocol / ALPN v7 将原初始 / 续演 CBCK 与周期 CBMC 分域，每秒最多一轮，250ms / 64包 / 每epoch1024轮有界；双方只由实际匹配交换更新 ClockSync，旧轮次、丢失和重复不能刷新，轮次跨认证续接保留。原可靠读和事实 FIFO、一次续演预算及新 epoch 状态重建保持；net31、真实 loopback3、runtime175、Clippy / 格式 / 边界和当前 Game / Lab 构建通过
+
+正常与真实双向 UDP 黑洞恢复双方权威 Replay 一致；黑洞以实际样本年龄 2006536911 / 2006500101 ns 超过原2秒有效期触发，两端均无 RequestRecovery，见[维护观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)。本批只更新进程时钟映射，长期双音源相位校正未完成；原29秒可靠 deadline 分支的历史证据保留，本次未复跑该分支，实际 Kira 丢包、物理设备、双机与真人继续独立验收

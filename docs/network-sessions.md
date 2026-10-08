@@ -71,13 +71,19 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 `status.json.network_timing` 保留探测计数、样本、host / local deadline、映射 uncertainty、实际软件唤醒与迟到；未达到的步骤用 null，host 映射 uncertainty 为 0 只表示本端坐标恒等。加速历史入口的输入时间来自原 Replay；实时入口来自本端 AudioClockBridge。两个入口都保留整数 SongTime，也不保证通信崩溃或确认后分区时的分布式原子开始
 
+实时 Running 阶段由原 worker 每秒进行一次独立的 56 字节 `CBMC` probe / reply / confirmation，双方保留同一 round 的四个实际时间戳；host 只接受与其实际回复匹配的 confirmation，guest 的第四时间戳来自本端实际收到 reply。它与初始及续演的 48 字节 `CBCK` 探测分域，共用唯一 datagram reader，原可靠输入读保持到完整帧结束
+
+每轮维护限 250ms、最多 64 个入站包，每个 epoch 最多 1024 轮；轮次跨一次认证续接保留。初始化仅启动等待期限，ClockSync 仍未校准；丢失、重复和过期回复不能刷新样本。维护以 host 的实际第二时间戳 / guest 的实际第四时间戳计算本端年龄，超过原 2 秒有效期只通过 typed Stale 进入一次续演，其他非法状态仍终止；已用掉续演后再次失效终止。Runtime 保存实际 exchange 并保持 freshness 查询约束，新一局重建状态
+
+[维护软件观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)记录 600 轮仿射时钟控制、实际 loopback、可靠 FIFO 与真实 UDP 黑洞恢复；它更新进程时钟映射，双音源相位比较和长期声卡校正继续开发
+
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/6`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/7`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
 邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，首次连接仍只接受一次尝试；已开始的实时局另有下述独立续演能力，初始握手失败后重新运行会生成新邀请
 
-协议 v6 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
+协议 v7 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
 
 实时 Replay v2 从实际原生 StagePlan 记录版本，开发歌曲与 headless 没有 StagePlan，因此输出保持 core-only v1；headless 模板即便带明确视觉版本也只提供经过校验的事实，不把模板版本或新 epoch 解释为已经渲染历史舞台
 
@@ -99,7 +105,7 @@ net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识
 
 ## 同 epoch 续演
 
-协议 v6 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset 和可靠输入帧 / 伙伴进展 Deadline 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
+协议 v7 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset、可靠输入帧 / 伙伴进展 Deadline 和 typed 时钟维护 Stale 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
 
 恢复先冻结本地演奏输入，暂停同一个 Kira SoundHandle，保留 PCM、source generation / id、Session、core、seq 和全部原 Replay。两个实际 Paused publication 的前进 sequence 与相同 frame 确认稳定暂停后，worker 在独占 `recovery-1/` 保存自己的已接受 tape、GUI 全历史和恢复元数据；原录制文件保持，token 不进入日志。两端对账完整逐玩家历史，原 owner 前缀必须逐项相同，只有真正缺失的尾部经原 ingest 入口补入一次，重复 seq、倒退水位、改写与重排均终止
 

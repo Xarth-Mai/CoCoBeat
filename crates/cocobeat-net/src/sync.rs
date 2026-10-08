@@ -130,12 +130,12 @@ impl ClockPacket {
     }
 }
 
-fn now_ns(origin: Instant) -> Result<u64, String> {
+pub(crate) fn now_ns(origin: Instant) -> Result<u64, String> {
     u64::try_from(origin.elapsed().as_nanos())
         .map_err(|_| "process monotonic clock overflow".into())
 }
 
-fn local_instant(origin: Instant, nanos: u64) -> Result<Instant, String> {
+pub(crate) fn local_instant(origin: Instant, nanos: u64) -> Result<Instant, String> {
     origin
         .checked_add(Duration::from_nanos(nanos))
         .ok_or_else(|| "scheduled local instant overflow".into())
@@ -788,9 +788,643 @@ pub(crate) fn resume_gate(
     Ok(intervals)
 }
 
+// Active-connection maintenance is a separate packet domain and round budget
+// Initial admission and the one authenticated continuation keep CBCK attempt 0/1
+const MAINTENANCE_BYTES: usize = 56;
+pub(crate) const MAX_MAINTENANCE_ROUNDS: u64 = 1_024;
+const MAINTENANCE_PERIOD_NS: u64 = 1_000_000_000;
+const MAINTENANCE_DEADLINE_NS: u64 = 250_000_000;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct MaintenancePacket {
+    kind: u8,
+    epoch: u64,
+    round: u64,
+    guest_send_ns: u64,
+    host_receive_ns: u64,
+    host_send_ns: u64,
+    guest_receive_ns: u64,
+}
+
+impl MaintenancePacket {
+    fn encode(self) -> [u8; MAINTENANCE_BYTES] {
+        let mut bytes = [0; MAINTENANCE_BYTES];
+        bytes[..4].copy_from_slice(b"CBMC");
+        bytes[4] = PROTOCOL_VERSION as u8;
+        bytes[5] = self.kind;
+        for (index, value) in [
+            self.epoch,
+            self.round,
+            self.guest_send_ns,
+            self.host_receive_ns,
+            self.host_send_ns,
+            self.guest_receive_ns,
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            bytes[8 + index * 8..16 + index * 8].copy_from_slice(&value.to_be_bytes());
+        }
+        bytes
+    }
+
+    fn decode(bytes: &[u8]) -> Option<Self> {
+        if bytes.len() != MAINTENANCE_BYTES
+            || &bytes[..4] != b"CBMC"
+            || bytes[4] != PROTOCOL_VERSION as u8
+            || !(1..=3).contains(&bytes[5])
+            || bytes[6..8] != [0, 0]
+        {
+            return None;
+        }
+        let mut values = [0; 6];
+        for (index, value) in values.iter_mut().enumerate() {
+            *value = u64::from_be_bytes(bytes[8 + index * 8..16 + index * 8].try_into().ok()?);
+        }
+        let [
+            epoch,
+            round,
+            guest_send_ns,
+            host_receive_ns,
+            host_send_ns,
+            guest_receive_ns,
+        ] = values;
+        if !(1..=MAX_MAINTENANCE_ROUNDS).contains(&round)
+            || (bytes[5] == 1
+                && (host_receive_ns != 0 || host_send_ns != 0 || guest_receive_ns != 0))
+            || (bytes[5] == 2 && guest_receive_ns != 0)
+        {
+            return None;
+        }
+        Some(Self {
+            kind: bytes[5],
+            epoch,
+            round,
+            guest_send_ns,
+            host_receive_ns,
+            host_send_ns,
+            guest_receive_ns,
+        })
+    }
+
+    fn exchange(self) -> ClockExchange {
+        ClockExchange {
+            epoch: SessionEpoch(self.epoch),
+            guest_send_ns: self.guest_send_ns,
+            host_receive_ns: self.host_receive_ns,
+            host_send_ns: self.host_send_ns,
+            guest_receive_ns: self.guest_receive_ns,
+        }
+    }
+}
+
+/// A single datagram reader drives this state beside the live fact FIFO
+/// No partial ControlIo read is cancelled and no sample is assumed at creation
+pub(crate) struct ClockMaintenance {
+    epoch: SessionEpoch,
+    player: PlayerId,
+    pub(crate) clock: ClockSync,
+    round: u64,
+    pending: Option<(MaintenancePacket, u64)>,
+    next_probe_ns: u64,
+    last_now_ns: u64,
+    last_valid_local_ns: u64,
+    received: u8,
+}
+
+pub(crate) struct MaintainedClock {
+    pub round: u64,
+    pub exchange: ClockExchange,
+    pub estimate: ClockEstimate,
+}
+
+pub(crate) struct MaintenanceResult {
+    pub reply: Option<[u8; MAINTENANCE_BYTES]>,
+    pub sample: Option<MaintainedClock>,
+}
+
+impl ClockMaintenance {
+    /// Carry `last_round` across the authenticated reconnect, separately from used
+    pub(crate) fn new(
+        epoch: SessionEpoch,
+        player: PlayerId,
+        last_round: u64,
+        now_ns: u64,
+    ) -> Result<Self, String> {
+        if last_round >= MAX_MAINTENANCE_ROUNDS {
+            return Err("clock maintenance round budget exhausted".into());
+        }
+        Ok(Self {
+            epoch,
+            player,
+            clock: ClockSync::new(epoch, ClockConfig::default())
+                .map_err(|error| error.to_string())?,
+            round: last_round,
+            pending: None,
+            next_probe_ns: now_ns,
+            last_now_ns: now_ns,
+            // This is only a startup deadline; ClockSync remains Uncalibrated
+            last_valid_local_ns: now_ns,
+            received: 0,
+        })
+    }
+
+    pub(crate) fn round(&self) -> u64 {
+        self.round
+    }
+
+    pub(crate) fn next_deadline_ns(&self) -> Result<u64, String> {
+        let stale = self
+            .last_valid_local_ns
+            .checked_add(ClockConfig::default().max_sample_age_ns)
+            .and_then(|time| time.checked_add(1))
+            .ok_or("clock maintenance age overflow")?;
+        let pending = self.pending.map_or(stale, |(_, deadline)| deadline);
+        Ok(stale.min(pending).min(if self.player == PlayerId::P2 {
+            self.next_probe_ns
+        } else {
+            stale
+        }))
+    }
+
+    pub(crate) fn check_local_time(&self, now_ns: u64) -> Result<(), crate::clock::ClockError> {
+        if now_ns < self.last_now_ns {
+            return Err(crate::clock::ClockError::NonMonotonic);
+        }
+        if now_ns - self.last_valid_local_ns > ClockConfig::default().max_sample_age_ns {
+            return Err(crate::clock::ClockError::Stale);
+        }
+        Ok(())
+    }
+
+    fn check_now(&mut self, now_ns: u64) -> Result<(), String> {
+        self.check_local_time(now_ns)
+            .map_err(|error| error.to_string())?;
+        self.last_now_ns = now_ns;
+        if self.pending.is_some_and(|(_, deadline)| now_ns >= deadline) {
+            self.pending = None;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn tick(&mut self, now_ns: u64) -> Result<Option<[u8; MAINTENANCE_BYTES]>, String> {
+        self.check_now(now_ns)?;
+        if self.player != PlayerId::P2 || now_ns < self.next_probe_ns {
+            return Ok(None);
+        }
+        let round = self
+            .round
+            .checked_add(1)
+            .ok_or("clock maintenance round overflow")?;
+        if round > MAX_MAINTENANCE_ROUNDS {
+            return Err("clock maintenance round budget exhausted".into());
+        }
+        let deadline = now_ns
+            .checked_add(MAINTENANCE_DEADLINE_NS)
+            .ok_or("clock maintenance deadline overflow")?;
+        let next = now_ns
+            .checked_add(MAINTENANCE_PERIOD_NS)
+            .ok_or("clock maintenance cadence overflow")?;
+        let probe = MaintenancePacket {
+            kind: 1,
+            epoch: self.epoch.0,
+            round,
+            guest_send_ns: now_ns,
+            host_receive_ns: 0,
+            host_send_ns: 0,
+            guest_receive_ns: 0,
+        };
+        self.round = round;
+        self.pending = Some((probe, deadline));
+        self.next_probe_ns = next;
+        self.received = 0;
+        Ok(Some(probe.encode()))
+    }
+
+    pub(crate) fn receive(
+        &mut self,
+        bytes: &[u8],
+        now_ns: u64,
+        host_send_ns: u64,
+    ) -> Result<MaintenanceResult, String> {
+        self.check_now(now_ns)?;
+        if self.received >= MAX_PACKETS {
+            return Err("clock maintenance datagram receive limit exceeded".into());
+        }
+        self.received += 1;
+        let ignored = MaintenanceResult {
+            reply: None,
+            sample: None,
+        };
+        let Some(packet) = MaintenancePacket::decode(bytes) else {
+            return Ok(ignored);
+        };
+        if packet.epoch != self.epoch.0 {
+            return Err("clock maintenance epoch differs from the active session".into());
+        }
+        if self.player == PlayerId::P1 && packet.kind == 1 {
+            if packet.round <= self.round || now_ns < self.next_probe_ns {
+                return Ok(ignored);
+            }
+            let deadline = now_ns
+                .checked_add(MAINTENANCE_DEADLINE_NS)
+                .ok_or("clock maintenance deadline overflow")?;
+            // Bound accepted probe rate while allowing 250 ms path jitter
+            let next = now_ns
+                .checked_add(MAINTENANCE_PERIOD_NS - MAINTENANCE_DEADLINE_NS * 2)
+                .ok_or("clock maintenance cadence overflow")?;
+            if host_send_ns < now_ns || host_send_ns >= deadline {
+                return Err("clock maintenance host processing missed its deadline".into());
+            }
+            let reply = MaintenancePacket {
+                kind: 2,
+                host_receive_ns: now_ns,
+                host_send_ns,
+                ..packet
+            };
+            self.round = packet.round;
+            self.pending = Some((reply, deadline));
+            self.next_probe_ns = next;
+            self.received = 0;
+            return Ok(MaintenanceResult {
+                reply: Some(reply.encode()),
+                sample: None,
+            });
+        }
+        let Some((pending, _)) = self.pending else {
+            return Ok(ignored);
+        };
+        let exchange = if self.player == PlayerId::P2 && packet.kind == 2 {
+            if pending.kind != 1
+                || packet.round != pending.round
+                || packet.guest_send_ns != pending.guest_send_ns
+            {
+                return Ok(ignored);
+            }
+            MaintenancePacket {
+                kind: 3,
+                guest_receive_ns: now_ns,
+                ..packet
+            }
+        } else if self.player == PlayerId::P1 && packet.kind == 3 {
+            if (MaintenancePacket {
+                kind: 2,
+                guest_receive_ns: 0,
+                ..packet
+            }) != pending
+            {
+                return Ok(ignored);
+            }
+            packet
+        } else {
+            return Ok(ignored);
+        };
+        let estimate = self
+            .clock
+            .observe(exchange.exchange())
+            .map_err(|error| error.to_string())?;
+        self.pending = None;
+        self.last_valid_local_ns = if self.player == PlayerId::P1 {
+            // The actual probe receipt precedes the fourth timestamp and confirmation
+            exchange.host_receive_ns
+        } else {
+            exchange.guest_receive_ns
+        };
+        Ok(MaintenanceResult {
+            reply: (self.player == PlayerId::P2).then(|| exchange.encode()),
+            sample: Some(MaintainedClock {
+                round: exchange.round,
+                exchange: exchange.exchange(),
+                estimate,
+            }),
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn maintenance_packet_domain_is_fixed_strict_and_separate_from_admission() {
+        let probe = MaintenancePacket {
+            kind: 1,
+            epoch: 9,
+            round: MAX_MAINTENANCE_ROUNDS,
+            guest_send_ns: 1_000,
+            host_receive_ns: 0,
+            host_send_ns: 0,
+            guest_receive_ns: 0,
+        };
+        let bytes = probe.encode();
+        assert_eq!(MaintenancePacket::decode(&bytes), Some(probe));
+        assert_eq!(ClockPacket::decode(&bytes), None);
+        assert_eq!(MaintenancePacket::decode(&bytes[..55]), None);
+        assert_eq!(MaintenancePacket::decode(&[0; 57]), None);
+        for index in [0, 4, 5, 6, 7, 32, 40, 48] {
+            let mut bad = bytes;
+            bad[index] ^= 0xff;
+            assert_eq!(
+                MaintenancePacket::decode(&bad),
+                None,
+                "accepted byte {index}"
+            );
+        }
+        for round in [0, MAX_MAINTENANCE_ROUNDS + 1] {
+            assert_eq!(
+                MaintenancePacket::decode(&MaintenancePacket { round, ..probe }.encode()),
+                None
+            );
+        }
+        let reply = MaintenancePacket {
+            kind: 2,
+            host_receive_ns: 2_000,
+            host_send_ns: 2_100,
+            ..probe
+        };
+        assert_eq!(MaintenancePacket::decode(&reply.encode()), Some(reply));
+        assert_eq!(
+            MaintenancePacket::decode(
+                &MaintenancePacket {
+                    guest_receive_ns: 3_000,
+                    ..reply
+                }
+                .encode()
+            ),
+            None
+        );
+        let confirmation = MaintenancePacket {
+            kind: 3,
+            guest_receive_ns: 3_000,
+            ..reply
+        };
+        assert_eq!(
+            MaintenancePacket::decode(&confirmation.encode()),
+            Some(confirmation)
+        );
+    }
+
+    #[test]
+    fn maintenance_six_hundred_rounds_keep_four_actual_timestamps_and_asymmetric_bounds() {
+        for ppm in [-1_000_i128, 0, 1_000] {
+            let host_time = |guest: u64| {
+                u64::try_from(50_000_000 + i128::from(guest) * (1_000_000 + ppm) / 1_000_000)
+                    .unwrap()
+            };
+            for (outbound, inbound) in [(5_000_000, 5_000_000), (10_000_000, 90_000_000)] {
+                let start = 1_000_000_000;
+                let mut guest =
+                    ClockMaintenance::new(SessionEpoch(9), PlayerId::P2, 0, start).unwrap();
+                let mut host =
+                    ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, 0, host_time(start))
+                        .unwrap();
+                for round in 1..=600 {
+                    let sent = start + (round - 1) * MAINTENANCE_PERIOD_NS;
+                    let probe = guest.tick(sent).unwrap().unwrap();
+                    let reply = host
+                        .receive(
+                            &probe,
+                            host_time(sent + outbound),
+                            host_time(sent + outbound + 2_000_000),
+                        )
+                        .unwrap();
+                    assert!(reply.sample.is_none());
+                    let received = sent + outbound + 2_000_000 + inbound;
+                    let guest_result = guest
+                        .receive(&reply.reply.unwrap(), received, received)
+                        .unwrap();
+                    let confirmation = guest_result.reply.unwrap();
+                    let host_result = host
+                        .receive(
+                            &confirmation,
+                            host_time(received + outbound),
+                            host_time(received + outbound),
+                        )
+                        .unwrap();
+                    assert!(host_result.reply.is_none());
+                    let guest_sample = guest_result.sample.unwrap();
+                    let host_sample = host_result.sample.unwrap();
+                    assert_eq!(guest_sample.round, round);
+                    assert_eq!(host_sample.round, round);
+                    assert_eq!(guest_sample.exchange, host_sample.exchange);
+                    assert_eq!(guest_sample.estimate, host_sample.estimate);
+                    assert_eq!(guest_sample.exchange.guest_receive_ns, received);
+                    assert_eq!(
+                        guest_sample.exchange.host_send_ns,
+                        host_time(sent + outbound + 2_000_000)
+                    );
+                    let query = received + 400_000_000;
+                    for clock in [&mut guest.clock, &mut host.clock] {
+                        let estimate = clock.estimate(query).unwrap();
+                        let actual_offset = i128::from(host_time(query)) - i128::from(query);
+                        assert!(
+                            (i128::from(estimate.offset_ns) - actual_offset).unsigned_abs()
+                                <= u128::from(estimate.uncertainty_ns)
+                        );
+                    }
+                    assert_eq!(guest.round(), round);
+                    assert_eq!(host.round(), round);
+                }
+                let sample_ns =
+                    start + 599 * MAINTENANCE_PERIOD_NS + outbound + 2_000_000 + inbound;
+                assert_eq!(
+                    guest.clock.estimate(sample_ns + 2_000_000_001),
+                    Err(crate::clock::ClockError::Stale)
+                );
+                assert_eq!(
+                    host.clock.estimate(sample_ns + 2_000_000_001),
+                    Err(crate::clock::ClockError::Stale)
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn maintenance_replay_loss_identity_and_monotonic_fail_without_fabricating_freshness() {
+        let start = 1_000_000_000;
+        let mut guest = ClockMaintenance::new(SessionEpoch(9), PlayerId::P2, 0, start).unwrap();
+        let mut host = ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, 0, start).unwrap();
+        assert_eq!(
+            guest.clock.estimate(start),
+            Err(crate::clock::ClockError::Uncalibrated)
+        );
+        let probe = guest.tick(start).unwrap().unwrap();
+        let reply = host
+            .receive(&probe, start + 10, start + 20)
+            .unwrap()
+            .reply
+            .unwrap();
+        assert!(
+            host.receive(&probe, start + 21, start + 21)
+                .unwrap()
+                .reply
+                .is_none()
+        );
+        let mut bad_reply = MaintenancePacket::decode(&reply).unwrap();
+        bad_reply.guest_send_ns += 1;
+        assert!(
+            guest
+                .receive(&bad_reply.encode(), start + 30, start + 30)
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        let confirmed = guest.receive(&reply, start + 31, start + 31).unwrap();
+        let confirmation = confirmed.reply.unwrap();
+        assert!(
+            guest
+                .receive(&reply, start + 32, start + 32)
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        let mut bad_confirmation = MaintenancePacket::decode(&confirmation).unwrap();
+        bad_confirmation.host_send_ns += 1;
+        assert!(
+            host.receive(&bad_confirmation.encode(), start + 40, start + 40)
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        assert_eq!(
+            host.clock.estimate(start + 40),
+            Err(crate::clock::ClockError::Uncalibrated)
+        );
+        let actual = host
+            .receive(&confirmation, start + 41, start + 41)
+            .unwrap()
+            .sample
+            .unwrap();
+        assert_eq!(actual.exchange.guest_receive_ns, start + 31);
+        assert!(
+            host.receive(&confirmation, start + 42, start + 42)
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        assert!(
+            host.receive(&probe, start + 43, start + 43)
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        assert!(guest.tick(start + 30).is_err());
+        let mut wrong_epoch = MaintenancePacket::decode(&probe).unwrap();
+        wrong_epoch.epoch += 1;
+        wrong_epoch.round += 1;
+        assert!(
+            host.receive(
+                &wrong_epoch.encode(),
+                start + 500_000_000,
+                start + 500_000_000
+            )
+            .is_err()
+        );
+        assert_eq!(host.round(), 1);
+        assert!(host.tick(start + 2_000_000_011).is_err());
+        // Lost confirmations leave the host Uncalibrated and cannot reset source age
+        let mut loss = ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, 0, start).unwrap();
+        let mut probe = MaintenancePacket::decode(&probe).unwrap();
+        for round in 1..=2 {
+            probe.round = round;
+            probe.guest_send_ns = start + (round - 1) * MAINTENANCE_PERIOD_NS;
+            let received = probe.guest_send_ns + 10;
+            assert!(
+                loss.receive(&probe.encode(), received, received + 10)
+                    .unwrap()
+                    .sample
+                    .is_none()
+            );
+        }
+        assert_eq!(
+            loss.clock.estimate(start + MAINTENANCE_PERIOD_NS),
+            Err(crate::clock::ClockError::Uncalibrated)
+        );
+        assert!(loss.tick(start + 2_000_000_001).is_err());
+    }
+
+    #[test]
+    fn maintenance_round_deadline_and_packet_budgets_are_independent_of_resume_attempt() {
+        let start = 1_000_000_000;
+        let mut guest = ClockMaintenance::new(
+            SessionEpoch(9),
+            PlayerId::P2,
+            MAX_MAINTENANCE_ROUNDS - 1,
+            start,
+        )
+        .unwrap();
+        let mut host = ClockMaintenance::new(
+            SessionEpoch(9),
+            PlayerId::P1,
+            MAX_MAINTENANCE_ROUNDS - 1,
+            start,
+        )
+        .unwrap();
+        let probe = guest.tick(start).unwrap().unwrap();
+        let reply = host
+            .receive(&probe, start + 10, start + 11)
+            .unwrap()
+            .reply
+            .unwrap();
+        let confirmation = guest
+            .receive(&reply, start + 20, start + 20)
+            .unwrap()
+            .reply
+            .unwrap();
+        assert!(
+            host.receive(&confirmation, start + 30, start + 30)
+                .unwrap()
+                .sample
+                .is_some()
+        );
+        assert!(guest.tick(start + MAINTENANCE_PERIOD_NS).is_err());
+        assert!(
+            ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, MAX_MAINTENANCE_ROUNDS, start)
+                .is_err()
+        );
+        // Reconnect may retain distinct seen/sent floors after a lost probe
+        let mut reconnected_host =
+            ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, 400, start).unwrap();
+        let mut reconnected_guest =
+            ClockMaintenance::new(SessionEpoch(9), PlayerId::P2, 401, start).unwrap();
+        let probe = reconnected_guest.tick(start).unwrap().unwrap();
+        assert!(
+            reconnected_host
+                .receive(&probe, start + 10, start + 11)
+                .unwrap()
+                .reply
+                .is_some()
+        );
+        assert_eq!(reconnected_guest.round(), 402);
+        assert_eq!(reconnected_host.round(), 402);
+        assert_eq!(RESUME_ATTEMPT, 1);
+        let mut deadline = ClockMaintenance::new(SessionEpoch(9), PlayerId::P2, 0, start).unwrap();
+        let probe = deadline.tick(start).unwrap().unwrap();
+        let mut reply = MaintenancePacket::decode(&probe).unwrap();
+        reply.kind = 2;
+        reply.host_receive_ns = start + 10;
+        reply.host_send_ns = start + 11;
+        assert!(
+            deadline
+                .receive(
+                    &reply.encode(),
+                    start + MAINTENANCE_DEADLINE_NS,
+                    start + MAINTENANCE_DEADLINE_NS
+                )
+                .unwrap()
+                .sample
+                .is_none()
+        );
+        assert_eq!(
+            deadline.clock.estimate(start + MAINTENANCE_DEADLINE_NS),
+            Err(crate::clock::ClockError::Uncalibrated)
+        );
+        let mut bounded = ClockMaintenance::new(SessionEpoch(9), PlayerId::P1, 0, start).unwrap();
+        for _ in 0..MAX_PACKETS {
+            assert!(bounded.receive(&[], start, start).unwrap().sample.is_none());
+        }
+        assert!(bounded.receive(&[], start, start).is_err());
+    }
 
     #[test]
     fn clock_datagrams_are_fixed_bounded_and_strict() {

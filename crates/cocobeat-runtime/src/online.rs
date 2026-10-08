@@ -38,6 +38,8 @@ pub(crate) struct OnlineRound {
     pub deadline: Option<Instant>,
     terminal: bool,
     recovery: Option<Recovery>,
+    pub(crate) network_clock: Option<cocobeat_net::clock::ClockSync>,
+    network_clock_round: u64,
 }
 
 impl OnlineRound {
@@ -153,6 +155,37 @@ impl OnlineRound {
             .ok_or("No active network round")?
             .try_send(command)
             .map_err(|error| error.to_string())
+    }
+
+    /// Preserve the actual exchange; future source comparisons must still query freshness
+    pub fn maintain_clock(
+        &mut self,
+        epoch: SessionEpoch,
+        round: u64,
+        exchange: cocobeat_net::clock::ClockExchange,
+    ) -> Result<(), String> {
+        if !self.started
+            || self.terminal
+            || self.player.is_none()
+            || exchange.epoch != epoch
+            || round == 0
+            || round <= self.network_clock_round
+        {
+            return Err("Clock maintenance does not belong to this running network round".into());
+        }
+        if self.network_clock.is_none() {
+            self.network_clock = Some(
+                cocobeat_net::clock::ClockSync::new(epoch, Default::default())
+                    .map_err(|error| error.to_string())?,
+            );
+        }
+        self.network_clock
+            .as_mut()
+            .ok_or("Network clock disappeared")?
+            .observe(exchange)
+            .map_err(|error| error.to_string())?;
+        self.network_clock_round = round;
+        Ok(())
     }
 
     pub fn recovering(&self) -> bool {
@@ -343,6 +376,55 @@ impl OnlineRound {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn active_network_clock_keeps_actual_samples_and_rejects_stale_rounds() {
+        use cocobeat_net::clock::{ClockError, ClockExchange};
+        let mut round = OnlineRound {
+            started: true,
+            player: Some(PlayerId::P1),
+            ..Default::default()
+        };
+        let exchange = ClockExchange {
+            epoch: SessionEpoch(9),
+            guest_send_ns: 1_000_000_000,
+            host_receive_ns: 1_015_000_000,
+            host_send_ns: 1_017_000_000,
+            guest_receive_ns: 1_022_000_000,
+        };
+        round.maintain_clock(SessionEpoch(9), 1, exchange).unwrap();
+        assert!(round.maintain_clock(SessionEpoch(9), 1, exchange).is_err());
+        assert!(
+            round
+                .maintain_clock(
+                    SessionEpoch(10),
+                    2,
+                    ClockExchange {
+                        epoch: SessionEpoch(10),
+                        ..exchange
+                    }
+                )
+                .is_err()
+        );
+        assert_eq!(round.network_clock_round, 1);
+        let next = ClockExchange {
+            guest_send_ns: exchange.guest_send_ns + 1_000_000_000,
+            host_receive_ns: exchange.host_receive_ns + 1_000_000_000,
+            host_send_ns: exchange.host_send_ns + 1_000_000_000,
+            guest_receive_ns: exchange.guest_receive_ns + 1_000_000_000,
+            ..exchange
+        };
+        round.maintain_clock(SessionEpoch(9), 2, next).unwrap();
+        assert_eq!(round.network_clock_round, 2);
+        let clock = round.network_clock.as_mut().unwrap();
+        let actual = clock.estimate(next.guest_receive_ns).unwrap();
+        assert_eq!(actual.epoch, SessionEpoch(9));
+        assert_eq!(actual.guest_ns, next.guest_receive_ns);
+        assert_eq!(
+            clock.estimate(next.guest_receive_ns + 2_000_000_001),
+            Err(ClockError::Stale)
+        );
+    }
 
     #[test]
     fn queued_configs_keep_the_package_and_use_separate_invitations_and_outputs() {

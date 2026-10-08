@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "base_head": "25411c498eda7729e1e2fe4ce66b00b608cda708",
+  "status": "PASS_SCOPED_SOFTWARE",
+  "scope": "Bounded protocol-7 live process clock maintenance and typed stale one-shot recovery; no dual-source phase correction",
+  "software_checks": {
+    "net_tests": 31,
+    "net_actual_ignored_loopback_tests": 3,
+    "runtime_tests": 175,
+    "clippy": "PASS",
+    "fmt": "PASS",
+    "boundaries": "PASS",
+    "current_game_lab_build": "PASS",
+    "sources": 375,
+    "source_after_equal": true
+  },
+  "maintenance": {
+    "period_ns": 1000000000,
+    "round_deadline_ns": 250000000,
+    "round_budget": 1024,
+    "round_packet_budget": 64,
+    "max_sample_age_ns": 2000000000,
+    "mechanical_affine_controls": "600 rounds, relative -1000/0/+1000 ppm, symmetric/asymmetric paths; original exchange timestamps retained",
+    "same_epoch_once_reconnect_budget_preserved": true,
+    "runtime_preserves_original_exchange": true
+  },
+  "actual_loopback": {
+    "commands": 3,
+    "ignored_tests": 3,
+    "authenticated_malformed_owner_tape_controls": 4,
+    "scenarios": [
+      {
+        "scenario": "recovery-model",
+        "epoch": 13577652017658761907,
+        "clock_maintenance_samples": [
+          2,
+          2
+        ],
+        "rounds": [
+          [
+            1,
+            2
+          ],
+          [
+            1,
+            2
+          ]
+        ],
+        "facts": [
+          37,
+          34
+        ],
+        "event_count": 16,
+        "authority_equal": true,
+        "worker_finished": true,
+        "prefix_preserved": true,
+        "snapshots_unchanged": true
+      },
+      {
+        "scenario": "recovery-udp-blackhole",
+        "epoch": 15156713540308215666,
+        "clock_maintenance_samples": [
+          2,
+          2
+        ],
+        "rounds": [
+          [
+            1,
+            3
+          ],
+          [
+            1,
+            3
+          ]
+        ],
+        "facts": [
+          77,
+          75
+        ],
+        "event_count": 16,
+        "authority_equal": true,
+        "worker_finished": true,
+        "prefix_preserved": true,
+        "snapshots_unchanged": true
+      }
+    ],
+    "all_commands_exit_zero": true,
+    "all_owned_process_groups_gone": true,
+    "all_protected_inputs_equal": true
+  },
+  "udp_blackhole": {
+    "cause": [
+      "clock maintenance sample is stale",
+      "clock maintenance sample is stale"
+    ],
+    "actual_sample_ages_at_pause_ns": [
+      2006536911,
+      2006500101
+    ],
+    "dropped_each_direction": [
+      42,
+      41
+    ],
+    "request_recovery_commands": 0,
+    "invitation_only_endpoint_changed": true,
+    "scope": "real UDP blackhole and production recovery; unchanged monotonic software oscillator, no CPAL/DAC"
+  },
+  "artifacts": [
+    {
+      "path": "target/debug/cocobeat-game",
+      "sha256": "aa31080bceb4f1f13ee81f7f528c701055c3b215615d29ab0a1f2c98faf9ed3d",
+      "bytes": 1482893344,
+      "target": "cocobeat-game",
+      "cargo_fresh": false
+    },
+    {
+      "path": "target/debug/cocobeat-lab",
+      "sha256": "30b52342aa439eb029b884dc67130b96acc77e79f0b4abb7f1ddcaed242d1b2b",
+      "bytes": 1556241024,
+      "target": "cocobeat-lab",
+      "cargo_fresh": false
+    }
+  ],
+  "evidence": [
+    {
+      "path": "target/live-clock-maintenance-production-checks-20261008/result.json",
+      "sha256": "51f95154ecea02b8c2eb0bbc4254bdc862861bf0835612462032de8448f1beaf",
+      "bytes": 2737
+    },
+    {
+      "path": "target/live-clock-maintenance-loopback-qa-20261008/summary.json",
+      "sha256": "93a838565bed1f5253b30c6ddd3ccfc9c410816c1014842001c1230117081751",
+      "bytes": 2196
+    },
+    {
+      "path": "target/live-clock-maintenance-loopback-qa-20261008/normal-recovery/summary.json",
+      "sha256": "49105511438c7a98fcd7728d05c62cce29f58dbec7a55c93ef9d26d21687f6fc",
+      "bytes": 8727
+    },
+    {
+      "path": "target/live-clock-maintenance-loopback-qa-20261008/udp-blackhole/summary.json",
+      "sha256": "2e1896fd2fa0d24d7c9b449dfe24177064485520bd1c8a3a6c6855b53c0348c5",
+      "bytes": 13301
+    },
+    {
+      "path": "target/live-clock-maintenance-loopback-qa-20261008/udp-blackhole/recovery-udp-blackhole/udp-loss.json",
+      "sha256": "d7c95a7ef78adfd58debb7d71af9a13ed3acbedd7c624dfc1dbf1fc18f055d25",
+      "bytes": 3268
+    },
+    {
+      "path": "target/live-clock-maintenance-final-evidence-20261008/raw-index.json",
+      "sha256": "0ce88180992d792e4b6a7f91134eeb4b5211225742d679b54838e51eb817459d",
+      "bytes": 27222
+    }
+  ],
+  "not_run": [
+    "current Game native window or actual Kira UDP-loss recovery",
+    "original reliable-input 29-second blackhole branch rerun with protocol 7",
+    "long-term dual-source phase correction",
+    "fresh current-ref four-target release builds",
+    "DAC/acoustics, physical inputs, two-machine or human acceptance"
+  ],
+  "documentation_only_changes_after_checks": [
+    "docs/network-sessions.md",
+    "tools/quic-live-check/README.md",
+    "todo/10-quic-network.md",
+    "todo/current-goal.md"
+  ]
+}
