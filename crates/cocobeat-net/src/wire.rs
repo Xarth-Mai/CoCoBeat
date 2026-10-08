@@ -26,6 +26,7 @@ pub(crate) enum Control {
     Phase {
         epoch: u64,
         round: u16,
+        attempt: u8,
         message: PhaseControl,
     },
     LiveFetch {
@@ -121,6 +122,9 @@ pub(crate) enum Control {
         identity: Identity,
         attempt: u8,
         pause_frame: i64,
+        publication: PhasePublication,
+        #[serde(deserialize_with = "Option::deserialize")]
+        phase: Option<PhaseResume>,
         source_generation: u64,
         source_id: u64,
         owner_count: u64,
@@ -135,6 +139,9 @@ pub(crate) enum Control {
         identity: Identity,
         attempt: u8,
         pause_frame: i64,
+        publication: PhasePublication,
+        #[serde(deserialize_with = "Option::deserialize")]
+        phase: Option<PhaseResume>,
         source_generation: u64,
         source_id: u64,
         owner_count: u64,
@@ -229,22 +236,44 @@ impl fmt::Debug for Control {
 impl Control {
     fn validate(&self) -> Result<(), String> {
         match self {
-            Self::Phase { round, message, .. } => message.validate(*round)?,
+            Self::Phase {
+                round,
+                attempt,
+                message,
+                ..
+            } => {
+                if *attempt > 1
+                    || (*round == 0
+                        && matches!(message, PhaseControl::Source { .. })
+                        && *attempt != 0)
+                {
+                    return Err("invalid phase connection attempt".into());
+                }
+                message.validate(*round)?;
+            }
             Self::ClockSynced { attempt, .. } if *attempt > 1 => {
                 return Err("clock attempt must be 0 or 1".into());
             }
             Self::ResumeHello {
                 attempt,
                 owner_count,
+                publication,
+                phase,
                 ..
             }
             | Self::ResumeWelcome {
                 attempt,
                 owner_count,
+                publication,
+                phase,
                 ..
             } => {
                 validate_attempt(*attempt)?;
                 validate_count(*owner_count)?;
+                publication.validate()?;
+                if let Some(phase) = phase {
+                    phase.validate()?;
+                }
             }
             Self::ResumeTapeReady {
                 attempt, counts, ..
@@ -400,6 +429,57 @@ impl PhaseAnchor {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum PhaseProofStage {
+    Check,
+    Correction,
+    ReconnectVerification,
+}
+
+/// Fixed original round metadata, never an alternate recovery attempt
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct PhaseResume {
+    pub round: u16,
+    pub host_deadline_ns: u64,
+    pub host_point_ns: u64,
+    pub stage: PhaseProofStage,
+    pub corrections: u8,
+    pub sealed: bool,
+    pub anchor: PhaseAnchor,
+    pub sources: [(u64, u64); 2],
+    pub previous: [Option<PhasePublication>; 2],
+    pub markers: [Option<u64>; 2],
+}
+
+impl PhaseResume {
+    pub(crate) fn validate(self) -> Result<(), String> {
+        if !(1..=crate::sync::MAX_PHASE_ROUNDS).contains(&self.round)
+            || self.corrections > crate::sync::MAX_PHASE_CORRECTIONS
+            || self.stage == PhaseProofStage::ReconnectVerification
+            || self
+                .sources
+                .iter()
+                .any(|&(generation, source_id)| generation == 0 || source_id == 0)
+            || self.host_deadline_ns <= self.host_point_ns
+            || self.host_point_ns <= self.anchor.host_send_ns
+            || !(1..=crate::sync::MAX_MAINTENANCE_ROUNDS).contains(&self.anchor.clock_round)
+            || self.anchor.guest_receive_ns <= self.anchor.guest_send_ns
+            || self.anchor.host_send_ns < self.anchor.host_receive_ns
+        {
+            return Err("invalid original phase continuation metadata".into());
+        }
+        for publication in self.previous.into_iter().flatten() {
+            publication.validate()?;
+        }
+        for count in self.markers.into_iter().flatten() {
+            validate_count(count)?;
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 pub(crate) enum PhaseControl {
@@ -411,6 +491,7 @@ pub(crate) enum PhaseControl {
     Check {
         anchor: PhaseAnchor,
         host_point_ns: u64,
+        host_deadline_ns: u64,
     },
     Evidence {
         anchor: PhaseAnchor,
@@ -606,6 +687,7 @@ pub(crate) enum Input {
     PhasePaused {
         epoch: u64,
         round: u16,
+        attempt: u8,
         fact_count: u64,
     },
     Open {
@@ -645,9 +727,12 @@ impl Input {
     fn validate(&self) -> Result<(), String> {
         match self {
             Self::PhasePaused {
-                round, fact_count, ..
+                round,
+                attempt,
+                fact_count,
+                ..
             } => {
-                if !(1..=128).contains(round) {
+                if *attempt > 1 || !(1..=128).contains(round) {
                     return Err("invalid phase FIFO marker round".into());
                 }
                 validate_count(*fact_count)?;
@@ -866,18 +951,20 @@ async fn recv_body(
 pub(crate) async fn recv_phase_control(
     stream: &mut RecvStream,
     budget: &mut PhaseBudget,
-) -> Result<Control, String> {
-    let body = recv_body(stream, None)
-        .await
-        .map_err(|error| error.to_string())?;
-    let message: Control =
-        serde_json::from_slice(&body).map_err(|_| "invalid phase control JSON")?;
+) -> Result<Control, LiveIoError> {
+    let body = recv_body(stream, None).await?;
+    let message: Control = serde_json::from_slice(&body)
+        .map_err(|_| LiveIoError::Invalid("invalid phase control JSON".into()))?;
     message.validate()?;
     match &message {
         Control::Phase { round, message, .. } => {
             budget.reserve(*round, message, 4 + body.len() as u64)?
         }
-        _ => return Err("non-phase control before phase reader drained".into()),
+        _ => {
+            return Err(LiveIoError::Invalid(
+                "non-phase control before phase reader drained".into(),
+            ));
+        }
     }
     Ok(message)
 }
@@ -928,6 +1015,20 @@ pub(crate) struct PhasePublication {
     pub position_seconds_bits: u64,
     pub publication_before_ns: u64,
     pub publication_after_ns: u64,
+}
+
+impl PhasePublication {
+    pub(crate) fn validate(self) -> Result<(), String> {
+        let position = f64::from_bits(self.position_seconds_bits);
+        if self.sequence == 0
+            || !position.is_finite()
+            || position < 0.0
+            || self.publication_before_ns > self.publication_after_ns
+        {
+            return Err("invalid original coherent phase publication".into());
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -1006,6 +1107,7 @@ mod tests {
         let envelope = Control::Phase {
             epoch: u64::MAX,
             round: 128,
+            attempt: 0,
             message: PhaseControl::Evidence {
                 anchor,
                 host_point_ns: u64::MAX,
@@ -1028,6 +1130,7 @@ mod tests {
             Control::Phase {
                 epoch: 9,
                 round: 1,
+                attempt: 0,
                 message: PhaseControl::Evidence {
                     anchor,
                     host_point_ns: 1,
@@ -1039,9 +1142,9 @@ mod tests {
             .is_err()
         );
         for invalid in [
-            r#"{"kind":"phase","epoch":9,"round":0,"message":{"kind":"pause"}}"#,
-            r#"{"kind":"phase","epoch":9,"round":129,"message":{"kind":"pause"}}"#,
-            r#"{"kind":"phase","epoch":9,"round":1,"message":{"kind":"source","generation":1,"source_id":1,"publication":{"sequence":1,"position_seconds_bits":0,"publication_before_ns":1,"publication_after_ns":2}}}"#,
+            r#"{"kind":"phase","epoch":9,"round":0,"attempt":0,"message":{"kind":"pause"}}"#,
+            r#"{"kind":"phase","epoch":9,"round":129,"attempt":0,"message":{"kind":"pause"}}"#,
+            r#"{"kind":"phase","epoch":9,"round":1,"attempt":0,"message":{"kind":"source","generation":1,"source_id":1,"publication":{"sequence":1,"position_seconds_bits":0,"publication_before_ns":1,"publication_after_ns":2}}}"#,
         ] {
             assert!(
                 serde_json::from_str::<Control>(invalid)
@@ -1051,11 +1154,11 @@ mod tests {
             );
         }
         for invalid in [
-            r#"{"kind":"phase","epoch":9,"round":1,"message":{"kind":"pause","extra":0}}"#,
-            r#"{"kind":"phase","epoch":9,"round":1,"message":{"kind":"armed","extra":0}}"#,
-            r#"{"kind":"phase","epoch":9,"round":1,"message":{"kind":"confirmed","extra":0}}"#,
-            r#"{"kind":"phase","epoch":9,"round":1,"round":2,"message":{"kind":"pause"}}"#,
-            r#"{"kind":"phase_paused","epoch":9,"round":1,"fact_count":0,"extra":0}"#,
+            r#"{"kind":"phase","epoch":9,"round":1,"attempt":0,"message":{"kind":"pause","extra":0}}"#,
+            r#"{"kind":"phase","epoch":9,"round":1,"attempt":0,"message":{"kind":"armed","extra":0}}"#,
+            r#"{"kind":"phase","epoch":9,"round":1,"attempt":0,"message":{"kind":"confirmed","extra":0}}"#,
+            r#"{"kind":"phase","epoch":9,"round":1,"attempt":0,"round":2,"message":{"kind":"pause"}}"#,
+            r#"{"kind":"phase_paused","epoch":9,"round":1,"attempt":0,"fact_count":0,"extra":0}"#,
         ] {
             assert!(
                 serde_json::from_str::<Control>(invalid).is_err(),
@@ -1064,18 +1167,19 @@ mod tests {
         }
         assert!(
             serde_json::from_str::<Input>(
-                r#"{"kind":"phase_paused","epoch":9,"round":1,"fact_count":0,"extra":0}"#
+                r#"{"kind":"phase_paused","epoch":9,"round":1,"attempt":0,"fact_count":0,"extra":0}"#
             )
             .is_err()
         );
         assert_eq!(
             serde_json::from_str::<Input>(
-                r#"{"kind":"phase_paused","epoch":9,"round":1,"fact_count":0}"#
+                r#"{"kind":"phase_paused","epoch":9,"round":1,"attempt":0,"fact_count":0}"#
             )
             .unwrap(),
             Input::PhasePaused {
                 epoch: 9,
                 round: 1,
+                attempt: 0,
                 fact_count: 0
             }
         );
@@ -1083,6 +1187,7 @@ mod tests {
             Input::PhasePaused {
                 epoch: 9,
                 round: 0,
+                attempt: 0,
                 fact_count: 0
             }
             .validate()
@@ -1289,6 +1394,13 @@ mod tests {
             identity: identity.clone(),
             attempt: 1,
             pause_frame: 3_000,
+            publication: PhasePublication {
+                sequence: 1,
+                position_seconds_bits: (3000.0_f64 / 48_000.0).to_bits(),
+                publication_before_ns: 1,
+                publication_after_ns: 2,
+            },
+            phase: None,
             source_generation: 7,
             source_id: 8,
             owner_count: 3,
@@ -1318,6 +1430,13 @@ mod tests {
                 identity: identity.clone(),
                 attempt: 1,
                 pause_frame: 3_000,
+                publication: PhasePublication {
+                    sequence: 1,
+                    position_seconds_bits: (3000.0_f64 / 48_000.0).to_bits(),
+                    publication_before_ns: 1,
+                    publication_after_ns: 2,
+                },
+                phase: None,
                 source_generation: 7,
                 source_id: 8,
                 owner_count: 3,
@@ -1624,5 +1743,55 @@ mod tests {
                 assert_eq!(Fact::from_input(input), fact);
             }
         }
+    }
+    #[test]
+    fn reconnect_wire_scope_and_metadata_are_explicit_strict_and_keep_sixteen_message_budget() {
+        let envelope = Control::Phase {
+            epoch: 9,
+            round: 1,
+            attempt: 1,
+            message: PhaseControl::Pause {},
+        };
+        envelope.validate().unwrap();
+        let mut value = serde_json::to_value(&envelope).unwrap();
+        value.as_object_mut().unwrap().remove("attempt");
+        assert!(serde_json::from_value::<Control>(value).is_err());
+        assert!(
+            Control::Phase {
+                epoch: 9,
+                round: 1,
+                attempt: 2,
+                message: PhaseControl::Pause {}
+            }
+            .validate()
+            .is_err()
+        );
+        let mut budget = PhaseBudget::default();
+        for _ in 0..12 {
+            budget.reserve(1, &PhaseControl::Pause {}, 100).unwrap();
+        }
+        for _ in 0..4 {
+            budget.reserve(1, &PhaseControl::Pause {}, 100).unwrap();
+        }
+        assert!(budget.reserve(1, &PhaseControl::Pause {}, 100).is_err());
+        assert_eq!(budget.round_messages, 16);
+        assert_eq!(budget.messages, 16);
+        let marker = Input::PhasePaused {
+            epoch: 9,
+            round: 1,
+            attempt: 1,
+            fact_count: 7,
+        };
+        marker.validate().unwrap();
+        assert!(
+            Input::PhasePaused {
+                epoch: 9,
+                round: 1,
+                attempt: 2,
+                fact_count: 7
+            }
+            .validate()
+            .is_err()
+        );
     }
 }

@@ -1472,7 +1472,10 @@ fn poll_network(
                 | LiveEvent::RecoverySampling { .. }
                 | LiveEvent::RecoveryReady { .. }) => {
                     if matches!(event, LiveEvent::RecoveryPausing { .. }) {
-                        if game.phase != Phase::Running || !online.started || online.local_ended {
+                        if !matches!(game.phase, Phase::Running | Phase::Recovering)
+                            || !online.started
+                            || online.local_ended
+                        {
                             return Err("Recovery requires the original running round".into());
                         }
                     } else if game.phase != Phase::Recovering {
@@ -1508,7 +1511,8 @@ fn poll_network(
                 event @ (LiveEvent::PhaseSampling { .. }
                 | LiveEvent::PhasePausing { .. }
                 | LiveEvent::PhaseScheduled { .. }
-                | LiveEvent::PhaseReady { .. }) => {
+                | LiveEvent::PhaseReady { .. }
+                | LiveEvent::PhaseRebound { .. }) => {
                     if !matches!(game.phase, Phase::Running | Phase::Recovering) {
                         return Err(
                             "Source phase event arrived outside the original running round".into(),

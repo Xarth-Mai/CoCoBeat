@@ -176,6 +176,34 @@ impl ClockSync {
         guest_now_ns: u64,
         minimum_lead_ns: u64,
     ) -> Result<ScheduledStart, ClockError> {
+        let scheduled = self.project_start(epoch, host_start_ns, guest_now_ns, minimum_lead_ns)?;
+        self.last_query_ns = Some(guest_now_ns);
+        Ok(scheduled)
+    }
+
+    /// Map an upper deadline to its earliest possible guest boundary without querying
+    /// Source proof still consumes the accepted anchor and raw publications in order
+    pub(crate) fn conservative_deadline(
+        &self,
+        epoch: SessionEpoch,
+        host_deadline_ns: u64,
+        guest_now_ns: u64,
+        minimum_lead_ns: u64,
+    ) -> Result<u64, ClockError> {
+        let mapped = self.project_start(epoch, host_deadline_ns, guest_now_ns, minimum_lead_ns)?;
+        mapped
+            .guest_start_ns
+            .checked_sub(mapped.uncertainty_ns)
+            .ok_or(ClockError::StartTooSoon)
+    }
+
+    fn project_start(
+        &self,
+        epoch: SessionEpoch,
+        host_start_ns: u64,
+        guest_now_ns: u64,
+        minimum_lead_ns: u64,
+    ) -> Result<ScheduledStart, ClockError> {
         if epoch != self.epoch {
             return Err(ClockError::WrongEpoch);
         }
@@ -203,7 +231,6 @@ impl ClockSync {
         if earliest <= guest_now_ns || earliest < ready_at {
             return Err(ClockError::StartTooSoon);
         }
-        self.last_query_ns = Some(guest_now_ns);
         Ok(ScheduledStart {
             epoch,
             guest_start_ns,
@@ -347,6 +374,58 @@ mod tests {
         assert_eq!(
             clock.estimate(sample.guest_receive_ns + 2_000_000_001),
             Err(ClockError::Stale)
+        );
+    }
+
+    #[test]
+    fn deadline_mapping_preserves_the_anchor_query_floor_and_full_horizon_bounds() {
+        let mut clock = clock(1_000);
+        let sample = exchange(200_000_000, 10_000_000, 5_000_000, 90_000_000);
+        let observed = clock.observe(sample).unwrap();
+        let now = sample.guest_receive_ns + 600_000_000;
+        let host_deadline = now + 30_000_000_000;
+        let earliest = clock
+            .conservative_deadline(SessionEpoch(7), host_deadline, now, 100_000_000)
+            .unwrap();
+        assert_eq!(clock.last_query_ns, None);
+        assert_eq!(clock.estimate(sample.guest_receive_ns).unwrap(), observed);
+        assert_eq!(clock.original_exchange(), Some(sample));
+        let floor = clock.last_query_ns;
+        assert_eq!(
+            clock.conservative_deadline(SessionEpoch(8), host_deadline, now, 100_000_000),
+            Err(ClockError::WrongEpoch)
+        );
+        assert_eq!(
+            clock.conservative_deadline(
+                SessionEpoch(7),
+                host_deadline,
+                sample.guest_receive_ns - 1,
+                0
+            ),
+            Err(ClockError::NonMonotonic)
+        );
+        assert_eq!(
+            clock.conservative_deadline(
+                SessionEpoch(7),
+                host_deadline,
+                sample.guest_receive_ns + 2_000_000_001,
+                0
+            ),
+            Err(ClockError::Stale)
+        );
+        assert_eq!(clock.last_query_ns, floor);
+        let scheduled = clock
+            .schedule_start(SessionEpoch(7), host_deadline, now, 100_000_000)
+            .unwrap();
+        assert_eq!(
+            earliest,
+            scheduled.guest_start_ns - scheduled.uncertainty_ns
+        );
+        assert!(scheduled.uncertainty_ns >= observed.uncertainty_ns + 30_000_000);
+        assert_eq!(clock.last_query_ns, Some(now));
+        assert_eq!(
+            clock.estimate(sample.guest_receive_ns),
+            Err(ClockError::NonMonotonic)
         );
     }
 

@@ -1,5 +1,7 @@
 # Production LiveSession loopback check
 
+The current driver targets protocol / ALPN 9 (`cocobeat-session/9`); build from a completed matching Cargo graph, while dated v7/v8 receipts retain their original scope
+
 Use a completed root Cargo JSON build containing the exact `cocobeat-net`, media, schema, core, Replay and `serde_json` rlibs, and a validated package with at least 4800 frames
 
 ```sh
@@ -22,7 +24,7 @@ The longer fixture provides native game probes enough time for Running and captu
 
 ## Same-epoch recovery
 
-The recovery software model explicitly advances an integer 48 kHz oscillator and submits source-publication intervals, real owner facts and watermarks through the public production worker API; it is not a Kira or CPAL observation
+The checked-in recovery software model is `raw-monotonic-seconds-v1`: it publishes actual unrounded elapsed monotonic seconds and original capture intervals, with real owner facts and watermarks through the public production worker API; it is not a Kira or CPAL observation
 
 The separate `recovery-udp-blackhole` scenario uses a validated long package, such as the production 64-second original package. A bounded two-client UDP relay drops both directions until the first actual RecoveryPausing event, then restores forwarding and maps the continuation client's new source port. It records raw packet counters and actual production recovery causes without RequestRecovery, changing the invitation's endpoint only; byte reversal verifies the remaining invitation bytes
 
@@ -37,3 +39,9 @@ python3 tools/quic-live-check/native.py FIXED_GAME ORIGINAL_64S_PACKAGE NEW_OUTP
 This native scenario uses two actual game processes and the original Kira source, explicitly requests connection maintenance after both players' first two accepted Hits, and verifies the real pause / future resume / past-publication gate before a third performing Hit. During Recovering it queues one negative CapturedControl Hit through the real update loop, observes queue removal and unchanged local diagnostics / owner facts, and preserves the full GUI history prefix and worker snapshots. Each player must finish with exactly Hit seq 0, 1, 2; the blocked probe cannot appear in authority
 
 The wrapper verifies the recorded game binary, compiler input receipt, actual child PID / exit, unchanged package objects and snapshots, authority bytes and core events. DISABLE_GAMESCOPE_WSI=1 avoids the separately retained local Gamescope WSI layer teardown crash; wrapper exit alone is not game exit evidence. Native connection maintenance and the UDP-deadline model are complementary tests, neither proves two-machine audio, physical controllers, DAC timing or long-term drift
+
+## Active Phase evidence
+
+The separate target-only v9 Phase QA declares a cumulative integer active-time source, distinct from this checked-in raw-seconds recovery model. Its latest matching-graph six cases all passed, with original source publication bits and 88 full-interval proofs independently recomputed; intentional prefix cancellation is not song EOF or authority. Earlier failed queues, fixtures and helper/reviewer checks remain recorded in the [v9 observations](../../testdata/synthetic/source-phase-reconnect-observations-20261009.json)
+
+These target scenarios are not additional commands of this baseline driver. Two separate current native Kira cases cover ordinary checks and same-source ordinary recovery through natural EOF, not forced Kira drift or active Phase stage rebind. AwaitLive/last-sealed true owned-QUIC edges, speakers, physical input and two machines remain unverified; protocol 7 maintenance history above is unchanged

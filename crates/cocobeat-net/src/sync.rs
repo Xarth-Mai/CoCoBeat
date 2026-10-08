@@ -453,6 +453,8 @@ pub(crate) struct ResumePlan {
     pub verify_at: Instant,
     pub host_verify_ns: u64,
     pub common_frame: i64,
+    pub start_uncertainties_ns: [u64; 2],
+    pub phase_deadline: Option<Instant>,
     pub timing: NetworkTiming,
 }
 
@@ -469,9 +471,10 @@ pub(crate) async fn arm_resume(
     epoch: SessionEpoch,
     player: PlayerId,
     origin: Instant,
-    paused: [i64; 2],
+    continuation: ([i64; 2], Option<u64>),
     end: i64,
 ) -> Result<ResumePlan, String> {
+    let (paused, host_deadline_ns) = continuation;
     let common_frame = *paused.iter().max().ok_or("missing paused frames")?;
     if paused.iter().any(|frame| !(0..end).contains(frame))
         || common_frame
@@ -495,24 +498,44 @@ pub(crate) async fn arm_resume(
         &mut timing,
     )
     .await?;
-    if player == PlayerId::P2 {
-        control
-            .send(Control::ResumeReady {
+    let phase_deadline = if let Some(host_deadline) = host_deadline_ns {
+        let local_deadline = if player == PlayerId::P1 {
+            host_deadline
+        } else {
+            clock
+                .conservative_deadline(epoch, host_deadline, now_ns(origin)?, MINIMUM_LEAD_NS)
+                .map_err(|error| error.to_string())?
+        };
+        Some(local_instant(origin, local_deadline)?)
+    } else {
+        None
+    };
+    let deadline = phase_deadline.unwrap_or(Instant::now() + Duration::from_secs(30));
+    tokio::time::timeout_at(deadline, async {
+        if player == PlayerId::P2 {
+            control
+                .send(Control::ResumeReady {
+                    epoch: epoch.0,
+                    attempt: RESUME_ATTEMPT,
+                })
+                .await?;
+        }
+        if control.recv().await?
+            != (Control::ResumeReady {
                 epoch: epoch.0,
                 attempt: RESUME_ATTEMPT,
             })
-            .await?;
-    }
-    if control.recv().await?
-        != (Control::ResumeReady {
-            epoch: epoch.0,
-            attempt: RESUME_ATTEMPT,
-        })
-    {
-        return Err("expected peer resume Ready for this attempt".into());
-    }
-    let (host_common_ns, host_verify_ns, local_resume_ns, local_verify_ns, uncertainty) =
-        if player == PlayerId::P1 {
+        {
+            return Err("expected peer resume Ready for this attempt".into());
+        }
+        let (
+            host_common_ns,
+            host_verify_ns,
+            local_resume_ns,
+            local_verify_ns,
+            uncertainty,
+            start_uncertainties_ns,
+        ) = if player == PlayerId::P1 {
             control
                 .send(Control::ResumeReady {
                     epoch: epoch.0,
@@ -537,7 +560,7 @@ pub(crate) async fn arm_resume(
                     guest_paused_frame: paused[1],
                 })
                 .await?;
-            match control.recv().await? {
+            let guest_uncertainty = match control.recv().await? {
                 Control::ResumeScheduleAck {
                     epoch: actual,
                     attempt: RESUME_ATTEMPT,
@@ -574,9 +597,10 @@ pub(crate) async fn arm_resume(
                             "resume schedule Ack differs from the complete clock mapping".into(),
                         );
                     }
+                    uncertainty_ns
                 }
                 _ => return Err("resume schedule Ack identity or attempt differs".into()),
-            }
+            };
             (
                 common,
                 verify,
@@ -585,6 +609,7 @@ pub(crate) async fn arm_resume(
                     .ok_or("host resume time overflow")?,
                 verify,
                 0,
+                [0, guest_uncertainty],
             )
         } else {
             let (common, verify) = match control.recv().await? {
@@ -641,27 +666,33 @@ pub(crate) async fn arm_resume(
                 resume.guest_start_ns,
                 observed.guest_start_ns,
                 resume.uncertainty_ns,
+                [0, resume.uncertainty_ns],
             )
         };
-    if now_ns(origin)?
-        .checked_add(MINIMUM_LEAD_NS)
-        .ok_or("resume arm time overflow")?
-        > local_resume_ns
-            .checked_sub(uncertainty)
-            .ok_or("resume interval precedes origin")?
-    {
-        return Err("resume no longer leaves the full minimum arm lead".into());
-    }
-    timing.host_start_ns = Some(host_common_ns);
-    timing.local_start_ns = Some(local_resume_ns);
-    timing.start_uncertainty_ns = Some(uncertainty);
-    Ok(ResumePlan {
-        deadline: local_instant(origin, local_resume_ns)?,
-        verify_at: local_instant(origin, local_verify_ns)?,
-        host_verify_ns,
-        common_frame,
-        timing,
+        if now_ns(origin)?
+            .checked_add(MINIMUM_LEAD_NS)
+            .ok_or("resume arm time overflow")?
+            > local_resume_ns
+                .checked_sub(uncertainty)
+                .ok_or("resume interval precedes origin")?
+        {
+            return Err("resume no longer leaves the full minimum arm lead".into());
+        }
+        timing.host_start_ns = Some(host_common_ns);
+        timing.local_start_ns = Some(local_resume_ns);
+        timing.start_uncertainty_ns = Some(uncertainty);
+        Ok(ResumePlan {
+            deadline: local_instant(origin, local_resume_ns)?,
+            verify_at: local_instant(origin, local_verify_ns)?,
+            host_verify_ns,
+            common_frame,
+            start_uncertainties_ns,
+            phase_deadline,
+            timing,
+        })
     })
+    .await
+    .map_err(|_| "resume scheduling exceeded the original phase deadline")?
 }
 
 #[derive(Clone, Copy)]
@@ -936,6 +967,20 @@ impl ClockMaintenance {
         self.accepted
     }
 
+    pub(crate) fn reconnect(&mut self, now_ns: u64) -> Result<(), String> {
+        if now_ns < self.last_now_ns || self.round >= MAX_MAINTENANCE_ROUNDS {
+            return Err("clock continuation rewinds time or exhausts its original rounds".into());
+        }
+        self.pending = None;
+        self.accepted = None;
+        self.received = 0;
+        self.last_now_ns = now_ns;
+        // Startup freshness is not a sample; sample() remains None until actual new CBMC
+        self.last_valid_local_ns = now_ns;
+        self.next_probe_ns = now_ns;
+        Ok(())
+    }
+
     pub(crate) fn round(&self) -> u64 {
         self.round
     }
@@ -1122,6 +1167,8 @@ pub(crate) struct PhaseWindow {
     pub round: u16,
     /// False for the check window, true only after actual pause and resume
     pub verification: bool,
+    pub attempt: u8,
+    pub reconnecting: bool,
     pub sources: [(u64, u64); 2],
     pub previous: [Option<crate::wire::PhasePublication>; 2],
     pub end: i64,
@@ -1136,7 +1183,7 @@ pub(crate) struct PhaseBounds {
     round: u16,
     host_point_ns: u64,
     host_received_ns: u64,
-    verification: bool,
+    stage: crate::wire::PhaseProofStage,
     source_frames: [[i64; 2]; 2],
     guest_minus_host_frames: [i64; 2],
     last_publications: [crate::wire::PhasePublication; 2],
@@ -1171,6 +1218,70 @@ impl PhaseBounds {
             })
     }
 
+    pub(crate) fn verify_reconnect_resume(
+        self,
+        paused: [crate::wire::PhasePublication; 2],
+        common_frame: i64,
+        host_common_ns: u64,
+        start_uncertainties_ns: [u64; 2],
+    ) -> Result<(), String> {
+        let elapsed = self
+            .host_point_ns
+            .checked_sub(host_common_ns)
+            .ok_or("reconnected phase point precedes the actual common frame")?;
+        let advance = u128::from(elapsed) * 48_000;
+        let expected_low = common_frame
+            .checked_add(
+                i64::try_from(advance / 1_000_000_000)
+                    .map_err(|_| "reconnected phase progress overflow")?,
+            )
+            .ok_or("reconnected expected frame overflow")?;
+        let expected_high = common_frame
+            .checked_add(
+                i64::try_from(advance.div_ceil(1_000_000_000))
+                    .map_err(|_| "reconnected phase progress overflow")?,
+            )
+            .ok_or("reconnected expected frame overflow")?;
+        if self.stage != crate::wire::PhaseProofStage::ReconnectVerification || !self.within_guard()
+        {
+            return Err(
+                "reconnected phase requires its new original-source proof within guard".into(),
+            );
+        }
+        for index in 0..2 {
+            let nanos = u128::from(start_uncertainties_ns[index])
+                + (u128::from(elapsed) * u128::from(ClockConfig::default().max_drift_ppm))
+                    .div_ceil(1_000_000);
+            let uncertainty = i64::try_from((nanos * 48_000).div_ceil(1_000_000_000))
+                .map_err(|_| "reconnected progress uncertainty overflow")?
+                .checked_add(1)
+                .ok_or("reconnected quantization overflow")?;
+            if uncertainty > RESUME_GUARD_FRAMES {
+                return Err("reconnected progress uncertainty exceeds unchanged guard".into());
+            }
+            let low = expected_low
+                .checked_sub(RESUME_GUARD_FRAMES)
+                .and_then(|n| n.checked_sub(uncertainty))
+                .ok_or("reconnected progress guard underflow")?;
+            let high = expected_high
+                .checked_add(RESUME_GUARD_FRAMES)
+                .and_then(|n| n.checked_add(uncertainty))
+                .ok_or("reconnected progress guard overflow")?;
+            let last = self.last_publications[index];
+            let frozen = paused[index];
+            if self.source_frames[index][0] < low
+                || self.source_frames[index][1] > high
+                || last.sequence <= frozen.sequence
+                || f64::from_bits(last.position_seconds_bits)
+                    <= f64::from_bits(frozen.position_seconds_bits)
+                || last.publication_before_ns < frozen.publication_after_ns
+            {
+                return Err("reconnected original source fails the full pause floor or bounded common-frame progress".into());
+            }
+        }
+        Ok(())
+    }
+
     pub(crate) fn verify_original_resume(
         self,
         paused: [crate::wire::PhasePublication; 2],
@@ -1185,7 +1296,7 @@ impl PhaseBounds {
         let high = expected
             .checked_add(RESUME_GUARD_FRAMES)
             .ok_or("phase resume guard overflow")?;
-        if !self.verification
+        if self.stage != crate::wire::PhaseProofStage::Correction
             || !self.within_guard()
             || self
                 .source_frames
@@ -1216,7 +1327,9 @@ pub(crate) fn source_phase_bounds(
     evidence: &[crate::wire::PhaseEvidence; 2],
     window: PhaseWindow,
 ) -> Result<PhaseBounds, String> {
-    if window.round == 0
+    if window.attempt > 1
+        || (window.reconnecting && (window.attempt != 1 || !window.verification))
+        || window.round == 0
         || window.round > MAX_PHASE_ROUNDS
         || window.end <= 0
         || window.end as u64 > cocobeat_schema::MAX_CANONICAL_FRAMES
@@ -1339,7 +1452,13 @@ pub(crate) fn source_phase_bounds(
         round: window.round,
         host_point_ns: window.host_point_ns,
         host_received_ns: window.host_now_ns,
-        verification: window.verification,
+        stage: if window.reconnecting {
+            crate::wire::PhaseProofStage::ReconnectVerification
+        } else if window.verification {
+            crate::wire::PhaseProofStage::Correction
+        } else {
+            crate::wire::PhaseProofStage::Check
+        },
         source_frames: intervals,
         last_publications: last_publications
             .map(|row| row.expect("both source windows were validated")),
@@ -1360,7 +1479,9 @@ pub(crate) struct PhaseRounds {
     round: u16,
     corrections: u8,
     // Fixed deadline, original epoch, expected common point, post-correction proof
-    active: Option<(u64, SessionEpoch, u64, bool)>,
+    active: Option<(u64, SessionEpoch, u64, crate::wire::PhaseProofStage)>,
+    sealed: Option<(u64, SessionEpoch, u64, crate::wire::PhaseProofStage)>,
+    rebound: bool,
     last_now_ns: u64,
 }
 
@@ -1387,12 +1508,21 @@ impl PhaseRounds {
             return Err("phase check point must be future and inside its fixed deadline".into());
         }
         self.round = round;
-        self.active = Some((deadline, epoch, host_point_ns, false));
+        self.active = Some((
+            deadline,
+            epoch,
+            host_point_ns,
+            crate::wire::PhaseProofStage::Check,
+        ));
         self.last_now_ns = now_ns;
         Ok(())
     }
 
-    fn check(&self, round: u16, now_ns: u64) -> Result<(u64, SessionEpoch, u64, bool), String> {
+    fn check(
+        &self,
+        round: u16,
+        now_ns: u64,
+    ) -> Result<(u64, SessionEpoch, u64, crate::wire::PhaseProofStage), String> {
         let active = self.active.ok_or("no active source-maintenance round")?;
         if round != self.round || now_ns < self.last_now_ns || now_ns >= active.0 {
             return Err("phase round identity or fixed deadline differs".into());
@@ -1407,7 +1537,9 @@ impl PhaseRounds {
         now_ns: u64,
     ) -> Result<(), String> {
         let (deadline, epoch, check_point, correcting) = self.check(round, now_ns)?;
-        if correcting || self.corrections >= MAX_PHASE_CORRECTIONS {
+        if correcting != crate::wire::PhaseProofStage::Check
+            || self.corrections >= MAX_PHASE_CORRECTIONS
+        {
             return Err("phase correction repeated or budget exhausted".into());
         }
         if verification_point_ns <= check_point
@@ -1417,7 +1549,56 @@ impl PhaseRounds {
             return Err("phase verification must be later and inside the original deadline".into());
         }
         self.corrections += 1;
-        self.active = Some((deadline, epoch, verification_point_ns, true));
+        self.active = Some((
+            deadline,
+            epoch,
+            verification_point_ns,
+            crate::wire::PhaseProofStage::Correction,
+        ));
+        self.last_now_ns = now_ns;
+        Ok(())
+    }
+
+    pub(crate) fn rebind(
+        &mut self,
+        round: u16,
+        epoch: SessionEpoch,
+        host_point_ns: u64,
+        host_deadline_ns: u64,
+        now_ns: u64,
+        corrections: u8,
+    ) -> Result<(), String> {
+        let original = self
+            .active
+            .or(self.sealed)
+            .ok_or("no unresolved or last-sealed phase to rebind")?;
+        if self.rebound
+            || round != self.round
+            || epoch != original.1
+            || host_deadline_ns != original.0
+            || now_ns < self.last_now_ns
+            || now_ns >= original.0
+            || host_point_ns <= now_ns
+            || host_point_ns <= original.2
+            || host_point_ns
+                .checked_add(80_000_000)
+                .is_none_or(|end| end >= original.0)
+            || corrections < self.corrections
+            || corrections > MAX_PHASE_CORRECTIONS
+        {
+            return Err(
+                "phase rebind differs from its original identity, fixed deadline or spent budgets"
+                    .into(),
+            );
+        }
+        self.rebound = true;
+        self.corrections = corrections;
+        self.active = Some((
+            original.0,
+            epoch,
+            host_point_ns,
+            crate::wire::PhaseProofStage::ReconnectVerification,
+        ));
         self.last_now_ns = now_ns;
         Ok(())
     }
@@ -1432,7 +1613,7 @@ impl PhaseRounds {
         if verified.epoch != epoch
             || verified.round != round
             || verified.host_point_ns != point
-            || verified.verification != correcting
+            || verified.stage != correcting
             || verified.host_received_ns < point
             || verified.host_received_ns > now_ns
             || verified.host_received_ns >= deadline
@@ -1444,7 +1625,7 @@ impl PhaseRounds {
         if !verified.within_guard() {
             return Err("source-maintenance cannot reopen input outside the phase guard".into());
         }
-        self.active = None;
+        self.sealed = self.active.take();
         self.last_now_ns = now_ns;
         Ok(())
     }
@@ -1509,6 +1690,8 @@ mod tests {
                 epoch: SessionEpoch(9),
                 round: 1,
                 verification: false,
+                attempt: 0,
+                reconnecting: false,
                 sources: [(11, 21), (12, 22)],
                 previous: [None; 2],
                 end: cocobeat_schema::MAX_CANONICAL_FRAMES as i64,
@@ -1632,6 +1815,36 @@ mod tests {
             phase_from_exchange(exchange, &short, window).is_err(),
             "missing whole-interval bracket cannot report synchronous sources"
         );
+    }
+
+    #[test]
+    fn guest_deadline_mapping_keeps_check_and_rebound_raw_proofs_queryable() {
+        for reconnecting in [false, true] {
+            let (exchange, evidence, mut window) = phase_model(
+                10_000_000_000,
+                [0; 2],
+                [0; 2],
+                [0; 2],
+                (1_000_000, 1_000_000),
+            );
+            window.attempt = u8::from(reconnecting);
+            window.verification = reconnecting;
+            window.reconnecting = reconnecting;
+            let original = phase_from_exchange(exchange, &evidence, window).unwrap();
+            let mut clock = ClockSync::new(exchange.epoch, ClockConfig::default()).unwrap();
+            clock.observe(exchange).unwrap();
+            let now = exchange.guest_receive_ns + 20_000_000;
+            let earliest = clock
+                .conservative_deadline(exchange.epoch, now + 30_000_000_000, now, 100_000_000)
+                .unwrap();
+            assert!(earliest > now);
+            assert_eq!(clock.original_exchange(), Some(exchange));
+            assert_eq!(
+                source_phase_bounds(&mut clock, exchange, &evidence, window).unwrap(),
+                original
+            );
+            assert!(clock.estimate(exchange.guest_receive_ns).is_err());
+        }
     }
 
     #[test]
@@ -2555,5 +2768,213 @@ mod tests {
         );
         assert_eq!(catchup_ns(10_000, 9_500).unwrap(), 10_416_667);
         assert!(catchup_ns(9_500, 10_000).is_err());
+    }
+    #[test]
+    fn reconnect_rebind_keeps_round_deadline_budget_and_requires_new_proof_stage() {
+        let point = 60_000_000_000;
+        let begin = point - 500_000_000;
+        let epoch = SessionEpoch(9);
+        let mut rounds = PhaseRounds::default();
+        rounds.begin(1, epoch, point, begin).unwrap();
+        rounds
+            .correct(1, point + 1_000_000_000, point + 200_000_000)
+            .unwrap();
+        let deadline = begin + 30_000_000_000;
+        assert!(
+            rounds
+                .rebind(
+                    1,
+                    epoch,
+                    point + 3_000_000_000,
+                    deadline + 1,
+                    point + 2_000_000_000,
+                    1
+                )
+                .is_err()
+        );
+        assert!(
+            rounds
+                .rebind(
+                    2,
+                    epoch,
+                    point + 3_000_000_000,
+                    deadline,
+                    point + 2_000_000_000,
+                    1
+                )
+                .is_err()
+        );
+        rounds
+            .rebind(
+                1,
+                epoch,
+                point + 3_000_000_000,
+                deadline,
+                point + 2_000_000_000,
+                1,
+            )
+            .unwrap();
+        assert_eq!(rounds.corrections, 1);
+        assert_eq!(rounds.round, 1);
+        assert_eq!(rounds.active.unwrap().0, deadline);
+        assert!(
+            rounds
+                .correct(1, point + 4_000_000_000, point + 2_000_000_001)
+                .is_err()
+        );
+        assert!(
+            rounds
+                .rebind(
+                    1,
+                    epoch,
+                    point + 4_000_000_000,
+                    deadline,
+                    point + 2_000_000_001,
+                    1
+                )
+                .is_err()
+        );
+        let (exchange, rows, mut window) = phase_model(
+            point + 3_000_000_000,
+            [0; 2],
+            [0; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        window.verification = true;
+        let old_stage = phase_from_exchange(exchange, &rows, window).unwrap();
+        assert!(rounds.complete(1, window.host_now_ns, old_stage).is_err());
+        window.attempt = 1;
+        window.reconnecting = true;
+        let fresh = phase_from_exchange(exchange, &rows, window).unwrap();
+        rounds.complete(1, window.host_now_ns, fresh).unwrap();
+        assert!(
+            rounds
+                .rebind(
+                    1,
+                    epoch,
+                    point + 5_000_000_000,
+                    deadline,
+                    point + 4_000_000_000,
+                    1
+                )
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn last_sealed_round_rebind_is_once_only_and_never_extends_original_deadline() {
+        let point = 60_000_000_000;
+        let (exchange, rows, window) =
+            phase_model(point, [0; 2], [0; 2], [0; 2], (1_000_000, 1_000_000));
+        let proof = phase_from_exchange(exchange, &rows, window).unwrap();
+        let begin = point - 500_000_000;
+        let mut rounds = PhaseRounds::default();
+        rounds.begin(1, window.epoch, point, begin).unwrap();
+        rounds.complete(1, window.host_now_ns, proof).unwrap();
+        let deadline = begin + 30_000_000_000;
+        assert!(
+            rounds
+                .rebind(
+                    1,
+                    window.epoch,
+                    deadline - 40_000_000,
+                    deadline,
+                    deadline - 100_000_000,
+                    0
+                )
+                .is_err()
+        );
+        rounds
+            .rebind(
+                1,
+                window.epoch,
+                point + 1_000_000_000,
+                deadline,
+                point + 500_000_000,
+                0,
+            )
+            .unwrap();
+        assert_eq!(rounds.active.unwrap().0, deadline);
+        assert_eq!(rounds.corrections, 0);
+    }
+
+    #[test]
+    fn reconnected_progress_binds_frozen_bits_actual_common_time_and_full_uncertainty() {
+        let point = 60_000_000_000;
+        let common = point - 1_000_000_000;
+        let frame = 100_000;
+        let (exchange, rows, mut window) = phase_model(
+            point,
+            [common; 2],
+            [frame; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        let frozen = std::array::from_fn(|_| crate::wire::PhasePublication {
+            sequence: 1,
+            position_seconds_bits: (frame as f64 / 48_000.0).to_bits(),
+            publication_before_ns: common - 1_000_000_000,
+            publication_after_ns: common - 999_000_000,
+        });
+        window.attempt = 1;
+        window.reconnecting = true;
+        window.verification = true;
+        window.previous = frozen.map(Some);
+        let proof = phase_from_exchange(exchange, &rows, window).unwrap();
+        proof
+            .verify_reconnect_resume(frozen, frame, common, [0, 2_000_000])
+            .unwrap();
+        assert!(proof.verify_original_resume(frozen, frame).is_err());
+        assert!(
+            proof
+                .verify_reconnect_resume(frozen, frame + 10_000, common, [0, 2_000_000])
+                .is_err()
+        );
+        assert!(
+            proof
+                .verify_reconnect_resume(frozen, frame, point + 1, [0, 2_000_000])
+                .is_err()
+        );
+        assert!(
+            proof
+                .verify_reconnect_resume(proof.last_publications, frame, common, [0, 2_000_000])
+                .is_err()
+        );
+        assert!(
+            proof
+                .verify_reconnect_resume(frozen, frame, common, [0, 100_000_000])
+                .is_err()
+        );
+        window.reconnecting = false;
+        let old = phase_from_exchange(exchange, &rows, window).unwrap();
+        assert!(
+            old.verify_reconnect_resume(frozen, frame, common, [0, 2_000_000])
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn reconnect_retains_original_clock_and_round_but_disallows_old_sample_as_new_evidence() {
+        let mut clock =
+            ClockMaintenance::new(SessionEpoch(9), PlayerId::P2, 7, 1_000_000_000).unwrap();
+        let original = ClockExchange {
+            epoch: SessionEpoch(9),
+            guest_send_ns: 1_000_000_000,
+            host_receive_ns: 1_001_000_000,
+            host_send_ns: 1_002_000_000,
+            guest_receive_ns: 1_003_000_000,
+        };
+        clock.clock.observe(original).unwrap();
+        clock.tick(1_100_000_000).unwrap();
+        let floor = clock.round();
+        clock.reconnect(2_000_000_000).unwrap();
+        assert_eq!(clock.clock.original_exchange(), Some(original));
+        assert_eq!(clock.round(), floor);
+        assert!(clock.sample().is_none());
+        let probe =
+            MaintenancePacket::decode(&clock.tick(2_000_000_000).unwrap().unwrap()).unwrap();
+        assert!(probe.round > floor);
+        assert!(clock.reconnect(1_999_999_999).is_err());
     }
 }

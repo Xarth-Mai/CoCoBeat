@@ -197,7 +197,7 @@ impl OnlineRound {
                 .is_some_and(PhaseMaintenance::correcting)
     }
 
-    /// Only RecoveryReady releases the presentation/input gate
+    /// RecoveryReady releases input only when no original Phase remains unresolved
     pub fn recovery_event(
         &mut self,
         event: LiveEvent,
@@ -210,34 +210,50 @@ impl OnlineRound {
             return Err("Recovery requires a started, unfinished network round".into());
         }
         let (epoch, attempt) = match &event {
-            LiveEvent::RecoveryPausing { epoch, attempt }
+            LiveEvent::RecoveryPausing { epoch, attempt, .. }
             | LiveEvent::RecoveryScheduled { epoch, attempt, .. }
             | LiveEvent::RecoverySampling { epoch, attempt, .. }
-            | LiveEvent::RecoveryReady { epoch, attempt } => (*epoch, *attempt),
+            | LiveEvent::RecoveryReady { epoch, attempt, .. } => (*epoch, *attempt),
             _ => return Err("Expected a network recovery event".into()),
         };
         if epoch != session.epoch() || attempt != 1 {
             return Err("Recovery epoch or attempt differs from the live session".into());
         }
-        if matches!(event, LiveEvent::RecoveryPausing { .. }) {
-            if self.recovery.is_some()
-                || self
-                    .source_phase
-                    .as_ref()
-                    .is_some_and(PhaseMaintenance::active)
-            {
+        if let LiveEvent::RecoveryPausing {
+            deadline,
+            phase_round,
+            ..
+        } = event
+        {
+            if self.recovery.is_some() {
                 return Err("This network round already attempted recovery".into());
             }
-            let source = audio.source_observation();
+            let source = audio
+                .source_observation()
+                .ok_or("Recovery needs its original coherent publication")?;
             let now = Instant::now();
-            if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
-                phase.observe(source, now)?;
+            let phase = self
+                .source_phase
+                .as_mut()
+                .ok_or("Recovery needs its previously announced original phase source")?;
+            if phase.end() != end {
+                return Err("Recovery changed its original content duration".into());
             }
-            if audio.state() != Some(kira::sound::PlaybackState::Playing) {
-                return Err("Recovery requires acknowledged Playing music".into());
+            let (recovery, snapshot) = phase.reconnect(
+                session,
+                (source, audio.state()),
+                now,
+                input_origin,
+                deadline,
+                phase_round,
+            )?;
+            if recovery.requests_pause() {
+                audio.pause();
             }
-            self.recovery = Some(Recovery::begin(session, end, source, now, input_origin)?);
-            audio.pause();
+            self.recovery = Some(recovery);
+            if let Some(snapshot) = snapshot {
+                self.send(snapshot)?;
+            }
             return Ok(false);
         }
         let recovery = self.recovery.as_mut().ok_or("Recovery has not paused")?;
@@ -261,14 +277,17 @@ impl OnlineRound {
                 recovery.sampling(not_before, Instant::now())?;
                 Ok(false)
             }
-            LiveEvent::RecoveryReady { .. } => {
+            LiveEvent::RecoveryReady { phase_round, .. } => {
                 let source = audio.source_observation();
                 let now = Instant::now();
                 if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
                     phase.observe(source, now)?;
                 }
                 recovery.ready(source, audio.state(), now)?;
-                Ok(true)
+                self.source_phase
+                    .as_mut()
+                    .ok_or("Recovery lost its original phase source")?
+                    .reconnect_ready(phase_round, now)
             }
             _ => unreachable!("recovery event was checked above"),
         }
@@ -281,10 +300,11 @@ impl OnlineRound {
         audio: &mut AudioOutput,
         input_origin: Instant,
     ) -> Result<Vec<DuoEvent>, String> {
-        if self
-            .source_phase
-            .as_ref()
-            .is_some_and(PhaseMaintenance::correcting)
+        if !self.recovery.as_ref().is_some_and(Recovery::active)
+            && self
+                .source_phase
+                .as_ref()
+                .is_some_and(PhaseMaintenance::correcting)
         {
             return self.update_phase(session, audio, input_origin);
         }
@@ -295,8 +315,12 @@ impl OnlineRound {
         if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
             phase.observe(source, now)?;
         }
+        let was_waiting = recovery.waiting_for_resume();
         let (events, commands) =
             recovery.update(session, player, source, audio.state(), now, input_origin)?;
+        if was_waiting && recovery.requests_pause() {
+            audio.pause();
+        }
         for command in commands {
             self.send(command)?;
         }
@@ -341,7 +365,7 @@ impl OnlineRound {
         Ok(())
     }
 
-    /// Ordinary checking keeps input open; only actual correction owns the paused input gate
+    /// Ordinary checks keep input open; correction and reconnect verification retain the gate
     pub fn phase_event(
         &mut self,
         event: LiveEvent,
@@ -357,11 +381,35 @@ impl OnlineRound {
         {
             return Err("Phase requires an unfinished round outside authenticated recovery".into());
         }
-        let (epoch, round) = match &event {
-            LiveEvent::PhaseSampling { epoch, round, .. }
-            | LiveEvent::PhasePausing { epoch, round }
-            | LiveEvent::PhaseScheduled { epoch, round, .. }
-            | LiveEvent::PhaseReady { epoch, round } => (*epoch, *round),
+        let (epoch, round, attempt) = match &event {
+            LiveEvent::PhaseSampling {
+                epoch,
+                round,
+                attempt,
+                ..
+            }
+            | LiveEvent::PhasePausing {
+                epoch,
+                round,
+                attempt,
+            }
+            | LiveEvent::PhaseScheduled {
+                epoch,
+                round,
+                attempt,
+                ..
+            }
+            | LiveEvent::PhaseReady {
+                epoch,
+                round,
+                attempt,
+            }
+            | LiveEvent::PhaseRebound {
+                epoch,
+                round,
+                attempt,
+                ..
+            } => (*epoch, *round, *attempt),
             _ => return Err("Expected an original-source phase event".into()),
         };
         if epoch != session.epoch() || round == 0 || round > 128 {
@@ -376,7 +424,13 @@ impl OnlineRound {
             .source_phase
             .as_mut()
             .ok_or("Phase source has not been announced")?;
+        if !matches!(event, LiveEvent::PhaseRebound { .. }) {
+            phase.expect_attempt(round, attempt)?;
+        }
         match event {
+            LiveEvent::PhaseRebound { deadline, .. } => {
+                phase.rebound(round, attempt, deadline, source, state, now)?;
+            }
             LiveEvent::PhaseSampling {
                 verification,
                 not_before,
@@ -412,7 +466,11 @@ impl OnlineRound {
                     common_frame,
                 )?;
                 audio.resume_at(deadline)?;
-                self.send(LiveCommand::PhaseArmed { epoch, round })?;
+                self.send(LiveCommand::PhaseArmed {
+                    epoch,
+                    round,
+                    attempt,
+                })?;
             }
             LiveEvent::PhaseReady { .. } => {
                 phase.ready(round, source, state, now)?;

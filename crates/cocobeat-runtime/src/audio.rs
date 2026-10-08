@@ -337,6 +337,19 @@ impl SourceSampler {
         Arc::strong_count(&self.music)
     }
 
+    /// Mock callback producer only; background samplers retain nonblocking `read`
+    #[cfg(test)]
+    pub(crate) fn read_witness(&self) -> Result<(SourceObservation, PlaybackState), String> {
+        let music = self
+            .music
+            .lock()
+            .map_err(|_| "Music sampler control lock is poisoned".to_owned())?;
+        self.source
+            .read(&music.handle)
+            .map(|row| (row, music.handle.state()))
+            .ok_or_else(|| "Mock callback has no coherent source witness".to_owned())
+    }
+
     pub(crate) fn read(&self) -> Result<Option<(SourceObservation, PlaybackState)>, String> {
         match self.music.try_lock() {
             Ok(music) => Ok(self

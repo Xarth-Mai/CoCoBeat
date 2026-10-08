@@ -462,6 +462,7 @@ impl Session {
         &self,
         round: u16,
         verification: bool,
+        reconnecting: bool,
         metadata: serde_json::Value,
     ) -> Result<(), String> {
         if !(1..=128).contains(&round) {
@@ -470,7 +471,9 @@ impl Session {
         let output = self.output.join(format!("phase-{round}"));
         fs::create_dir_all(&output)
             .map_err(|error| format!("create source phase evidence: {error}"))?;
-        let name = if verification {
+        let name = if reconnecting {
+            "reconnect-verification.json"
+        } else if verification {
             "verification.json"
         } else {
             "check.json"

@@ -66,6 +66,9 @@ pub struct RecoveryFrozen {
     pub source_generation: u64,
     pub source_id: u64,
     pub paused_at: std::time::Instant,
+    pub publication: PhasePublication,
+    /// Earlier unfinished Phase pause ACK to actual Playing progress ACK, disjoint from this pause
+    pub prior_phase_pause: Option<[std::time::Instant; 2]>,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -121,17 +124,20 @@ pub enum LiveCommand {
     PhaseObserved {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
         verification: bool,
         evidence: PhaseObserved,
     },
     PhaseFrozen {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
         snapshot: Box<PhaseFrozen>,
     },
     PhaseArmed {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
     },
     Fact(DuoInput),
     End,
@@ -188,6 +194,7 @@ pub enum LiveEvent {
     PhaseSampling {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
         verification: bool,
         not_before: std::time::Instant,
         common_at: std::time::Instant,
@@ -196,10 +203,12 @@ pub enum LiveEvent {
     PhasePausing {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
     },
     PhaseScheduled {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
         deadline: std::time::Instant,
         verify_at: std::time::Instant,
         common_frame: SongTime,
@@ -208,11 +217,20 @@ pub enum LiveEvent {
     PhaseReady {
         epoch: SessionEpoch,
         round: u16,
+        attempt: u8,
+    },
+    PhaseRebound {
+        epoch: SessionEpoch,
+        round: u16,
+        attempt: u8,
+        deadline: std::time::Instant,
     },
     PeerFacts(Vec<DuoInput>),
     RecoveryPausing {
         epoch: SessionEpoch,
         attempt: u8,
+        deadline: std::time::Instant,
+        phase_round: Option<u16>,
     },
     RecoveryScheduled {
         epoch: SessionEpoch,
@@ -230,6 +248,7 @@ pub enum LiveEvent {
     RecoveryReady {
         epoch: SessionEpoch,
         attempt: u8,
+        phase_round: Option<u16>,
     },
     Complete(Box<SessionSummary>),
     Failed(String),
@@ -600,6 +619,7 @@ async fn host_prepare(
         used: false,
         candidates: 0,
         maintenance_round: 0,
+        maintenance: None,
         phase: PhaseState::default(),
         pending: JoinSet::new(),
     });
@@ -779,6 +799,7 @@ async fn guest_prepare(
             used: false,
             candidates: 0,
             maintenance_round: 0,
+            maintenance: None,
             phase: PhaseState::default(),
             pending: JoinSet::new(),
         });
@@ -913,11 +934,16 @@ enum PhaseStep {
     ScheduleAck,
     Arming,
     VerifyClock,
+    ReconnectClock,
     AwaitLive,
 }
 
 struct PhaseRound {
     round: u16,
+    attempt: u8,
+    reconnecting: bool,
+    host_deadline_ns: u64,
+    start_uncertainties_ns: [u64; 2],
     step: PhaseStep,
     anchor: wire::PhaseAnchor,
     host_point_ns: u64,
@@ -948,6 +974,8 @@ struct PhaseState {
     corrections: u8,
     rounds: sync::PhaseRounds,
     active: Option<PhaseRound>,
+    sealed: Option<wire::PhaseResume>,
+    attempt: u8,
     next_check_frame: Option<i64>,
     progress_frame: i64,
     sent: wire::PhaseBudget,
@@ -1012,9 +1040,13 @@ fn phase_sampling_event(
             "phase sampling window is not entirely future and after its actual anchor".into(),
         );
     }
+    if sync::local_instant(session.origin, until)? >= round.deadline {
+        return Err("phase sampling tail crosses its fixed deadline".into());
+    }
     Ok(LiveEvent::PhaseSampling {
         epoch: session.epoch,
         round: round.round,
+        attempt: round.attempt,
         verification: round.verification,
         not_before: sync::local_instant(session.origin, begin)?.into_std(),
         common_at: sync::local_instant(session.origin, point)?.into_std(),
@@ -1038,6 +1070,7 @@ async fn phase_send(
             &Control::Phase {
                 epoch: session.epoch.0,
                 round,
+                attempt: phase.attempt,
                 message,
             },
         ),
@@ -1054,6 +1087,10 @@ fn new_phase_round(
 ) -> PhaseRound {
     PhaseRound {
         round,
+        attempt: 0,
+        reconnecting: false,
+        host_deadline_ns: 0,
+        start_uncertainties_ns: [0; 2],
         step: PhaseStep::Sampling,
         anchor,
         host_point_ns: point,
@@ -1107,7 +1144,10 @@ async fn phase_clock_progress(
         let point = now
             .checked_add(250_000_000)
             .ok_or("phase common point overflow")?;
-        let deadline = Instant::now() + RECOVERY_TIMEOUT;
+        let host_deadline_ns = now
+            .checked_add(30_000_000_000)
+            .ok_or("phase deadline overflow")?;
+        let deadline = sync::local_instant(session.origin, host_deadline_ns)?;
         phase.rounds.begin(round, session.epoch, point, now)?;
         phase.round = round;
         phase.active = Some(new_phase_round(
@@ -1116,6 +1156,8 @@ async fn phase_clock_progress(
             point,
             deadline,
         ));
+        phase.active.as_mut().unwrap().host_deadline_ns = host_deadline_ns;
+        phase.active.as_mut().unwrap().attempt = phase.attempt;
         phase_send(
             session,
             control,
@@ -1125,6 +1167,7 @@ async fn phase_clock_progress(
             wire::PhaseControl::Check {
                 anchor: phase_anchor(sample),
                 host_point_ns: point,
+                host_deadline_ns,
             },
         )
         .await?;
@@ -1132,6 +1175,45 @@ async fn phase_clock_progress(
             events,
             phase_sampling_event(session, phase.active.as_ref().unwrap(), sample)?,
         )?;
+    } else if session.player == PlayerId::P1
+        && phase
+            .active
+            .as_ref()
+            .is_some_and(|round| round.step == PhaseStep::ReconnectClock)
+        && sample.round > phase.active.as_ref().unwrap().anchor.clock_round
+    {
+        let now = sync::now_ns(session.origin)?;
+        let point = now
+            .checked_add(250_000_000)
+            .ok_or("reconnected common point overflow")?;
+        let active = phase.active.as_mut().unwrap();
+        phase.rounds.rebind(
+            active.round,
+            session.epoch,
+            point,
+            active.host_deadline_ns,
+            now,
+            phase.corrections,
+        )?;
+        active.anchor = phase_anchor(sample);
+        active.host_point_ns = point;
+        active.verification = true;
+        active.step = PhaseStep::Sampling;
+        let event = phase_sampling_event(session, active, sample)?;
+        let (round, deadline, anchor) = (active.round, active.deadline, active.anchor);
+        phase_send(
+            session,
+            control,
+            phase,
+            round,
+            deadline,
+            wire::PhaseControl::Verify {
+                anchor,
+                host_point_ns: point,
+            },
+        )
+        .await?;
+        emit(events, event)?;
     } else if session.player == PlayerId::P1
         && phase
             .active
@@ -1206,6 +1288,8 @@ async fn phase_try_gate(
             epoch: session.epoch,
             round: active.round,
             verification: active.verification,
+            attempt: active.attempt,
+            reconnecting: active.reconnecting,
             sources: phase
                 .sources
                 .map(|source| source.expect("bound phase sources")),
@@ -1215,7 +1299,20 @@ async fn phase_try_gate(
             host_now_ns: host_received_ns,
         },
     )?;
-    if active.verification {
+    if active.reconnecting {
+        bounds.verify_reconnect_resume(
+            active
+                .frozen
+                .map(|frozen| frozen.expect("reconnect pause acknowledgments").1),
+            active
+                .common_frame
+                .ok_or("missing reconnect common frame")?,
+            active
+                .host_common_ns
+                .ok_or("missing reconnect common timestamp")?,
+            active.start_uncertainties_ns,
+        )?;
+    } else if active.verification {
         bounds.verify_original_resume(
             active
                 .frozen
@@ -1223,13 +1320,15 @@ async fn phase_try_gate(
             active.common_frame.ok_or("missing phase common frame")?,
         )?;
     }
-    session.record_phase(active.round, active.verification, serde_json::json!({
+    session.record_phase(active.round, active.verification, active.reconnecting, serde_json::json!({
         "epoch": session.epoch.0, "round": active.round, "verification": active.verification,
+        "connection_attempt": active.attempt, "reconnect_verification": active.reconnecting,
         "player": session.player.index() + 1, "actual_anchor": active.anchor,
         "host_point_ns": active.host_point_ns, "host_received_ns": host_received_ns,
         "own_receipt_ns": sync::now_ns(session.origin)?, "source_evidence": evidence,
         "source_intervals_frames": bounds.source_frames(), "guest_minus_host_frames": bounds.difference(),
-        "within_guard": bounds.within_guard(), "common_frame": active.common_frame,
+        "within_guard": bounds.within_guard(), "common_frame": active.common_frame, "host_common_ns": active.host_common_ns,
+        "start_uncertainties_ns": active.start_uncertainties_ns,
         "original_source_ids": phase.sources, "previous_publications": phase.previous,
         "frozen_publications": active.frozen.map(|frozen| frozen.map(|value| value.1)),
         "marker_owner_counts": active.markers,
@@ -1353,6 +1452,8 @@ async fn phase_try_schedule(
         verify_at: sync::local_instant(session.origin, verify)?,
         host_verify_ns: verify,
         common_frame,
+        start_uncertainties_ns: [0; 2],
+        phase_deadline: None,
         timing: phase_timing(sample, common, local_resume, 0),
     });
     let (round, deadline, anchor) = (active.round, active.deadline, active.anchor);
@@ -1410,6 +1511,7 @@ fn phase_scheduled(session: &Session, active: &PhaseRound) -> Result<LiveEvent, 
     Ok(LiveEvent::PhaseScheduled {
         epoch: session.epoch,
         round: active.round,
+        attempt: active.attempt,
         deadline: plan.deadline.into_std(),
         verify_at: plan.verify_at.into_std(),
         common_frame: SongTime::from_frames(plan.common_frame),
@@ -1476,9 +1578,14 @@ async fn phase_finish(
             .rounds
             .complete(active.round, sync::now_ns(session.origin)?, bounds)?;
     }
+    phase.sealed = if active.reconnecting {
+        None
+    } else {
+        Some(phase_description(phase, &active, true)?)
+    };
     phase.previous = bounds.last_publications().map(Some);
     phase.next_check_frame = bounds.source_frames()[0][1].checked_add(240_000);
-    if active.verification {
+    if active.verification && !active.reconnecting {
         let frozen = active
             .own_frozen
             .ok_or("phase completion lost the actual pause acknowledgment")?;
@@ -1504,6 +1611,7 @@ async fn phase_finish(
         LiveEvent::PhaseReady {
             epoch: session.epoch,
             round: active.round,
+            attempt: active.attempt,
         },
     )
 }
@@ -1565,6 +1673,7 @@ async fn phase_command(
         LiveCommand::PhaseObserved {
             epoch,
             round,
+            attempt,
             verification,
             evidence,
         } if epoch == session.epoch => {
@@ -1576,6 +1685,7 @@ async fn phase_command(
                 .as_mut()
                 .ok_or("phase evidence has no active window")?;
             if round != active.round
+                || attempt != active.attempt
                 || verification != active.verification
                 || active.step != PhaseStep::Sampling
                 || active.own.is_some()
@@ -1607,6 +1717,7 @@ async fn phase_command(
         LiveCommand::PhaseFrozen {
             epoch,
             round,
+            attempt,
             snapshot,
         } if epoch == session.epoch => {
             let active = phase
@@ -1614,6 +1725,7 @@ async fn phase_command(
                 .as_mut()
                 .ok_or("phase pause acknowledgment has no active round")?;
             if round != active.round
+                || attempt != active.attempt
                 || active.step != PhaseStep::Pausing
                 || active.own_frozen.is_some()
             {
@@ -1637,6 +1749,7 @@ async fn phase_command(
                     &Input::PhasePaused {
                         epoch: session.epoch.0,
                         round,
+                        attempt,
                         fact_count: count,
                     },
                 ),
@@ -1662,12 +1775,20 @@ async fn phase_command(
             .await?;
             phase_try_schedule(session, control, phase, maintained).await?;
         }
-        LiveCommand::PhaseArmed { epoch, round } if epoch == session.epoch => {
+        LiveCommand::PhaseArmed {
+            epoch,
+            round,
+            attempt,
+        } if epoch == session.epoch => {
             let active = phase
                 .active
                 .as_mut()
                 .ok_or("phase Armed has no active round")?;
-            if round != active.round || active.step != PhaseStep::Arming || active.own_armed {
+            if round != active.round
+                || attempt != active.attempt
+                || active.step != PhaseStep::Arming
+                || active.own_armed
+            {
                 return Err("phase Armed belongs to another round or is repeated".into());
             }
             phase_scheduled(session, active)?;
@@ -1701,13 +1822,17 @@ async fn phase_control(
     let Control::Phase {
         epoch,
         round,
+        attempt,
         message,
     } = envelope
     else {
         return Err("non-phase control while phase reader owns the stream".into());
     };
-    if epoch != session.epoch.0 {
-        return Err("phase control epoch differs from the authenticated session".into());
+    if epoch != session.epoch.0 || attempt != phase.attempt {
+        return Err(
+            "phase control epoch or connection attempt differs from the authenticated session"
+                .into(),
+        );
     }
     let peer = other(session.player).index();
     match message {
@@ -1745,6 +1870,7 @@ async fn phase_control(
         wire::PhaseControl::Check {
             anchor,
             host_point_ns,
+            host_deadline_ns,
         } if session.player == PlayerId::P2 => {
             if session.ended.iter().any(|ended| *ended)
                 || phase.peer_end_count.is_some()
@@ -1764,9 +1890,21 @@ async fn phase_control(
                     "peer check anchor differs from the actual accepted four timestamps".into(),
                 );
             }
-            let deadline = Instant::now() + RECOVERY_TIMEOUT;
+            let earliest = maintained
+                .clock
+                .conservative_deadline(
+                    session.epoch,
+                    host_deadline_ns,
+                    sync::now_ns(session.origin)?,
+                    100_000_000,
+                )
+                .map_err(|error| error.to_string())?;
+            let deadline = sync::local_instant(session.origin, earliest)?
+                .min(Instant::now() + RECOVERY_TIMEOUT);
             phase.round = round;
             phase.active = Some(new_phase_round(round, anchor, host_point_ns, deadline));
+            phase.active.as_mut().unwrap().host_deadline_ns = host_deadline_ns;
+            phase.active.as_mut().unwrap().attempt = phase.attempt;
             emit(
                 events,
                 phase_sampling_event(session, phase.active.as_ref().unwrap(), sample)?,
@@ -1844,6 +1982,8 @@ async fn phase_control(
                     epoch: session.epoch,
                     round,
                     verification,
+                    attempt: active.attempt,
+                    reconnecting: active.reconnecting,
                     sources: phase.sources.map(|source| source.unwrap()),
                     previous: phase.previous,
                     end: session.prepared.end,
@@ -1859,7 +1999,20 @@ async fn phase_control(
                     "host phase decision differs from the complete original-source bounds".into(),
                 );
             }
-            if verification {
+            if active.reconnecting {
+                proof.verify_reconnect_resume(
+                    active
+                        .frozen
+                        .map(|frozen| frozen.expect("reconnect pause acknowledgments").1),
+                    active
+                        .common_frame
+                        .ok_or("missing reconnect common frame")?,
+                    active
+                        .host_common_ns
+                        .ok_or("missing reconnect common timestamp")?,
+                    active.start_uncertainties_ns,
+                )?;
+            } else if verification {
                 proof.verify_original_resume(
                     active
                         .frozen
@@ -1869,13 +2022,15 @@ async fn phase_control(
                         .ok_or("missing scheduled common frame")?,
                 )?;
             }
-            session.record_phase(round, verification, serde_json::json!({
+            session.record_phase(round, verification, active.reconnecting, serde_json::json!({
                 "epoch": epoch, "round": round, "verification": verification,
+                "connection_attempt": active.attempt, "reconnect_verification": active.reconnecting,
                 "player": session.player.index() + 1, "actual_anchor": anchor,
                 "host_point_ns": host_point_ns, "host_received_ns": host_received_ns,
                 "own_receipt_ns": sync::now_ns(session.origin)?, "source_evidence": evidence,
                 "source_intervals_frames": proof.source_frames(), "guest_minus_host_frames": proof.difference(),
-                "within_guard": proof.within_guard(), "common_frame": active.common_frame,
+                "within_guard": proof.within_guard(), "common_frame": active.common_frame, "host_common_ns": active.host_common_ns,
+        "start_uncertainties_ns": active.start_uncertainties_ns,
                 "original_source_ids": phase.sources, "previous_publications": phase.previous,
                 "frozen_publications": active.frozen.map(|frozen| frozen.map(|value| value.1)),
                 "marker_owner_counts": active.markers,
@@ -1927,6 +2082,7 @@ async fn phase_control(
                     LiveEvent::PhasePausing {
                         epoch: session.epoch,
                         round,
+                        attempt: active.attempt,
                     },
                 )?;
             }
@@ -1950,6 +2106,7 @@ async fn phase_control(
                 LiveEvent::PhasePausing {
                     epoch: session.epoch,
                     round,
+                    attempt: active.attempt,
                 },
             )?;
         }
@@ -2050,6 +2207,8 @@ async fn phase_control(
                 verify_at: sync::local_instant(session.origin, verify.guest_start_ns)?,
                 host_verify_ns,
                 common_frame,
+                start_uncertainties_ns: [0; 2],
+                phase_deadline: None,
                 timing: phase_timing(
                     sample,
                     host_common_ns,
@@ -2152,8 +2311,9 @@ async fn phase_control(
             anchor,
             host_point_ns,
         } if session.player == PlayerId::P2
-            && active.step == PhaseStep::VerifyClock
-            && Some(host_point_ns) == active.host_verify_ns
+            && (active.step == PhaseStep::VerifyClock
+                && Some(host_point_ns) == active.host_verify_ns
+                || active.step == PhaseStep::ReconnectClock && active.attempt == 1)
             && anchor.clock_round > active.anchor.clock_round =>
         {
             let sample = maintained
@@ -2161,6 +2321,20 @@ async fn phase_control(
                 .ok_or("verification lacks actual refreshed clock")?;
             if phase_anchor(sample) != anchor {
                 return Err("verification refresh is not the actual accepted CBMC exchange".into());
+            }
+            if active.reconnecting {
+                let earliest = maintained
+                    .clock
+                    .conservative_deadline(
+                        session.epoch,
+                        active.host_deadline_ns,
+                        sync::now_ns(session.origin)?,
+                        100_000_000,
+                    )
+                    .map_err(|error| error.to_string())?;
+                active.deadline = active
+                    .deadline
+                    .min(sync::local_instant(session.origin, earliest)?);
             }
             active.anchor = anchor;
             active.host_point_ns = host_point_ns;
@@ -2204,12 +2378,325 @@ async fn phase_control(
     Ok(())
 }
 
+fn prior_phase_pause_extension(
+    origin: std::time::Instant,
+    active: Option<&PhaseRound>,
+    prior: Option<[std::time::Instant; 2]>,
+    paused_at: std::time::Instant,
+) -> Result<Duration, String> {
+    let Some([start, end]) = prior else {
+        return Ok(Duration::ZERO);
+    };
+    let held = end
+        .checked_duration_since(start)
+        .filter(|held| !held.is_zero() && *held < RECOVERY_TIMEOUT)
+        .ok_or("prior phase pause acknowledgment span is invalid")?;
+    if start < origin || end > paused_at {
+        return Err("prior phase pause span crosses origin or the new actual pause".into());
+    }
+    let Some(active) = active else {
+        return Ok(Duration::ZERO);
+    };
+    if !active.verification
+        && !matches!(
+            active.step,
+            PhaseStep::Pausing
+                | PhaseStep::ScheduleAck
+                | PhaseStep::Arming
+                | PhaseStep::VerifyClock
+        )
+        || active
+            .own_frozen
+            .as_ref()
+            .is_some_and(|frozen| frozen.paused_at != start)
+    {
+        return Err(
+            "prior pause does not belong to the unfinished original phase correction".into(),
+        );
+    }
+    Ok(held)
+}
+
+fn merge_phase_floor(
+    left: Option<wire::PhasePublication>,
+    right: Option<wire::PhasePublication>,
+) -> Result<Option<wire::PhasePublication>, String> {
+    for publication in [left, right].into_iter().flatten() {
+        publication.validate()?;
+    }
+    let (Some(left), Some(right)) = (left, right) else {
+        return Ok(left.or(right));
+    };
+    if left.sequence == right.sequence {
+        if left != right {
+            return Err("phase continuation mutates one accepted publication".into());
+        }
+        return Ok(Some(left));
+    }
+    let (old, next) = if left.sequence < right.sequence {
+        (left, right)
+    } else {
+        (right, left)
+    };
+    if f64::from_bits(next.position_seconds_bits) < f64::from_bits(old.position_seconds_bits)
+        || next.publication_before_ns < old.publication_after_ns
+    {
+        return Err("phase continuation rewinds its full publication floor".into());
+    }
+    Ok(Some(next))
+}
+
+fn phase_description(
+    phase: &PhaseState,
+    active: &PhaseRound,
+    sealed: bool,
+) -> Result<wire::PhaseResume, String> {
+    let stage = if active.verification
+        || matches!(
+            active.step,
+            PhaseStep::Pausing
+                | PhaseStep::ScheduleAck
+                | PhaseStep::Arming
+                | PhaseStep::VerifyClock
+        ) {
+        wire::PhaseProofStage::Correction
+    } else {
+        wire::PhaseProofStage::Check
+    };
+    let descriptor = wire::PhaseResume {
+        round: active.round,
+        host_deadline_ns: active.host_deadline_ns,
+        host_point_ns: active.host_point_ns,
+        stage,
+        corrections: phase.corrections,
+        sealed,
+        anchor: active.anchor,
+        sources: [
+            phase.sources[0].ok_or("phase continuation lost Host source")?,
+            phase.sources[1].ok_or("phase continuation lost Guest source")?,
+        ],
+        previous: if sealed {
+            active
+                .bounds
+                .ok_or("sealed phase lost accepted proof")?
+                .last_publications()
+                .map(Some)
+        } else {
+            phase.previous
+        },
+        markers: active.markers,
+    };
+    descriptor.validate()?;
+    Ok(descriptor)
+}
+
+fn reconcile_phase_resume(
+    state: &PhaseState,
+    player: PlayerId,
+    own: RemoteFreeze,
+    peer: RemoteFreeze,
+) -> Result<Option<wire::PhaseResume>, String> {
+    own.publication.validate()?;
+    peer.publication.validate()?;
+    for freeze in [own, peer] {
+        if SongTime::try_from_seconds_f64(f64::from_bits(freeze.publication.position_seconds_bits))
+            != Some(SongTime::from_frames(freeze.frame))
+        {
+            return Err("continuation frame differs from actual original cursor bits".into());
+        }
+        if let Some(phase) = freeze.phase {
+            phase.validate()?;
+        }
+    }
+    let selected = if player == PlayerId::P1 {
+        if let Some(active) = own.phase {
+            Some(active)
+        } else if let Some(remote) = peer.phase {
+            let sealed = state
+                .sealed
+                .ok_or("peer unresolved phase has no last-sealed Host round")?;
+            if remote.round != sealed.round {
+                return Err("peer unresolved phase differs from last-sealed Host round".into());
+            }
+            Some(sealed)
+        } else {
+            None
+        }
+    } else {
+        peer.phase
+    };
+    let Some(mut selected) = selected else {
+        if own.phase.is_some() {
+            return Err("Host continuation omits an unresolved Guest phase".into());
+        }
+        return Ok(None);
+    };
+    if selected.round != state.round
+        && !(player == PlayerId::P2
+            && own.phase.is_none()
+            && state.round.checked_add(1) == Some(selected.round))
+    {
+        return Err("continuation skips or overlaps the original phase round".into());
+    }
+    if let Some(local) = own.phase
+        && (local.round != selected.round
+            || local.host_deadline_ns != selected.host_deadline_ns
+            || local.sources != selected.sources)
+    {
+        return Err("continuation changes the original phase identity or deadline".into());
+    }
+    for descriptor in [own.phase, peer.phase].into_iter().flatten() {
+        if descriptor.round != selected.round
+            || descriptor.host_deadline_ns != selected.host_deadline_ns
+            || descriptor.sources != selected.sources
+            || descriptor.corrections.abs_diff(selected.corrections) > 1
+            || (descriptor.corrections != selected.corrections
+                && descriptor.stage == wire::PhaseProofStage::Check
+                && selected.stage == wire::PhaseProofStage::Check)
+        {
+            return Err(
+                "continuation contradicts the original phase sources or correction stage".into(),
+            );
+        }
+        if selected.stage == wire::PhaseProofStage::Check
+            && descriptor.stage == wire::PhaseProofStage::Correction
+        {
+            return Err("peer invents a correction not issued by Host".into());
+        }
+        selected.corrections = selected.corrections.max(descriptor.corrections);
+        if descriptor.anchor.clock_round == selected.anchor.clock_round
+            && descriptor.anchor != selected.anchor
+        {
+            return Err("continuation changes the actual old clock exchange".into());
+        }
+        if descriptor.anchor.clock_round > selected.anchor.clock_round {
+            selected.anchor = descriptor.anchor;
+        }
+        for index in 0..2 {
+            selected.previous[index] =
+                merge_phase_floor(selected.previous[index], descriptor.previous[index])?;
+            if selected.markers[index]
+                .zip(descriptor.markers[index])
+                .is_some_and(|(left, right)| left != right)
+            {
+                return Err("continuation disagrees with an accepted FIFO marker".into());
+            }
+            selected.markers[index] = selected.markers[index].or(descriptor.markers[index]);
+        }
+    }
+    let freezes = if player == PlayerId::P1 {
+        [own, peer]
+    } else {
+        [peer, own]
+    };
+    for (index, freeze) in freezes.into_iter().enumerate() {
+        if selected.sources[index] != (freeze.generation, freeze.source_id)
+            || selected.markers[index].is_some_and(|marker| marker > freeze.count)
+        {
+            return Err(
+                "continuation replaces the original source or truncates its accepted prefix".into(),
+            );
+        }
+        selected.previous[index] =
+            merge_phase_floor(selected.previous[index], Some(freeze.publication))?;
+        // Metadata floors cannot exceed this actual newly paused source
+        if selected.previous[index] != Some(freeze.publication) {
+            return Err("actual continuation pause predates an accepted publication floor".into());
+        }
+    }
+    selected.validate()?;
+    Ok(Some(selected))
+}
+
+fn prepare_phase_rebound(
+    session: &Session,
+    state: &mut PhaseState,
+    context: &ResumeContext,
+) -> Result<(), String> {
+    if state.attempt != 0
+        || session.ended.iter().any(|ended| *ended)
+        || state.peer_end_count.is_some()
+    {
+        return Err("phase continuation is repeated or tries to revive End".into());
+    }
+    state.attempt = 1;
+    let own_pub = phase_publication_wire(context.frozen.publication, session.origin)?;
+    let freezes = if session.player == PlayerId::P1 {
+        [
+            (
+                context.frozen.paused_frame.frames(),
+                own_pub,
+                session.counts[0] as u64,
+            ),
+            (
+                context.peer.frame,
+                context.peer.publication,
+                session.counts[1] as u64,
+            ),
+        ]
+    } else {
+        [
+            (
+                context.peer.frame,
+                context.peer.publication,
+                session.counts[0] as u64,
+            ),
+            (
+                context.frozen.paused_frame.frames(),
+                own_pub,
+                session.counts[1] as u64,
+            ),
+        ]
+    };
+    let sources = if session.player == PlayerId::P1 {
+        [
+            (context.frozen.source_generation, context.frozen.source_id),
+            (context.peer.generation, context.peer.source_id),
+        ]
+    } else {
+        [
+            (context.peer.generation, context.peer.source_id),
+            (context.frozen.source_generation, context.frozen.source_id),
+        ]
+    };
+    for index in 0..2 {
+        if state.sources[index].is_some_and(|ids| ids != sources[index]) {
+            return Err("continuation changes original phase source".into());
+        }
+        state.sources[index] = Some(sources[index]);
+        state.previous[index] = merge_phase_floor(state.previous[index], Some(freezes[index].1))?;
+    }
+    let Some(descriptor) = context.phase else {
+        return Ok(());
+    };
+    let mut rebound = new_phase_round(
+        descriptor.round,
+        descriptor.anchor,
+        descriptor.host_point_ns,
+        context.deadline,
+    );
+    rebound.attempt = 1;
+    rebound.reconnecting = true;
+    rebound.host_deadline_ns = descriptor.host_deadline_ns;
+    rebound.verification = true;
+    rebound.step = PhaseStep::ReconnectClock;
+    rebound.frozen = freezes.map(Some);
+    rebound.markers = freezes.map(|freeze| Some(freeze.2));
+    state.round = descriptor.round;
+    state.corrections = state.corrections.max(descriptor.corrections);
+    // No begin/reset, second correction or old proof/control is retained
+    state.active = Some(rebound);
+    state.sealed = None;
+    Ok(())
+}
+
 struct Continuation {
     invitation: Invitation,
     capability: [u8; 32],
     used: bool,
     candidates: u8,
     maintenance_round: u64,
+    maintenance: Option<sync::ClockMaintenance>,
     phase: PhaseState,
     pending: JoinSet<Result<AuthenticatedContinuation, String>>,
 }
@@ -2217,6 +2704,8 @@ struct Continuation {
 #[derive(Clone, Copy)]
 struct RemoteFreeze {
     frame: i64,
+    publication: wire::PhasePublication,
+    phase: Option<wire::PhaseResume>,
     generation: u64,
     source_id: u64,
     count: u64,
@@ -2305,6 +2794,8 @@ async fn authenticate_continuation(
                 identity: actual,
                 attempt: sync::RESUME_ATTEMPT,
                 pause_frame,
+                publication,
+                phase,
                 source_generation,
                 source_id,
                 owner_count,
@@ -2320,6 +2811,8 @@ async fn authenticate_continuation(
             {
                 RemoteFreeze {
                     frame: pause_frame,
+                    publication,
+                    phase,
                     generation: source_generation,
                     source_id,
                     count: owner_count,
@@ -2347,20 +2840,30 @@ struct ResumeContext {
     end: i64,
     frozen: Box<RecoveryFrozen>,
     peer: RemoteFreeze,
+    phase: Option<wire::PhaseResume>,
+    prior_phase_pause_extension: Duration,
     deadline: Instant,
 }
 struct ResumeSignals {
     armed: Option<oneshot::Sender<()>>,
     observed: Option<oneshot::Sender<RecoveryObserved>>,
 }
-type ResumeGate<'a> = Pin<Box<dyn Future<Output = Result<(Duration, ControlIo), String>> + 'a>>;
+struct ResumeCompletion {
+    pause: Duration,
+    control: ControlIo,
+    host_common_ns: u64,
+    common_frame: i64,
+    start_uncertainties_ns: [u64; 2],
+    phase_deadline: Option<Instant>,
+}
+type ResumeGate<'a> = Pin<Box<dyn Future<Output = Result<ResumeCompletion, String>> + 'a>>;
 type PhaseRead = Pin<
     Box<
         dyn Future<
             Output = (
                 quinn::RecvStream,
                 wire::PhaseBudget,
-                Result<Control, String>,
+                Result<Control, wire::LiveIoError>,
             ),
         >,
     >,
@@ -2389,7 +2892,13 @@ async fn freeze_and_reconnect(
     if (continuation.used && authenticated.is_none()) || session.ended.iter().any(|ended| *ended) {
         return Err("continuation is spent or a player already ended".into());
     }
-    let deadline = Instant::now() + RECOVERY_TIMEOUT;
+    let deadline = continuation
+        .phase
+        .active
+        .as_ref()
+        .map_or(Instant::now() + RECOVERY_TIMEOUT, |phase| {
+            phase.deadline.min(Instant::now() + RECOVERY_TIMEOUT)
+        });
     tokio::time::timeout_at(deadline, async {
         old_connection.close(RECOVERY_REQUESTED.into(), b"connection maintenance");
         emit(
@@ -2397,6 +2906,8 @@ async fn freeze_and_reconnect(
             LiveEvent::RecoveryPausing {
                 epoch: session.epoch,
                 attempt: sync::RESUME_ATTEMPT,
+                deadline: deadline.into_std(),
+                phase_round: continuation.phase.active.as_ref().map(|phase| phase.round),
             },
         )?;
         let frozen = tokio::time::timeout_at(deadline, async {
@@ -2407,6 +2918,15 @@ async fn freeze_and_reconnect(
                     .ok_or("recovery command sender stopped")?
                 {
                     LiveCommand::Fact(input) => ingest_local(session, input)?,
+                    LiveCommand::PhaseObserved {
+                        epoch, attempt: 0, ..
+                    }
+                    | LiveCommand::PhaseFrozen {
+                        epoch, attempt: 0, ..
+                    }
+                    | LiveCommand::PhaseArmed {
+                        epoch, attempt: 0, ..
+                    } if epoch == session.epoch => {}
                     LiveCommand::RecoveryFrozen {
                         epoch,
                         attempt: sync::RESUME_ATTEMPT,
@@ -2431,10 +2951,34 @@ async fn freeze_and_reconnect(
         {
             return Err("frozen audio source identity, frame or acknowledgment differs".into());
         }
+        let publication = phase_publication_wire(frozen.publication, session.origin)?;
+        publication.validate()?;
+        if SongTime::try_from_seconds_f64(f64::from_bits(publication.position_seconds_bits))
+            != Some(frozen.paused_frame)
+            || frozen.publication.published_between[1] > std::time::Instant::now()
+            || std::time::Instant::now()
+                .checked_duration_since(frozen.publication.published_between[0])
+                .is_none_or(|age| age > Duration::from_millis(50))
+        {
+            return Err("recovery freeze lacks an actual coherent cursor acknowledgment".into());
+        }
+        let local = session.player.index();
+        if continuation.phase.sources[local]
+            .is_some_and(|ids| ids != (frozen.source_generation, frozen.source_id))
+        {
+            return Err("recovery freeze replaces the phase original source".into());
+        }
+        merge_phase_floor(continuation.phase.previous[local], Some(publication))?;
+        let prior_phase_pause_extension = prior_phase_pause_extension(
+            session.origin.into_std(), continuation.phase.active.as_ref(),
+            frozen.prior_phase_pause, frozen.paused_at,
+        )?;
         session.begin_recovery(&frozen.replay, serde_json::json!({
         "attempt": sync::RESUME_ATTEMPT, "epoch": session.epoch.0, "cause": cause,
         "paused_frame": frozen.paused_frame.frames(), "source_generation": frozen.source_generation,
         "source_id": frozen.source_id, "worker_counts": session.counts,
+        "prior_phase_pause": frozen.prior_phase_pause.map(|span| span.map(|at| at.duration_since(session.origin.into_std()).as_nanos())),
+        "prior_phase_pause_extension_ns": prior_phase_pause_extension.as_nanos(),
     }))?;
         let mut gui_tapes: [Vec<DuoInput>; 2] = [Vec::new(), Vec::new()];
         for &input in frozen.replay.facts() {
@@ -2459,6 +3003,13 @@ async fn freeze_and_reconnect(
             emit(events, LiveEvent::PeerFacts(missing_gui))?;
         }
         let own = RemoteFreeze {
+            publication,
+            phase: continuation
+                .phase
+                .active
+                .as_ref()
+                .map(|active| phase_description(&continuation.phase, active, false))
+                .transpose()?,
             frame: frozen.paused_frame.frames(),
             generation: frozen.source_generation,
             source_id: frozen.source_id,
@@ -2521,6 +3072,8 @@ async fn freeze_and_reconnect(
                         identity: session.prepared.identity.clone(),
                         attempt: sync::RESUME_ATTEMPT,
                         pause_frame: own.frame,
+                        publication: own.publication,
+                        phase: own.phase,
                         source_generation: own.generation,
                         source_id: own.source_id,
                         owner_count: own.count,
@@ -2537,6 +3090,8 @@ async fn freeze_and_reconnect(
                         identity,
                         attempt: sync::RESUME_ATTEMPT,
                         pause_frame,
+                        publication,
+                        phase,
                         source_generation,
                         source_id,
                         owner_count,
@@ -2550,6 +3105,8 @@ async fn freeze_and_reconnect(
                     {
                         RemoteFreeze {
                             frame: pause_frame,
+                            publication,
+                            phase,
                             generation: source_generation,
                             source_id,
                             count: owner_count,
@@ -2567,6 +3124,15 @@ async fn freeze_and_reconnect(
         })
         .await
         .map_err(|_| "continuation authentication exceeded the recovery deadline")??;
+        let phase = reconcile_phase_resume(&continuation.phase, session.player, own, peer)?;
+        let deadline = if session.player == PlayerId::P1 {
+            phase
+                .map(|phase| sync::local_instant(session.origin, phase.host_deadline_ns))
+                .transpose()?
+                .map_or(deadline, |phase| deadline.min(phase))
+        } else {
+            deadline
+        };
         if session.player == PlayerId::P1 {
             control
                 .send(Control::ResumeWelcome {
@@ -2576,6 +3142,8 @@ async fn freeze_and_reconnect(
                     identity: session.prepared.identity.clone(),
                     attempt: sync::RESUME_ATTEMPT,
                     pause_frame: own.frame,
+                    publication: own.publication,
+                    phase,
                     source_generation: own.generation,
                     source_id: own.source_id,
                     owner_count: own.count,
@@ -2647,6 +3215,8 @@ async fn freeze_and_reconnect(
                 end: session.prepared.end,
                 frozen,
                 peer,
+                phase,
+                prior_phase_pause_extension,
                 deadline,
             },
         ))
@@ -2931,7 +3501,7 @@ async fn resume_control(
     events: &std_mpsc::SyncSender<LiveEvent>,
     context: ResumeContext,
     acknowledgments: (oneshot::Receiver<()>, oneshot::Receiver<RecoveryObserved>),
-) -> Result<(Duration, ControlIo), String> {
+) -> Result<ResumeCompletion, String> {
     tokio::time::timeout_at(context.deadline, async {
         let ResumeContext {
             epoch,
@@ -2946,211 +3516,242 @@ async fn resume_control(
         paused[player.index()] = frozen.paused_frame.frames();
         let mut sources = [(peer.generation, peer.source_id); 2];
         sources[player.index()] = (frozen.source_generation, frozen.source_id);
-        let plan =
-            sync::arm_resume(connection, &mut control, epoch, player, origin, paused, end).await?;
-        emit(
-            events,
-            LiveEvent::RecoveryScheduled {
-                epoch,
-                attempt: sync::RESUME_ATTEMPT,
-                deadline: plan.deadline.into_std(),
-                verify_at: plan.verify_at.into_std(),
-                common_frame: SongTime::from_frames(plan.common_frame),
-                timing: plan.timing.clone(),
-            },
-        )?;
-        let cutoff = plan
-            .deadline
-            .checked_sub(
-                MINIMUM_ARM_LEAD
-                    + Duration::from_nanos(plan.timing.start_uncertainty_ns.unwrap_or(0)),
-            )
-            .ok_or("resume arm interval overflow")?;
-        let (armed, observed) = acknowledgments;
-        tokio::time::timeout_at(cutoff, async {
-            armed
-                .await
-                .map_err(|_| "local resume scheduler stopped before Armed")?;
-            let armed = Control::ResumeArmed {
-                epoch: epoch.0,
-                attempt: sync::RESUME_ATTEMPT,
-            };
-            let confirmed = Control::ResumeConfirmed {
-                epoch: epoch.0,
-                attempt: sync::RESUME_ATTEMPT,
-            };
-            if player == PlayerId::P2 {
-                control.send(armed.clone()).await?;
-            }
-            if control.recv().await? != armed {
-                return Err("peer resume Armed identity differs".into());
-            }
-            if player == PlayerId::P1 {
-                control.send(armed).await?;
-            }
-            if player == PlayerId::P2 {
-                control.send(confirmed.clone()).await?;
-            }
-            if control.recv().await? != confirmed {
-                return Err("peer resume confirmation differs".into());
-            }
-            if player == PlayerId::P1 {
-                control.send(confirmed).await?;
-            }
-            Ok::<_, String>(())
-        })
-        .await
-        .map_err(|_| "resume Armed barrier missed the safety deadline")??;
-        if Instant::now() >= cutoff {
-            return Err("confirmed resume lost the minimum arm lead".into());
-        }
-        tokio::time::sleep_until(
-            plan.verify_at
-                .checked_sub(Duration::from_millis(300))
-                .ok_or("verification clock refresh underflow")?,
-        )
-        .await;
-        let mut refreshed = NetworkTiming::default();
-        let mut clock = sync::capture_clock(
+        let plan = sync::arm_resume(
             connection,
             &mut control,
             epoch,
-            sync::RESUME_ATTEMPT,
             player,
             origin,
-            &mut refreshed,
+            (paused, context.phase.map(|phase| phase.host_deadline_ns)),
+            end,
         )
         .await?;
-        let sample = refreshed
-            .clock
-            .as_ref()
-            .ok_or("missing refreshed resume clock")?
-            .guest_sample_ns;
-        emit(
-            events,
-            LiveEvent::RecoverySampling {
-                epoch,
-                attempt: sync::RESUME_ATTEMPT,
-                not_before: std::time::Instant::now(),
-            },
-        )?;
-        let local = observed
+        let original_deadline = plan
+            .phase_deadline
+            .map_or(context.deadline, |deadline| deadline.min(context.deadline));
+        tokio::time::timeout_at(original_deadline, async {
+            emit(
+                events,
+                LiveEvent::RecoveryScheduled {
+                    epoch,
+                    attempt: sync::RESUME_ATTEMPT,
+                    deadline: plan.deadline.into_std(),
+                    verify_at: plan.verify_at.into_std(),
+                    common_frame: SongTime::from_frames(plan.common_frame),
+                    timing: plan.timing.clone(),
+                },
+            )?;
+            let cutoff = plan
+                .deadline
+                .checked_sub(
+                    MINIMUM_ARM_LEAD
+                        + Duration::from_nanos(plan.timing.start_uncertainty_ns.unwrap_or(0)),
+                )
+                .ok_or("resume arm interval overflow")?;
+            let (armed, observed) = acknowledgments;
+            tokio::time::timeout_at(cutoff, async {
+                armed
+                    .await
+                    .map_err(|_| "local resume scheduler stopped before Armed")?;
+                let armed = Control::ResumeArmed {
+                    epoch: epoch.0,
+                    attempt: sync::RESUME_ATTEMPT,
+                };
+                let confirmed = Control::ResumeConfirmed {
+                    epoch: epoch.0,
+                    attempt: sync::RESUME_ATTEMPT,
+                };
+                if player == PlayerId::P2 {
+                    control.send(armed.clone()).await?;
+                }
+                if control.recv().await? != armed {
+                    return Err("peer resume Armed identity differs".into());
+                }
+                if player == PlayerId::P1 {
+                    control.send(armed).await?;
+                }
+                if player == PlayerId::P2 {
+                    control.send(confirmed.clone()).await?;
+                }
+                if control.recv().await? != confirmed {
+                    return Err("peer resume confirmation differs".into());
+                }
+                if player == PlayerId::P1 {
+                    control.send(confirmed).await?;
+                }
+                Ok::<_, String>(())
+            })
             .await
-            .map_err(|_| "source observation producer stopped")?;
-        if (local.generation, local.source_id) != (frozen.source_generation, frozen.source_id)
-            || local.progress.sequence == 0
-            || local.progress.frame <= frozen.paused_frame
-            || local.progress.frame.frames() >= end
-            || local.progress.published_between[0] < frozen.paused_at
-            || local.progress.published_between[0] > local.progress.published_between[1]
-            || local.progress.published_between[1] > std::time::Instant::now()
-        {
-            return Err("original source did not acknowledge real forward resume".into());
-        }
-        let pause_extension = local.progress.published_between[1]
-            .checked_duration_since(frozen.paused_at)
-            .filter(|duration| *duration <= RECOVERY_TIMEOUT)
-            .ok_or("acknowledged pause exceeded the recovery window")?;
-        let read_finished = std::time::Instant::now();
-        if local
-            .publications
-            .iter()
-            .any(|row| row.published_between[1] > read_finished)
-        {
-            return Err("source publication lies after the completed snapshot read".into());
-        }
-        check_publication_continuation(&local)?;
-        let own = wire::GateEvidence {
-            generation: local.generation,
-            source_id: local.source_id,
-            progress_sequence: local.progress.sequence,
-            observations: local
+            .map_err(|_| "resume Armed barrier missed the safety deadline")??;
+            if Instant::now() >= cutoff {
+                return Err("confirmed resume lost the minimum arm lead".into());
+            }
+            tokio::time::sleep_until(
+                plan.verify_at
+                    .checked_sub(Duration::from_millis(300))
+                    .ok_or("verification clock refresh underflow")?,
+            )
+            .await;
+            let mut refreshed = NetworkTiming::default();
+            let mut clock = sync::capture_clock(
+                connection,
+                &mut control,
+                epoch,
+                sync::RESUME_ATTEMPT,
+                player,
+                origin,
+                &mut refreshed,
+            )
+            .await?;
+            let sample = refreshed
+                .clock
+                .as_ref()
+                .ok_or("missing refreshed resume clock")?
+                .guest_sample_ns;
+            emit(
+                events,
+                LiveEvent::RecoverySampling {
+                    epoch,
+                    attempt: sync::RESUME_ATTEMPT,
+                    not_before: std::time::Instant::now(),
+                },
+            )?;
+            let local = observed
+                .await
+                .map_err(|_| "source observation producer stopped")?;
+            if (local.generation, local.source_id) != (frozen.source_generation, frozen.source_id)
+                || local.progress.sequence <= frozen.publication.sequence
+                || local.progress.frame <= frozen.paused_frame
+                || local.progress.frame.frames() >= end
+                || local.progress.published_between[0] < frozen.paused_at
+                || local.progress.published_between[0] > local.progress.published_between[1]
+                || local.progress.published_between[1] > std::time::Instant::now()
+            {
+                return Err("original source did not acknowledge real forward resume".into());
+            }
+            let pause_extension = local.progress.published_between[1]
+                .checked_duration_since(frozen.paused_at)
+                .filter(|duration| *duration <= RECOVERY_TIMEOUT)
+                .ok_or("acknowledged pause exceeded the recovery window")?;
+            let read_finished = std::time::Instant::now();
+            if local
                 .publications
-                .into_iter()
-                .map(|publication| publication_wire(publication, origin))
-                .collect::<Result<_, _>>()?,
-        };
-        own.validate()?;
-        if player == PlayerId::P2 {
-            control
-                .send(Control::ResumeObserved {
-                    epoch: epoch.0,
+                .iter()
+                .any(|row| row.published_between[1] > read_finished)
+            {
+                return Err("source publication lies after the completed snapshot read".into());
+            }
+            check_publication_continuation(&local)?;
+            let own = wire::GateEvidence {
+                generation: local.generation,
+                source_id: local.source_id,
+                progress_sequence: local.progress.sequence,
+                observations: local
+                    .publications
+                    .into_iter()
+                    .map(|publication| publication_wire(publication, origin))
+                    .collect::<Result<_, _>>()?,
+            };
+            own.validate()?;
+            if player == PlayerId::P2 {
+                control
+                    .send(Control::ResumeObserved {
+                        epoch: epoch.0,
+                        attempt: sync::RESUME_ATTEMPT,
+                        evidence: own.clone(),
+                    })
+                    .await?;
+            }
+            let remote = match control.recv().await? {
+                Control::ResumeObserved {
+                    epoch: actual,
                     attempt: sync::RESUME_ATTEMPT,
-                    evidence: own.clone(),
-                })
-                .await?;
-        }
-        let remote = match control.recv().await? {
-            Control::ResumeObserved {
-                epoch: actual,
+                    evidence,
+                } if actual == epoch.0 => evidence,
+                _ => {
+                    return Err(
+                        "peer resume observations belong to another epoch or attempt".into(),
+                    );
+                }
+            };
+            if player == PlayerId::P1 {
+                control
+                    .send(Control::ResumeObserved {
+                        epoch: epoch.0,
+                        attempt: sync::RESUME_ATTEMPT,
+                        evidence: own.clone(),
+                    })
+                    .await?;
+            }
+            let evidence = if player == PlayerId::P1 {
+                [own, remote]
+            } else {
+                [remote, own]
+            };
+            sync::resume_gate(
+                &mut clock,
+                sample,
+                &evidence,
+                sync::GateWindow {
+                    paused,
+                    sources,
+                    end,
+                    common_frame: plan.common_frame,
+                    host_verify_ns: plan.host_verify_ns,
+                },
+            )?;
+            if Instant::now() >= context.deadline {
+                return Err("source gate exceeded the fixed recovery deadline".into());
+            }
+            let gate = Control::ResumeGate {
+                epoch: epoch.0,
                 attempt: sync::RESUME_ATTEMPT,
-                evidence,
-            } if actual == epoch.0 => evidence,
-            _ => return Err("peer resume observations belong to another epoch or attempt".into()),
-        };
-        if player == PlayerId::P1 {
-            control
-                .send(Control::ResumeObserved {
-                    epoch: epoch.0,
-                    attempt: sync::RESUME_ATTEMPT,
-                    evidence: own.clone(),
-                })
-                .await?;
-        }
-        let evidence = if player == PlayerId::P1 {
-            [own, remote]
-        } else {
-            [remote, own]
-        };
-        sync::resume_gate(
-            &mut clock,
-            sample,
-            &evidence,
-            sync::GateWindow {
-                paused,
-                sources,
-                end,
-                common_frame: plan.common_frame,
-                host_verify_ns: plan.host_verify_ns,
-            },
-        )?;
-        if Instant::now() >= context.deadline {
-            return Err("source gate exceeded the fixed recovery deadline".into());
-        }
-        let gate = Control::ResumeGate {
-            epoch: epoch.0,
-            attempt: sync::RESUME_ATTEMPT,
-        };
-        let ack = Control::ResumeGateAck {
-            epoch: epoch.0,
-            attempt: sync::RESUME_ATTEMPT,
-        };
-        let live = Control::ResumeLive {
-            epoch: epoch.0,
-            attempt: sync::RESUME_ATTEMPT,
-        };
-        if player == PlayerId::P1 {
-            control.send(gate).await?;
-            if control.recv().await? != ack {
-                return Err("peer did not confirm actual source gate".into());
+            };
+            let ack = Control::ResumeGateAck {
+                epoch: epoch.0,
+                attempt: sync::RESUME_ATTEMPT,
+            };
+            let live = Control::ResumeLive {
+                epoch: epoch.0,
+                attempt: sync::RESUME_ATTEMPT,
+            };
+            if player == PlayerId::P1 {
+                control.send(gate).await?;
+                if control.recv().await? != ack {
+                    return Err("peer did not confirm actual source gate".into());
+                }
+                if Instant::now() >= context.deadline {
+                    return Err("resume Live missed the fixed recovery deadline".into());
+                }
+                control.send(live).await?;
+            } else {
+                if control.recv().await? != gate {
+                    return Err("host actual source gate differs".into());
+                }
+                control.send(ack).await?;
+                if control.recv().await? != live {
+                    return Err("host continuation Live belongs to another attempt".into());
+                }
             }
             if Instant::now() >= context.deadline {
-                return Err("resume Live missed the fixed recovery deadline".into());
+                return Err("confirmed resume exceeded the fixed recovery deadline".into());
             }
-            control.send(live).await?;
-        } else {
-            if control.recv().await? != gate {
-                return Err("host actual source gate differs".into());
-            }
-            control.send(ack).await?;
-            if control.recv().await? != live {
-                return Err("host continuation Live belongs to another attempt".into());
-            }
-        }
-        if Instant::now() >= context.deadline {
-            return Err("confirmed resume exceeded the fixed recovery deadline".into());
-        }
-        Ok((pause_extension, control))
+            Ok(ResumeCompletion {
+                pause: pause_extension
+                    .checked_add(context.prior_phase_pause_extension)
+                    .ok_or("combined actual disjoint pause extension overflow")?,
+                control,
+                host_common_ns: plan
+                    .host_verify_ns
+                    .checked_sub(100_000_000)
+                    .ok_or("reconnect common time underflow")?,
+                common_frame: plan.common_frame,
+                start_uncertainties_ns: plan.start_uncertainties_ns,
+                phase_deadline: plan.phase_deadline,
+            })
+        })
+        .await
+        .map_err(|_| "resume source verification exceeded the original phase deadline")?
     })
     .await
     .map_err(|_| "resume exceeded the total recovery deadline")?
@@ -3209,8 +3810,15 @@ async fn run_started(
         }
         Err(error) => return Err(error.into_message()),
     };
+    let running_deadline = mode.running_deadline;
     drop(mode);
     drop(inputs);
+    for batch in std::mem::take(&mut continuation.phase.deferred_peer).chunks(64) {
+        accept_peer_batch(session, other(session.player), batch, events)?;
+    }
+    if continuation.phase.deferred_end.is_some() || continuation.phase.peer_end_count.is_some() {
+        return Err("ended phase cannot enter authenticated continuation".into());
+    }
     let (connection, control, mut inputs, context) = freeze_and_reconnect(
         session,
         (&connection, endpoint, candidate),
@@ -3221,6 +3829,7 @@ async fn run_started(
         cause,
     )
     .await?;
+    prepare_phase_rebound(session, &mut continuation.phase, &context)?;
     let recovery_deadline = context.deadline;
     let (armed_tx, armed_rx) = oneshot::channel();
     let (observed_tx, observed_rx) = oneshot::channel();
@@ -3240,7 +3849,7 @@ async fn run_started(
             observed: Some(observed_tx),
         }),
         deadline: recovery_deadline,
-        running_deadline: deadline,
+        running_deadline,
         recovering: true,
     };
     match exchange(
@@ -3320,6 +3929,8 @@ async fn exchange(
     let mut deferred_end = None;
     let mut maintenance = if mode.recovering {
         None
+    } else if let Some(clock) = continuation.maintenance.take() {
+        Some(clock)
     } else {
         Some(sync::ClockMaintenance::new(
             session.epoch,
@@ -3331,6 +3942,7 @@ async fn exchange(
     if let Some(control) = mode.control.as_mut() {
         mode.phase_read = Some(phase_reader(control, &mut continuation.phase)?);
     }
+    let result = async {
     while !session.ended.iter().all(|ended| *ended)
         || (mode.control.is_some() && continuation.phase.peer_end_count.is_none())
     {
@@ -3414,12 +4026,23 @@ async fn exchange(
                         continuation.maintenance_round = clock.round();
                     }
                     result = async { mode.gate.as_mut().expect("guarded resume gate").await }, if mode.gate.is_some() => {
-                        let (pause, control) = result?;
-                        mode.control = Some(control);
+                        let completed = result?;
+                        let pause = completed.pause;
+                        mode.control = Some(completed.control);
+                        if let Some(active) = continuation.phase.active.as_mut().filter(|active| active.reconnecting) {
+                            active.common_frame = Some(completed.common_frame);
+                            active.host_common_ns = Some(completed.host_common_ns);
+                            active.start_uncertainties_ns = completed.start_uncertainties_ns;
+                            if let Some(deadline) = completed.phase_deadline { active.deadline = active.deadline.min(deadline); }
+                        }
                         if Instant::now() >= mode.deadline { return Err("resume Ready missed its fixed deadline".into()); }
                         mode.gate = None;
                         mode.signals = None;
                         // Different QUIC streams can deliver a legitimate post-Live Hit before local control completion
+                        if continuation.phase.active.as_ref().is_some_and(|active| active.reconnecting)
+                            && deferred_peer.iter().any(|fact| matches!(fact, Fact::Hit { .. })) {
+                            return Err("performing peer Hit crosses the unresolved reconnect phase".into());
+                        }
                         for batch in std::mem::take(&mut deferred_peer).chunks(64) {
                             accept_peer_batch(session, peer, batch, events)?;
                         }
@@ -3427,13 +4050,23 @@ async fn exchange(
                             session.end_live(peer, count, through)?;
                         }
                         if Instant::now() >= mode.deadline { return Err("deferred peer facts exceeded the fixed recovery deadline".into()); }
+                        if continuation.phase.active.is_some() && session.ended.iter().any(|ended| *ended) {
+                            return Err("ended source cannot reopen the unresolved reconnect phase".into());
+                        }
                         mode.recovering = false;
                         if let Some(control) = mode.control.as_mut() {
                             mode.phase_read = Some(phase_reader(control, &mut continuation.phase)?);
                         }
                         mode.deadline = mode.running_deadline.checked_add(pause).ok_or("acknowledged pause deadline overflow")?;
-                        maintenance = Some(sync::ClockMaintenance::new(session.epoch, session.player, continuation.maintenance_round, sync::now_ns(session.origin)?)?);
-                        emit(events, LiveEvent::RecoveryReady { epoch: session.epoch, attempt: sync::RESUME_ATTEMPT })?;
+                        let now = sync::now_ns(session.origin)?;
+                        let mut retained = continuation.maintenance.take().ok_or("authenticated continuation lost its original maintained clock")?;
+                        retained.reconnect(now)?;
+                        maintenance = Some(retained);
+                        let phase_round = continuation.phase.active.as_ref().map(|active| active.round);
+                        emit(events, LiveEvent::RecoveryReady { epoch: session.epoch, attempt: sync::RESUME_ATTEMPT, phase_round })?;
+                        if let Some(active) = &continuation.phase.active {
+                            emit(events, LiveEvent::PhaseRebound { epoch: session.epoch, round: active.round, attempt: 1, deadline: active.deadline.into_std() })?;
+                        }
                     }
                     incoming = endpoint.accept(), if session.player == PlayerId::P1 && !continuation.used
                         && continuation.candidates < CANDIDATE_LIMIT && continuation.pending.is_empty()
@@ -3483,6 +4116,9 @@ async fn exchange(
                                         wire::PhaseControl::Ended { owner_count: count }).await?;
                                 }
                             }
+                            LiveCommand::PhaseObserved { epoch, attempt: 0, .. }
+                            | LiveCommand::PhaseFrozen { epoch, attempt: 0, .. }
+                            | LiveCommand::PhaseArmed { epoch, attempt: 0, .. } if epoch == session.epoch && continuation.phase.attempt == 1 => {},
                             command @ (LiveCommand::PhaseSource { .. } | LiveCommand::PhaseObserved { .. }
                                 | LiveCommand::PhaseFrozen { .. } | LiveCommand::PhaseArmed { .. }) if !mode.recovering => {
                                 let control = mode.control.as_mut().ok_or("phase command has no live control stream")?;
@@ -3518,6 +4154,7 @@ async fn exchange(
                 Input::PhasePaused {
                     epoch,
                     round,
+                    attempt,
                     fact_count,
                 } if epoch == session.epoch.0 && !mode.recovering => {
                     let active = continuation
@@ -3526,6 +4163,7 @@ async fn exchange(
                         .as_mut()
                         .ok_or("phase FIFO marker has no active round")?;
                     if round != active.round
+                        || attempt != active.attempt
                         || active.markers[peer.index()].is_some()
                         || !matches!(active.step, PhaseStep::Pausing | PhaseStep::GateAck)
                         || fact_count != session.counts[peer.index()] as u64
@@ -3559,6 +4197,7 @@ async fn exchange(
                             Control::Phase {
                                 epoch,
                                 round,
+                                attempt,
                                 message,
                             },
                         )
@@ -3670,6 +4309,11 @@ async fn exchange(
         }
     }
     Ok(None)
+    }.await;
+    if maintenance.is_some() {
+        continuation.maintenance = maintenance;
+    }
+    result
 }
 
 #[cfg(test)]
@@ -3827,6 +4471,7 @@ mod tests {
                     used: true,
                     candidates: 0,
                     maintenance_round: 0,
+                    maintenance: None,
                     phase: PhaseState::default(),
                     pending: JoinSet::new(),
                 };
@@ -3836,6 +4481,7 @@ mod tests {
                     used: true,
                     candidates: 0,
                     maintenance_round: 0,
+                    maintenance: None,
                     phase: PhaseState::default(),
                     pending: JoinSet::new(),
                 };
@@ -4125,6 +4771,105 @@ mod tests {
     }
 
     #[test]
+    #[ignore = "explicit real phase-reader loopback required"]
+    fn phase_reader_preserves_requested_close_and_invalid_controls_remain_terminal() {
+        session::runtime().unwrap().block_on(async {
+            tokio::time::timeout(Duration::from_secs(15), async {
+                for case in [
+                    "requested-close",
+                    "ordinary-close",
+                    "invalid-json",
+                    "budget",
+                    "incomplete-eof",
+                ] {
+                    let (host_endpoint, invitation) =
+                        listen("127.0.0.1:0".parse().unwrap()).unwrap();
+                    let mut owned_endpoint = None;
+                    let guest = connect_owned(&invitation, &mut owned_endpoint);
+                    let host = async { host_endpoint.accept().await.unwrap().await.unwrap() };
+                    let (guest, host_connection) = tokio::join!(guest, host);
+                    let (guest_endpoint, guest_connection) = guest.unwrap();
+                    let (mut send, _recv) = guest_connection.open_bi().await.unwrap();
+                    if case == "budget" {
+                        wire::send_control(
+                            &mut send,
+                            &mut 0,
+                            &Control::Phase {
+                                epoch: 9,
+                                round: 1,
+                                attempt: 0,
+                                message: wire::PhaseControl::Armed {},
+                            },
+                        )
+                        .await
+                        .unwrap();
+                    } else {
+                        let prefix: &[u8] = if case == "invalid-json" {
+                            &[0, 0, 0, 1, b'{']
+                        } else {
+                            &[0, 0]
+                        };
+                        send.write_all(prefix).await.unwrap();
+                    }
+                    let host_stream = host_connection.accept_bi().await.unwrap();
+                    let mut control = ControlIo::new(host_stream);
+                    let mut phase = PhaseState::default();
+                    if case == "budget" {
+                        for _ in 0..16 {
+                            phase.received.reserve(1, &wire::PhaseControl::Armed {}, 5).unwrap();
+                        }
+                    }
+                    let reading = phase_reader(&mut control, &mut phase).unwrap();
+                    match case {
+                        "requested-close" => guest_connection.close(
+                            RECOVERY_REQUESTED.into(), b"phase-reader QA requested close",
+                        ),
+                        "ordinary-close" => guest_connection.close(
+                            7_u32.into(), b"phase-reader QA ordinary close",
+                        ),
+                        "incomplete-eof" => send.finish().unwrap(),
+                        _ => {}
+                    }
+                    let (_, _, result) = reading.await;
+                    if case == "requested-close" {
+                        assert!(matches!(&result,
+                            Err(wire::LiveIoError::Transport(
+                                quinn::ConnectionError::ApplicationClosed(close)
+                            )) if close.error_code.into_inner() == u64::from(RECOVERY_REQUESTED)
+                        ));
+                    } else if case != "ordinary-close" {
+                        assert!(matches!(&result, Err(wire::LiveIoError::Invalid(_))));
+                    }
+                    if case == "invalid-json" {
+                        assert!(matches!(&result,
+                            Err(wire::LiveIoError::Invalid(error)) if error == "invalid phase control JSON"
+                        ));
+                    } else if case == "budget" {
+                        assert!(matches!(&result,
+                            Err(wire::LiveIoError::Invalid(error)) if error == "phase per-round message budget exceeded"
+                        ));
+                    }
+                    let error = match result {
+                        Err(error) => ExchangeError::from(error),
+                        Ok(_) => panic!("incomplete or malformed control unexpectedly accepted"),
+                    };
+                    if case == "requested-close" {
+                        assert!(matches!(error, ExchangeError::Recoverable(
+                            "authenticated peer requested connection maintenance"
+                        )));
+                    } else {
+                        assert!(matches!(error, ExchangeError::Terminal(_)));
+                    }
+                    host_endpoint.close(0_u32.into(), b"phase-reader QA complete");
+                    guest_endpoint.close(0_u32.into(), b"phase-reader QA complete");
+                }
+            })
+            .await
+            .expect("real phase-reader classification check stays within fifteen seconds");
+        });
+    }
+
+    #[test]
     #[ignore = "explicit long QA package and real host loopback required"]
     fn authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order() {
         use std::sync::atomic::{AtomicUsize, Ordering};
@@ -4200,7 +4945,7 @@ mod tests {
                                 count_for_ui.fetch_add(1, Ordering::SeqCst);
                             }
                         }
-                        Ok(LiveEvent::RecoveryPausing { epoch, attempt }) => {
+                        Ok(LiveEvent::RecoveryPausing { epoch, attempt, .. }) => {
                             host.try_send(LiveCommand::RecoveryFrozen {
                                 epoch,
                                 attempt,
@@ -4210,6 +4955,12 @@ mod tests {
                                     source_generation: 1,
                                     source_id: 1,
                                     paused_at: std::time::Instant::now(),
+                                    prior_phase_pause: None,
+                                    publication: PhasePublication {
+                                        sequence: 1,
+                                        position_seconds_bits: (10_000.0_f64 / 48_000.0).to_bits(),
+                                        published_between: [std::time::Instant::now(); 2],
+                                    },
                                 }),
                             })
                             .unwrap();
@@ -4270,7 +5021,7 @@ mod tests {
                     connection.close(RECOVERY_REQUESTED.into(), b"QA controlled rebuild");
                     let (_, resumed) = connect_owned(&invitation, &mut owned_endpoint).await.unwrap();
                     let mut control = ControlIo::new(resumed.open_bi().await.unwrap());
-                    control.send(Control::ResumeHello { protocol_version: PROTOCOL_VERSION, epoch: epoch.0, player: 2, identity, attempt: 1, pause_frame: 10_000, source_generation: 2, source_id: 2, owner_count: tape.len() as u64, started: true, ended: false, capability }).await.unwrap();
+                    control.send(Control::ResumeHello { protocol_version: PROTOCOL_VERSION, epoch: epoch.0, player: 2, identity, attempt: 1, pause_frame: 10_000, publication: wire::PhasePublication { sequence: 1, position_seconds_bits: (10000.0_f64/48000.0).to_bits(), publication_before_ns: 1, publication_after_ns: 2 }, phase: None, source_generation: 2, source_id: 2, owner_count: tape.len() as u64, started: true, ended: false, capability }).await.unwrap();
                     assert!(matches!(control.recv().await.unwrap(), Control::ResumeWelcome { epoch: actual, attempt: 1, owner_count: 0, .. } if actual == epoch.0), "negative tape must reach authenticated continuation");
                     let names = ["worker-prefix.replay.json", "gui-prefix.replay.json", "metadata.json"];
                     let snapshot_bytes = names.map(|name| fs::read(host_output.join("recovery-1").join(name)).unwrap());
@@ -4365,6 +5116,7 @@ mod tests {
                     used: true,
                     candidates: 0,
                     maintenance_round: 0,
+                    maintenance: None,
                     phase,
                     pending: JoinSet::new(),
                 };
@@ -4477,14 +5229,20 @@ mod tests {
                 let control_guest = async {
                     let mut control = ControlIo::new(guest_connection.open_bi().await.unwrap());
                     wire::send_phase_control(&mut control.send, &mut wire::PhaseBudget::default(),
-                        &Control::Phase { epoch: 9, round: 0, message: wire::PhaseControl::Ended { owner_count: 3 } }).await.unwrap();
+                        &Control::Phase { epoch: 9, round: 0, attempt: 1, message: wire::PhaseControl::Ended { owner_count: 3 } }).await.unwrap();
                     control
                 };
                 let control_host = async { ControlIo::new(host_connection.accept_bi().await.unwrap()) };
                 let (_guest_control, host_control) = tokio::join!(control_guest, control_host);
                 let (gate_sender, gate_receiver) = oneshot::channel();
                 let mut mode = ExchangeControl { control: None, phase_read: None, gate: Some(Box::pin(async { gate_receiver.await.map_err(|_| "test gate cancelled".to_owned()) })), signals: None, deadline: Instant::now() + Duration::from_secs(4), running_deadline: Instant::now() + Duration::from_secs(4), recovering: true };
-                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, maintenance_round: 0, phase: PhaseState::default(), pending: JoinSet::new() };
+                let preserved_maintenance = sync::ClockMaintenance::new(
+                    state.epoch,
+                    state.player,
+                    0,
+                    sync::now_ns(state.origin).unwrap(),
+                ).unwrap();
+                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, maintenance_round: 0, maintenance: Some(preserved_maintenance), phase: PhaseState { attempt: 1, ..PhaseState::default() }, pending: JoinSet::new() };
                 let exchange = exchange(&mut state, (&host_connection, &host_endpoint), &mut host_inputs, &mut commands, &events, &mut continuation, &mut mode);
                 let peer = async {
                     wire::send_live_input(&mut guest_inputs.send, &mut guest_inputs.written, &Input::Facts { epoch: 9, facts: vec![Fact::Watermark { through: -2400 }] }).await.unwrap();
@@ -4496,12 +5254,19 @@ mod tests {
                     guest_inputs.send.finish().unwrap();
                     tokio::time::sleep(Duration::from_millis(200)).await;
                     assert!(matches!(receiver.try_recv(), Err(std_mpsc::TryRecvError::Empty)), "post-Live peer facts/End remain behind the pending local gate");
-                    assert!(gate_sender.send((Duration::from_millis(10), host_control)).is_ok());
+                    assert!(gate_sender.send(ResumeCompletion {
+                        pause: Duration::from_millis(10),
+                        control: host_control,
+                        host_common_ns: 1,
+                        common_frame: 0,
+                        start_uncertainties_ns: [0; 2],
+                        phase_deadline: None,
+                    }).is_ok());
                     let mut actual = Vec::new();
                     loop {
                         match receiver.try_recv() {
                             Ok(LiveEvent::PeerFacts(facts)) => actual.extend(facts),
-                            Ok(LiveEvent::RecoveryReady { epoch: SessionEpoch(9), attempt: 1 }) => break,
+                            Ok(LiveEvent::RecoveryReady { epoch: SessionEpoch(9), attempt: 1, phase_round: None }) => break,
                             Ok(other) => panic!("unexpected event during gate drain: {other:?}"),
                             Err(std_mpsc::TryRecvError::Empty) => tokio::time::sleep(Duration::from_millis(1)).await,
                             Err(error) => panic!("gate event sender disappeared: {error}"),
@@ -4623,5 +5388,278 @@ mod tests {
         assert!(matches!(session.try_recv().unwrap(), LiveEvent::Failed(_)));
         drop(session);
         fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn reconnect_metadata_merges_complete_owner_floors_without_reopening_other_rounds() {
+        let publication = wire::PhasePublication {
+            sequence: 2,
+            position_seconds_bits: (10_000.0_f64 / 48_000.0).to_bits(),
+            publication_before_ns: 10,
+            publication_after_ns: 11,
+        };
+        let descriptor = wire::PhaseResume {
+            round: 1,
+            host_deadline_ns: 30_000_000_000,
+            host_point_ns: 250_000_000,
+            stage: wire::PhaseProofStage::Correction,
+            corrections: 1,
+            sealed: false,
+            anchor: wire::PhaseAnchor {
+                clock_round: 1,
+                guest_send_ns: 1,
+                host_receive_ns: 2,
+                host_send_ns: 3,
+                guest_receive_ns: 4,
+            },
+            sources: [(11, 21), (12, 22)],
+            previous: [Some(publication); 2],
+            markers: [Some(1); 2],
+        };
+        let mut state = PhaseState {
+            round: 1,
+            sealed: Some(wire::PhaseResume {
+                sealed: true,
+                ..descriptor
+            }),
+            ..Default::default()
+        };
+        let own = RemoteFreeze {
+            frame: 10_000,
+            publication,
+            phase: None,
+            generation: 11,
+            source_id: 21,
+            count: 1,
+        };
+        let peer = RemoteFreeze {
+            frame: 10_000,
+            publication,
+            phase: Some(descriptor),
+            generation: 12,
+            source_id: 22,
+            count: 1,
+        };
+        let merged = reconcile_phase_resume(&state, PlayerId::P1, own, peer)
+            .unwrap()
+            .unwrap();
+        assert_eq!(merged.host_deadline_ns, descriptor.host_deadline_ns);
+        assert_eq!(merged.corrections, 1);
+        assert_eq!(merged.previous, [Some(publication); 2]);
+        assert!(
+            reconcile_phase_resume(
+                &state,
+                PlayerId::P1,
+                own,
+                RemoteFreeze {
+                    source_id: 23,
+                    ..peer
+                }
+            )
+            .is_err()
+        );
+        assert!(
+            reconcile_phase_resume(&state, PlayerId::P1, own, RemoteFreeze { count: 0, ..peer })
+                .is_err()
+        );
+        assert!(
+            reconcile_phase_resume(
+                &state,
+                PlayerId::P1,
+                own,
+                RemoteFreeze {
+                    phase: Some(wire::PhaseResume {
+                        round: 2,
+                        ..descriptor
+                    }),
+                    ..peer
+                }
+            )
+            .is_err()
+        );
+        state.sealed = None;
+        assert!(reconcile_phase_resume(&state, PlayerId::P1, own, peer).is_err());
+        let changed = wire::PhasePublication {
+            position_seconds_bits: f64::from_bits(publication.position_seconds_bits)
+                .next_up()
+                .to_bits(),
+            ..publication
+        };
+        assert!(merge_phase_floor(Some(publication), Some(changed)).is_err());
+        let rewind = wire::PhasePublication {
+            sequence: 3,
+            position_seconds_bits: 0.0_f64.to_bits(),
+            publication_before_ns: 12,
+            publication_after_ns: 13,
+        };
+        assert!(merge_phase_floor(Some(publication), Some(rewind)).is_err());
+    }
+    #[test]
+    fn prior_waiting_resume_pause_is_disjoint_once_and_sealed_host_does_not_double_count() {
+        let start = std::time::Instant::now();
+        let resumed = start + Duration::from_secs(2);
+        let new_pause = resumed + Duration::from_millis(100);
+        let origin = start - Duration::from_secs(1);
+        let mut active = new_phase_round(
+            1,
+            wire::PhaseAnchor {
+                clock_round: 1,
+                guest_send_ns: 1,
+                host_receive_ns: 2,
+                host_send_ns: 3,
+                guest_receive_ns: 4,
+            },
+            250_000_000,
+            Instant::now() + RECOVERY_TIMEOUT,
+        );
+        active.step = PhaseStep::Arming;
+        let held =
+            prior_phase_pause_extension(origin, Some(&active), Some([start, resumed]), new_pause)
+                .unwrap();
+        assert_eq!(held, Duration::from_secs(2));
+        assert_eq!(
+            prior_phase_pause_extension(origin, None, Some([start, resumed]), new_pause).unwrap(),
+            Duration::ZERO
+        );
+        assert_eq!(
+            prior_phase_pause_extension(origin, Some(&active), None, new_pause).unwrap(),
+            Duration::ZERO
+        );
+        assert!(
+            prior_phase_pause_extension(
+                origin,
+                Some(&active),
+                Some([start, new_pause + Duration::from_millis(1)]),
+                new_pause
+            )
+            .is_err()
+        );
+        assert!(
+            prior_phase_pause_extension(origin, Some(&active), Some([resumed, start]), new_pause)
+                .is_err()
+        );
+        active.step = PhaseStep::Sampling;
+        assert!(
+            prior_phase_pause_extension(origin, Some(&active), Some([start, resumed]), new_pause)
+                .is_err()
+        );
+    }
+    #[test]
+    fn sealed_host_and_awaitlive_guest_reconcile_distinct_raw_floors_and_exact_fifo_markers() {
+        // Metadata fixtures only: no claim that an actual QUIC peer is parked at AwaitLive
+        let publication = |sequence, frame: i64, at| wire::PhasePublication {
+            sequence,
+            position_seconds_bits: (frame as f64 / 48_000.0).to_bits(),
+            publication_before_ns: at,
+            publication_after_ns: at + 1,
+        };
+        let original = [publication(10, 10_000, 100), publication(12, 10_100, 110)];
+        let accepted = [publication(20, 11_000, 200), publication(22, 11_100, 210)];
+        let frozen = [publication(30, 12_000, 300), publication(32, 12_100, 310)];
+        let sources = [(11, 21), (12, 22)];
+        let anchor = wire::PhaseAnchor {
+            clock_round: 2,
+            guest_send_ns: 1,
+            host_receive_ns: 2,
+            host_send_ns: 3,
+            guest_receive_ns: 4,
+        };
+        let mut active = new_phase_round(3, anchor, 250_000_000, Instant::now() + RECOVERY_TIMEOUT);
+        active.step = PhaseStep::AwaitLive;
+        active.verification = true;
+        active.host_deadline_ns = 30_000_000_000;
+        active.markers = [Some(3), Some(4)];
+        let guest = PhaseState {
+            round: 3,
+            corrections: 1,
+            sources: sources.map(Some),
+            previous: original.map(Some),
+            active: Some(active),
+            ..Default::default()
+        };
+        let unresolved = phase_description(&guest, guest.active.as_ref().unwrap(), false).unwrap();
+        let sealed = wire::PhaseResume {
+            sealed: true,
+            previous: accepted.map(Some),
+            ..unresolved
+        };
+        let host = PhaseState {
+            round: 3,
+            corrections: 1,
+            sources: sources.map(Some),
+            previous: accepted.map(Some),
+            sealed: Some(sealed),
+            ..Default::default()
+        };
+        let host_freeze = RemoteFreeze {
+            frame: 12_000,
+            publication: frozen[0],
+            phase: None,
+            generation: sources[0].0,
+            source_id: sources[0].1,
+            count: 5,
+        };
+        let guest_freeze = RemoteFreeze {
+            frame: 12_100,
+            publication: frozen[1],
+            phase: Some(unresolved),
+            generation: sources[1].0,
+            source_id: sources[1].1,
+            count: 6,
+        };
+        let selected = reconcile_phase_resume(&host, PlayerId::P1, host_freeze, guest_freeze)
+            .unwrap()
+            .unwrap();
+        assert!(selected.sealed);
+        assert_eq!(selected.round, 3);
+        assert_eq!(selected.host_deadline_ns, unresolved.host_deadline_ns);
+        assert_eq!(selected.corrections, 1);
+        assert_eq!(selected.sources, sources);
+        assert_eq!(selected.markers, [Some(3), Some(4)]);
+        assert_eq!(selected.previous, frozen.map(Some));
+        let authoritative = RemoteFreeze {
+            phase: Some(selected),
+            ..host_freeze
+        };
+        assert_eq!(
+            reconcile_phase_resume(&guest, PlayerId::P2, guest_freeze, authoritative).unwrap(),
+            Some(selected)
+        );
+        assert_eq!(host.previous, accepted.map(Some));
+        assert_eq!(guest.previous, original.map(Some));
+        assert!(matches!(
+            guest.active.as_ref().unwrap().step,
+            PhaseStep::AwaitLive
+        ));
+        // Both direction consumers reject a contradictory accepted marker even with ample owner count
+        let conflicting = RemoteFreeze {
+            phase: Some(wire::PhaseResume {
+                markers: [Some(3), Some(5)],
+                ..unresolved
+            }),
+            ..guest_freeze
+        };
+        assert!(reconcile_phase_resume(&host, PlayerId::P1, host_freeze, conflicting).is_err());
+        assert!(reconcile_phase_resume(&guest, PlayerId::P2, conflicting, authoritative).is_err());
+        // A later raw cursor cannot authorize a freeze whose sequence predates the Host's accepted proof
+        let below_sealed = RemoteFreeze {
+            publication: wire::PhasePublication {
+                sequence: 15,
+                ..frozen[0]
+            },
+            ..host_freeze
+        };
+        assert!(reconcile_phase_resume(&host, PlayerId::P1, below_sealed, guest_freeze).is_err());
+        assert!(
+            reconcile_phase_resume(
+                &guest,
+                PlayerId::P2,
+                guest_freeze,
+                RemoteFreeze {
+                    phase: Some(selected),
+                    ..below_sealed
+                }
+            )
+            .is_err()
+        );
     }
 }

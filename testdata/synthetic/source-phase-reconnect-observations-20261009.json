@@ -1,0 +1,1748 @@
+{
+  "status": "PASS_SCOPED_V9_MODELS_NATIVE_AND_THREE_PUBLIC_WORKER_PROBES",
+  "date": "2026-10-09",
+  "protocol": 9,
+  "base_head": "493299426d349c26fe1fc070fe6d41d414968b27",
+  "scope": "Current dirty13 v9 production scope; latest six software source cases and two separate ordinary native Kira cases; not project/release/device acceptance",
+  "production": {
+    "net_tests": {
+      "passed": 52,
+      "ignored": 5
+    },
+    "runtime_tests": {
+      "passed": 185
+    },
+    "source_count": 379,
+    "source_before_after_equal": true,
+    "current_source_equal_at_collection": true,
+    "source_scope13": [
+      {
+        "path": "crates/cocobeat-net/src/clock.rs",
+        "bytes": 19921,
+        "sha256": "5413a43c2225dbfcfb5f4b42676060304d9ee43541228075095ca58834f4f2ca"
+      },
+      {
+        "path": "crates/cocobeat-net/src/lib.rs",
+        "bytes": 14500,
+        "sha256": "d005df5ed05d393a3307a90434c42e359648ecd15831802bf16297499b553f70"
+      },
+      {
+        "path": "crates/cocobeat-net/src/live.rs",
+        "bytes": 227294,
+        "sha256": "91ab81b68a5f2cd26a0541680393ce0160838be9b3741e86e644fc41f3d8c27f"
+      },
+      {
+        "path": "crates/cocobeat-net/src/session.rs",
+        "bytes": 62254,
+        "sha256": "592c3bb1e1ef8eecb6fd778ec9e7c1317c2fd28876800cbe0d8d32a630b9d8cd"
+      },
+      {
+        "path": "crates/cocobeat-net/src/sync.rs",
+        "bytes": 112155,
+        "sha256": "f8d38b098935a5f990d6fabe02170f0057aac164d02dc0ac65e0af253183f77a"
+      },
+      {
+        "path": "crates/cocobeat-net/src/wire.rs",
+        "bytes": 57392,
+        "sha256": "e76a5fb925906db8c2fa65519e8348ca00d95c31ee5a4c7c17ff61535b2c584e"
+      },
+      {
+        "path": "crates/cocobeat-runtime/src/app.rs",
+        "bytes": 192963,
+        "sha256": "604307fff7446de067a3bbde587a2410ec5f781c1eb3edb1f24f4ccec8d6e6b4"
+      },
+      {
+        "path": "crates/cocobeat-runtime/src/online.rs",
+        "bytes": 37292,
+        "sha256": "3e903ef48651130de5ab6e0fb0e06ca98545f32e99b75880b06f10b1bfadc92c"
+      },
+      {
+        "path": "crates/cocobeat-runtime/src/recovery.rs",
+        "bytes": 100824,
+        "sha256": "d415b9270ee1720eb588bddeef4309beb1f0b41bcc7eca5984d56c03fcbcb476"
+      },
+      {
+        "path": "tools/quic-live-check/check.py",
+        "bytes": 19216,
+        "sha256": "31c2adc23f0afba117b404506bf26edfd5400aa2fef472bb7b05e5a8d1fde7a6"
+      },
+      {
+        "path": "tools/quic-live-check/driver.rs",
+        "bytes": 60955,
+        "sha256": "a8fe12d73ef7c82e7c798929e72222aa4f81baacc6f467f37fb3e98a011c6277"
+      },
+      {
+        "path": "tools/quic-live-check/native.py",
+        "bytes": 24416,
+        "sha256": "7c960a26b81bd77f7a1cabb4abf358491f7d40dfa5d7893315aa62195fe9b1dd"
+      },
+      {
+        "path": "crates/cocobeat-runtime/src/audio.rs",
+        "bytes": 34728,
+        "sha256": "0b5ca0bb407dbd0a32dd1fcc300d7ea81032be80b466419aa8a62299a6836f7c"
+      }
+    ],
+    "source_map_ref": {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/source-before.json",
+      "bytes": 44005,
+      "sha256": "673d2980b08358838cfcf5d6f61f2bbf16758b0cc5593c873b31519cb49ae037"
+    },
+    "status": "PASS",
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "--lib"
+        ],
+        "pid": 4,
+        "pgid": 4,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 3.5701283540111035
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--lib"
+        ],
+        "pid": 343,
+        "pgid": 343,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 30.072573054989334
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "-p",
+          "cocobeat-runtime",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 1104,
+        "pgid": 1104,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 4.021753095003078
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 1124,
+        "pgid": 1124,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 1.0653278710087761
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 1127,
+        "pgid": 1127,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 0.21396131999790668
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-game",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "pid": 1138,
+        "pgid": 1138,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 108.25468354902114
+      }
+    ]
+  },
+  "model_campaign": {
+    "status": "PASS_SOFTWARE_V9_PHASE_AND_RECONNECT_LATEST_GRAPH",
+    "elapsed_seconds_sum": 582.7015522810107,
+    "all_six_latest_graph": true,
+    "guard_count": 450,
+    "guards_equal": true,
+    "compile_commands": [
+      {
+        "name": "compile",
+        "pid": 3,
+        "pgid": 3,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 0.9157368080050219
+      },
+      {
+        "name": "compile-test",
+        "pid": 36,
+        "pgid": 36,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 0.4644384299754165
+      },
+      {
+        "name": "integer-test",
+        "pid": 61,
+        "pgid": 61,
+        "exit_code": 0,
+        "timed_out": false,
+        "owned_group_gone": true,
+        "elapsed_seconds": 0.0013689309998881072
+      }
+    ],
+    "cases": [
+      {
+        "command": {
+          "case": "phase-model-identity-change",
+          "pid": 1065047,
+          "pgid": 1065047,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 61.26208595500793
+        },
+        "summary": {
+          "status": "PASS_EXPECTED_IDENTITY_REJECTION",
+          "ppm": [
+            1000,
+            -1000
+          ],
+          "completed_correction_rounds": [
+            [],
+            []
+          ],
+          "connection_attempt": [
+            0,
+            0
+          ],
+          "accepted_owner_counts": [
+            126,
+            126
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            false,
+            false
+          ],
+          "rebound_round": [
+            null,
+            null
+          ],
+          "request_round": null,
+          "request_stage": null,
+          "request_clock_floor": [
+            0,
+            0
+          ],
+          "subsequent_attempt1_ready": [
+            false,
+            false
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          7,
+          7
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-identity-change/phase-summary.json"
+      },
+      {
+        "command": {
+          "case": "phase-model-forward",
+          "pid": 1065122,
+          "pgid": 1065122,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 136.42377363098785
+        },
+        "summary": {
+          "status": "PASS_SOFTWARE_PHASE_CORRECTIONS",
+          "ppm": [
+            1000,
+            -1000
+          ],
+          "completed_correction_rounds": [
+            [
+              4,
+              8,
+              12
+            ],
+            [
+              4,
+              8,
+              12
+            ]
+          ],
+          "connection_attempt": [
+            0,
+            0
+          ],
+          "accepted_owner_counts": [
+            1430,
+            1430
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            false,
+            false
+          ],
+          "rebound_round": [
+            null,
+            null
+          ],
+          "request_round": null,
+          "request_stage": null,
+          "request_clock_floor": [
+            0,
+            0
+          ],
+          "subsequent_attempt1_ready": [
+            false,
+            false
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          82,
+          82
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-forward/phase-summary.json"
+      },
+      {
+        "command": {
+          "case": "phase-model-swapped",
+          "pid": 1065507,
+          "pgid": 1065507,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 136.4747146370064
+        },
+        "summary": {
+          "status": "PASS_SOFTWARE_PHASE_CORRECTIONS",
+          "ppm": [
+            -1000,
+            1000
+          ],
+          "completed_correction_rounds": [
+            [
+              4,
+              8,
+              12
+            ],
+            [
+              4,
+              8,
+              12
+            ]
+          ],
+          "connection_attempt": [
+            0,
+            0
+          ],
+          "accepted_owner_counts": [
+            1429,
+            1429
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            false,
+            false
+          ],
+          "rebound_round": [
+            null,
+            null
+          ],
+          "request_round": null,
+          "request_stage": null,
+          "request_clock_floor": [
+            0,
+            0
+          ],
+          "subsequent_attempt1_ready": [
+            false,
+            false
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          82,
+          82
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-swapped/phase-summary.json"
+      },
+      {
+        "command": {
+          "case": "phase-reconnect-sampling",
+          "pid": 1065607,
+          "pgid": 1065607,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 69.67808546501328
+        },
+        "summary": {
+          "status": "PASS_SOFTWARE_ACTIVE_PHASE_RECONNECT",
+          "ppm": [
+            1000,
+            -1000
+          ],
+          "completed_correction_rounds": [
+            [],
+            []
+          ],
+          "connection_attempt": [
+            1,
+            1
+          ],
+          "accepted_owner_counts": [
+            250,
+            250
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            true,
+            true
+          ],
+          "rebound_round": [
+            1,
+            1
+          ],
+          "request_round": 1,
+          "request_stage": "sampling",
+          "request_clock_floor": [
+            7,
+            7
+          ],
+          "subsequent_attempt1_ready": [
+            true,
+            true
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          14,
+          14
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-sampling/phase-summary.json"
+      },
+      {
+        "command": {
+          "case": "phase-reconnect-pause",
+          "pid": 1065727,
+          "pgid": 1065727,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 87.95538936299272
+        },
+        "summary": {
+          "status": "PASS_SOFTWARE_ACTIVE_PHASE_RECONNECT",
+          "ppm": [
+            1000,
+            -1000
+          ],
+          "completed_correction_rounds": [
+            [],
+            []
+          ],
+          "connection_attempt": [
+            1,
+            1
+          ],
+          "accepted_owner_counts": [
+            610,
+            611
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            true,
+            true
+          ],
+          "rebound_round": [
+            4,
+            4
+          ],
+          "request_round": 4,
+          "request_stage": "pause",
+          "request_clock_floor": [
+            25,
+            25
+          ],
+          "subsequent_attempt1_ready": [
+            true,
+            true
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          32,
+          32
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-pause/phase-summary.json"
+      },
+      {
+        "command": {
+          "case": "phase-reconnect-pending-resume",
+          "pid": 1065776,
+          "pgid": 1065776,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 90.90750323000248
+        },
+        "summary": {
+          "status": "PASS_SOFTWARE_ACTIVE_PHASE_RECONNECT",
+          "ppm": [
+            1000,
+            -1000
+          ],
+          "completed_correction_rounds": [
+            [],
+            []
+          ],
+          "connection_attempt": [
+            1,
+            1
+          ],
+          "accepted_owner_counts": [
+            613,
+            614
+          ],
+          "owned_workers_finished": true,
+          "qa_cancelled_prefix": true,
+          "rebound_ready": [
+            true,
+            true
+          ],
+          "rebound_round": [
+            4,
+            4
+          ],
+          "request_round": 4,
+          "request_stage": "pending-resume",
+          "request_clock_floor": [
+            25,
+            25
+          ],
+          "subsequent_attempt1_ready": [
+            true,
+            true
+          ]
+        },
+        "clock_exchange_count_by_side": [
+          32,
+          32
+        ],
+        "summary_ref": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-pending-resume/phase-summary.json"
+      }
+    ],
+    "offline_review": {
+      "status": "PASS_OFFLINE_TERMINAL_CASES_ONLY",
+      "original_proof_count": 88,
+      "original_guard_count": 450,
+      "cases": [
+        {
+          "case": "phase-model-identity-change",
+          "raw_publications_by_side": [
+            2666,
+            2666
+          ],
+          "proof_count": 0,
+          "clock_exchange_count": 7
+        },
+        {
+          "case": "phase-model-forward",
+          "raw_publications_by_side": [
+            33590,
+            33589
+          ],
+          "proof_count": 30,
+          "clock_exchange_count": 82
+        },
+        {
+          "case": "phase-model-swapped",
+          "raw_publications_by_side": [
+            33547,
+            33548
+          ],
+          "proof_count": 30,
+          "clock_exchange_count": 82
+        },
+        {
+          "case": "phase-reconnect-sampling",
+          "raw_publications_by_side": [
+            6031,
+            6031
+          ],
+          "proof_count": 4,
+          "clock_exchange_count": 14
+        },
+        {
+          "case": "phase-reconnect-pause",
+          "raw_publications_by_side": [
+            13608,
+            13607
+          ],
+          "proof_count": 12,
+          "clock_exchange_count": 32
+        },
+        {
+          "case": "phase-reconnect-pending-resume",
+          "raw_publications_by_side": [
+            14806,
+            14806
+          ],
+          "proof_count": 12,
+          "clock_exchange_count": 32
+        }
+      ]
+    },
+    "source": "Cumulative declared integer active-time software source, ±1000ppm, original f64 publication bits and natural integration; not Kira",
+    "budgets": {
+      "source_playing_seconds": 160,
+      "wall_seconds": 220,
+      "parent_seconds": 235,
+      "cleanup_seconds": 5,
+      "publication_ms": 2,
+      "freshness_ms": 50,
+      "evidence_cap": 64,
+      "phase_guard_frames": 2400,
+      "phase_round_seconds": 30,
+      "round_cap": 128,
+      "correction_cap": 64
+    },
+    "recovery_model_window": "[max(actual not_before, verify_at-40ms), verify_at+50ms]; complete original eligible rows and actual first Playing-forward ACK; distinct from production Kira sampler",
+    "termination": "Intentional QA cancellation after accepted original prefixes; saved FAILED partial evidence is expected, no End/EOF/authority claim",
+    "canonical_frames": 28800000
+  },
+  "real_quic_narrow": {
+    "ignored_four_functions": {
+      "status": "PASS",
+      "commands": [
+        {
+          "name": "active_clock_maintenance_refreshes_beside_the_original_fact_fifo",
+          "pid": 1064656,
+          "pgid": 1064656,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 3.3558293719834182
+        },
+        {
+          "name": "phase_gate_keeps_later_watermark_behind_hit_and_bounds_slow_end_eof",
+          "pid": 1064659,
+          "pgid": 1064659,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 0.8543296789866872
+        },
+        {
+          "name": "recovery_gate_parks_real_peer_end_and_eof_after_fifo_facts",
+          "pid": 1064672,
+          "pgid": 1064672,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 0.40049256299971603
+        },
+        {
+          "name": "phase_reader_preserves_requested_close_and_invalid_controls_remain_terminal",
+          "pid": 1064674,
+          "pgid": 1064674,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 0.16755579801974818
+        }
+      ]
+    },
+    "typed_phase_reader_five_cases": [
+      "requested-close0x4343 recoverable",
+      "ordinary-close terminal",
+      "invalid-json terminal",
+      "17th valid message after16 budget terminal",
+      "incomplete EOF terminal"
+    ],
+    "malformed_four_controls": {
+      "actual": {
+        "status": "PASS",
+        "commands": [
+          {
+            "name": "authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order",
+            "pid": 1064687,
+            "pgid": 1064687,
+            "exit_code": 0,
+            "timed_out": false,
+            "owned_group_gone": true,
+            "elapsed_seconds": 12.120410297997296
+          }
+        ]
+      },
+      "observations": [
+        {
+          "scenario": "changed-prefix",
+          "status": "PASS",
+          "failure": "accepted player history is not an exact prefix of its owner tape; session evidence: /home/lzzz/MyProjects/CoCoBeat/target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/malformed-prefix/changed-prefix/host",
+          "authenticated_continuation": true,
+          "owned_worker_finished": true,
+          "owner_prefix_unchanged": true,
+          "snapshots_unchanged": true
+        },
+        {
+          "scenario": "duplicate-seq",
+          "status": "PASS",
+          "failure": "live Hit sequence must be continuous from zero; session evidence: /home/lzzz/MyProjects/CoCoBeat/target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/malformed-prefix/duplicate-seq/host",
+          "authenticated_continuation": true,
+          "owned_worker_finished": true,
+          "owner_prefix_unchanged": true,
+          "snapshots_unchanged": true
+        },
+        {
+          "scenario": "backward-watermark",
+          "status": "PASS",
+          "failure": "invalid player history: WatermarkRegression { player: P2, current: SongTime(100), requested: SongTime(99) }; session evidence: /home/lzzz/MyProjects/CoCoBeat/target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/malformed-prefix/backward-watermark/host",
+          "authenticated_continuation": true,
+          "owned_worker_finished": true,
+          "owner_prefix_unchanged": true,
+          "snapshots_unchanged": true
+        },
+        {
+          "scenario": "reordered",
+          "status": "PASS",
+          "failure": "accepted player history is not an exact prefix of its owner tape; session evidence: /home/lzzz/MyProjects/CoCoBeat/target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/malformed-prefix/reordered/host",
+          "authenticated_continuation": true,
+          "owned_worker_finished": true,
+          "owner_prefix_unchanged": true,
+          "snapshots_unchanged": true
+        }
+      ]
+    },
+    "typed_fix_scope": "Only phase read retains existing LiveIoError classification; existing exact allowed causes preserved. send_phase_control/other String paths unchanged, no all-path transport recovery claim; historical TLS winning branch UNKNOWN"
+  },
+  "native_campaign": {
+    "status": "PASS",
+    "guard_count_root_recorded": 387,
+    "scope": "post typed-reader current v9 native Linux Kira, normal maintenance and ordinary same-source recovery/natural EOF; active_phase/pending_source/AwaitLive/physical/two-machine not covered",
+    "offline_kira_status": "PASS_OFFLINE_V9_NATIVE_TWO_CASE_RECALCULATION",
+    "cases": [
+      {
+        "command": {
+          "scenario": "complete",
+          "pid": 1066024,
+          "pgid": 1066024,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 48.5224907869997,
+          "actual_games": [
+            {
+              "pid": 1066058,
+              "gone": true
+            },
+            {
+              "pid": 1066128,
+              "gone": true
+            }
+          ],
+          "guards_equal": true
+        },
+        "summary_ref": "target/source-phase-reconnect-native-run-20261009-revision02/complete/summary.json",
+        "game_sha256": "3e034f5b1028ad946dd1dacc424246bef178f44360b9e6a1b197aea85408f6be",
+        "package_objects_sha256": {
+          "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+          "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+          "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+          "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+        },
+        "reports": [
+          {
+            "side": "host",
+            "runtime": {
+              "status": "COMPLETE",
+              "epoch": 613880485067526741,
+              "facts": 833,
+              "events": 5,
+              "local_ended": true,
+              "owned_workers_finished": true,
+              "process_id": 1066058
+            },
+            "network": {
+              "status": "COMPLETE",
+              "protocol_version": 9,
+              "epoch": 613880485067526741,
+              "facts": [
+                417,
+                416
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "e1276f73401e45991f5488c0fc48f3a8cfeda1035ec53462ac7c8695d90fd837",
+              "authority_replay_blake3": "e1276f73401e45991f5488c0fc48f3a8cfeda1035ec53462ac7c8695d90fd837"
+            }
+          },
+          {
+            "side": "guest",
+            "runtime": {
+              "status": "COMPLETE",
+              "epoch": 613880485067526741,
+              "facts": 833,
+              "events": 5,
+              "local_ended": true,
+              "owned_workers_finished": true,
+              "process_id": 1066128
+            },
+            "network": {
+              "status": "COMPLETE",
+              "protocol_version": 9,
+              "epoch": 613880485067526741,
+              "facts": [
+                417,
+                416
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "fb26be8ef0638934a6c2e39cfdbf40bb793b791a984d1fd4a34ef2353144313d",
+              "authority_replay_blake3": "e1276f73401e45991f5488c0fc48f3a8cfeda1035ec53462ac7c8695d90fd837"
+            }
+          }
+        ],
+        "offline_kira_recalculation": {
+          "sources": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "proof_pairs": [
+            {
+              "path": "phase-1/check.json",
+              "round": 1,
+              "attempt": 0,
+              "verification": false,
+              "clock_round": 7,
+              "offset_ns": 11095052436,
+              "uncertainty_ns": 252105,
+              "guest_query_floor_ns": 8852050119,
+              "source_intervals_frames": [
+                [
+                  300159,
+                  300673
+                ],
+                [
+                  299903,
+                  300417
+                ]
+              ],
+              "guest_minus_host_frames": [
+                -770,
+                258
+              ],
+              "within_guard": true
+            },
+            {
+              "path": "phase-2/check.json",
+              "round": 2,
+              "attempt": 0,
+              "verification": false,
+              "clock_round": 13,
+              "offset_ns": 11095039605,
+              "uncertainty_ns": 240752,
+              "guest_query_floor_ns": 14858658765,
+              "source_intervals_frames": [
+                [
+                  588415,
+                  588929
+                ],
+                [
+                  588159,
+                  588673
+                ]
+              ],
+              "guest_minus_host_frames": [
+                -770,
+                258
+              ],
+              "within_guard": true
+            }
+          ],
+          "natural_song_EOF": true,
+          "authority_equal": true,
+          "ordinary_recovery": false,
+          "active_sampling_paused_reservation_AwaitLive": "NOT_ASSESSED",
+          "audio_DAC_or_physical": "NOT_ASSESSED"
+        }
+      },
+      {
+        "command": {
+          "scenario": "same-epoch-active",
+          "pid": 1066248,
+          "pgid": 1066248,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 55.601152949006064,
+          "actual_games": [
+            {
+              "pid": 1066272,
+              "gone": true
+            },
+            {
+              "pid": 1066356,
+              "gone": true
+            }
+          ],
+          "guards_equal": true
+        },
+        "summary_ref": "target/source-phase-reconnect-native-run-20261009-revision02/same-epoch-active/summary.json",
+        "game_sha256": "3e034f5b1028ad946dd1dacc424246bef178f44360b9e6a1b197aea85408f6be",
+        "package_objects_sha256": {
+          "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+          "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+          "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+          "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+        },
+        "reports": [
+          {
+            "side": "host",
+            "runtime": {
+              "status": "COMPLETE",
+              "epoch": 18374889103117692673,
+              "facts": 837,
+              "events": 5,
+              "local_ended": true,
+              "owned_workers_finished": true,
+              "process_id": 1066272
+            },
+            "network": {
+              "status": "COMPLETE",
+              "protocol_version": 9,
+              "epoch": 18374889103117692673,
+              "facts": [
+                418,
+                419
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "72478631c03dacb316d7fd74b92626ec429a7dc43e8fee86f0329d47c8ac685d",
+              "authority_replay_blake3": "72478631c03dacb316d7fd74b92626ec429a7dc43e8fee86f0329d47c8ac685d"
+            }
+          },
+          {
+            "side": "guest",
+            "runtime": {
+              "status": "COMPLETE",
+              "epoch": 18374889103117692673,
+              "facts": 837,
+              "events": 5,
+              "local_ended": true,
+              "owned_workers_finished": true,
+              "process_id": 1066356
+            },
+            "network": {
+              "status": "COMPLETE",
+              "protocol_version": 9,
+              "epoch": 18374889103117692673,
+              "facts": [
+                418,
+                419
+              ],
+              "event_count": 5,
+              "live_replay_blake3": "36073156e05f96bce56a19096428e40ae2145676c80f71dbb4053b5a60650aff",
+              "authority_replay_blake3": "72478631c03dacb316d7fd74b92626ec429a7dc43e8fee86f0329d47c8ac685d"
+            }
+          }
+        ],
+        "offline_kira_recalculation": {
+          "sources": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "proof_pairs": [
+            {
+              "path": "phase-1/check.json",
+              "round": 1,
+              "attempt": 1,
+              "verification": false,
+              "clock_round": 7,
+              "offset_ns": 11952188820,
+              "uncertainty_ns": 376697,
+              "guest_query_floor_ns": 10290531799,
+              "source_intervals_frames": [
+                [
+                  267903,
+                  268417
+                ],
+                [
+                  267903,
+                  268417
+                ]
+              ],
+              "guest_minus_host_frames": [
+                -514,
+                514
+              ],
+              "within_guard": true
+            },
+            {
+              "path": "phase-2/check.json",
+              "round": 2,
+              "attempt": 1,
+              "verification": false,
+              "clock_round": 13,
+              "offset_ns": 11952199590,
+              "uncertainty_ns": 389141,
+              "guest_query_floor_ns": 16296928002,
+              "source_intervals_frames": [
+                [
+                  556159,
+                  556673
+                ],
+                [
+                  556159,
+                  556673
+                ]
+              ],
+              "guest_minus_host_frames": [
+                -514,
+                514
+              ],
+              "within_guard": true
+            }
+          ],
+          "natural_song_EOF": true,
+          "authority_equal": true,
+          "ordinary_recovery": true,
+          "active_sampling_paused_reservation_AwaitLive": "NOT_ASSESSED",
+          "audio_DAC_or_physical": "NOT_ASSESSED"
+        }
+      }
+    ],
+    "visual_review": "NOT_RUN_BY_THIS_COLLECTOR",
+    "not_covered": "Native forced ±ppm correction, active Sampling/Paused/pending-reservation authentication rebind and AwaitLive edge are NOT_ASSESSED"
+  },
+  "historical_failures_and_prior_graphs": [
+    {
+      "kind": "historical_production_checks",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-production-checks-20261009/result.json",
+      "exits": [
+        0,
+        101
+      ],
+      "source_before_after_equal": true
+    },
+    {
+      "kind": "historical_production_checks",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-production-checks-20261009-revision02/result.json",
+      "exits": [
+        0,
+        101
+      ],
+      "source_before_after_equal": true
+    },
+    {
+      "kind": "historical_production_checks",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-production-checks-20261009-revision03/result.json",
+      "exits": [
+        0,
+        0,
+        101
+      ],
+      "source_before_after_equal": true
+    },
+    {
+      "kind": "historical_production_checks",
+      "status": "PASS",
+      "receipt": "target/source-phase-reconnect-production-checks-20261009-revision04/result.json",
+      "exits": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source_before_after_equal": true
+    },
+    {
+      "kind": "historical_production_checks",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-production-checks-20261009-revision05/result.json",
+      "exits": [
+        101
+      ],
+      "source_before_after_equal": true
+    },
+    {
+      "kind": "historical_actual_failure",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-worker-qa-run-20261009/case-result.json",
+      "commands": [
+        {
+          "case": "phase-model-identity-change",
+          "pid": 1057958,
+          "pgid": 1057958,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 61.46719335397938
+        },
+        {
+          "case": "phase-model-forward",
+          "pid": 1058349,
+          "pgid": 1058349,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 136.7793729059922
+        },
+        {
+          "case": "phase-model-swapped",
+          "pid": 1058907,
+          "pgid": 1058907,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 136.8290481469885
+        },
+        {
+          "case": "phase-reconnect-sampling",
+          "pid": 1059424,
+          "pgid": 1059424,
+          "exit_code": 101,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 63.11642249400029
+        }
+      ],
+      "observation": "Original six queue stopped at sampling overflow, first three actual successes remain historical"
+    },
+    {
+      "kind": "historical_actual_failure",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-worker-qa-run-20261009-revision04/compile-result.json",
+      "commands": [
+        {
+          "name": "compile",
+          "pid": 3,
+          "pgid": 3,
+          "exit_code": 1,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 0.1639392209763173
+        }
+      ],
+      "observation": "json! rejected unparenthesized original array.map expression; root parentheses-only helper fix"
+    },
+    {
+      "kind": "historical_actual_failure",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-malformed-prefix-run-20261009/result.json",
+      "commands": [
+        {
+          "name": "authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order",
+          "pid": 1060353,
+          "pgid": 1060353,
+          "exit_code": 101,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 3.0184651630115695
+        }
+      ],
+      "observation": "600s invite absent within original 3s wait"
+    },
+    {
+      "kind": "historical_actual_failure",
+      "status": "FAIL",
+      "receipt": "target/source-phase-reconnect-malformed-prefix-run-20261009-revision02/result.json",
+      "commands": [
+        {
+          "name": "authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order",
+          "pid": 1060475,
+          "pgid": 1060475,
+          "exit_code": 101,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 5.873342342994874
+        }
+      ],
+      "observation": "Adopted package changed-prefix PASS followed by host TLS handshake failure; actual winning select branch UNKNOWN"
+    },
+    {
+      "kind": "reviewer_assertion_failure",
+      "receipt": "target/source-phase-reconnect-worker-proof-review-20261009-revision05/first-recalculation-failure.json",
+      "actual": {
+        "command": "python3 target/source-phase-reconnect-worker-proof-review-20261009-revision05/review.py",
+        "exit_code": 1,
+        "assertion": "any(span[0]==frozen[pause_ack_fixture_ns] for span in spans[i])",
+        "line": 162,
+        "status": "PRESERVED_REVIEW_FAILURE_PENDING_CAUSE"
+      },
+      "correction": "ACK is confirmation inside exactly one reconstructed paused interval, not exact source-stop timestamp; raw and production unchanged"
+    },
+    {
+      "kind": "native_reviewer_envelope_lookup_failure",
+      "repair_record": "target/source-phase-v9-kira-proof-review-20261009-revision02/repair-record.json",
+      "scope": "Nonzero epoch belongs to original proof envelope, not nested four-timestamp anchor; raw/production unchanged"
+    }
+  ],
+  "public_baseline_probe": {
+    "status": "PASS_THREE_NARROW_CASES",
+    "scope": "Three checked-in v9 baseline public worker probes, original raw-monotonic-seconds software recovery. Not Source active-phase/Kira/blackhole or all15 scenario acceptance",
+    "build_command": {
+      "name": "build",
+      "pid": 1067945,
+      "pgid": 1067945,
+      "exit_code": 0,
+      "elapsed_seconds": 0.9952974330226425,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "guards_equal": true
+    },
+    "guard_count": 391,
+    "all_guards_equal": true,
+    "graph_sha256": "32914a5782c9eced5922a5009ba99b3078a93c1f6777f2f13d9cb0d94953a464",
+    "source_count": 379,
+    "tools_readme_sha256": "6e063629e0dc66eda19314a06e9f800d9b54c0e4860e04043217b3757e0b0fba",
+    "driver_sha256": "7daeb11aaace1f5a6ade55bc7445c58cabb5ff3a532535f643df3f15c2a87000",
+    "build_sha256": "c8e67a22223353e3644d2f5de0f1ffbcf4dabe656207c7bf32f9cf88988c1df8",
+    "model_identity": "qa-v9-raw-monotonic-seconds-v1, actual unrounded elapsed monotonic seconds; distinct from target integer Phase model",
+    "cases": [
+      {
+        "scenario": "installed",
+        "status": "PASS",
+        "summary_ref": "target/source-phase-reconnect-public-check-20261009-revision02/installed/summary.json",
+        "outer_command": {
+          "name": "installed",
+          "pid": 1067983,
+          "pgid": 1067983,
+          "exit_code": 0,
+          "elapsed_seconds": 4.64894762300537,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "guards_equal": true
+        },
+        "report_scalars": {
+          "epoch": 12884241073976070709,
+          "owned_workers_finished": true,
+          "scenario": "installed",
+          "status": "PASS"
+        },
+        "peer_statuses": [
+          {
+            "status": "COMPLETE",
+            "protocol_version": 9,
+            "epoch": 12884241073976070709,
+            "facts": [
+              93,
+              27
+            ],
+            "event_count": 21,
+            "authority_replay_blake3": "69a4a1c5873e3d186dc95ae969b135afea1075053b26d98554524c672fd76c7c",
+            "error": null
+          },
+          {
+            "status": "COMPLETE",
+            "protocol_version": 9,
+            "epoch": 12884241073976070709,
+            "facts": [
+              93,
+              27
+            ],
+            "event_count": 21,
+            "authority_replay_blake3": "69a4a1c5873e3d186dc95ae969b135afea1075053b26d98554524c672fd76c7c",
+            "error": null
+          }
+        ],
+        "source_objects_sha256": {
+          "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+          "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+          "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+          "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+        }
+      },
+      {
+        "scenario": "recovery-model",
+        "status": "PASS",
+        "summary_ref": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-model/summary.json",
+        "outer_command": {
+          "name": "recovery-model",
+          "pid": 1067987,
+          "pgid": 1067987,
+          "exit_code": 0,
+          "elapsed_seconds": 6.553737337002531,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "guards_equal": true
+        },
+        "report_scalars": {
+          "actual_udp_blackhole": false,
+          "cancel_requested": false,
+          "owned_workers_finished": true,
+          "player_tape_prefix_preserved": true,
+          "same_epoch": true,
+          "scenario": "recovery-model",
+          "second_recovery_terminal": false,
+          "snapshots_unchanged": true,
+          "source_model": "qa-v9-raw-monotonic-seconds-v1",
+          "status": "PASS",
+          "unauth_candidate_rejected": false
+        },
+        "peer_statuses": [
+          {
+            "status": "COMPLETE",
+            "protocol_version": 9,
+            "epoch": 5482045840715398647,
+            "facts": [
+              37,
+              35
+            ],
+            "event_count": 4,
+            "authority_replay_blake3": "37fcb7cb138babb6d1505c336e39528a611980e267219bd92e8f2b67f3be7c02",
+            "error": null
+          },
+          {
+            "status": "COMPLETE",
+            "protocol_version": 9,
+            "epoch": 5482045840715398647,
+            "facts": [
+              37,
+              35
+            ],
+            "event_count": 4,
+            "authority_replay_blake3": "37fcb7cb138babb6d1505c336e39528a611980e267219bd92e8f2b67f3be7c02",
+            "error": null
+          }
+        ],
+        "source_objects_sha256": {
+          "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+          "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+          "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+          "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+        }
+      },
+      {
+        "scenario": "recovery-bad-source",
+        "status": "PASS_EXPECTED_REJECTION",
+        "summary_ref": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-bad-source/summary.json",
+        "outer_command": {
+          "name": "recovery-bad-source",
+          "pid": 1067991,
+          "pgid": 1067991,
+          "exit_code": 0,
+          "elapsed_seconds": 5.700978478998877,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "guards_equal": true
+        },
+        "report_scalars": {
+          "actual_udp_blackhole": false,
+          "cancel_requested": false,
+          "owned_workers_finished": true,
+          "player_tape_prefix_preserved": true,
+          "same_epoch": true,
+          "scenario": "recovery-bad-source",
+          "second_recovery_terminal": false,
+          "snapshots_unchanged": true,
+          "source_model": "qa-v9-raw-monotonic-seconds-v1",
+          "status": "PASS",
+          "unauth_candidate_rejected": false
+        },
+        "peer_statuses": [
+          {
+            "status": "FAILED",
+            "protocol_version": 9,
+            "epoch": 660937348486532084,
+            "facts": [
+              33,
+              30
+            ],
+            "event_count": 0,
+            "authority_replay_blake3": null,
+            "error": "connection lost: closed by peer: 0"
+          },
+          {
+            "status": "FAILED",
+            "protocol_version": 9,
+            "epoch": 660937348486532084,
+            "facts": [
+              32,
+              31
+            ],
+            "event_count": 0,
+            "authority_replay_blake3": null,
+            "error": "original source did not acknowledge real forward resume"
+          }
+        ],
+        "source_objects_sha256": {
+          "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+          "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+          "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+          "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+        }
+      }
+    ],
+    "negative_qualification": "recovery-bad-source expects FAILED original-source forward-resume rejection and no authority; this outer PASS is not successful recovery",
+    "not_covered": "Other 12 baseline cases not rerun; no UDP blackhole/Kira/active Phase/two-machine proof"
+  },
+  "not_run": [
+    "AwaitLive/last-sealed true owned QUIC edge",
+    "Native Kira forced drift correction or active Phase stage rebind",
+    "DAC/speaker timing/physical devices/human/music admission",
+    "Two-machine LAN/WAN",
+    "Four-platform release/tag/performance acceptance"
+  ],
+  "direct_refs": [
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/result.json",
+      "bytes": 3250,
+      "sha256": "b4af76209d474f1da864e7e9447d0cff71516d16de5c3ce11ea09e44c205fbad"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/source-before.json",
+      "bytes": 44005,
+      "sha256": "673d2980b08358838cfcf5d6f61f2bbf16758b0cc5593c873b31519cb49ae037"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/source-after.json",
+      "bytes": 44005,
+      "sha256": "673d2980b08358838cfcf5d6f61f2bbf16758b0cc5593c873b31519cb49ae037"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/build.jsonl",
+      "bytes": 406477,
+      "sha256": "32914a5782c9eced5922a5009ba99b3078a93c1f6777f2f13d9cb0d94953a464"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision06/repair-record.json",
+      "bytes": 503,
+      "sha256": "851aa920545b0d3544cb5949ff079f7e0c045f25ef982d2c8bbb90c21b88a3b7"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/case-result.json",
+      "bytes": 4088,
+      "sha256": "5414bcf02c27e15c8eae3746a85b4c3b4805dec6926107faf2adcdc067e934d8"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/compile-result.json",
+      "bytes": 3230,
+      "sha256": "f4b702a91375054d349a80b2697fd38993eba55c20ab3ec190b16f70602eaeb1"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/input-binding.json",
+      "bytes": 6003,
+      "sha256": "49797692f16c4cf4a5edfb127897d268decaeeb0facc9b24c6396d28ade46dc8"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/queue-binding.json",
+      "bytes": 647,
+      "sha256": "bed99e6d95337a4f01c646ffef81693a5b271b407834a41945effa9af1b48c90"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/guard.json",
+      "bytes": 54741,
+      "sha256": "015ac1352b8c518deac6381534686c046d356263270d87d9fa6b309e5e85caf7"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-proof-review-20261009-revision06/result.json",
+      "bytes": 137922,
+      "sha256": "23e7cd413c2546286e74f760de4c516d0b5f4687d95501e56fe41231bf1c3f39"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-proof-review-20261009-revision06/REPORT.md",
+      "bytes": 4611,
+      "sha256": "c330c29edf55272643bb809b4c23f2d2eda58caeacb0eb3fe2deecc231e16eef"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-proof-review-20261009-revision06/repair-record.json",
+      "bytes": 610,
+      "sha256": "5eb802cd9e01c9ac6b359b8893ce7fa2aaced7c535f4e63a1755e1051dad6f78"
+    },
+    {
+      "path": "target/source-phase-v9-kira-proof-review-20261009-revision02/result.json",
+      "bytes": 70263,
+      "sha256": "a3dbb3899f78d7b0af83aa890196dfc37452d5bc73ad9f393bbf370df12eba7f"
+    },
+    {
+      "path": "target/source-phase-v9-kira-proof-review-20261009-revision02/repair-record.json",
+      "bytes": 472,
+      "sha256": "e52dc15b6619672f4821d47c56fa357c99c5a7622c7fea27099cb44c3cb283a5"
+    },
+    {
+      "path": "target/source-phase-reconnect-ignored-run-20261009-revision02/result.json",
+      "bytes": 2602,
+      "sha256": "e40bfb7f716c86b2c93d43676ac37f0947c591929eda42e081684e8a1fc5a0f4"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/result.json",
+      "bytes": 820,
+      "sha256": "d5ee3cc00031876ca8f54c57d9140455c4e7ac6fbddae2de85aa4a04bc0e1001"
+    },
+    {
+      "path": "target/source-phase-reconnect-native-run-20261009-revision02/result.json",
+      "bytes": 6802,
+      "sha256": "68ba17c8593cae3b46fa1864fac4b499fcb58923ab9eaf16b8276338968f787e"
+    },
+    {
+      "path": "target/source-phase-read-transport-current-review-20261009/REPORT.md",
+      "bytes": 2876,
+      "sha256": "546fc6c41fe1cd0b0873d1d4445c07a236b482e72061b4d96db9f2f2aa4ed484"
+    },
+    {
+      "path": "target/source-phase-read-transport-current-review-20261009/scope.json",
+      "bytes": 3512,
+      "sha256": "2a0dcb90a7f0f0ce15ccc7a2c98da4a35cc504e6df3feed774ee0a8f35c188c2"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-draft-20261009-revision04-root-json-fix/MANIFEST.json",
+      "bytes": 727,
+      "sha256": "1db7f5c8c015b59431e54170d9ec1166088d1031bc4faa02eedc196c782e17cf"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-identity-change/phase-summary.json",
+      "bytes": 6515,
+      "sha256": "332a2cd5104daea6b2482f04df25533f345328921d0fc0acab444d4d9fcc4561"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-forward/phase-summary.json",
+      "bytes": 62532,
+      "sha256": "057b0929d05eea0ddc404bbe8cc2de263c38ed2990bace10407aae819082f541"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-model-swapped/phase-summary.json",
+      "bytes": 62532,
+      "sha256": "b37976c1adeb2233345521d281e986ba011cff7969953dbff7ca0e61a79dee2c"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-sampling/phase-summary.json",
+      "bytes": 12439,
+      "sha256": "04f9db93f060b5b69d5705ee21d7b15d7a13205f00b08b43c353b70c7d29e5ef"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-pause/phase-summary.json",
+      "bytes": 25899,
+      "sha256": "313c021ac20fc8c8c9fe0a4509d6ea60daf9f426ae4de564f86e6fb4da5eba20"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision05/phase-reconnect-pending-resume/phase-summary.json",
+      "bytes": 25945,
+      "sha256": "c7db26fe6188ec7a4d37ebb90cd3cfc011c770dda69edf57f68112ef927413a3"
+    },
+    {
+      "path": "target/source-phase-reconnect-native-run-20261009-revision02/complete/summary.json",
+      "bytes": 26712,
+      "sha256": "a763571b11cbab931c9bb608faa428c16b570b04c39ef1443528e0779f33a1a0"
+    },
+    {
+      "path": "target/source-phase-reconnect-native-run-20261009-revision02/same-epoch-active/summary.json",
+      "bytes": 20766279,
+      "sha256": "e74840ee76a4077cdfaffdd1d43488882d57b7bddcc2ce23725c77256318b27f"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009-revision03/authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order.stdout",
+      "bytes": 2335,
+      "sha256": "85f22cda95afa17a785b6631601a97a83dc20c498e0ce36dc5c5c391cc881519"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009/result.json",
+      "bytes": 1119,
+      "sha256": "1806ed6a79a0c1df2834dcafda26c8a4a997c751e9414903cb12647be44084e2"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision02/result.json",
+      "bytes": 1162,
+      "sha256": "03baa37d878810386c4ac4fb2b13c29df1f887b350168b807e116d1677204b9a"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision03/result.json",
+      "bytes": 1762,
+      "sha256": "ca8b81eb1a51e3ea48d2708d76a8997f0b9cfe34e4322831e98a90bf00599173"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision04/result.json",
+      "bytes": 3248,
+      "sha256": "d10e39bba97b9615b5b2dae226bf03f0e2f40f7fd8ab9efe4d7206aefa260781"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision05/result.json",
+      "bytes": 660,
+      "sha256": "0ec04c2ab228703b4aee10c0fc4fc93502f4f93a5dacb999206d0ae57f30e43b"
+    },
+    {
+      "path": "target/source-phase-reconnect-production-checks-20261009-revision05/01.stderr",
+      "bytes": 3333,
+      "sha256": "50fb807d3919f2120e2a6dc9514ff215cb58f20bfc6a346d29ebce4c68b074fa"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009/case-result.json",
+      "bytes": 2550,
+      "sha256": "05abe17662d29c186e1f7a7b2e2b3b0f9bbba23eb88a92684d9e0131b822addd"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision04/compile-result.json",
+      "bytes": 1382,
+      "sha256": "2c3d50b94c7d24c67b3c5c8e35434ba27496cbaf286225caa75b8ee5e8676b26"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-qa-run-20261009-revision04/compile.stderr",
+      "bytes": 480,
+      "sha256": "e850fde2f452440d436bb9e26e5450b5c82ff45525f19a3e8243598da829665f"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009/result.json",
+      "bytes": 823,
+      "sha256": "ab271cadd3e83d84c517ca127a3ccb372505e23cc8a309dae380db5489129bdf"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009/authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order.stderr",
+      "bytes": 290,
+      "sha256": "a3141a3cac1567582295e0a5948dc12865f0817a234b85fa7ac3b7d01cfec3ff"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009-revision02/result.json",
+      "bytes": 822,
+      "sha256": "7898c403057d66793ebc63adbe0600b9c4fb44b649e9d01b8cd4a840d1ba20ca"
+    },
+    {
+      "path": "target/source-phase-reconnect-malformed-prefix-run-20261009-revision02/authenticated_recovery_rejects_changed_prefix_sequence_watermark_and_order.stderr",
+      "bytes": 312,
+      "sha256": "3856c234a789b24bc3ce28197190278c57c3861e8eb10b8fd18fc80efb071453"
+    },
+    {
+      "path": "target/source-phase-reconnect-worker-proof-review-20261009-revision05/first-recalculation-failure.json",
+      "bytes": 276,
+      "sha256": "09200438404a7ac3fe23d02b4c7d2f263688fa4542869da9edd6b1a2a67648fe"
+    },
+    {
+      "path": "target/source-phase-v9-kira-proof-review-20261009-revision02/REPORT.md",
+      "bytes": 4285,
+      "sha256": "9db9d1906dab0ff5e40d2984d0bce7ffda2b4f91269d5b12e1f45b51474cdf54"
+    },
+    {
+      "path": "target/source-phase-v9-kira-proof-review-20261009-revision02/MANIFEST.json",
+      "bytes": 1274,
+      "sha256": "d7cb4b21abd188073e085816d3f55871d3cfaefb50ece310eba9cc1948022bf4"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/result.json",
+      "bytes": 2840,
+      "sha256": "2992380585558bcf117f98c605cc3ad2cee109ea84440347da5e1eeed3c7ed7e"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/plan.json",
+      "bytes": 48785,
+      "sha256": "3e8295ae1705942c1d40d0b4664a2fb497fd130b747745924835a617b991ae8a"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/build/build.json",
+      "bytes": 6777,
+      "sha256": "c8e67a22223353e3644d2f5de0f1ffbcf4dabe656207c7bf32f9cf88988c1df8"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/installed/summary.json",
+      "bytes": 6714,
+      "sha256": "ba6de5b865851db4b0e26de3c8f9a08419bcd4f05439cdfe9d2920e999ca4d67"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/installed.stdout",
+      "bytes": 167,
+      "sha256": "7c6261032107a01f2df7cb27887d6473e3a8e29b60ec5fcfb4ba11f38f1d4e63"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/installed.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-model/summary.json",
+      "bytes": 9803,
+      "sha256": "efcee34681d452227b76847aab6a48ad03b0cb1fa9ebbf3c0de616f5197a3fb9"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-model.stdout",
+      "bytes": 172,
+      "sha256": "76fc5364fe1d2880efecb725eb48f745403a89a1b533e1c269781e833717fc02"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-model.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-bad-source/summary.json",
+      "bytes": 8715,
+      "sha256": "bf54869f71c751a4a1813b0f8a70a60f8000bbadc2ae692602ca6fce42dd25d0"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-bad-source.stdout",
+      "bytes": 177,
+      "sha256": "56e71752c3ba05f6b05a1adf699ebd96d430d3f5eb629aa12f699d353da3228a"
+    },
+    {
+      "path": "target/source-phase-reconnect-public-check-20261009-revision02/recovery-bad-source.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "collector_execution": "Read-only receipts and hashing plus target-only JSON/document draft; no Rust/Cargo/products/network/source/Git modification",
+  "documentation_draft": {
+    "frozen_patch": {
+      "path": "target/source-phase-reconnect-final-evidence-20261009-revision02/docs.patch",
+      "bytes": 18981,
+      "sha256": "db52d599ff7594a2fe5f721d0f4f2a64c30529d2070a45ea6e97be18d82c661e"
+    },
+    "tools_readme": {
+      "path": "target/source-phase-reconnect-final-evidence-20261009-revision02/docs/tools/quic-live-check/README.md",
+      "bytes": 6486,
+      "sha256": "6e063629e0dc66eda19314a06e9f800d9b54c0e4860e04043217b3757e0b0fba"
+    }
+  },
+  "compact_record": "Raw subordinate streams, all 88 original proofs and full guard map remain bound by direct terminal/reviewer receipts; no source maps or Replay byte arrays copied"
+}

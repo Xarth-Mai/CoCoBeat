@@ -79,21 +79,21 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 ## 原音源相位维护
 
-protocol / ALPN v8 在原 Running worker 内按歌曲进度约每5秒比较两个原音源，在可靠流传递原 generation、source_id、sequence、f64 position bits 与完整 publication 时间区间；每轮绑定一份实际 CBMC 四时间戳，不以时钟区间中点或推算游标代替原出版
+原音源相位维护自 protocol / ALPN v8 接入；当前 v9 在原 Running worker 内按歌曲进度约每5秒比较两个原音源，在可靠流传递原 generation、source_id、sequence、f64 position bits 与完整 publication 时间区间；每轮绑定一份实际 CBMC 四时间戳，不以时钟区间中点或推算游标代替原出版
 
 实际2ms只读采样窗口最多64条，原出版年龄50ms、收集窗口1秒、可靠交付250ms；共同过去点须被完整不确定性区间夹逼，两个位置与差值全区间必须支持原±2400帧 guard。普通检查保持 Playing / Running 和输入，仅实际超 guard 才进入原句柄暂停与自然追赶流程；后验须使用更新的 CBMC 和实际 source 出版，不能靠 Armed 入队确认恢复
 
 每轮沿原30秒期限，最多128轮 /64次校正，可靠 Phase 控制每方向每轮最多16条、每epoch最多2048条 /32MiB；原输入 FIFO、水位、End/count/EOF 与 FinishAck 保持，控制 Ended 只排空控制 reader，不替代歌曲 End。校正期间屏蔽演奏、歌曲与设置操作，取消和窗口关闭有效，重新开放输入需要新的释放事件
 
-[相位维护软件观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)包含42项 net /179项 runtime 普通测试、三个明确真实 QUIC 窄测及当前原生双方两轮实际 Kira 检查；双方自然完成、846条事实和5个事件一致，两个完整差值区间均为[-514,514]帧。该样本未触发校正，实际暂停追赶闭环、多轮强制漂移、active Phase 的认证续接重绑、设备与双机仍待验证；当前未支持的 active Phase 续接保持失败与真实前缀
+[相位维护软件观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)包含42项 net /179项 runtime 普通测试、三个明确真实 QUIC 窄测及当前原生双方两轮实际 Kira 检查；双方自然完成、846条事实和5个事件一致，两个完整差值区间均为[-514,514]帧。该样本未触发校正，实际暂停追赶闭环、多轮强制漂移、active Phase 的认证续接重绑、设备与双机仍待验证；该 v8 冻结版未支持的 active Phase 续接保持原失败与真实前缀，当前 v9 见下节
 
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/8`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/9`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
 邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，首次连接仍只接受一次尝试；已开始的实时局另有下述独立续演能力，初始握手失败后重新运行会生成新邀请
 
-协议 v8 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 3；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
+当前协议 v9 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 3；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
 
 实时 Replay v2 从实际原生 StagePlan 记录版本，开发歌曲与 headless 没有 StagePlan，因此输出保持 core-only v1；headless 模板即便带明确视觉版本也只提供经过校验的事实，不把模板版本或新 epoch 解释为已经渲染历史舞台
 
@@ -115,7 +115,7 @@ net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识
 
 ## 同 epoch 续演
 
-协议 v8 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset、可靠输入帧 / 伙伴进展 Deadline 和 typed 时钟维护 Stale 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
+当前协议 v9 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset、可靠输入帧 / 伙伴进展 Deadline 和 typed 时钟维护 Stale 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
 
 恢复先冻结本地演奏输入，暂停同一个 Kira SoundHandle，保留 PCM、source generation / id、Session、core、seq 和全部原 Replay。两个实际 Paused publication 的前进 sequence 与相同 frame 确认稳定暂停后，worker 在独占 `recovery-1/` 保存自己的已接受 tape、GUI 全历史和恢复元数据；原录制文件保持，token 不进入日志。两端对账完整逐玩家历史，原 owner 前缀必须逐项相同，只有真正缺失的尾部经原 ingest 入口补入一次，重复 seq、倒退水位、改写与重排均终止
 
@@ -128,6 +128,18 @@ net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识
 原流与续接流各自每方向最多 32 MiB，长度前缀在 body 分配或发送前预留预算；只能续接一次，因此每方向累计最多 64 MiB。候选认证最多四次，未认证候选失败不损坏仍可用的原连接，已认证续演失败或 30 秒耗尽则终止。单条消息、队列、事实、Replay 和历史对账沿用有界限制；跨 QUIC 流的控制 Live 与 peer Facts / End 在 gate 完成前按可靠输入流顺序保留，不能提前结束或丢弃已经接受的事实
 
 这次 gate 约束的是过去的软件 source publication 区间，尚不提供未来 callback 上界、声卡漂移补偿或扬声器同步保证；真实双机、物理输入、输出设备及长期漂移继续单独验收
+
+## Active Phase 的认证续接重绑
+
+当前 protocol / ALPN v9 将 Phase 消息与原 source floors 绑定 connection_attempt；普通连接 attempt0，唯一认证续接 attempt1，保留原 round / deadline / 已花校正预算、音源身份和逐玩家 owner tapes / FIFO，不延长原30秒期限
+
+RecoveryReady(Some) 保持输入屏蔽，实际 PhaseRebound 后以新鲜原 publication 和更新的真实 ClockSync 完成同轮 ReconnectVerification，可靠门控到 PhaseReady 才开放输入；同轮不再次校正，原已预约 source 先取得真实 Playing / forward ACK，再暂停并保留原跨度
+
+[当前 v9 续接观察](../testdata/synthetic/source-phase-reconnect-observations-20261009.json)绑定最新构建图：net52 / runtime185、四个真实 QUIC 窄测函数和四个认证坏历史拒绝通过；最新六项整数软件源模型全部实际成功，双向双方各在 round4 /8 /12 完成三次校正，Sampling / Paused / pending-resume 在原 round1 /4 /4 续接并得到后续 attempt1 Ready，88份完整 proof 与450个 guards 独立重算保持
+
+另两项当前 Linux 双游戏 Kira 普通检查 / 同源普通维护恢复自然完成，各833 /837条事实、5个事件及双方相同权威 Replay；它们没有覆盖 Kira 强制漂移或 active Phase 阶段重绑。整数模型以 QA 取消保存部分前缀，不是自然 EOF；原队列、编译、fixture 和 reviewer FAIL 独立保留，历史 TLS failure 的实际 winning branch UNKNOWN
+
+Phase read 保留既有 typed 传输分类，坏 JSON / 预算 / 不完整 EOF 保持终态；其他 send/control String 路径未扩展，不能推断所有传输故障均可恢复。AwaitLive / last-sealed 只有 metadata unit，真实 owned QUIC 边缘、物理设备、DAC / 双机继续 NOT_RUN，原 v8 观察仅绑定其原版本
 
 ## 故障后的新轮次软件验证
 

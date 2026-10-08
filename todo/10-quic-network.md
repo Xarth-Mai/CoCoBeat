@@ -10,7 +10,8 @@
 - [x] 同 epoch 原进程、原音源与原历史的软件续演
 - [x] Running 期间有界进程时钟维护与过期样本故障处理
 - [x] 原始音源出版的有界相位检查与生产 Running 接线
-- [x] 声明整数软件源的真实 worker 双向三轮超 guard 校正与源身份拒绝，见[软件源观察](../testdata/synthetic/source-phase-model-observations-20261009.json)
+- [x] 原 protocol8 声明整数软件源的真实 worker 双向三轮超 guard 校正与源身份拒绝，见[软件源观察](../testdata/synthetic/source-phase-model-observations-20261009.json)
+- [x] protocol9 整数软件源的 active Phase 一次认证续接与原 round / deadline / floors / FIFO 保真，见[续接观察](../testdata/synthetic/source-phase-reconnect-observations-20261009.json)
 - [ ] 实际 Kira 超 guard 校正、active Phase 认证续接与长期漂移故障矩阵
 - [ ] 长期声卡漂移测量与校正
 - [x] 每位玩家可靠输入流与进度水位：水位关闭前不能把未到达当作未按键
@@ -43,3 +44,5 @@
 正常与真实双向 UDP 黑洞恢复双方权威 Replay 一致；黑洞以实际样本年龄 2006536911 / 2006500101 ns 超过原2秒有效期触发，两端均无 RequestRecovery，见[维护观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)。本批只更新进程时钟映射，长期双音源相位校正未完成；原29秒可靠 deadline 分支的历史证据保留，本次未复跑该分支，实际 Kira 丢包、物理设备、双机与真人继续独立验收
 
 2026-10-09 · protocol / ALPN v8 的原音源相位检查已接生产，net42 / runtime179 普通测试、三个真实 QUIC 窄测、Clippy / 格式 / 边界和当前 Game / Lab 构建通过；Gamescope 原生双方各完成两轮实际 Kira 原出版检查，完整差值均[-514,514]帧，原句柄 / source floors / 可靠 FIFO 和终局846条事实、5个事件及权威 Replay 保持。原 Xvfb 无 DRI3 的呈现失败保留；未触发实际校正，多轮漂移、active Phase 续接重绑及设备 /双机继续，见[相位观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)
+
+2026-10-09 · 当前 protocol / ALPN v9：net52 / runtime185与六项本机检查、四个真实 QUIC 窄测函数 / 五类 typed read 控制和四个坏历史拒绝通过；最新六模型实际成功，88份 proof /450个 guards 重算保持，原失败链保留。另两项当前 Kira 普通检查与同源普通恢复自然完成，833 /837条事实和权威一致；Kira 强制漂移 / active阶段重绑、AwaitLive、DAC /双机继续未验，见[续接观察](../testdata/synthetic/source-phase-reconnect-observations-20261009.json)

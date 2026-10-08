@@ -263,7 +263,8 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
                     LiveEvent::PhaseSampling { .. }
                     | LiveEvent::PhasePausing { .. }
                     | LiveEvent::PhaseScheduled { .. }
-                    | LiveEvent::PhaseReady { .. } => {
+                    | LiveEvent::PhaseReady { .. }
+                    | LiveEvent::PhaseRebound { .. } => {
                         panic!(
                             "this software probe has not announced an actual original phase source"
                         )
@@ -645,6 +646,24 @@ fn relay_invitation(original: &Path, relay: &UdpRelay, copied: &Path) {
 }
 
 // The oscillator below is declared QA input, not a PCM/device acknowledgment
+fn read_model_source(
+    sequence: &mut u64,
+    started_at: Instant,
+    initial_seconds: f64,
+) -> cocobeat_net::PhasePublication {
+    let before = Instant::now();
+    let position_seconds = initial_seconds + before.duration_since(started_at).as_secs_f64();
+    let after = Instant::now();
+    *sequence = sequence
+        .checked_add(1)
+        .expect("software source sequence overflow");
+    cocobeat_net::PhasePublication {
+        sequence: *sequence,
+        position_seconds_bits: position_seconds.to_bits(),
+        published_between: [before, after],
+    }
+}
+
 fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
     use cocobeat_net::{RecoveryFrozen, RecoveryObserved, RecoveryPublication};
     use cocobeat_replay::ReplayIdentity;
@@ -689,6 +708,8 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
     let mut maintained_clocks: [Vec<serde_json::Value>; 2] = [Vec::new(), Vec::new()];
     let mut clock_sync: [Option<cocobeat_net::clock::ClockSync>; 2] = [None, None];
     let mut paused = [0_i64; 2];
+    let mut paused_seconds = [0_f64; 2];
+    let mut frozen_publications = [None, None];
     let mut resume = [None, None];
     let mut verify = [None, None];
     let mut sampling = [false; 2];
@@ -731,7 +752,7 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                         identities[index] = Some(ReplayIdentity {
                             content_id,
                             rules_id: "duo-watermark-v1".into(),
-                            build_id: "software-oscillator-QA".into(),
+                            build_id: "software-oscillator-QA-v9-raw-seconds".into(),
                             stage_compiler_version: Some(stage_compiler_version),
                         });
                         workers[index].try_send(LiveCommand::Ready).unwrap();
@@ -775,16 +796,46 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                     LiveEvent::PhaseSampling { .. }
                     | LiveEvent::PhasePausing { .. }
                     | LiveEvent::PhaseScheduled { .. }
-                    | LiveEvent::PhaseReady { .. } => {
+                    | LiveEvent::PhaseReady { .. }
+                    | LiveEvent::PhaseRebound { .. } => {
                         panic!(
                             "this software probe has not announced an actual original phase source"
                         )
                     }
                     LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
-                    LiveEvent::RecoveryPausing { epoch, attempt } => {
+                    LiveEvent::RecoveryPausing {
+                        epoch,
+                        attempt,
+                        deadline,
+                        phase_round,
+                    } => {
                         assert_eq!(epoch, prepared[index].unwrap().0);
                         assert_eq!(attempt, 1);
-                        let now = Instant::now();
+                        assert_eq!(
+                            phase_round, None,
+                            "software probe has not announced PhaseSource"
+                        );
+                        let publication = read_model_source(
+                            &mut publication_seq[index],
+                            initial_deadline[index].unwrap(),
+                            index as f64 * 500.0 / 48_000.0,
+                        );
+                        let now = publication.published_between[1];
+                        assert!(
+                            now < deadline,
+                            "original recovery deadline must remain future"
+                        );
+                        paused_seconds[index] = f64::from_bits(publication.position_seconds_bits);
+                        paused[index] = SongTime::try_from_seconds_f64(paused_seconds[index])
+                            .unwrap()
+                            .frames();
+                        frozen_publications[index] = Some(serde_json::json!({
+                            "sequence":publication.sequence,
+                            "position_seconds_bits":publication.position_seconds_bits,
+                            "captured_since_initial_start_ns":publication.published_between.map(|stamp| stamp.duration_since(initial_deadline[index].unwrap()).as_nanos()),
+                            "paused_frame":paused[index],"generation":1,"source_id":index as u64 + 1,
+                            "coordinate_policy":"actual std::Instant read bracket relative to original Scheduled.deadline; raw software oscillator seconds before production frame conversion"
+                        }));
                         frozen[index] = true;
                         if let Some(relay) = &relay {
                             let sample = maintained_clocks[index]
@@ -820,12 +871,6 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                                 relay.blackhole(false);
                             }
                         }
-                        paused[index] = (now
-                            .duration_since(initial_deadline[index].unwrap())
-                            .as_nanos()
-                            * 48_000
-                            / 1_000_000_000) as i64
-                            + index as i64 * 500;
                         let mut replay =
                             Replay::new(identities[index].clone().unwrap(), epoch).unwrap();
                         for input in accepted[index].iter().chain(&peer[index]) {
@@ -841,6 +886,8 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                                     source_generation: 1,
                                     source_id: index as u64 + 1,
                                     paused_at: now,
+                                    publication,
+                                    prior_phase_pause: None,
                                 }),
                             })
                             .unwrap();
@@ -895,7 +942,15 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                         assert!(not_before <= Instant::now());
                         sampling[index] = true;
                     }
-                    LiveEvent::RecoveryReady { epoch, attempt } => {
+                    LiveEvent::RecoveryReady {
+                        epoch,
+                        attempt,
+                        phase_round,
+                    } => {
+                        assert_eq!(
+                            phase_round, None,
+                            "unannounced PhaseSource cannot unlock a rebound"
+                        );
                         assert!(
                             valid || scenario == "recovery-second-loss",
                             "negative model must not unlock input"
@@ -993,13 +1048,17 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                 && last_original_watermark[index]
                     .is_none_or(|last: Instant| last.elapsed() >= Duration::from_millis(50))
             {
-                let now = Instant::now();
-                let frame = (now
-                    .duration_since(initial_deadline[index].unwrap())
-                    .as_nanos()
-                    * 48_000
-                    / 1_000_000_000) as i64
-                    + index as i64 * 500;
+                let publication = read_model_source(
+                    &mut publication_seq[index],
+                    initial_deadline[index].unwrap(),
+                    index as f64 * 500.0 / 48_000.0,
+                );
+                let now = publication.published_between[1];
+                let frame = SongTime::try_from_seconds_f64(f64::from_bits(
+                    publication.position_seconds_bits,
+                ))
+                .unwrap()
+                .frames();
                 let (epoch, player, _) = prepared[index].unwrap();
                 let input = watermark(epoch, player, frame - 2_400);
                 workers[index].try_send(LiveCommand::Fact(input)).unwrap();
@@ -1009,13 +1068,20 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
             if let Some(deadline) = resume[index] {
                 let now = Instant::now();
                 if now > deadline {
-                    let frame = paused[index]
-                        + (now.duration_since(deadline).as_nanos() * 48_000 / 1_000_000_000) as i64;
-                    publication_seq[index] += 1;
+                    let publication = read_model_source(
+                        &mut publication_seq[index],
+                        deadline,
+                        paused_seconds[index],
+                    );
+                    let frame = SongTime::try_from_seconds_f64(f64::from_bits(
+                        publication.position_seconds_bits,
+                    ))
+                    .unwrap()
+                    .frames();
                     let row = RecoveryPublication {
-                        sequence: publication_seq[index],
+                        sequence: publication.sequence,
                         frame: SongTime::from_frames(frame),
-                        published_between: [now; 2],
+                        published_between: publication.published_between,
                     };
                     if progress[index].is_none() {
                         progress[index] = Some(row);
@@ -1222,7 +1288,7 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
         )
         .unwrap();
     }
-    serde_json::json!({"status":"PASS","scenario":scenario,"same_epoch":true,"snapshots_unchanged":true,"player_tape_prefix_preserved":true,"recovery_ready":ready,"owned_workers_finished":true,"clock_maintenance_samples":[maintained_clocks[0].len(),maintained_clocks[1].len()],"clock_maintenance_receipts":maintained_clocks,"queued_facts":accepted.map(|facts|facts.len()),"unauth_candidate_rejected":scenario == "recovery-unauth-candidate" && candidate_failed,"second_recovery_terminal":second_loss,"cancel_requested":cancelled,"actual_udp_blackhole":udp,"scope":if udp { "actual UDP blackhole and typed clock-freshness or reliable-input deadline triggered same-epoch production worker recovery; unchanged declared integer monotonic software source model; no Kira, original SoundHandle, PCM/device or two-machine acceptance" } else { "actual TLS/QUIC production worker with declared integer monotonic software source model; controlled active connection rebuilding; no Kira, original SoundHandle, PCM/device, UDP loss, or two-machine acceptance" }})
+    serde_json::json!({"status":"PASS","scenario":scenario,"source_model":"qa-v9-raw-monotonic-seconds-v1","frozen_publications":frozen_publications,"same_epoch":true,"snapshots_unchanged":true,"player_tape_prefix_preserved":true,"recovery_ready":ready,"owned_workers_finished":true,"clock_maintenance_samples":[maintained_clocks[0].len(),maintained_clocks[1].len()],"clock_maintenance_receipts":maintained_clocks,"queued_facts":accepted.map(|facts|facts.len()),"unauth_candidate_rejected":scenario == "recovery-unauth-candidate" && candidate_failed,"second_recovery_terminal":second_loss,"cancel_requested":cancelled,"actual_udp_blackhole":udp,"scope":if udp { "actual UDP blackhole and typed clock-freshness or reliable-input deadline triggered same-epoch production worker recovery; declared monotonic software source model with raw seconds and bounded read capture; no Kira, original SoundHandle, PCM/device or two-machine acceptance" } else { "actual TLS/QUIC production worker with declared monotonic software source model with raw seconds and bounded read capture; controlled active connection rebuilding; no Kira, original SoundHandle, PCM/device, UDP loss, or two-machine acceptance" }})
 }
 
 fn main() {

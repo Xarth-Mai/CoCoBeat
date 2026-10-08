@@ -25,6 +25,11 @@ const SAMPLE_TAIL: Duration = Duration::from_millis(80);
 const MAX_PUBLICATIONS: usize = 64;
 
 enum Step {
+    WaitingForResume {
+        floor: SongTime,
+        paused_at: Instant,
+        acknowledged: Option<RecoveryPublication>,
+    },
     Pausing {
         stable: Option<RecoveryPublication>,
         paused_bits: Option<u64>,
@@ -52,7 +57,7 @@ struct Resume {
 #[derive(Clone, Copy)]
 enum Purpose {
     Reconnect,
-    SourceMaintenance { round: u16 },
+    SourceMaintenance { round: u16, attempt: u8 },
 }
 
 pub(super) struct Recovery {
@@ -60,6 +65,8 @@ pub(super) struct Recovery {
     epoch: SessionEpoch,
     end: SongTime,
     started_at: Instant,
+    deadline: Instant,
+    prior_phase_pause: Option<[Instant; 2]>,
     generation: u64,
     source_id: u64,
     last: SourceObservation,
@@ -128,6 +135,8 @@ impl Recovery {
             epoch: session.epoch(),
             end,
             started_at: now,
+            deadline: now + RECOVERY_TIMEOUT,
+            prior_phase_pause: None,
             generation: source.generation,
             source_id: source.source_id,
             last: source,
@@ -138,15 +147,44 @@ impl Recovery {
         })
     }
 
+    pub(super) fn waiting_for_resume(&self) -> bool {
+        matches!(self.step, Step::WaitingForResume { .. })
+    }
+
+    pub(super) fn requests_pause(&self) -> bool {
+        matches!(self.step, Step::Pausing { .. })
+    }
+
+    fn frozen_command(&self, session: &Session) -> Option<LiveCommand> {
+        let Step::Frozen {
+            frame,
+            acknowledged_at,
+            ..
+        } = self.step
+        else {
+            return None;
+        };
+        Some(LiveCommand::RecoveryFrozen {
+            epoch: self.epoch,
+            attempt: 1,
+            snapshot: Box::new(RecoveryFrozen {
+                replay: session.replay.clone(),
+                paused_frame: frame,
+                source_generation: self.generation,
+                source_id: self.source_id,
+                paused_at: acknowledged_at,
+                publication: raw_publication(self.last),
+                prior_phase_pause: self.prior_phase_pause,
+            }),
+        })
+    }
+
     pub(super) fn active(&self) -> bool {
         !matches!(self.step, Step::Ready)
     }
 
     fn check_time(&self, now: Instant) -> Result<(), String> {
-        if now
-            .checked_duration_since(self.started_at)
-            .is_none_or(|age| age >= RECOVERY_TIMEOUT)
-        {
+        if now < self.started_at || now >= self.deadline {
             return Err("Recovery exceeded its fixed thirty-second window".into());
         }
         Ok(())
@@ -207,15 +245,14 @@ impl Recovery {
         };
         if state != Some(PlaybackState::Paused)
             || publication(self.last, self.end, now)?.frame != frame
-            || matches!(self.purpose, Purpose::SourceMaintenance { .. })
-                && self.last.position_seconds.to_bits() != position_seconds_bits
+            || self.last.position_seconds.to_bits() != position_seconds_bits
             || deadline
                 .checked_duration_since(now)
                 .is_none_or(|lead| lead < Duration::from_millis(100))
             || verify_at <= deadline
             || verify_at
-                .checked_duration_since(self.started_at)
-                .is_none_or(|age| age + SAMPLE_TAIL >= RECOVERY_TIMEOUT)
+                .checked_add(SAMPLE_TAIL)
+                .is_none_or(|until| until >= self.deadline)
             || common_frame < frame
             || common_frame >= self.end
         {
@@ -312,6 +349,45 @@ impl Recovery {
         let mut commands = Vec::new();
         let mut events = Vec::new();
         match &mut self.step {
+            Step::WaitingForResume {
+                floor,
+                paused_at,
+                acknowledged,
+            } => {
+                if !matches!(
+                    state,
+                    Some(PlaybackState::Resuming | PlaybackState::Playing)
+                ) {
+                    return Err("Reconnect lost the original pending resume".into());
+                }
+                if state == Some(PlaybackState::Playing)
+                    && let Some(ack) = acknowledged.take().or(row.filter(|row| row.frame > *floor))
+                {
+                    if ack.published_between[0] < *paused_at {
+                        return Err("Reconnect original resume predates its pause ACK".into());
+                    }
+                    self.prior_phase_pause
+                        .get_or_insert([*paused_at, ack.published_between[1]]);
+                    if session.clock.state() == ClockState::Paused {
+                        session
+                            .clock
+                            .resume(monotonic(ack.published_between[0], input_origin)?)
+                            .map_err(|error| format!("Reconnect original resume ACK: {error:?}"))?;
+                    }
+                    session.observe_audio(
+                        self.last.position_seconds,
+                        monotonic(self.last.published_between[1], input_origin)?,
+                    )?;
+                    session.update_position(monotonic(now, input_origin)?)?;
+                    let (facts, confirmed) = session.advance_player(player)?;
+                    commands.extend(facts.into_iter().map(LiveCommand::Fact));
+                    events = confirmed;
+                    self.step = Step::Pausing {
+                        stable: None,
+                        paused_bits: None,
+                    };
+                }
+            }
             Step::Pausing {
                 stable,
                 paused_bits,
@@ -325,11 +401,9 @@ impl Recovery {
                 if state == Some(PlaybackState::Paused)
                     && let Some(row) = row.filter(|row| row.published_between[0] >= self.started_at)
                 {
-                    if stable.is_some_and(|previous| previous.frame == row.frame)
-                        && (matches!(self.purpose, Purpose::Reconnect)
-                            || stable.is_some_and(|previous| previous.sequence < row.sequence)
-                                && self.last.position_seconds.to_bits()
-                                    == paused_bits.unwrap_or(u64::MAX))
+                    if stable.is_some_and(|previous| {
+                        previous.frame == row.frame && previous.sequence < row.sequence
+                    }) && self.last.position_seconds.to_bits() == paused_bits.unwrap_or(u64::MAX)
                     {
                         let at = monotonic(row.published_between[1], input_origin)?;
                         session.observe_audio(self.last.position_seconds, at)?;
@@ -348,20 +422,25 @@ impl Recovery {
                                     source_generation: self.generation,
                                     source_id: self.source_id,
                                     paused_at: now,
-                                }),
-                            },
-                            Purpose::SourceMaintenance { round } => LiveCommand::PhaseFrozen {
-                                epoch: self.epoch,
-                                round,
-                                snapshot: Box::new(PhaseFrozen {
-                                    replay: session.replay.clone(),
-                                    paused_frame: row.frame,
-                                    source_generation: self.generation,
-                                    source_id: self.source_id,
-                                    paused_at: now,
                                     publication: raw_publication(self.last),
+                                    prior_phase_pause: self.prior_phase_pause,
                                 }),
                             },
+                            Purpose::SourceMaintenance { round, attempt } => {
+                                LiveCommand::PhaseFrozen {
+                                    epoch: self.epoch,
+                                    round,
+                                    attempt,
+                                    snapshot: Box::new(PhaseFrozen {
+                                        replay: session.replay.clone(),
+                                        paused_frame: row.frame,
+                                        source_generation: self.generation,
+                                        source_id: self.source_id,
+                                        paused_at: now,
+                                        publication: raw_publication(self.last),
+                                    }),
+                                }
+                            }
                         });
                         self.step = Step::Frozen {
                             frame: row.frame,
@@ -381,8 +460,7 @@ impl Recovery {
             } => {
                 if state != Some(PlaybackState::Paused)
                     || SongTime::try_from_seconds_f64(self.last.position_seconds) != Some(*frame)
-                    || matches!(self.purpose, Purpose::SourceMaintenance { .. })
-                        && self.last.position_seconds.to_bits() != *position_seconds_bits
+                    || self.last.position_seconds.to_bits() != *position_seconds_bits
                 {
                     return Err("Recovery original source did not remain frozen".into());
                 }
@@ -522,12 +600,24 @@ pub(super) struct PhaseMaintenance {
     end: SongTime,
     last: SourceObservation,
     last_round: u16,
+    connection_attempt: u8,
+    last_round_deadline: Option<Instant>,
     round: Option<MaintenanceRound>,
+    reconnect: Option<ReconnectPhase>,
+}
+
+struct ReconnectPhase {
+    round: Option<u16>,
+    deadline: Instant,
+    ready: bool,
 }
 
 struct MaintenanceRound {
     number: u16,
+    attempt: u8,
+    rebound: bool,
     started_at: Instant,
+    deadline: Instant,
     sample: Option<PhaseSample>,
     check_observed: bool,
     verification_observed: bool,
@@ -555,18 +645,235 @@ impl PhaseMaintenance {
             end,
             last: source,
             last_round: 0,
+            connection_attempt: 0,
+            last_round_deadline: None,
             round: None,
+            reconnect: None,
         })
     }
 
+    pub(super) fn end(&self) -> SongTime {
+        self.end
+    }
+
+    #[cfg(test)]
     pub(super) fn active(&self) -> bool {
         self.round.is_some()
     }
 
     pub(super) fn correcting(&self) -> bool {
-        self.round
+        self.reconnect.is_some()
+            || self
+                .round
+                .as_ref()
+                .is_some_and(|round| round.rebound || round.correction.is_some())
+    }
+
+    pub(super) fn expect_attempt(&self, round: u16, attempt: u8) -> Result<(), String> {
+        if self.reconnect.is_some()
+            || attempt > 1
+            || self
+                .round
+                .as_ref()
+                .map_or(attempt != self.connection_attempt, |active| {
+                    active.number != round || active.attempt != attempt
+                })
+        {
+            return Err("Phase result belongs to an old connection or suspended round".into());
+        }
+        Ok(())
+    }
+
+    /// Stop the old producer before the original FIFO's RecoveryFrozen fence
+    pub(super) fn reconnect(
+        &mut self,
+        session: &mut Session,
+        observed: (SourceObservation, Option<PlaybackState>),
+        now: Instant,
+        input_origin: Instant,
+        deadline: Instant,
+        phase_round: Option<u16>,
+    ) -> Result<(Recovery, Option<LiveCommand>), String> {
+        let (source, state) = observed;
+        if self.reconnect.is_some()
+            || self.connection_attempt != 0
+            || session.epoch() != self.epoch
+            || now >= deadline
+        {
+            return Err("Reconnect duplicated or exceeded its original deadline".into());
+        }
+        self.observe(source, now)?;
+        let round = self
+            .round
             .as_ref()
-            .is_some_and(|round| round.correction.is_some())
+            .map(|round| round.number)
+            .or(phase_round);
+        if phase_round.is_some() && phase_round != round
+            || round.is_some_and(|number| number == 0 || number > 128)
+        {
+            return Err("Reconnect Phase round differs from the original source".into());
+        }
+        let original_deadline = if let Some(active) = &self.round {
+            if active.attempt != 0 {
+                return Err("Original Phase already used its only continuation".into());
+            }
+            Some(active.deadline)
+        } else if round == Some(self.last_round) {
+            self.last_round_deadline
+        } else {
+            if round.is_some_and(|number| self.last_round.checked_add(1) != Some(number)) {
+                return Err("Reconnect cannot skip an unobserved Phase round".into());
+            }
+            None
+        };
+        let deadline = original_deadline.map_or(deadline, |old| old.min(deadline));
+        if now >= deadline {
+            return Err("Reconnect cannot extend the original Phase deadline".into());
+        }
+        self.stop_sampling();
+        let previous = self
+            .round
+            .as_mut()
+            .and_then(|round| round.correction.take());
+        let mut recovery = if let Some(mut recovery) = previous {
+            let current = recovery.read(Some(source), now)?;
+            recovery.purpose = Purpose::Reconnect;
+            match &recovery.step {
+                Step::Frozen {
+                    frame,
+                    position_seconds_bits,
+                    ..
+                } if state == Some(PlaybackState::Paused)
+                    && publication(source, self.end, now)?.frame == *frame
+                    && source.position_seconds.to_bits() == *position_seconds_bits => {}
+                Step::Pausing { .. }
+                    if matches!(state, Some(PlaybackState::Pausing | PlaybackState::Paused)) =>
+                {
+                    recovery.step = Step::Pausing {
+                        stable: None,
+                        paused_bits: None,
+                    };
+                }
+                Step::Resuming(resume)
+                    if matches!(
+                        state,
+                        Some(PlaybackState::Resuming | PlaybackState::Playing)
+                    ) =>
+                {
+                    let floor = resume.frozen_frame;
+                    let paused_at = resume.acknowledged_at;
+                    let acknowledged = resume.progress.or(current
+                        .filter(|row| state == Some(PlaybackState::Playing) && row.frame > floor));
+                    recovery.prior_phase_pause =
+                        acknowledged.map(|progress| [paused_at, progress.published_between[1]]);
+                    recovery.step = Step::WaitingForResume {
+                        floor,
+                        paused_at,
+                        acknowledged,
+                    };
+                }
+                _ => return Err("Reconnect lost its original correction state".into()),
+            }
+            recovery
+        } else {
+            if state != Some(PlaybackState::Playing) {
+                return Err("Reconnect needs the acknowledged original Playing source".into());
+            }
+            Recovery::begin(session, self.end, Some(source), now, input_origin)?
+        };
+        recovery.deadline = recovery.deadline.min(deadline);
+        recovery.check_time(now)?;
+        self.reconnect = Some(ReconnectPhase {
+            round,
+            deadline: recovery.deadline,
+            ready: false,
+        });
+        let snapshot = recovery.frozen_command(session);
+        Ok((recovery, snapshot))
+    }
+
+    /// Connection-ready is not source-phase-ready and never releases a pending Phase gate
+    pub(super) fn reconnect_ready(
+        &mut self,
+        round: Option<u16>,
+        now: Instant,
+    ) -> Result<bool, String> {
+        let pending = self
+            .reconnect
+            .as_mut()
+            .ok_or("Reconnect Ready has no original source fence")?;
+        if pending.ready
+            || now >= pending.deadline
+            || pending.round.is_some() && pending.round != round
+            || round.is_some_and(|number| number == 0 || number > 128)
+        {
+            return Err("Reconnect Ready changed its original Phase round or deadline".into());
+        }
+        if let Some(number) = round {
+            if number == self.last_round {
+                let original = self
+                    .last_round_deadline
+                    .ok_or("Unknown sealed Phase deadline")?;
+                pending.deadline = pending.deadline.min(original);
+            } else if self.round.as_ref().map(|active| active.number) != Some(number)
+                && self.last_round.checked_add(1) != Some(number)
+            {
+                return Err("Reconnect Ready skipped an original Phase round".into());
+            }
+            if now >= pending.deadline {
+                return Err("Reconnect Ready exceeded the original sealed deadline".into());
+            }
+        }
+        pending.round = round;
+        pending.ready = true;
+        if round.is_none() {
+            self.connection_attempt = 1;
+            self.reconnect = None;
+            return Ok(true);
+        }
+        Ok(false)
+    }
+
+    pub(super) fn rebound(
+        &mut self,
+        round: u16,
+        attempt: u8,
+        deadline: Instant,
+        source: SourceObservation,
+        state: Option<PlaybackState>,
+        now: Instant,
+    ) -> Result<(), String> {
+        let pending = self
+            .reconnect
+            .as_ref()
+            .ok_or("Phase rebound has no original reconnect")?;
+        if !pending.ready
+            || pending.round != Some(round)
+            || attempt != 1
+            || now >= deadline
+            || deadline > pending.deadline
+            || state != Some(PlaybackState::Playing)
+        {
+            return Err(
+                "Phase rebound changed its connection, original deadline or source gate".into(),
+            );
+        }
+        self.observe(source, now)?;
+        let started_at = now;
+        self.round = Some(MaintenanceRound {
+            number: round,
+            attempt: 1,
+            rebound: true,
+            started_at,
+            deadline,
+            sample: None,
+            check_observed: false,
+            verification_observed: false,
+            correction: None,
+        });
+        self.connection_attempt = 1;
+        self.reconnect = None;
+        Ok(())
     }
 
     pub(super) fn observe(
@@ -595,10 +902,10 @@ impl PhaseMaintenance {
 
     fn matching(&mut self, round: u16, now: Instant) -> Result<&mut MaintenanceRound, String> {
         let active = self.round.as_mut().ok_or("Phase round is not active")?;
-        if active.number != round
-            || now
-                .checked_duration_since(active.started_at)
-                .is_none_or(|age| age >= RECOVERY_TIMEOUT)
+        if self.reconnect.is_some()
+            || active.number != round
+            || now < active.started_at
+            || now >= active.deadline
         {
             return Err("Phase round differs or exceeded its fixed deadline".into());
         }
@@ -642,7 +949,10 @@ impl PhaseMaintenance {
             }
             self.round = Some(MaintenanceRound {
                 number: round,
+                attempt: self.connection_attempt,
+                rebound: false,
                 started_at: now,
+                deadline: now + RECOVERY_TIMEOUT,
                 sample: None,
                 check_observed: false,
                 verification_observed: false,
@@ -655,15 +965,21 @@ impl PhaseMaintenance {
         if active.sample.is_some()
             || (verification && active.verification_observed)
             || (!verification && active.check_observed)
-            || until
-                .checked_duration_since(active.started_at)
-                .is_none_or(|age| age >= RECOVERY_TIMEOUT)
+            || until >= active.deadline
         {
             return Err(
                 "Phase sampling is duplicate or outside the original round deadline".into(),
             );
         }
-        let frozen = if verification {
+        let frozen = if active.rebound {
+            if !verification
+                || state != Some(PlaybackState::Playing)
+                || not_before < active.started_at
+            {
+                return Err("Rebound needs its fresh original-source verification window".into());
+            }
+            None
+        } else if verification {
             let recovery = active
                 .correction
                 .as_ref()
@@ -705,7 +1021,8 @@ impl PhaseMaintenance {
         self.observe(source, now)?;
         let end = self.end;
         let active = self.matching(round, now)?;
-        if !active.check_observed
+        if active.rebound
+            || !active.check_observed
             || active.sample.is_some()
             || active.correction.is_some()
             || state != Some(PlaybackState::Playing)
@@ -716,9 +1033,13 @@ impl PhaseMaintenance {
             );
         }
         let mut correction = Recovery::begin(session, end, Some(source), now, input_origin)?;
-        correction.purpose = Purpose::SourceMaintenance { round };
+        correction.purpose = Purpose::SourceMaintenance {
+            round,
+            attempt: active.attempt,
+        };
         // Pausing does not restart the check's thirty-second budget
         correction.started_at = active.started_at;
+        correction.deadline = active.deadline;
         active.correction = Some(correction);
         Ok(())
     }
@@ -733,7 +1054,11 @@ impl PhaseMaintenance {
         common_frame: SongTime,
     ) -> Result<(), String> {
         self.observe(source, now)?;
-        self.matching(round, now)?
+        let active = self.matching(round, now)?;
+        if active.rebound {
+            return Err("Rebound cannot schedule a second correction".into());
+        }
+        active
             .correction
             .as_mut()
             .ok_or("Phase correction has not paused")?
@@ -751,9 +1076,13 @@ impl PhaseMaintenance {
         let active = self.matching(round, now)?;
         if active.sample.is_some()
             || state != Some(PlaybackState::Playing)
-            || !active.check_observed
+            || if active.rebound {
+                !active.verification_observed
+            } else {
+                !active.check_observed
+            }
         {
-            return Err("Phase Ready arrived without its original completed Playing check".into());
+            return Err("Phase Ready arrived without its original completed Playing proof".into());
         }
         if let Some(correction) = &mut active.correction {
             if !active.verification_observed {
@@ -761,7 +1090,9 @@ impl PhaseMaintenance {
             }
             correction.ready(Some(source), state, now)?;
         }
+        let deadline = active.deadline;
         self.last_round = round;
+        self.last_round_deadline = Some(deadline);
         self.round = None;
         Ok(())
     }
@@ -789,13 +1120,16 @@ impl PhaseMaintenance {
         }
         let source = source.ok_or("Phase requires a coherent original source publication")?;
         self.observe(source, now)?;
+        if let Some(pending) = &self.reconnect {
+            if now >= pending.deadline {
+                return Err("Reconnect phase gate exceeded its original deadline".into());
+            }
+            return Ok((Vec::new(), Vec::new()));
+        }
         let Some(active) = &mut self.round else {
             return Ok((Vec::new(), Vec::new()));
         };
-        if now
-            .checked_duration_since(active.started_at)
-            .is_none_or(|age| age >= RECOVERY_TIMEOUT)
-        {
+        if now < active.started_at || now >= active.deadline {
             return Err("Phase exceeded its fixed thirty-second budget".into());
         }
         let (events, mut commands) = if let Some(correction) = &mut active.correction {
@@ -829,7 +1163,7 @@ impl PhaseMaintenance {
         {
             return Err("Phase raw publications do not bracket the fixed common point".into());
         }
-        if sample.verification {
+        if sample.verification && !active.rebound {
             let correction = active
                 .correction
                 .as_mut()
@@ -850,12 +1184,18 @@ impl PhaseMaintenance {
             }
             resume.observed = true;
             active.verification_observed = true;
+        } else if active.rebound {
+            if !sample.verification || state != Some(PlaybackState::Playing) {
+                return Err("Rebound requires its fresh Playing verification".into());
+            }
+            active.verification_observed = true;
         } else {
             active.check_observed = true;
         }
         commands.push(LiveCommand::PhaseObserved {
             epoch: self.epoch,
             round: active.number,
+            attempt: active.attempt,
             verification: sample.verification,
             evidence: PhaseObserved {
                 generation: self.last.generation,
@@ -1525,7 +1865,7 @@ mod tests {
         let (mut audio, source) = crate::audio::mock_source_sampler();
         audio.backend_mut().on_start_processing();
         audio.backend_mut().process();
-        let (initial, _) = source.read().unwrap().unwrap();
+        let (initial, _) = source.read_witness().unwrap();
         let started = Instant::now();
         let mut phase = PhaseMaintenance::new(
             SessionEpoch(42),
@@ -1555,12 +1895,12 @@ mod tests {
         while Instant::now() < until + Duration::from_millis(20) {
             thread::sleep(Duration::from_millis(3));
             audio.backend_mut().on_start_processing();
-            let (row, state) = source.read().unwrap().unwrap();
+            let (row, state) = source.read_witness().unwrap();
             assert_eq!(state, PlaybackState::Playing);
             callbacks.insert(row.sequence, row);
             audio.backend_mut().process();
         }
-        let (current, state) = source.read().unwrap().unwrap();
+        let (current, state) = source.read_witness().unwrap();
         let (events, commands) = phase
             .update(
                 &mut session,
@@ -1578,14 +1918,15 @@ mod tests {
                 round,
                 verification,
                 evidence,
+                attempt,
             },
         ] = commands.as_slice()
         else {
             panic!("expected one actual raw check");
         };
         assert_eq!(
-            (*epoch, *round, *verification),
-            (SessionEpoch(42), 1, false)
+            (*epoch, *round, *verification, *attempt),
+            (SessionEpoch(42), 1, false, 0)
         );
         assert!((2..=MAX_PUBLICATIONS).contains(&evidence.publications.len()));
         for row in &evidence.publications {
@@ -1617,7 +1958,10 @@ mod tests {
     fn phase_pause_requires_exact_raw_stability_and_emits_its_own_fifo_snapshot() {
         let origin = Instant::now();
         let (mut session, mut correction) = begin(origin);
-        correction.purpose = Purpose::SourceMaintenance { round: 3 };
+        correction.purpose = Purpose::SourceMaintenance {
+            round: 3,
+            attempt: 0,
+        };
         let prefix = session.replay.encode().unwrap();
         let mut last = None;
         for (sequence, subframe) in [(2, 0.1), (3, 0.2), (4, 0.2)] {
@@ -1641,12 +1985,13 @@ mod tests {
                         epoch,
                         round,
                         snapshot,
+                        attempt,
                     },
                 ] = commands.as_slice()
                 else {
                     panic!("expected phase snapshot, never RecoveryFrozen attempt1");
                 };
-                assert_eq!((*epoch, *round), (SessionEpoch(42), 3));
+                assert_eq!((*epoch, *round, *attempt), (SessionEpoch(42), 3, 0));
                 assert_eq!(
                     snapshot.publication.position_seconds_bits,
                     row.position_seconds.to_bits()
@@ -1705,7 +2050,10 @@ mod tests {
         );
         phase.round = Some(MaintenanceRound {
             number: 2,
+            attempt: 0,
+            rebound: false,
             started_at: origin,
+            deadline: origin + RECOVERY_TIMEOUT,
             sample: None,
             check_observed: true,
             verification_observed: false,
@@ -1746,5 +2094,715 @@ mod tests {
                 )
                 .is_err()
         );
+    }
+    fn interrupted_phase(
+        origin: Instant,
+        correction: Recovery,
+        source: SourceObservation,
+    ) -> PhaseMaintenance {
+        let mut phase = PhaseMaintenance::new(
+            SessionEpoch(42),
+            SongTime::from_frames(3_072_000),
+            source,
+            source.published_between[1],
+        )
+        .unwrap();
+        phase.last_round = 2;
+        phase.round = Some(MaintenanceRound {
+            number: 3,
+            attempt: 0,
+            rebound: false,
+            started_at: origin + Duration::from_millis(1_001),
+            deadline: origin + Duration::from_secs(3),
+            sample: None,
+            check_observed: true,
+            verification_observed: false,
+            correction: Some(correction),
+        });
+        phase
+    }
+
+    #[test]
+    fn active_reconnect_keeps_original_paused_ack_raw_floor_and_replay_prefix() {
+        for offset in [0, 1_000_000] {
+            let origin = Instant::now() + Duration::from_millis(offset);
+            let (mut session, mut correction) = freeze(origin);
+            correction.purpose = Purpose::SourceMaintenance {
+                round: 3,
+                attempt: 0,
+            };
+            let Step::Frozen {
+                acknowledged_at, ..
+            } = correction.step
+            else {
+                panic!("actual prior pause ACK");
+            };
+            let old_source = correction.last;
+            let prefix = session.replay.encode().unwrap();
+            let mut phase = interrupted_phase(origin, correction, old_source);
+            let current = source(origin, 4, 1_030, 48_480);
+            let (recovery, snapshot) = phase
+                .reconnect(
+                    &mut session,
+                    (current, Some(PlaybackState::Paused)),
+                    origin + Duration::from_millis(1_031),
+                    origin,
+                    origin + Duration::from_secs(20),
+                    Some(3),
+                )
+                .unwrap();
+            let Some(LiveCommand::RecoveryFrozen {
+                epoch,
+                attempt,
+                snapshot,
+            }) = snapshot
+            else {
+                panic!("same FIFO frozen fence");
+            };
+            assert_eq!((epoch, attempt), (SessionEpoch(42), 1));
+            assert_eq!(snapshot.paused_at, acknowledged_at);
+            assert_eq!(snapshot.prior_phase_pause, None);
+            assert!(snapshot.publication.published_between[1] > snapshot.paused_at);
+            assert_eq!(
+                snapshot.publication.position_seconds_bits,
+                current.position_seconds.to_bits()
+            );
+            assert_eq!(snapshot.publication.sequence, current.sequence);
+            assert_eq!(snapshot.replay.encode().unwrap(), prefix);
+            assert_eq!(session.replay.encode().unwrap(), prefix);
+            assert_eq!(session.clock.state(), ClockState::Paused);
+            assert!(!recovery.requests_pause());
+            assert_eq!(recovery.deadline, origin + Duration::from_secs(3));
+            assert!(phase.correcting());
+            assert!(
+                phase
+                    .reconnect_ready(None, origin + Duration::from_millis(1_032))
+                    .is_err()
+            );
+            assert!(phase.expect_attempt(3, 0).is_err());
+            assert!(
+                phase
+                    .rebound(
+                        3,
+                        1,
+                        recovery.deadline,
+                        current,
+                        Some(PlaybackState::Playing),
+                        origin + Duration::from_millis(1_032)
+                    )
+                    .is_err()
+            );
+            assert!(phase.reconnect_ready(Some(3), recovery.deadline).is_err());
+        }
+    }
+
+    #[test]
+    fn active_reconnect_waits_for_old_resume_playing_progress_before_requesting_pause() {
+        let origin = Instant::now();
+        let (mut session, mut correction) = freeze(origin);
+        correction.purpose = Purpose::SourceMaintenance {
+            round: 3,
+            attempt: 0,
+        };
+        let Step::Frozen {
+            acknowledged_at: original_ack,
+            ..
+        } = correction.step
+        else {
+            panic!("actual old pause ACK");
+        };
+        schedule(&mut correction, origin);
+        let previous = correction.last;
+        let prefix = session.replay.facts().to_vec();
+        let mut phase = interrupted_phase(origin, correction, previous);
+        let current = source(origin, 5, 1_040, 48_480);
+        let (mut recovery, snapshot) = phase
+            .reconnect(
+                &mut session,
+                (current, Some(PlaybackState::Resuming)),
+                origin + Duration::from_millis(1_041),
+                origin,
+                origin + Duration::from_secs(20),
+                Some(3),
+            )
+            .unwrap();
+        assert!(snapshot.is_none());
+        assert!(recovery.waiting_for_resume());
+        assert_eq!(recovery.prior_phase_pause, None);
+        assert!(!recovery.requests_pause());
+        assert!(
+            tick(
+                &mut recovery,
+                &mut session,
+                origin,
+                6,
+                1_300,
+                48_480,
+                PlaybackState::Resuming
+            )
+            .unwrap()
+            .1
+            .is_empty()
+        );
+        assert!(
+            tick(
+                &mut recovery,
+                &mut session,
+                origin,
+                7,
+                1_500,
+                48_480,
+                PlaybackState::Playing
+            )
+            .unwrap()
+            .1
+            .is_empty()
+        );
+        assert!(recovery.waiting_for_resume());
+        assert_eq!(session.clock.state(), ClockState::Paused);
+        let (_, commands) = tick(
+            &mut recovery,
+            &mut session,
+            origin,
+            8,
+            1_510,
+            48_960,
+            PlaybackState::Playing,
+        )
+        .unwrap();
+        assert!(!recovery.waiting_for_resume());
+        assert!(recovery.requests_pause());
+        assert_eq!(session.clock.state(), ClockState::Running);
+        assert!(
+            commands
+                .iter()
+                .all(|command| matches!(command, LiveCommand::Fact(_)))
+        );
+        let prior = [original_ack, origin + Duration::from_millis(1_510)];
+        assert_eq!(recovery.prior_phase_pause, Some(prior));
+        assert_eq!(&session.replay.facts()[..prefix.len()], prefix.as_slice());
+        assert!(
+            recovery
+                .ready(
+                    Some(source(origin, 9, 1_520, 48_960)),
+                    Some(PlaybackState::Playing),
+                    origin + Duration::from_millis(1_521)
+                )
+                .is_err()
+        );
+        assert!(
+            tick(
+                &mut recovery,
+                &mut session,
+                origin,
+                10,
+                1_530,
+                48_960,
+                PlaybackState::Paused
+            )
+            .unwrap()
+            .1
+            .is_empty()
+        );
+        let (_, frozen) = tick(
+            &mut recovery,
+            &mut session,
+            origin,
+            11,
+            1_540,
+            48_960,
+            PlaybackState::Paused,
+        )
+        .unwrap();
+        let [LiveCommand::RecoveryFrozen { snapshot, .. }] = frozen.as_slice() else {
+            panic!("new same-FIFO freeze");
+        };
+        assert_eq!(snapshot.prior_phase_pause, Some(prior));
+        assert!(prior[1] < snapshot.paused_at);
+        assert!(
+            recovery
+                .update(
+                    &mut session,
+                    PlayerId::P1,
+                    Some(source(origin, 12, 3_000, 48_960)),
+                    Some(PlaybackState::Paused),
+                    recovery.deadline,
+                    origin
+                )
+                .is_err()
+        );
+
+        let (mut progressed_session, mut progressed) = freeze(origin);
+        progressed.purpose = Purpose::SourceMaintenance {
+            round: 3,
+            attempt: 0,
+        };
+        schedule(&mut progressed, origin);
+        tick(
+            &mut progressed,
+            &mut progressed_session,
+            origin,
+            5,
+            1_510,
+            48_960,
+            PlaybackState::Playing,
+        )
+        .unwrap();
+        let old_source = progressed.last;
+        let mut phase = interrupted_phase(origin, progressed, old_source);
+        let (mut recovery, _) = phase
+            .reconnect(
+                &mut progressed_session,
+                (
+                    source(origin, 6, 1_520, 49_440),
+                    Some(PlaybackState::Playing),
+                ),
+                origin + Duration::from_millis(1_521),
+                origin,
+                origin + Duration::from_secs(20),
+                Some(3),
+            )
+            .unwrap();
+        assert_eq!(recovery.prior_phase_pause, Some(prior));
+        tick(
+            &mut recovery,
+            &mut progressed_session,
+            origin,
+            7,
+            1_530,
+            49_920,
+            PlaybackState::Playing,
+        )
+        .unwrap();
+        assert_eq!(recovery.prior_phase_pause, Some(prior));
+    }
+
+    #[test]
+    fn rebound_has_fresh_attempt_scoped_mock_evidence_then_normal_rounds_on_same_connection() {
+        let (mut audio, sampler) = crate::audio::mock_source_sampler();
+        audio.backend_mut().on_start_processing();
+        audio.backend_mut().process();
+        let (initial, state) = sampler.read_witness().unwrap();
+        assert_eq!(state, PlaybackState::Playing);
+        let origin = Instant::now();
+        let mut phase = PhaseMaintenance::new(
+            SessionEpoch(42),
+            SongTime::from_frames(48_000),
+            initial,
+            origin,
+        )
+        .unwrap();
+        let mut session = Session::new(SessionEpoch(42)).unwrap();
+        session
+            .observe_audio(initial.position_seconds, MonotonicTime::from_nanos(1))
+            .unwrap();
+        let prefix = session.replay.encode().unwrap();
+        let deadline = origin + Duration::from_secs(2);
+        phase.reconnect = Some(ReconnectPhase {
+            round: Some(1),
+            deadline,
+            ready: false,
+        });
+        assert!(
+            phase
+                .rebound(1, 1, deadline, initial, Some(state), origin)
+                .is_err()
+        );
+        assert!(!phase.reconnect_ready(Some(1), origin).unwrap());
+        assert!(
+            phase
+                .rebound(
+                    1,
+                    1,
+                    deadline + Duration::from_nanos(1),
+                    initial,
+                    Some(state),
+                    origin
+                )
+                .is_err()
+        );
+        phase
+            .rebound(1, 1, deadline, initial, Some(state), origin)
+            .unwrap();
+        assert!(phase.expect_attempt(1, 0).is_err());
+        assert!(phase.expect_attempt(1, 2).is_err());
+        assert!(phase.ready(1, initial, Some(state), origin).is_err());
+        for (round, verification) in [(1, true), (2, false)] {
+            let now = Instant::now();
+            let (current, state) = sampler.read_witness().unwrap();
+            phase.expect_attempt(round, 1).unwrap();
+            let common = now + Duration::from_millis(60);
+            let until = common + SAMPLE_TAIL;
+            phase
+                .sampling(
+                    round,
+                    verification,
+                    [common - Duration::from_millis(40), common, until],
+                    (current, Some(state)),
+                    sampler.clone(),
+                    now,
+                )
+                .unwrap();
+            assert_eq!(phase.correcting(), verification);
+            let mut original = std::collections::BTreeMap::new();
+            while Instant::now() < until + Duration::from_millis(20) {
+                thread::sleep(Duration::from_millis(3));
+                audio.backend_mut().on_start_processing();
+                let (row, _) = sampler.read_witness().unwrap();
+                original.insert(row.sequence, row);
+                audio.backend_mut().process();
+            }
+            let (current, state) = sampler.read_witness().unwrap();
+            let (_, commands) = phase
+                .update(
+                    &mut session,
+                    PlayerId::P1,
+                    Some(current),
+                    Some(state),
+                    Instant::now(),
+                    origin,
+                )
+                .unwrap();
+            let [
+                LiveCommand::PhaseObserved {
+                    round: actual,
+                    attempt,
+                    verification: proof,
+                    evidence,
+                    ..
+                },
+            ] = commands.as_slice()
+            else {
+                panic!("actual attempt-scoped publication evidence");
+            };
+            assert_eq!((*actual, *attempt, *proof), (round, 1, verification));
+            for row in &evidence.publications {
+                let actual = original.get(&row.sequence).unwrap();
+                assert_eq!(row.position_seconds_bits, actual.position_seconds.to_bits());
+                assert_eq!(row.published_between, actual.published_between);
+            }
+            phase
+                .ready(round, current, Some(state), Instant::now())
+                .unwrap();
+            assert_eq!(phase.last_round, round);
+            assert_eq!(phase.connection_attempt, 1);
+            assert!(!phase.active());
+            assert_eq!(session.replay.encode().unwrap(), prefix);
+            assert_eq!(session.clock.state(), ClockState::Running);
+        }
+        let (current, state) = sampler.read_witness().unwrap();
+        assert!(
+            phase
+                .reconnect(
+                    &mut session,
+                    (current, Some(state)),
+                    Instant::now(),
+                    origin,
+                    deadline,
+                    None
+                )
+                .is_err()
+        );
+        assert_eq!(sampler.music_owners(), 1);
+    }
+
+    #[test]
+    fn unknown_guest_rebound_and_sealed_round_keep_original_deadline_and_source_identity() {
+        let origin = Instant::now();
+        let initial = source(origin, 1, 1_000, 48_000);
+        let mut session = Session::new(SessionEpoch(42)).unwrap();
+        session
+            .observe_audio(
+                initial.position_seconds,
+                MonotonicTime::from_nanos(1_000_000_000),
+            )
+            .unwrap();
+        let mut phase = PhaseMaintenance::new(
+            session.epoch(),
+            SongTime::from_frames(3_072_000),
+            initial,
+            origin + Duration::from_secs(1),
+        )
+        .unwrap();
+        let deadline = origin + Duration::from_secs(3);
+        let (recovery, _) = phase
+            .reconnect(
+                &mut session,
+                (initial, Some(PlaybackState::Playing)),
+                origin + Duration::from_millis(1_001),
+                origin,
+                deadline,
+                None,
+            )
+            .unwrap();
+        assert_eq!(recovery.deadline, deadline);
+        assert!(
+            phase
+                .reconnect_ready(Some(2), origin + Duration::from_millis(1_002))
+                .is_err()
+        );
+        assert!(
+            !phase
+                .reconnect_ready(Some(1), origin + Duration::from_millis(1_002))
+                .unwrap()
+        );
+        let mut changed = initial;
+        changed.source_id += 1;
+        assert!(
+            phase
+                .rebound(
+                    1,
+                    1,
+                    deadline,
+                    changed,
+                    Some(PlaybackState::Playing),
+                    origin + Duration::from_millis(1_002)
+                )
+                .is_err()
+        );
+        phase
+            .rebound(
+                1,
+                1,
+                deadline,
+                initial,
+                Some(PlaybackState::Playing),
+                origin + Duration::from_millis(1_002),
+            )
+            .unwrap();
+        assert_eq!(phase.round.as_ref().unwrap().deadline, deadline);
+        assert!(phase.matching(1, deadline).is_err());
+        let mut sealed = PhaseMaintenance::new(
+            session.epoch(),
+            SongTime::from_frames(3_072_000),
+            initial,
+            origin + Duration::from_secs(1),
+        )
+        .unwrap();
+        sealed.last_round = 1;
+        sealed.last_round_deadline = Some(origin + Duration::from_millis(1_050));
+        sealed.reconnect = Some(ReconnectPhase {
+            round: None,
+            deadline,
+            ready: false,
+        });
+        assert!(
+            sealed
+                .reconnect_ready(Some(1), origin + Duration::from_millis(1_060))
+                .is_err()
+        );
+        assert_eq!(
+            sealed.reconnect.as_ref().unwrap().deadline,
+            origin + Duration::from_millis(1_050)
+        );
+        let mut ordinary = PhaseMaintenance::new(
+            session.epoch(),
+            SongTime::from_frames(3_072_000),
+            initial,
+            origin + Duration::from_secs(1),
+        )
+        .unwrap();
+        ordinary.reconnect = Some(ReconnectPhase {
+            round: None,
+            deadline,
+            ready: false,
+        });
+        assert!(
+            ordinary
+                .reconnect_ready(None, origin + Duration::from_millis(1_002))
+                .unwrap()
+        );
+        assert_eq!(ordinary.connection_attempt, 1);
+        assert!(!ordinary.correcting());
+        ordinary.expect_attempt(1, 1).unwrap();
+        assert!(ordinary.expect_attempt(1, 0).is_err());
+    }
+
+    #[test]
+    fn active_reconnect_joins_original_check_sampler_before_preserving_fifo_fence() {
+        let (mut audio, sampler) = crate::audio::mock_source_sampler();
+        audio.backend_mut().on_start_processing();
+        audio.backend_mut().process();
+        let (initial, state) = sampler.read().unwrap().unwrap();
+        let origin = Instant::now();
+        let mut session = Session::new(SessionEpoch(42)).unwrap();
+        session
+            .observe_audio(initial.position_seconds, MonotonicTime::from_nanos(1))
+            .unwrap();
+        session.hit(PlayerId::P1, 1, 1).unwrap();
+        let prefix = session.replay.encode().unwrap();
+        let mut phase = PhaseMaintenance::new(
+            session.epoch(),
+            SongTime::from_frames(48_000),
+            initial,
+            origin,
+        )
+        .unwrap();
+        let common = origin + Duration::from_millis(80);
+        phase
+            .sampling(
+                1,
+                false,
+                [
+                    common - Duration::from_millis(40),
+                    common,
+                    common + SAMPLE_TAIL,
+                ],
+                (initial, Some(state)),
+                sampler.clone(),
+                origin,
+            )
+            .unwrap();
+        assert!(phase.round.as_ref().unwrap().sample.is_some());
+        assert_eq!(sampler.music_owners(), 2);
+        let now = Instant::now();
+        let (recovery, snapshot) = phase
+            .reconnect(
+                &mut session,
+                (initial, Some(state)),
+                now,
+                origin,
+                origin + Duration::from_secs(2),
+                Some(1),
+            )
+            .unwrap();
+        assert!(snapshot.is_none());
+        assert!(recovery.requests_pause());
+        assert!(phase.round.as_ref().unwrap().sample.is_none());
+        assert_eq!(sampler.music_owners(), 1);
+        assert_eq!(session.replay.encode().unwrap(), prefix);
+        assert_eq!(phase.last.sequence, initial.sequence);
+        assert_eq!(
+            phase.last.position_seconds.to_bits(),
+            initial.position_seconds.to_bits()
+        );
+        assert!(phase.expect_attempt(1, 0).is_err());
+    }
+
+    #[test]
+    fn active_reconnect_uses_takeover_first_playing_publication_once_before_pause() {
+        let origin = Instant::now();
+        let (mut session, mut correction) = freeze(origin);
+        let Step::Frozen {
+            acknowledged_at, ..
+        } = correction.step
+        else {
+            panic!("original pause ACK");
+        };
+        correction.purpose = Purpose::SourceMaintenance {
+            round: 3,
+            attempt: 0,
+        };
+        schedule(&mut correction, origin);
+        let previous = correction.last;
+        let mut phase = interrupted_phase(origin, correction, previous);
+        let current = source(origin, 5, 1_510, 48_960);
+        let (mut recovery, frozen) = phase
+            .reconnect(
+                &mut session,
+                (current, Some(PlaybackState::Playing)),
+                origin + Duration::from_millis(1_511),
+                origin,
+                origin + Duration::from_secs(20),
+                Some(3),
+            )
+            .unwrap();
+        assert!(frozen.is_none() && recovery.waiting_for_resume() && !recovery.requests_pause());
+        assert_eq!(session.clock.state(), ClockState::Paused);
+        let prior = [acknowledged_at, current.published_between[1]];
+        assert_eq!(recovery.prior_phase_pause, Some(prior));
+        let prefix = session.replay.facts().to_vec();
+        // The same sequence returns no new row; the original real takeover ACK still owns the transition
+        let (_, commands) = recovery
+            .update(
+                &mut session,
+                PlayerId::P1,
+                Some(current),
+                Some(PlaybackState::Playing),
+                origin + Duration::from_millis(1_512),
+                origin,
+            )
+            .unwrap();
+        assert!(!recovery.waiting_for_resume() && recovery.requests_pause());
+        assert_eq!(session.clock.state(), ClockState::Running);
+        assert_eq!(recovery.prior_phase_pause, Some(prior));
+        assert_eq!(&session.replay.facts()[..prefix.len()], prefix.as_slice());
+        assert!(
+            commands
+                .iter()
+                .all(|command| matches!(command, LiveCommand::Fact(_)))
+        );
+        assert!(
+            commands
+                .iter()
+                .any(|command| matches!(command, LiveCommand::Fact(DuoInput::Watermark { .. })))
+        );
+        tick(
+            &mut recovery,
+            &mut session,
+            origin,
+            6,
+            1_530,
+            48_960,
+            PlaybackState::Paused,
+        )
+        .unwrap();
+        let (_, commands) = tick(
+            &mut recovery,
+            &mut session,
+            origin,
+            7,
+            1_540,
+            48_960,
+            PlaybackState::Paused,
+        )
+        .unwrap();
+        let [LiveCommand::RecoveryFrozen { snapshot, .. }] = commands.as_slice() else {
+            panic!("same FIFO new freeze");
+        };
+        assert_eq!(snapshot.prior_phase_pause, Some(prior));
+        assert!(snapshot.paused_at > prior[1]);
+
+        let (mut session, mut correction) = freeze(origin);
+        correction.purpose = Purpose::SourceMaintenance {
+            round: 3,
+            attempt: 0,
+        };
+        schedule(&mut correction, origin);
+        tick(
+            &mut correction,
+            &mut session,
+            origin,
+            5,
+            1_510,
+            48_960,
+            PlaybackState::Resuming,
+        )
+        .unwrap();
+        let current = correction.last; // Forward cursor already read while Resuming, no actual Playing progress ACK
+        let mut phase = interrupted_phase(origin, correction, current);
+        let (mut recovery, _) = phase
+            .reconnect(
+                &mut session,
+                (current, Some(PlaybackState::Playing)),
+                origin + Duration::from_millis(1_512),
+                origin,
+                origin + Duration::from_secs(20),
+                Some(3),
+            )
+            .unwrap();
+        let (_, commands) = recovery
+            .update(
+                &mut session,
+                PlayerId::P1,
+                Some(current),
+                Some(PlaybackState::Playing),
+                origin + Duration::from_millis(1_513),
+                origin,
+            )
+            .unwrap();
+        assert!(commands.is_empty() && recovery.waiting_for_resume() && !recovery.requests_pause());
+        assert_eq!(recovery.prior_phase_pause, None);
+        assert_eq!(session.clock.state(), ClockState::Paused);
     }
 }

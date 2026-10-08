@@ -30,9 +30,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 8;
+pub(crate) const PROTOCOL_VERSION: u32 = 9;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/8";
+const ALPN: &[u8] = b"cocobeat-session/9";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 

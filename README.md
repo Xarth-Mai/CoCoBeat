@@ -8,7 +8,7 @@
 
 ## 当前状态：本地双人原型，待真实设备验收
 
-已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘 / 手柄菜单、Free Sync、Anchor Sync、Resonance 和 Replay；`--package` 播放完整校验的手工内容包，`--watch-replay` 按明确记录的舞台版本只读观看原录制。lab 已提供唯一生产 Vorbis 编码的源导入、四对象事务、波形编辑、候选证据、歌曲试听和 Replay 诊断；实时 QUIC 已接资源接收、预约音频、伙伴反馈及完成或故障后用新邀请开启下一局。游戏曲库、完整自动 MIR / Anchor / 编排、性能与实际设备验收继续按 [todo](todo/README.md) 推进
+已实现 Bevy 3D 场景、Kira 播放、原创 64 秒开发音乐与 7 个手写 Anchor、键盘 / 手柄菜单、Free Sync、Anchor Sync、Resonance 和 Replay；`--package` 播放完整校验的手工内容包，`--watch-replay` 按明确记录的舞台版本只读观看原录制。lab 已提供唯一生产 Vorbis 编码的源导入、四对象事务、波形编辑、候选证据、歌曲试听和 Replay 诊断；实时 QUIC 当前使用 protocol / ALPN v9，已接资源接收、预约音频、伙伴反馈及完成或故障后用新邀请开启下一局。游戏曲库、完整自动 MIR / Anchor / 编排、性能与实际设备验收继续按 [todo](todo/README.md) 推进
 
 早期完整软件基线通过 97 项测试，16 组软件计时情景、Replay CLI、原生 Logo 停靠、Ready 眼睛循环与 13 个语言变体的 GPU 离屏界面均已有验证；画质与帧率设置里程碑的软件检查及 46 张 GPU 截图均为 PASS，覆盖低/中/高/关闭效果共 4 张画质场景、39 张设置页面与 3 张语言列表；小窗口/DPI 设置已有 25 张截图通过；极小 Ready 菜单的越界和遮挡已修复，该批 28 张菜单与设置截图逐张检查通过；真实窗口、呈现 FPS、VSync、物理输入、音频延迟、听感和真人双人体验均为 NOT RUN，具体证据见 [验证策略](docs/testing.md)
 
