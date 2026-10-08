@@ -183,3 +183,11 @@ cargo build --offline --locked --release -j1 -p cocobeat-game
 
 初版面向 Windows MSVC 和 Linux 的 x86-64 / ARM64。发行前对每个平台/架构分别执行完整 workspace 检查、release 构建和干净机器运行，并记录 OS、GPU、音频/手柄后端与实际帧时间数据。
 轻量 CI 与手动构建服务开发效率，不降低真实手柄和真实声音输出的验收要求。原生 ARM64 runner 构建通过后，仍需在真实 ARM64 游戏设备上验证图形、音频和输入。
+
+## Linux ARM64 独立诊断补验
+
+固定 `d3b2648` 的 CI `37708305717` 通过后仅派发一次 [37708701226](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37708701226)，原生 `ubuntu-24.04-arm` job 完成成功；优化 Game / Lab、固定 SDK / 模型、实际解包的十项 Lab 命令与下载 TAR 核验通过，详见 [ARM 补验](../testdata/synthetic/native-beat-arm-release-observations-20261008.json)；38 份源码许可和四份 SDK notices 原字节匹配，597 行台账对应本次固定提交，包内不含字体 QA 或构建诊断文件
+
+实际 Cargo `--jobs 1` 保持 fat LTO，GNU time 报告 wall `29:35.45`、最大 RSS `11386900 kbytes`、CPU `98%`、swaps `0`，command / tee exit 均为 `0`；这是一次构建命令的测量，独立 artifact 保留原合并日志、NUL argv 和 step shell PID，GNU time 仅为 runner QA 工具，不进入产品，也不据本次成功推断原 exit 143 或失联的根因
+
+本轮仅 ARM64 绑定 `d3b2648`，另三个目标仍绑定 `0930d17`，当前同一 ref 的完整四目标矩阵未重跑；左右候选实际为 111 / 114 beats、各 35 downbeats，历史 Linux x64 右侧 113 的原值保留，不等于跨平台数值一致或质量准入，reference logits/q、模型质量、Game GUI / 设备 / 真人、干净 Windows VC 与实际 tag Release 仍分别验收

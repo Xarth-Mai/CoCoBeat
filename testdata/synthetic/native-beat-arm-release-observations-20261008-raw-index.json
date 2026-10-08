@@ -1,0 +1,1959 @@
+{
+  "schema_version": 1,
+  "scope": "complete owned ARM diagnostic acceptance files including downloaded archives and hidden failed staging; excludes generated raw index/delivery/review destinations",
+  "fixed_sha": "d3b2648cd20ee1d1d538470701d7c8f7018e1b23",
+  "refs": [
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/build-output.txt",
+      "size_bytes": 28644,
+      "sha256": "04e67d73d56f979fda9f52311742712a0b249a87ee4aec5e7fbf6fa9d6f9383e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/cargo-argv.nul",
+      "size_bytes": 122,
+      "sha256": "b39425d0b804cb465f883f77fc45f0289fdc0cc98b4f46bd9a038a965803fbb7"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/command-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/completed.txt",
+      "size_bytes": 26,
+      "sha256": "d0a5e19edebc33889beb3e760889ae85fafe344a07215ac1461732b217ec92ab"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/resources.txt",
+      "size_bytes": 870,
+      "sha256": "c6340723a3751f9aae109dabab06d87c31a13712b4f4e1a45b4740c49434a6ed"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/start.txt",
+      "size_bytes": 147,
+      "sha256": "67feae5d00f1dd8ad1aeff461eba31ba1567674e66fb835d3972d10ca451a79e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/step-shell-pid.txt",
+      "size_bytes": 5,
+      "sha256": "0c746561a57effa88170a894225e32c48364bdf7af06af85619643d6e5c0c6f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/tee-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/arm-build-diagnostics-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/time-version.txt",
+      "size_bytes": 336,
+      "sha256": "a3b64288a651d40a18a243c43c871f7ae2886baa58b7e3c64a1061bfd651245f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/cocobeat-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/cocobeat-aarch64-unknown-linux-gnu.tar.gz",
+      "size_bytes": 141013626,
+      "sha256": "4a9b37cda8180206f0b1aad5c8dc93d1c5928bfb0acd38e42864df9fd6133cf1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/.cocobeat-native-beat-8696-0/evidence/artifact-core.json",
+      "size_bytes": 337,
+      "sha256": "d54ad2c2c4d2e7af155ff2fba22e1dd086131c50034090c0d86b9732c1ad13d1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/.cocobeat-native-beat-8696-0/evidence/artifact-provider.json",
+      "size_bytes": 343,
+      "sha256": "0731507286f5b448e5ed3c7289ff4a5a521e0fd7e009cd9616806aefd43eb0f6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/.cocobeat-native-beat-8696-0/evidence/failed.json",
+      "size_bytes": 268,
+      "sha256": "ae8c922a6c24fc4c212546c55d29257bc1ddc2b38c891c5cf8986fba266004bd"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/.cocobeat-native-beat-8696-0/evidence/started.json",
+      "size_bytes": 352,
+      "sha256": "1a1321d44b20c795c48e9af01b7523f98dc39a2fcfe81780306928bc2ed198cf"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/BUILD-INFO.txt",
+      "size_bytes": 382,
+      "sha256": "2f62115d9669718c91a0a028640b8ebd7351786ac88c0b384ccd85100b991334"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/NATIVE-ASSETS.json",
+      "size_bytes": 708,
+      "sha256": "37a10c58d5c18271f6ca6b5dcbd5993632f802616e6348b9a16ed7d1ff3d9d82"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-argv.nul",
+      "size_bytes": 130,
+      "sha256": "0ad7dc0575e941bae55f8483c9d77e81e766a1ad63f741f289baa0f2069e62c4"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-pid.txt",
+      "size_bytes": 5,
+      "sha256": "d5f0f1bcf5a9ea15a6df582febec8499f287aeb55d7b631fc446549d2d25d961"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/generate-stdout.txt",
+      "size_bytes": 175,
+      "sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/aggregate-beat.f32",
+      "size_bytes": 12804,
+      "sha256": "578f4d19720e9d9dd8085747da1bbd6deb99fb00872133bf2b9831e37690fe9a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/aggregate-coverage.bin",
+      "size_bytes": 3201,
+      "sha256": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/aggregate-downbeat.f32",
+      "size_bytes": 12804,
+      "sha256": "24a078f30e93fdfc48864fe521b6958f04d7074c261dcf71324c39bd36ca5e12"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/analysis-complete.json",
+      "size_bytes": 122,
+      "sha256": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/artifact-core.json",
+      "size_bytes": 337,
+      "sha256": "d54ad2c2c4d2e7af155ff2fba22e1dd086131c50034090c0d86b9732c1ad13d1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/artifact-model.json",
+      "size_bytes": 332,
+      "sha256": "f1ea7370817525d4dae712ca3b279501c6620fb259c98bf8e750ef1c98cbe33c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/artifact-provider.json",
+      "size_bytes": 343,
+      "sha256": "0731507286f5b448e5ed3c7289ff4a5a521e0fd7e009cd9616806aefd43eb0f6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk-starts.json",
+      "size_bytes": 24,
+      "sha256": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk000-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "4fbda7c88e6b7a7562b5746cde911cf54ffed047767ff0b46c1329be2274d113"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk000-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk000-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "301e0ae41300f331a5d49cd468c74d6b99c113f27729bb4821939ae82cce9029"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk000-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk000-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "86bb0ca399c1501b8c8da617aad33c99191cba59990616588dfce433a23fbf14"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk001-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "c58dfe44ecc100e0bb3387717a506b41b57d4bdf7bc78ed8191dc958e4b40ac9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk001-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk001-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "7732bbc0f1cb9396f2e785fe585d98f1075415c6fc5f6274c802aa1b8a28c224"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk001-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk001-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "7fcf97b3f96dfbf554b6a31ff9b101d45cdd452d875dff6261f81316f70c60dc"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk002-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "180356fd7c484d36ace1a7cee0eec08463fbe48b1761b7d8999cc41e2af04385"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk002-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk002-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "2b0d73ab66046e553ced90b4761825e4fb861af2a81b2264ac764ac492ec3c13"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk002-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/chunk002-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "091f8d19b325587b49dd9fcfb1bbba39a2c66e1ee6ec0b8f97e03fc2f65bdb6c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/evidence-summary.json",
+      "size_bytes": 1247,
+      "sha256": "a975a3b559fbe0ef618de227d05bde91e10e9019e7e5b3c3c87acc546db4aa5b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/final-canonical-identity.json",
+      "size_bytes": 248,
+      "sha256": "65d19fed6883d42410487f0820bc18128043346ec3be60d4cc8f7ef7f8f36339"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/final-canonical.ogg",
+      "size_bytes": 2330678,
+      "sha256": "51cc1ac99be047837a307aa0b961a057301d0aef9fa0b446a8bc2f3e8cb1a320"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/minimal-alignment.json",
+      "size_bytes": 4689,
+      "sha256": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/minimal-raw-groups.json",
+      "size_bytes": 15621,
+      "sha256": "f7616d46c154c12a90fe3bffef89fd25bbda01a632b927b93354865ec4f17f0b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/native-shape.json",
+      "size_bytes": 323,
+      "sha256": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/native-spect.f32",
+      "size_bytes": 1638912,
+      "sha256": "65a6b7862469a9653b14810cd3f4652579e2d3b39045ddfcfadc2148945d54de"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/package-complete.json",
+      "size_bytes": 258,
+      "sha256": "a4eb1129877d617b79f77700d4e3b3292d1c9fd9c3929338d8d7a49a589e725d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/resampled-stereo.f32",
+      "size_bytes": 11289600,
+      "sha256": "ddbe01d0dd32f9b9d2ca2df34afda07c37c69e5024066d4f9d4fc18d8eef3843"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/resampler-output.bin",
+      "size_bytes": 11289600,
+      "sha256": "ddbe01d0dd32f9b9d2ca2df34afda07c37c69e5024066d4f9d4fc18d8eef3843"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/resampler-output.jsonl",
+      "size_bytes": 409326,
+      "sha256": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/session-metadata.json",
+      "size_bytes": 954,
+      "sha256": "01c4c04e99cc622152f88de7985593be1a87d8a39d5762c25d1db937882df18d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/evidence/started.json",
+      "size_bytes": 352,
+      "sha256": "1a1321d44b20c795c48e9af01b7523f98dc39a2fcfe81780306928bc2ed198cf"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/package/analysis.bin",
+      "size_bytes": 67294,
+      "sha256": "d90c08e8c1a231a7c3f98efdea07cc7251fe4583ca4434e69b87f6ef2858cf10"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/package/chart.bin",
+      "size_bytes": 205,
+      "sha256": "779785af4cf6de74b5f837e6df736b65611feeb1a70ac4d6c972be810728d0fe"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/package/song.audio.ogg",
+      "size_bytes": 2330678,
+      "sha256": "51cc1ac99be047837a307aa0b961a057301d0aef9fa0b446a8bc2f3e8cb1a320"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left/package/song.package",
+      "size_bytes": 349,
+      "sha256": "7cc4ab41f688d5e83a85c4f9fc350b425ca69f220c2d38ebc3c51fb28fcdf5a2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-argv.nul",
+      "size_bytes": 291,
+      "sha256": "6f0b5f7cf01e34049a6f2b717041a1c53f0e7ebb317b79fd865706c2d1ef94cb"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-pid.txt",
+      "size_bytes": 5,
+      "sha256": "a7f0d5d19e01d4e30e3cf666e18de8599a93aa8dd444c5ad98f19ce50c37674b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-import-stdout.txt",
+      "size_bytes": 1226,
+      "sha256": "47b7c4e189138202f2b0a7376b92f3c027a39fd32dd0e2b9e9ebcfd077917833"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-argv.nul",
+      "size_bytes": 139,
+      "sha256": "4b00d331dc20a0ebba59c8c836af1098d9b2e5cd98dd49e6446fed36414f5991"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-pid.txt",
+      "size_bytes": 5,
+      "sha256": "1e0d010ef87b5f5770bece82faad325fcd649b618e1a70d966e40191ba9cbe4c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-stage-stdout.txt",
+      "size_bytes": 298,
+      "sha256": "e190f65427d45b439563d0059b767a3efbfad9e090bba496af0b07ac685f6e16"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-argv.nul",
+      "size_bytes": 138,
+      "sha256": "6698654dd99266e3808718d624815fd49fc09c293151ddfe9bc915df2a0bde82"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-pid.txt",
+      "size_bytes": 5,
+      "sha256": "6e15e81046618de0e59f265fde33638c2fb407fe1d63e188b2d2973c045ec597"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/left-verify-stdout.txt",
+      "size_bytes": 994,
+      "sha256": "bea099af314c9a9ce190845527894ac49275d4ff436c68d7888abafbce846858"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual/analysis.bin",
+      "size_bytes": 65696,
+      "sha256": "17121d71d58ef402042268bcd918ffce0a5baabff8700ebc2a69d44eaa7aee56"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual/chart.bin",
+      "size_bytes": 205,
+      "sha256": "779785af4cf6de74b5f837e6df736b65611feeb1a70ac4d6c972be810728d0fe"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual/song.audio.ogg",
+      "size_bytes": 2330678,
+      "sha256": "51cc1ac99be047837a307aa0b961a057301d0aef9fa0b446a8bc2f3e8cb1a320"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual/song.package",
+      "size_bytes": 319,
+      "sha256": "54974bb891d9ec7c6fbffc5111c95ba1fc05bae71aab846e77dda2d05fbe989e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-argv.nul",
+      "size_bytes": 287,
+      "sha256": "2660a0d65450ef6aa491d24ae44020e9381caac6327929dbd32f1be0cb400505"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-pid.txt",
+      "size_bytes": 5,
+      "sha256": "30391b5c99655a05b6274f13fef98d560f7dd06010b9bc3b6cb4929a794b65a0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-import-stdout.txt",
+      "size_bytes": 1055,
+      "sha256": "f5dd7af53786340547f2c51341e5a274c55c07eed3b748645b0cd7346c76ca50"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-argv.nul",
+      "size_bytes": 132,
+      "sha256": "05d9bbe85243f46c2e324fe217d663212df64207a328dd336e0f0166b1344182"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-pid.txt",
+      "size_bytes": 5,
+      "sha256": "9aeb741e89908a134e7280654c93e2d7ef9b511b863ebfb842919ad3082fe72b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/manual-verify-stdout.txt",
+      "size_bytes": 983,
+      "sha256": "0a7ee6791fe37e7da1b80d0129560693c9798a27b0bee2e475ff11508296d3bc"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-argv.nul",
+      "size_bytes": 300,
+      "sha256": "1d293869195fabe32f7374dd93ef3bc5f178aa212dd698074b5519187d8907e4"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-exit.txt",
+      "size_bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-pid.txt",
+      "size_bytes": 5,
+      "sha256": "541db3e07ce96be564dc45419a8d2e9fcd778071e424d6362e9c422205e8e3b3"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-stderr.txt",
+      "size_bytes": 363,
+      "sha256": "9e026013ef0a375bcdc3a2778ea65c70eab1d90856f0c078d9dea77e54dafe29"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/missing-model-stdout.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/aggregate-beat.f32",
+      "size_bytes": 12804,
+      "sha256": "23e02bba66f5d78081355d50661e4f17ea0897dd65092366ee0a0b785fc42c7c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/aggregate-coverage.bin",
+      "size_bytes": 3201,
+      "sha256": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/aggregate-downbeat.f32",
+      "size_bytes": 12804,
+      "sha256": "982c7a2c8cd13fa124481f06739397bce5aa4189b2577b5a2d9e153e6d2b18b9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/analysis-complete.json",
+      "size_bytes": 122,
+      "sha256": "0a38a3b97223d65435db6eb3815b5e2cf1c49b63271a7ed162441fa2d3b90101"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/artifact-core.json",
+      "size_bytes": 337,
+      "sha256": "d54ad2c2c4d2e7af155ff2fba22e1dd086131c50034090c0d86b9732c1ad13d1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/artifact-model.json",
+      "size_bytes": 332,
+      "sha256": "f1ea7370817525d4dae712ca3b279501c6620fb259c98bf8e750ef1c98cbe33c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/artifact-provider.json",
+      "size_bytes": 343,
+      "sha256": "0731507286f5b448e5ed3c7289ff4a5a521e0fd7e009cd9616806aefd43eb0f6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk-starts.json",
+      "size_bytes": 24,
+      "sha256": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk000-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "4a34410b5b260290a8ea173e35b595950153829d8787a53a109dcaf1a9c19f88"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk000-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk000-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "613d9f55578cb6271afb86b1e0a6dac94fae22bbc3f6e3b4707be6604994d563"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk000-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk000-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "fcc34930c4a0595801c12c43d6646757d457223ceea1b8e591993097bde4c3e2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk001-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "3cc0cc45420d5c9be5ede175b1bd607bfb0a8f707c8f8db6af635d1963d17b2f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk001-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk001-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "147ae4c8c1e4fc2361352a7db45ea1a12a9db28222c9ace74db4a40f91d555ee"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk001-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk001-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "2b949c899eb5195365434e89ad5db82ff769b48723970d2e038d0142955e9c82"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk002-beat.f32",
+      "size_bytes": 6000,
+      "sha256": "1736fdc68fff7e07a635dc310f8725fe14316e24f34e99ef09453b722e92f91c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk002-beat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk002-downbeat.f32",
+      "size_bytes": 6000,
+      "sha256": "dd539f2620f6371ddf9cb955d02ef7ddc834c2a1b5d677c8c6332916004fcbc6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk002-downbeat.metadata.json",
+      "size_bytes": 137,
+      "sha256": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/chunk002-spect.f32",
+      "size_bytes": 768000,
+      "sha256": "15bc73dd06c6e1cd9663292f64cab429de543db74cd1156482219da5385df674"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/evidence-summary.json",
+      "size_bytes": 1247,
+      "sha256": "083ba1e3434ca4691b1fa43656f6b37b5281452615932703082716e4ac0ec082"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/final-canonical-identity.json",
+      "size_bytes": 248,
+      "sha256": "8ed83e6a1e14d69f0470c7277ef9d08f4c188405b74b9affbf5a09a963b14463"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/final-canonical.ogg",
+      "size_bytes": 2330678,
+      "sha256": "51cc1ac99be047837a307aa0b961a057301d0aef9fa0b446a8bc2f3e8cb1a320"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/minimal-alignment.json",
+      "size_bytes": 4689,
+      "sha256": "53aa64bbdb05bca1a2102dd54bc395e43097f24618d1be8981fb71241505a3e6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/minimal-raw-groups.json",
+      "size_bytes": 15937,
+      "sha256": "3dc4cb50218918c2ba6a646bd57f31d288df330bf48d5e391597bbcfc6c5e5c8"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/native-shape.json",
+      "size_bytes": 323,
+      "sha256": "4393dd7795cc07e940a413779f174d8049a7717359f5230d195cb440ff3f245a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/native-spect.f32",
+      "size_bytes": 1638912,
+      "sha256": "e193d52936b52edb6a10fd54c85a40d91a75dfb1a83f7e628e16d8c226eec8ed"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/package-complete.json",
+      "size_bytes": 258,
+      "sha256": "45233a73417b8d1bd987984e37484d24931ddaa0b554d60e7c8045d8ba36065a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/resampled-stereo.f32",
+      "size_bytes": 11289600,
+      "sha256": "ddbe01d0dd32f9b9d2ca2df34afda07c37c69e5024066d4f9d4fc18d8eef3843"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/resampler-output.bin",
+      "size_bytes": 11289600,
+      "sha256": "ddbe01d0dd32f9b9d2ca2df34afda07c37c69e5024066d4f9d4fc18d8eef3843"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/resampler-output.jsonl",
+      "size_bytes": 409326,
+      "sha256": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/session-metadata.json",
+      "size_bytes": 954,
+      "sha256": "d04003bd2805d0093ac78bea092884a2e5c5c0aea118c880f35e0dbbec949a16"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/evidence/started.json",
+      "size_bytes": 352,
+      "sha256": "2105a07a49296dd5b445f66e460c1faff6931ac25a195f19a81a828ed5ca2911"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/package/analysis.bin",
+      "size_bytes": 67323,
+      "sha256": "a8166e3d3bbfa01ff1071911f124f75e17a1eca7caa4374229864febd271ef5d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/package/chart.bin",
+      "size_bytes": 205,
+      "sha256": "779785af4cf6de74b5f837e6df736b65611feeb1a70ac4d6c972be810728d0fe"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/package/song.audio.ogg",
+      "size_bytes": 2330678,
+      "sha256": "51cc1ac99be047837a307aa0b961a057301d0aef9fa0b446a8bc2f3e8cb1a320"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right/package/song.package",
+      "size_bytes": 349,
+      "sha256": "75b43cfde74d5dbac81a47ad9f4c31d353b0a24079a23438fa6a64c2eef5cfdd"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-argv.nul",
+      "size_bytes": 293,
+      "sha256": "84f86cc81d32db1c9b26c38a3af25ce432c61243a79fdc19661e9e3081cc5eb9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-pid.txt",
+      "size_bytes": 5,
+      "sha256": "79a3588361a0cae29c6c04f046694f316cd801a0f21be6d80b1861c7c7c2de25"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-import-stdout.txt",
+      "size_bytes": 1228,
+      "sha256": "4fcf5693e39cc465828722a104f4e0e3c6e103eee3f4979e60c792d6678f8291"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-argv.nul",
+      "size_bytes": 140,
+      "sha256": "104287d9da48976eb2bb7af80a2bb052e6412eabf8fa439b23044c56ce3ee2bd"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-pid.txt",
+      "size_bytes": 5,
+      "sha256": "cb419fd6235b69c0ce1f7f42e89f9b21bc8f51e73e63994a5fbae4b02ecbf0b5"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-stage-stdout.txt",
+      "size_bytes": 298,
+      "sha256": "694150a239611396d9ecc7c2d2dc6c81d1e0dfcff46f4457332591d4723c29fc"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-argv.nul",
+      "size_bytes": 139,
+      "sha256": "668f83910a3bc468aaca25ff037a4e3fda46690fa0e6542e998e8da7acfbdebe"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-cwd.txt",
+      "size_bytes": 36,
+      "sha256": "42d0618feff727e3ce7336aa2538ca6232e20cf837a2221e106deb492537b976"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-exit.txt",
+      "size_bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-pid.txt",
+      "size_bytes": 5,
+      "sha256": "c8817f12cd3acdd5501aeb9b34db50cf12ac9142b10d6a3aec3cd0bfcfd70cbf"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-stderr.txt",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/right-verify-stdout.txt",
+      "size_bytes": 994,
+      "sha256": "eff1b9764f6f47bbc6cef080ea78aa3b50419938221cf2244d2a520075c62b2a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/smoke-start.txt",
+      "size_bytes": 81,
+      "sha256": "404956f04111bdb530af7f1e5ecc50c51b439f71fe044d630222b2f0aaca09ee"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/source/cocobeat-64.txt",
+      "size_bytes": 335,
+      "sha256": "d898eb7746d4a5ed70076fdaf37c445542fc60bf08f9637ba42c38b50d31ce03"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/artifacts/linux-arm64/native-smoke-evidence-aarch64-unknown-linux-gnu-d3b2648cd20ee1d1d538470701d7c8f7018e1b23/source/cocobeat-64.wav",
+      "size_bytes": 12288044,
+      "sha256": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/check-release-package.py",
+      "size_bytes": 6693,
+      "sha256": "76d51bd5abd1453a414a48f21eb19be89a0331c6b8c9466c1ebe35ea6e4da29e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/check-smoke-evidence.py",
+      "size_bytes": 5465,
+      "sha256": "3eec86580a049d8e07b32dd312d8cb17787a4437929e0e868c25ed65623dde3f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/checker-adaptation.json",
+      "size_bytes": 1211,
+      "sha256": "bd958bb6f092a94b1a5581bb04617a254ad81b37ee8b1fb513b9917a6ecca6ac"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/checks.json",
+      "size_bytes": 2003,
+      "sha256": "960f60ee450b2c581568b0fc91474bafc758b3f573ee85a7f07b543dc1c45143"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/dispatch.json",
+      "size_bytes": 1117,
+      "sha256": "ce03d257c6b0657a0bcc25be0d96ccc532191c7cbfc6af5dd8a69a477ae35610"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/docs-draft/base-refs.json",
+      "size_bytes": 1139,
+      "sha256": "04cf02ee9f1a5a3fa7ac961f2feebb9f44aa2514336ec302b609f49393f20ce2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/docs-draft/exact.patch",
+      "size_bytes": 5113,
+      "sha256": "23ba5455bf50371003c8531a8596c6096d512bb6cd1d63b55eaeeff3909b621a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/docs-draft/proposed/docs/build-release.md",
+      "size_bytes": 19588,
+      "sha256": "dacaa2db2b1f5783c92490faaf5d9f446e30590c8f16ae6c45d3f8a28c2bbbe5"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/docs-draft/proposed/todo/current-goal.md",
+      "size_bytes": 27249,
+      "sha256": "7bfdbf30dd7ab5e87006ea3de8d20dab8049b2243416f5d599b72bb8f27b5d54"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/docs-draft/proposed/todo/progress.md",
+      "size_bytes": 31815,
+      "sha256": "18c4a68fe578675781a84c3b44ff0852de0365f1b195924ec4b5d481693a459f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/accepted-linux-arm64/result.json",
+      "size_bytes": 463,
+      "sha256": "0d763d2d1f9637df1e1830c000c035c41bf5a24b910ffdc1fd4a50357a402093"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/accepted-linux-arm64/started.json",
+      "size_bytes": 404,
+      "sha256": "7f596b21e32ee02eb04009f8845d774c5faf70f70806415d4fc8455441ed40e0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/accepted-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/accepted-linux-arm64/stdout",
+      "size_bytes": 863,
+      "sha256": "d4505a62c6e2c1486387c3e6197ba429d5894f878256513b709ebfda14d1c315"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/annotations-final-linux-arm64/result.json",
+      "size_bytes": 335,
+      "sha256": "65989f9bc78faa5b31b3eda773a19838efa4902796e9f865ce86e76803993459"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/annotations-final-linux-arm64/started.json",
+      "size_bytes": 276,
+      "sha256": "4d58edd6720e004a5cb1d2ea37eeee08acea803f3fa428e947ef509dc9c54b70"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/annotations-final-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/annotations-final-linux-arm64/stdout",
+      "size_bytes": 2,
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-final-linux-arm64/result.json",
+      "size_bytes": 334,
+      "sha256": "2f19614f03eb66d70cc9ae86affed46b838819e08aa37da0306d1baf679074e9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-final-linux-arm64/started.json",
+      "size_bytes": 275,
+      "sha256": "67255ee609b332cb200cff8f0b935d4c0359d33d24c233d2a3a354ba7a7fdbea"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-final-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-final-linux-arm64/stdout",
+      "size_bytes": 2280,
+      "sha256": "f771b91088f22242023b6e38e5a044542da19b6a6ae779a7cd6e4d33b34f6da1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-post-build/result.json",
+      "size_bytes": 334,
+      "sha256": "944110440637223ee456c57cefa299264f28275a9c1df601342a9e7a8f0d5d8b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-post-build/started.json",
+      "size_bytes": 275,
+      "sha256": "acb4574bd0d00d4037dbad973538df36d04d0c7cb9c6204eb1ad22c1d5172006"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-post-build/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/artifacts-post-build/stdout",
+      "size_bytes": 2280,
+      "sha256": "f771b91088f22242023b6e38e5a044542da19b6a6ae779a7cd6e4d33b34f6da1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/ci-01/result.json",
+      "size_bytes": 421,
+      "sha256": "cc56240106750ae44e505d328868d8402c3c43b84642f92a2623f2981a0e0181"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/ci-01/started.json",
+      "size_bytes": 362,
+      "sha256": "632c85616bc2ee47bbe7e1f0d67eefbfddddcc17a3f60b0b4323da68b9b7b76b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/ci-01/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/ci-01/stdout",
+      "size_bytes": 2575,
+      "sha256": "05abd7c0c4a35732f069dc13a2be5cbb78f41612d8b5736e9408ea0140671f06"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/dispatch-linux-arm64/result.json",
+      "size_bytes": 421,
+      "sha256": "a8e530d6a4fcee828f4a57f6479f1b4b5130893ab36f01cac2fc654dc7ee5e7e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/dispatch-linux-arm64/started.json",
+      "size_bytes": 363,
+      "sha256": "01a33ecd50bda392b2fcd2d90a4deb5dccebe4a223754854bec558d168752560"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/dispatch-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/dispatch-linux-arm64/stdout",
+      "size_bytes": 63,
+      "sha256": "b872be410484cee62efcede99a2d136ae5608de56f95fb6cf3df3274430b61a7"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/download-linux-arm64/result.json",
+      "size_bytes": 754,
+      "sha256": "6b31ce8f3c4161a586b7bdb61fac29dcb81b5d77b242ce092a1f45ff748b31f1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/download-linux-arm64/started.json",
+      "size_bytes": 695,
+      "sha256": "63111e7f440ba22c4d671b1c3216e5780d19a10174e20fbe5f34bc5f569f2327"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/download-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/download-linux-arm64/stdout",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/final-linux-arm64/result.json",
+      "size_bytes": 463,
+      "sha256": "86278a4e33e3813af1a96ddc820f2fa498581bcb1eba3b2ab136d13271b69cd9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/final-linux-arm64/started.json",
+      "size_bytes": 404,
+      "sha256": "915c8e376ba0d511bbaaba2c05102c77d7c46704c63343d831b06715f9d65c61"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/final-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/final-linux-arm64/stdout",
+      "size_bytes": 3411,
+      "sha256": "a5e011dc1e1e0ab8b1d550c5efd565bd22a6be39d77c5d5938e9bb74ba102104"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-final-linux-arm64/result.json",
+      "size_bytes": 329,
+      "sha256": "05c54f5097b9692b0958429e24ab193d136906848b8e899451aee766b8bfb086"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-final-linux-arm64/started.json",
+      "size_bytes": 270,
+      "sha256": "2d58ec794c943de1fcf86503111eb9e478cf183e4b02919b2e5213237a6e49c5"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-final-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-final-linux-arm64/stdout",
+      "size_bytes": 4314,
+      "sha256": "50ef4da756fc0424bf8f0a85aafb3f8e4aab418b33218670fe3d6270459c7aa9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-post-build/result.json",
+      "size_bytes": 328,
+      "sha256": "dc39089462ca2799391766f440ae7c12415996f95a7eb532fc4888a778467a38"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-post-build/started.json",
+      "size_bytes": 270,
+      "sha256": "8d1a48c0464b7ad75af43247a425b9db29bcc7bb2d62005863d175497791ac70"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-post-build/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/jobs-post-build/stdout",
+      "size_bytes": 4075,
+      "sha256": "e05456fc135efaf4d2d5ff615cab880e952570edc362ba3af4a21349907519c9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/logs-final-linux-arm64/result.json",
+      "size_bytes": 350,
+      "sha256": "ecd733c56aa5c7315a2557162f166427675e692e83e1d5394f81cd831899ea9d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/logs-final-linux-arm64/started.json",
+      "size_bytes": 292,
+      "sha256": "d3cce18c354976a33c092f7c7456c37b588416d76a42e68cfc0343b220168def"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/logs-final-linux-arm64/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/logs-final-linux-arm64/stdout",
+      "size_bytes": 185269,
+      "sha256": "5e0f8f193c4275ca29fc5f412869e671d48bd15e243f1a8910f815a8aedbda55"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/main-before-dispatch/result.json",
+      "size_bytes": 335,
+      "sha256": "ee7b9f6e0cecb5c5dc36472b8d8358630fe590f6e97d356a2012da85b2ac25a7"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/main-before-dispatch/started.json",
+      "size_bytes": 276,
+      "sha256": "d8b1f9804911ee5ae1b8c2d2e3072a41b040ce693a9611024f24e8b71eda7eca"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/main-before-dispatch/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/main-before-dispatch/stdout",
+      "size_bytes": 41,
+      "sha256": "3ab29b2ff0e33e6ba462ceb0e4e52363937756c1c53792053aa1def1d0e59f29"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-01/result.json",
+      "size_bytes": 404,
+      "sha256": "50b8e703bc0bc75bc11ab77d573f3bcc1e4a18ecf7ef282977c6284111ea3aa9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-01/started.json",
+      "size_bytes": 345,
+      "sha256": "2f0300c885f7d51cd85334788ee4a5e236745db65f28637e929290c2a8af1007"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-01/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-01/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-02/result.json",
+      "size_bytes": 404,
+      "sha256": "baa01431cce180da0f9556af13f664e7ee323d22b09ce866ce0030d26325f6c5"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-02/started.json",
+      "size_bytes": 346,
+      "sha256": "b865210e22f7a7b5b97fe4b7c26379ae5d2ab88271bd9090341a45aa89e91453"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-02/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-02/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-03/result.json",
+      "size_bytes": 403,
+      "sha256": "aa30e3081508dcc9368e58ce9cfb569dcc44a6ce9fad2ef1a2dcfa9f95759dc4"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-03/started.json",
+      "size_bytes": 346,
+      "sha256": "983661b2cc08e18bd8f21efc445134065a9776f33f275906306a009b2d149e75"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-03/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-03/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-04/result.json",
+      "size_bytes": 405,
+      "sha256": "e2ad6467090e6b75e4936fb49826dababb4d8d78bfaf64c48e1bf79f4ec46085"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-04/started.json",
+      "size_bytes": 346,
+      "sha256": "e3841356a6df444d379083d10f5d90f7d33f05bd7d20299e4939439f00374312"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-04/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-04/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-05/result.json",
+      "size_bytes": 405,
+      "sha256": "0a2cfd062044b50a036e75128d14b26b5deb4b4da545fee1611554e8ff32e6d1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-05/started.json",
+      "size_bytes": 346,
+      "sha256": "e25c0a9201af296b11ec97c40093f47dbc1e46275e9a8879d8f5f11f5b57f275"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-05/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-05/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-06/result.json",
+      "size_bytes": 405,
+      "sha256": "bad9b3276ac2f74f96a66dfd2bf767b993d2e527287acb48cb7f03fdcb2de7f9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-06/started.json",
+      "size_bytes": 346,
+      "sha256": "04089f5ae60c4c257e831e79ffa9182c3c421e7c6d147c036eda176a3d0739cf"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-06/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-06/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-07/result.json",
+      "size_bytes": 404,
+      "sha256": "87780e042b901c4061c34adb29ff3cd09bad12b35df99784b47ef03bedf296d3"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-07/started.json",
+      "size_bytes": 345,
+      "sha256": "924daeebf41eb7c8522215bdf34ed229fa9aaf2a2e92476bbf836d5f627abce6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-07/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-07/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-08/result.json",
+      "size_bytes": 404,
+      "sha256": "c5711c1d4e8fc423b7588009278996391a9b89ff27fc2b41aebd00c93210d42f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-08/started.json",
+      "size_bytes": 346,
+      "sha256": "782d4db482ffd3d6a446e98c23567d6d6a4fe1c169d85aea65f47b2f2bd86187"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-08/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-08/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-09/result.json",
+      "size_bytes": 404,
+      "sha256": "561caf8212081471d19660b70fd9f79ce319c4b55a07b6eeece9ac18316a10be"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-09/started.json",
+      "size_bytes": 345,
+      "sha256": "ae38798cec12ddc0e1b3eb7baa1626d6757c925b31cf6be007844cb101307495"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-09/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-09/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-10/result.json",
+      "size_bytes": 403,
+      "sha256": "97e922b22697e81ac89623832608cfc531bf4133ff64aa5cc58bd9dadaa660e0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-10/started.json",
+      "size_bytes": 346,
+      "sha256": "b67cf54243a7cbdf41abbec67181119b4c0af75eeb18f25ad10dcb90b48f46fa"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-10/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-10/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-11/result.json",
+      "size_bytes": 405,
+      "sha256": "ebffda72040cacedaee29bf45d4ff21a3a79b11ba16ed5209f8843b106e0b9f7"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-11/started.json",
+      "size_bytes": 346,
+      "sha256": "fa10c2fcf949112132d4b0e48eadceaa17933b27ae6c2d9974f60272686a0419"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-11/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-11/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-12/result.json",
+      "size_bytes": 405,
+      "sha256": "e1c0163cc63eba56fdc68dfe7161ea107a4ec80a18ed93bbc499b935191a26eb"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-12/started.json",
+      "size_bytes": 346,
+      "sha256": "1e23bd29664c0317a4acac3f2d3d038d2b91ee9b22e45a7a320d5e0f6af82ea6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-12/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-12/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-13/result.json",
+      "size_bytes": 405,
+      "sha256": "528f10e2149ce49aab79cf625dfc3664d1fadd91d8cae634327234abb752eaf6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-13/started.json",
+      "size_bytes": 346,
+      "sha256": "4e42be3aa175a7a0457837914e1c918b59eda9d7903d8efba07247d757e0f075"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-13/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-13/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-14/result.json",
+      "size_bytes": 405,
+      "sha256": "5d372d135bba42aa186887f7c123d98173789f1c936d5f306cd87b8d814e31a5"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-14/started.json",
+      "size_bytes": 346,
+      "sha256": "f1e770f8bc7490ee77e554a284d06cdeddcf42d0414f883fe77f1cc38b391b48"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-14/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-14/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-15/result.json",
+      "size_bytes": 404,
+      "sha256": "6e73bf709b62fbddab070d1f854a407ba03e1594c803c6c7e9ad9b14d3d36280"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-15/started.json",
+      "size_bytes": 346,
+      "sha256": "d0f3e441498376cbea7836c6e57e7fd38bfe2301e60f24fc55c837a73e0dad31"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-15/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-15/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-16/result.json",
+      "size_bytes": 405,
+      "sha256": "35f704e4319370cf444fd80a1a67ff32ca16d97283207e3e8a50f2971b9ac8af"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-16/started.json",
+      "size_bytes": 346,
+      "sha256": "403da7cbd5ee9a70a1db71b9328871900f8e101534f9e7251d1a93a4f258303a"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-16/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-16/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-17/result.json",
+      "size_bytes": 404,
+      "sha256": "44a4be29dc9a374172e9927dcf096d9c41b6190c1b2052e62875c3707a46029c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-17/started.json",
+      "size_bytes": 345,
+      "sha256": "392fad4cfd3dff54bd3975451f2867656e47c8301227572ae20dbbade854f334"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-17/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-17/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-18/result.json",
+      "size_bytes": 404,
+      "sha256": "ad83739a6b09fd8a4fa2245e640cfb5508c8663599a5fd047319f177f889a095"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-18/started.json",
+      "size_bytes": 346,
+      "sha256": "0b9c74b6bd6ed0f3c1691fec576ef740f00b52eaecd8da35fd6f4a2f389c4f57"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-18/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-18/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-19/result.json",
+      "size_bytes": 405,
+      "sha256": "27c81aa847ed1ee939778d6507799fa350e49a1e57150b0323458e01aaab1a01"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-19/started.json",
+      "size_bytes": 346,
+      "sha256": "df4043466ea2750f368203cf3fa001aed1e38e8e65772af0afd15482e7142fca"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-19/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-19/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-20/result.json",
+      "size_bytes": 404,
+      "sha256": "27c3469e3542a809d6c7ea8e38f28ee25e5273bbad4a3c1294b8296ddb815d77"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-20/started.json",
+      "size_bytes": 345,
+      "sha256": "c3c8927c249d7206a2f670108d13eee9d3291f75a962e5aa06823d2154d29c9c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-20/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-20/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-21/result.json",
+      "size_bytes": 405,
+      "sha256": "25e12d92bf727fd1f53bb68b7820f6bef416acf1c85a884fc9ea448d30980228"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-21/started.json",
+      "size_bytes": 346,
+      "sha256": "a532485bc65c4e4b9643da80d254d4f4c02c4f94fc30f94ba48ed3c8f963ca77"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-21/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-21/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-22/result.json",
+      "size_bytes": 404,
+      "sha256": "33ef5640ae058c339fe97eb95353daac8bca7c2f3f69d333fc7cf52e215c4430"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-22/started.json",
+      "size_bytes": 345,
+      "sha256": "c1d2ace1e07fb8023761dbbafb60b3c339feab28aa178de7e144da95d07615ab"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-22/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-22/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-23/result.json",
+      "size_bytes": 403,
+      "sha256": "02290342168c1193c30e633d9ff193e60157762634a81fc5d032be03483aec54"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-23/started.json",
+      "size_bytes": 346,
+      "sha256": "3b2cc5e44c7e9ad7a83d48bc7a6928ff5bc44eec4737ead8fda9802dcf509f48"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-23/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-23/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-24/result.json",
+      "size_bytes": 404,
+      "sha256": "82097e242cc82e679d957ca5cfb96f94debe9dd3922d6f7f09d7c56898c138bb"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-24/started.json",
+      "size_bytes": 346,
+      "sha256": "9028a76e2b777be2e3079a963f034747b7fe70c8e40579bb09531b31526f2f19"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-24/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-24/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-25/result.json",
+      "size_bytes": 404,
+      "sha256": "219227ee03a98d336f122cdf2b589070d29f99f890d3f954d32244af0db84eee"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-25/started.json",
+      "size_bytes": 346,
+      "sha256": "1401e378dee6f8d65e6a23ababf8096e3a6ccfeff76b22b4ac303fc7f1db3479"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-25/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-25/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-26/result.json",
+      "size_bytes": 405,
+      "sha256": "4bab999d11536989d28fc8feadc55a2e3d23973a955abd6ec8d0ad7639eb718d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-26/started.json",
+      "size_bytes": 346,
+      "sha256": "b4379edead481b6805aa034c63ec9352dc42001d3dc80867a2863601f8704677"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-26/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-26/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-27/result.json",
+      "size_bytes": 405,
+      "sha256": "c8883076cb0684b582c6810141099b36b92cca622000ee99eabccf26875459e8"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-27/started.json",
+      "size_bytes": 346,
+      "sha256": "f63251fd4a50642681b66b9d88635c50637ba3aa1168f6a3495e32d4fa6d8937"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-27/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-27/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-28/result.json",
+      "size_bytes": 405,
+      "sha256": "fa3ce7de9c846ef304e63fded3ec0b5fb6de6c912250dc39fe34dbb63cb2d79f"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-28/started.json",
+      "size_bytes": 346,
+      "sha256": "3fd082563c355c9e30c12f6e03e0ca7357d95c7bf5017b0798c501692642de9b"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-28/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-28/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-29/result.json",
+      "size_bytes": 405,
+      "sha256": "919423f50f90eed474141249bff4fc2ac146fab528e460325f6cdff643e4946e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-29/started.json",
+      "size_bytes": 346,
+      "sha256": "d00876417af2dec25c3ad143b7bafcf74e3915c6a3b43c6a2d898ca903b9e369"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-29/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-29/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-30/result.json",
+      "size_bytes": 403,
+      "sha256": "3a95969775c564b7ee36ca631dda4a4a1c2c0ac0d952d9d277f0e92225bdc4e6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-30/started.json",
+      "size_bytes": 344,
+      "sha256": "99281d60ecfdfa7a44994a2a98f19723b3dd977e2786d2d6f8f94bb4f1e898c3"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-30/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-30/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-31/result.json",
+      "size_bytes": 405,
+      "sha256": "fd25d2ef702e327bcaafd46274d679f484166e844efde82802e6ed85070078a6"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-31/started.json",
+      "size_bytes": 346,
+      "sha256": "207a7ce42d2856e4c49786b3315398bd313a3fdc183d1b93caaaef4ec11ceab4"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-31/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-31/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-32/result.json",
+      "size_bytes": 405,
+      "sha256": "bec40264c260a654eaed228a8536853ebb8e6b10c4518c2ac726fa8ea30f78b1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-32/started.json",
+      "size_bytes": 346,
+      "sha256": "4f929db6446011ef5fd930179ce65ec5198ca99cc5e1d3310b6e2393cccf033c"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-32/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-32/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-33/result.json",
+      "size_bytes": 405,
+      "sha256": "037f06b9517e0543e41fbeda0240f4f6cf4609a4df62b3cbd75d1bc8a2b26527"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-33/started.json",
+      "size_bytes": 346,
+      "sha256": "d59baf49b9ca0694a33411a15b06dadab82a84ce382bc1a4e059c1a3a212a604"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-33/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-33/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-34/result.json",
+      "size_bytes": 405,
+      "sha256": "ffc7ac101687cf03e565cbf704c03be9eb0ecf0e5af90f52161d8fd66e5bc5b9"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-34/started.json",
+      "size_bytes": 346,
+      "sha256": "781465c31d9928c94a28943d32e1238ab85bdbf7b878c981dc427a3d5d285b95"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-34/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-34/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-35/result.json",
+      "size_bytes": 404,
+      "sha256": "4b14ff5fe8ccdde899b13830c8542126323f22295005788f7fbb0903ceb75733"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-35/started.json",
+      "size_bytes": 346,
+      "sha256": "6762bf1deb12a037ba9b28bea61c091dca05d3a732ad58b29b2397d4877c43ea"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-35/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-35/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-36/result.json",
+      "size_bytes": 405,
+      "sha256": "b5d63b45e1501a22da3952dab2a764bc2027e571e9b9c011fcd6bda298501943"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-36/started.json",
+      "size_bytes": 346,
+      "sha256": "94c96c86717d8f8e6a9c6f95a7500096bb00fccfbafaadba96bdbea138b79dc8"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-36/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-36/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-37/result.json",
+      "size_bytes": 405,
+      "sha256": "6bbc4683667a992a1398c15805bcc176283c387987650358403e529dc5544f41"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-37/started.json",
+      "size_bytes": 346,
+      "sha256": "ad9adad935fbf2bd8d6afcecfd92cd0a640b9cfb01803f2db21586a73c2b8f4d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-37/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-37/stdout",
+      "size_bytes": 3011,
+      "sha256": "1a8131bf6a6520f6630fd0fefac6834020804276ac72f4e951fc6d3c696b31f2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-38/result.json",
+      "size_bytes": 405,
+      "sha256": "3b0c9da1bfd827af58279663adf85a09d6cd4cd889e4bfc02005e5bb75d52ff0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-38/started.json",
+      "size_bytes": 346,
+      "sha256": "983b36ccbbe1b1c63553947a0e2e9dd4a7f47d12615dc10c63fd9d90f6cb8a2e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-38/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-38/stdout",
+      "size_bytes": 3074,
+      "sha256": "1d8a50fde46ec6ec79b2ff46394df6031a538630da03c0c7358a0ba411f70967"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-39/result.json",
+      "size_bytes": 404,
+      "sha256": "375450b63719e9e93d003c7c6d6e7279c580262a2793941d70227158b65784c1"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-39/started.json",
+      "size_bytes": 346,
+      "sha256": "d7bbbbfd67dd8c31dc058d5b1f22505a3be771ff8fe713a11e2b3d567b376f55"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-39/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-39/stdout",
+      "size_bytes": 3074,
+      "sha256": "1d8a50fde46ec6ec79b2ff46394df6031a538630da03c0c7358a0ba411f70967"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-40/result.json",
+      "size_bytes": 404,
+      "sha256": "b12ee8ba7ef8e13cdfc4492b9451cc3d7d3689318b5a5a29ef8dafaace87002e"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-40/started.json",
+      "size_bytes": 345,
+      "sha256": "c0d50c0cc763fa8fc2901e051da8c6843e8bff645f3b256e35f4d7aba1678dfc"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-40/stderr",
+      "size_bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github/monitor-40/stdout",
+      "size_bytes": 3250,
+      "sha256": "112d5bb1571cb42b4f6ac84b53582ea7ffbfdd3dfc2302c8da30a3d9f470fcf2"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/github-command.py",
+      "size_bytes": 1000,
+      "sha256": "56b847f7e8f90fff8f6d5f7ee87f4cce84485abbd078827478175d6fe9ee37b0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/observations.json",
+      "size_bytes": 46089,
+      "sha256": "3bbae60ca014fda2731f7e638c551436041efac925a3f1e6bf64fab5d9ccef8d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/plan.json",
+      "size_bytes": 737,
+      "sha256": "f3dce0b591927565eef445c082480fdb378734006d339e8b5076e9a381a34466"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/proposed/testdata/synthetic/native-beat-arm-release-observations-20261008.json",
+      "size_bytes": 46089,
+      "sha256": "3bbae60ca014fda2731f7e638c551436041efac925a3f1e6bf64fab5d9ccef8d"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/reports/linux-arm64/build-diagnostics.json",
+      "size_bytes": 5466,
+      "sha256": "7ff595dc1e9ea318c1d062b0c784fa226d953c02558a527ec2d951eaca7a20b0"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/reports/linux-arm64/package-check.json",
+      "size_bytes": 38731,
+      "sha256": "bc9a0261eacfdab0bba3c384b44f94b45898dd8fae219f82de76ac151b80ef18"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/reports/linux-arm64/smoke-check.json",
+      "size_bytes": 38799,
+      "sha256": "f33899debffe728670a7a6ab6fdb8f0b995d973c5461b049bdb4efb49997a834"
+    },
+    {
+      "path": "target/native-beat-arm-diagnostic-acceptance-20261008/workflow-fixed-ref.yml",
+      "size_bytes": 20746,
+      "sha256": "72e2ba776c37e2bf9550d46539b0cfbb4d2c61a3a4dfb071cebafbe717e9ca0f"
+    }
+  ],
+  "file_count": 389,
+  "total_size_bytes": 219908217,
+  "owned_index_ref": {
+    "path": "target/native-beat-arm-diagnostic-acceptance-20261008/raw-artifact-index.json",
+    "size_bytes": 104614,
+    "sha256": "43841c9a8aafd16259584c7a730d65fb91d7dad237854ce12b78dff0f2ad0339"
+  }
+}

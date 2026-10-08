@@ -107,3 +107,7 @@
 [原始 `046a05b` 矩阵](../testdata/synthetic/native-beat-release-original-observations-20261008.json) 的三包 QA 排除 FAIL 与 ARM exit 143 保留，原因未知；下一次仅 ARM64 以 `--jobs 1` / GNU time 收集实际构建诊断，release 优化参数保持，正常 runner 才能留下完整记录，静态软件检查与六项 shell stub 窄控已通过，后续固定 ref 运行单独记录，本冻结矩阵时 GNU time 诊断构建与 RSS 为 NOT RUN，不据前三目标或失联消息宣称四平台完成或 OOM 修复
 
 这些结果绑定 `0930d17`，不覆盖后续 Labels GUI / 采用提交，完整四目标软件、实际 tag Release 和设备 / 真人门槛继续推进，既有标注采用软件证据保持
+
+2026-10-08 · Linux ARM64 独立发行软件补验：固定 `d3b2648` 的 CI 通过后仅运行 `37708701226`，优化 Game / Lab、下载包和十项解包 Lab 命令通过；GNU time 实际 wall 29:35.45、最大 RSS 11386900 kbytes、command / tee exit 0，见 [ARM 观察](../testdata/synthetic/native-beat-arm-release-observations-20261008.json)，旧 143 与失联原因保持未知
+
+本轮仅 ARM64 覆盖 `d3b2648`，另三目标实绩仍是 `0930d17`，未宣称当前同 ref 完整四目标；候选左右 111 / 114 beats 的原值与历史差异保留，完整质量 / reference logits/q、取消与长曲成本、设备 / 真人及实际 tag Release 继续独立推进，目标保持 active

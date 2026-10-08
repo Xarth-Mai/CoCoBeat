@@ -112,3 +112,7 @@
 [原始矩阵](../testdata/synthetic/native-beat-release-original-observations-20261008.json) 三项 `verify.py` 包排除 FAIL 及 ARM exit 143 原因未知保持；仅 ARM64 后续采用 `--jobs 1` / GNU time 诊断，不改 fat LTO 或 timeout，不宣称 OOM 已证实或已修复，静态软件检查与六项 shell stub 窄控已通过，后续固定 ref 的实际构建单独记录，本冻结矩阵时 GNU time 诊断 GHA / RSS 为 NOT RUN，失联仍可能导致记录缺失
 
 本批固定版本不覆盖后续 Labels GUI / 采用提交，Game GUI、真实设备 / 真人、干净 Windows VC、模型质量、reference logits/q 与实际 tag Release 继续独立取证，工作包 24 的完整 V1 退出状态保持
+
+2026-10-08 · Linux ARM64 发行诊断补验：固定 `d3b2648`、通过 CI 后唯一运行 [37708701226](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37708701226) 成功，独立 TAR、38 份源码许可 / 四份 SDK notices、597 行台账和十项解包 Lab 命令核验通过；实际 GNU time wall 29:35.45、最大 RSS 11386900 kbytes、command / tee exit 0，构建 QA 诊断单独保存且不入产品，见 [ARM 观察](../testdata/synthetic/native-beat-arm-release-observations-20261008.json)
+
+旧两次 ARM 失败和三包 QA 排除 FAIL 保留，本次成功不解释其根因；另三平台仍是 `0930d17`，本 ref 完整四目标未重跑，右侧 beat 数量 114 与历史 Linux x64 113 保留为独立实际值，数值 / 音乐质量、Game GUI / 真实设备 / 真人、干净 Windows VC 和实际 tag Release 门槛仍由各自证据关闭，工作包 24 的完整 V1 退出状态保持
