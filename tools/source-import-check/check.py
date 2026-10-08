@@ -110,7 +110,7 @@ def check(lab, lab_receipt, game, game_receipt, dev_source, output):
             end = json.loads(execute(f"{name}-end", ["inspect-stage", package, frames]))
             assert stage["end_frames"] == frames and stage["frame"] == sample and not stage["at_end"]
             assert end["end_frames"] == frames and end["frame"] == frames and end["at_end"]
-            assert stage["compiler_version"] == 2 and end["compiler_version"] == 2
+            assert stage["compiler_version"] == 3 and end["compiler_version"] == 3
             assert {obj: digest(package / obj) for obj in OBJECTS} == hashes
             stages[name] = (package, sample, stage, frames, hashes)
             result["packages"].append({"name": name, "path": str(package), "source_sha256": digest(source), "authoring_sha256": digest(authored),

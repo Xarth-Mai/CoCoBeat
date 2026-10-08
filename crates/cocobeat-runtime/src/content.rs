@@ -89,7 +89,7 @@ pub(crate) fn load_package_named(
     let content_id = format!("package-blake3:{hash}");
     let end = SongTime::from_frames(package.manifest.canonical_frames as i64);
     let stage =
-        cocobeat_stage::compile_version(&content_id, end, &package.analysis.sections, version)?;
+        cocobeat_stage::compile_analysis_version(&content_id, end, &package.analysis, version)?;
     Ok((
         SongContent {
             content_id,
@@ -225,7 +225,16 @@ mod tests {
             assert_eq!(stage.segments().len(), 3);
             assert!(content.sections.is_empty());
         }
-        assert!(load_package_version(&path, 3).is_err());
+        assert_eq!(
+            load_package_version(&path, 3)
+                .unwrap()
+                .0
+                .stage
+                .unwrap()
+                .compiler_version(),
+            3
+        );
+        assert!(load_package_version(&path, 4).is_err());
     }
 
     #[test]
@@ -239,7 +248,8 @@ mod tests {
         assert_eq!(content.content_id, ordinary.content_id);
         assert_eq!(content.end, ordinary.end);
         assert_eq!(sound.frames, ordinary_sound.frames);
-        assert!(load_package_named(&path, 3).is_err());
+        assert_eq!(content.stage.as_ref().unwrap().compiler_version(), 3);
+        assert!(load_package_named(&path, 4).is_err());
         let unknown = root.package("unknown-named", "unknown-rules-v1", 1_200, vec![]);
         assert!(
             load_package_named(&unknown, cocobeat_stage::COMPILER_VERSION)

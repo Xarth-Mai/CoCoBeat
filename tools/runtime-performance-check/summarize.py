@@ -45,7 +45,7 @@ def summarize(rows, metadata, result):
         runs.append(current)
     if metadata["release"] is not True: reasons.append("not a release build")
     if metadata["time_strategy"] != "Automatic": reasons.append("not automatic Time")
-    if metadata.get("stage_compiler_version") not in (1, 2): reasons.append("missing supported compiled stage")
+    if metadata.get("stage_compiler_version") not in (1, 2, 3): reasons.append("missing supported compiled stage")
     if result["status"] != "COMPLETE": reasons.append("runtime did not complete")
     if result["synthetic_hits"] != result["expected_hits"]: reasons.append("incomplete synthetic hit schedule")
     expected_captures = result.get("requested_captures", [])
@@ -133,6 +133,8 @@ def self_check():
     receipts = [{**capture, "target_frame": index + 1, "moment_ns": capture["observed_ns"], "deadline_ns": 0, "anchor_ns": 0, "anchor_frame": index + 1} for index, capture in enumerate(captures)]
     valid_result["capture_producer"] = {"completed": True, "error": None, "captures": receipts}
     assert summarize(native_like, valid_meta, valid_result)["status"] == "VALID_LOCAL_OBSERVATION"
+    assert summarize(native_like, {**valid_meta, "stage_compiler_version": 3}, valid_result)["status"] == "VALID_LOCAL_OBSERVATION"
+    assert "missing supported compiled stage" in summarize(native_like, {**valid_meta, "stage_compiler_version": 4}, valid_result)["invalid_reasons"]
     for replacement in ({"quality": {"preset": "low"}}, {"physical_width": 640}, {"window_requested_present_mode": "AutoVsync"}, {"stage_kind": "Straight"}, {"section_cue_id": None}):
         changed = [{**row, **replacement} if row["phase"] == "Running" else row for row in native_like]
         assert summarize(changed, valid_meta, valid_result)["status"] == "INVALID_LOCAL_OBSERVATION"

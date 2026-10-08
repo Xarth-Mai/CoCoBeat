@@ -19,7 +19,7 @@ crates/cocobeat-core     Anchor 判定、一对一配对与有界 Resonance
 crates/cocobeat-runtime  Bevy / Kira、ClockBridge、输入、会话与表现
 crates/cocobeat-replay   有界 JSON 持久化与同一 core 重放
 crates/cocobeat-media    有界音频处理、严格读回与四对象内容包事务
-crates/cocobeat-stage    手工段落区间驱动的确定性轨道与整数几何采样
+crates/cocobeat-stage    完整分析来源驱动的确定性轨道、整数采样与独立装饰
 crates/cocobeat-editor   精确 Anchor 编辑与有界撤销重做
 crates/cocobeat-net      受邀请的 QUIC 资源、实时 / 加速事实、ClockSync 与权威 Replay
 tools/cocobeat-lab       研究实验，不进入正式游戏 UX
@@ -116,7 +116,7 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `import-authored-package SOURCE_AUDIO AUTHORING_JSON NEW_PACKAGE` 从有界源快照经唯一 q10 编码器创建手工内容四对象，记录真实源 / 最终帧数、来源和能量；已有目标拒绝覆盖，完整自动 MIR 与曲库另行推进，操作见 [源导入](docs/source-import.md)
 
-`--package DIR --watch-replay FILE` 在完整身份与原规则通过后，按录制的 Stage 1 / 2 用当前渲染器观看；完整开场后等待明确开始，可以暂停、重启原 epoch 或返回菜单。此模式不接受实况 Hit，也不写 Replay，原事实顺序和未完成历史保留；没有 Stage 版本的旧录制仍可用 `--replay` 做 core 校验，详细边界见 [Replay 观看](docs/replay-diagnostics.md#原生只读-replay-观看)
+`--package DIR --watch-replay FILE` 在完整身份与原规则通过后，按录制的 Stage 1 / 2 / 3 用当前渲染器观看；完整开场后等待明确开始，可以暂停、重启原 epoch 或返回菜单。此模式不接受实况 Hit，也不写 Replay，原事实顺序和未完成历史保留；没有 Stage 版本的旧录制仍可用 `--replay` 做 core 校验，详细边界见 [Replay 观看](docs/replay-diagnostics.md#原生只读-replay-观看)
 
 `cocobeat-lab edit-anchors <package-dir> <patch.json> <new-package-dir>` 可修正已有包的 Anchor，支持整数帧增删移动及撤销重做；全部操作成功后导出新包，保留音频、分析对象与原提示，实际修改才产生新身份，无变化导出保留四个对象原字节。补丁绑定完整源包身份，源包目录及其内部路径不能作为输出，具体格式见 [内容编辑](docs/editor.md)
 
@@ -132,9 +132,9 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空
 
-歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；默认开发歌曲保留原手写场景，完整自动编排继续按内容分析证据推进，明确版本的只读观看见 [Replay 说明](docs/replay-diagnostics.md#原生只读-replay-观看)
+歌曲包的真实分析段落区间生成基础 StagePlan：短区间拓宽后收回，至少 16 秒的区间依次呈现缓弯和低桥，带低护栏与霓虹拱门，区间空隙保持直道，终点标线绑定实际音频结束帧；段落提示门使用独立的 chart cue。路面、预告和终点共享整数歌曲时间和三轴相对位置，画质和 Resonance 不改变计划，曲外基宽铺底仅作场景延伸；当前 Stage 3 保持 Stage 2 的整数几何，以已声明重复关系为相关区间分配一致环境配色，以实测 RMS 能量分档调整建筑与拱门微光，装饰不改变 Anchor、SongTime 或核心判定；默认开发歌曲保留原手写场景，完整自动编排继续按内容分析证据推进，明确版本的只读观看见 [Replay 说明](docs/replay-diagnostics.md#原生只读-replay-观看)
 
-`cocobeat-lab inspect-stage <package-dir> <frame>` 完整验证歌曲包后输出内容身份、编译版本、片段数量和该帧的整数毫米采样，帧范围包含 EOF；同一包与编译版本产生相同计划。四对象包保持，Replay v2 记录实际 Stage 版本，`inspect-replay-stage` 与 `--watch-replay` 按明确版本重建几何；渲染使用固定网格预算，极密段落的细小轮廓近似与软件验证边界见 [包契约](docs/song-package.md)
+`cocobeat-lab inspect-stage <package-dir> <frame>` 完整验证歌曲包后输出内容身份、编译版本、片段数量、该帧的整数毫米采样及独立 motif / energy_band，帧范围包含 EOF；同一包与编译版本产生相同计划。四对象包保持，Replay v2 记录实际 Stage 版本，`inspect-replay-stage` 与 `--watch-replay` 按明确版本重建，Stage 1 / 2 保持原几何，Stage 3 另绑定重复分组与能量分档；`inspect-stage-plan` 保留原 capability / 区间 / confidence / 能量位证据，未知能力不补造来源；渲染使用固定网格预算，极密段落的细小轮廓近似与软件验证边界见 [包契约](docs/song-package.md)
 
 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG` 可在指定整数音频帧预览轨道与段落提示，`FRAME` 为 `0..=总帧数`，`CODE` 使用语言代码，`PRESET` 为 `low|medium|high|off`；画面没有音频或真实输入，不能代替设备验收。包内标签保持作者原文，换行和控制空白只在显示时折成单行，过长标签限制在字幕区域内；Noto 使用现有嵌入字体的跨脚本回退，英文界面可显示中日韩标签，CJK 界面可显示乌克兰字母，各地区首选字体保留
 

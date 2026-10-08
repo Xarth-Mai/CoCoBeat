@@ -1,8 +1,8 @@
 //! Deterministic song-time geometry, independent of rendering and music judgement
 
 use cocobeat_schema::{
-    CANONICAL_SAMPLE_RATE, MAX_CANONICAL_FRAMES, MAX_CONTENT_ITEMS, MAX_CONTENT_TEXT_BYTES,
-    SectionFeature, SongTime,
+    AnalysisSource, AnalysisState, CANONICAL_SAMPLE_RATE, MAX_CANONICAL_FRAMES, MAX_CONTENT_ITEMS,
+    MAX_CONTENT_TEXT_BYTES, MusicAnalysis, RepetitionFeature, SectionFeature, SongTime,
 };
 
 pub use cocobeat_schema::STAGE_COMPILER_VERSION as COMPILER_VERSION;
@@ -19,6 +19,9 @@ pub struct StagePlan {
     compiler_version: u32,
     end: SongTime,
     segments: Vec<TrackSegment>,
+    motifs: Vec<MotifSpan>,
+    energy: Vec<DecorEnergy>,
+    repetition_known: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -47,13 +50,158 @@ pub struct TrackSample {
     pub kind: SegmentKind,
 }
 
-/// Compile real analysis intervals without inferring intervals from chart cues
+/// Independent visual arrangements; neither field participates in core or track geometry
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DecorationSample {
+    pub motif: Option<u8>,
+    pub energy_band: Option<u8>,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MotifSpan {
+    pub start: SongTime,
+    pub end: SongTime,
+    pub motif: u8,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct DecorEnergy {
+    pub start: SongTime,
+    pub end: SongTime,
+    pub rms_bits: [u32; 2],
+    pub peak_bits: [u32; 2],
+    pub band: u8,
+}
+
+/// Current compiler requires the complete validated analysis, not just section geometry
+pub fn compile_analysis(
+    content_id: &str,
+    end: SongTime,
+    analysis: &MusicAnalysis,
+) -> Result<StagePlan, String> {
+    compile_analysis_version(content_id, end, analysis, COMPILER_VERSION)
+}
+
+pub fn compile_analysis_version(
+    content_id: &str,
+    end: SongTime,
+    analysis: &MusicAnalysis,
+    version: u32,
+) -> Result<StagePlan, String> {
+    if version != 3 {
+        return compile_version(content_id, end, &analysis.sections, version);
+    }
+    analysis.validate(end.frames().try_into().map_err(|_| "Invalid Stage end")?)?;
+    let mut plan = compile_version(content_id, end, &analysis.sections, 2)?;
+    plan.compiler_version = 3;
+    if let Some(capabilities) = analysis.capabilities {
+        plan.repetition_known = !matches!(
+            capabilities.repetition.state,
+            AnalysisState::NotRun | AnalysisState::Unsupported
+        ) || capabilities.repetition.source == AnalysisSource::Authored;
+        if plan.repetition_known {
+            plan.motifs = compile_motifs(&analysis.repetitions);
+        }
+        if capabilities.energy.source == AnalysisSource::Measured
+            && matches!(
+                capabilities.energy.state,
+                AnalysisState::Candidate | AnalysisState::Validated
+            )
+        {
+            plan.energy = analysis
+                .energy
+                .iter()
+                .map(|sample| {
+                    let bits = sample.rms.map(f32::to_bits);
+                    // Exact power-of-two thresholds, inclusive; signed zero stays silent
+                    let level = (bits[0] & 0x7fff_ffff).max(bits[1] & 0x7fff_ffff);
+                    DecorEnergy {
+                        start: sample.start,
+                        end: SongTime::from_frames(
+                            sample.start.frames() + i64::from(sample.frames),
+                        ),
+                        rms_bits: bits,
+                        peak_bits: sample.peak.map(f32::to_bits),
+                        band: u8::from(level >= 0x3d00_0000) + u8::from(level >= 0x3e00_0000),
+                    }
+                })
+                .collect();
+        }
+    }
+    Ok(plan)
+}
+
+fn component(parent: &mut [usize], mut index: usize) -> usize {
+    while parent[index] != index {
+        parent[index] = parent[parent[index]];
+        index = parent[index];
+    }
+    index
+}
+
+fn connect(parent: &mut [usize], a: usize, b: usize) {
+    let a = component(parent, a);
+    let b = component(parent, b);
+    parent[a.max(b)] = a.min(b);
+}
+
+// Shared/overlapping relation spans conservatively share one arrangement; no musical label is inferred
+fn compile_motifs(relations: &[RepetitionFeature]) -> Vec<MotifSpan> {
+    let mut spans: Vec<_> = relations
+        .iter()
+        .flat_map(|r| {
+            [
+                (r.source_start, r.source_end),
+                (r.target_start, r.target_end),
+            ]
+        })
+        .collect();
+    spans.sort_unstable();
+    spans.dedup();
+    let mut parent: Vec<_> = (0..spans.len()).collect();
+    for r in relations {
+        connect(
+            &mut parent,
+            spans
+                .binary_search(&(r.source_start, r.source_end))
+                .unwrap(),
+            spans
+                .binary_search(&(r.target_start, r.target_end))
+                .unwrap(),
+        );
+    }
+    // The furthest-reaching prior span covers every overlapping neighbour in one sweep
+    let mut furthest = 0;
+    for index in 1..spans.len() {
+        if spans[index].0 < spans[furthest].1 {
+            connect(&mut parent, furthest, index);
+        }
+        if spans[index].1 > spans[furthest].1 {
+            furthest = index;
+        }
+    }
+    let mut result: Vec<MotifSpan> = Vec::with_capacity(spans.len());
+    for (index, &(start, end)) in spans.iter().enumerate() {
+        let motif = (component(&mut parent, index) % 3 + 1) as u8;
+        if let Some(last) = result.last_mut()
+            && last.motif == motif
+            && start <= last.end
+        {
+            last.end = last.end.max(end);
+        } else {
+            result.push(MotifSpan { start, end, motif });
+        }
+    }
+    result
+}
+
+/// Legacy section-only version 2 geometry; use compile_analysis for current arrangements
 pub fn compile(
     content_id: &str,
     end: SongTime,
     sections: &[SectionFeature],
 ) -> Result<StagePlan, String> {
-    compile_version(content_id, end, sections, COMPILER_VERSION)
+    compile_version(content_id, end, sections, 2)
 }
 
 /// Version 1 keeps every analysis interval as a Plaza; version 2 adds Curve and Bridge
@@ -135,6 +283,9 @@ pub fn compile_version(
         compiler_version,
         end,
         segments,
+        motifs: Vec::new(),
+        energy: Vec::new(),
+        repetition_known: false,
     })
 }
 
@@ -153,6 +304,34 @@ impl StagePlan {
 
     pub fn segments(&self) -> &[TrackSegment] {
         &self.segments
+    }
+
+    pub fn motifs(&self) -> &[MotifSpan] {
+        &self.motifs
+    }
+    pub fn decor_energy(&self) -> &[DecorEnergy] {
+        &self.energy
+    }
+
+    pub fn decoration(&self, time: SongTime) -> Option<DecorationSample> {
+        if time < SongTime::ZERO || time > self.end {
+            return None;
+        }
+        // EOF retains the last interval; no extrapolation beyond canonical audio
+        let at = SongTime::from_frames(time.frames().min(self.end.frames() - 1));
+        let motif = self
+            .motifs
+            .get(self.motifs.partition_point(|span| span.end <= at))
+            .filter(|span| span.start <= at)
+            .map_or(0, |span| span.motif);
+        let energy_band = self
+            .energy
+            .get(self.energy.partition_point(|span| span.end <= at))
+            .map(|span| span.band);
+        Some(DecorationSample {
+            motif: self.repetition_known.then_some(motif),
+            energy_band,
+        })
     }
 
     /// Sample closed song bounds; the end retains the last kind at base width and zero offset
@@ -221,6 +400,202 @@ mod tests {
             confidence: None,
             label: "authored".into(),
         }
+    }
+
+    #[test]
+    fn music_context_is_independent_of_geometry_and_preserves_original_energy_bits() {
+        use cocobeat_schema::{AnalysisCapabilities, EnergySample};
+        let end = SongTime::from_frames(960_000);
+        let mut caps = AnalysisCapabilities::authored();
+        caps.repetition.state = AnalysisState::Candidate;
+        caps.repetition.source = AnalysisSource::Algorithm;
+        let mut analysis = MusicAnalysis {
+            schema_version: 2,
+            audio_hash: [1; 32],
+            capabilities: Some(caps),
+            tempo_regions: vec![],
+            beats: vec![],
+            onsets: vec![],
+            sections: vec![section(0, 960_000)],
+            repetitions: vec![
+                RepetitionFeature {
+                    source_start: SongTime::from_frames(0),
+                    source_end: SongTime::from_frames(100),
+                    target_start: SongTime::from_frames(200),
+                    target_end: SongTime::from_frames(300),
+                    confidence: None,
+                },
+                RepetitionFeature {
+                    source_start: SongTime::from_frames(200),
+                    source_end: SongTime::from_frames(300),
+                    target_start: SongTime::from_frames(400),
+                    target_end: SongTime::from_frames(550),
+                    confidence: Some(0.5),
+                },
+                RepetitionFeature {
+                    source_start: SongTime::from_frames(500),
+                    source_end: SongTime::from_frames(600),
+                    target_start: SongTime::from_frames(700),
+                    target_end: SongTime::from_frames(800),
+                    confidence: None,
+                },
+            ],
+            energy: vec![
+                EnergySample {
+                    start: SongTime::ZERO,
+                    frames: 100,
+                    rms: [-0.0, 0.0],
+                    peak: [0.0; 2],
+                },
+                EnergySample {
+                    start: SongTime::from_frames(100),
+                    frames: 100,
+                    rms: [0.03125, 0.0],
+                    peak: [0.125; 2],
+                },
+                EnergySample {
+                    start: SongTime::from_frames(200),
+                    frames: 959_800,
+                    rms: [0.0, 0.125],
+                    peak: [0.125; 2],
+                },
+            ],
+            diagnostics: String::new(),
+        };
+        let current = compile_analysis("context", end, &analysis).unwrap();
+        assert_eq!(current.compiler_version(), 3);
+        assert_eq!(
+            current,
+            compile_analysis("context", end, &analysis).unwrap()
+        );
+        assert_eq!(current.decor_energy()[0].rms_bits, [0x8000_0000, 0]);
+        assert_eq!(
+            current
+                .decor_energy()
+                .iter()
+                .map(|s| s.band)
+                .collect::<Vec<_>>(),
+            [0, 1, 2]
+        );
+        for frame in [0, 50, 200, 299, 400, 599, 700, 799] {
+            assert_eq!(
+                current
+                    .decoration(SongTime::from_frames(frame))
+                    .unwrap()
+                    .motif,
+                Some(1)
+            );
+        }
+        for frame in [100, 199, 300, 600, 800, 959_999, 960_000] {
+            assert_eq!(
+                current
+                    .decoration(SongTime::from_frames(frame))
+                    .unwrap()
+                    .motif,
+                Some(0)
+            );
+        }
+        for version in [1, 2] {
+            let historical = compile_analysis_version("context", end, &analysis, version).unwrap();
+            let direct = compile_version("context", end, &analysis.sections, version).unwrap();
+            assert_eq!(historical, direct);
+            assert_eq!(
+                historical.decoration(end),
+                Some(DecorationSample {
+                    motif: None,
+                    energy_band: None
+                })
+            );
+        }
+        let old_geometry = compile_version("context", end, &analysis.sections, 2).unwrap();
+        assert_eq!(current.segments(), old_geometry.segments());
+        for frame in 0..=end.frames() {
+            assert_eq!(
+                current.sample(SongTime::from_frames(frame)),
+                old_geometry.sample(SongTime::from_frames(frame))
+            );
+        }
+        analysis.repetitions.clear();
+        analysis.schema_version = 1;
+        analysis.capabilities = None;
+        let unknown = compile_analysis("unknown", end, &analysis).unwrap();
+        assert_eq!(
+            unknown.decoration(end),
+            Some(DecorationSample {
+                motif: None,
+                energy_band: None
+            })
+        );
+        assert_eq!(unknown.sample(end), current.sample(end));
+        assert_eq!(unknown.decoration(SongTime::from_frames(-1)), None);
+        assert_eq!(unknown.decoration(SongTime::from_frames(960_001)), None);
+        analysis.energy[0].rms[0] = f32::NAN;
+        assert!(compile_analysis("invalid", end, &analysis).is_err());
+        assert!(compile_analysis_version("invalid", end, &analysis, 4).is_err());
+    }
+
+    #[test]
+    fn maximum_repetition_spans_and_unavailable_capabilities_are_explicit() {
+        use cocobeat_schema::{AnalysisCapabilities, EnergySample};
+        let count = MAX_CONTENT_ITEMS as i64;
+        let end = SongTime::from_frames(4 * count);
+        let mut caps = AnalysisCapabilities::authored();
+        caps.repetition.state = AnalysisState::Candidate;
+        caps.repetition.source = AnalysisSource::Algorithm;
+        let mut analysis = MusicAnalysis {
+            schema_version: 2,
+            audio_hash: [1; 32],
+            capabilities: Some(caps),
+            tempo_regions: vec![],
+            beats: vec![],
+            onsets: vec![],
+            sections: vec![],
+            repetitions: (0..count)
+                .map(|index| RepetitionFeature {
+                    source_start: SongTime::from_frames(2 * index),
+                    source_end: SongTime::from_frames(2 * index + 1),
+                    target_start: SongTime::from_frames(2 * count + 2 * index),
+                    target_end: SongTime::from_frames(2 * count + 2 * index + 1),
+                    confidence: None,
+                })
+                .collect(),
+            energy: vec![EnergySample {
+                start: SongTime::ZERO,
+                frames: end.frames() as u32,
+                rms: [0.0; 2],
+                peak: [0.0; 2],
+            }],
+            diagnostics: String::new(),
+        };
+        let plan = compile_analysis("maximum-context", end, &analysis).unwrap();
+        assert_eq!(plan.motifs().len(), 2 * MAX_CONTENT_ITEMS);
+        for index in 0..count {
+            assert_eq!(
+                plan.decoration(SongTime::from_frames(2 * index))
+                    .unwrap()
+                    .motif,
+                plan.decoration(SongTime::from_frames(2 * count + 2 * index))
+                    .unwrap()
+                    .motif
+            );
+            assert_eq!(
+                plan.decoration(SongTime::from_frames(2 * index + 1))
+                    .unwrap()
+                    .motif,
+                Some(0)
+            );
+        }
+        analysis
+            .repetitions
+            .push(*analysis.repetitions.last().unwrap());
+        assert!(compile_analysis("over-limit", end, &analysis).is_err());
+        analysis.repetitions.clear();
+        analysis.capabilities.as_mut().unwrap().repetition.state = AnalysisState::Unsupported;
+        let unknown = compile_analysis("unavailable", end, &analysis).unwrap();
+        assert_eq!(unknown.decoration(end).unwrap().motif, None);
+        analysis.capabilities.as_mut().unwrap().repetition.state = AnalysisState::Candidate;
+        let known_empty = compile_analysis("known-empty", end, &analysis).unwrap();
+        assert_eq!(known_empty.decoration(end).unwrap().motif, Some(0));
     }
 
     #[test]

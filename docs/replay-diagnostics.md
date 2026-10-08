@@ -72,11 +72,11 @@ sidecar 输入要求普通有界文件，128 MiB、12,000 AudioRead 和最多 16
 
 Replay v1 / v2 的事实文档不增加设备时间、软件观察 / 消费时间或音频历史，默认诊断不推算这些字段或把歌曲时间差当物理延迟；显式 sidecar 保持独立来源和精确原字节关联。既有另存 CSV 保留生成行为和历史文件，但缺完整字节身份，本入口不自动升级、猜测或合并它
 
-Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未知，原 `build_id` 不等于视觉兼容证明；Replay v2 明确记录 `stage_compiler_version = 1 / 2`，只绑定确定性几何编译，不记录 shader、呈现设置或设备表现
+Replay v1 没有视觉或着色器版本记录，缺失版本始终保留为未知，原 `build_id` 不等于视觉兼容证明；Replay v2 明确记录 `stage_compiler_version = 1 / 2 / 3`，1 / 2 绑定原确定性几何，3 复用版本 2 几何并绑定重复关系分组和实测能量分档，不记录 shader、呈现设置或设备表现
 
 `cocobeat-lab inspect-replay-stage PACKAGE REPLAY FRAME` 先沿用同一完整包、身份、整数事实范围与 core 校验，再按明确记录的版本重建 StagePlan 并输出整数采样；v1 缺字段明确失败，不猜测历史版本。v1 图形诊断与 JSONL 的原字节保持，v2 JSONL 使用 `report_version = 2` 并在 header 增加 `stage_compiler_version`
 
-runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接通下面的原生只读观看，几何版本使用明确记录，历史 shader、网络到达时间和设备计时仍没有记录
+runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接通下面的原生只读观看，舞台版本使用明确记录，历史 shader、网络到达时间和设备计时仍没有记录
 
 [Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。本机软件计时关联按上面的显式 sidecar 入口推进；试听校准、物理设备计时和真实输入验收继续独立推进
 
@@ -94,7 +94,7 @@ runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接
 cargo run --locked -p cocobeat-game -- --package PACKAGE --watch-replay REPLAY.json
 ```
 
-观看前完整验证四对象、实际 PCM、完整内容 / 规则身份、Hit 范围和同一 core 的原始历史；只接受明确记录的 Stage 1 / 2，以 analysis 段落区间和实际长度编译该版本。缺失舞台版本的旧录制仍有效用于 core 诊断，观看明确报错，不猜测历史几何
+观看前完整验证四对象、实际 PCM、完整内容 / 规则身份、Hit 范围和同一 core 的原始历史；只接受明确记录的 Stage 1 / 2 / 3，以原完整 analysis 和实际长度编译该版本，1 / 2 的几何及无装饰采样保持，3 消费已有重复关系和实测能量；未知 Stage 版本（如 4）明确拒绝。缺失舞台版本的旧录制仍有效用于 core 诊断，观看明确报错，不猜测历史几何
 
 每次进程启动完整播放品牌开场，然后保持 Ready，明确的新确认才启动歌曲；观看复用现有真实 Kira、设置、暂停和菜单主控，键盘与手柄可接管菜单。界面只显示观看标记与原事实进度，隐藏玩家加入 / Hit 绑定和保存录制；实况 Hit 和直接保存快捷键无效，原包 / Replay 和录制目录不写入
 
@@ -102,7 +102,7 @@ cargo run --locked -p cocobeat-game -- --package PACKAGE --watch-replay REPLAY.j
 
 自然 EOF 只消费剩余原事实，没有追加结束水位、假命中或补 Miss；只有单方水位的录制仍保持未确认 Anchor。重新开始恢复原 epoch、空消费游标和新引擎，使用同一 PCM；暂停由 callback acknowledgment 确认，返回菜单停止音乐并等待下一次新确认
 
-一次可见的多个同玩家 Hit 合并为一个呈现音效与角色脉冲，原始事实和 core 事件全部保留；这是一种按歌曲帧观看的表示，不重造录制时的网络接收时刻。舞台版本绑定几何，当前 shader / 字体 / 画质不会被当作历史渲染器
+一次可见的多个同玩家 Hit 合并为一个呈现音效与角色脉冲，原始事实和 core 事件全部保留；这是一种按歌曲帧观看的表示，不重造录制时的网络接收时刻。舞台版本绑定对应的几何及版本 3 独立装饰规则，当前 shader / 字体 / 画质不会被当作历史渲染器
 
 ## 软件验证
 

@@ -111,7 +111,7 @@ impl Replay {
         }
         if identity
             .stage_compiler_version
-            .is_some_and(|version| !matches!(version, 1 | 2))
+            .is_some_and(|version| !matches!(version, 1..=3))
         {
             return Err(invalid("Unsupported Stage compiler version"));
         }
@@ -195,7 +195,7 @@ impl Replay {
         let document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
         let stage_compiler_version = match (document.version, document.stage_compiler_version) {
             (CORE_VERSION, None) => None,
-            (STAGE_VERSION, Some(Some(version @ (1 | 2)))) => Some(version),
+            (STAGE_VERSION, Some(Some(version @ 1..=3))) => Some(version),
             _ => return Err(invalid("Invalid Replay version or Stage compiler identity")),
         };
         if document.format != FORMAT {
@@ -367,7 +367,7 @@ mod tests {
                 .stage_compiler_version,
             None
         );
-        for version in [1, 2] {
+        for version in [1, 2, 3] {
             let mut identity = legacy.identity().clone();
             identity.stage_compiler_version = Some(version);
             let explicit = Replay::new(identity, legacy.epoch()).unwrap();
@@ -384,7 +384,7 @@ mod tests {
             (2, None),
             (2, Some(serde_json::json!(null))),
             (2, Some(serde_json::json!(0))),
-            (2, Some(serde_json::json!(3))),
+            (2, Some(serde_json::json!(4))),
         ] {
             let mut value = original.clone();
             value["version"] = document_version.into();
@@ -394,7 +394,7 @@ mod tests {
             assert!(Replay::decode(serde_json::to_vec(&value).unwrap().as_slice()).is_err());
         }
         let mut identity = legacy.identity().clone();
-        identity.stage_compiler_version = Some(3);
+        identity.stage_compiler_version = Some(4);
         assert!(Replay::new(identity, legacy.epoch()).is_err());
     }
 

@@ -159,7 +159,7 @@ cargo run --locked -p cocobeat-game -- --package /path/to/song-package --library
 
 字幕使用既有六份 Noto Sans 字体，界面 locale 继续决定首选地区字形，缺少字符时通过原生 fontique 按脚本回退，涵盖英文界面中的已有 CJK / 韩文字集以及 CJK 界面中的乌克兰字母；此处不承诺任意 Unicode、emoji 或扩展汉字覆盖
 
-开发歌曲在代码中保留与现有 authoring 一致的六个固定 cue：0、8、24、40、48、60 秒，生产启动不读取 authoring JSON，且继续使用没有 StagePlan 的原手写场景；歌曲包的分析区间已驱动下述地面计划，`energy` 尚未驱动场景，这不等于完整自动音乐分析与舞台编译管线
+开发歌曲在代码中保留与现有 authoring 一致的六个固定 cue：0、8、24、40、48、60 秒，生产启动不读取 authoring JSON，且继续使用没有 StagePlan 的原手写场景；歌曲包的分析区间驱动下述地面计划，当前 Stage 3 另消费明确重复关系与实测 `energy` 调整建筑和拱门装饰，这不等于完整自动音乐分析与音乐质量准入
 
 指定整数帧的无音频预览入口为 `--package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG`；`FRAME` 接受 `0..=canonical_frames`，EOF 用于观察提示清空和终点，`CODE` 必须是已支持的完整语言代码，`PRESET` 为 `low`、`medium`、`high` 或 `off`，宽高使用物理像素，`SCALE` 为 DPI 缩放；预览复用生产 cue 查询和地面计划并输出 PNG 与 `CONTENT_SAMPLE` 状态，其中 `stage` 子对象包含编译版本、片段数、采样帧、类型、距离、半宽、侧向位移、抬升、两个切线分量和 `at_end`，完整内容身份保留在外层，不代替音频或物理输入验收
 
@@ -171,15 +171,15 @@ cargo run --locked -p cocobeat-game -- --package /path/to/song-package --section
 
 ## 内存 StagePlan 与整数采样
 
-[cocobeat-stage](../crates/cocobeat-stage/src/lib.rs) 的 `compile(content_id, end, sections)` 消费真实 `analysis.sections`，短于 16 秒的合法区间生成 Plaza，至少 16 秒的区间以前半段 Curve、后半段 Bridge 编排，奇数帧中点向下取整；首尾和区间之间的空隙生成 Straight，空分析列表生成一条全曲 Straight；输出非空、有序、连续覆盖 `[0, end)` 的片段，最多从 N 个区间生成 `2N + 1 + min(N, floor(end_frames / 768000))` 个片段，拒绝超限、倒序、重叠和越界输入，不按 chart cue 补区间，也不使用标签或置信度来选择几何
+[cocobeat-stage](../crates/cocobeat-stage/src/lib.rs) 的当前 `compile_analysis(content_id, end, analysis)` 消费完整合法分析，几何复用版本 2 的真实 `analysis.sections`，短于 16 秒的合法区间生成 Plaza，至少 16 秒的区间以前半段 Curve、后半段 Bridge 编排，奇数帧中点向下取整；首尾和区间之间的空隙生成 Straight，空分析列表生成一条全曲 Straight；输出非空、有序、连续覆盖 `[0, end)` 的片段，最多从 N 个区间生成 `2N + 1 + min(N, floor(end_frames / 768000))` 个片段，拒绝超限、倒序、重叠和越界输入，不按 chart cue 补区间，也不使用标签或置信度来选择几何
 
 计划的 `sample` 接受 `0..=end`，范围外返回无采样；纵向距离为 `floor(frame / 16)` 毫米，对应 48 kHz 下 3 m/s，基础半宽为 3500 mm；Plaza 的名义峰值为 `peak = min(500, floor(duration_frames / 32))` 毫米，额外半宽为 `floor(2 × peak × min(elapsed, duration_frames - elapsed) / duration_frames)`，形成对称三角拓宽，首尾回到基础宽度，奇数帧区间的整数中点不保证达到名义峰值，少于 32 帧的区间保持基础宽度
 
 Curve 侧向峰值为 600 mm，Bridge 抬升峰值为 300 mm，基础半宽保持 3500 mm；两者使用 `16 × A × u² × (1-u)²`，其中 `u` 是片段内的归一化时间，位置与斜率 ppm 用 i128 有理数计算，最近整数舍入、半值远离零；解析中心线在端点位置和一阶导数均回到零，毫米 / ppm 输出仍是整数台阶，Plaza 路宽仍是分段线性，纵向距离没有替换成弧长
 
-EOF 采样保留最后片段的类型、返回基础半宽、零位移 / 坡度和实际结束距离；包加载在创建游戏及音频输出前编译一次，并以 `Arc<StagePlan>` 共享，重开不重编译，计划身份绑定完整 `package-blake3:<64 个十六进制字符>` 与 `compiler_version = 2`
+EOF 采样保留最后片段的类型、返回基础半宽、零位移 / 坡度和实际结束距离；包加载在创建游戏及音频输出前编译一次，并以 `Arc<StagePlan>` 共享，重开不重编译，计划身份绑定完整 `package-blake3:<64 个十六进制字符>` 与当前 `compiler_version = 3`；旧 section-only `compile` 固定为几何版本 2，旧 1 / 2 的明确重建保留原算法
 
-StagePlan 是由包派生的内存对象，不是第五个包文件，四对象目录形状不变，analysis 独立支持 v1 / v2，chart / manifest 继续 v1；相同内容和编译版本的计划与整数采样可复现。Replay v2 保存实际舞台编译版本，支持现有 Stage 1 / 2 的只读观看；历史 Replay v1 保持 core-only，缺少版本时不重构未记录的几何
+StagePlan 是由包派生的内存对象，不是第五个包文件，四对象目录形状不变，analysis 独立支持 v1 / v2，chart / manifest 继续 v1；相同内容和编译版本的计划与整数采样可复现。Replay v2 保存实际舞台编译版本，支持现有 Stage 1 / 2 / 3 的只读观看，3 在原几何之外绑定下述装饰规则；历史 Replay v1 保持 core-only，缺少版本时不重构未记录的几何
 
 runtime 固定复用九个动态网格：路面、两侧地面、两条路缘，以及只在 Bridge 区间绘制的两面桥侧墙和两条低护栏；另有两个固定霓虹拱门实例，终点仍为地面标线。窗口为当前显示位置前 42 m、后 12 m，最多 257 个横断面，64 条基础条带、歌曲首尾和可见 Curve / Bridge 的起点 / 中点 / 终点优先保留，剩余预算才补短 Plaza 截面；极密短段按基础采样近似，完整 StagePlan 保留，实体和网格数量不随段落数增长
 
@@ -187,13 +187,17 @@ runtime 固定复用九个动态网格：路面、两侧地面、两条路缘，
 
 窗口在歌曲范围外延伸的地面按基础宽度绘制，只作场景衬底，不增加可演奏帧或 Hit；地面、标线与终点的显示游标夹到 `0..=end`，原始 Session 时间和预告有效性判断保持原样，Anchor / cue 的四秒 / 六秒窗口不变；画质与 Resonance 不修改计划或关键采样，品牌 Ready、手柄组合、输入门控和音频生命周期沿用现有流程
 
-lab 的 `inspect-stage-plan PACKAGE` 先完整验证四对象，再复用当前编译器输出一行完整计划 JSON：`content_id`、`compiler_version`、`end_frames`、`analysis_schema_version`、`analysis_version`、`sections_capability`、`sections` 和 `segments`；每条原 section 保留 `section_index`、半开区间、label 和 confidence，每条 segment 保留半开区间、kind 和 `source_section_index`，空隙来源为 null，Curve / Bridge 两半关联同一原 section，label 和 confidence 不参与几何选择
+lab 的 `inspect-stage-plan PACKAGE` 先完整验证四对象，再复用当前编译器输出一行完整计划 JSON：`content_id`、`compiler_version`、`end_frames`、`analysis_schema_version`、`analysis_version`、`sections_capability`、`sections`、`segments`、`repetition_capability`、`repetitions`、`energy_capability`、`motifs` 和 `decor_energy`；每条原 section 保留 `section_index`、半开区间、label 和 confidence，每条 segment 保留半开区间、kind 和 `source_section_index`，空隙来源为 null，Curve / Bridge 两半关联同一原 section，label 和 confidence 不参与几何选择
+
+版本 3 按已有重复关系两端和严格重叠区间确定连通组，按排序后最早区间分配三种稳定 motif，同组相关区间使用一致环境配色；有明确 Candidate / Validated 或 Authored 来源时，未命中关系为 `motif = 0`，无明确来源为 null。最多接受 100000 条关系和 200000 个去重端点区间，先合并相连或重叠的同组区间，再由整数 SongTime 查询，不推断段落名称或音乐质量
+
+能量仅使用 Measured 且 Candidate / Validated 的原能量块，双声道最大 RMS 小于 1/32、至少 1/32 且小于 1/8、至少 1/8 分别为 `energy_band = 0 / 1 / 2`，合法负零保持静音；`decor_energy` 保留原 start / end、RMS / peak 的 u32 bits 和 band，能力缺失为 null。EOF 装饰沿用最后一个有效音频帧，曲外不外推；runtime 只复用建筑和霓虹拱门材质，按 `(band + 1) / 16` 调整微光，玩家、段落提示、Anchor、SongTime 与核心判定保持独立
 
 旧 analysis v1 的 `sections_capability = null` 保持 Unknown；新手工段落的 `not_run / authored / null` 表示作者已提供区间、自动结构算法未运行，不能改写为 validated。Candidate 与未知 confidence 原样保留，beat 候选不会成为 section 来源或自动音乐真值，完整包 CID 和实际 compiler version 继续绑定几何身份
 
 2026-10-08 的固定五包软件对照通过：原始包、选定标签采用包、空选择采用包的实际 analysis wire version 为 1 / 1 / 1，手工 v2 包与原生 beat 候选包为 2 / 2；前三包来源能力保持 Unknown，后两包的 sections 均保持 Authored / NotRun / None，并未生成自动段落。66 项 Lab 测试、Clippy / 格式、466 项冻结输入构建与 30 条真实 CLI（5 条完整计划、25 条采样）通过，五包四对象和原保护输入保持；section Candidate 与首中尾空隙的机制覆盖来自单元窄测，不冒充真实 CLI 或音乐质量。结果见[持久观察](../testdata/synthetic/stage-plan-observations-20261008.json)与[原始证据索引](../testdata/synthetic/stage-plan-raw-index-20261008.json)，本批没有新增平台、原生游戏 / GPU / 音频或真人验收
 
-lab 的 `inspect-stage PACKAGE FRAME` 先完整验证包，再输出一行稳定 JSON，字段为 `content_id`、`compiler_version`、`segment_count`、`end_frames`、`frame`、`kind`、`distance_mm`、`half_width_mm`、`lateral_mm`、`elevation_mm`、`slope_x_ppm`、`slope_y_ppm`、`at_end`；`FRAME` 是 `0..=canonical_frames` 的整数，`kind` 为 `straight`、`plaza`、`curve` 或 `bridge`，结果不含机器路径、当前时间或音频字节，入口见 [lab/stage.rs](../tools/cocobeat-lab/src/stage.rs)
+lab 的 `inspect-stage PACKAGE FRAME` 先完整验证包，再输出一行稳定 JSON，字段为 `content_id`、`compiler_version`、`segment_count`、`end_frames`、`frame`、`kind`、`distance_mm`、`half_width_mm`、`lateral_mm`、`elevation_mm`、`slope_x_ppm`、`slope_y_ppm`、`at_end`、`motif`、`energy_band`；`FRAME` 是 `0..=canonical_frames` 的整数，`kind` 为 `straight`、`plaza`、`curve` 或 `bridge`，结果不含机器路径、当前时间或音频字节，入口见 [lab/stage.rs](../tools/cocobeat-lab/src/stage.rs)
 
 ```sh
 cargo run --locked -p cocobeat-lab -- inspect-stage-plan /path/to/song-package

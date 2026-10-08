@@ -15,7 +15,8 @@ OBJECTS = ("song.audio.ogg", "analysis.bin", "chart.bin", "song.package")
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def network_directory(output, side, round_number):
@@ -156,7 +157,7 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                 status = json.loads((network / "status.json").read_text())
                 assert file_hashes(network) == preserved[(side, number)], "earlier round evidence changed"
                 expected = "FAILED" if scenario.startswith("reenter-") and number == 1 else "COMPLETE"
-                assert status["mode"] == "live" and status["protocol_version"] == 6
+                assert status["mode"] == "live" and status["protocol_version"] == 7
                 assert result["status"] == status["status"] == expected
                 assert result["scenario"] == scenario and result["owned_workers_finished"]
                 process_ids[side].add(result["process_id"])
@@ -168,7 +169,7 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                     replay_path = network / replay_name
                     if replay_path.exists():
                         replay = json.loads(replay_path.read_text())
-                        assert replay["version"] == 2 and replay["stage_compiler_version"] == 2
+                        assert replay["version"] == 2 and replay["stage_compiler_version"] == 3
                         assert replay["epoch"] == status["epoch"]
                 rows = list(csv.DictReader((directory / "frames.csv").open()))
                 if expected == "FAILED":
@@ -294,7 +295,7 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
             assert local, "successful round must save local Replay"
             for path in local:
                 replay = json.loads(path.read_text())
-                assert replay["version"] == 2 and replay["stage_compiler_version"] == 2
+                assert replay["version"] == 2 and replay["stage_compiler_version"] == 3
                 assert replay["epoch"] in epochs
         assert original == {name: digest(output / "received" / name) for name in OBJECTS}
         summary = {"status": "PASS", "commands": records, "game_sha256": game_sha256, "scenario": scenario, "native_process_ids": {side: next(iter(ids)) for side, ids in process_ids.items()}, "package_objects_sha256": original,

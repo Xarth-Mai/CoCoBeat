@@ -25,14 +25,31 @@ pub fn inspect_plan(path: &Path) -> Result<(), String> {
 fn package_plan(
     package: &cocobeat_media::ValidatedPackage,
 ) -> Result<cocobeat_stage::StagePlan, String> {
-    cocobeat_stage::compile(
+    cocobeat_stage::compile_analysis(
         &format!(
             "package-blake3:{}",
             blake3::Hash::from(package.manifest.package_hash)
         ),
         SongTime::from_frames(package.manifest.canonical_frames as i64),
-        &package.analysis.sections,
+        &package.analysis,
     )
+}
+
+fn capability_report(capability: cocobeat_schema::AnalysisCapability) -> serde_json::Value {
+    serde_json::json!({
+        "state": match capability.state {
+            AnalysisState::NotRun => "not_run",
+            AnalysisState::Unsupported => "unsupported",
+            AnalysisState::Candidate => "candidate",
+            AnalysisState::Validated => "validated",
+        },
+        "source": match capability.source {
+            AnalysisSource::Algorithm => "algorithm",
+            AnalysisSource::Authored => "authored",
+            AnalysisSource::Measured => "measured",
+        },
+        "confidence": capability.confidence,
+    })
 }
 
 fn plan_report(
@@ -40,23 +57,7 @@ fn plan_report(
     analysis: &MusicAnalysis,
     analysis_version: &str,
 ) -> serde_json::Value {
-    let capability = analysis.capabilities.map(|capabilities| {
-        let sections = capabilities.sections;
-        serde_json::json!({
-            "state": match sections.state {
-                AnalysisState::NotRun => "not_run",
-                AnalysisState::Unsupported => "unsupported",
-                AnalysisState::Candidate => "candidate",
-                AnalysisState::Validated => "validated",
-            },
-            "source": match sections.source {
-                AnalysisSource::Algorithm => "algorithm",
-                AnalysisSource::Authored => "authored",
-                AnalysisSource::Measured => "measured",
-            },
-            "confidence": sections.confidence,
-        })
-    });
+    let capability = analysis.capabilities.map(|c| capability_report(c.sections));
     let sections: Vec<_> = analysis
         .sections
         .iter()
@@ -100,6 +101,11 @@ fn plan_report(
         "sections_capability": capability,
         "sections": sections,
         "segments": segments,
+        "repetitions": analysis.repetitions.iter().enumerate().map(|(index, r)| serde_json::json!({"relation_index": index, "source_start_frames": r.source_start.frames(), "source_end_frames": r.source_end.frames(), "target_start_frames": r.target_start.frames(), "target_end_frames": r.target_end.frames(), "confidence": r.confidence, "confidence_bits": r.confidence.map(f32::to_bits)})).collect::<Vec<_>>(),
+        "repetition_capability": analysis.capabilities.map(|c| capability_report(c.repetition)),
+        "energy_capability": analysis.capabilities.map(|c| capability_report(c.energy)),
+        "motifs": plan.motifs().iter().map(|span| serde_json::json!({"start_frames": span.start.frames(), "end_frames": span.end.frames(), "motif": span.motif})).collect::<Vec<_>>(),
+        "decor_energy": plan.decor_energy().iter().map(|span| serde_json::json!({"start_frames": span.start.frames(), "end_frames": span.end.frames(), "rms_bits": span.rms_bits, "peak_bits": span.peak_bits, "band": span.band})).collect::<Vec<_>>(),
     })
 }
 
@@ -123,10 +129,10 @@ pub fn inspect_replay(path: &Path, replay_path: &Path, frame: &str) -> Result<()
         .identity()
         .stage_compiler_version
         .ok_or("Replay has no Stage compiler identity; historical geometry is unsupported")?;
-    let plan = cocobeat_stage::compile_version(
+    let plan = cocobeat_stage::compile_analysis_version(
         &replay.identity().content_id,
         SongTime::from_frames(package.manifest.canonical_frames as i64),
-        &package.analysis.sections,
+        &package.analysis,
         version,
     )?;
     print_sample(&plan, frame)
@@ -136,6 +142,7 @@ fn print_sample(plan: &cocobeat_stage::StagePlan, frame: i64) -> Result<(), Stri
     let sample = plan
         .sample(SongTime::from_frames(frame))
         .ok_or_else(|| format!("Stage frame must be in 0..={}", plan.end().frames()))?;
+    let decor = plan.decoration(SongTime::from_frames(frame)).unwrap();
     println!(
         "{}",
         serde_json::json!({
@@ -145,6 +152,8 @@ fn print_sample(plan: &cocobeat_stage::StagePlan, frame: i64) -> Result<(), Stri
             "end_frames": plan.end().frames(),
             "frame": frame,
             "kind": kind_name(sample.kind),
+            "motif": decor.motif,
+            "energy_band": decor.energy_band,
             "distance_mm": sample.distance_mm,
             "half_width_mm": sample.half_width_mm,
             "lateral_mm": sample.lateral_mm,
@@ -196,7 +205,7 @@ mod tests {
             diagnostics: "Synthetic provenance control, not music quality evidence".into(),
         };
         analysis.validate(end.frames() as u64).unwrap();
-        let plan = cocobeat_stage::compile("mechanism-control", end, &analysis.sections).unwrap();
+        let plan = cocobeat_stage::compile_analysis("mechanism-control", end, &analysis).unwrap();
         let report = plan_report(&plan, &analysis, "mechanism-control-v1");
         assert_eq!(report["compiler_version"], cocobeat_stage::COMPILER_VERSION);
         assert_eq!(

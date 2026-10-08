@@ -1,0 +1,139 @@
+{
+ "format": "CoCoBeat scoped software observations",
+ "milestone": "S5 Stage context v3",
+ "date": "2026-10-09",
+ "base_head": "b3f8b605484865b989a628bf96d1516320d1746d",
+ "status": "PASS_SCOPED",
+ "implementation": {
+  "inputs": "Complete validated package MusicAnalysis sections/provenance, repetition relations/capability and measured original RMS f32 bits/capability",
+  "output": "Integer geometry preserved; bounded motif spans and energy bands drive existing environment materials",
+  "unknown": "Legacy/unsupported streams remain unknown; known-empty differs from unknown",
+  "candidate": "Decoration consumption does not promote Candidate to Validated/musical admission"
+ },
+ "checks": {
+  "initial_tests": {
+   "Lab": 100,
+   "Replay": 11,
+   "Runtime": 176,
+   "Stage": 8,
+   "total": 295,
+   "exit": 0
+  },
+  "initial_clippy": {
+   "exit": 101,
+   "reason": "Two Replay manual_range_patterns errors",
+   "receipt_retained": true
+  },
+  "repair": "Only Replay lib.rs changed between freezes: two OR patterns replaced with equivalent 1..=3; original/final wholetext exact",
+  "revision02": {
+   "Replay_tests": 11,
+   "all_five_exit_zero": true,
+   "commands": "Replay test; four-crate Clippy all-targets -D warnings; fmt; boundaries; Game+Lab build",
+   "sources": 379,
+   "before_after_equal": true
+  }
+ },
+ "cpu_cli": {
+  "commands": 98,
+  "exit_zero": 94,
+  "expected_exit_one": 4,
+  "elapsed_seconds": 102.695133,
+  "packages": 7,
+  "samples": 33,
+  "oracle": "Actual typed source versus complete CLI plan; independent BFS repetition components, RMS bits and rational/integer geometry",
+  "controls": [
+   "short Plaza",
+   "long Curve/Bridge",
+   "repeat-three shared motif",
+   "repeat-gap neutral motif/silence",
+   "static Unknown repetition",
+   "authored v2 energy 0/1/2",
+   "legacy v1 Unknown"
+  ],
+  "v2": "All 33 samples seven normalized geometry fields byteexact/integer equal; old2 motif/energy null",
+  "history": "Four original records: Stage1, Stage2, missing Stage identity (3 frame rejects), actual-long Stage2; original facts untouched",
+  "new_replay": "Empty v3 whole sample equals current at 3 frames; unknown v4 rejected",
+  "errors": [
+   "Replay has no Stage compiler identity; historical geometry is unsupported",
+   "Cannot decode Replay: Invalid Replay version or Stage compiler identity"
+  ],
+  "processes": "All groups gone; no timeout/cleanup signal",
+  "guards": "431 original inputs exact; only new compiled source-dump added (432 final); GPU 429 before/after exact"
+ },
+ "gpu": {
+  "commands": 4,
+  "all_exit_zero": true,
+  "all_groups_gone": true,
+  "timeouts": 0,
+  "mode": "Existing offscreen section-smoke; no primary window/Winit loop",
+  "captures": [
+   {
+    "name": "short-plaza",
+    "frame": 196608,
+    "preset": "medium",
+    "size": "1280x800",
+    "sha256": "7616889708db81de02fa3feb0207ae9fbc3004a847bf1ff51b7bc961b3499238"
+   },
+   {
+    "name": "long-bridge",
+    "frame": 1228800,
+    "preset": "medium",
+    "size": "1280x800",
+    "sha256": "8f891982e252fbf6221ca9aa0378fdc0dd1a3bf54069933b1991d4d15a42e035"
+   },
+   {
+    "name": "repeat-three",
+    "frame": 98304,
+    "preset": "low",
+    "size": "640x480",
+    "sha256": "04549a91bf25c8631e1682be801783624fb1d80ab08ad16b7a817c6cb079986b"
+   },
+   {
+    "name": "repeat-three",
+    "frame": 294912,
+    "preset": "low",
+    "size": "640x480",
+    "sha256": "05e5b6763cdee3eee1d9c992e5db76dbb9f6236e456cc8d95cc15890288899e9"
+   }
+  ],
+  "mechanical": "v3/CID/N/frame, geometry, quality preset, PNG size/hash; CONTENT_SAMPLE has no decor fields",
+  "materials": "Production material-system narrow test passed in initial Runtime tests; CPU plans/parameters provide decor evidence",
+  "raw_visual_review": "NOT RUN",
+  "root_visual_scope": "Root viewed four PNG: Plaza/Bridge framing and blue/pink players visible, arch does not obscure players, repeat source/target environment colours match, low640 logo wraps normally; repeated low samples contain no active core cue"
+ },
+ "binaries": {
+  "cocobeat-game": "e4d419ed83898a122008a93383eb48c22dd35a97aa0bb785a53bbb33e998d93d",
+  "cocobeat-lab": "7404aa809079734f708561eb4327ee89e9123f45e820a12786c091848438c409"
+ },
+ "limits": {
+  "musical_quality": "UNASSESSED",
+  "musical_admission": false,
+  "NOT_RUN": [
+   "Continuous motion/effects",
+   "Interactive window/Ready/intro/audio in this campaign",
+   "All active low-preset core cues",
+   "Physical controllers/mixed input/DAC/speakers",
+   "Real dual-machine/human acceptance",
+   "Four-platform release acceptance"
+  ],
+  "retained": "Original live Game -9 UNKNOWN not retried here; old music/whole-spectrum FAIL keep original scope"
+ },
+ "independent_review": {
+  "product_commands_run": false,
+  "protected_files_rehashed": 433,
+  "raw_streams_rehashed": 204,
+  "oracle_packages_rechecked": 7,
+  "geometry_samples_rechecked": 33,
+  "findings": []
+ },
+ "raw_refs": {
+  "target/stage-context-production-checks-20261009/result.json": "6eddfaa2b8a18e0d1ce0cb24d0c389625a0c681c3976db10701b4317bb45e910",
+  "target/stage-context-production-checks-20261009/01.stdout": "9197b8822add63c7d138185ea036ff3ff159303a87f799e634e3f5fbfed0e74f",
+  "target/stage-context-production-checks-20261009/02.stderr": "bb77f0886228a12b9cf339d44d315691be12af677c3b2964079f129109774deb",
+  "target/stage-context-production-checks-20261009-revision02/result.json": "eaa95f8a05c48ec225dcc06fb179244a8d65ae3993a05af64e2b3170d858195f",
+  "target/stage-context-production-checks-20261009-revision02/source-after.json": "5b86d836ea69c93376130e73ed6028c9892b7411dddf34e67f21b240b618c0b1",
+  "target/stage-context-cpu-cli-run-20261009/result.json": "3406bb3f1a1409f1625fdc2a68470e320547a50942f6799b8f4547468f039ff7",
+  "target/stage-context-gpu-run-20261009/result.json": "09787245dc9b8d9f5568f5537a9331a7f2a7c90c2017d26e2b6c35e24703e31d",
+  "target/stage-context-final-evidence-20261009/review.json": "08862dae699915f2d9126257284245717c99a4f961ee4b409180f361a89ca7b6"
+ }
+}

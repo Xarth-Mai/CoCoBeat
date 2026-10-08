@@ -102,7 +102,7 @@ def check(game, receipt, lab, package, output, sizes="all"):
         execute("invalid-hit", ["--package", package, "--watch-replay", path], "outside the song timeline")
 
         document = json.loads(json.dumps(base))
-        document["stage_compiler_version"] = 3
+        document["stage_compiler_version"] = 4
         path = output / "unknown-stage.json"
         save(path, document)
         execute("unknown-stage", ["--package", package, "--watch-replay", path], "Invalid Replay version or Stage compiler identity")

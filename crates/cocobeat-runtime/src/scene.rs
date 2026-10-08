@@ -38,6 +38,8 @@ pub(crate) struct StageGround {
     features: Vec<usize>,
     arches: [Option<Vec3>; 2],
     last_time: Option<SongTime>,
+    decor_materials: [Handle<StandardMaterial>; 2],
+    last_decor: Option<cocobeat_stage::DecorationSample>,
 }
 
 fn ground_mesh() -> Mesh {
@@ -489,6 +491,8 @@ fn spawn_scene(
             features: feature_indices(&stage.0),
             arches: [None; 2],
             last_time: None,
+            decor_materials: [building.clone(), arch.clone()],
+            last_decor: None,
         };
         for (mesh, material) in ground.meshes.iter().zip([
             &asphalt, &pavement, &pavement, &neon[0], &neon[1], &bridge, &bridge, &bridge, &bridge,
@@ -1004,6 +1008,32 @@ pub(crate) fn animate(
         song = display_time.as_seconds_f64() as f32;
         if let Some(ground) = &mut ground {
             update_ground(&stage.0, display_time, ground, &mut meshes);
+            if stage.0.compiler_version() == 3 {
+                let decor = stage.0.decoration(display_time).unwrap();
+                if ground.last_decor != Some(decor) {
+                    for (index, handle) in ground.decor_materials.iter().enumerate() {
+                        if let Some(mut material) = materials.get_mut(handle) {
+                            let color = match decor.motif {
+                                Some(1) => Color::srgb(0.12, 0.19, 0.28),
+                                Some(2) => Color::srgb(0.23, 0.14, 0.22),
+                                Some(3) => Color::srgb(0.19, 0.16, 0.27),
+                                _ if index == 0 => Color::srgb(0.12, 0.145, 0.22),
+                                _ => Color::srgb(0.38, 0.49, 0.60),
+                            };
+                            material.base_color = color;
+                            material.emissive = decor.energy_band.map_or(
+                                if index == 0 {
+                                    LinearRgba::BLACK
+                                } else {
+                                    LinearRgba::rgb(0.06, 0.08, 0.1)
+                                },
+                                |band| LinearRgba::from(color) * (f32::from(band) + 1.0) / 16.0,
+                            );
+                        }
+                    }
+                    ground.last_decor = Some(decor);
+                }
+            }
         }
         stage.0.sample(display_time)
     } else {
@@ -1192,6 +1222,116 @@ pub(crate) fn animate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn stage_context_changes_only_existing_environment_materials() {
+        use cocobeat_schema::{
+            AnalysisCapabilities, AnalysisSource, AnalysisState, EnergySample, MusicAnalysis,
+            RepetitionFeature,
+        };
+        let mut caps = AnalysisCapabilities::authored();
+        caps.repetition.state = AnalysisState::Candidate;
+        caps.repetition.source = AnalysisSource::Algorithm;
+        let analysis = MusicAnalysis {
+            schema_version: 2,
+            audio_hash: [1; 32],
+            capabilities: Some(caps),
+            tempo_regions: vec![],
+            beats: vec![],
+            onsets: vec![],
+            sections: vec![],
+            repetitions: vec![RepetitionFeature {
+                source_start: SongTime::ZERO,
+                source_end: SongTime::from_frames(100),
+                target_start: SongTime::from_frames(300),
+                target_end: SongTime::from_frames(400),
+                confidence: None,
+            }],
+            energy: vec![
+                EnergySample {
+                    start: SongTime::ZERO,
+                    frames: 200,
+                    rms: [0.03125; 2],
+                    peak: [0.03125; 2],
+                },
+                EnergySample {
+                    start: SongTime::from_frames(200),
+                    frames: 800,
+                    rms: [0.125; 2],
+                    peak: [0.125; 2],
+                },
+            ],
+            diagnostics: String::new(),
+        };
+        let plan = cocobeat_stage::compile_analysis(
+            "scene-context",
+            SongTime::from_frames(1000),
+            &analysis,
+        )
+        .unwrap();
+        let mut app = App::new();
+        app.register_required_components::<Mesh3d, Visibility>()
+            .add_plugins(TransformPlugin)
+            .insert_resource(VisualState::default())
+            .insert_resource(StageScene(Arc::new(plan)))
+            .init_resource::<Time>()
+            .init_resource::<Assets<Mesh>>()
+            .init_resource::<Assets<StandardMaterial>>()
+            .add_systems(Startup, setup)
+            .add_systems(PostUpdate, (animate, update_signs).chain());
+        app.update();
+        let handle = app.world().resource::<StageGround>().decor_materials[0].clone();
+        let counts = (
+            app.world().resource::<Assets<Mesh>>().len(),
+            app.world().resource::<Assets<StandardMaterial>>().len(),
+        );
+        let signs = app.world().resource::<SignMaterials>().0.clone();
+        let sign_colors = signs.each_ref().map(|h| {
+            app.world()
+                .resource::<Assets<StandardMaterial>>()
+                .get(h)
+                .unwrap()
+                .base_color
+        });
+        let material = app
+            .world()
+            .resource::<Assets<StandardMaterial>>()
+            .get(&handle)
+            .unwrap();
+        assert_eq!(material.base_color, Color::srgb(0.12, 0.19, 0.28));
+        assert_eq!(
+            material.emissive,
+            LinearRgba::from(material.base_color) * 0.125
+        );
+        app.world_mut().resource_mut::<VisualState>().song_time = SongTime::from_frames(200);
+        app.update();
+        let material = app
+            .world()
+            .resource::<Assets<StandardMaterial>>()
+            .get(&handle)
+            .unwrap();
+        assert_eq!(material.base_color, Color::srgb(0.12, 0.145, 0.22));
+        assert_eq!(
+            material.emissive,
+            LinearRgba::from(material.base_color) * 0.1875
+        );
+        assert_eq!(
+            counts,
+            (
+                app.world().resource::<Assets<Mesh>>().len(),
+                app.world().resource::<Assets<StandardMaterial>>().len()
+            )
+        );
+        assert_eq!(
+            sign_colors,
+            signs.each_ref().map(|h| app
+                .world()
+                .resource::<Assets<StandardMaterial>>()
+                .get(h)
+                .unwrap()
+                .base_color)
+        );
+    }
 
     #[test]
     fn dynamic_stage_replaces_only_owned_scene_and_reapplies_quality() {
@@ -1602,6 +1742,8 @@ mod tests {
             features: feature_indices(&odd_plan),
             arches: [None; 2],
             last_time: None,
+            decor_materials: Default::default(),
+            last_decor: None,
         };
         update_ground(
             &odd_plan,
