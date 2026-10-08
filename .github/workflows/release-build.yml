@@ -223,8 +223,39 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y g++ pkg-config libasound2-dev libudev-dev libx11-dev libxkbcommon-x11-0 libwayland-dev libxkbcommon-dev
+          if [[ "$BUILD_TARGET" == aarch64-unknown-linux-gnu ]]; then
+            sudo apt-get install --no-install-recommends -y time
+          fi
       - name: Build optimized game and Lab
-        run: cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target "$BUILD_TARGET"
+        run: |
+          if [[ "$BUILD_TARGET" != aarch64-unknown-linux-gnu ]]; then
+            cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target "$BUILD_TARGET"
+            exit $?
+          fi
+          diagnostics="$RUNNER_TEMP/cocobeat-arm-build"
+          mkdir -p "$diagnostics"
+          printf 'commit=%s\ntarget=%s\ncwd=%s\n' "$GITHUB_SHA" "$BUILD_TARGET" "$PWD" > "$diagnostics/start.txt"
+          date --utc --iso-8601=seconds >> "$diagnostics/start.txt"
+          printf '%s\0' cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target "$BUILD_TARGET" --jobs 1 > "$diagnostics/cargo-argv.nul"
+          /usr/bin/time --version > "$diagnostics/time-version.txt"
+          printf '%s\n' "$$" > "$diagnostics/step-shell-pid.txt"
+          set +e
+          /usr/bin/time -v --output="$diagnostics/resources.txt" cargo build --locked --release --package cocobeat-game --package cocobeat-lab --target "$BUILD_TARGET" --jobs 1 2>&1 | tee "$diagnostics/build-output.txt"
+          statuses=("${PIPESTATUS[@]}")
+          set -e
+          printf '%s\n' "${statuses[0]}" > "$diagnostics/command-exit.txt"
+          printf '%s\n' "${statuses[1]}" > "$diagnostics/tee-exit.txt"
+          date --utc --iso-8601=seconds > "$diagnostics/completed.txt"
+          if [[ "${statuses[0]}" != 0 ]]; then exit "${statuses[0]}"; fi
+          exit "${statuses[1]}"
+      - name: Preserve ARM build diagnostics
+        if: ${{ always() && inputs.target == 'aarch64-unknown-linux-gnu' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: arm-build-diagnostics-${{ inputs.target }}-${{ github.sha }}
+          path: ${{ runner.temp }}/cocobeat-arm-build/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Fetch the fixed official CPU SDK
         run: |
           case "$BUILD_TARGET" in
