@@ -4,6 +4,7 @@
 
 - [x] 原生工作台显示双声道峰值波形、精确 SongTime、Anchor 列表与作者设置的 SectionCue
 - [x] 显示 Anchor 候选、音乐结构证据与拒绝原因
+- [x] 校准 v2 候选严格读取与只读浏览：原 onset / None、独立概率、完整 context 和密度拒绝分开显示，复用明确定位及实际 Kira 试听；99 项 Lab 检查与同窗口双尺寸六图通过软件验收，见[操作与范围](../docs/anchors.md#校准候选只读工作台)
 - [x] 显式左右声道的只读谱形工作台：原半开区间、至多4个相似邻居、Unknown / 尾部原值和作者上下文，共用同次 canonical PCM / 立体声试听，不自动 Anchor；73 项 media / 85 项 Lab / 3 项 i18n 与 9 条生产 CLI 控制通过，两组原生窗口 / 六 PNG 指定目检通过，首轮 QA 浮点读回 FAIL 保留，见[操作与验证范围](../docs/native-structure-features.md#只读结构工作台)
 - [x] 原生 beat / raw downbeat 只读图形证据：raw / aligned 位置、同帧独立记录与未知置信度分开显示，复用波形和试听，无自动 Anchor 或 UI 采用；本批分版软件验证与图例定向修复见[原生工作台](../docs/native-beat-candidate.md#原生候选工作台)，设备 / 真人退出另计
 - [x] 增删移动 Anchor，支持撤销重做，重新生成内容哈希，已由实际修包 CLI 消费

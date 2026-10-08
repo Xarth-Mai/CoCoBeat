@@ -72,6 +72,22 @@ v2 提案将原 `confidence: null` 与独立 `calibrated_estimate` 分开保存�
 
 V2 Selection 的 schema 2 明确来源 CID、实际保存提案原字节的 `proposal_blake3`、提案完整五字段 `calibration` context 和 `onset_indices`；采用前完整重算 Input / Training / Choice / Report / 提案，检查原来源和侧车新鲜性，只能选择已接受候选。空选择明确清空 Anchor，导出复用原事务并保留音频、analysis、SectionCue 和 native None；输出在全部声明 package / evidence 和实际传入的源包副本之外
 
-当前只适用于 Input 中完全标注的 evaluation 包，未标签歌曲推断与 v2 图形工作台另行实现；既有 v1 CLI / 报告保持，v1 工作台拒绝 v2。Input / Choice 各最多 1 MiB、校准报告最多 4 MiB，其他提案与选择沿用前述上限
+当前只适用于 Input 中完全标注的 evaluation 包，未标签歌曲推断继续实现；既有 v1 CLI / 报告保持，v1 工作台拒绝 v2。Input / Choice 各最多 1 MiB、校准报告最多 4 MiB，其他提案与选择沿用前述上限
 
 2026-10-08 的 [软件记录](../testdata/synthetic/calibration-drift-observations-20261008.json)包含 Media86 / Lab96、Clippy / 格式 / 边界与当前 Lab 构建、33 条实际校准 CLI（24 成功 / 9 预期拒绝），46 条训练与 69 条新源评估候选、显式采用 1 个 Anchor、原 native reader 和 v1 完整字节回归；固定 index 构造标签验证机制，音乐准入、并发源副本写窗和真人试听仍未验收，首轮 lint 与 QA setup 失败保留
+
+## 校准候选只读工作台
+
+```sh
+cocobeat-lab workbench-candidates PACKAGE V2_PROPOSAL.json --calibration INPUT.json CALIBRATION.json CHOICE.json [--locale CODE]
+```
+
+打开前完整重算原 Input、训练与评估来源、Choice、校准报告和 v2 提案，再检查原字节新鲜性与实际传入的完整源包；可以传入相同内容的独立目录副本。缺少 context、篡改分数位、来源或政策均拒绝，旧 v1 入口仍只读取 v1
+
+列表和波形保留全部原 onset 帧，详情分别显示原 strength / score bits / confidence、独立 probability / bits / bin / method / 报告来源、密度或间隔拒绝原因，以及完整 Source / policy / calibration context。原 chart Anchor 与提案选择分开显示，Unknown 继续留空，`UNASSESSED` 与 `production_admission:false` 保持
+
+复用已有浏览、详情滚动和立体声试听；选择候选只移动浏览游标，定位按钮才请求试听跳转。该视图只读，增删、撤销、导出和帧编辑操作不改变原谱面；采用仍通过前述 CLI 明确选择
+
+2026-10-08 的[消费者软件记录](../testdata/synthetic/calibrated-candidate-consumer-observations-20261008.json)包含 Lab99、Clippy / 格式 / 边界与构建、10 条正式 CLI 预期拒绝、5 条私有严格读取控制，以及调用公共 `workbench::run` 的单窗口验收。原包与同 CID 副本正向读取 69 条候选，55 条独立估计 / 14 条 Unknown / 3 条政策选择均保留原 None；同一窗口 1280×800 和 640×480 的六张图已按列表尾部、详情和滚动底部指定范围检查，实际 Kira 游标、暂停和停止状态通过软件断言
+
+首轮新增测试的类型错误及 QA 分数位负例被前置 Input 哈希门拦截的结果保留，后者另补仅改变提案估计原分数位的正式 CLI 拒绝。物理输入、声学试听、真人音乐准入、未标签推断、并发改写窗口和当前四平台原生验收继续保留，窗口截图与软件状态不替代这些验收

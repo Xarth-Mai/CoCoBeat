@@ -292,6 +292,29 @@ fn main() -> ExitCode {
                 }),
             )
         }
+        [
+            command,
+            source,
+            proposal,
+            flag,
+            input,
+            calibration_report,
+            choice,
+            options @ ..,
+        ] if command == "workbench-candidates" && flag == "--calibration" => {
+            report(workbench_locale(options).and_then(|locale| {
+                workbench::run(
+                    Path::new(source),
+                    workbench::Mode::CalibratedCandidates(
+                        Path::new(proposal),
+                        Path::new(input),
+                        Path::new(calibration_report),
+                        Path::new(choice),
+                    ),
+                    locale,
+                )
+            }))
+        }
         [command, input, target, options @ ..]
             if command == "workbench"
                 || command == "workbench-replay"
@@ -348,7 +371,7 @@ fn main() -> ExitCode {
         ),
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | import-authored-package <source-audio> <authoring.json> <new-package-dir> | import-experimental-beat <source-audio> <authoring.json> <left|right> <new-output-dir> | import-experimental-analysis <source-audio> <authoring.json> <left|right> <new-output-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | inspect-native-tempo <package-dir> <left|right> <new-report.json> | inspect-structure-features <package-dir> <left|right> <new-report.json> | compile-structure-candidate <package-dir> <left|right> <new-package-dir> | compile-repetition-candidate <package-dir> <left|right> <new-package-dir> | verify-package <package-dir> | music-truth-source <package-dir> | music-truth-template <package-dir> <reviewer> <stereo|left|right> <new-json> | import-music-truth <package-dir> <manual.json> <new-json> | compare-music-truth <package-dir> <reviewer-a.json> <reviewer-b.json> <new-report.json> | compare-native-beats <package-dir> <evidence-dir> <music-truth.json> <tolerance-frames> <new-report.json> | label-source <package-dir> | import-labels <package-dir> <manual-labels.json> <new-labels.json> | compare-labels <package-dir> <reviewer-a.json> <reviewer-b.json> <new-comparison.json> | adopt-labeled-anchors <package-dir> <labels.json> <selection.json> <new-package-dir> | inspect-stage-plan <package-dir> | inspect-stage <package-dir> <frame> | inspect-replay-stage <package-dir> <replay.json> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | train-anchor-calibration <input.json> <new-training-receipt.json> | evaluate-anchor-calibration <input.json> <choice.json> <new-calibration-report.json> | propose-anchors <package-dir> --calibration <input.json> <calibration-report.json> <choice.json> <new-proposal.json> | adopt-anchor-proposal <package-dir> <v2-proposal.json> <v2-selection.json> <new-package-dir> --calibration <input.json> <calibration-report.json> <choice.json> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> [--timing SIDECAR] | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir> | net-receive <new-package-dir> <local-replay.json> <invite.json> <new-output-dir> | workbench-labels <package-dir> <new-labels.json> [--locale CODE] | workbench <package-dir> <new-package-dir> [--locale CODE] | workbench-replay <package-dir> <replay.json> [--timing SIDECAR] [--locale CODE] | workbench-candidates <package-dir> <proposal.json> [--locale CODE] | workbench-candidates <package-dir> --structure <left|right> [--locale CODE] | workbench-beats <package-dir> <evidence-dir> [--locale CODE]"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | import-authored-package <source-audio> <authoring.json> <new-package-dir> | import-experimental-beat <source-audio> <authoring.json> <left|right> <new-output-dir> | import-experimental-analysis <source-audio> <authoring.json> <left|right> <new-output-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | inspect-native-tempo <package-dir> <left|right> <new-report.json> | inspect-structure-features <package-dir> <left|right> <new-report.json> | compile-structure-candidate <package-dir> <left|right> <new-package-dir> | compile-repetition-candidate <package-dir> <left|right> <new-package-dir> | verify-package <package-dir> | music-truth-source <package-dir> | music-truth-template <package-dir> <reviewer> <stereo|left|right> <new-json> | import-music-truth <package-dir> <manual.json> <new-json> | compare-music-truth <package-dir> <reviewer-a.json> <reviewer-b.json> <new-report.json> | compare-native-beats <package-dir> <evidence-dir> <music-truth.json> <tolerance-frames> <new-report.json> | label-source <package-dir> | import-labels <package-dir> <manual-labels.json> <new-labels.json> | compare-labels <package-dir> <reviewer-a.json> <reviewer-b.json> <new-comparison.json> | adopt-labeled-anchors <package-dir> <labels.json> <selection.json> <new-package-dir> | inspect-stage-plan <package-dir> | inspect-stage <package-dir> <frame> | inspect-replay-stage <package-dir> <replay.json> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | train-anchor-calibration <input.json> <new-training-receipt.json> | evaluate-anchor-calibration <input.json> <choice.json> <new-calibration-report.json> | propose-anchors <package-dir> --calibration <input.json> <calibration-report.json> <choice.json> <new-proposal.json> | adopt-anchor-proposal <package-dir> <v2-proposal.json> <v2-selection.json> <new-package-dir> --calibration <input.json> <calibration-report.json> <choice.json> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> [--timing SIDECAR] | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir> | net-receive <new-package-dir> <local-replay.json> <invite.json> <new-output-dir> | workbench-labels <package-dir> <new-labels.json> [--locale CODE] | workbench <package-dir> <new-package-dir> [--locale CODE] | workbench-replay <package-dir> <replay.json> [--timing SIDECAR] [--locale CODE] | workbench-candidates <package-dir> <v2-proposal.json> --calibration <input.json> <calibration-report.json> <choice.json> [--locale CODE] | workbench-candidates <package-dir> <proposal.json> [--locale CODE] | workbench-candidates <package-dir> --structure <left|right> [--locale CODE] | workbench-beats <package-dir> <evidence-dir> [--locale CODE]"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS

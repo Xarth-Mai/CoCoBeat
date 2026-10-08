@@ -27,6 +27,7 @@ pub enum Mode<'a> {
     Labels(&'a Path),
     Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
+    CalibratedCandidates(&'a Path, &'a Path, &'a Path, &'a Path),
     NativeBeats(&'a Path),
     StructureFeatures(usize),
 }
@@ -97,6 +98,11 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
     };
     let mut candidates = match mode {
         Mode::Candidates(path) => Some(candidates::CandidateView::load(&package, path)?),
+        Mode::CalibratedCandidates(proposal, input, report, choice) => {
+            Some(candidates::CandidateView::load_calibrated(
+                source, &package, proposal, input, report, choice,
+            )?)
+        }
         Mode::NativeBeats(path) => Some(candidates::CandidateView::load_native(&package, path)?),
         Mode::StructureFeatures(_) => Some(candidates::CandidateView::from_structure(
             &package,
@@ -998,6 +1004,45 @@ mod tests {
             saving: None,
             audition: audition::Audition::default(),
         }
+    }
+
+    #[test]
+    fn calibrated_candidates_reuse_read_only_actions_and_selection_requires_explicit_seek() {
+        use bevy::ecs::system::SystemState;
+        let mut app = App::new();
+        app.add_message::<AppExit>();
+        let mut state = state();
+        state.candidates = Some(candidates::calibrated_fixture());
+        let original = state.document.editor.anchors().to_vec();
+        let destination = state.destination.clone();
+        state.audition.playing = true;
+        state.audition.target = Some(99);
+        state.select(3);
+        assert!(state.is_read_only());
+        assert_eq!(state.document.cursor, 1200);
+        assert_eq!(state.document.selected, None);
+        assert_eq!(state.audition.target, Some(99));
+        assert!(state.audition.playing);
+        let mut system = SystemState::<MessageWriter<AppExit>>::new(app.world_mut());
+        let mut exit = system.get_mut(app.world_mut()).unwrap();
+        for action in [
+            Action::Add,
+            Action::Remove,
+            Action::Undo,
+            Action::Redo,
+            Action::Export,
+            Action::Frame,
+            Action::Apply,
+        ] {
+            assert!(!state.toolbar().contains(&action));
+            state.action(action, true, 1280.0, &mut exit);
+        }
+        assert_eq!(state.document.editor.anchors(), original);
+        assert!(!state.document.dirty);
+        assert!(state.saving.is_none());
+        assert_eq!(state.destination, destination);
+        state.action(Action::Seek, true, 1280.0, &mut exit);
+        assert_eq!(state.audition.target, Some(1200));
     }
 
     #[test]

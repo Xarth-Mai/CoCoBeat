@@ -10,6 +10,7 @@ use std::path::Path;
 
 enum CandidateData {
     Onsets(Report),
+    Calibrated(Vec<Value>),
     Native(NativeBeatEvidence),
     Structure(StructureFeatureEvidence),
 }
@@ -40,6 +41,84 @@ impl CandidateView {
         });
         Ok(Self {
             data: CandidateData::Onsets(report),
+            analysis: package.analysis.clone(),
+            header,
+            selected: 0,
+        })
+    }
+
+    pub(super) fn load_calibrated(
+        source: &Path,
+        package: &ValidatedPackage,
+        proposal: &Path,
+        input: &Path,
+        calibration_report: &Path,
+        choice: &Path,
+    ) -> Result<Self, String> {
+        const LIMIT: usize = 32 * 1024 * 1024;
+        let (report, proposal_hash): (anchors::CalibratedReport, _) =
+            anchors::read_document_identified(proposal, LIMIT)?;
+        let compilation =
+            crate::anchor_calibration::recompile(package, input, calibration_report, choice)?;
+        let expected = anchors::make_calibrated_report(
+            package,
+            &compilation.proposal,
+            &compilation.estimates,
+            compilation.policy,
+            &compilation.context,
+        )?;
+        if report != expected
+            || serde_json::to_vec(&report).map_err(|e| e.to_string())?
+                != serde_json::to_vec(&expected).map_err(|e| e.to_string())?
+        {
+            return Err("Calibrated candidate proposal differs from full original-source/context recompilation".into());
+        }
+        compilation.require_fresh_sources()?;
+        let (_, fresh_hash): (anchors::CalibratedReport, _) =
+            anchors::read_document_identified(proposal, LIMIT)?;
+        if fresh_hash != proposal_hash {
+            return Err("Calibrated candidate proposal raw bytes changed after load".into());
+        }
+        if cocobeat_media::validate_package(source)? != *package {
+            return Err("Calibrated candidate supplied source changed after load".into());
+        }
+        Self::from_calibrated(package, &report, &proposal_hash.to_string(), source)
+    }
+
+    fn from_calibrated(
+        package: &ValidatedPackage,
+        report: &anchors::CalibratedReport,
+        proposal_hash: &str,
+        source: &Path,
+    ) -> Result<Self, String> {
+        let mut header = serde_json::to_value(report).map_err(|e| e.to_string())?;
+        let fields = header
+            .as_object_mut()
+            .ok_or("Calibrated proposal must be an object")?;
+        let Some(Value::Array(mut evidence)) = fields.remove("evidence") else {
+            return Err("Calibrated proposal lacks evidence rows".into());
+        };
+        let Some(Value::Array(anchors)) = fields.remove("anchors") else {
+            return Err("Calibrated proposal lacks Anchor rows".into());
+        };
+        let proposed_anchor_count = anchors.len();
+        if evidence.len() != package.analysis.onsets.len() {
+            return Err("Calibrated display requires all original onset rows".into());
+        }
+        for (row, onset) in evidence.iter_mut().zip(&package.analysis.onsets) {
+            // Original bits remain visible even when an estimate is unknown
+            row["original_score_bits"] = json!(onset.strength.to_bits());
+        }
+        header["proposal_blake3"] = json!(proposal_hash);
+        header["source_path"] = json!(std::fs::canonicalize(source).map_err(|e| e.to_string())?);
+        header["candidate_count"] = json!(evidence.len());
+        header["proposed_anchor_count"] = json!(proposed_anchor_count);
+        header["source_chart_anchor_count"] = json!(package.chart.anchors.len());
+        header["analysis_diagnostics"] = json!(package.analysis.diagnostics);
+        header["analysis_capabilities"] =
+            json!(package.analysis.capabilities.map(|c| format!("{c:?}")));
+        Ok(Self {
+            data: CandidateData::Calibrated(evidence),
             analysis: package.analysis.clone(),
             header,
             selected: 0,
@@ -171,6 +250,7 @@ impl CandidateView {
     pub(super) fn len(&self) -> usize {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.len(),
+            CandidateData::Calibrated(evidence) => evidence.len(),
             CandidateData::Native(evidence) => evidence.records.len(),
             CandidateData::Structure(evidence) => {
                 evidence.bins.len() + self.analysis.repetitions.len() * 2
@@ -181,6 +261,9 @@ impl CandidateView {
     fn frame(&self, index: usize) -> Option<i64> {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.get(index).map(|e| e.frame),
+            CandidateData::Calibrated(_) => {
+                self.analysis.onsets.get(index).map(|e| e.time.frames())
+            }
             CandidateData::Native(evidence) => evidence.records.get(index).map(|e| e.frame),
             CandidateData::Structure(evidence) => evidence
                 .bins
@@ -217,6 +300,10 @@ impl CandidateView {
         let tolerance = u64::try_from(tolerance).ok()?;
         let after = match &self.data {
             CandidateData::Onsets(report) => report.evidence.partition_point(|e| e.frame < frame),
+            CandidateData::Calibrated(_) => self
+                .analysis
+                .onsets
+                .partition_point(|e| e.time.frames() < frame),
             CandidateData::Native(evidence) => {
                 evidence.records.partition_point(|e| e.frame < frame)
             }
@@ -238,6 +325,9 @@ impl CandidateView {
                     report.evidence[index].decision,
                     Decision::SelectedByExperimentalPolicy { .. }
                 ),
+                CandidateData::Calibrated(evidence) => {
+                    evidence[index]["decision"]["kind"] == "selected_by_experimental_policy"
+                }
                 CandidateData::Native(_) => false,
                 CandidateData::Structure(_) => unreachable!("Structure has no point events"),
             };
@@ -265,6 +355,15 @@ impl CandidateView {
                 } = report.evidence[self.selected].decision
                 {
                     points.push((report.evidence[blocking_onset_index].frame, true));
+                }
+            }
+            CandidateData::Calibrated(evidence) => {
+                if let Some(blocker) = evidence[self.selected]["decision"]["blocking_onset_index"]
+                    .as_u64()
+                    .and_then(|i| usize::try_from(i).ok())
+                    .and_then(|i| self.frame(i))
+                {
+                    points.push((blocker, true));
                 }
             }
             CandidateData::Native(evidence) => {
@@ -324,6 +423,12 @@ impl CandidateView {
                     },
                 )
             }
+            CandidateData::Calibrated(evidence) => (
+                index,
+                evidence[index]["decision"]["kind"]
+                    .as_str()
+                    .expect("Typed calibrated decisions have a kind"),
+            ),
             CandidateData::Native(evidence) => {
                 let record = &evidence.records[index];
                 (
@@ -347,8 +452,7 @@ impl CandidateView {
         .render(locale)
     }
 
-    fn record(&self, report: &Report, evidence: &Evidence) -> Value {
-        let frame = evidence.frame;
+    fn analysis_context(&self, frame: i64) -> Value {
         let beat_after = self
             .analysis
             .beats
@@ -393,6 +497,12 @@ impl CandidateView {
                 "peak": energy.peak,
             })
         });
+        json!({ "beat_at_or_before": beat_after.checked_sub(1).and_then(beat),
+            "beat_after": beat(beat_after), "section": section, "energy": energy })
+    }
+
+    fn record(&self, report: &Report, evidence: &Evidence) -> Value {
+        let frame = evidence.frame;
         let selected_anchor = match evidence.decision {
             Decision::SelectedByExperimentalPolicy { anchor_id } => {
                 Some(json!({"id": anchor_id, "frame": frame}))
@@ -410,13 +520,23 @@ impl CandidateView {
             "candidate": evidence,
             "proposed_anchor": selected_anchor,
             "blocking_candidate": blocker,
-            "analysis_context": {
-                "beat_at_or_before": beat_after.checked_sub(1).and_then(beat),
-                "beat_after": beat(beat_after),
-                "section": section,
-                "energy": energy,
-            },
+            "analysis_context": self.analysis_context(frame),
         })
+    }
+
+    fn calibrated_record(&self, evidence: &[Value], index: usize) -> Value {
+        let candidate = evidence.get(index);
+        let frame = self.frame(index);
+        let decision = candidate.map(|row| &row["decision"]);
+        let proposed_anchor = decision
+            .filter(|d| d["kind"] == "selected_by_experimental_policy")
+            .map(|d| json!({ "id": d["anchor_id"], "frame": frame }));
+        let blocker = decision
+            .and_then(|d| d["blocking_onset_index"].as_u64())
+            .and_then(|i| usize::try_from(i).ok())
+            .and_then(|i| evidence.get(i));
+        json!({ "candidate": candidate, "proposed_anchor": proposed_anchor,
+            "blocking_candidate": blocker, "analysis_context": frame.map(|f| self.analysis_context(f)), "header": self.header })
     }
 
     #[cfg(test)]
@@ -461,6 +581,12 @@ impl CandidateView {
                 .expect("Measured structure descriptors contain valid JSON");
             }
             CandidateData::Onsets(report) => report,
+            CandidateData::Calibrated(evidence) => {
+                return serde_json::to_string_pretty(
+                    &self.calibrated_record(evidence, self.selected),
+                )
+                .expect("Fully recompiled calibrated evidence contains valid JSON");
+            }
             CandidateData::Native(evidence) => {
                 return serde_json::to_string_pretty(&json!({
                     "candidate": evidence.records.get(self.selected),
@@ -496,6 +622,81 @@ pub(super) fn fixture() -> CandidateView {
     let path = root.join("proposal.json");
     anchors::propose(&root.join("source"), "0.7", "1000", &path).unwrap();
     let view = CandidateView::load(&package, &path).unwrap();
+    std::fs::remove_dir_all(root).unwrap();
+    view
+}
+
+// Constructed display-only calibration, not a positive strict SDK/input reader fixture
+#[cfg(test)]
+fn calibrated_components() -> (
+    std::path::PathBuf,
+    ValidatedPackage,
+    anchors::CalibratedReport,
+) {
+    let (root, mut package) = anchors::tests::fixture("calibrated-candidate-view");
+    for onset in &mut package.analysis.onsets {
+        onset.confidence = None;
+    }
+    let mut transient = package.analysis.clone();
+    let probabilities = [None, Some(0.2), Some(0.8), Some(0.9), Some(0.8), Some(1.0)];
+    for (onset, probability) in transient.onsets.iter_mut().zip(probabilities) {
+        onset.confidence = probability;
+    }
+    let policy = crate::anchor_calibration::Policy {
+        min_confidence: 0.5,
+        min_gap_frames: 500,
+        density_window_frames: 4800,
+        max_anchors_per_window: 2,
+    };
+    let proposal = cocobeat_media::AnchorPolicy {
+        min_confidence: policy.min_confidence,
+        min_gap_frames: policy.min_gap_frames,
+    }
+    .compile_with_density(
+        &transient,
+        package.manifest.canonical_frames,
+        policy.density_window_frames,
+        policy.max_anchors_per_window,
+    )
+    .unwrap();
+    let estimates = package
+        .analysis
+        .onsets
+        .iter()
+        .zip(probabilities)
+        .enumerate()
+        .map(
+            |(index, (onset, probability))| crate::anchor_calibration::Estimate {
+                onset_index: index,
+                original_frame: onset.time.frames(),
+                original_score_bits: onset.strength.to_bits(),
+                probability_bits: probability.map(f32::to_bits),
+                bin_index: probability.map(|_| 0),
+            },
+        )
+        .collect::<Vec<_>>();
+    let context = crate::anchor_calibration::Context {
+        input_blake3: "constructed-input-raw".into(),
+        calibration_report_blake3: "constructed-report-raw".into(),
+        choice_blake3: "constructed-choice-raw".into(),
+        train_result_blake3: "constructed-training-content".into(),
+        policy_index: 0,
+    };
+    let report =
+        anchors::make_calibrated_report(&package, &proposal, &estimates, policy, &context).unwrap();
+    (root, package, report)
+}
+
+#[cfg(test)]
+pub(super) fn calibrated_fixture() -> CandidateView {
+    let (root, package, report) = calibrated_components();
+    let view = CandidateView::from_calibrated(
+        &package,
+        &report,
+        "constructed-proposal-raw",
+        &root.join("source"),
+    )
+    .unwrap();
     std::fs::remove_dir_all(root).unwrap();
     view
 }
@@ -685,6 +886,110 @@ pub(super) fn repetition_fixture() -> CandidateView {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn calibrated_rows_keep_original_none_bits_estimate_provenance_and_density_decisions() {
+        let mut view = calibrated_fixture();
+        let original = view.analysis.clone();
+        assert_eq!(view.len(), 6);
+        assert_eq!(
+            view.points()
+                .filter(|(_, selected)| *selected)
+                .map(|(frame, _)| frame)
+                .collect::<Vec<_>>(),
+            [1200, 4799]
+        );
+        for index in 0..view.len() {
+            view.select(index).unwrap();
+            let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+            assert!(detail["candidate"]["confidence"].is_null());
+            assert_eq!(
+                detail["candidate"]["frame"],
+                original.onsets[index].time.frames()
+            );
+            assert_eq!(
+                detail["candidate"]["original_score_bits"],
+                original.onsets[index].strength.to_bits()
+            );
+            assert_eq!(detail["header"]["quality_status"], "UNASSESSED");
+            assert_eq!(detail["header"]["production_admission"], false);
+            assert_eq!(
+                detail["header"]["calibration"]["choice_blake3"],
+                "constructed-choice-raw"
+            );
+            assert_eq!(detail["header"]["source_chart_anchor_count"], 1);
+        }
+        view.select(0).unwrap();
+        let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(
+            detail["candidate"]["original_score_bits"],
+            (-0.0f32).to_bits()
+        );
+        assert!(detail["candidate"]["calibrated_estimate"].is_null());
+        assert_eq!(
+            detail["candidate"]["decision"]["kind"],
+            "unknown_confidence"
+        );
+        view.select(2).unwrap();
+        assert_eq!(view.selected_points(), [(1000, false), (1200, true)]);
+        let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(
+            detail["candidate"]["calibrated_estimate"]["probability_bits"],
+            0.8f32.to_bits()
+        );
+        assert_eq!(
+            detail["candidate"]["calibrated_estimate"]["method"],
+            "fixed_bin_beta11"
+        );
+        assert_eq!(
+            detail["candidate"]["calibrated_estimate"]["calibration_report_blake3"],
+            "constructed-report-raw"
+        );
+        assert_eq!(detail["blocking_candidate"]["onset_index"], 3);
+        view.select(4).unwrap();
+        let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(detail["candidate"]["decision"]["kind"], "density_limited");
+        assert!(detail["proposed_anchor"].is_null());
+        assert!(view.row(4, Locale::EnUs).contains("density_limited"));
+        assert_eq!(view.nearest(1100, 100), Some(2));
+        assert_eq!(view.nearest(1100, 99), None);
+        assert_eq!(view.select(6), None);
+        assert_eq!(view.analysis, original);
+    }
+
+    #[test]
+    fn calibrated_consumer_requires_explicit_context_and_legacy_loader_rejects_v2() {
+        let (root, package, report) = calibrated_components();
+        let path = root.join("proposal.json");
+        std::fs::write(&path, serde_json::to_vec(&report).unwrap()).unwrap();
+        assert!(CandidateView::load(&package, &path).is_err());
+        assert!(
+            CandidateView::load_calibrated(
+                &root.join("source"),
+                &package,
+                &path,
+                &root.join("missing-input"),
+                &root.join("missing-report"),
+                &root.join("missing-choice")
+            )
+            .is_err()
+        );
+        let mut missing = serde_json::to_value(&report).unwrap();
+        missing.as_object_mut().unwrap().remove("calibration");
+        std::fs::write(&path, serde_json::to_vec(&missing).unwrap()).unwrap();
+        assert!(
+            CandidateView::load_calibrated(
+                &root.join("source"),
+                &package,
+                &path,
+                &root.join("missing-input"),
+                &root.join("missing-report"),
+                &root.join("missing-choice")
+            )
+            .is_err()
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
 
     #[test]
     fn repetition_rows_preserve_both_sides_and_all_original_endpoints() {
