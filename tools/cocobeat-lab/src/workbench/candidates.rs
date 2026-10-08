@@ -85,6 +85,27 @@ impl CandidateView {
         Self::from_calibrated(package, &report, &proposal_hash.to_string(), source)
     }
 
+    pub(super) fn load_inferred(
+        source: &Path,
+        package: &ValidatedPackage,
+        proposal: &Path,
+        evidence: &Path,
+        input: &Path,
+        calibration_report: &Path,
+        choice: &Path,
+    ) -> Result<Self, String> {
+        let (report, proposal_hash) = anchors::load_inferred_report(
+            source,
+            package,
+            proposal,
+            evidence,
+            input,
+            calibration_report,
+            choice,
+        )?;
+        Self::from_calibrated(package, &report, &proposal_hash.to_string(), source)
+    }
+
     fn from_calibrated(
         package: &ValidatedPackage,
         report: &anchors::CalibratedReport,

@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "scope": "S3 unlabelled fixed-bin inference CLI, public strict CPU model, single native read-only workbench and adopted package Ready software",
+  "status": "PASS_SCOPED_SOFTWARE",
+  "base_head": "f13b5aa31cee1c5a566f0756cecc5f1388129854",
+  "production_checks": {
+    "lab_tests": 100,
+    "commands": 5,
+    "all_exit_zero": true,
+    "source_count": 376,
+    "source_before_after_exact": true,
+    "lab_sha256": "ff1a455dd173b3c05e1721c56cfcf280ef7bc7a079268d51395af4b44a9d2491",
+    "lab_bytes": 1556765936
+  },
+  "CLI": {
+    "actual_attempts": 35,
+    "distinct_passed_cases": 34,
+    "successful_cases": 14,
+    "expected_rejections": 20,
+    "retained_QA_prefix_failure_attempts": 1,
+    "continuation_only": true,
+    "new_labels_or_refit": false,
+    "original_candidates": 69,
+    "original_confidence_all_none": true,
+    "known_estimates": 69,
+    "frozen_probability_bits": 1056964608,
+    "eligible": 3,
+    "explicit_adopted_anchors": 1,
+    "sameCIDcopy_report_bytes_exact": true,
+    "audio_analysis_bytes_exact": true,
+    "legacy_v1_evaluation_v2_bytes_exact": true,
+    "unknown_estimate_path_actual_in_this_sample": false,
+    "quality_status": "UNASSESSED",
+    "production_admission": false
+  },
+  "adoptedReady": {
+    "status": "PASS_SCOPED_READY_NATIVE_SOFTWARE",
+    "game_sha256": "aa31080bceb4f1f13ee81f7f528c701055c3b215615d29ab0a1f2c98faf9ed3d",
+    "game_scope": "Frozen Game and unchanged relevant runtime inputs; no new Lab code",
+    "process_id": 1013225,
+    "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+    "canonical_frames": 786432,
+    "observer_steps": 9,
+    "Ready_audio_not_started": true,
+    "fresh_confirmation_then_Kira_cursor": true,
+    "pause_position_seconds": 1.312,
+    "resume_position_seconds": 1.568,
+    "replay_json_csv_pairs": 2,
+    "hit_facts_per_replay": 2,
+    "timing_sidecar": false,
+    "natural_child_wait4_exit": 0,
+    "wrapper_exit": 0,
+    "protected_inputs": 23,
+    "input_hashes_before_after_exact": true,
+    "raw_index_refs_checked": 21,
+    "owned_groups_gone": true,
+    "capture": [
+      1280,
+      800
+    ],
+    "visual_scope": "Root checked one paused PNG: scene/actions visible; long path partly clipped; limited UI scope"
+  },
+  "public_strict_reader_CPU": {
+    "status": "PASS_PUBLIC_INFERRED_READER_CPU_MODEL_ONLY",
+    "controls": 5,
+    "positive_new_copy_adopted": 3,
+    "expected_rejections": 2,
+    "each_positive_counts": [
+      69,
+      69,
+      0,
+      3
+    ],
+    "original_f32bits_header_binding_exact": true,
+    "negative_error_exact_outputs_absent": true,
+    "guard603_before_after_exact": true,
+    "source376_current_exact": true,
+    "helper_build_exit": 0,
+    "helper_sha256": "23f65e3c6db92522e48861f5643a4c99429d98fd255c68cfdf430c9befae7adc",
+    "helper_build_seconds": 8.62995247199433,
+    "CPU_seconds": 31.729662605008343,
+    "scope": "Public strict reader+CandidateView CPU only; no public run/GPU"
+  },
+  "inference_GUI": {
+    "status": "PASS_SINGLE_PUBLIC_INFERRED_NATIVE_CONSUMER",
+    "public_entry": "workbench::run Mode::InferredCandidates; shipping command interface --inference",
+    "windows": 1,
+    "size": [
+      1280,
+      800
+    ],
+    "locale": "zh-CN",
+    "wrapper_PID": 1018028,
+    "helper_PID": 1018051,
+    "actual_exit": 0,
+    "helper_exit": 0,
+    "elapsed_seconds": 7.833811479009455,
+    "candidate_counts": [
+      69,
+      69,
+      0,
+      3
+    ],
+    "source_original_None_scorebits_preserved": true,
+    "select_without_autoplay_frame": 197120,
+    "explicit_seek_target_stopped": 197120,
+    "Kira_play_cursor": 197632,
+    "Kira_pause_cursor": 199680,
+    "Kira_stopped": true,
+    "close_requested_through_production_handler": true,
+    "owned_groups_gone": true,
+    "guard614_before_after_exact": true,
+    "native_build_source376_exact": true,
+    "root_visual_review": "Both PNG reviewed: list/details visible, detail needs scrolling; single1280x800; raw visual_review=NOT_RUN",
+    "capture_sha256": {
+      "inferred-detail.png": "dd2f3469ef794171d563e2dbc659b3831e033cbd87a18136eccb64cced05862d",
+      "inferred-list.png": "f6a0828979fbac1c9487051ed7760e4689a06f1089469c22993781cc0f5386d3"
+    }
+  },
+  "preserved_history": {
+    "first_clippy_nested_if": "FAIL retained; minimal let-chain repair then five checks passed",
+    "missing_choice_prefix": "Product correctly exit1; initial QA omitted Inspect JSON document prefix; original FAIL retained",
+    "old_native_minus9": "UNKNOWN retained; not acceptance",
+    "diagnostic_active_minus15": "Cancelled diagnostic retained; not acceptance",
+    "CPU_helper_first_build": "E0433 missing anchors module in QA mirror; original build failure retained",
+    "CPU_second_positive": "QA compared JSON roundtrip f64 ULP representation; original exit101 retained; revision03 exact original f32bits fix only, no product tolerance"
+  },
+  "not_run": [
+    "Wider UI/resolution/input matrix and uninterrupted human review-to-adopt workflow",
+    "Music/MIR/Anchor quality or production admission",
+    "Physical input and DAC/speaker timing",
+    "Long-term dual-source phase",
+    "Current four-platform inference feature acceptance"
+  ],
+  "raw_refs": {
+    "target/anchor-unlabelled-inference-production-checks-20261008-revision02/result.json": {
+      "sha256": "1c06526f40edbe12af4f79a82712eee500a97957e42357bdc42501525a8ec133",
+      "bytes": 2688
+    },
+    "target/anchor-unlabelled-inference-cli-run-20261008/summary.json": {
+      "sha256": "743a284e06c4f4fa41bbfbd20cec92e2bab8dabdb2e67a4bceb5c275a1a4c1d5",
+      "bytes": 803793
+    },
+    "target/anchor-unlabelled-inference-cli-tail-run-20261008/summary.json": {
+      "sha256": "4fc87b929615b641aeae28fbb2fd35fce4c52e600766aa20b02fb599c2629a2f",
+      "bytes": 1534534
+    },
+    "target/anchor-adopted-ready-plan-20261008/case-01/summary.json": {
+      "sha256": "d11cb969d22a61a03a9c7019f225ffc970001a6cd537675613de1e4953f3a8ba",
+      "bytes": 573
+    },
+    "target/anchor-adopted-ready-plan-20261008/case-01/observation/result.json": {
+      "sha256": "5287ee9a4a70008c8fe11dfaa569158818c98eaa39ea64fa63db442e31816798",
+      "bytes": 445412
+    },
+    "target/anchor-adopted-ready-plan-20261008/case-01/raw-index.json": {
+      "sha256": "4622f200f6ece2f6097ed8dbdc8319b3c01288ed3f957e9de86b500bd3cb3502",
+      "bytes": 2854
+    },
+    "target/anchor-unlabelled-inference-consumer-run-20261008-revision03/cpu/result.json": {
+      "sha256": "a50995b0c04aeea7e69a79dbe4ade6228527afbe56c6f3c6c2e6f2d8491a42eb",
+      "bytes": 212222
+    },
+    "target/anchor-unlabelled-inference-consumer-run-20261008-revision03/actual-build-process.json": {
+      "sha256": "b4cbc5186a0aeda0ca3237bcaae6d9349c89950c0a55d7f9f805404fa9a86e2d",
+      "bytes": 92161
+    },
+    "target/anchor-unlabelled-inference-native-run-20261008/native-one-window/result.json": {
+      "sha256": "5208745f5bf159f831fd3fa6ff7473aa22fb071188b0fb1accdc377289b45ed6",
+      "bytes": 210954
+    },
+    "target/anchor-unlabelled-inference-native-run-20261008/native-one-window/metadata.json": {
+      "sha256": "babf5f4d1b7e737908891d4d306b8463632c2a8e4e74e5a359759844aab0a3dd",
+      "bytes": 64597
+    },
+    "target/anchor-unlabelled-inference-native-run-20261008/actual-build-process.json": {
+      "sha256": "83621bf7adfba0941f9dc62353eb500c0978fe95861cdaeef9097b5da5b4a8c1",
+      "bytes": 92137
+    },
+    "target/anchor-unlabelled-inference-route-check-20261009/result.json": {
+      "sha256": "e3740cf028ff00bbcbe8ac96991360d096db848eaf7bc15c4ea82f3a3032ecc5",
+      "bytes": 4702
+    }
+  },
+  "shipping_inference_route": {
+    "scope": "Separate from original34distinct/35attempt inference+adopt queue",
+    "preApp_exact_rejections": 2,
+    "tampered_binding_and_invalid_locale": true,
+    "original_binary_four_objects_hashes_exact": true
+  }
+}

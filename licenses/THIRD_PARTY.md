@@ -2,6 +2,8 @@
 
 项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-08 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 597 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
 
+生产音乐分析按用户确认采用许可宽松的原生库 / 模型，允许成熟 C / C++ 实现，不接受 GPL 组合发行或 Python 产品运行环境；开发研究、模型导出和 QA Python 保持独立，许可文本、来源身份与实际分发组件分别核验，系统共享运行库的适用条款见 [SDK 对应源说明](onnxruntime/SOURCE-AVAILABILITY.md)
+
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
 | [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI；lab：原生时间线工作台 | MIT OR Apache-2.0 |

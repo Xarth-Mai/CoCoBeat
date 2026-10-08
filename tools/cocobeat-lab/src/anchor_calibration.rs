@@ -77,7 +77,7 @@ impl Policy {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Binding {
+pub(crate) struct Binding {
     source: labels::Source,
     analysis_blake3: String,
     evidence_summary_blake3: String,
@@ -259,6 +259,8 @@ pub(crate) struct Compilation {
     pub(crate) estimates: Vec<Estimate>,
     pub(crate) policy: Policy,
     pub(crate) context: Context,
+    pub(crate) inference_source: Option<Binding>,
+    inference_evidence: Option<(PathBuf, ValidatedPackage)>,
     snapshot: Snapshot,
     report_path: PathBuf,
     choice_path: PathBuf,
@@ -276,6 +278,11 @@ impl Compilation {
         {
             return Err("Calibration report or choice raw bytes changed after load".into());
         }
+        if let Some((path, package)) = &self.inference_evidence
+            && Some(binding(package, path)?) != self.inference_source
+        {
+            return Err("Inference native evidence changed after load".into());
+        }
         Ok(())
     }
 
@@ -288,6 +295,15 @@ impl Compilation {
             .is_some_and(|parent| parent.starts_with(source))
         {
             return Err("Calibration output must be outside the supplied source package".into());
+        }
+        if let Some((evidence, _)) = &self.inference_evidence {
+            let evidence = fs::canonicalize(evidence).map_err(|e| e.to_string())?;
+            if destination
+                .parent()
+                .is_some_and(|parent| parent.starts_with(evidence))
+            {
+                return Err("Inference output must be outside its native evidence".into());
+            }
         }
         Ok(destination)
     }
@@ -876,12 +892,11 @@ fn evaluate_policy(
 }
 
 // Recompute the frozen calibration context before generating or adopting a v2 proposal
-pub(crate) fn recompile(
-    package: &ValidatedPackage,
+fn frozen_context(
     input_path: &Path,
     report_path: &Path,
     choice_path: &Path,
-) -> Result<Compilation, String> {
+) -> Result<(Snapshot, Report, Context), String> {
     let (choice, choice_hash): (Choice, _) =
         anchors::read_document_identified(choice_path, MAX_INPUT_BYTES)?;
     let snapshot = Snapshot::load(input_path, &choice)?;
@@ -897,6 +912,23 @@ pub(crate) fn recompile(
     if expected.status != Status::Applicable {
         return Err("Calibration lacks heldout known positive and negative support".into());
     }
+    let context = Context {
+        input_blake3: snapshot.input_blake3.clone(),
+        calibration_report_blake3: report_hash.to_string(),
+        choice_blake3: choice_hash.to_string(),
+        train_result_blake3: expected.train_result_blake3.clone(),
+        policy_index: choice.policy_index,
+    };
+    Ok((snapshot, expected, context))
+}
+
+pub(crate) fn recompile(
+    package: &ValidatedPackage,
+    input_path: &Path,
+    report_path: &Path,
+    choice_path: &Path,
+) -> Result<Compilation, String> {
+    let (snapshot, expected, context) = frozen_context(input_path, report_path, choice_path)?;
     let source = labels::Source::from_package(package);
     let case = snapshot
         .evaluation
@@ -906,7 +938,7 @@ pub(crate) fn recompile(
     if package != &case.package {
         return Err("Calibration package data differs from its validated source snapshot".into());
     }
-    let policy = expected.training.policies[choice.policy_index];
+    let policy = expected.training.policies[context.policy_index];
     let (_, proposal, estimates) = evaluate_policy(
         case,
         &expected.training.bins,
@@ -918,17 +950,102 @@ pub(crate) fn recompile(
         proposal,
         estimates,
         policy,
-        context: Context {
-            input_blake3: snapshot.input_blake3.clone(),
-            calibration_report_blake3: report_hash.to_string(),
-            choice_blake3: choice_hash.to_string(),
-            train_result_blake3: expected.train_result_blake3,
-            policy_index: choice.policy_index,
-        },
+        context,
+        inference_source: None,
+        inference_evidence: None,
         snapshot,
         report_path: report_path.to_path_buf(),
         choice_path: choice_path.to_path_buf(),
     })
+}
+
+fn check_inference_source(actual: &Binding, report: &Report) -> Result<(), String> {
+    if actual.profile != report.training.profile || actual.channel != report.training.channel {
+        return Err("Inference profile/channel differs from the frozen score domain".into());
+    }
+    if report
+        .training
+        .datasets
+        .iter()
+        .chain(&report.evaluation)
+        .any(|case| case.binding.source.audio_blake3 == actual.source.audio_blake3)
+    {
+        return Err("Inference source must be outside train and evaluation canonical audio".into());
+    }
+    Ok(())
+}
+
+fn infer_policy(
+    package: &ValidatedPackage,
+    bins: &[Bin],
+    edges: &[u32],
+    policy: Policy,
+) -> Result<(AnchorProposal, Vec<Estimate>), String> {
+    if package.analysis.onsets.len() > MAX_CANDIDATES
+        || package
+            .analysis
+            .onsets
+            .iter()
+            .any(|onset| onset.confidence.is_some())
+    {
+        return Err("Inference requires at most 1024 original unknown-confidence onsets".into());
+    }
+    // Unlabelled rows have no judgments: use only the frozen training bin support
+    let estimates: Vec<_> = package
+        .analysis
+        .onsets
+        .iter()
+        .enumerate()
+        .map(|(index, onset)| {
+            let bin_index = bin_index(onset.strength.to_bits(), edges);
+            Estimate {
+                onset_index: index,
+                original_frame: onset.time.frames(),
+                original_score_bits: onset.strength.to_bits(),
+                probability_bits: bin_index.and_then(|i| bins[i].probability_bits),
+                bin_index,
+            }
+        })
+        .collect();
+    let mut temporary = package.analysis.clone();
+    for (onset, estimate) in temporary.onsets.iter_mut().zip(&estimates) {
+        onset.confidence = estimate.probability_bits.map(f32::from_bits);
+    }
+    let proposal = policy.compile(&temporary, package.manifest.canonical_frames)?;
+    Ok((proposal, estimates))
+}
+
+// Explicit inference is not a heldout evaluation and never loads labels for the new source
+pub(crate) fn recompile_inference(
+    package: &ValidatedPackage,
+    evidence: &Path,
+    input_path: &Path,
+    report_path: &Path,
+    choice_path: &Path,
+) -> Result<Compilation, String> {
+    let (snapshot, expected, context) = frozen_context(input_path, report_path, choice_path)?;
+    let actual = binding(package, evidence)?;
+    check_inference_source(&actual, &expected)?;
+    let policy = expected.training.policies[context.policy_index];
+    let (proposal, estimates) = infer_policy(
+        package,
+        &expected.training.bins,
+        &expected.training.edge_bits,
+        policy,
+    )?;
+    let compilation = Compilation {
+        proposal,
+        estimates,
+        policy,
+        context,
+        inference_source: Some(actual),
+        inference_evidence: Some((evidence.to_path_buf(), package.clone())),
+        snapshot,
+        report_path: report_path.to_path_buf(),
+        choice_path: choice_path.to_path_buf(),
+    };
+    compilation.require_fresh_sources()?;
+    Ok(compilation)
 }
 
 #[cfg(test)]
@@ -937,6 +1054,162 @@ mod tests {
     use labels::AnchorDecision::{
         ShouldAnchor as Positive, ShouldNotAnchor as Negative, Uncertain,
     };
+
+    #[test]
+    fn unlabelled_inference_uses_frozen_bins_and_rejects_split_or_domain_leakage() {
+        let (root, mut package) = anchors::tests::fixture("unlabelled-inference-mechanism");
+        let edges = [0.0f32.to_bits(), 0.5f32.to_bits(), 1.0f32.to_bits()];
+        let bins = vec![
+            Bin {
+                positive: 2,
+                negative: 0,
+                probability_bits: Some(0.75f32.to_bits()),
+            },
+            Bin {
+                positive: 0,
+                negative: 0,
+                probability_bits: None,
+            },
+        ];
+        let policy = Policy {
+            min_confidence: 0.5,
+            min_gap_frames: 1,
+            density_window_frames: 4800,
+            max_anchors_per_window: 2,
+        };
+        // Existing fixture confidence is never silently overwritten
+        assert!(infer_policy(&package, &bins, &edges, policy).is_err());
+        for (onset, strength) in package
+            .analysis
+            .onsets
+            .iter_mut()
+            .zip([0.25, 0.75, 1.25, 0.5, -0.0, 0.25])
+        {
+            onset.confidence = None;
+            onset.strength = strength;
+        }
+        let original = package.analysis.clone();
+        let frozen_bins = serde_json::to_vec(&bins).unwrap();
+        let (proposal, estimates) = infer_policy(&package, &bins, &edges, policy).unwrap();
+        assert_eq!(package.analysis, original);
+        assert_eq!(serde_json::to_vec(&bins).unwrap(), frozen_bins);
+        assert_eq!(
+            estimates
+                .iter()
+                .map(|v| v.probability_bits)
+                .collect::<Vec<_>>(),
+            [
+                Some(0.75f32.to_bits()),
+                None,
+                None,
+                None,
+                Some(0.75f32.to_bits()),
+                Some(0.75f32.to_bits())
+            ]
+        );
+        assert_eq!(estimates[4].original_score_bits, (-0.0f32).to_bits());
+        assert_eq!(
+            proposal
+                .anchors
+                .iter()
+                .map(|v| (v.id, v.song_time.frames()))
+                .collect::<Vec<_>>(),
+            [(1, 0), (5, 3000)]
+        );
+        assert!(matches!(
+            proposal.evidence[5].decision,
+            cocobeat_media::AnchorDecision::DensityLimited {
+                window_start: 0,
+                window_end: 4800,
+                max_anchors: 2
+            }
+        ));
+        for index in [1, 2, 3] {
+            assert_eq!(
+                proposal.evidence[index].decision,
+                cocobeat_media::AnchorDecision::UnknownConfidence
+            );
+        }
+        let train = summary(
+            "frozen-train",
+            "train-origin",
+            &[(0.25, Positive), (0.25, Positive)],
+        );
+        let evaluation = summary(
+            "frozen-evaluation",
+            "evaluation-origin",
+            &[(0.25, Positive), (0.25, Negative)],
+        );
+        let report = Report {
+            schema_version: 1,
+            input_blake3: "raw-input".into(),
+            train_result_blake3: "training-content".into(),
+            choice_blake3: "raw-choice".into(),
+            training: Training {
+                scope: Scope::ExperimentalAnchorCalibration,
+                method: Method::FixedBinBeta11,
+                score_definition: ScoreDefinition::OriginalHfcNormalizedStrengthF32Bits,
+                profile: PROFILE.into(),
+                channel: 0,
+                edge_bits: edges.to_vec(),
+                min_bin_support: 2,
+                datasets: vec![train.clone()],
+                bins,
+                policies: vec![policy],
+                policy_counts: vec![Counts::default()],
+            },
+            policy_index: 0,
+            evaluation: vec![evaluation.clone()],
+            evaluation_bin_counts: vec![[1, 1], [0, 0]],
+            counts: Counts::default(),
+            known_positive: 1,
+            known_negative: 1,
+            brier: None,
+            status: Status::Applicable,
+            quality_status: "UNASSESSED".into(),
+            production_admission: false,
+        };
+        let source = Binding {
+            source: labels::Source::from_package(&package),
+            analysis_blake3: "analysis".into(),
+            evidence_summary_blake3: "summary".into(),
+            profile: PROFILE.into(),
+            channel: 0,
+        };
+        assert!(check_inference_source(&source, &report).is_ok());
+        for leaked in [&train, &evaluation] {
+            let mut wrong = source.clone();
+            wrong.source.audio_blake3 = leaked.binding.source.audio_blake3.clone();
+            assert!(check_inference_source(&wrong, &report).is_err());
+        }
+        let mut wrong = source.clone();
+        wrong.profile.push('x');
+        assert!(check_inference_source(&wrong, &report).is_err());
+        let mut wrong = source.clone();
+        wrong.channel = 1;
+        assert!(check_inference_source(&wrong, &report).is_err());
+        let mut empty = package.clone();
+        empty.analysis.onsets.clear();
+        assert!(
+            infer_policy(&empty, &report.training.bins, &edges, policy)
+                .unwrap()
+                .0
+                .anchors
+                .is_empty()
+        );
+        let mut oversized = package.clone();
+        oversized
+            .analysis
+            .onsets
+            .resize(MAX_CANDIDATES + 1, package.analysis.onsets[0]);
+        assert!(infer_policy(&oversized, &report.training.bins, &edges, policy).is_err());
+        let invalid_window = Policy {
+            density_window_frames: 4801,
+            ..policy
+        };
+        assert!(infer_policy(&package, &report.training.bins, &edges, invalid_window).is_err());
+        std::fs::remove_dir_all(root).unwrap();
+    }
 
     // Explicit integer-class controls exercise mechanics, not human music labels or recommended thresholds
     fn summary(
@@ -1250,6 +1523,9 @@ mod tests {
         assert_eq!(value["report_version"], 2);
         assert_eq!(value["quality_status"], "UNASSESSED");
         assert_eq!(value["production_admission"], false);
+        assert!(value.get("inference_source").is_none());
+        assert_eq!(value["scope"], "experimental_anchor_calibration");
+        assert_eq!(value["calibration"].as_object().unwrap().len(), 5);
         assert!(
             value["evidence"]
                 .as_array()

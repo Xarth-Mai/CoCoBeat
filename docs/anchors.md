@@ -72,9 +72,29 @@ v2 提案将原 `confidence: null` 与独立 `calibrated_estimate` 分开保存�
 
 V2 Selection 的 schema 2 明确来源 CID、实际保存提案原字节的 `proposal_blake3`、提案完整五字段 `calibration` context 和 `onset_indices`；采用前完整重算 Input / Training / Choice / Report / 提案，检查原来源和侧车新鲜性，只能选择已接受候选。空选择明确清空 Anchor，导出复用原事务并保留音频、analysis、SectionCue 和 native None；输出在全部声明 package / evidence 和实际传入的源包副本之外
 
-当前只适用于 Input 中完全标注的 evaluation 包，未标签歌曲推断继续实现；既有 v1 CLI / 报告保持，v1 工作台拒绝 v2。Input / Choice 各最多 1 MiB、校准报告最多 4 MiB，其他提案与选择沿用前述上限
+旧 `--calibration` 分支只适用于 Input 中完全标注的 evaluation 包；未标注新 Source 使用下述显式 inference 入口，不回退到 evaluation。既有 v1 CLI / 报告保持，v1 工作台拒绝 v2；Input / Choice 各最多 1 MiB、校准报告最多 4 MiB，其他提案与选择沿用前述上限
 
 2026-10-08 的 [软件记录](../testdata/synthetic/calibration-drift-observations-20261008.json)包含 Media86 / Lab96、Clippy / 格式 / 边界与当前 Lab 构建、33 条实际校准 CLI（24 成功 / 9 预期拒绝），46 条训练与 69 条新源评估候选、显式采用 1 个 Anchor、原 native reader 和 v1 完整字节回归；固定 index 构造标签验证机制，音乐准入、并发源副本写窗和真人试听仍未验收，首轮 lint 与 QA setup 失败保留
+
+## 未标注新 Source 推断
+
+```sh
+cocobeat-lab infer-anchor-calibration NEW_SOURCE_PACKAGE EVIDENCE INPUT.json CALIBRATION.json CHOICE.json NEW_V2_PROPOSAL.json
+cocobeat-lab workbench-candidates NEW_SOURCE_PACKAGE V2_PROPOSAL.json --inference EVIDENCE INPUT.json CALIBRATION.json CHOICE.json [--locale CODE]
+cocobeat-lab adopt-inferred-anchors NEW_SOURCE_PACKAGE EVIDENCE V2_PROPOSAL.json V2_SELECTION.json NEW_PACKAGE INPUT.json CALIBRATION.json CHOICE.json
+```
+
+新 Source 不读取标签或重新拟合，原 Input / Training / Choice / heldout Report 全部重编核对后只复用冻结 bins 和预声明策略；新 canonical audio 必须不在 train / evaluation，原 native profile、选中声道和 score domain 一致，最多 1024 条原 None onset，支持不足或分数未知时估计仍为 None
+
+v2 report 保留原五字段 calibration Context，以 `scope: "experimental_anchor_calibration_inference"` 和独立 `inference_source` 明确新 Source / analysis / native summary / profile / channel 的原字节绑定；原 frame、strength bits 和 confidence None 不变，`UNASSESSED` 与 `production_admission:false` 保持。V2 Selection 沿用 schema 2 的完整 source / proposal raw hash / Context 绑定，只能明确采用已接受候选，不自动补谱
+
+只读工作台的 `--inference` 调用公共严格 `load_inferred_report` 重编新 Source 和原 Context，不静默切换到 evaluation；提出与采用均末次检查传入源副本及全部数据新鲜性，输出须在传入 Source、声明 package / evidence 和新证据之外，采用继续保留 audio / analysis / SectionCue 原字节
+
+2026-10-09 的[推断软件记录](../testdata/synthetic/anchor-unlabelled-inference-observations-20261009.json)覆盖 Lab100 与五项检查、34 项独立 CLI（14 成功 / 20 准确拒绝，共 35 次尝试，首个缺 Choice 的 QA 前缀失配保留）、5 项公共严格 reader / CandidateView CPU 控制，以及新源推断 / 同 CID 副本 / 明确采用 / 原字节回归；机械新源 69 条原 None 候选、69 条独立估计、3 条政策选择和明确采用 1 个 Anchor 保持 UNASSESSED
+
+公共 `workbench::run` 的单个 zh-CN、1280×800 窗口通过只读候选 / 详情、选择不自动播放、明确定位 197120 帧、Kira 游标 197632 / 暂停 199680 / 停止和关闭 exit0；正式 `--inference` 路由另有两项 before-App 拒绝，与原 34 项统计分开。两张图仅目检列表 / 详情可见，长 JSON 需要滚动，不承诺完整滚动、其他尺寸或实体输入验收
+
+采用包使用原冻结 Game 和未变相关 runtime 输入，完整新 CID / 786432 帧、Ready 无音频、新确认后 Kira、暂停 / 恢复、两条合成 Hit 的 Replay / CSV、自然 exit0 和 worker 释放通过；这项软件出口不声称旧 Game 含新 Lab 代码。既有 MIR 质量 FAIL、历史 −9 UNKNOWN / 主动 −15 诊断、首次 lint 和两次 CPU QA 失败保留，真人音乐策略、实体输入、DAC / 扬声器与当前四平台新功能验收继续开放
 
 ## 校准候选只读工作台
 
@@ -90,4 +110,4 @@ cocobeat-lab workbench-candidates PACKAGE V2_PROPOSAL.json --calibration INPUT.j
 
 2026-10-08 的[消费者软件记录](../testdata/synthetic/calibrated-candidate-consumer-observations-20261008.json)包含 Lab99、Clippy / 格式 / 边界与构建、10 条正式 CLI 预期拒绝、5 条私有严格读取控制，以及调用公共 `workbench::run` 的单窗口验收。原包与同 CID 副本正向读取 69 条候选，55 条独立估计 / 14 条 Unknown / 3 条政策选择均保留原 None；同一窗口 1280×800 和 640×480 的六张图已按列表尾部、详情和滚动底部指定范围检查，实际 Kira 游标、暂停和停止状态通过软件断言
 
-首轮新增测试的类型错误及 QA 分数位负例被前置 Input 哈希门拦截的结果保留，后者另补仅改变提案估计原分数位的正式 CLI 拒绝。物理输入、声学试听、真人音乐准入、未标签推断、并发改写窗口和当前四平台原生验收继续保留，窗口截图与软件状态不替代这些验收
+首轮新增测试的类型错误及 QA 分数位负例被前置 Input 哈希门拦截的结果保留，后者另补仅改变提案估计原分数位的正式 CLI 拒绝。物理输入、声学试听、真人音乐准入、更广泛的未标签推断 UI / 输入验收及真人审阅采用流程、并发改写窗口和当前四平台原生验收继续保留，窗口截图与软件状态不替代这些验收

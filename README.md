@@ -43,7 +43,7 @@ cargo xtask check
 cargo run --locked -p cocobeat-game
 ```
 
-Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。各模块可采用适合需求的成熟库，不追求纯 Rust，须核验许可证、跨平台构建与发行方式；研究报告中的版本号只作为历史参考
+Rust 跟随最新 stable，Edition 2024。依赖采用最新稳定版本，Cargo manifest 使用主版本范围（如 `"1"`），GitHub Actions 使用最新稳定主版本标签（如 `@v7`）。`Cargo.lock` 提交到仓库并固定实际解析版本，常规构建使用 `--locked`；升级时运行 `cargo update` 并重跑检查，跨主版本时更新 manifest 和适配 API。各模块可采用适合需求的成熟库，不追求纯 Rust，须核验许可证、跨平台构建与发行方式；生产音乐分析不接受 GPL 组合发行或 Python 运行环境，开发研究、模型导出和 QA 工具独立于产品运行时；研究报告中的版本号只作为历史参考
 
 正常启动完整播放原生 Logo 动画，再将同一 Logo 移至左上角并显露界面，随后保持 Ready，主菜单播放眼睛循环；开始歌曲、暂停和结算时使用静态定稿，失焦冻结菜单动画，恢复后继续；音乐在用户另行选择 Start 后播放，片头期间的按键和手柄操作不会穿透到游戏，窗口关闭仍有效；音频输出初始化失败会明确退出
 
@@ -124,7 +124,7 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
 
-`workbench-candidates PACKAGE V2_PROPOSAL --calibration INPUT CALIBRATION CHOICE [--locale CODE]` 完整重算校准来源后只读显示原 onset、未知 confidence、独立概率和密度拒绝，复用波形、滚动与明确定位试听；音乐准入与未标签推断继续推进，操作和实际软件验证见[校准候选工作台](docs/anchors.md#校准候选只读工作台)
+`workbench-candidates PACKAGE V2_PROPOSAL --calibration INPUT CALIBRATION CHOICE [--locale CODE]` 完整重算校准来源后只读显示原 onset、未知 confidence、独立概率和密度拒绝，复用波形、滚动与明确定位试听；未标注新歌曲可用 `infer-anchor-calibration` 复用冻结策略，`workbench-candidates --inference` 只读审阅，再由 `adopt-inferred-anchors` 明确导出新包；音乐准入继续推进，操作和实际软件验证见[校准候选工作台](docs/anchors.md#校准候选只读工作台)
 
 `adopt-labeled-anchors PACKAGE LABELS SELECTION NEW_PACKAGE` 将独立人工标签中明确选择的肯定精确点导出为新包，绑定完整来源和标签原字节 hash，保留 ID / frame 与原音频、分析和段落；空选择明确清空 Anchor，操作与限制见[独立标签采用](docs/independent-labels.md#明确采用为-anchor)
 

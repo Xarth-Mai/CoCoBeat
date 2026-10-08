@@ -217,6 +217,8 @@ pub(crate) struct CalibratedReport {
     quality_status: String,
     production_admission: bool,
     calibration: crate::anchor_calibration::Context,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    inference_source: Option<crate::anchor_calibration::Binding>,
     anchors: Vec<ProposedAnchor>,
     evidence: Vec<CalibratedEvidence>,
 }
@@ -368,6 +370,7 @@ pub(crate) fn make_calibrated_report(
         quality_status: "UNASSESSED".into(),
         production_admission: false,
         calibration: calibration.clone(),
+        inference_source: None,
         anchors: proposal
             .anchors
             .iter()
@@ -434,16 +437,56 @@ pub(crate) fn propose_calibrated(
     let package = cocobeat_media::validate_package(source)?;
     let compilation =
         crate::anchor_calibration::recompile(&package, input, calibration_report, choice)?;
-    let report = make_calibrated_report(
+    propose_compiled(source, &package, &compilation, destination)
+}
+
+pub(crate) fn propose_inferred(
+    source: &Path,
+    evidence: &Path,
+    input: &Path,
+    calibration_report: &Path,
+    choice: &Path,
+    destination: &Path,
+) -> Result<(), String> {
+    let package = cocobeat_media::validate_package(source)?;
+    let compilation = crate::anchor_calibration::recompile_inference(
         &package,
+        evidence,
+        input,
+        calibration_report,
+        choice,
+    )?;
+    propose_compiled(source, &package, &compilation, destination)
+}
+
+fn compiled_report(
+    package: &ValidatedPackage,
+    compilation: &crate::anchor_calibration::Compilation,
+) -> Result<CalibratedReport, String> {
+    let mut report = make_calibrated_report(
+        package,
         &compilation.proposal,
         &compilation.estimates,
         compilation.policy,
         &compilation.context,
     )?;
+    if let Some(binding) = &compilation.inference_source {
+        report.scope = "experimental_anchor_calibration_inference".into();
+        report.inference_source = Some(binding.clone());
+    }
+    Ok(report)
+}
+
+fn propose_compiled(
+    source: &Path,
+    package: &ValidatedPackage,
+    compilation: &crate::anchor_calibration::Compilation,
+    destination: &Path,
+) -> Result<(), String> {
+    let report = compiled_report(package, compilation)?;
     let destination = compilation.output_path(source, destination)?;
     compilation.require_fresh_sources()?;
-    if cocobeat_media::validate_package(source)? != package {
+    if cocobeat_media::validate_package(source)? != *package {
         return Err("Calibration supplied source changed after load".into());
     }
     let hash = crate::labels::write_new(&destination, &report, MAX_REPORT_BYTES)?;
@@ -468,20 +511,58 @@ pub(crate) fn adopt_calibrated(
     calibration_report: &Path,
     choice: &Path,
 ) -> Result<(), String> {
+    adopt_with_context(
+        source,
+        report_path,
+        selection_path,
+        destination,
+        [input, calibration_report, choice],
+        None,
+    )
+}
+
+pub(crate) fn adopt_inferred(
+    source: &Path,
+    evidence: &Path,
+    report_path: &Path,
+    selection_path: &Path,
+    destination: &Path,
+    context: [&Path; 3],
+) -> Result<(), String> {
+    adopt_with_context(
+        source,
+        report_path,
+        selection_path,
+        destination,
+        context,
+        Some(evidence),
+    )
+}
+
+fn adopt_with_context(
+    source: &Path,
+    report_path: &Path,
+    selection_path: &Path,
+    destination: &Path,
+    [input, calibration_report, choice]: [&Path; 3],
+    inference_evidence: Option<&Path>,
+) -> Result<(), String> {
     let (report, report_hash): (CalibratedReport, _) =
         read_document_identified(report_path, MAX_REPORT_BYTES)?;
     let (selection, selection_hash): (CalibratedSelection, _) =
         read_document_identified(selection_path, MAX_SELECTION_BYTES)?;
     let package = cocobeat_media::validate_package(source)?;
-    let compilation =
-        crate::anchor_calibration::recompile(&package, input, calibration_report, choice)?;
-    let expected = make_calibrated_report(
-        &package,
-        &compilation.proposal,
-        &compilation.estimates,
-        compilation.policy,
-        &compilation.context,
-    )?;
+    let compilation = match inference_evidence {
+        Some(evidence) => crate::anchor_calibration::recompile_inference(
+            &package,
+            evidence,
+            input,
+            calibration_report,
+            choice,
+        )?,
+        None => crate::anchor_calibration::recompile(&package, input, calibration_report, choice)?,
+    };
+    let expected = compiled_report(&package, &compilation)?;
     if report != expected
         || serde_json::to_vec(&report).map_err(|e| e.to_string())?
             != serde_json::to_vec(&expected).map_err(|e| e.to_string())?
@@ -519,6 +600,43 @@ pub(crate) fn adopt_calibrated(
         })
     );
     Ok(())
+}
+
+// Strict inference consumer: caller supplies evidence explicitly; evaluation is never a fallback
+pub(crate) fn load_inferred_report(
+    source: &Path,
+    package: &ValidatedPackage,
+    proposal_path: &Path,
+    evidence: &Path,
+    input: &Path,
+    calibration_report: &Path,
+    choice: &Path,
+) -> Result<(CalibratedReport, blake3::Hash), String> {
+    let (report, hash): (CalibratedReport, _) =
+        read_document_identified(proposal_path, MAX_REPORT_BYTES)?;
+    let compilation = crate::anchor_calibration::recompile_inference(
+        package,
+        evidence,
+        input,
+        calibration_report,
+        choice,
+    )?;
+    let expected = compiled_report(package, &compilation)?;
+    if report != expected
+        || serde_json::to_vec(&report).map_err(|e| e.to_string())?
+            != serde_json::to_vec(&expected).map_err(|e| e.to_string())?
+    {
+        return Err(
+            "Inference proposal differs from full original-source/context recompilation".into(),
+        );
+    }
+    compilation.require_fresh_sources()?;
+    let (_, fresh): (CalibratedReport, _) =
+        read_document_identified(proposal_path, MAX_REPORT_BYTES)?;
+    if fresh != hash || cocobeat_media::validate_package(source)? != *package {
+        return Err("Inference proposal or supplied source changed after load".into());
+    }
+    Ok((report, hash))
 }
 
 pub(crate) fn load_report(package: &ValidatedPackage, path: &Path) -> Result<Report, String> {

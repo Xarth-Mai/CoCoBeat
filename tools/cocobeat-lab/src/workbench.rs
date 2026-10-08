@@ -28,6 +28,7 @@ pub enum Mode<'a> {
     Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
     CalibratedCandidates(&'a Path, &'a Path, &'a Path, &'a Path),
+    InferredCandidates(&'a Path, &'a Path, &'a Path, &'a Path, &'a Path),
     NativeBeats(&'a Path),
     StructureFeatures(usize),
 }
@@ -101,6 +102,11 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         Mode::CalibratedCandidates(proposal, input, report, choice) => {
             Some(candidates::CandidateView::load_calibrated(
                 source, &package, proposal, input, report, choice,
+            )?)
+        }
+        Mode::InferredCandidates(proposal, evidence, input, report, choice) => {
+            Some(candidates::CandidateView::load_inferred(
+                source, &package, proposal, evidence, input, report, choice,
             )?)
         }
         Mode::NativeBeats(path) => Some(candidates::CandidateView::load_native(&package, path)?),
