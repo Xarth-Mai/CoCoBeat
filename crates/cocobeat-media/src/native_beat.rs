@@ -14,7 +14,7 @@ use ort::{
     session::{Session, builder::GraphOptimizationLevel},
     value::{DynValue, Tensor, TensorElementType, ValueType},
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{self, File, OpenOptions},
     io::{BufWriter, Read, Seek, Write},
@@ -26,6 +26,7 @@ use std::{
 mod assets;
 
 pub(crate) const ANALYSIS_VERSION: &str = "native-small0-high22050-f64fma-minimal-v1-candidate";
+pub(crate) const MODEL_BLAKE3: [u8; 32] = assets::MODEL_BLAKE3;
 // Lab is the sole ORT consumer; rc.13 cannot detect another caller loading a library without committing an environment
 static OWN_ORT_ENVIRONMENT: OnceLock<()> = OnceLock::new();
 const BORDER: usize = 6;
@@ -396,16 +397,17 @@ fn infer(
     Ok(result)
 }
 
-#[derive(Serialize, Debug)]
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct PeakGroup {
     pub(crate) q: f64,
-    score: f32,
-    members: Vec<usize>,
+    pub(crate) score: f32,
+    pub(crate) members: Vec<usize>,
 }
 
 // Coordinate semantics ported from MIT Beat This minimal/deduplicate_peaks
 // Score is a project adapter policy, not an official confidence output
-fn peaks(logits: &[f32]) -> Result<Vec<PeakGroup>, String> {
+pub(crate) fn peaks(logits: &[f32]) -> Result<Vec<PeakGroup>, String> {
     if logits.iter().any(|v| !v.is_finite()) {
         return Err("Nonfinite aggregate logits".into());
     }
@@ -437,7 +439,7 @@ fn peaks(logits: &[f32]) -> Result<Vec<PeakGroup>, String> {
     Ok(groups)
 }
 
-fn canonical_frame(q: f64, n: u64) -> Result<i64, String> {
+pub(crate) fn canonical_frame(q: f64, n: u64) -> Result<i64, String> {
     let center = q * 960.0;
     let frame = center.round();
     if !q.is_finite()
@@ -452,6 +454,18 @@ fn canonical_frame(q: f64, n: u64) -> Result<i64, String> {
         ));
     }
     Ok(frame as i64)
+}
+
+// Caller has verified a nonempty, ascending beat list; equal distance chooses the left beat
+pub(crate) fn nearest_beat_index(q: f64, beat: &[PeakGroup]) -> usize {
+    let right = beat.partition_point(|v| v.q < q);
+    if right == 0 {
+        0
+    } else if right == beat.len() || q - beat[right - 1].q <= beat[right].q - q {
+        right - 1
+    } else {
+        right
+    }
 }
 
 /// Preserve original coordinates before any bounded schema mapping or nearest alignment
@@ -488,14 +502,7 @@ pub(crate) fn minimal(
     let mut scores = vec![None::<f32>; beat.len()];
     let mut alignment = Vec::new();
     for group in &downbeat {
-        let right = beat.partition_point(|v| v.q < group.q);
-        let index = if right == 0 {
-            0
-        } else if right == beat.len() || group.q - beat[right - 1].q <= beat[right].q - group.q {
-            right - 1
-        } else {
-            right
-        };
+        let index = nearest_beat_index(group.q, &beat);
         scores[index] = Some(scores[index].map_or(group.score, |old| old.max(group.score)));
         alignment.push(serde_json::json!({"original_downbeat_q":group.q,"nearest_beat_index":index,"aligned_beat_q":beat[index].q,"canonical_frame":frames[index]}));
     }

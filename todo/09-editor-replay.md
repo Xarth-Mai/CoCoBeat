@@ -4,6 +4,7 @@
 
 - [x] 原生工作台显示双声道峰值波形、精确 SongTime、Anchor 列表与作者设置的 SectionCue
 - [x] 显示 Anchor 候选、音乐结构证据与拒绝原因
+- [x] 原生 beat / raw downbeat 只读图形证据：raw / aligned 位置、同帧独立记录与未知置信度分开显示，复用波形和试听，无自动 Anchor 或 UI 采用；本批分版软件验证与图例定向修复见[原生工作台](../docs/native-beat-candidate.md#原生候选工作台)，设备 / 真人退出另计
 - [x] 增删移动 Anchor，支持撤销重做，重新生成内容哈希，已由实际修包 CLI 消费
 - [x] 图形界面显示 Replay 输入、水位、Anchor 判定与 Free Sync 配对，保留原始整数和事实关联
 - [x] 三种工作台共用 canonical PCM 试听，独立显示源游标和请求起点，暂停 / 恢复 / 停止 / 选择跳转保留原编辑与 Replay 帧

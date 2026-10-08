@@ -27,6 +27,7 @@ pub enum Mode<'a> {
     Labels(&'a Path),
     Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
+    NativeBeats(&'a Path),
 }
 
 pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> {
@@ -86,14 +87,15 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
     } else {
         None
     };
-    let candidates = if let Mode::Candidates(path) = mode {
-        let mut candidates = candidates::CandidateView::load(&package, path)?;
+    let mut candidates = match mode {
+        Mode::Candidates(path) => Some(candidates::CandidateView::load(&package, path)?),
+        Mode::NativeBeats(path) => Some(candidates::CandidateView::load_native(&package, path)?),
+        _ => None,
+    };
+    if let Some(candidates) = &mut candidates {
         document.cursor = candidates.select(0).unwrap_or(0);
         document.selected = None;
-        Some(candidates)
-    } else {
-        None
-    };
+    }
     let mut app = App::new();
     let plugins = DefaultPlugins.set(WindowPlugin {
         close_when_requested: false,
@@ -103,8 +105,12 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
                     "labels.title"
                 } else if replay.is_some() {
                     "replay.title"
-                } else if candidates.is_some() {
-                    "candidates.title"
+                } else if let Some(candidates) = &candidates {
+                    if candidates.is_native() {
+                        "native_beats.title"
+                    } else {
+                        "candidates.title"
+                    }
                 } else {
                     "workbench.title"
                 })

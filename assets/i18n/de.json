@@ -281,5 +281,8 @@
   "labels.source": "Vollständige Identität des Quellpakets: {content_id} · BLAKE3 des canonical Audios: {audio_hash} · Frames insgesamt: {frames}",
   "labels.point_row": "#{id} · Punkt {frame} · {decision}",
   "labels.interval_row": "#{id} · Intervall [{start}, {end}) · {decision}",
-  "labels.bytes": "UTF-8-Bytes: {used} / {max}"
+  "labels.bytes": "UTF-8-Bytes: {used} / {max}",
+  "native_beats.title": "CoCoBeat · Beat/downbeat-Kandidaten",
+  "native_beats.legend": "Candidate: beat/raw downbeat · Quell-Anchor: Autor",
+  "native_beats.help": "Nur Lesen · q ist die Koordinate im ursprünglichen 50-Hz-Spektrogrammraster; q×960 entspricht ganzzahligen Frames im 48-kHz-Audio · raw downbeat behält seine ursprüngliche Position; Beziehungen zu nearest/aligned beat werden getrennt angezeigt · confidence ist unbekannt (null); raw logit, sigmoid, strength und downbeat_probability sind unkalibrierte Werte, keine Konfidenzwerte · Keine automatischen Anchor · Nutzt die vorhandene Wellenform und das Probehören in canonical stereo"
 }

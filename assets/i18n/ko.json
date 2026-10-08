@@ -281,5 +281,8 @@
   "labels.source": "원본 패키지 전체 내용 식별자: {content_id} · canonical 오디오 BLAKE3: {audio_hash} · 총 프레임: {frames}",
   "labels.point_row": "#{id} · 지점 {frame} · {decision}",
   "labels.interval_row": "#{id} · 구간 [{start}, {end}) · {decision}",
-  "labels.bytes": "UTF-8 바이트: {used} / {max}"
+  "labels.bytes": "UTF-8 바이트: {used} / {max}",
+  "native_beats.title": "CoCoBeat · Beat/downbeat 후보",
+  "native_beats.legend": "Candidate: beat/raw downbeat · 원본 Anchor: 작성자",
+  "native_beats.help": "읽기 전용 · q는 원본 50 Hz 스펙트로그램 격자 좌표이며 q×960으로 48 kHz 오디오의 정수 프레임에 대응합니다 · raw downbeat는 원래 위치를 유지하며 nearest/aligned beat와의 관계는 별도로 표시합니다 · confidence는 알 수 없음(null)입니다. raw logit, sigmoid, strength, downbeat_probability는 보정되지 않은 점수이며 신뢰도가 아닙니다 · Anchor를 자동 생성하지 않습니다 · 기존 파형과 canonical stereo 미리 듣기를 재사용합니다"
 }

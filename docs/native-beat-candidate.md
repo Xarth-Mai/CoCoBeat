@@ -27,3 +27,25 @@ MusicAnalysis v2 的 beat / downbeat capability 标为 `Candidate / Algorithm`�
 48 bytes 上限控制仅有 1 frame 真实 payload，header 声明 600 秒加 1 frame，实际拒绝原因确为十分钟上限，因此只通过 declared-duration header guard；完整超长音频和本 600 秒样本的独立 Python 数值对照仍为 NOT_RUN。首轮源生成的最终 print TypeError 与 staging glob 漏记均保留，后续只读文件快照及 mtime 标记不能补成精确内部阶段计时；长样本仍为 Candidate / Algorithm / confidence None，成本样本不作为音乐真值
 
 旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。各目标原生发行接线与实际 tag Release 按[构建发行](build-release.md)逐版本另验；发行 CPU/RSS 预算、十分钟产品取消、同进程 ORT 重试、真实音乐 / 设备 / 真人验收仍为 NOT_RUN
+
+## 原生候选工作台
+
+```sh
+cargo run --locked -p cocobeat-lab -- workbench-beats /path/to/bundle/package /path/to/bundle/evidence --locale zh-CN
+```
+
+`workbench-beats PACKAGE EVIDENCE [--locale CODE]` 在完整验证歌曲包后读取原生候选证据目录，核对 analysis 末尾生产注记绑定的 summary、固定 profile / 模型 / 音频身份、N / M / F / 声道、六项资源的字节数 / BLAKE3，以及原 aggregate、峰组、最近 beat 对齐与包 analysis 的一致性；缺少 / 损坏 / 越界 / 不匹配直接报错，不重新推理或写入包。仅修改 chart Anchor 并保留同一音频与 analysis 的新包可以复用原 evidence，当前窗口仍显示新包的完整 CID 与源谱面身份
+
+列表按原 canonical frame 排序，`beat` 与 `raw_downbeat` 是独立行，同帧也不合并；每条候选的详情保留本类别内的零起始 `group_index`、原 `original_q`、原 frame、未校准 score 和成员 raw logit。q 是 50 Hz 谱网格坐标，峰组均值可为小数，48 kHz 帧按 `round(q × 960)` 映射并严格保持在 `[0, N)`；raw downbeat 光标保留原帧，nearest / aligned beat 的索引、q 和帧另列为关系，不用对齐帧覆盖原位置
+
+详情先显示未知置信度与只读说明，再展示原证据；`confidence=null` 保持未知，raw logit、sigmoid、strength 和 downbeat_probability 均为未校准分数。选中 raw downbeat 时另标最近 beat 关系，包内分数只是保存的候选聚合，不自动成为 Anchor、音乐真值或已验证置信度
+
+窗口复用现有 final canonical stereo 波形、试听、单一菜单主控、缩放与滚动，不提供采用或编辑 / 导出按钮。源 chart 的作者 Anchor 仍可见，这不是隐藏提示的盲审入口；独立 `workbench-labels` 继续隐藏作者 / 算法提示，候选工作台不把记录写入 Labels 或自动采用标签
+
+本批 Linux x86-64 软件检查通过：reader 8 项窄测、Lab 68 项、修正后的 Clippy / 格式、两轮各 13 语言字形及两版各 467 项冻结输入构建。首版 13 条实际 CLI 为 4 条包校验与 9 条窗口打开前的证据拒绝，不冒充 evidence 正向读取；原生辅助程序另完成四包 reader API 正控，raw / aligned q 在这四包中相同，实际不等坐标只由构造 CPU 例覆盖
+
+首版原生补验为 4 项 API、3 个窗口 / 12 PNG，软件控制与实际 Kira 音源游标推进、暂停 / 停止通过；中文 7 图指定范围目检通过，法语 5 图发现图例换行重叠 Cursor。仅缩短 13 语言图例后重新冻结第二版，实际 1 项 API 与法语 640×480 单窗口 / 5 PNG 经主线程和独立 agent 全图指定范围目检通过；中文、空候选和试听未在第二版重跑，不能把首版三窗口或音频结果改绑为新版全量通过
+
+首轮 std lint、CLI QA 路径错误、辅助程序 E0277 / E0502 和 Unix socket 环境失败、法语图例视觉 FAIL 与定向修复均保留，命令、两版源码 / 二进制与原始结果见[观察记录](../testdata/synthetic/native-beat-workbench-observations-20261008.json)和[原始证据索引](../testdata/synthetic/native-beat-workbench-observations-20261008-raw-index.json)；独立 Labels 逻辑保持，本批未重新进行其原生窗口验证
+
+既有 wholeSpect / 音乐质量 FAIL、未校准 confidence 及 production_admission=false 保留；本入口交付候选复核软件，不扩大 MIR 生产准入、真人盲标、实体手柄、声学试听或设备计时结论

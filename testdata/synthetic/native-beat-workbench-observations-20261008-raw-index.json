@@ -1,0 +1,2140 @@
+{
+  "schema": "cocobeat-selected-raw-artifact-index-v1",
+  "state": "FROZEN_ACTUAL_SOFTWARE_OBSERVATIONS",
+  "scope": "Linux local software evidence reader, production CLI rejection controls, copied production Bevy Workbench observation harness; distinct build01 and build02 inputs and native revisions retained",
+  "file_count": 426,
+  "total_bytes": 9664157,
+  "selection": "Actual command receipts/streams/logs/screenshots/DTOs, copied helper sources/patches/reviews, checks/glyphs,467 input manifests,21 changed frozen inputs per build; binary identities delegated to actual build receipts, original four candidate complete trees bound by actual CLI/API before/after hashes; no vendor/model/SDK/rlib/old release archive recopy",
+  "files": [
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/build-result.json",
+      "bytes": 141498,
+      "sha256": "6c2575a7e45f4d2de7ff7334dbc22ec61d1197c47b367d85866982c75d6584ef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/build.jsonl",
+      "bytes": 403067,
+      "sha256": "db04cd28eca36ec70116533d55c933be2fb011350c15c55a01ba1a9615744b9c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/build.py",
+      "bytes": 2749,
+      "sha256": "14862f5e72bf1cc5f2655883baae08606574c0749465c3daa61cdcf5fa45c8cf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/build.stderr",
+      "bytes": 428,
+      "sha256": "38ac6eb6f695b7cfa5fb361f00903a9a261319ed06cb4e1da9f516805a9069a2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+      "bytes": 141778,
+      "sha256": "c9e41c48fbff5176bce4fb2bf98d5ccfe54a543e9b0a95dd9c4a2a67fb0236fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/inputs-after.json",
+      "bytes": 57724,
+      "sha256": "5d62c34c1cb58226814bb750c2304c1375df9c5f76948c23fa66f6cca3aa830b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/inputs-before.json",
+      "bytes": 57724,
+      "sha256": "5d62c34c1cb58226814bb750c2304c1375df9c5f76948c23fa66f6cca3aa830b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/de.json",
+      "bytes": 20467,
+      "sha256": "800250666b22e10b4ac25d1b9ed7c27d3253ebada14546f6a3437f7b7844c076"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/en-GB.json",
+      "bytes": 18381,
+      "sha256": "e101cf7f66a3f26799d7954146ba3179f414a82000dd95af8058276b5fa4d9b3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/en-US.json",
+      "bytes": 18381,
+      "sha256": "e101cf7f66a3f26799d7954146ba3179f414a82000dd95af8058276b5fa4d9b3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/es-419.json",
+      "bytes": 20413,
+      "sha256": "ff67431d876457468abf50b79094d9c0fbffada6e56ac7a3b09c1b300953370f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/fr.json",
+      "bytes": 21278,
+      "sha256": "7d7e1d071cec44d5248fcae8e460cd0d358643627516a1888763c125b54287e7"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ja.json",
+      "bytes": 23251,
+      "sha256": "d76e78f21c381d2bdf3b63ef2564146efab78049ec420d7c38583a4e3bf91edf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ko.json",
+      "bytes": 21860,
+      "sha256": "6cba907cb9d2eaa967f5023a3fadb22cc70e6d6487ed1bd111ec6c548fde59b1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/pt-BR.json",
+      "bytes": 20121,
+      "sha256": "fd277af6d323524b0c536ef29c6425f19cd7cef2f1369411df36babf0420fd66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ru.json",
+      "bytes": 27618,
+      "sha256": "278a4983786ebf501a959680c80f635605c6277247be10831d412d4a12a06ec2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/uk.json",
+      "bytes": 27376,
+      "sha256": "8cab797593800599b2a92d468009e20192c8f5f6c2caef11587d9210160a386b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-CN.json",
+      "bytes": 18209,
+      "sha256": "256331567896bf1035cba03665f5280f54cae5dd335fc76a3463ae41bd307f9f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-HK.json",
+      "bytes": 18326,
+      "sha256": "af25dbf06758c5d3326f142364bcaae948b70a309b10d3d4e6519bb8d24f9397"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-TW.json",
+      "bytes": 18374,
+      "sha256": "27f3f860e840ae430b6be05d343e6a3021c2d4d376c72eb6095f214538b26ae6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/lib.rs",
+      "bytes": 1532,
+      "sha256": "c3d3fb266de542babf2fab7dbf4e3d7958184e992c216c5e7e76263a1ebadef6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat.rs",
+      "bytes": 44017,
+      "sha256": "2d8bc675944edf86387aa0b352c5ffb0fb27d8771216cc22ea2a799f7954e51f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat_evidence.rs",
+      "bytes": 45526,
+      "sha256": "20594c7dd5cd027a2991ffd22eb67500aa893d4cabe7888f926a057376c1bd6c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+      "bytes": 13394,
+      "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench.rs",
+      "bytes": 36053,
+      "sha256": "d93a2a63bd560d742f8d97abbf1611606240171c9eb0c7f5ca0acbf64cd24f37"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/build-result.json",
+      "bytes": 141507,
+      "sha256": "187b4a10494302345bc09704e2d4da0f867a676fc854d855def1d32d7f74bce2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/build.jsonl",
+      "bytes": 403065,
+      "sha256": "5fa2f5cf85ed973ee5053b2b7dda265faa222d61faac365bfa2831f0362ac9a7"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/build.py",
+      "bytes": 2758,
+      "sha256": "23212d6499d765d50441f92bff3843c361fe8cc94cda88ae344087fe857d9929"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/build.stderr",
+      "bytes": 252,
+      "sha256": "8980eb57006d0bf733f1a573492543f1524940197c206b4f76fd662b5a52b067"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/cocobeat-lab-build-result.json",
+      "bytes": 141787,
+      "sha256": "6a16cc0051ca6661e798d169ed8f10f9718e7362ec314c361da4eaadb87d2b90"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/inputs-after.json",
+      "bytes": 57724,
+      "sha256": "907d757f5e3b2719ad0556107a6670ee697d1e5b2870893ba1eeb4cb4cf0c8e6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/inputs-before.json",
+      "bytes": 57724,
+      "sha256": "907d757f5e3b2719ad0556107a6670ee697d1e5b2870893ba1eeb4cb4cf0c8e6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/de.json",
+      "bytes": 20428,
+      "sha256": "2e6a98105fb7d2df2a6499184246690a977c6172f23abe893c6560828eecd5cb"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/en-GB.json",
+      "bytes": 18352,
+      "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/en-US.json",
+      "bytes": 18352,
+      "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/es-419.json",
+      "bytes": 20372,
+      "sha256": "cf79aade44544684696f4bebfab32c7300245483ecbc5a20209b0976cdcbd533"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/fr.json",
+      "bytes": 21226,
+      "sha256": "576a077c8f1a28115ef394f69c9d16eb00cbc1f576c6e8129d54019326d9ca66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ja.json",
+      "bytes": 23222,
+      "sha256": "66b0519edd9e4cea4a070ab9a52b5318f5d3e2de337d9b16da97a61d491b7624"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ko.json",
+      "bytes": 21829,
+      "sha256": "f42c20a89a6d79e9d756654380bf239f07fdf51eec6ec3eb825cc79f70d0ab46"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/pt-BR.json",
+      "bytes": 20080,
+      "sha256": "3dfc50276179516f3af32e6f576a6d603be5a0c8a585033e30a39715a4192fd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ru.json",
+      "bytes": 27558,
+      "sha256": "4f770eab319314b4d57b76b65fe580190e3e6d45ba3d8f7675a15a49ea051a5f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/uk.json",
+      "bytes": 27314,
+      "sha256": "6a08560b4f411baf78a308027fb9087d1a9d37ccc81acc1741dbe0aab83436fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-CN.json",
+      "bytes": 18186,
+      "sha256": "d9d9967da6bc8baa86e6ee63960b0b6eefebc5c4f05e899858ebdcce33084201"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-HK.json",
+      "bytes": 18303,
+      "sha256": "c6b27fc381ce3271a9563b5f759b868ee1f502f239406b7a715f559865c2a101"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-TW.json",
+      "bytes": 18351,
+      "sha256": "824851c2ace0fb7c3ce64267fdfe8a6ca58057140a6e6bbb5532469f6cd223b6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/lib.rs",
+      "bytes": 1532,
+      "sha256": "c3d3fb266de542babf2fab7dbf4e3d7958184e992c216c5e7e76263a1ebadef6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/native_beat.rs",
+      "bytes": 44017,
+      "sha256": "2d8bc675944edf86387aa0b352c5ffb0fb27d8771216cc22ea2a799f7954e51f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/native_beat_evidence.rs",
+      "bytes": 45526,
+      "sha256": "20594c7dd5cd027a2991ffd22eb67500aa893d4cabe7888f926a057376c1bd6c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/main.rs",
+      "bytes": 13394,
+      "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench.rs",
+      "bytes": 36053,
+      "sha256": "d93a2a63bd560d742f8d97abbf1611606240171c9eb0c7f5ca0acbf64cd24f37"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/source-delta.json",
+      "bytes": 539,
+      "sha256": "97de0e4d4367c4f4a10f092147ff8c4359f5d463f6dd891145b41ab8d45a4251"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-02-result.json",
+      "bytes": 238,
+      "sha256": "f50cff0644a66f21416eea3b5fb9f7c2beb597632e7927c20cb0c627c7884468"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-02.log",
+      "bytes": 427,
+      "sha256": "a1da2e4166b73b8007f23a842cb94028b061ca3304344ffc050f2068a9baa6c9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-result.json",
+      "bytes": 240,
+      "sha256": "aee8d1fbd63705a74aa37f4f00914837c2074ac477c3498f46b0014f87021914"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/clippy.log",
+      "bytes": 959,
+      "sha256": "7b184f5ce94a7c50f802ab76b05213f96f2de4bf0562df166023fbfc2c12320d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/fmt-result.json",
+      "bytes": 102,
+      "sha256": "cbe15d2900bb8b36c81054b7027cc1822899f6e25cc23664661ca1700015a356"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/fmt.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/lab-tests-result.json",
+      "bytes": 147,
+      "sha256": "d218393a8a6209e8ff6a25661b16d9614b8fe7629ee3c5d5b402ed0735364bca"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/lab-tests.log",
+      "bytes": 7188,
+      "sha256": "85aa4dd9185fd46d9a45eeb40def258b6d560003b34ce5b4ee8e7fac9e0c48db"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-02-result.json",
+      "bytes": 211,
+      "sha256": "e1bcdb346eee022b57a7bbff7230d8a34f8e854155aaf66932da10300f1e998a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-02.log",
+      "bytes": 1238,
+      "sha256": "702fcc80b066affca97f6dcfaed6d2f68ba485ec89e1d8360e022c62f8a9dfd8"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-result.json",
+      "bytes": 211,
+      "sha256": "e1bcdb346eee022b57a7bbff7230d8a34f8e854155aaf66932da10300f1e998a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests.log",
+      "bytes": 1268,
+      "sha256": "b40a8a66cd4c7a729accd9f2bd3f8037931f24cee92e3662f6947bd6e9a9d77a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/commands.json",
+      "bytes": 25756,
+      "sha256": "904e07abab7735619f61c547f93fbb18609e3085330047e2ffd23e1fa6c772ab"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/root-failure.json",
+      "bytes": 557,
+      "sha256": "6991a7e013839b7bbedbb9f7915404cf9d08a332cb562c91af75a00799347155"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-beat-f32/stderr",
+      "bytes": 54,
+      "sha256": "6b8c9c6906ea6a11bfb79833663598f2e5049a692a0d5961a02f453840e0d1ce"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-beat-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-downbeat-f32/stderr",
+      "bytes": 58,
+      "sha256": "6fedb95561a45805be4d819aab8d799d250605bbbb779c5acd18b2e87d2f59b2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-downbeat-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-evidence-summary-json/stderr",
+      "bytes": 47,
+      "sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-evidence-summary-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-alignment-json/stderr",
+      "bytes": 58,
+      "sha256": "92e92e43501095059c4860d5eb69347393a6a56dca720c9992dd040d82abf055"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-alignment-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-raw-groups-json/stderr",
+      "bytes": 59,
+      "sha256": "052950bea0b6889463d71b7fc88e9ad542f7661418c4b09a8dfabad9f1b0c50a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-raw-groups-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-shape-json/stderr",
+      "bytes": 53,
+      "sha256": "585e085f1b71d76e0cdeb7d67e257097cfe4bd044895b553873c37a052483659"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-shape-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-spect-f32/stderr",
+      "bytes": 31,
+      "sha256": "f37a72041d224a009734a34a46a4b461a624b76cbfe00737255596b40b2e0cbf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-spect-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-left/stdout",
+      "bytes": 994,
+      "sha256": "43308484e9cc70b79ececd1cb22c805d3d8d79a120be4c48cff9a7a06abec602"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-right/stdout",
+      "bytes": 994,
+      "sha256": "0da7857ef9d440136bf055acf0b0620e6aafc345fc640da70ee138d942ca8fb1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-left/stdout",
+      "bytes": 988,
+      "sha256": "4a6c7d385116a9686b068515edc22d23aca3623517644aa449d97bb1964e5487"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-right/stdout",
+      "bytes": 988,
+      "sha256": "520768f0e9f7acf332c2dbad529a0d65553c99dbff17b71db4b407850a113583"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/wrong-pair/stderr",
+      "bytes": 47,
+      "sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/wrong-pair/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/commands.json",
+      "bytes": 59453,
+      "sha256": "7d0c0ddb9c275f252b9aee62dbdfae0cf19058212588dc766f4cf36651405fef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/missing-resource/stderr",
+      "bytes": 178,
+      "sha256": "e7ed0c3ccb21bebc9c031e98feaf8611eb9db19c2df13dbb844273ef091e66dd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/missing-resource/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-beat-f32/stderr",
+      "bytes": 54,
+      "sha256": "6b8c9c6906ea6a11bfb79833663598f2e5049a692a0d5961a02f453840e0d1ce"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-beat-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-downbeat-f32/stderr",
+      "bytes": 58,
+      "sha256": "6fedb95561a45805be4d819aab8d799d250605bbbb779c5acd18b2e87d2f59b2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-downbeat-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-evidence-summary-json/stderr",
+      "bytes": 47,
+      "sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-evidence-summary-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-alignment-json/stderr",
+      "bytes": 58,
+      "sha256": "92e92e43501095059c4860d5eb69347393a6a56dca720c9992dd040d82abf055"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-alignment-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-raw-groups-json/stderr",
+      "bytes": 59,
+      "sha256": "052950bea0b6889463d71b7fc88e9ad542f7661418c4b09a8dfabad9f1b0c50a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-raw-groups-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-shape-json/stderr",
+      "bytes": 53,
+      "sha256": "585e085f1b71d76e0cdeb7d67e257097cfe4bd044895b553873c37a052483659"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-shape-json/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-spect-f32/stderr",
+      "bytes": 31,
+      "sha256": "f37a72041d224a009734a34a46a4b461a624b76cbfe00737255596b40b2e0cbf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-spect-f32/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-left/stdout",
+      "bytes": 994,
+      "sha256": "43308484e9cc70b79ececd1cb22c805d3d8d79a120be4c48cff9a7a06abec602"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-right/stdout",
+      "bytes": 994,
+      "sha256": "0da7857ef9d440136bf055acf0b0620e6aafc345fc640da70ee138d942ca8fb1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-left/stdout",
+      "bytes": 988,
+      "sha256": "4a6c7d385116a9686b068515edc22d23aca3623517644aa449d97bb1964e5487"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-right/stdout",
+      "bytes": 988,
+      "sha256": "520768f0e9f7acf332c2dbad529a0d65553c99dbff17b71db4b407850a113583"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/wrong-pair/stderr",
+      "bytes": 47,
+      "sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/wrong-pair/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/de.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/de.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/de.txt",
+      "bytes": 620,
+      "sha256": "7aa3ef47ba3b1fb0ff32ed7ec6022b4c0f6f76ce4acb54455ccdcc2f853ffec1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-GB.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-GB.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-GB.txt",
+      "bytes": 551,
+      "sha256": "4807ed0d8e1cd432f18882a44b3d78f82d3d3d7af736e32227244cec64014a87"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-US.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-US.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/en-US.txt",
+      "bytes": 551,
+      "sha256": "4807ed0d8e1cd432f18882a44b3d78f82d3d3d7af736e32227244cec64014a87"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/es-419.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/es-419.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/es-419.txt",
+      "bytes": 650,
+      "sha256": "9f24ff2055b5fdb12b07d5909cdc3f3ba65cce52e923b058a1ca0f230c0e282e"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/fr.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/fr.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/fr.txt",
+      "bytes": 672,
+      "sha256": "8909e51cb7ebd6e76e12bc7de180b59057786814b56b379ea235a5fd280aa7f1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ja.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ja.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ja.txt",
+      "bytes": 651,
+      "sha256": "d01ec86a603a3f9acd0dee2ffc6a60a5a6714b4665752a6af94439e0afb562d2"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ko.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ko.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ko.txt",
+      "bytes": 656,
+      "sha256": "630d2c5f1751eef9ef53ed9c6edaa634d20761c526784a3265a579b4bec4de87"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/pt-BR.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/pt-BR.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/pt-BR.txt",
+      "bytes": 651,
+      "sha256": "6aa09498d4d78f79f98ec64fe48b182c3dacbdab434e2dc11b3fe5ed293d2fac"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/result.json",
+      "bytes": 4021,
+      "sha256": "5c21fdb9c969bbb8e3fae3e6660edd8960a3bee2f87991e73c31decc8dee11f8"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ru.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ru.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/ru.txt",
+      "bytes": 904,
+      "sha256": "cb803a99bff733022fabe1c700535cbc0c23ea900376714fff065647dd8082bc"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/uk.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/uk.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/uk.txt",
+      "bytes": 891,
+      "sha256": "4a789e90819fb9dc21a040696b9b11bc66dc8760c37bf15510a35bc6a75409e5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-CN.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-CN.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-CN.txt",
+      "bytes": 475,
+      "sha256": "0722c43dd551a3f76bdf446177b2adb38f72d3b6629d7ef859abd4cffefd2334"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-HK.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-HK.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-HK.txt",
+      "bytes": 484,
+      "sha256": "261d3bc41b7c2050d1ad66a7fb5723d77155c3bd0f797b9eb5ddf9f74ce648dd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-TW.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-TW.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs/zh-TW.txt",
+      "bytes": 487,
+      "sha256": "257877ad53e86825fceb34da817cdd87912c8d086134c234e706c0f15acc0743"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/de.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/de.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/de.txt",
+      "bytes": 581,
+      "sha256": "84821bbf29553b6bef64389452171ca030bd2f773b6ac4a15f30ad3c3a8ddfc0"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-GB.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-GB.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-GB.txt",
+      "bytes": 522,
+      "sha256": "04d74a4af5b217c1479e3c32763c796c595a14cd18c02f417034903f1c80405a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-US.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-US.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/en-US.txt",
+      "bytes": 522,
+      "sha256": "04d74a4af5b217c1479e3c32763c796c595a14cd18c02f417034903f1c80405a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/es-419.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/es-419.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/es-419.txt",
+      "bytes": 609,
+      "sha256": "7b8f32855c7c31d037059ab67e2c70aa8a58bbc86808895bcaa5bb339a5000fe"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/fr.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/fr.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/fr.txt",
+      "bytes": 620,
+      "sha256": "df8edce5527c80ad616788200952f3d7f25afb30f71a2f2692c798fb57a8fe36"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ja.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ja.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ja.txt",
+      "bytes": 622,
+      "sha256": "38a2f3480f5af1b25ce9d7834cc1cb2b58db3018055ee684c9a2c847b12f6e8d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ko.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ko.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ko.txt",
+      "bytes": 625,
+      "sha256": "3f8792b330014e257710f3a855c23b310b188fe1c207241e773ccaccf2b68896"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/pt-BR.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/pt-BR.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/pt-BR.txt",
+      "bytes": 610,
+      "sha256": "a7fa72fce65f1c23c327c93bf9049bfe1a81f9efa999eb0942466b0ec96f9230"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/result.json",
+      "bytes": 4060,
+      "sha256": "996356fc75448a703f1646cfca24539d508b708aede815b53117a5d43828b4b3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ru.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ru.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/ru.txt",
+      "bytes": 844,
+      "sha256": "10b2bda4cb4a8207f2876a76ea630db4788a5ba382f3243a31fcc42b8b8a7310"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/uk.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/uk.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/uk.txt",
+      "bytes": 829,
+      "sha256": "d5209e2d791b193fc16deefc750ef8877ca8546ab24ec2777443cd0317973080"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-CN.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-CN.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-CN.txt",
+      "bytes": 452,
+      "sha256": "3b13c1df287f6f9bc500d6375b8465de9326b698d64da909a9413598dbe83761"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-HK.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-HK.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-HK.txt",
+      "bytes": 461,
+      "sha256": "19f37020875244672629766af431d8d37948df27f71418d4ae5066ccf661a734"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-TW.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-TW.stdout",
+      "bytes": 728,
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/zh-TW.txt",
+      "bytes": 464,
+      "sha256": "a3669ca5b3839782a2c89ccc0dee92040e31c9b180130ad9b4a963a3a5b63d95"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/build.json",
+      "bytes": 80587,
+      "sha256": "d4af03f81bea6fe7307ef7fa11312f9a8c2ff5a2d8ecfbfef7d061e6a1b41624"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/build.log",
+      "bytes": 9184,
+      "sha256": "990490d993fdd65ee1064c99a0049da386d783267e59a0787bb4a562445d5841"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/instrumentation.patch",
+      "bytes": 1099,
+      "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/prepared.json",
+      "bytes": 2971,
+      "sha256": "7582c02ddbecd39e4a290a5238c3f4281477b4e2c0f375538acc2addc1aa2add"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/replay-workbench-check.long-type-5762621355506321129.txt",
+      "bytes": 1500,
+      "sha256": "92405e62aeec2e1d93e2c7298c65c7a1b5521918497d254453903f82e7cacc53"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/anchors.rs",
+      "bytes": 25416,
+      "sha256": "86e9c7ef131cc86367d53d3d1b2f0913da49ad8a8308c80ebe086502e05a8aef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/labels.rs",
+      "bytes": 15730,
+      "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/labels_cli.rs",
+      "bytes": 7781,
+      "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/main.rs",
+      "bytes": 2300,
+      "sha256": "98cebed5cdd8f773bb29d4f9907bafcdbda8cd34cb2798fdf188c87745888023"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/replay.rs",
+      "bytes": 45533,
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/audition.rs",
+      "bytes": 7854,
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/label_text.rs",
+      "bytes": 23616,
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/labels.rs",
+      "bytes": 13727,
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/qa.rs",
+      "bytes": 13895,
+      "sha256": "d34a19e7ec0dc6ffcb658527b1f68725e29056fe3a28d1099cd4181920854acc"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/replay.rs",
+      "bytes": 13609,
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/source/workbench.rs",
+      "bytes": 36304,
+      "sha256": "9ecdd4e5b59dbfc1734d3ac663db2f708662bbaaf5433dea3ed9c60090aae728"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/build.json",
+      "bytes": 80587,
+      "sha256": "cf445898e0a8430efe51762cbfea9650e7ab7698e9f66d823ba7b00e6c705b6a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/build.log",
+      "bytes": 649,
+      "sha256": "b281f0939eaf32611462d7877a907a7851f2446de8372c6b9efd8b218bbc52f3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/instrumentation.patch",
+      "bytes": 1099,
+      "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/prepared.json",
+      "bytes": 2971,
+      "sha256": "9cdd520477def83c1ebd25d65c32c9da27c8ec0c0c729c459934201b268c06f3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/anchors.rs",
+      "bytes": 25416,
+      "sha256": "86e9c7ef131cc86367d53d3d1b2f0913da49ad8a8308c80ebe086502e05a8aef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/labels.rs",
+      "bytes": 15730,
+      "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/labels_cli.rs",
+      "bytes": 7781,
+      "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/replay.rs",
+      "bytes": 45533,
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/audition.rs",
+      "bytes": 7854,
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/label_text.rs",
+      "bytes": 23616,
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/labels.rs",
+      "bytes": 13727,
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/qa.rs",
+      "bytes": 16170,
+      "sha256": "1fa2cb05625b051c6fd5cc94d00197ffa33fe9375d2f89b5f3954404138a764c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/replay.rs",
+      "bytes": 13609,
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/source/workbench.rs",
+      "bytes": 36304,
+      "sha256": "9ecdd4e5b59dbfc1734d3ac663db2f708662bbaaf5433dea3ed9c60090aae728"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-left/evidence.json",
+      "bytes": 54915,
+      "sha256": "f53032507a464dadaaee051eee74e6f4185a5df0f8181d1bd1a296854700e063"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-left/run.log",
+      "bytes": 468,
+      "sha256": "1756e6185b27d71785a14fc66e5b4da33c8ed00042725b315e34e0625a61da4b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-right/evidence.json",
+      "bytes": 54915,
+      "sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-right/run.log",
+      "bytes": 471,
+      "sha256": "6862a32204058bcddf717485008171e7247567bb06096114d3ebf4480c25bc6b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-left/evidence.json",
+      "bytes": 823,
+      "sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-left/run.log",
+      "bytes": 465,
+      "sha256": "f06eb9c7a27e99b5364fd981fab71bb327bbd51122c6da659261c711fc089e7c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-right/evidence.json",
+      "bytes": 823,
+      "sha256": "5d3b6c7f94eb169b8d30ff70304c6a29cb3246835d557cf9dcbc90a4b0d1c2c6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-right/run.log",
+      "bytes": 468,
+      "sha256": "9a81c3cd34f7ad4b19617e12c13759354cfde38c0108a2aca5cf83fc3badc6ec"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/build.json",
+      "bytes": 80649,
+      "sha256": "7fea78ab56a88b6e251a6948e0172a5c76ca0026856bb10199e9b8da499e664d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/instrumentation.patch",
+      "bytes": 1099,
+      "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/native-fixture-left-640-zh-CN/run.log",
+      "bytes": 38513,
+      "sha256": "f70cd7c9f83ed48c79f66a55e06d44c1e9cb21c719c96512080749a71c92c5d3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/prepared.json",
+      "bytes": 2971,
+      "sha256": "b4ca70ad04fb4075f8d9ff8d11c54043a40e1e92054f46f0f3ae67cede8b3995"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/root-run-failure.json",
+      "bytes": 445,
+      "sha256": "a33569001d27cd39f98c08f046bc8643cd41ddc6a6317fd55387bf9f0037954f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/run.json",
+      "bytes": 138654,
+      "sha256": "56645c2743ca0e55490a818bb8f1b942c6bf93a9dd672a10139fd7a8101f95f3"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/anchors.rs",
+      "bytes": 25416,
+      "sha256": "86e9c7ef131cc86367d53d3d1b2f0913da49ad8a8308c80ebe086502e05a8aef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/labels.rs",
+      "bytes": 15730,
+      "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/labels_cli.rs",
+      "bytes": 7781,
+      "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/replay.rs",
+      "bytes": 45533,
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/audition.rs",
+      "bytes": 7854,
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/label_text.rs",
+      "bytes": 23616,
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/labels.rs",
+      "bytes": 13727,
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/replay.rs",
+      "bytes": 13609,
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/source/workbench.rs",
+      "bytes": 36304,
+      "sha256": "9ecdd4e5b59dbfc1734d3ac663db2f708662bbaaf5433dea3ed9c60090aae728"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-left/evidence.json",
+      "bytes": 54915,
+      "sha256": "f53032507a464dadaaee051eee74e6f4185a5df0f8181d1bd1a296854700e063"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-left/run.log",
+      "bytes": 468,
+      "sha256": "db1a6da77ab7309a316c6cd66e09081f842390289114f2cb965322e1c657ab21"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-right/evidence.json",
+      "bytes": 54915,
+      "sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-right/run.log",
+      "bytes": 471,
+      "sha256": "919344d2e5b7eedb8ab94ed6f5c7f9102358335b1cfa1885bdac93039414ffaa"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-left/evidence.json",
+      "bytes": 823,
+      "sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-left/run.log",
+      "bytes": 465,
+      "sha256": "cfa24336b04391f7ab51294cdaceee29b6f9a6a9af588b69f67540ebbc2b792a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-right/evidence.json",
+      "bytes": 823,
+      "sha256": "5d3b6c7f94eb169b8d30ff70304c6a29cb3246835d557cf9dcbc90a4b0d1c2c6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-right/run.log",
+      "bytes": 468,
+      "sha256": "f9af0f88c03ed9d28f5db3f056cbc6ef282b01c7ca77c114bc3961004984d82d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/build.json",
+      "bytes": 80649,
+      "sha256": "1ab4a0f2ce41afbabfc10e318853fe02d3077f126cba8b36a81da5b0125e6bae"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/instrumentation.patch",
+      "bytes": 1099,
+      "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/details-scrolled.png",
+      "bytes": 311789,
+      "sha256": "92f9fc319ba63783813743cd076ed7106cdeb03c7da7f66acd1920f065e4a6bc"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/details-top.png",
+      "bytes": 224622,
+      "sha256": "8da1050422bf6721afa876c9921877a1ddabffec8cefccecbfbf0d8371ee3d84"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/first-screen.png",
+      "bytes": 226788,
+      "sha256": "ff713d48264b77be25922d8b67c8114ee32e0a49e81e115e2d456efae6cb0f5a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/list-tail.png",
+      "bytes": 242013,
+      "sha256": "59593bcc578cf01b5f9d617f143ebe4727b273e5e9e019179d90e08801702ccb"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/metadata.json",
+      "bytes": 30457,
+      "sha256": "640a5798f4549529147f4a996d1261dd89a1dceb3b73289d9ca97dbbbe111a7c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/raw-row.png",
+      "bytes": 224622,
+      "sha256": "34b11737a97d455d7b8aaefca57c0bc8b66799c302e77602b444c8d468d337a7"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/run.log",
+      "bytes": 379489,
+      "sha256": "3e4362f72a20445daa6f857fe293cf79e59166efd4dd0ee872df200b57eaed19"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-scrolled.png",
+      "bytes": 81959,
+      "sha256": "edbe6e74d59b92b295c1290efe9174eabaa115d3076be2bef9d093cbbade17e1"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-top.png",
+      "bytes": 136323,
+      "sha256": "237efb246ed79798ffda5e835846d1a4625c02f3a6ffc29d5b8f392d997cfe04"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/first-screen.png",
+      "bytes": 88163,
+      "sha256": "e6a37f8c0af96743d991771715771091bd0317e04868b7b47d47500d3fc7d249"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/list-tail.png",
+      "bytes": 94968,
+      "sha256": "042e07440e430d9e281ca54d68e98634c3f4f9b84e1b47fbcc12d3bcc545ad1b"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/metadata.json",
+      "bytes": 31293,
+      "sha256": "8074db409e36823b2368ac4432f17984a21df072d8e4bcc2a9556e9e261b0af6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/raw-row.png",
+      "bytes": 88212,
+      "sha256": "ce9c01614261f40cbe890f3958a6bddee50d687f634615ed3d482d4f0cf0d860"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/run.log",
+      "bytes": 21877,
+      "sha256": "8d1b53f68b6c42c6a6f2c51fe93beeadbd8cffdb0eb8b907f28310077f0203f7"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/empty-details.png",
+      "bytes": 105184,
+      "sha256": "b60c0b74c2b8030dcb55080188290f188cd38e5f99a37e20c030eb2ced746b3a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/first-screen.png",
+      "bytes": 53781,
+      "sha256": "648a16d19203bfd559231e346d0361f274f3a9de2c3b7f574c43272a32f7c7d9"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/metadata.json",
+      "bytes": 10384,
+      "sha256": "ee742e6bcd80ebd16882d6a2bf2ef12f14e6ff9f921b9f0147f23116a1b46bee"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/run.log",
+      "bytes": 12469,
+      "sha256": "0ed8b482993f608a5b1ceed79c8c27690b3820e461a1d5eff492a0d549ea52b8"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/prepared.json",
+      "bytes": 2971,
+      "sha256": "7bdd6937f28715fe7cb8921e16ede39f559868dc534f18c657cf7166e418c02c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/root-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/root-run.stdout",
+      "bytes": 217,
+      "sha256": "0aeaf00f3338b31b9c502c6e0a153e2696b9d449ea0a7ed5cf300af9b58fab34"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/root-visual-review.json",
+      "bytes": 638,
+      "sha256": "a42066a7f2f4adef1e014de04f270681f095634460a13204cdc3a2e6cfcb0459"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/run.json",
+      "bytes": 228195,
+      "sha256": "73fb912d1b34e85315f06a7a2380876994f887560b6454ba2afdc087e5477106"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/anchors.rs",
+      "bytes": 25416,
+      "sha256": "86e9c7ef131cc86367d53d3d1b2f0913da49ad8a8308c80ebe086502e05a8aef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/labels.rs",
+      "bytes": 15730,
+      "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/labels_cli.rs",
+      "bytes": 7781,
+      "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/replay.rs",
+      "bytes": 45533,
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/audition.rs",
+      "bytes": 7854,
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/label_text.rs",
+      "bytes": 23616,
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/labels.rs",
+      "bytes": 13727,
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/replay.rs",
+      "bytes": 13609,
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/source/workbench.rs",
+      "bytes": 36304,
+      "sha256": "9ecdd4e5b59dbfc1734d3ac663db2f708662bbaaf5433dea3ed9c60090aae728"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/visual-review.json",
+      "bytes": 11608,
+      "sha256": "ba5a678980490319fd22b5238d862cc058b5fa3e218181857c09db453a140670"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/api-fixed120-right/evidence.json",
+      "bytes": 54915,
+      "sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/api-fixed120-right/run.log",
+      "bytes": 471,
+      "sha256": "be393cafa2c5676561a9a2075d7f50197b24f86935ef02fc8f89f86b55ffe5cb"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/build.json",
+      "bytes": 80649,
+      "sha256": "7bf6f3d88ce88958d86edebbf6bcb4df8e02d616895249f4b6371db34710b421"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/instrumentation.patch",
+      "bytes": 1099,
+      "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/details-scrolled.png",
+      "bytes": 76610,
+      "sha256": "3804b91f9c9754ab205d1c80941d70cf5ef5c9c30d07c6a87a6bbf9a5880ebe8"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/details-top.png",
+      "bytes": 130974,
+      "sha256": "bb9baadbf82d55cef1ffbcdeec40ab06b6293a130cd31990bb0a7bf902d8306f"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/first-screen.png",
+      "bytes": 82815,
+      "sha256": "84dd6e34799171b10e18364054f8ff49daad37444d575ebdfd5b2509481d24b6"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/list-tail.png",
+      "bytes": 89612,
+      "sha256": "d356c7fd3f489629760fc0851c44dbd1f95e6e5be32bfbbc15c02a63c355bf6a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/metadata.json",
+      "bytes": 31286,
+      "sha256": "da8d254347a99686a25bfd70aa8ae2f492903d7c375d36090773fde1157472bf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/raw-row.png",
+      "bytes": 82863,
+      "sha256": "463958fef0ec983be5d9c616d2e60e60c9332d45eade4e253ddf5d15ce05cf88"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/run.log",
+      "bytes": 21877,
+      "sha256": "25183a2fc1587aa33dbdfed080296558b87915cd63ab3839d72db7d22845e2b8"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/prepared.json",
+      "bytes": 2971,
+      "sha256": "bf08a5b4abfb794dc8201571493dc254296263bb7ee410954cd2c0f872418dd4"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/root-run.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/root-run.stdout",
+      "bytes": 73,
+      "sha256": "613371341b6765477b6cb015eb467a33c526cf4e57a42d2dfd4e5f5f4cfd0020"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/root-visual-review.json",
+      "bytes": 1133,
+      "sha256": "5e9ac57a6ee814dfa49d1a38898f7ce063bbcb2c254ba07789631a2e7ab35393"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/run.json",
+      "bytes": 134860,
+      "sha256": "75ad418976223b9559c2246fc266720dab394150835df4561f9ca1d39b428fe0"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/anchors.rs",
+      "bytes": 25416,
+      "sha256": "86e9c7ef131cc86367d53d3d1b2f0913da49ad8a8308c80ebe086502e05a8aef"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/labels.rs",
+      "bytes": 15730,
+      "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/labels_cli.rs",
+      "bytes": 7781,
+      "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/replay.rs",
+      "bytes": 45533,
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/audition.rs",
+      "bytes": 7854,
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/candidates.rs",
+      "bytes": 19223,
+      "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/input.rs",
+      "bytes": 66465,
+      "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/label_text.rs",
+      "bytes": 23616,
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/labels.rs",
+      "bytes": 13727,
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/replay.rs",
+      "bytes": 13609,
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench/ui.rs",
+      "bytes": 73139,
+      "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/source/workbench.rs",
+      "bytes": 36304,
+      "sha256": "9ecdd4e5b59dbfc1734d3ac663db2f708662bbaaf5433dea3ed9c60090aae728"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/visual-review.json",
+      "bytes": 3846,
+      "sha256": "beb7ec0996998c89c11bc02de6f19714a366102fb728fdd713936e35d569189c"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/main-integration-review.json",
+      "bytes": 10661,
+      "sha256": "6b9c4ab0ba28cbd480dd87c9127a2bfe739c66061b25d41151b2116226b2ce01"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/main-wiring.json",
+      "bytes": 299,
+      "sha256": "1b4b44abbba53b41da76144247578a3c2a914b4e788ba8e7e768b44e9cdfbe36"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/post-cli-source-binding.json",
+      "bytes": 300,
+      "sha256": "27294d997d0bdaaecfc8471002a0f77f29fbcc2cdf7cea14e9a4377f30191207"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/reader-std-review.json",
+      "bytes": 3067,
+      "sha256": "2a8182ac4c0fe6bf43aabef8f9462019da69527099337cbb0a1260412b976105"
+    },
+    {
+      "path": "target/native-beat-workbench-delivery-20261008/root-apply.json",
+      "bytes": 6978,
+      "sha256": "ce4175877fc8f996f4a2ccf28ed0c5b8cc8c746099f70e2db982df298ca7ef33"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/README.md",
+      "bytes": 786,
+      "sha256": "ca48ddb0ad99c58c133032f63e4a8707290a863b81c7e0e12f5e96aaf5992d34"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/de.json",
+      "bytes": 20428,
+      "sha256": "2e6a98105fb7d2df2a6499184246690a977c6172f23abe893c6560828eecd5cb"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/en-GB.json",
+      "bytes": 18352,
+      "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/en-US.json",
+      "bytes": 18352,
+      "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/es-419.json",
+      "bytes": 20372,
+      "sha256": "cf79aade44544684696f4bebfab32c7300245483ecbc5a20209b0976cdcbd533"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/fr.json",
+      "bytes": 21226,
+      "sha256": "576a077c8f1a28115ef394f69c9d16eb00cbc1f576c6e8129d54019326d9ca66"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/ja.json",
+      "bytes": 23222,
+      "sha256": "66b0519edd9e4cea4a070ab9a52b5318f5d3e2de337d9b16da97a61d491b7624"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/ko.json",
+      "bytes": 21829,
+      "sha256": "f42c20a89a6d79e9d756654380bf239f07fdf51eec6ec3eb825cc79f70d0ab46"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/pt-BR.json",
+      "bytes": 20080,
+      "sha256": "3dfc50276179516f3af32e6f576a6d603be5a0c8a585033e30a39715a4192fd9"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/ru.json",
+      "bytes": 27558,
+      "sha256": "4f770eab319314b4d57b76b65fe580190e3e6d45ba3d8f7675a15a49ea051a5f"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/uk.json",
+      "bytes": 27314,
+      "sha256": "6a08560b4f411baf78a308027fb9087d1a9d37ccc81acc1741dbe0aab83436fd"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/zh-CN.json",
+      "bytes": 18186,
+      "sha256": "d9d9967da6bc8baa86e6ee63960b0b6eefebc5c4f05e899858ebdcce33084201"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/zh-HK.json",
+      "bytes": 18303,
+      "sha256": "c6b27fc381ce3271a9563b5f759b868ee1f502f239406b7a715f559865c2a101"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/candidate/assets/i18n/zh-TW.json",
+      "bytes": 18351,
+      "sha256": "824851c2ace0fb7c3ce64267fdfe8a6ca58057140a6e6bbb5532469f6cd223b6"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/legend.patch",
+      "bytes": 13173,
+      "sha256": "670cb6d622bf271f2df155925e4c5ded3872ced160291fd6c69878e51ac4a551"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/manifest.json",
+      "bytes": 7792,
+      "sha256": "c15ae8b1a6c8490c53e96e3abfa12bd0e5c291e702a928d9a1e98832f98eb988"
+    },
+    {
+      "path": "target/native-beat-workbench-legend-20261008/review.json",
+      "bytes": 6818,
+      "sha256": "49dbbbf474a12c73d64ebacc9a66d8b79127bd77415e97a4afa1790bf7eb302d"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/API.md",
+      "bytes": 2621,
+      "sha256": "c6aea1c2e4b46e8f62b72907682a6dd130488114d5fa88b64f783c88340ab817"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/BASE-SHA.json",
+      "bytes": 2259,
+      "sha256": "3adf4f8a7f923fd2be86ab4921c81ec65296d347be461a110f128f3068fc3d7b"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/BASE.md",
+      "bytes": 415,
+      "sha256": "dc79937359df00cddcee8377c4c88b47b5d609a336c5c37557331f20ad6fbcb0"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/DELIVERY-final.json",
+      "bytes": 8713,
+      "sha256": "0a6297e1306e73f8c10fb139b3a9732b58bacda5717e446935de73ecc451c00a"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/DELIVERY.json",
+      "bytes": 6005,
+      "sha256": "d618fd0c2e12f705037cba9c62a96062c0736c561c84328693d74eaee7c3a8b3"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/HANDOFF.md",
+      "bytes": 5141,
+      "sha256": "29ccda0346bcc3fb54c6534bd1a8b3cceec7631ad3c1582555b8acbc83752a09"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/LAB-FREEZE.json",
+      "bytes": 3916,
+      "sha256": "2e5f2f990537306b6c04b3def1169481f9983f4e7caad92d52311cfd07174535"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/LOCALES-REPORT.md",
+      "bytes": 4153,
+      "sha256": "264326f8b07010f590b1541586ff36b093e7e89cd930c4fae9a87081669b8a8b"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/PLAN.md",
+      "bytes": 4152,
+      "sha256": "b23d2a26e14ec1b23f206eeb07e78debbcf56bbb53c73b9efecc668f4be125c3"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/add-lab-tests.py",
+      "bytes": 6927,
+      "sha256": "a803c19e5f58238c1a4801b15d34b4b20309bbe8f9123f71d22ceafb146be971"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/lab-locales.patch",
+      "bytes": 42068,
+      "sha256": "1bbff9622e69bc2df4bdf091e64bb56d1802d407df054c79191e487df18c7cd3"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/locale-sha256.json",
+      "bytes": 3301,
+      "sha256": "41123c7973c717cc3c4afd24c638c8cef4d4d3d0166edc13b34ae00f7f51613d"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/media-revision02.patch",
+      "bytes": 50930,
+      "sha256": "8960cde6518d30d7add995f2af49a6bb85f9df22cd5bb8e1c207d48df39431dd"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/media.patch",
+      "bytes": 44408,
+      "sha256": "775845e25dd4f51350c3a4285f378ef3dbe979849fe05212879d2621efa5675a"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/native-beats-new-keys.json",
+      "bytes": 9581,
+      "sha256": "a184f59018a6bf3f1a1a4f0974c7222b25dc7af56e46f3fbb4bf5730d7d9e24f"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/prepare-lab.py",
+      "bytes": 10337,
+      "sha256": "0dff6b3156b19a10d766d351a8cbd9f66a67bd14fdd9558f09f2c0e7f57d2078"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/review/labui-independent.json",
+      "bytes": 9729,
+      "sha256": "1fc543317a994f35e31323ffe7d2e7a7a2e77d0f5f7dc3e0cba35bf23e6daba5"
+    },
+    {
+      "path": "target/native-beat-workbench-plan-20261008/verify-locales.py",
+      "bytes": 2425,
+      "sha256": "2dddeacf282f9d6298fe72626383d958f3c3ef9631b843343fa2195530276e24"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/FREEZE.json",
+      "bytes": 582,
+      "sha256": "63ddbb59e11f1edc98f8a1329731a9ff909670fa9d58d0c7f089bb5d865bb623"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/README.md",
+      "bytes": 3698,
+      "sha256": "3af073e666e6b1c10ad12e348b637e7e195fc78f2037ef7414be42bbe3b12454"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/check.py",
+      "bytes": 9995,
+      "sha256": "be245b5a06588ef47447cd98ab868bd9a31dba7141648a4d6bce06a1f3d94e63"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/cli-receipt-review.json",
+      "bytes": 7471,
+      "sha256": "e59cb74a5a82d17e5265d85a013344124b21a8602c2f26843656ee4936aaf62a"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/cli-review-revision02.json",
+      "bytes": 2659,
+      "sha256": "8ec08d7a7cb5876a4cb9bff0c1d191e9216b4511d89fb266f4af729eec0d4d5c"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/cli-review.json",
+      "bytes": 5863,
+      "sha256": "399d5e670bc0266176fd882ef61a24a3e5a0b2d8c6094623096ba8c2efbe24f9"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/cli-revision02.py",
+      "bytes": 6470,
+      "sha256": "0d543d3bf10b4ffebdfa168d52c2203478236d7581036208976b55ea5860c302"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/cli.py",
+      "bytes": 5899,
+      "sha256": "82bc0b1075917bb7d42febd90c10e23bd4fcf80fe2b150fea8a3184d0e5e59d4"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/gui-review.json",
+      "bytes": 5738,
+      "sha256": "2e3546c47380eec26d487451b3c69a1fa7496ff1e38da81105a17534e1486c6f"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/main.rs",
+      "bytes": 2300,
+      "sha256": "98cebed5cdd8f773bb29d4f9907bafcdbda8cd34cb2798fdf188c87745888023"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008/qa.rs",
+      "bytes": 13895,
+      "sha256": "d34a19e7ec0dc6ffcb658527b1f68725e29056fe3a28d1099cd4181920854acc"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/FREEZE.json",
+      "bytes": 589,
+      "sha256": "de5fe10852aad4895474d2693a8b35d7873fedbb3e7bbfa5b557cb5a196acbf6"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/README.md",
+      "bytes": 4131,
+      "sha256": "cce144b0774de11b65162cf8b7e7aa713a8947b564ee3095f9be337fe8ca4291"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/check.py",
+      "bytes": 9995,
+      "sha256": "be245b5a06588ef47447cd98ab868bd9a31dba7141648a4d6bce06a1f3d94e63"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/gui-review.json",
+      "bytes": 5022,
+      "sha256": "05356e641c27990e87e56005ad08d8585081f3fd64bb036cb4085ce62128c866"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision02/qa.rs",
+      "bytes": 16170,
+      "sha256": "1fa2cb05625b051c6fd5cc94d00197ffa33fe9375d2f89b5f3954404138a764c"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/FREEZE.json",
+      "bytes": 616,
+      "sha256": "f7d13b9f439f7f41ce9e0215aaf2c0762b3bd127ff01e042dc8c91d0751c50fa"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/README.md",
+      "bytes": 4466,
+      "sha256": "957139ca9971d47cf3b983bd2b93d5eb0e4a443b56a470719256db931a177b3e"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/check.py",
+      "bytes": 10161,
+      "sha256": "e49bc522276b2f55f4a2ea01aadc313f1786dc888e6b12cf2eb6dc9e9eb523a2"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/gui-review.json",
+      "bytes": 4933,
+      "sha256": "2a90308d4acbc43c3bd69c2a706dccb6c79280456faa06fcbe806cbdb137c0ee"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision03/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/FREEZE.json",
+      "bytes": 587,
+      "sha256": "4438f85d79e8665fef03e842f79c45ab127a9ebe586b010f234f40dc59ad9fa4"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/README.md",
+      "bytes": 4868,
+      "sha256": "17ee9b1f8c41067dcf9f943b7b62bd6c531c1228790218ecdd0f6dfc1f0c4f3f"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/check.py",
+      "bytes": 10274,
+      "sha256": "f1840fe719984584ac1887fc4aaea3349727cb7810625fae2a1570cb5a0dbf18"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/gui-review.json",
+      "bytes": 6224,
+      "sha256": "82f4b936e60dc4ab2ad061ba026e1949f8e70a62be8705a22997d8c28da64c6d"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision04/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/FREEZE.json",
+      "bytes": 1267,
+      "sha256": "a9823ad5078d33a93b241f12856cc95d6aeb57b105da1c91cec93461255eb0a4"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/README.md",
+      "bytes": 1694,
+      "sha256": "f4c7e8055e8066b908f972e7fefd25d804403d6dc6be6eeb26694fb8406750ee"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/check.py",
+      "bytes": 10166,
+      "sha256": "d639432299090ac0d4b259f2519cfd38545bab5de129051c044adb909719b006"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/gui-review.json",
+      "bytes": 4965,
+      "sha256": "dbdee6d8bed5c0773a18185b91db4965c1d57567772268f694eabf7225a381ed"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/main.rs",
+      "bytes": 2506,
+      "sha256": "b9da21ba94d49d7d6acdd733e799b77d4bfcd76a67759c085d62160d2b0b2d03"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/qa.rs",
+      "bytes": 16201,
+      "sha256": "3d53242f486b1c15807cd93c947acaac759c8bc8d510f7ca1354dc8eb25c3c8d"
+    },
+    {
+      "path": "target/native-beat-workbench-qa-20261008-revision05/revision04-to05.diff",
+      "bytes": 2210,
+      "sha256": "06a9fae127b7cc83448bc85e008aef4ac306c0de328f70dec49b24cf038ad37d"
+    },
+    {
+      "path": "target/native-beat-workbench-reader-review-20261008/revision02-review.json",
+      "bytes": 7041,
+      "sha256": "58641a683479f1e1d750c29a240e87d1fdcafd6675a30eea4d7e6ca059774fab"
+    }
+  ]
+}

@@ -281,5 +281,8 @@
   "labels.source": "Full source package identity: {content_id} · Canonical audio BLAKE3: {audio_hash} · Total frames: {frames}",
   "labels.point_row": "#{id} · Point {frame} · {decision}",
   "labels.interval_row": "#{id} · Interval [{start}, {end}) · {decision}",
-  "labels.bytes": "UTF-8 bytes: {used} / {max}"
+  "labels.bytes": "UTF-8 bytes: {used} / {max}",
+  "native_beats.title": "CoCoBeat · Beat/downbeat candidates",
+  "native_beats.legend": "Candidate: beat/raw downbeat · Source Anchors: authored",
+  "native_beats.help": "Read only · q is the original 50 Hz spectrogram grid coordinate; q×960 maps to integer frames in 48 kHz audio · Raw downbeat retains its original position; nearest/aligned beat relationships are shown separately · confidence is unknown (null); raw logit, sigmoid, strength and downbeat_probability are uncalibrated scores, not confidence · No automatic Anchors · Reuses the existing waveform and canonical stereo audition"
 }

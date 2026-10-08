@@ -281,5 +281,8 @@
   "labels.source": "來源套件完整內容識別：{content_id} · canonical 音訊 BLAKE3：{audio_hash} · 總幀數：{frames}",
   "labels.point_row": "#{id} · 單點 {frame} · {decision}",
   "labels.interval_row": "#{id} · 區間 [{start}, {end}) · {decision}",
-  "labels.bytes": "UTF-8 位元組：{used} / {max}"
+  "labels.bytes": "UTF-8 位元組：{used} / {max}",
+  "native_beats.title": "CoCoBeat · Beat/downbeat 候選",
+  "native_beats.legend": "Candidate：beat/raw downbeat · 來源 Anchor：作者",
+  "native_beats.help": "唯讀 · q 是原 50 Hz 頻譜圖網格座標，以 q×960 對應到 48 kHz 音訊的整數幀 · raw downbeat 保留原位置，nearest/aligned beat 另行表示關係 · confidence 未知（null）；raw logit、sigmoid、strength、downbeat_probability 均為未校準分數，並非可信度 · 不自動產生 Anchor · 沿用現有波形與 canonical stereo 試聽"
 }

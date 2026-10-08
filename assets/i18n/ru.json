@@ -281,5 +281,8 @@
   "labels.source": "Полная идентичность исходного пакета: {content_id} · BLAKE3 аудио canonical: {audio_hash} · Всего кадров: {frames}",
   "labels.point_row": "#{id} · Точка {frame} · {decision}",
   "labels.interval_row": "#{id} · Интервал [{start}, {end}) · {decision}",
-  "labels.bytes": "Байты UTF-8: {used} / {max}"
+  "labels.bytes": "Байты UTF-8: {used} / {max}",
+  "native_beats.title": "CoCoBeat · Кандидаты beat/downbeat",
+  "native_beats.legend": "Candidate: beat/raw downbeat · Anchor источника: автор",
+  "native_beats.help": "Только чтение · q — координата исходной сетки спектрограммы 50 Hz; q×960 соответствует целочисленным кадрам аудио 48 kHz · raw downbeat сохраняет исходную позицию; связи с nearest/aligned beat показаны отдельно · confidence неизвестен (null); raw logit, sigmoid, strength и downbeat_probability — некалиброванные оценки, а не значения уверенности · Anchor не создаются автоматически · Используются существующая волновая форма и прослушивание canonical stereo"
 }

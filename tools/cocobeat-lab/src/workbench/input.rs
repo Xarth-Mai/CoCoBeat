@@ -1581,15 +1581,15 @@ mod tests {
 
     #[test]
     fn read_only_shortcuts_frame_input_and_drag_preserve_anchors_and_history() {
-        for candidates_mode in [false, true] {
+        for mode in 0..3 {
             let (mut app, window, _, _) = app();
             app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
             {
                 let mut state = app.world_mut().resource_mut::<Workbench>();
-                if candidates_mode {
-                    state.candidates = Some(candidates::fixture());
-                } else {
-                    state.replay = Some(replay::fixture());
+                match mode {
+                    0 => state.replay = Some(replay::fixture()),
+                    1 => state.candidates = Some(candidates::fixture()),
+                    _ => state.candidates = Some(candidates::native_fixture()),
                 }
                 state.document.move_selected(600).unwrap();
                 state.document.move_selected(700).unwrap();
@@ -1650,7 +1650,11 @@ mod tests {
             app.update();
             assert_eq!(
                 app.world().resource::<Workbench>().document.cursor,
-                if candidates_mode { 500 } else { 600 }
+                match mode {
+                    0 => 600,
+                    1 => 500,
+                    _ => 480,
+                }
             );
             assert!(app.world().resource::<Workbench>().document.drag.is_none());
             app.world_mut()

@@ -13,6 +13,7 @@ mod encode;
     all(target_os = "windows", target_arch = "aarch64", target_env = "msvc")
 ))]
 mod native_beat;
+mod native_beat_evidence;
 mod package;
 mod resample;
 
@@ -26,6 +27,10 @@ pub use authored::{
 };
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use encode::{CANONICAL_ENCODER_PROFILE, MAX_ENCODER_PCM_PEAK, encode_canonical_audio};
+pub use native_beat_evidence::{
+    NativeBeatEvidence, NativeBeatKind, NativeBeatMetadata, NativeBeatRecord,
+    NativeDownbeatAlignment, NativePeakMember, read_native_beat_evidence,
+};
 pub use package::{
     MAX_RECEIVED_PACKAGE_BYTES, PACKAGE_OBJECT_LIMITS, PACKAGE_OBJECT_NAMES, PackageBuildInput,
     ReceivedPackage, ValidatedPackage, build_package, export_anchors, read_package,

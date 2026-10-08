@@ -1,0 +1,2911 @@
+{
+  "schema": "cocobeat-native-beat-workbench-observations-v1",
+  "date": "2026-10-08",
+  "state": "FROZEN_ACTUAL_SOFTWARE_OBSERVATIONS",
+  "scope": "Linux local software evidence reader, production CLI rejection controls, copied production Bevy Workbench observation harness; distinct build01 and build02 inputs and native revisions retained",
+  "summary": {
+    "reader_tests": 8,
+    "lab_tests": 68,
+    "clippy_initial": "FAIL chunks_exact_to_as_chunks; retained",
+    "clippy_after_std_as_chunks": "PASS",
+    "fmt": "PASS",
+    "cli_revision01": "12 actual commands then QA path collision before final CLI launch; retained",
+    "cli_revision02": "13 controls PASS; four package verifies + nine expected rejects; reader API positives separately observed",
+    "gui_revision01": "FAIL E0277 QA compile",
+    "gui_revision02": "FAIL E0502 QA compile",
+    "gui_revision03": "4 reader APIs PASS; gamescope wrapper -6 before helper launch due socket path; retained",
+    "gui_revision04": "4 APIs + 3 native windows + 12 PNG software PASS; visual7 Chinese PASS and5 French legend FAIL; real Kira cursor/pause/stop software only",
+    "gui_revision05": "1 API + 1 fr640 native window + 5 PNG software PASS; final root visual receipt separately scoped",
+    "latest_all_native_matrix_retest": "NOT_RUN; only13locale input delta after build01, source delta receipt retained"
+  },
+  "build_freezes": [
+    {
+      "head": "b57a1c7df28c4fab7552a33dd791ed6f03b399d0",
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "source_inputs": 467,
+      "inputs_unchanged": true,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/source",
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+      "binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "scope": "Frozen b57a1c7 plus native beat read-only evidence reader, workbench, CLI and 13 locales; software build only; actual CLI and window controls not run by this build",
+      "manifest_before": {
+        "path": "target/native-beat-workbench-delivery-20261008/build-01/inputs-before.json",
+        "bytes": 57724,
+        "sha256": "5d62c34c1cb58226814bb750c2304c1375df9c5f76948c23fa66f6cca3aa830b"
+      },
+      "manifest_after": {
+        "path": "target/native-beat-workbench-delivery-20261008/build-01/inputs-after.json",
+        "bytes": 57724,
+        "sha256": "5d62c34c1cb58226814bb750c2304c1375df9c5f76948c23fa66f6cca3aa830b"
+      },
+      "before_equals_after": true,
+      "scoped21_snapshot_identities": [
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench.rs",
+          "bytes": 36053,
+          "sha256": "d93a2a63bd560d742f8d97abbf1611606240171c9eb0c7f5ca0acbf64cd24f37"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/candidates.rs",
+          "bytes": 19223,
+          "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/ui.rs",
+          "bytes": 73139,
+          "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/input.rs",
+          "bytes": 66465,
+          "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/de.json",
+          "bytes": 20467,
+          "sha256": "800250666b22e10b4ac25d1b9ed7c27d3253ebada14546f6a3437f7b7844c076"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/en-GB.json",
+          "bytes": 18381,
+          "sha256": "e101cf7f66a3f26799d7954146ba3179f414a82000dd95af8058276b5fa4d9b3"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/en-US.json",
+          "bytes": 18381,
+          "sha256": "e101cf7f66a3f26799d7954146ba3179f414a82000dd95af8058276b5fa4d9b3"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/es-419.json",
+          "bytes": 20413,
+          "sha256": "ff67431d876457468abf50b79094d9c0fbffada6e56ac7a3b09c1b300953370f"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/fr.json",
+          "bytes": 21278,
+          "sha256": "7d7e1d071cec44d5248fcae8e460cd0d358643627516a1888763c125b54287e7"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ja.json",
+          "bytes": 23251,
+          "sha256": "d76e78f21c381d2bdf3b63ef2564146efab78049ec420d7c38583a4e3bf91edf"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ko.json",
+          "bytes": 21860,
+          "sha256": "6cba907cb9d2eaa967f5023a3fadb22cc70e6d6487ed1bd111ec6c548fde59b1"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/pt-BR.json",
+          "bytes": 20121,
+          "sha256": "fd277af6d323524b0c536ef29c6425f19cd7cef2f1369411df36babf0420fd66"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/ru.json",
+          "bytes": 27618,
+          "sha256": "278a4983786ebf501a959680c80f635605c6277247be10831d412d4a12a06ec2"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/uk.json",
+          "bytes": 27376,
+          "sha256": "8cab797593800599b2a92d468009e20192c8f5f6c2caef11587d9210160a386b"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-CN.json",
+          "bytes": 18209,
+          "sha256": "256331567896bf1035cba03665f5280f54cae5dd335fc76a3463ae41bd307f9f"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-HK.json",
+          "bytes": 18326,
+          "sha256": "af25dbf06758c5d3326f142364bcaae948b70a309b10d3d4e6519bb8d24f9397"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/assets/i18n/zh-TW.json",
+          "bytes": 18374,
+          "sha256": "27f3f860e840ae430b6be05d343e6a3021c2d4d376c72eb6095f214538b26ae6"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/lib.rs",
+          "bytes": 1532,
+          "sha256": "c3d3fb266de542babf2fab7dbf4e3d7958184e992c216c5e7e76263a1ebadef6"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat.rs",
+          "bytes": 44017,
+          "sha256": "2d8bc675944edf86387aa0b352c5ffb0fb27d8771216cc22ea2a799f7954e51f"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat_evidence.rs",
+          "bytes": 45526,
+          "sha256": "20594c7dd5cd027a2991ffd22eb67500aa893d4cabe7888f926a057376c1bd6c"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+          "bytes": 13394,
+          "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742"
+        }
+      ],
+      "dependency_artifacts": "Existing actual build receipt records fixed dependency SHA identities; not rehashed or copied by this observation preparation"
+    },
+    {
+      "head": "d8a1ecfd510933f80f9922a97e6116017811a154",
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "build",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "source_inputs": 467,
+      "inputs_unchanged": true,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-02/source",
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-02/bin/cocobeat-lab",
+      "binary_sha256": "12b3db1a0b3d00f26ab84d0264318d86ca05b256f36a2333cb3bf1f90119f0cb",
+      "scope": "Frozen d8a1ecf plus native beat workbench21 files; legend shortened13 locales after actual French640 overlap; software build only; latest native validation not run by build",
+      "manifest_before": {
+        "path": "target/native-beat-workbench-delivery-20261008/build-02/inputs-before.json",
+        "bytes": 57724,
+        "sha256": "907d757f5e3b2719ad0556107a6670ee697d1e5b2870893ba1eeb4cb4cf0c8e6"
+      },
+      "manifest_after": {
+        "path": "target/native-beat-workbench-delivery-20261008/build-02/inputs-after.json",
+        "bytes": 57724,
+        "sha256": "907d757f5e3b2719ad0556107a6670ee697d1e5b2870893ba1eeb4cb4cf0c8e6"
+      },
+      "before_equals_after": true,
+      "scoped21_snapshot_identities": [
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench.rs",
+          "bytes": 36053,
+          "sha256": "d93a2a63bd560d742f8d97abbf1611606240171c9eb0c7f5ca0acbf64cd24f37"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/candidates.rs",
+          "bytes": 19223,
+          "sha256": "ee5ff2112d883a7b1e2f831130643692421c64f6e701f842785c4b0a4087b76d"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/ui.rs",
+          "bytes": 73139,
+          "sha256": "1700884d009084131bce34f65a477723d3d46945779e3528484da0f0acec6768"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/input.rs",
+          "bytes": 66465,
+          "sha256": "c3eb2b79e9985d313ebc6c07c7d9773a63e5b690b07ef011bbe9af336aaa70df"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/de.json",
+          "bytes": 20428,
+          "sha256": "2e6a98105fb7d2df2a6499184246690a977c6172f23abe893c6560828eecd5cb"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/en-GB.json",
+          "bytes": 18352,
+          "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/en-US.json",
+          "bytes": 18352,
+          "sha256": "938aa467c8b3d1f35528ede3445b5f8a70de86b9282bfdbc322e9c481ac7bc09"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/es-419.json",
+          "bytes": 20372,
+          "sha256": "cf79aade44544684696f4bebfab32c7300245483ecbc5a20209b0976cdcbd533"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/fr.json",
+          "bytes": 21226,
+          "sha256": "576a077c8f1a28115ef394f69c9d16eb00cbc1f576c6e8129d54019326d9ca66"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ja.json",
+          "bytes": 23222,
+          "sha256": "66b0519edd9e4cea4a070ab9a52b5318f5d3e2de337d9b16da97a61d491b7624"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ko.json",
+          "bytes": 21829,
+          "sha256": "f42c20a89a6d79e9d756654380bf239f07fdf51eec6ec3eb825cc79f70d0ab46"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/pt-BR.json",
+          "bytes": 20080,
+          "sha256": "3dfc50276179516f3af32e6f576a6d603be5a0c8a585033e30a39715a4192fd9"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/ru.json",
+          "bytes": 27558,
+          "sha256": "4f770eab319314b4d57b76b65fe580190e3e6d45ba3d8f7675a15a49ea051a5f"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/uk.json",
+          "bytes": 27314,
+          "sha256": "6a08560b4f411baf78a308027fb9087d1a9d37ccc81acc1741dbe0aab83436fd"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-CN.json",
+          "bytes": 18186,
+          "sha256": "d9d9967da6bc8baa86e6ee63960b0b6eefebc5c4f05e899858ebdcce33084201"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-HK.json",
+          "bytes": 18303,
+          "sha256": "c6b27fc381ce3271a9563b5f759b868ee1f502f239406b7a715f559865c2a101"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/assets/i18n/zh-TW.json",
+          "bytes": 18351,
+          "sha256": "824851c2ace0fb7c3ce64267fdfe8a6ca58057140a6e6bbb5532469f6cd223b6"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/lib.rs",
+          "bytes": 1532,
+          "sha256": "c3d3fb266de542babf2fab7dbf4e3d7958184e992c216c5e7e76263a1ebadef6"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/native_beat.rs",
+          "bytes": 44017,
+          "sha256": "2d8bc675944edf86387aa0b352c5ffb0fb27d8771216cc22ea2a799f7954e51f"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/crates/cocobeat-media/src/native_beat_evidence.rs",
+          "bytes": 45526,
+          "sha256": "20594c7dd5cd027a2991ffd22eb67500aa893d4cabe7888f926a057376c1bd6c"
+        },
+        {
+          "path": "target/native-beat-workbench-delivery-20261008/build-02/source/tools/cocobeat-lab/src/main.rs",
+          "bytes": 13394,
+          "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742"
+        }
+      ],
+      "dependency_artifacts": "Existing actual build receipt records fixed dependency SHA identities; not rehashed or copied by this observation preparation"
+    }
+  ],
+  "build01_build02_delta": {
+    "status": "PASS",
+    "source_inputs": 467,
+    "only_build01_to_build02_delta": [
+      "assets/i18n/de.json",
+      "assets/i18n/en-GB.json",
+      "assets/i18n/en-US.json",
+      "assets/i18n/es-419.json",
+      "assets/i18n/fr.json",
+      "assets/i18n/ja.json",
+      "assets/i18n/ko.json",
+      "assets/i18n/pt-BR.json",
+      "assets/i18n/ru.json",
+      "assets/i18n/uk.json",
+      "assets/i18n/zh-CN.json",
+      "assets/i18n/zh-HK.json",
+      "assets/i18n/zh-TW.json"
+    ],
+    "all_other454_input_hashes_same": true,
+    "current467_equal_build02": true
+  },
+  "current467_binding": {
+    "status": "PASS",
+    "scope": "Actual all467 current input SHA comparisons with build02 inputs-before; no dependency artifact or whole source/vendor byte rehash",
+    "manifest": {
+      "path": "target/native-beat-workbench-delivery-20261008/build-02/inputs-before.json",
+      "bytes": 57724,
+      "sha256": "907d757f5e3b2719ad0556107a6670ee697d1e5b2870893ba1eeb4cb4cf0c8e6"
+    },
+    "mismatches": []
+  },
+  "checks": [
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-02-result.json",
+        "bytes": 238,
+        "sha256": "f50cff0644a66f21416eea3b5fb9f7c2beb597632e7927c20cb0c627c7884468"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-02.log",
+        "bytes": 427,
+        "sha256": "a1da2e4166b73b8007f23a842cb94028b061ca3304344ffc050f2068a9baa6c9"
+      },
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "test_result_counts": [],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/clippy-result.json",
+        "bytes": 240,
+        "sha256": "aee8d1fbd63705a74aa37f4f00914837c2074ac477c3498f46b0014f87021914"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/clippy.log",
+        "bytes": 959,
+        "sha256": "7b184f5ce94a7c50f802ab76b05213f96f2de4bf0562df166023fbfc2c12320d"
+      },
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "test_result_counts": [],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/fmt-result.json",
+        "bytes": 102,
+        "sha256": "cbe15d2900bb8b36c81054b7027cc1822899f6e25cc23664661ca1700015a356"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/fmt.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "test_result_counts": [],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/lab-tests-result.json",
+        "bytes": 147,
+        "sha256": "d218393a8a6209e8ff6a25661b16d9614b8fe7629ee3c5d5b402ed0735364bca"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/lab-tests.log",
+        "bytes": 7188,
+        "sha256": "85aa4dd9185fd46d9a45eeb40def258b6d560003b34ce5b4ee8e7fac9e0c48db"
+      },
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab"
+      ],
+      "exit_code": 0,
+      "test_result_counts": [
+        {
+          "passed": 68,
+          "failed": 0
+        }
+      ],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-02-result.json",
+        "bytes": 211,
+        "sha256": "e1bcdb346eee022b57a7bbff7230d8a34f8e854155aaf66932da10300f1e998a"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-02.log",
+        "bytes": 1238,
+        "sha256": "702fcc80b066affca97f6dcfaed6d2f68ba485ec89e1d8360e022c62f8a9dfd8"
+      },
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "native_beat_evidence",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "test_result_counts": [
+        {
+          "passed": 8,
+          "failed": 0
+        }
+      ],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests-result.json",
+        "bytes": 211,
+        "sha256": "e1bcdb346eee022b57a7bbff7230d8a34f8e854155aaf66932da10300f1e998a"
+      },
+      "log": {
+        "path": "target/native-beat-workbench-delivery-20261008/checks/reader-tests.log",
+        "bytes": 1268,
+        "sha256": "b40a8a66cd4c7a729accd9f2bd3f8037931f24cee92e3662f6947bd6e9a9d77a"
+      },
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "native_beat_evidence",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "test_result_counts": [
+        {
+          "passed": 8,
+          "failed": 0
+        }
+      ],
+      "local_process_pid": "NOT_CAPTURED in root completion receipt"
+    }
+  ],
+  "glyph_batches": [
+    {
+      "record": {
+        "path": "target/native-beat-workbench-delivery-20261008/glyphs/result.json",
+        "bytes": 4021,
+        "sha256": "5c21fdb9c969bbb8e3fae3e6660edd8960a3bee2f87991e73c31decc8dee11f8"
+      },
+      "count": 13,
+      "all_actual_exit0": true
+    },
+    {
+      "record": {
+        "path": "target/native-beat-workbench-delivery-20261008/glyphs-02/result.json",
+        "bytes": 4060,
+        "sha256": "996356fc75448a703f1646cfca24539d508b708aede815b53117a5d43828b4b3"
+      },
+      "count": 13,
+      "all_actual_exit0": true
+    }
+  ],
+  "cli_batches": [
+    {
+      "record": {
+        "path": "target/native-beat-workbench-delivery-20261008/cli-run-01/commands.json",
+        "bytes": 25756,
+        "sha256": "904e07abab7735619f61c547f93fbb18609e3085330047e2ffd23e1fa6c772ab"
+      },
+      "binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "status": "INCOMPLETE_QA_PATH_COLLISION",
+      "commands_count_actual": 12,
+      "commands": [
+        {
+          "name": "valid-package-fixture-left",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-left",
+          "pid": 3,
+          "exit": 0,
+          "begin_ns": 1791422466521374970,
+          "end_ns": 1791422466553185888,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "4a6c7d385116a9686b068515edc22d23aca3623517644aa449d97bb1964e5487",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "valid-package-fixture-right",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixture-right",
+          "pid": 4,
+          "exit": 0,
+          "begin_ns": 1791422467644114323,
+          "end_ns": 1791422467675956971,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "520768f0e9f7acf332c2dbad529a0d65553c99dbff17b71db4b407850a113583",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "valid-package-fixed120-left",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-left",
+          "pid": 5,
+          "exit": 0,
+          "begin_ns": 1791422468770563374,
+          "end_ns": 1791422469685630704,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "43308484e9cc70b79ececd1cb22c805d3d8d79a120be4c48cff9a7a06abec602",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "valid-package-fixed120-right",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/valid-package-fixed120-right",
+          "pid": 6,
+          "exit": 0,
+          "begin_ns": 1791422470775309782,
+          "end_ns": 1791422471640423754,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "0da7857ef9d440136bf055acf0b0620e6aafc345fc640da70ee138d942ca8fb1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "name": "wrong-pair",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/wrong-pair",
+          "pid": 7,
+          "exit": 1,
+          "begin_ns": 1791422472731161946,
+          "end_ns": 1791422472763019474,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native summary does not match package analysis",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+        },
+        {
+          "name": "tampered-evidence-summary-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-evidence-summary-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-evidence-summary-json",
+          "pid": 8,
+          "exit": 1,
+          "begin_ns": 1791422473853156507,
+          "end_ns": 1791422473884905416,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native summary does not match package analysis",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+        },
+        {
+          "name": "tampered-native-shape-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-native-shape-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-shape-json",
+          "pid": 9,
+          "exit": 1,
+          "begin_ns": 1791422474975590861,
+          "end_ns": 1791422475007389299,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "585e085f1b71d76e0cdeb7d67e257097cfe4bd044895b553873c37a052483659"
+        },
+        {
+          "name": "tampered-native-spect-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-native-spect-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-native-spect-f32",
+          "pid": 10,
+          "exit": 1,
+          "begin_ns": 1791422476100607471,
+          "end_ns": 1791422476132337471,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native spect identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "f37a72041d224a009734a34a46a4b461a624b76cbfe00737255596b40b2e0cbf"
+        },
+        {
+          "name": "tampered-aggregate-beat-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-aggregate-beat-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-beat-f32",
+          "pid": 11,
+          "exit": 1,
+          "begin_ns": 1791422477223540799,
+          "end_ns": 1791422477255334048,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "6b8c9c6906ea6a11bfb79833663598f2e5049a692a0d5961a02f453840e0d1ce"
+        },
+        {
+          "name": "tampered-aggregate-downbeat-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-aggregate-downbeat-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-aggregate-downbeat-f32",
+          "pid": 12,
+          "exit": 1,
+          "begin_ns": 1791422478347378132,
+          "end_ns": 1791422478379441926,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "6fedb95561a45805be4d819aab8d799d250605bbbb779c5acd18b2e87d2f59b2"
+        },
+        {
+          "name": "tampered-minimal-raw-groups-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-minimal-raw-groups-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-raw-groups-json",
+          "pid": 13,
+          "exit": 1,
+          "begin_ns": 1791422479472893197,
+          "end_ns": 1791422479504668466,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "052950bea0b6889463d71b7fc88e9ad542f7661418c4b09a8dfabad9f1b0c50a"
+        },
+        {
+          "name": "tampered-minimal-alignment-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/modified-minimal-alignment-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-01/tampered-minimal-alignment-json",
+          "pid": 14,
+          "exit": 1,
+          "begin_ns": 1791422480594473390,
+          "end_ns": 1791422480626228710,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "92e92e43501095059c4860d5eb69347393a6a56dca720c9992dd040d82abf055"
+        }
+      ],
+      "input_four_complete_tree_identities_recorded": {
+        "fixture-left": {
+          "package": {
+            "analysis.bin": "ca79634d06c8163ae21ec996e6323a6b4bd3d934d457888d33379ce20f714e15",
+            "chart.bin": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+            "song.audio.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "song.package": "9cd28223f0490aa21011c56764c94ad8bae8dc0f3fea76e80a9332a4e470c3ba"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "dbefef1ac633a22e9c848f05c608372f659f1a7b51d2e3e1ec1c1587830c90c4",
+            "aggregate-coverage.bin": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+            "aggregate-downbeat.f32": "af05ea19684837a7ce77dfa624266b61dc92fc445961c83eced7894592696c72",
+            "analysis-complete.json": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+            "chunk000-beat.f32": "739ee0409d1e6a0f36b709ca67cbc2cac07020276867f9fc7d4e2ee8215c0feb",
+            "chunk000-beat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-downbeat.f32": "57c9766d42e9ce22428de173b0be719137d7b6018583d874f8f2bdf919a2719a",
+            "chunk000-downbeat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-spect.f32": "7e12551aea37c8406d0abdbf29464382c7d3fe64dc4bbc07497dda81df9df1b2",
+            "evidence-summary.json": "51e9d9d0deef5cd6e801bd56837f2f5008ed6f9f6da0272ea2ad3d4b05e0bd69",
+            "final-canonical-identity.json": "856d9b69fd6932f4dfff32aa8088216ab054de0f9eb0c84601d8f4a6e61aa0b7",
+            "final-canonical.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "minimal-alignment.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "minimal-raw-groups.json": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+            "native-shape.json": "050490023be95392b6927b5ae9201fa85a09d5a3be20fcdcf3049b88cfddf65f",
+            "native-spect.f32": "84ef24494319c1a59625d47099878ae0618c9745c6359c720aac3ab0acb44786",
+            "package-complete.json": "eff1a34e7a53eed89bb50801841f164d749030eb8b1d8d20830bd7a155ca67d2",
+            "resampled-stereo.f32": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.bin": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.jsonl": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+            "session-metadata.json": "54ef4c8c5a765724f02b3725594870afaccefb93dce0266cea7337497bb5b394",
+            "started.json": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622"
+          }
+        },
+        "fixture-right": {
+          "package": {
+            "analysis.bin": "58009369339af7f58e74f71191ce8505bc1eca540f0f60dc4374673ec3598b81",
+            "chart.bin": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+            "song.audio.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "song.package": "e8c834f698a4a052d9ec9645ba18fd20b7a7cb80435b33820721a5374ad34952"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "dba4c639ee4d69bf2d80344308dec2267f0faf4e59dfc98b1240bc53416aeb4a",
+            "aggregate-coverage.bin": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+            "aggregate-downbeat.f32": "ffeba63eff16c86e180796fc8d78c2d4303f2a7f00f5d60a146bc0fd3f24f392",
+            "analysis-complete.json": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+            "chunk000-beat.f32": "3c43d4954e7688073e338b37b49ea9ab22667bda85022ea2d64b15782cf2e774",
+            "chunk000-beat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-downbeat.f32": "662074c00b1991278455bde8179529e8d015235085bca9d02a1918b328e2f103",
+            "chunk000-downbeat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-spect.f32": "74bea6a91ab5ed099021b85650645afa92f43a001be7fd406e8d2d6ae50b4a71",
+            "evidence-summary.json": "b026c555a3070e33774d6d325d77e841d6905cc754d52efb7ba6bd50c8a057c1",
+            "final-canonical-identity.json": "ad1554f303d2def00f2e315351645c3a42d9068d11cd265792798822503aba8c",
+            "final-canonical.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "minimal-alignment.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "minimal-raw-groups.json": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+            "native-shape.json": "f486d9c6fb388b6fa5111cd211009a91837e334cfcc2dfa9c50fd69299dedd6a",
+            "native-spect.f32": "f2e04f9afcfdcbb2203eb3127b4cff1134a1b3f2693d719cbac1b335da72ad11",
+            "package-complete.json": "4d197688af8d4b87df4a75566c19e113d48c88b3644d95b6617632a82e6e2d79",
+            "resampled-stereo.f32": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.bin": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.jsonl": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+            "session-metadata.json": "45e3c1047485efbc074fd373a4ca52eae29604c3760a27d0c7c7a40bdb89d079",
+            "started.json": "edd6c81b31ef5b141c4b14c5963e92201f406f62b9537e22ef57f898ef68c722"
+          }
+        },
+        "fixed120-left": {
+          "package": {
+            "analysis.bin": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+            "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+            "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "song.package": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+            "aggregate-coverage.bin": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+            "aggregate-downbeat.f32": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+            "analysis-complete.json": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+            "chunk000-beat.f32": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+            "chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-downbeat.f32": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+            "chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-spect.f32": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+            "chunk001-beat.f32": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+            "chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-downbeat.f32": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+            "chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-spect.f32": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+            "evidence-summary.json": "7eb46ccaa5e76ff86d3c8176d5370b1005300f18ce08e8d682357d7d78a1e637",
+            "final-canonical-identity.json": "f8051b377c9d48b04cdfe8c7ced25dc602a2288c62329eb73a7e1bf555a2c552",
+            "final-canonical.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "minimal-alignment.json": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+            "minimal-raw-groups.json": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+            "native-shape.json": "e85f60addfc6ec53061f37587f0ed1ee5a9b2390d853cbe745cce464d5ea95a7",
+            "native-spect.f32": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+            "package-complete.json": "376f6fdf2a1e520108e542979138cb41199a663d77bb13ff6d8f9a5f775e5e0b",
+            "resampled-stereo.f32": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.bin": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.jsonl": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+            "session-metadata.json": "ad249b6e80f7a073002844790d15ee93bfda02e9cb78446214154bc3cebc0ccd",
+            "started.json": "361c1e62fa105ea0f05b79bf9bdb8f0394fb95dc0f9823bbb632c89ef9d5a4bb"
+          }
+        },
+        "fixed120-right": {
+          "package": {
+            "analysis.bin": "265c637b8d8a323d2fc373c38c89fe7570dce2c9409b3d78112f461d1087ecd7",
+            "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+            "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "song.package": "f313f820aedc8335cec7c18e6eed261c496e2c9dee4f9fdd982c8f0772baa7b2"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+            "aggregate-coverage.bin": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+            "aggregate-downbeat.f32": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+            "analysis-complete.json": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+            "chunk000-beat.f32": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+            "chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-downbeat.f32": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+            "chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-spect.f32": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+            "chunk001-beat.f32": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+            "chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-downbeat.f32": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+            "chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-spect.f32": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+            "evidence-summary.json": "c1fdfb3df5ae526df237ecb89ff5938778a73dd005601b1bf384c73c2ccea2b1",
+            "final-canonical-identity.json": "036daa49c1650691f96957dc0cd0c5e458614dd43f358926baecac3141647aad",
+            "final-canonical.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "minimal-alignment.json": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+            "minimal-raw-groups.json": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+            "native-shape.json": "f24133aa18e2b29069ce3c9b900919fc07baa404b6f900ede624665566a08d20",
+            "native-spect.f32": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+            "package-complete.json": "0b4effdecc77a93732623ef633cfdea1f5d1810d63bf012987cb62605ce7cf4c",
+            "resampled-stereo.f32": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.bin": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.jsonl": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+            "session-metadata.json": "7e6d84282da773224b40075f4f3d083063d777f40c15fc8251047a5291d622cd",
+            "started.json": "482f3077c255053b4e3e1a9f9e8350aef4738d9eff67873162aba29ecbf8e690"
+          }
+        }
+      },
+      "scope": "Actual production CLI; positive verify-package validates package only. Native evidence positives require API/native helper, NOT RUN here.",
+      "ownedgone": null,
+      "root_failure_receipt": {
+        "status": "FAIL_QA_PATH_COLLISION",
+        "helper_sha256": "82bc0b1075917bb7d42febd90c10e23bd4fcf80fe2b150fea8a3184d0e5e59d4",
+        "root_exec_session": 66422,
+        "exit_code": 1,
+        "actual_commands_completed": 12,
+        "commands_record_sha256": "904e07abab7735619f61c547f93fbb18609e3085330047e2ffd23e1fa6c772ab",
+        "failure": "missing-resource evidence fixture and command log directory share same path; FileExistsError before final CLI launch",
+        "product_fault_inferred": false,
+        "remaining_owned_groups": [],
+        "all_actual_child_groups_rechecked_gone": true
+      }
+    },
+    {
+      "record": {
+        "path": "target/native-beat-workbench-delivery-20261008/cli-run-02/commands.json",
+        "bytes": 59453,
+        "sha256": "7d0c0ddb9c275f252b9aee62dbdfae0cf19058212588dc766f4cf36651405fef"
+      },
+      "binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "status": "PASS_ACTUAL_CLI_CONTROLS",
+      "commands_count_actual": 13,
+      "commands": [
+        {
+          "name": "valid-package-fixture-left",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-left",
+          "pid": 3,
+          "exit": 0,
+          "begin_ns": 1791422554107121060,
+          "end_ns": 1791422554139169726,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "4a6c7d385116a9686b068515edc22d23aca3623517644aa449d97bb1964e5487",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "valid-package-fixture-right",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixture-right",
+          "pid": 4,
+          "exit": 0,
+          "begin_ns": 1791422555228467691,
+          "end_ns": 1791422555260515287,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "520768f0e9f7acf332c2dbad529a0d65553c99dbff17b71db4b407850a113583",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "valid-package-fixed120-left",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-left",
+          "pid": 5,
+          "exit": 0,
+          "begin_ns": 1791422556350092659,
+          "end_ns": 1791422557215696881,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "43308484e9cc70b79ececd1cb22c805d3d8d79a120be4c48cff9a7a06abec602",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "valid-package-fixed120-right",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "verify-package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/valid-package-fixed120-right",
+          "pid": 6,
+          "exit": 0,
+          "begin_ns": 1791422558306705070,
+          "end_ns": 1791422559172543659,
+          "timeout": false,
+          "expected_success": true,
+          "expected_message": null,
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "0da7857ef9d440136bf055acf0b0620e6aafc345fc640da70ee138d942ca8fb1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "wrong-pair",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/wrong-pair",
+          "pid": 7,
+          "exit": 1,
+          "begin_ns": 1791422560264624401,
+          "end_ns": 1791422560297938836,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native summary does not match package analysis",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-evidence-summary-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-evidence-summary-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-evidence-summary-json",
+          "pid": 8,
+          "exit": 1,
+          "begin_ns": 1791422561389160673,
+          "end_ns": 1791422561421462205,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native summary does not match package analysis",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-evidence-summary-json"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-native-shape-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-native-shape-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-shape-json",
+          "pid": 9,
+          "exit": 1,
+          "begin_ns": 1791422562511860156,
+          "end_ns": 1791422562544308546,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "585e085f1b71d76e0cdeb7d67e257097cfe4bd044895b553873c37a052483659",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-native-shape-json"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-native-spect-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-native-spect-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-native-spect-f32",
+          "pid": 10,
+          "exit": 1,
+          "begin_ns": 1791422563633833543,
+          "end_ns": 1791422563666180164,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native spect identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "f37a72041d224a009734a34a46a4b461a624b76cbfe00737255596b40b2e0cbf",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-native-spect-f32"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-aggregate-beat-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-aggregate-beat-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-beat-f32",
+          "pid": 11,
+          "exit": 1,
+          "begin_ns": 1791422564758171660,
+          "end_ns": 1791422564790617140,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "6b8c9c6906ea6a11bfb79833663598f2e5049a692a0d5961a02f453840e0d1ce",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-aggregate-beat-f32"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-aggregate-downbeat-f32",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-aggregate-downbeat-f32"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-aggregate-downbeat-f32",
+          "pid": 12,
+          "exit": 1,
+          "begin_ns": 1791422565882305852,
+          "end_ns": 1791422565914621284,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "6fedb95561a45805be4d819aab8d799d250605bbbb779c5acd18b2e87d2f59b2",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-aggregate-downbeat-f32"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-minimal-raw-groups-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-minimal-raw-groups-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-raw-groups-json",
+          "pid": 13,
+          "exit": 1,
+          "begin_ns": 1791422567006092790,
+          "end_ns": 1791422567038421421,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "052950bea0b6889463d71b7fc88e9ad542f7661418c4b09a8dfabad9f1b0c50a",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-minimal-raw-groups-json"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "tampered-minimal-alignment-json",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-minimal-alignment-json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/tampered-minimal-alignment-json",
+          "pid": 14,
+          "exit": 1,
+          "begin_ns": 1791422568131084408,
+          "end_ns": 1791422568163434239,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "Native resource identity mismatch",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "92e92e43501095059c4860d5eb69347393a6a56dca720c9992dd040d82abf055",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/modified-minimal-alignment-json"
+          },
+          "actual_inputs_equal": true
+        },
+        {
+          "name": "missing-resource",
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/build-01/bin/cocobeat-lab",
+            "workbench-beats",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/missing-resource-evidence"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/missing-resource",
+          "pid": 15,
+          "exit": 1,
+          "begin_ns": 1791422569255460218,
+          "end_ns": 1791422569287772140,
+          "timeout": false,
+          "expected_success": false,
+          "expected_message": "aggregate-downbeat.f32",
+          "cleanup": [],
+          "ownedgone": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e7ed0c3ccb21bebc9c031e98feaf8611eb9db19c2df13dbb844273ef091e66dd",
+          "actual_input_paths": {
+            "package": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "evidence": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/cli-run-02/missing-resource-evidence"
+          },
+          "actual_inputs_equal": true
+        }
+      ],
+      "input_four_complete_tree_identities_recorded": {
+        "fixture-left": {
+          "package": {
+            "analysis.bin": "ca79634d06c8163ae21ec996e6323a6b4bd3d934d457888d33379ce20f714e15",
+            "chart.bin": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+            "song.audio.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "song.package": "9cd28223f0490aa21011c56764c94ad8bae8dc0f3fea76e80a9332a4e470c3ba"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "dbefef1ac633a22e9c848f05c608372f659f1a7b51d2e3e1ec1c1587830c90c4",
+            "aggregate-coverage.bin": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+            "aggregate-downbeat.f32": "af05ea19684837a7ce77dfa624266b61dc92fc445961c83eced7894592696c72",
+            "analysis-complete.json": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+            "chunk000-beat.f32": "739ee0409d1e6a0f36b709ca67cbc2cac07020276867f9fc7d4e2ee8215c0feb",
+            "chunk000-beat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-downbeat.f32": "57c9766d42e9ce22428de173b0be719137d7b6018583d874f8f2bdf919a2719a",
+            "chunk000-downbeat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-spect.f32": "7e12551aea37c8406d0abdbf29464382c7d3fe64dc4bbc07497dda81df9df1b2",
+            "evidence-summary.json": "51e9d9d0deef5cd6e801bd56837f2f5008ed6f9f6da0272ea2ad3d4b05e0bd69",
+            "final-canonical-identity.json": "856d9b69fd6932f4dfff32aa8088216ab054de0f9eb0c84601d8f4a6e61aa0b7",
+            "final-canonical.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "minimal-alignment.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "minimal-raw-groups.json": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+            "native-shape.json": "050490023be95392b6927b5ae9201fa85a09d5a3be20fcdcf3049b88cfddf65f",
+            "native-spect.f32": "84ef24494319c1a59625d47099878ae0618c9745c6359c720aac3ab0acb44786",
+            "package-complete.json": "eff1a34e7a53eed89bb50801841f164d749030eb8b1d8d20830bd7a155ca67d2",
+            "resampled-stereo.f32": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.bin": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.jsonl": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+            "session-metadata.json": "54ef4c8c5a765724f02b3725594870afaccefb93dce0266cea7337497bb5b394",
+            "started.json": "5ffff7291bbff8af577ebdad541b8af8a98732f0bddc4e05adcb0a9b36eb5622"
+          }
+        },
+        "fixture-right": {
+          "package": {
+            "analysis.bin": "58009369339af7f58e74f71191ce8505bc1eca540f0f60dc4374673ec3598b81",
+            "chart.bin": "54123f30c3d34aef853b94705ca927cda8aeaaf23503e28bba1d4012aa2e5745",
+            "song.audio.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "song.package": "e8c834f698a4a052d9ec9645ba18fd20b7a7cb80435b33820721a5374ad34952"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "dba4c639ee4d69bf2d80344308dec2267f0faf4e59dfc98b1240bc53416aeb4a",
+            "aggregate-coverage.bin": "dfea2964b5deedea7b1ef077de529c3959e6788bdbb3441e70c77a1ae875bb48",
+            "aggregate-downbeat.f32": "ffeba63eff16c86e180796fc8d78c2d4303f2a7f00f5d60a146bc0fd3f24f392",
+            "analysis-complete.json": "e6cfa9ae04a5833fd29a35e5a47b6201d533327442038dfe90b2e5221993b9bc",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "7122dbd00f17a81a086dcddf1fc032a012509a975c76e2ec923df80b8499fe52",
+            "chunk000-beat.f32": "3c43d4954e7688073e338b37b49ea9ab22667bda85022ea2d64b15782cf2e774",
+            "chunk000-beat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-downbeat.f32": "662074c00b1991278455bde8179529e8d015235085bca9d02a1918b328e2f103",
+            "chunk000-downbeat.metadata.json": "a73ad8395b8146c551fc379cd3f791287a4727d4e37fdcc1b8e1f2040845001d",
+            "chunk000-spect.f32": "74bea6a91ab5ed099021b85650645afa92f43a001be7fd406e8d2d6ae50b4a71",
+            "evidence-summary.json": "b026c555a3070e33774d6d325d77e841d6905cc754d52efb7ba6bd50c8a057c1",
+            "final-canonical-identity.json": "ad1554f303d2def00f2e315351645c3a42d9068d11cd265792798822503aba8c",
+            "final-canonical.ogg": "58c31eae860741dc5e1d1deebfd48218bf03eadb2d7aa42c4e7e1527872981d8",
+            "minimal-alignment.json": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "minimal-raw-groups.json": "6f560504ff44d0ff3e02c4ff4e2df43edd41a2e6e7d3db6820c93a06161714c3",
+            "native-shape.json": "f486d9c6fb388b6fa5111cd211009a91837e334cfcc2dfa9c50fd69299dedd6a",
+            "native-spect.f32": "f2e04f9afcfdcbb2203eb3127b4cff1134a1b3f2693d719cbac1b335da72ad11",
+            "package-complete.json": "4d197688af8d4b87df4a75566c19e113d48c88b3644d95b6617632a82e6e2d79",
+            "resampled-stereo.f32": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.bin": "fa34707a42aa156c90d1243754a48410327475b892c8da8bcc64c50dd5d44e39",
+            "resampler-output.jsonl": "fc78d549bb6d3041db0f40a2e6bff923777281f4ebb32c55a6476d58b6b4f6f2",
+            "session-metadata.json": "45e3c1047485efbc074fd373a4ca52eae29604c3760a27d0c7c7a40bdb89d079",
+            "started.json": "edd6c81b31ef5b141c4b14c5963e92201f406f62b9537e22ef57f898ef68c722"
+          }
+        },
+        "fixed120-left": {
+          "package": {
+            "analysis.bin": "62867f6f9b4d9d06e3a9566b609a0e219fdab9b28579d9db4a636cb4d92d0b77",
+            "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+            "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "song.package": "9b393ff0e0288103125743b3cdefc1f9d81e4a2bed86637c57674971aa0b1ad5"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+            "aggregate-coverage.bin": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+            "aggregate-downbeat.f32": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+            "analysis-complete.json": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+            "chunk000-beat.f32": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+            "chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-downbeat.f32": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+            "chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-spect.f32": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+            "chunk001-beat.f32": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+            "chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-downbeat.f32": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+            "chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-spect.f32": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+            "evidence-summary.json": "7eb46ccaa5e76ff86d3c8176d5370b1005300f18ce08e8d682357d7d78a1e637",
+            "final-canonical-identity.json": "f8051b377c9d48b04cdfe8c7ced25dc602a2288c62329eb73a7e1bf555a2c552",
+            "final-canonical.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "minimal-alignment.json": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+            "minimal-raw-groups.json": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+            "native-shape.json": "e85f60addfc6ec53061f37587f0ed1ee5a9b2390d853cbe745cce464d5ea95a7",
+            "native-spect.f32": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+            "package-complete.json": "376f6fdf2a1e520108e542979138cb41199a663d77bb13ff6d8f9a5f775e5e0b",
+            "resampled-stereo.f32": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.bin": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.jsonl": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+            "session-metadata.json": "ad249b6e80f7a073002844790d15ee93bfda02e9cb78446214154bc3cebc0ccd",
+            "started.json": "361c1e62fa105ea0f05b79bf9bdb8f0394fb95dc0f9823bbb632c89ef9d5a4bb"
+          }
+        },
+        "fixed120-right": {
+          "package": {
+            "analysis.bin": "265c637b8d8a323d2fc373c38c89fe7570dce2c9409b3d78112f461d1087ecd7",
+            "chart.bin": "8180b7f448b01cce9495e2e3b597b40feb5774e4a3506d336dc1e992fa8e6cee",
+            "song.audio.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "song.package": "f313f820aedc8335cec7c18e6eed261c496e2c9dee4f9fdd982c8f0772baa7b2"
+          },
+          "evidence": {
+            "aggregate-beat.f32": "3ac1c1053c2f47983eeef9f59dba9a8a6fd87d9d1662147a895196121f3272b8",
+            "aggregate-coverage.bin": "77fa6af8c8892763ab06fc7d5843997d19c653b9fda59d0a79689b4fe82c61f3",
+            "aggregate-downbeat.f32": "f93aff03fec4e9a7684fa968f58f27c243cdc731be8a99b4f2337427b86b7b8f",
+            "analysis-complete.json": "d9ad7ba864cfb942a300d9c0f374e27f1ea036ac09f883061487e0ae1733458a",
+            "artifact-core.json": "94c61bf6a829ea70997a6513ae3d5ce0d773b7913f69f112de755178b7af8fc7",
+            "artifact-model.json": "ff787b6e987c620722597fe0165a45a5a872f27272e51b24db6e632a262b1a02",
+            "artifact-provider.json": "d0e5fbed86afb6380c65e83d23870acdb8736453788fc1cde7570e379bae575d",
+            "chunk-starts.json": "9bb8e88e644c903284c6fce998349afb17e75b33b70f479759ca695670fdd6e2",
+            "chunk000-beat.f32": "55426643c3a63eb1fc4ad1e2c8e3c2a686bc30fb011e7b6d1dfc61aca3e678bd",
+            "chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-downbeat.f32": "51dfb40d7da16308a4a1fe31313465b34b5dc2d6bb0ff3c8b9430f4b2cdf1e1e",
+            "chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk000-spect.f32": "f0c4dbd88cbb550ea7d99d587b963b74ac117bb80d4097ba5a528e976794c026",
+            "chunk001-beat.f32": "e7a4fde70c10ae6588fa04d5052f29dec9656ca012a5b4c6871932426205cbc6",
+            "chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-downbeat.f32": "dff3bd965957ff823b5b961e979e1f4456a7c50835497ad0fb01b775d9a229b9",
+            "chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+            "chunk001-spect.f32": "99441b4d9dea88ca50aeb8798f454aaa9adb0aad920132e3b58609b49d979f08",
+            "evidence-summary.json": "c1fdfb3df5ae526df237ecb89ff5938778a73dd005601b1bf384c73c2ccea2b1",
+            "final-canonical-identity.json": "036daa49c1650691f96957dc0cd0c5e458614dd43f358926baecac3141647aad",
+            "final-canonical.ogg": "15f8c8bda2847fc39bffdc76bdfe093985a2b42743754046101ce82138f723a7",
+            "minimal-alignment.json": "1bcd15acf6c721faa41fdee305d62e428d6e3eca64b41a37c30630c1cc684ce4",
+            "minimal-raw-groups.json": "114ae093079d7067a0e24abc781dc4907a43b079639d0b520f66059cdeb523c8",
+            "native-shape.json": "f24133aa18e2b29069ce3c9b900919fc07baa404b6f900ede624665566a08d20",
+            "native-spect.f32": "f43f55ba9d20d5a424bca7f5277c583b989f22ae0d1a1006dce5d11d33a48441",
+            "package-complete.json": "0b4effdecc77a93732623ef633cfdea1f5d1810d63bf012987cb62605ce7cf4c",
+            "resampled-stereo.f32": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.bin": "f0ce261d3b648c82365523e4673df3bfd237900500a6b1312096eccf3355bf35",
+            "resampler-output.jsonl": "951b468a09ad8aecceaf8aa1fdb6142e5189b77588afa93190549b95c2a9f723",
+            "session-metadata.json": "7e6d84282da773224b40075f4f3d083063d777f40c15fc8251047a5291d622cd",
+            "started.json": "482f3077c255053b4e3e1a9f9e8350aef4738d9eff67873162aba29ecbf8e690"
+          }
+        }
+      },
+      "scope": "Actual production CLI; positive verify-package validates package only. Native evidence positives require API/native helper, NOT RUN here.",
+      "ownedgone": true,
+      "root_failure_receipt": null
+    }
+  ],
+  "gui_revisions": [
+    {
+      "revision": 1,
+      "build_receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/build.json",
+        "bytes": 80587,
+        "sha256": "d4af03f81bea6fe7307ef7fa11312f9a8c2ff5a2d8ecfbfef7d061e6a1b41624"
+      },
+      "build_exit_code": 1,
+      "production_binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "helper_binary_sha256": null,
+      "instrumentation_patch": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/instrumentation.patch",
+        "bytes": 1099,
+        "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+      },
+      "prepared": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-01/prepared.json",
+        "bytes": 2971,
+        "sha256": "7582c02ddbecd39e4a290a5238c3f4281477b4e2c0f375538acc2addc1aa2add"
+      }
+    },
+    {
+      "revision": 2,
+      "build_receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/build.json",
+        "bytes": 80587,
+        "sha256": "cf445898e0a8430efe51762cbfea9650e7ab7698e9f66d823ba7b00e6c705b6a"
+      },
+      "build_exit_code": 1,
+      "production_binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "helper_binary_sha256": null,
+      "instrumentation_patch": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/instrumentation.patch",
+        "bytes": 1099,
+        "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+      },
+      "prepared": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-02/prepared.json",
+        "bytes": 2971,
+        "sha256": "9cdd520477def83c1ebd25d65c32c9da27c8ec0c0c729c459934201b268c06f3"
+      }
+    },
+    {
+      "revision": 3,
+      "build_receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/build.json",
+        "bytes": 80649,
+        "sha256": "7fea78ab56a88b6e251a6948e0172a5c76ca0026856bb10199e9b8da499e664d"
+      },
+      "build_exit_code": 0,
+      "production_binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "helper_binary_sha256": "d53867fcd2ddf8c79de611c1b582e7d824439d6eb5ab30e274b9dbef196da496",
+      "instrumentation_patch": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/instrumentation.patch",
+        "bytes": 1099,
+        "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+      },
+      "prepared": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/prepared.json",
+        "bytes": 2971,
+        "sha256": "b4ca70ad04fb4075f8d9ff8d11c54043a40e1e92054f46f0f3ae67cede8b3995"
+      },
+      "run_record": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-03/run.json",
+        "bytes": 138654,
+        "sha256": "56645c2743ca0e55490a818bb8f1b942c6bf93a9dd672a10139fd7a8101f95f3"
+      },
+      "status": "INCOMPLETE_NATIVE_ENVIRONMENT_FAILURE",
+      "scope": "Four direct actual frozen-media reader API positives, three copied production Workbench native windows; production CLI pre-window controls separately recorded.",
+      "api_cases": [
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-left/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-left",
+          "wrapper_pid": 868109,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791423756848653738,
+          "end_ns": 1791423756962693755,
+          "run_log_sha256": "f06eb9c7a27e99b5364fd981fab71bb327bbd51122c6da659261c711fc089e7c",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868109
+          },
+          "helper_ownedgone": true,
+          "name": "fixture-left",
+          "inputs_equal": true,
+          "baseline_sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-left/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868109
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868109
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-right/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-right",
+          "wrapper_pid": 868110,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791423756964521295,
+          "end_ns": 1791423756996248105,
+          "run_log_sha256": "9a81c3cd34f7ad4b19617e12c13759354cfde38c0108a2aca5cf83fc3badc6ec",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868110
+          },
+          "helper_ownedgone": true,
+          "name": "fixture-right",
+          "inputs_equal": true,
+          "baseline_sha256": "5d3b6c7f94eb169b8d30ff70304c6a29cb3246835d557cf9dcbc90a4b0d1c2c6",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixture-right/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868110
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868110
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-left/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-left",
+          "wrapper_pid": 868111,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791423756998370890,
+          "end_ns": 1791423757863331565,
+          "run_log_sha256": "1756e6185b27d71785a14fc66e5b4da33c8ed00042725b315e34e0625a61da4b",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868111
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-left",
+          "inputs_equal": true,
+          "baseline_sha256": "f53032507a464dadaaee051eee74e6f4185a5df0f8181d1bd1a296854700e063",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-left/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868111
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868111
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-right/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-right",
+          "wrapper_pid": 868112,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791423757876393767,
+          "end_ns": 1791423758791473985,
+          "run_log_sha256": "6862a32204058bcddf717485008171e7247567bb06096114d3ebf4480c25bc6b",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868112
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-right",
+          "inputs_equal": true,
+          "baseline_sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/api-fixed120-right/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868112
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868112
+            }
+          ]
+        }
+      ],
+      "native_cases": [
+        {
+          "argv": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "-W",
+            "640",
+            "-H",
+            "480",
+            "-w",
+            "640",
+            "-h",
+            "480",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/replay-workbench-check",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+            "zh-CN"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-03/native-fixture-left-640-zh-CN",
+          "wrapper_pid": 868113,
+          "wrapper_exit": -6,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791423758804174694,
+          "end_ns": 1791423758969953947,
+          "run_log_sha256": "f70cd7c9f83ed48c79f66a55e06d44c1e9cb21c719c96512080749a71c92c5d3",
+          "group_ownedgone": true,
+          "helper_result": null,
+          "name": "fixture-left",
+          "size": [
+            640,
+            480
+          ],
+          "locale": "zh-CN",
+          "audition_requested": false,
+          "baseline_sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc",
+          "png_sha256": {},
+          "metadata_sha256": null,
+          "inputs_equal": true,
+          "observed_events": []
+        }
+      ],
+      "input_trees_unchanged": null,
+      "failure": {
+        "status": "FAIL_QA_ENVIRONMENT_SOCKET_LENGTH",
+        "api_positive_count": 4,
+        "api_actual_exit0_count": 4,
+        "native_helper_launch_count": 0,
+        "native_wrapper_exit": -6,
+        "cause_from_log": "XDG_RUNTIME_DIR under long repository target path exceeds Unix socket 108-byte limit; gamescope-0...127 cannot bind; no helper_started events",
+        "all_owned_groups_rechecked_gone": true,
+        "inputs_equal": true,
+        "current_production_changed": false
+      }
+    },
+    {
+      "revision": 4,
+      "build_receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/build.json",
+        "bytes": 80649,
+        "sha256": "1ab4a0f2ce41afbabfc10e318853fe02d3077f126cba8b36a81da5b0125e6bae"
+      },
+      "build_exit_code": 0,
+      "production_binary_sha256": "da8f60b97d496836e55617c42f161b553c1e75fd5a2864e95d656d6b5ef263c2",
+      "helper_binary_sha256": "c6c192ed27586691e707594da753c8fb4c35ab268384d419ef37a8246ac7009c",
+      "instrumentation_patch": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/instrumentation.patch",
+        "bytes": 1099,
+        "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+      },
+      "prepared": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/prepared.json",
+        "bytes": 2971,
+        "sha256": "7bdd6937f28715fe7cb8921e16ede39f559868dc534f18c657cf7166e418c02c"
+      },
+      "run_record": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/run.json",
+        "bytes": 228195,
+        "sha256": "73fb912d1b34e85315f06a7a2380876994f887560b6454ba2afdc087e5477106"
+      },
+      "status": "PASS_SOFTWARE_API_AND_NATIVE",
+      "scope": "Four direct actual frozen-media reader API positives, three copied production Workbench native windows; production CLI pre-window controls separately recorded.",
+      "api_cases": [
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-left/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-left",
+          "wrapper_pid": 868601,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424038209061313,
+          "end_ns": 1791424038323548559,
+          "run_log_sha256": "cfa24336b04391f7ab51294cdaceee29b6f9a6a9af588b69f67540ebbc2b792a",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868601
+          },
+          "helper_ownedgone": true,
+          "name": "fixture-left",
+          "inputs_equal": true,
+          "baseline_sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-left/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868601
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868601
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-right/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-right",
+          "wrapper_pid": 868602,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424038325381333,
+          "end_ns": 1791424038357067627,
+          "run_log_sha256": "f9af0f88c03ed9d28f5db3f056cbc6ef282b01c7ca77c114bc3961004984d82d",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868602
+          },
+          "helper_ownedgone": true,
+          "name": "fixture-right",
+          "inputs_equal": true,
+          "baseline_sha256": "5d3b6c7f94eb169b8d30ff70304c6a29cb3246835d557cf9dcbc90a4b0d1c2c6",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-right/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixture-right/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868602
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868602
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-left/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-left",
+          "wrapper_pid": 868603,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424038359165634,
+          "end_ns": 1791424039274153417,
+          "run_log_sha256": "db1a6da77ab7309a316c6cd66e09081f842390289114f2cb965322e1c657ab21",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868603
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-left",
+          "inputs_equal": true,
+          "baseline_sha256": "f53032507a464dadaaee051eee74e6f4185a5df0f8181d1bd1a296854700e063",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-left/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868603
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868603
+            }
+          ]
+        },
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-right/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-right",
+          "wrapper_pid": 868604,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424039286823795,
+          "end_ns": 1791424040201794886,
+          "run_log_sha256": "919344d2e5b7eedb8ab94ed6f5c7f9102358335b1cfa1885bdac93039414ffaa",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868604
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-right",
+          "inputs_equal": true,
+          "baseline_sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/api-fixed120-right/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 868604
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868604
+            }
+          ]
+        }
+      ],
+      "native_cases": [
+        {
+          "argv": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "-W",
+            "640",
+            "-H",
+            "480",
+            "-w",
+            "640",
+            "-h",
+            "480",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+            "zh-CN"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN",
+          "wrapper_pid": 868605,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424040214594289,
+          "end_ns": 1791424043384186098,
+          "run_log_sha256": "0ed8b482993f608a5b1ceed79c8c27690b3820e461a1d5eff492a0d549ea52b8",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868627
+          },
+          "helper_ownedgone": true,
+          "name": "fixture-left",
+          "size": [
+            640,
+            480
+          ],
+          "locale": "zh-CN",
+          "audition_requested": false,
+          "baseline_sha256": "6f2d923398befd84ce6c2e31b2a68c7b0dc98c5dc4c58bb861f4c66988447cfc",
+          "png_sha256": {
+            "empty-details.png": "b60c0b74c2b8030dcb55080188290f188cd38e5f99a37e20c030eb2ced746b3a",
+            "first-screen.png": "648a16d19203bfd559231e346d0361f274f3a9de2c3b7f574c43272a32f7c7d9"
+          },
+          "metadata_sha256": "ee742e6bcd80ebd16882d6a2bf2ef12f14e6ff9f921b9f0147f23116a1b46bee",
+          "inputs_equal": true,
+          "observed_events": [
+            {
+              "argv": [
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixture-left/evidence",
+                "zh-CN"
+              ],
+              "event": "helper_started",
+              "pid": 868627
+            },
+            {
+              "event": "finished",
+              "physical_input_acoustic": "NOT_RUN",
+              "screenshots": [
+                "first-screen",
+                "empty-details"
+              ],
+              "source_unchanged_ui": true
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868627
+            }
+          ]
+        },
+        {
+          "argv": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "-W",
+            "1280",
+            "-H",
+            "800",
+            "-w",
+            "1280",
+            "-h",
+            "800",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+            "zh-CN"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN",
+          "wrapper_pid": 868657,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424043391761062,
+          "end_ns": 1791424054424124503,
+          "run_log_sha256": "3e4362f72a20445daa6f857fe293cf79e59166efd4dd0ee872df200b57eaed19",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868679
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-left",
+          "size": [
+            1280,
+            800
+          ],
+          "locale": "zh-CN",
+          "audition_requested": true,
+          "baseline_sha256": "f53032507a464dadaaee051eee74e6f4185a5df0f8181d1bd1a296854700e063",
+          "png_sha256": {
+            "details-scrolled.png": "92f9fc319ba63783813743cd076ed7106cdeb03c7da7f66acd1920f065e4a6bc",
+            "details-top.png": "8da1050422bf6721afa876c9921877a1ddabffec8cefccecbfbf0d8371ee3d84",
+            "first-screen.png": "ff713d48264b77be25922d8b67c8114ee32e0a49e81e115e2d456efae6cb0f5a",
+            "list-tail.png": "59593bcc578cf01b5f9d617f143ebe4727b273e5e9e019179d90e08801702ccb",
+            "raw-row.png": "34b11737a97d455d7b8aaefca57c0bc8b66799c302e77602b444c8d468d337a7"
+          },
+          "metadata_sha256": "640a5798f4549529147f4a996d1261dd89a1dceb3b73289d9ca97dbbbe111a7c",
+          "inputs_equal": true,
+          "observed_events": [
+            {
+              "argv": [
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-left/evidence",
+                "zh-CN"
+              ],
+              "event": "helper_started",
+              "pid": 868679
+            },
+            {
+              "after": 48.0,
+              "before": 0.0,
+              "clamped": false,
+              "computed_after": 48.0,
+              "event": "actual_details_scroll",
+              "maximum": 749.0
+            },
+            {
+              "after": 96.0,
+              "before": 48.0,
+              "clamped": false,
+              "computed_after": 96.0,
+              "event": "actual_details_scroll",
+              "maximum": 749.0
+            },
+            {
+              "after": 144.0,
+              "before": 96.0,
+              "clamped": false,
+              "computed_after": 144.0,
+              "event": "actual_details_scroll",
+              "maximum": 749.0
+            },
+            {
+              "after": 192.0,
+              "before": 144.0,
+              "clamped": false,
+              "computed_after": 192.0,
+              "event": "actual_details_scroll",
+              "maximum": 749.0
+            },
+            {
+              "after": 240.0,
+              "before": 192.0,
+              "clamped": false,
+              "computed_after": 240.0,
+              "event": "actual_details_scroll",
+              "maximum": 749.0
+            },
+            {
+              "event": "actual_kira_source_cursor",
+              "position": 512,
+              "status": "audition.playing",
+              "target": 0
+            },
+            {
+              "event": "actual_kira_paused",
+              "position": 2560
+            },
+            {
+              "event": "finished",
+              "physical_input_acoustic": "NOT_RUN",
+              "screenshots": [
+                "first-screen",
+                "raw-row",
+                "details-top",
+                "details-scrolled",
+                "list-tail"
+              ],
+              "source_unchanged_ui": true
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868679
+            }
+          ]
+        },
+        {
+          "argv": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "-W",
+            "640",
+            "-H",
+            "480",
+            "-w",
+            "640",
+            "-h",
+            "480",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/replay-workbench-check",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+            "fr"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr",
+          "wrapper_pid": 868714,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424054439764808,
+          "end_ns": 1791424064820635444,
+          "run_log_sha256": "8d1b53f68b6c42c6a6f2c51fe93beeadbd8cffdb0eb8b907f28310077f0203f7",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 868736
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-right",
+          "size": [
+            640,
+            480
+          ],
+          "locale": "fr",
+          "audition_requested": false,
+          "baseline_sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e",
+          "png_sha256": {
+            "details-scrolled.png": "edbe6e74d59b92b295c1290efe9174eabaa115d3076be2bef9d093cbbade17e1",
+            "details-top.png": "237efb246ed79798ffda5e835846d1a4625c02f3a6ffc29d5b8f392d997cfe04",
+            "first-screen.png": "e6a37f8c0af96743d991771715771091bd0317e04868b7b47d47500d3fc7d249",
+            "list-tail.png": "042e07440e430d9e281ca54d68e98634c3f4f9b84e1b47fbcc12d3bcc545ad1b",
+            "raw-row.png": "ce9c01614261f40cbe890f3958a6bddee50d687f634615ed3d482d4f0cf0d860"
+          },
+          "metadata_sha256": "8074db409e36823b2368ac4432f17984a21df072d8e4bcc2a9556e9e261b0af6",
+          "inputs_equal": true,
+          "observed_events": [
+            {
+              "argv": [
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+                "fr"
+              ],
+              "event": "helper_started",
+              "pid": 868736
+            },
+            {
+              "after": 48.0,
+              "before": 0.0,
+              "clamped": false,
+              "computed_after": 48.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 96.0,
+              "before": 48.0,
+              "clamped": false,
+              "computed_after": 96.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 144.0,
+              "before": 96.0,
+              "clamped": false,
+              "computed_after": 144.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 192.0,
+              "before": 144.0,
+              "clamped": false,
+              "computed_after": 192.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 240.0,
+              "before": 192.0,
+              "clamped": false,
+              "computed_after": 240.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "event": "finished",
+              "physical_input_acoustic": "NOT_RUN",
+              "screenshots": [
+                "first-screen",
+                "raw-row",
+                "details-top",
+                "details-scrolled",
+                "list-tail"
+              ],
+              "source_unchanged_ui": true
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 868736
+            }
+          ]
+        }
+      ],
+      "input_trees_unchanged": true,
+      "visual-review.json": {
+        "reviewer": "/root/authored_game_native",
+        "status": "FAIL_SMALL_FRENCH_LEGEND_OVERLAP",
+        "viewed_images": 12,
+        "pass_images": 7,
+        "fail_images": 5,
+        "scope": "逐张实际像素目检 12 张截图；只评价这些视口和所见状态，软件输入/只读门控及文件不变由原 run.json/metadata 单独支持",
+        "findings": [
+          {
+            "id": "FR640_LEGEND_OVERLAP",
+            "severity": "P2",
+            "affected_images": [
+              "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/first-screen.png",
+              "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/raw-row.png",
+              "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-top.png",
+              "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-scrolled.png",
+              "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/list-tail.png"
+            ],
+            "description": "640×480 法语范围图例超过固定 18px 区域，第二行 l’auteur 与紧随的 Curseur 文本重叠",
+            "recommendation": "只缩短 native_beats.legend 文案，保留 Candidate、beat/raw downbeat、源作者 Anchor；细节已有详情说明，不改布局或旧截图"
+          }
+        ],
+        "readonly_visual": "Native 模式中仅见导航、试听、缩放及返回控件，无修改 Anchor/保存/删除入口；截图不证明所有快捷键门控或 Labels 模式隔离，后者沿用独立软件测试证据",
+        "raw_alignment_boundary": "本批实际数据的 raw/downbeat 与 nearest/aligned 坐标相同；1280 详情明确分开字段，但不声称实际观察到坐标偏移",
+        "empty_boundary": "两张空 fixture 截图候选计数 0、空列表和只读说明清楚；不额外声称存在未显示的空提示文案",
+        "native_software_context": "root run.json PASS_SOFTWARE_API_AND_NATIVE：4 reader API + 3 原生窗口 exit0；该状态不覆盖本次视觉 FAIL",
+        "not_run": [
+          "新版短图例原生渲染",
+          "真实手柄或物理键盘",
+          "声学/设备延迟/真人演奏质量",
+          "本次 Labels 隐藏模式原生重测",
+          "性能准入"
+        ],
+        "images": [
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/first-screen.png",
+            "sha256": "648a16d19203bfd559231e346d0361f274f3a9de2c3b7f574c43272a32f7c7d9",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "空候选计数 0 清楚，空列表不伪造事件；图例一行、光标行和试听状态互不重叠，双声道波形和六个工具按钮可读",
+            "software_metadata_separate_from_visual": {
+              "focus": "Timeline",
+              "selected_index": 0,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixture-left-640-zh-CN/empty-details.png",
+            "sha256": "b60c0b74c2b8030dcb55080188290f188cd38e5f99a37e20c030eb2ced746b3a",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "只读说明、q×960 映射、raw 与 nearest/aligned 区别、confidence 未知及未校准分数说明在内容区可读；空候选没有可编辑 Anchor 控件",
+            "software_metadata_separate_from_visual": {
+              "focus": "Details",
+              "selected_index": 0,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/first-screen.png",
+            "sha256": "ff713d48264b77be25922d8b67c8114ee32e0a49e81e115e2d456efae6cb0f5a",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "127 条候选、beat/raw_downbeat 独立行及当前 beat 行高亮可读；图例和光标清楚；详情说明及 beat JSON 字段可读",
+            "software_metadata_separate_from_visual": {
+              "focus": "Timeline",
+              "selected_index": 0,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 12,
+              "size": [
+                1280.0,
+                800.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/raw-row.png",
+            "sha256": "34b11737a97d455d7b8aaefca57c0bc8b66799c302e77602b444c8d468d337a7",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "原 raw_downbeat 行独立高亮；alignment 的 beat_frame/beat_group_index/beat_q 与 frame/group_index/kind 分开呈现；本例 raw 和 aligned 坐标相同",
+            "software_metadata_separate_from_visual": {
+              "focus": "List",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 12,
+              "size": [
+                1280.0,
+                800.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/details-top.png",
+            "sha256": "8da1050422bf6721afa876c9921877a1ddabffec8cefccecbfbf0d8371ee3d84",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "详情焦点高亮清楚；只读说明和 raw_downbeat 的 alignment、frame、group_index、kind、members/raw_logit 在实际视口内可读；下方内容仍须滚动",
+            "software_metadata_separate_from_visual": {
+              "focus": "Details",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 12,
+              "size": [
+                1280.0,
+                800.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/details-scrolled.png",
+            "sha256": "92f9fc319ba63783813743cd076ed7106cdeb03c7da7f66acd1920f065e4a6bc",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "实际滚动后 original_q、uncalibrated_score、confidence:null、analysis_diagnostics 均可读；未把 score/logit 标成 confidence；视口顶缘切到上一行属于滚动内容裁切",
+            "software_metadata_separate_from_visual": {
+              "focus": "Details",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 240.0,
+              "row_count": 12,
+              "size": [
+                1280.0,
+                800.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-left-1280-zh-CN/list-tail.png",
+            "sha256": "59593bcc578cf01b5f9d617f143ebe4727b273e5e9e019179d90e08801702ccb",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "visual_observation": "候选 61 raw_downbeat 尾行高亮、候选 64 beat 与其分行；光标 1535040/1536000 帧、31.98 秒，与尾部位置一致；原 q=1599 和 alignment beat_group_index=64 分开可读",
+            "software_metadata_separate_from_visual": {
+              "focus": "List",
+              "selected_index": 126,
+              "cursor_frames": 1535040,
+              "first_row": 115,
+              "scroll": 0.0,
+              "row_count": 12,
+              "size": [
+                1280.0,
+                800.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/first-screen.png",
+            "sha256": "e6a37f8c0af96743d991771715771091bd0317e04868b7b47d47500d3fc7d249",
+            "view_method": "tools.view_image actual pixels",
+            "status": "FAIL",
+            "visual_observation": "标题、主控、两行工具栏、127 候选及行文本清楚；图例第二行 l’auteur 与 Curseur 行重叠，范围/光标区域 FAIL",
+            "software_metadata_separate_from_visual": {
+              "focus": "Timeline",
+              "selected_index": 0,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/raw-row.png",
+            "sha256": "ce9c01614261f40cbe890f3958a6bddee50d687f634615ed3d482d4f0cf0d860",
+            "view_method": "tools.view_image actual pixels",
+            "status": "FAIL",
+            "visual_observation": "raw_downbeat 行实际高亮且与 beat 行分开；图例第二行与 Curseur 行重叠，范围/光标区域 FAIL",
+            "software_metadata_separate_from_visual": {
+              "focus": "List",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-top.png",
+            "sha256": "237efb246ed79798ffda5e835846d1a4625c02f3a6ffc29d5b8f392d997cfe04",
+            "view_method": "tools.view_image actual pixels",
+            "status": "FAIL",
+            "visual_observation": "Détails 焦点和法语只读说明可读；小视口只展示说明前部，需要滚动查看 JSON，不据此声称全字段可见；图例第二行与 Curseur 行重叠 FAIL",
+            "software_metadata_separate_from_visual": {
+              "focus": "Details",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/details-scrolled.png",
+            "sha256": "edbe6e74d59b92b295c1290efe9174eabaa115d3076be2bef9d093cbbade17e1",
+            "view_method": "tools.view_image actual pixels",
+            "status": "FAIL",
+            "visual_observation": "滚动确实呈现 frame/group_index/kind:raw_downbeat/members 片段，原说明不再占满视口；不声称此图显示了所有 raw/aligned 字段；图例与 Curseur 行重叠 FAIL",
+            "software_metadata_separate_from_visual": {
+              "focus": "Details",
+              "selected_index": 1,
+              "cursor_frames": 0,
+              "first_row": 0,
+              "scroll": 240.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-04/native-fixed120-right-640-fr/list-tail.png",
+            "sha256": "042e07440e430d9e281ca54d68e98634c3f4f9b84e1b47fbcc12d3bcc545ad1b",
+            "view_method": "tools.view_image actual pixels",
+            "status": "FAIL",
+            "visual_observation": "尾部候选 60 raw_downbeat、64 beat、61 raw_downbeat 行均可读，最后一行高亮，光标已到 1535040 帧；图例第二行 l’auteur 与光标区域重叠 FAIL",
+            "software_metadata_separate_from_visual": {
+              "focus": "List",
+              "selected_index": 126,
+              "cursor_frames": 1535040,
+              "first_row": 124,
+              "scroll": 0.0,
+              "row_count": 3,
+              "size": [
+                640.0,
+                480.0
+              ]
+            }
+          }
+        ],
+        "preservation": "不改原 PNG、QA freeze、run.json、metadata 或生产源码"
+      },
+      "root-visual-review.json": {
+        "status": "FAIL_VISUAL_FR_LEGEND",
+        "software_commands": "PASS_4_API_3_NATIVE_12_CAPTURE",
+        "current467sourceinputs_equal_build01": true,
+        "owned_processes_rechecked_gone": true,
+        "root_images_viewed": [
+          "native-fixture-left-640-zh-CN/first-screen.png",
+          "native-fixed120-right-640-fr/first-screen.png",
+          "native-fixed120-right-640-fr/details-top.png",
+          "native-fixed120-left-1280-zh-CN/raw-row.png"
+        ],
+        "finding": "French nativelegend wraps into a second line within fixed 18px Range row and overlaps Cursor label at640; minfixshorten nativelegend wording",
+        "physical_acoustic_human_music_quality": "NOT_RUN"
+      }
+    },
+    {
+      "revision": 5,
+      "build_receipt": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/build.json",
+        "bytes": 80649,
+        "sha256": "7bf6f3d88ce88958d86edebbf6bcb4df8e02d616895249f4b6371db34710b421"
+      },
+      "build_exit_code": 0,
+      "production_binary_sha256": "12b3db1a0b3d00f26ab84d0264318d86ca05b256f36a2333cb3bf1f90119f0cb",
+      "helper_binary_sha256": "7b4bdb6983c19df849ae482c118138030a8d19e678989c13bd089522ef7e3be6",
+      "instrumentation_patch": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/instrumentation.patch",
+        "bytes": 1099,
+        "sha256": "7344284b4b379d942f924dbcc3b1f554222dbf6b348e3f34abc020ad660439f5"
+      },
+      "prepared": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/prepared.json",
+        "bytes": 2971,
+        "sha256": "bf08a5b4abfb794dc8201571493dc254296263bb7ee410954cd2c0f872418dd4"
+      },
+      "run_record": {
+        "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/run.json",
+        "bytes": 134860,
+        "sha256": "75ad418976223b9559c2246fc266720dab394150835df4561f9ca1d39b428fe0"
+      },
+      "status": "PASS_SOFTWARE_API_AND_NATIVE",
+      "scope": "One direct actual frozen-media reader API positive and one copied production Workbench fr640 native window; prior CLI controls and original three-window results separately retained.",
+      "api_cases": [
+        {
+          "argv": [
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/replay-workbench-check",
+            "--read-evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/api-fixed120-right/evidence.json"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/api-fixed120-right",
+          "wrapper_pid": 870247,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424808904475350,
+          "end_ns": 1791424809819687229,
+          "run_log_sha256": "be393cafa2c5676561a9a2075d7f50197b24f86935ef02fc8f89f86b55ffe5cb",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 870247
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-right",
+          "inputs_equal": true,
+          "baseline_sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e",
+          "observed_events": [
+            {
+              "argv": [
+                "--read-evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/api-fixed120-right/evidence.json"
+              ],
+              "event": "helper_started",
+              "pid": 870247
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 870247
+            }
+          ]
+        }
+      ],
+      "native_cases": [
+        {
+          "argv": [
+            "gamescope",
+            "--backend",
+            "headless",
+            "-W",
+            "640",
+            "-H",
+            "480",
+            "-w",
+            "640",
+            "-h",
+            "480",
+            "--",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/replay-workbench-check",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+            "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+            "fr"
+          ],
+          "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr",
+          "wrapper_pid": 870248,
+          "wrapper_exit": 0,
+          "timed_out": false,
+          "cleanup": [],
+          "begin_ns": 1791424809832013264,
+          "end_ns": 1791424820515133308,
+          "run_log_sha256": "25183a2fc1587aa33dbdfed080296558b87915cd63ab3839d72db7d22845e2b8",
+          "group_ownedgone": true,
+          "helper_result": {
+            "error": null,
+            "event": "helper_result",
+            "exit": 0,
+            "pid": 870270
+          },
+          "helper_ownedgone": true,
+          "name": "fixed120-right",
+          "size": [
+            640,
+            480
+          ],
+          "locale": "fr",
+          "audition_requested": false,
+          "baseline_sha256": "76606e41810b501e8f32eaf160ff9b217c824bf3a439a55edaf839555d6bea1e",
+          "png_sha256": {
+            "details-scrolled.png": "3804b91f9c9754ab205d1c80941d70cf5ef5c9c30d07c6a87a6bbf9a5880ebe8",
+            "details-top.png": "bb9baadbf82d55cef1ffbcdeec40ab06b6293a130cd31990bb0a7bf902d8306f",
+            "first-screen.png": "84dd6e34799171b10e18364054f8ff49daad37444d575ebdfd5b2509481d24b6",
+            "list-tail.png": "d356c7fd3f489629760fc0851c44dbd1f95e6e5be32bfbbc15c02a63c355bf6a",
+            "raw-row.png": "463958fef0ec983be5d9c616d2e60e60c9332d45eade4e253ddf5d15ce05cf88"
+          },
+          "metadata_sha256": "da8d254347a99686a25bfd70aa8ae2f492903d7c375d36090773fde1157472bf",
+          "inputs_equal": true,
+          "observed_events": [
+            {
+              "argv": [
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/package",
+                "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-delivery-20261008/positive-01/fixed120-right/evidence",
+                "fr"
+              ],
+              "event": "helper_started",
+              "pid": 870270
+            },
+            {
+              "after": 48.0,
+              "before": 0.0,
+              "clamped": false,
+              "computed_after": 48.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 96.0,
+              "before": 48.0,
+              "clamped": false,
+              "computed_after": 96.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 144.0,
+              "before": 96.0,
+              "clamped": false,
+              "computed_after": 144.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 192.0,
+              "before": 144.0,
+              "clamped": false,
+              "computed_after": 192.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "after": 240.0,
+              "before": 192.0,
+              "clamped": false,
+              "computed_after": 240.0,
+              "event": "actual_details_scroll",
+              "maximum": 1108.0
+            },
+            {
+              "event": "finished",
+              "physical_input_acoustic": "NOT_RUN",
+              "screenshots": [
+                "first-screen",
+                "raw-row",
+                "details-top",
+                "details-scrolled",
+                "list-tail"
+              ],
+              "source_unchanged_ui": true
+            },
+            {
+              "error": null,
+              "event": "helper_result",
+              "exit": 0,
+              "pid": 870270
+            }
+          ]
+        }
+      ],
+      "input_trees_unchanged": true,
+      "visual-review.json": {
+        "reviewer": "/root/authored_game_native",
+        "status": "PASS_NARROW_FRENCH640_LEGEND",
+        "scope": "独立实际像素目检新版 fixed120-right/fr/640×480 五张截图；闭环旧 Range 图例换行覆盖 Cursor 问题，兼查这五个状态的可见文案/控件/列表/详情片段",
+        "viewed_images": 5,
+        "findings": [],
+        "images": [
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/first-screen.png",
+            "sha256": "84dd6e34799171b10e18364054f8ff49daad37444d575ebdfd5b2509481d24b6",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "observation": "缩短的范围图例完整单行：Candidate、beat/raw downbeat、Anchor source : auteur 可读；与下面 Curseur 行有明确间隔，无第二行覆盖；标题、六个工具按钮、127 候选计数及首行可读"
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/raw-row.png",
+            "sha256": "463958fef0ec983be5d9c616d2e60e60c9332d45eade4e253ddf5d15ce05cf88",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "observation": "图例与 Curseur 无覆盖；raw_downbeat 0 行独立高亮，与相同帧的 beat 0 行分开，列表文字完整可读"
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/details-top.png",
+            "sha256": "bb9baadbf82d55cef1ffbcdeec40ab06b6293a130cd31990bb0a7bf902d8306f",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "observation": "图例单行和光标、试听状态互不覆盖；Détails 焦点清楚，法语只读说明前部可读；该截图不显示全文或所有 JSON 字段，下方内容需滚动"
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/details-scrolled.png",
+            "sha256": "3804b91f9c9754ab205d1c80941d70cf5ef5c9c30d07c6a87a6bbf9a5880ebe8",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "observation": "图例单行无覆盖；实际滚动后的 frame/group_index/kind:raw_downbeat/members 可读，详情保持在内容区域内；只评价可见片段，不声称全部 raw/aligned 字段同屏"
+          },
+          {
+            "path": "target/native-beat-workbench-delivery-20261008/gui-build-05/native-fixed120-right-640-fr/list-tail.png",
+            "sha256": "d356c7fd3f489629760fc0851c44dbd1f95e6e5be32bfbbc15c02a63c355bf6a",
+            "view_method": "tools.view_image actual pixels",
+            "status": "PASS",
+            "observation": "图例完整单行；光标 1535040/1536000 帧及 31.980000 秒可读；尾部 raw_downbeat 60、beat64、raw_downbeat61 分行，最后一行高亮，无截断或重叠"
+          }
+        ],
+        "software_context_separate_from_visual": {
+          "status": "PASS_SOFTWARE_API_AND_NATIVE",
+          "api_count": 1,
+          "native_count": 1,
+          "helper_pid": 870270,
+          "helper_exit": 0,
+          "wrapper_exit": 0,
+          "group_ownedgone": true,
+          "helper_ownedgone": true,
+          "inputs_equal": true
+        },
+        "production_lab_sha256": "12b3db1a0b3d00f26ab84d0264318d86ca05b256f36a2333cb3bf1f90119f0cb",
+        "history_preserved": "gui-build-04 12PNG：7中文所见范围PASS，5法语640FAIL图例覆盖；旧失败报告和PNG未覆盖，此新5PNG仅闭环法语窄修",
+        "not_run": [
+          "新版其他语言原生窗口",
+          "新版试听/Kira重跑（原gui04中文试听实际软件证据保留）",
+          "真实硬件输入/声学/设备延迟",
+          "人类音乐质量或真值",
+          "性能准入",
+          "新版Labels模式原生重测"
+        ],
+        "boundaries": "详细数据仍通过现有滚动访问；本轮不把字符数/hash/geometry当视觉证明，不新增案例，不改变source/evidence或QA freeze"
+      },
+      "root-visual-review.json": {
+        "status": "PASS_NARROW_FR640_VISUAL",
+        "all_five_png_actually_viewed": true,
+        "images": {
+          "details-scrolled.png": "3804b91f9c9754ab205d1c80941d70cf5ef5c9c30d07c6a87a6bbf9a5880ebe8",
+          "details-top.png": "bb9baadbf82d55cef1ffbcdeec40ab06b6293a130cd31990bb0a7bf902d8306f",
+          "first-screen.png": "84dd6e34799171b10e18364054f8ff49daad37444d575ebdfd5b2509481d24b6",
+          "list-tail.png": "d356c7fd3f489629760fc0851c44dbd1f95e6e5be32bfbbc15c02a63c355bf6a",
+          "raw-row.png": "463958fef0ec983be5d9c616d2e60e60c9332d45eade4e253ddf5d15ce05cf88"
+        },
+        "finding_closed": "Nativelegend now single line above Cursor; no overlap in all five screenshots",
+        "scope": "Only fixed120-right/fr640 latest frozen build02; source_legend, candidate/raw row distinction, title, cursor, detail help/scroll and list tail observed; clipped bottom of details is scroll viewport",
+        "prior04_fr_failure_retained": true,
+        "latest_chinese_empty_audition_retest": "NOT_RUN; prior04 distinct frozen binary history",
+        "physical_acoustic_human_music_quality": "NOT_RUN",
+        "owned_processes_rechecked_gone": true,
+        "current467_equal_build02": true
+      }
+    }
+  ],
+  "evidence_boundaries": {
+    "production_admission": false,
+    "confidence": null,
+    "music_quality_frontend_reference": "Historical FAIL retained; no new inference or musical quality measurement in this batch",
+    "automatic_anchor": "NOT_IMPLEMENTED; workbench native evidence read-only; manually authored source anchors retained",
+    "physical_keyboard_controller_acoustic_human": "NOT_RUN",
+    "latest_chinese_empty_audio_native_retest": "NOT_RUN; old04 actual distinct frozen build01 retained",
+    "four_target_current_workbench_builds": "NOT_RUN",
+    "labels_native_retest": "NOT_RUN;68 CPU tests and historical Labels native evidence not upgraded",
+    "performance": "NOT_RUN",
+    "source_tree_large_assets_dependencies": "Existing467 source manifests and binary/dependency SHA receipts bind them; this selected raw index omits their direct bytes",
+    "pid_namespace": "CLI receipt PID may be namespace-local (3 etc); native wrapper/helper PIDs recorded separately; do not equate host and namespace identifiers",
+    "visual_review": "Root and native owner receipts only; this sealing agent has not independently viewed PNG pixels"
+  },
+  "raw_index_candidate": "testdata/synthetic/native-beat-workbench-observations-20261008-raw-index.json"
+}

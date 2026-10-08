@@ -281,5 +281,8 @@
   "labels.source": "源包完整内容标识：{content_id} · canonical 音频 BLAKE3：{audio_hash} · 总帧数：{frames}",
   "labels.point_row": "#{id} · 单点 {frame} · {decision}",
   "labels.interval_row": "#{id} · 区间 [{start}, {end}) · {decision}",
-  "labels.bytes": "UTF-8 字节：{used} / {max}"
+  "labels.bytes": "UTF-8 字节：{used} / {max}",
+  "native_beats.title": "CoCoBeat · Beat/downbeat 候选",
+  "native_beats.legend": "Candidate：beat/raw downbeat · 源 Anchor：作者",
+  "native_beats.help": "只读 · q 是原 50 Hz 谱网格坐标，以 q×960 映射到 48 kHz 音频的整数帧 · raw downbeat 保留原位置，nearest/aligned beat 单独表示关系 · confidence 未知（null）；raw logit、sigmoid、strength、downbeat_probability 均为未校准分数，不是置信度 · 不自动生成 Anchor · 复用现有波形与 canonical stereo 试听"
 }

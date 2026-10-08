@@ -589,8 +589,15 @@ pub(super) fn update(
                     state.locale.text("replay.title").into()
                 } else if state.labels.is_some() {
                     state.locale.text("labels.title").into()
-                } else if state.candidates.is_some() {
-                    state.locale.text("candidates.title").into()
+                } else if let Some(candidates) = &state.candidates {
+                    state
+                        .locale
+                        .text(if candidates.is_native() {
+                            "native_beats.title"
+                        } else {
+                            "candidates.title"
+                        })
+                        .into()
                 } else {
                     format!(
                         "{} · {}",
@@ -645,12 +652,16 @@ pub(super) fn update(
                         doc.start + doc.span,
                         state.locale.text("replay.legend")
                     )
-                } else if state.candidates.is_some() {
+                } else if let Some(candidates) = &state.candidates {
                     format!(
                         "{}–{} · {}",
                         doc.start,
                         doc.start + doc.span,
-                        state.locale.text("candidates.legend")
+                        state.locale.text(if candidates.is_native() {
+                            "native_beats.legend"
+                        } else {
+                            "candidates.legend"
+                        })
                     )
                 } else {
                     state.text(
@@ -807,11 +818,25 @@ pub(super) fn update(
                 let candidates = state
                     .candidates
                     .as_ref()
-                    .expect("Candidate details require a proposal");
+                    .expect("Candidate details require validated evidence");
+                let details = candidates.details(state.locale);
+                let help = state
+                    .locale
+                    .text(if candidates.is_native() {
+                        "native_beats.help"
+                    } else {
+                        "candidates.help"
+                    })
+                    .to_owned();
+                let (first, second) = if candidates.is_native() {
+                    (help, details)
+                } else {
+                    (details, help)
+                };
                 [
                     state.notice.clone(),
-                    candidates.details(state.locale),
-                    state.locale.text("candidates.help").to_owned(),
+                    first,
+                    second,
                     state.locale.text("audition.help").to_owned(),
                 ]
                 .into_iter()
@@ -1725,6 +1750,69 @@ mod tests {
             assert!(detail.contains("not_assessed"));
             assert!(detail.contains("Audition failure fixture"));
         }
+    }
+
+    #[test]
+    fn native_candidate_details_use_distinct_rows_and_read_only_controls() {
+        let mut state = super::super::tests::state();
+        state.destination = None;
+        state.candidates = Some(candidates::native_fixture());
+        state.select(3);
+        assert_eq!(state.document.cursor, 960);
+        assert_eq!(state.document.selected, None);
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.is_read_only());
+        assert_eq!(state.record_count(), 4);
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        app.world_mut().spawn(Window {
+            resolution: (640, 480).into(),
+            ..default()
+        });
+        app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut().resource_mut::<Workbench>().details = true;
+        app.world_mut().run_system_once(update).unwrap();
+        let view = app.world().resource::<View>();
+        assert!(view.first_row <= 3 && view.first_row + view.row_count > 3);
+        let mut toolbars = 0;
+        for (part, node) in app
+            .world_mut()
+            .query::<(&BoxPart, &Node)>()
+            .iter(app.world())
+        {
+            match part {
+                BoxPart::Toolbar(_) => toolbars += 1,
+                BoxPart::Frame | BoxPart::Apply => assert_eq!(node.display, Display::None),
+                _ => {}
+            }
+        }
+        assert_eq!(toolbars, 6);
+        let texts: Vec<_> = app
+            .world_mut()
+            .query::<(&Part, &Text)>()
+            .iter(app.world())
+            .map(|(part, text)| {
+                (
+                    matches!(part, Part::DetailText),
+                    matches!(part, Part::Title),
+                    text.0.clone(),
+                )
+            })
+            .collect();
+        let detail = &texts.iter().find(|(details, _, _)| *details).unwrap().2;
+        assert!(detail.contains("\"original_q\": 1.0"));
+        assert!(detail.contains("\"beat_frame\": 960"));
+        assert!(detail.contains("\"confidence\": null"));
+        assert!(
+            detail.find("confidence is unknown").unwrap() < detail.find("\"original_q\"").unwrap()
+        );
+        assert!(!detail.contains("proposed_anchor"));
+        let title = &texts.iter().find(|(_, title, _)| *title).unwrap().2;
+        assert_eq!(title, Locale::EnUs.text("native_beats.title"));
     }
 
     #[test]
