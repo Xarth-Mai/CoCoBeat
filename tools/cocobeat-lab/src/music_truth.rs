@@ -126,7 +126,7 @@ impl Track {
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Tracks {
-    onset: Track,
+    pub(crate) onset: Track,
     pub(crate) beat: Track,
     pub(crate) downbeat: Track,
 }

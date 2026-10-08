@@ -1,10 +1,10 @@
 use crate::anchors::{self, Decision, Evidence, Report};
 use cocobeat_media::{
-    NativeBeatEvidence, NativeBeatKind, StructureFeatureEvidence, ValidatedPackage,
-    read_native_beat_evidence,
+    NativeBeatEvidence, NativeBeatKind, REPETITION_CANDIDATE_PROFILE, StructureFeatureEvidence,
+    ValidatedPackage, read_native_beat_evidence,
 };
 use cocobeat_runtime::{Locale, Message};
-use cocobeat_schema::MusicAnalysis;
+use cocobeat_schema::{AnalysisSource, MusicAnalysis, RepetitionFeature};
 use serde_json::{Value, json};
 use std::path::Path;
 
@@ -80,12 +80,34 @@ impl CandidateView {
         package: &ValidatedPackage,
         evidence: StructureFeatureEvidence,
     ) -> Self {
+        let diagnostics =
+            serde_json::from_str::<Value>(&package.analysis.diagnostics).unwrap_or(Value::Null);
+        let repetition_capability = package.analysis.capabilities.map(|c| c.repetition);
+        let known_origin = package.manifest.analysis_version == REPETITION_CANDIDATE_PROFILE
+            && repetition_capability.is_some_and(|c| c.source == AnalysisSource::Algorithm)
+            && diagnostics["profile"] == REPETITION_CANDIDATE_PROFILE
+            && diagnostics["audio_blake3"]
+                == blake3::Hash::from_bytes(package.manifest.audio.blake3)
+                    .to_hex()
+                    .as_str()
+            && diagnostics["canonical_frames"] == package.manifest.canonical_frames;
         let header = json!({
             "source": crate::labels::Source::from_package(package),
             "profile": evidence.profile,
             "sample_rate": evidence.sample_rate,
             "channels": evidence.channels,
             "channel": evidence.channel,
+            "inspection_channel": evidence.channel,
+            "origin_channel": known_origin.then(|| diagnostics["channel"].as_u64().filter(|c| *c < 2)).flatten(),
+            "origin_source_content_id": known_origin.then(|| diagnostics["source_content_id"].as_str()).flatten(),
+            "analysis_profile": package.manifest.analysis_version,
+            "analysis_diagnostics": package.analysis.diagnostics,
+            "repetition_capability": repetition_capability.map(|c| json!({
+                "state": format!("{:?}", c.state),
+                "source": format!("{:?}", c.source),
+                "confidence": c.confidence,
+            })),
+            "declared_repetition_count": package.analysis.repetitions.len(),
             "canonical_frames": evidence.canonical_frames,
             "fft_frames": evidence.fft_frames,
             "windows_per_bin": evidence.windows_per_bin,
@@ -124,6 +146,24 @@ impl CandidateView {
         }
     }
 
+    fn repetition_row(&self, index: usize) -> Option<(usize, bool, &RepetitionFeature)> {
+        let offset = index.checked_sub(self.structure_evidence()?.bins.len())?;
+        let relation_index = offset / 2;
+        Some((
+            relation_index,
+            offset % 2 == 1,
+            self.analysis.repetitions.get(relation_index)?,
+        ))
+    }
+
+    pub(super) fn selected_repetition_spans(&self) -> Option<[(i64, i64); 2]> {
+        let (_, _, relation) = self.repetition_row(self.selected)?;
+        Some([
+            (relation.source_start.frames(), relation.source_end.frames()),
+            (relation.target_start.frames(), relation.target_end.frames()),
+        ])
+    }
+
     pub(super) fn is_native(&self) -> bool {
         matches!(self.data, CandidateData::Native(_))
     }
@@ -132,7 +172,9 @@ impl CandidateView {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.len(),
             CandidateData::Native(evidence) => evidence.records.len(),
-            CandidateData::Structure(evidence) => evidence.bins.len(),
+            CandidateData::Structure(evidence) => {
+                evidence.bins.len() + self.analysis.repetitions.len() * 2
+            }
         }
     }
 
@@ -140,9 +182,19 @@ impl CandidateView {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.get(index).map(|e| e.frame),
             CandidateData::Native(evidence) => evidence.records.get(index).map(|e| e.frame),
-            CandidateData::Structure(evidence) => {
-                evidence.bins.get(index).map(|b| b.start_frame as i64)
-            }
+            CandidateData::Structure(evidence) => evidence
+                .bins
+                .get(index)
+                .map(|b| b.start_frame as i64)
+                .or_else(|| {
+                    self.repetition_row(index).map(|(_, target, relation)| {
+                        if target {
+                            relation.target_start.frames()
+                        } else {
+                            relation.source_start.frames()
+                        }
+                    })
+                }),
         }
     }
 
@@ -227,15 +279,29 @@ impl CandidateView {
 
     pub(super) fn row(&self, index: usize, locale: Locale) -> String {
         if let Some(evidence) = self.structure_evidence() {
-            let Some(bin) = evidence.bins.get(index) else {
+            let (label, start, end) = if let Some(bin) = evidence.bins.get(index) {
+                (
+                    bin.index.to_string(),
+                    bin.start_frame as i64,
+                    bin.end_frame as i64,
+                )
+            } else if let Some((relation_index, target, relation)) = self.repetition_row(index) {
+                let side = if target { "target" } else { "source" };
+                let (start, end) = if target {
+                    (relation.target_start.frames(), relation.target_end.frames())
+                } else {
+                    (relation.source_start.frames(), relation.source_end.frames())
+                };
+                (format!("repetition[{relation_index}].{side}"), start, end)
+            } else {
                 return String::new();
             };
             return Message::with(
                 "structure.row",
                 [
-                    ("index", bin.index.to_string()),
-                    ("start", bin.start_frame.to_string()),
-                    ("end", bin.end_frame.to_string()),
+                    ("index", label),
+                    ("start", start.to_string()),
+                    ("end", end.to_string()),
                 ],
             )
             .render(locale);
@@ -364,6 +430,22 @@ impl CandidateView {
     pub(super) fn details(&self, locale: Locale) -> String {
         let report = match &self.data {
             CandidateData::Structure(evidence) => {
+                if let Some((relation_index, target, relation)) = self.repetition_row(self.selected)
+                {
+                    return serde_json::to_string_pretty(&json!({
+                        "compiled_repetition": {
+                            "relation_index": relation_index,
+                            "selected_side": if target { "target" } else { "source" },
+                            "source_start": relation.source_start.frames(),
+                            "source_end": relation.source_end.frames(),
+                            "target_start": relation.target_start.frames(),
+                            "target_end": relation.target_end.frames(),
+                            "confidence": relation.confidence,
+                        },
+                        "header": self.header,
+                    }))
+                    .expect("Validated repetitions contain valid JSON");
+                }
                 let adjacent: Vec<_> = evidence
                     .adjacent
                     .iter()
@@ -486,6 +568,12 @@ pub(super) fn native_fixture() -> CandidateView {
 // Constructed display-only intervals, not a validated long audio package or music truth
 #[cfg(test)]
 pub(super) fn structure_fixture() -> CandidateView {
+    let (package, evidence) = structure_components();
+    CandidateView::from_structure(&package, evidence)
+}
+
+#[cfg(test)]
+fn structure_components() -> (ValidatedPackage, StructureFeatureEvidence) {
     use cocobeat_media::{StructureAdjacentChange, StructureFeatureBin, StructureNeighbor};
     let (root, mut package) = anchors::tests::fixture("structure-candidate-view");
     let (_, mut evidence) =
@@ -544,14 +632,164 @@ pub(super) fn structure_fixture() -> CandidateView {
         },
     ];
     package.manifest.canonical_frames = 49_153;
-    let view = CandidateView::from_structure(&package, evidence);
     std::fs::remove_dir_all(root).unwrap();
-    view
+    (package, evidence)
+}
+
+#[cfg(test)]
+fn repetition_components() -> (ValidatedPackage, StructureFeatureEvidence) {
+    use cocobeat_schema::{
+        ANALYSIS_SCHEMA_VERSION, AnalysisCapabilities, AnalysisCapability, AnalysisState, SongTime,
+    };
+    let (mut package, mut evidence) = structure_components();
+    package.analysis.repetitions = [
+        (1, 16_385, 16_385, 32_769),
+        (1, 16_385, 32_769, 49_153),
+        (16_385, 32_769, 32_769, 49_153),
+    ]
+    .map(|(a, b, c, d)| RepetitionFeature {
+        source_start: SongTime::from_frames(a),
+        source_end: SongTime::from_frames(b),
+        target_start: SongTime::from_frames(c),
+        target_end: SongTime::from_frames(d),
+        confidence: None,
+    })
+    .to_vec();
+    let mut capabilities = AnalysisCapabilities::authored();
+    capabilities.repetition = AnalysisCapability {
+        state: AnalysisState::Candidate,
+        source: AnalysisSource::Algorithm,
+        confidence: None,
+    };
+    package.analysis.schema_version = ANALYSIS_SCHEMA_VERSION;
+    package.analysis.capabilities = Some(capabilities);
+    package.manifest.analysis_version = REPETITION_CANDIDATE_PROFILE.into();
+    package.analysis.diagnostics = json!({
+        "profile": REPETITION_CANDIDATE_PROFILE,
+        "audio_blake3": blake3::Hash::from_bytes(package.manifest.audio.blake3).to_hex().as_str(),
+        "canonical_frames": package.manifest.canonical_frames,
+        "channel": 0,
+        "source_content_id": "original-package-before-repetition",
+    })
+    .to_string();
+    evidence.channel = 1;
+    (package, evidence)
+}
+
+#[cfg(test)]
+pub(super) fn repetition_fixture() -> CandidateView {
+    let (package, evidence) = repetition_components();
+    CandidateView::from_structure(&package, evidence)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn repetition_rows_preserve_both_sides_and_all_original_endpoints() {
+        let mut view = repetition_fixture();
+        assert_eq!(view.len(), 9);
+        for (row, relation_index, target, spans) in [
+            (3, 0, false, [(1, 16_385), (16_385, 32_769)]),
+            (4, 0, true, [(1, 16_385), (16_385, 32_769)]),
+            (5, 1, false, [(1, 16_385), (32_769, 49_153)]),
+            (6, 1, true, [(1, 16_385), (32_769, 49_153)]),
+            (7, 2, false, [(16_385, 32_769), (32_769, 49_153)]),
+            (8, 2, true, [(16_385, 32_769), (32_769, 49_153)]),
+        ] {
+            let side = if target { "target" } else { "source" };
+            assert_eq!(view.select(row), Some(spans[usize::from(target)].0));
+            assert_eq!(view.selected_repetition_spans(), Some(spans));
+            assert!(
+                view.row(row, Locale::EnUs)
+                    .contains(&format!("repetition[{relation_index}].{side}"))
+            );
+            let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+            let record = &detail["compiled_repetition"];
+            assert_eq!(record["relation_index"], relation_index);
+            assert_eq!(record["selected_side"], side);
+            assert_eq!(record["source_start"], spans[0].0);
+            assert_eq!(record["source_end"], spans[0].1);
+            assert_eq!(record["target_start"], spans[1].0);
+            assert_eq!(record["target_end"], spans[1].1);
+            assert!(record["confidence"].is_null());
+            assert!(detail.get("bin").is_none());
+            assert!(detail.get("proposed_anchor").is_none());
+        }
+        assert_eq!(view.select(9), None);
+        assert!(view.row(9, Locale::EnUs).is_empty());
+        assert_eq!(view.nearest(32_769, 0), Some(1));
+        assert_eq!(view.nearest(49_153, 0), None);
+        assert!(view.points().next().is_none());
+        assert!(view.selected_points().is_empty());
+        view.select(0).unwrap();
+        assert!(view.selected_repetition_spans().is_none());
+        let detail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(detail["bin"]["neighbors"][0]["raw_cosine"], 0.0);
+    }
+
+    #[test]
+    fn repetition_origin_is_separate_from_inspection_and_unknown_without_matching_identity() {
+        let (package, evidence) = repetition_components();
+        let header = |package: &ValidatedPackage| {
+            let (_, mut evidence) = structure_components();
+            evidence.channel = 1;
+            CandidateView::from_structure(package, evidence).header
+        };
+        let known = header(&package);
+        assert_eq!(known["inspection_channel"], 1);
+        assert_eq!(known["channel"], 1);
+        assert_eq!(known["origin_channel"], 0);
+        assert_eq!(
+            known["origin_source_content_id"],
+            "original-package-before-repetition"
+        );
+        assert_eq!(known["repetition_capability"]["state"], "Candidate");
+        assert_eq!(known["repetition_capability"]["source"], "Algorithm");
+        assert!(known["repetition_capability"]["confidence"].is_null());
+        assert_eq!(known["analysis_diagnostics"], package.analysis.diagnostics);
+        let mut unknown_profile = package.clone();
+        unknown_profile.manifest.analysis_version = "unknown-profile".into();
+        assert!(header(&unknown_profile)["origin_channel"].is_null());
+        let mut malformed = package.clone();
+        malformed.analysis.diagnostics = "not JSON".into();
+        assert!(header(&malformed)["origin_channel"].is_null());
+        for field in ["profile", "audio_blake3", "canonical_frames", "channel"] {
+            let mut changed = package.clone();
+            let mut diagnostics: Value =
+                serde_json::from_str(&changed.analysis.diagnostics).unwrap();
+            diagnostics[field] = Value::Null;
+            changed.analysis.diagnostics = diagnostics.to_string();
+            assert!(header(&changed)["origin_channel"].is_null(), "{field}");
+        }
+        let mut authored = package.clone();
+        authored
+            .analysis
+            .capabilities
+            .as_mut()
+            .unwrap()
+            .repetition
+            .source = AnalysisSource::Authored;
+        assert_eq!(
+            header(&authored)["repetition_capability"]["source"],
+            "Authored"
+        );
+        assert!(header(&authored)["origin_channel"].is_null());
+        let mut legacy = package.clone();
+        legacy.analysis.capabilities = None;
+        legacy.analysis.schema_version = 1;
+        legacy.manifest.analysis_version = "legacy-author-profile".into();
+        assert!(header(&legacy)["repetition_capability"].is_null());
+        assert!(header(&legacy)["origin_channel"].is_null());
+        let view = CandidateView::from_structure(&legacy, evidence);
+        assert_eq!(view.len(), 9);
+        assert!(view.header["confidence"].is_null());
+        let empty = structure_fixture();
+        assert_eq!(empty.len(), 3);
+        assert_eq!(empty.header["declared_repetition_count"], 0);
+        assert!(empty.header["origin_channel"].is_null());
+    }
 
     #[test]
     fn structure_intervals_keep_half_open_edges_and_do_not_become_point_events() {

@@ -4,11 +4,13 @@ use crate::{labels, labels_cli, music_truth};
 use cocobeat_media::{
     NativeBeatEvidence, NativeBeatKind, NativeBeatMetadata, NativeDownbeatAlignment,
 };
+use cocobeat_schema::{AnalysisSource, AnalysisState, MusicAnalysis};
 use music_truth::{Channel, Interval, Track};
 use serde::Serialize;
 use std::path::Path;
 
 const MAX_REPORT_BYTES: usize = 4 * 1_048_576;
+const AUTO_ANALYSIS_PROFILE: &str = "native-small0-hfc1024-interbeat-v1-candidate";
 
 #[derive(Clone, Copy, Debug, Serialize)]
 struct Event {
@@ -58,6 +60,31 @@ struct Record {
 }
 
 #[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum Onset {
+    Absent(&'static str),
+    Stream(Box<OnsetComparison>),
+}
+
+#[derive(Debug, Serialize)]
+struct OnsetRecord {
+    frame: i64,
+    strength: f32,
+    confidence: Option<f32>,
+}
+
+#[derive(Debug, Serialize)]
+struct OnsetComparison {
+    candidate_state: &'static str,
+    unsupported_reason: Option<&'static str>,
+    coordinate_policy: &'static str,
+    strength_policy: &'static str,
+    // Only onset comparisons index these records, never the native beat records
+    records: Vec<OnsetRecord>,
+    comparison: Option<StreamComparison>,
+}
+
+#[derive(Debug, Serialize)]
 struct Report {
     schema_version: u32,
     validated_content_id: String,
@@ -78,7 +105,7 @@ struct Report {
     production_admission: bool,
     old_frontend_numeric: &'static str,
     old_music_quality: &'static str,
-    onset: &'static str,
+    onset: Onset,
     // Stream references index these records; original alignment is never replaced by truth
     records: Vec<Record>,
     raw_beat: StreamComparison,
@@ -241,12 +268,73 @@ fn comparison(
         production_admission: false,
         old_frontend_numeric: "FAIL_PRESERVED_19_OF_28",
         old_music_quality: "FAIL_PRESERVED",
-        onset: "NO_CANDIDATE_STREAM",
+        onset: Onset::Absent("NO_CANDIDATE_STREAM"),
         records,
         raw_beat: compare_track(&beats, &truth.tracks.beat, tolerance),
         raw_downbeat: compare_track(&downbeats, &truth.tracks.downbeat, tolerance),
         package_aligned: compare_track(&aligned, &truth.tracks.downbeat, tolerance),
     })
+}
+
+// Called only after the package and its fixed-profile native resources have been verified
+fn include_onsets(
+    report: &mut Report,
+    analysis: &MusicAnalysis,
+    truth: &music_truth::Document,
+) -> Result<(), String> {
+    if report.native.profile != AUTO_ANALYSIS_PROFILE {
+        return Ok(());
+    }
+    let capability = analysis
+        .capabilities
+        .ok_or("Automatic onset comparison requires v2 capabilities")?
+        .onset;
+    if capability.source != AnalysisSource::Algorithm
+        || capability.confidence.is_some()
+        || !matches!(
+            capability.state,
+            AnalysisState::Candidate | AnalysisState::Unsupported
+        )
+        || (capability.state == AnalysisState::Unsupported && !analysis.onsets.is_empty())
+    {
+        return Err("Automatic onset comparison requires Candidate or Unsupported/Algorithm with unknown confidence".into());
+    }
+    let events = analysis
+        .onsets
+        .iter()
+        .enumerate()
+        .map(|(record_index, onset)| {
+            Ok(Event {
+                record_index,
+                frame: u64::try_from(onset.time.frames())
+                    .map_err(|_| "Negative automatic onset candidate frame")?,
+            })
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    let supported = capability.state == AnalysisState::Candidate;
+    report.onset = Onset::Stream(Box::new(OnsetComparison {
+        candidate_state: if supported {
+            "Candidate"
+        } else {
+            "Unsupported"
+        },
+        unsupported_reason: (!supported).then_some("insufficient_analysis_frames"),
+        coordinate_policy: "canonical_left_window_start_1024_frames_hop_512_no_alignment",
+        strength_policy: "original_hfc_normalized_strength_not_confidence",
+        records: analysis
+            .onsets
+            .iter()
+            .map(|onset| OnsetRecord {
+                frame: onset.time.frames(),
+                strength: onset.strength,
+                confidence: onset.confidence,
+            })
+            .collect(),
+        comparison: supported
+            .then(|| compare_track(&events, &truth.tracks.onset, report.tolerance_frames)),
+    }));
+    report.schema_version = 2;
+    Ok(())
 }
 
 pub(crate) fn compare_native_beats(
@@ -261,7 +349,8 @@ pub(crate) fn compare_native_beats(
     let native = cocobeat_media::read_native_beat_evidence(&validated, evidence)?;
     let (truth, raw_hash) =
         music_truth::load(truth, &music_truth::Source::from_snapshot(&initial))?;
-    let report = comparison(&initial, &native, &truth, raw_hash, tolerance_frames)?;
+    let mut report = comparison(&initial, &native, &truth, raw_hash, tolerance_frames)?;
+    include_onsets(&mut report, &validated.analysis, &truth)?;
     let destination = labels_cli::outside_package(package, destination)?;
     labels_cli::require_fresh_source(package, &initial)?;
     let written = labels::write_new(&destination, &report, MAX_REPORT_BYTES)?;
@@ -452,6 +541,160 @@ mod tests {
         serde_json::json!({"schema_version":1,"source":music_truth::Source::from_snapshot(source),"reviewer":"constructed-oracle","channel":"left",
             "tracks":{"onset":{"reviewed":[],"frames":[]},"beat":{"reviewed":[{"start_frame":0,"end_frame":200}],"frames":[120]},
             "downbeat":{"reviewed":[{"start_frame":0,"end_frame":200}],"frames":[100]}}})
+    }
+
+    fn onset_analysis(package: &cocobeat_media::ValidatedPackage, frames: &[i64]) -> MusicAnalysis {
+        let mut analysis = package.analysis.clone();
+        analysis.schema_version = 2;
+        let mut capabilities = cocobeat_schema::AnalysisCapabilities::authored();
+        capabilities.onset = cocobeat_schema::AnalysisCapability {
+            state: AnalysisState::Candidate,
+            source: AnalysisSource::Algorithm,
+            confidence: None,
+        };
+        analysis.capabilities = Some(capabilities);
+        analysis.onsets = frames
+            .iter()
+            .enumerate()
+            .map(|(index, &frame)| cocobeat_schema::OnsetFeature {
+                time: cocobeat_schema::SongTime::from_frames(frame),
+                strength: (index + 1) as f32 / (frames.len() + 1) as f32,
+                confidence: None,
+            })
+            .collect();
+        analysis
+    }
+
+    #[test]
+    fn automatic_onsets_keep_original_records_coverage_errors_and_kind_indices() {
+        let (root, package) = crate::anchors::tests::fixture("automatic-onset-compare");
+        let source = labels::Source::from_package(&package);
+        let mut native = native(&source);
+        native.metadata.profile = AUTO_ANALYSIS_PROFILE.into();
+        let mut truth: music_truth::Document = serde_json::from_value(manual(&source)).unwrap();
+        // Independently constructed matching oracle, not copied candidate output or music truth
+        truth.tracks.onset = track(&[(0, 1300), (2000, 3500)], &[500, 1100, 2100, 2300, 3400]);
+        let analysis = onset_analysis(&package, &[512, 1024, 1536, 2048, 2560, 3072]);
+        let mut report = comparison(&source, &native, &truth, blake3::hash(b"oracle"), 64).unwrap();
+        include_onsets(&mut report, &analysis, &truth).unwrap();
+        assert_eq!(report.schema_version, 2);
+        let Onset::Stream(onset) = &report.onset else {
+            panic!("Missing onset stream")
+        };
+        assert_eq!(onset.candidate_state, "Candidate");
+        let result = onset.comparison.as_ref().unwrap();
+        conserved(result);
+        assert_eq!(result.candidate_total, 6);
+        assert_eq!(result.matched_count, 2);
+        assert_eq!(result.unmatched_candidate_inside_count, 3);
+        assert_eq!(result.unmatched_truth_count, 3);
+        assert_eq!(result.candidate_outside[0].record_index, 2);
+        assert_eq!(result.matches[0].record_index, 0);
+        assert_eq!(result.matches[0].signed_error_frames, 12);
+        assert_eq!(result.matches[1].record_index, 3);
+        assert_eq!(result.matches[1].signed_error_frames, -52);
+        for (record, original) in onset.records.iter().zip(&analysis.onsets) {
+            assert_eq!(record.frame, original.time.frames());
+            assert_eq!(record.strength.to_bits(), original.strength.to_bits());
+            assert_eq!(record.confidence, original.confidence);
+        }
+        assert_eq!(report.raw_beat.matches[0].record_index, 2);
+        assert_eq!(report.records[2].frame, 120);
+        assert_eq!(onset.records[2].frame, 1536);
+        let value = serde_json::to_value(&report).unwrap();
+        assert_eq!(value["onset"]["records"][3]["frame"], 2048);
+        assert!(value["onset"]["records"][3]["confidence"].is_null());
+        assert_eq!(value["production_admission"], false);
+        // Even a wide tolerance cannot match across disconnected reviewed components
+        truth.tracks.onset = track(&[(0, 600), (700, 2000)], &[550]);
+        let mut gap = comparison(&source, &native, &truth, blake3::hash(b"oracle"), 500).unwrap();
+        include_onsets(&mut gap, &onset_analysis(&package, &[1024]), &truth).unwrap();
+        let Onset::Stream(onset) = gap.onset else {
+            panic!("Missing onset stream")
+        };
+        let result = onset.comparison.unwrap();
+        assert_eq!(result.matched_count, 0);
+        assert_eq!(result.unmatched_truth_frames, [550]);
+        conserved(&result);
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn empty_automatic_candidate_is_a_stream_with_reviewed_false_negatives() {
+        let (root, package) = crate::anchors::tests::fixture("automatic-onset-empty");
+        let source = labels::Source::from_package(&package);
+        let mut native = native(&source);
+        native.metadata.profile = AUTO_ANALYSIS_PROFILE.into();
+        let mut truth: music_truth::Document = serde_json::from_value(manual(&source)).unwrap();
+        truth.tracks.onset = track(&[(0, 4800)], &[1500]);
+        let analysis = onset_analysis(&package, &[]);
+        let mut report = comparison(&source, &native, &truth, blake3::hash(b"oracle"), 0).unwrap();
+        include_onsets(&mut report, &analysis, &truth).unwrap();
+        let Onset::Stream(onset) = report.onset else {
+            panic!("Missing empty candidate stream")
+        };
+        assert_eq!(onset.candidate_state, "Candidate");
+        assert!(onset.records.is_empty());
+        let result = onset.comparison.unwrap();
+        assert_eq!(result.status, "MECHANICAL_FRAME_COMPARISON");
+        assert_eq!(result.unmatched_truth_frames, [1500]);
+        conserved(&result);
+        truth.tracks.onset = Track::default();
+        let mut report = comparison(&source, &native, &truth, blake3::hash(b"oracle"), 0).unwrap();
+        include_onsets(&mut report, &analysis, &truth).unwrap();
+        let Onset::Stream(onset) = report.onset else {
+            panic!("Missing empty candidate stream")
+        };
+        assert_eq!(onset.comparison.unwrap().status, "NO_COMPARABLE_COVERAGE");
+        // Constructed short-sample report oracle, not an ORT import or resource-reader acceptance
+        let mut short_source = source.clone();
+        short_source.canonical_frames = 1536;
+        let mut short_native = native.clone();
+        short_native.metadata.canonical_frames = short_source.canonical_frames;
+        short_native.metadata.profile = AUTO_ANALYSIS_PROFILE.into();
+        let mut short_truth: music_truth::Document =
+            serde_json::from_value(manual(&short_source)).unwrap();
+        short_truth.tracks.onset = track(&[(0, 1536)], &[1000]);
+        let mut unsupported = analysis.clone();
+        unsupported.capabilities.as_mut().unwrap().onset.state = AnalysisState::Unsupported;
+        unsupported.energy[0].frames = 1536;
+        unsupported.validate(1536).unwrap();
+        let mut report = comparison(
+            &short_source,
+            &short_native,
+            &short_truth,
+            blake3::hash(b"oracle"),
+            0,
+        )
+        .unwrap();
+        include_onsets(&mut report, &unsupported, &short_truth).unwrap();
+        let value = serde_json::to_value(report).unwrap();
+        assert_eq!(value["schema_version"], 2);
+        assert_eq!(value["onset"]["candidate_state"], "Unsupported");
+        assert_eq!(
+            value["onset"]["unsupported_reason"],
+            "insufficient_analysis_frames"
+        );
+        assert!(value["onset"]["comparison"].is_null());
+        assert!(value["onset"]["records"].as_array().unwrap().is_empty());
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn legacy_report_remains_byte_identical_when_package_has_unrelated_onsets() {
+        let (root, package) = crate::anchors::tests::fixture("native-onset-legacy");
+        let source = labels::Source::from_package(&package);
+        let truth = serde_json::from_value(manual(&source)).unwrap();
+        let mut native = native(&source);
+        native.metadata.profile = "native-small0-high22050-f64fma-minimal-v1-candidate".into();
+        let mut report = comparison(&source, &native, &truth, blake3::hash(b"oracle"), 0).unwrap();
+        let original = serde_json::to_vec_pretty(&report).unwrap();
+        include_onsets(&mut report, &package.analysis, &truth).unwrap();
+        assert_eq!(serde_json::to_vec_pretty(&report).unwrap(), original);
+        assert_eq!(report.schema_version, 1);
+        let value = serde_json::to_value(report).unwrap();
+        assert_eq!(value["onset"], "NO_CANDIDATE_STREAM");
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

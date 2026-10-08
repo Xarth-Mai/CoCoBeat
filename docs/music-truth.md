@@ -53,7 +53,11 @@ cargo run --locked -p cocobeat-lab -- compare-native-beats /path/to/package /pat
 
 每流分别记录覆盖帧数、候选总数 / 区间内 / 区间外、匹配与未匹配计数、真实原坐标及 candidate-minus-truth 有符号帧误差；区间外候选仅是 uncompared，不作为误报。匹配误差的绝对值中位数为偶数中间两值平均，P95 使用 nearest-rank，max 保持整数帧，空匹配分布为 null。没有 reviewed 区间时状态为 `NO_COMPARABLE_COVERAGE`；已审阅但零事件仍为机械对照，不等于未审阅，也不给 perfect / F1 或总体准确率
 
-当前 MusicTruth v1 没有拍号 / 节拍单位字段，报告明确保留 `beat_unit=null`、`meter=null`、`reference_semantics=unrecorded_in_music_truth_v1`，不能从机械帧对照推出音乐语义。confidence=None、quality_status=UNASSESSED、production_admission=false、旧音乐 / wholeSpect FAIL 保持；onset 没有此候选流，不自动形成 Anchor 或生产算法准入
+当前 MusicTruth v1 没有拍号 / 节拍单位字段，报告明确保留 `beat_unit=null`、`meter=null`、`reference_semantics=unrecorded_in_music_truth_v1`，不能从机械帧对照推出音乐语义。confidence=None、quality_status=UNASSESSED、production_admission=false、旧音乐 / wholeSpect FAIL 保持；旧 beat-only profile 的报告 schema_version=1 与原内容保持，onset 仍为 `NO_CANDIDATE_STREAM`，不自动形成 Anchor 或生产算法准入
+
+`import-experimental-analysis` 的固定自动分析 profile 使用报告 schema_version=2；通过既有七资源 reader 核对包与 evidence 后，`onset.records` 独立保留原 canonical frame、HFC normalized strength 和未知 confidence，onset 匹配的 record_index 只引用这份数组，不引用原 beat records。坐标是 1024 帧完整窗的左端点、hop 512，不移动到窗中心或按 beat 对齐；strength 不作为置信度
+
+Candidate 即使零 onset，也按人工 onset 的 reviewed 覆盖计算未匹配事件，不因空候选免记漏检；没有覆盖仍为 `NO_COMPARABLE_COVERAGE`。短输入 Unsupported 保留 `unsupported_reason=insufficient_analysis_frames`、空 records 与 `comparison=null`，不冒充已检测到零事件；Lab92项、Clippy、格式、边界与构建通过；实际4条CLI保留46个原onset、旧v1完整报告字节及600秒七资源reader，均exit0，373编译输入 / 44冻结文件 / Lab字节前后保持，见[消费者观察](../testdata/synthetic/candidate-consumers-observations-20261008.json)，不改变音乐准入状态
 
 输出为包外的新普通 JSON，父目录须存在，已有文件 / 目录 / symlink 拒绝覆盖，最多 4 MiB，超限报错而非截断；保存前重新完整验证当前包，报告绑定本次读到的人工原字节 BLAKE3 和原生 summary 身份，不声称之后证据文件不会变化
 

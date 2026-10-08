@@ -1695,6 +1695,51 @@ mod tests {
     }
 
     #[test]
+    fn repetition_selection_requires_explicit_seek_and_keeps_read_only_input_guards() {
+        let (mut app, window, _, second) = app();
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.candidates = Some(candidates::repetition_fixture());
+            state.document =
+                Document::from_anchors(49_153, state.document.original.clone(), vec![]).unwrap();
+            state.focus = Focus::Toolbar(2);
+            state.select(3);
+            assert_eq!(state.document.cursor, 1);
+            assert_eq!(state.audition.target, None);
+            assert!(!state.audition.playing);
+        }
+        tap(&mut app, window, KeyCode::Enter);
+        assert_eq!(app.world().resource::<Workbench>().audition.target, Some(1));
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.select(4);
+            assert_eq!(state.document.cursor, 16_385);
+            assert_eq!(state.audition.target, Some(1));
+        }
+        pad(&mut app, second, GamepadButton::South, true);
+        app.update();
+        assert_eq!(app.world().resource::<Workbench>().audition.target, Some(1));
+        tap(&mut app, window, KeyCode::Enter);
+        assert_eq!(
+            app.world().resource::<Workbench>().audition.target,
+            Some(16_385)
+        );
+        key(&mut app, window, KeyCode::ControlLeft, true);
+        tap(&mut app, window, KeyCode::KeyS);
+        key(&mut app, window, KeyCode::ControlLeft, false);
+        app.world_mut().resource_mut::<Workbench>().document.cursor = 49_153;
+        tap(&mut app, window, KeyCode::Enter);
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        assert_eq!(state.audition.target, Some(16_385));
+        assert!(!state.audition.playing);
+        assert!(state.is_read_only());
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.document.editor.undo().is_err());
+        assert!(state.saving.is_none());
+    }
+
+    #[test]
     fn audition_input_uses_the_menu_owner_and_preserves_raw_record_positions() {
         let (mut app, window, first, second) = app();
         app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);

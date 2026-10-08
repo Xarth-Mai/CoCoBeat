@@ -1,0 +1,564 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "status": "PASS_CANDIDATE_CONSUMER_SOFTWARE_AND_DESIGNATED_VISUAL",
+  "scope": {
+    "base_commit": "d1a20aa53d3552d410e35c5443257f1d7a943d7f",
+    "production_changed_files": {
+      "tools/cocobeat-lab/src/native_beat_compare.rs": "411b8cbc687021ab28a42dfe544b048b763a53a049c9543a11bf24b6564f88c1",
+      "tools/cocobeat-lab/src/music_truth.rs": "f2ec3d8ac9eaa791959baff20c825ed0cc681fdf56a66876800ac0471a167f0e",
+      "tools/cocobeat-lab/src/workbench/candidates.rs": "4e7dda710cfa3779430c96f6b9579870d06dd14373ad5fa6c4888fa9ffd44df1",
+      "tools/cocobeat-lab/src/workbench/ui.rs": "ab0f8224bb2f73e5adafc5a8f198ed0ddd40394da582f6b2c6fddf3fe211abac",
+      "tools/cocobeat-lab/src/workbench/input.rs": "f6d726b727e8f599e24590210b583aba56fac20936f7840c7a71eec4e4eb0387"
+    },
+    "source_count": 373,
+    "source_guard": "373 actual compiler inputs including asset locales unchanged throughout; full map referenced",
+    "lab": {
+      "sha256": "b7ce7dd6761bd0f60150f052145ad06d37728afbe604f98dac446326d2cde7d0",
+      "bytes": 1550609608
+    },
+    "dependencies_or_product_runtime_added": false,
+    "gpl_or_product_python_added": false
+  },
+  "checks": {
+    "lab_tests": 92,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-lab"
+        ],
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 16.330256183980964,
+        "stdout": "target/candidate-consumers-production-checks-20261008/01.stdout",
+        "stderr": "target/candidate-consumers-production-checks-20261008/01.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 672,
+        "exit_code": 0,
+        "elapsed_seconds": 3.902494437992573,
+        "stdout": "target/candidate-consumers-production-checks-20261008/02.stdout",
+        "stderr": "target/candidate-consumers-production-checks-20261008/02.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 692,
+        "exit_code": 0,
+        "elapsed_seconds": 0.8822153339860961,
+        "stdout": "target/candidate-consumers-production-checks-20261008/03.stdout",
+        "stderr": "target/candidate-consumers-production-checks-20261008/03.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 695,
+        "exit_code": 0,
+        "elapsed_seconds": 0.1605526739731431,
+        "stdout": "target/candidate-consumers-production-checks-20261008/04.stdout",
+        "stderr": "target/candidate-consumers-production-checks-20261008/04.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "pid": 706,
+        "exit_code": 0,
+        "elapsed_seconds": 13.097123587009264,
+        "stdout": "target/candidate-consumers-production-checks-20261008/build.jsonl",
+        "stderr": "target/candidate-consumers-production-checks-20261008/05.stderr"
+      }
+    ],
+    "source_before_after_equal": true,
+    "production_structure_reader_commands": [
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "inspect-structure-features",
+          "target/repetition-candidate-canonical-run-01/repeat-three/candidate-left",
+          "right",
+          "target/repetition-workbench-qa-20261008/three-left-origin-inspection.json"
+        ],
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 0.8799575279990677
+      },
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "inspect-structure-features",
+          "target/repetition-candidate-canonical-run-01/repeat-two/candidate-right",
+          "right",
+          "target/repetition-workbench-qa-20261008/two-right-origin-inspection.json"
+        ],
+        "pid": 5,
+        "exit_code": 0,
+        "elapsed_seconds": 0.5949622710177209
+      }
+    ]
+  },
+  "hfc_consumer": {
+    "commands": [
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-empty-truth.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/transients.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/transients",
+        "timeout_seconds": 180,
+        "expected_exit": 0,
+        "pid": 3,
+        "exit_code": 0,
+        "timeout": false,
+        "elapsed_seconds": 0.9651138409972191,
+        "owned_group_gone_before_cleanup": true,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/legacy.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/legacy",
+        "timeout_seconds": 180,
+        "expected_exit": 0,
+        "pid": 4,
+        "exit_code": 0,
+        "timeout": false,
+        "elapsed_seconds": 1.7662088689976372,
+        "owned_group_gone_before_cleanup": true,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "music-truth-template",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published/package",
+          "qa-software-consumer-not-human",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/long-empty-truth.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/long-template",
+        "timeout_seconds": 180,
+        "expected_exit": 0,
+        "pid": 5,
+        "exit_code": 0,
+        "timeout": false,
+        "elapsed_seconds": 35.16706529198564,
+        "owned_group_gone_before_cleanup": true,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/long-empty-truth.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/long.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/hfc-truth-consumer-cli-qa-20261008/run-01/long",
+        "timeout_seconds": 180,
+        "expected_exit": 0,
+        "generated_truth_before_sha256": "3434b141c4466d6e508f4049206586a5a1f365f54cb522711ba979da4c9a81ae",
+        "pid": 6,
+        "exit_code": 0,
+        "timeout": false,
+        "elapsed_seconds": 35.270513054012554,
+        "owned_group_gone_before_cleanup": true,
+        "owned_group_gone": true,
+        "generated_truth_after_sha256": "3434b141c4466d6e508f4049206586a5a1f365f54cb522711ba979da4c9a81ae"
+      }
+    ],
+    "observations": {
+      "transients": {
+        "frames": 786432,
+        "onsets": 46,
+        "status": "NO_COMPARABLE_COVERAGE",
+        "frame_strength_confidence_preserved": true,
+        "independent_onset_indices": true,
+        "all_non_onset_report_fields_unchanged": true
+      },
+      "legacy": {
+        "complete_report_bytes_equal": true,
+        "old_report": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-left.json"
+      },
+      "long": {
+        "frames": 28800000,
+        "onsets": 0,
+        "status": "NO_COMPARABLE_COVERAGE",
+        "frame_strength_confidence_preserved": true,
+        "independent_onset_indices": true
+      }
+    },
+    "input_count": 44,
+    "guards_before_after_equal": true,
+    "long_reader_scope": "Existing successful 600-second N28800000 automatic bundle; strict seven-resource SDK evidence read, no model/import/FFT rerun",
+    "original_onset_confidence": "None",
+    "old_report": "Complete legacy v1 serialized bytes equal",
+    "nonempty_matching": "Independent constructed unit oracle only, not human musical truth"
+  },
+  "repetition_workbench": {
+    "cases": [
+      {
+        "name": "three-left-origin",
+        "status": "PASS_SOFTWARE_NATIVE_CONTROLS",
+        "wrapper_pid": 970543,
+        "helper_pid": 970566,
+        "wrapper_exit": 0,
+        "helper_exit": 0,
+        "elapsed_seconds": 8.927816608978901,
+        "groups_gone": true,
+        "raw_binary64_oracle": "PASS_EXACT_TYPES_FIELDS_ORDER_AND_BINARY64_LEAVES",
+        "pointer_observations": [
+          {
+            "cursor": 196608,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 8,
+            "step": "Pointer(196608)"
+          },
+          {
+            "cursor": 565248,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 23,
+            "step": "Pointer(589823)"
+          },
+          {
+            "cursor": 589824,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 23,
+            "step": "Pointer(589824)"
+          }
+        ],
+        "audition_events": [
+          {
+            "cursor": 196608,
+            "event": "actual_explicit_seek",
+            "status": "audition.stopped",
+            "target": 196608
+          },
+          {
+            "event": "actual_kira_source_cursor",
+            "position": 197632,
+            "target": 196608
+          },
+          {
+            "event": "actual_kira_paused",
+            "position": 199168
+          },
+          {
+            "event": "actual_kira_stopped"
+          }
+        ],
+        "protectedequal": true,
+        "inputs_equal": true
+      },
+      {
+        "name": "two-right-origin",
+        "status": "PASS_SOFTWARE_NATIVE_CONTROLS",
+        "wrapper_pid": 970695,
+        "helper_pid": 970717,
+        "wrapper_exit": 0,
+        "helper_exit": 0,
+        "elapsed_seconds": 6.97502165401238,
+        "groups_gone": true,
+        "raw_binary64_oracle": "PASS_EXACT_TYPES_FIELDS_ORDER_AND_BINARY64_LEAVES",
+        "pointer_observations": [
+          {
+            "cursor": 196608,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 8,
+            "step": "Pointer(196608)"
+          },
+          {
+            "cursor": 368640,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 15,
+            "step": "Pointer(393215)"
+          },
+          {
+            "cursor": 393216,
+            "event": "observed_input_result",
+            "focused": true,
+            "owner": "Some(Keyboard)",
+            "readonly_chart_unchanged": true,
+            "selected": 15,
+            "step": "Pointer(393216)"
+          }
+        ],
+        "audition_events": [
+          {
+            "cursor": 196608,
+            "event": "actual_explicit_seek",
+            "status": "audition.stopped",
+            "target": 196608
+          },
+          {
+            "event": "actual_kira_source_cursor",
+            "position": 197632,
+            "target": 196608
+          },
+          {
+            "event": "actual_kira_paused",
+            "position": 199168
+          },
+          {
+            "event": "actual_kira_stopped"
+          }
+        ],
+        "protectedequal": true,
+        "inputs_equal": true
+      }
+    ],
+    "relation_selection": "Every original relation source/target, exact four half-open endpoints; selection does not autoplay, explicit Seek required",
+    "helper_sha256": "ed3a747ea4e0567ee80f255a4ab8b2328d4b4142d610dc4ae4fcf822f1088266",
+    "lab_sha256": "b7ce7dd6761bd0f60150f052145ad06d37728afbe604f98dac446326d2cde7d0",
+    "visual": "Root and independent six actual PNG inspection passed designated layout/selection/bottom scope; small details middle not captured",
+    "adjacent_support": "Original adjacent source/target intervals join into a continuous same-color stripe"
+  },
+  "preserved_failure": {
+    "status": "FAIL_PRESERVED",
+    "reason": "QA expected clicked N-1 as final cursor; unchanged production selects containing bin and sets cursor to its original start",
+    "revision03_delta": "One additional QA expected.cursor assignment for frame<N from frozen 24576-frame grid; original exact at_pixel/EOF/readonly/owner checks unchanged",
+    "production_fixed": false,
+    "first_window_wrapper_exit": 0,
+    "first_window_helper_normal_result": null,
+    "overall_first_run": "FAIL, wrapper zero does not prove helper success",
+    "old_second_window": "NOT_RUN_STOP_ON_FIRST_FAIL"
+  },
+  "review": {
+    "static_ui": "Lean already. Ship.",
+    "static_hfc": "Lean already. Ship.",
+    "qa_oracle_fix": "Lean already. Ship."
+  },
+  "not_run_or_not_admitted": [
+    "Human onset/Anchor musical truth, blind annotation, confidence calibration and musical quality admission",
+    "Acoustic output, physical controller/pointer and clean-device verification",
+    "Current source four-native final builds and tag Release",
+    "600-second successful structure publication cost; previous 64-boundary cap rejection remains",
+    "New runtime dual-source drift maintenance protocol"
+  ],
+  "old_quality_fail": "WholeSpect19PASS/9FAIL and old music quality FAIL preserved; no automatic Anchor admission",
+  "goal_status": "active",
+  "raw_artifacts": [
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/result.json",
+      "sha256": "07cb2270c2efb27deec0746ef6a782791f17150241505ec0e0ab32ba6f0b5bdd",
+      "bytes": 2116
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/checks.json",
+      "sha256": "72b259c25902fbc524a709d64b935aaf92f606bee9870d8a3876b08e740038b2",
+      "bytes": 1811
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/source-after.json",
+      "sha256": "6fb61041b47359c488baa1c0959eaf28557e1482608895f5fb3d4f6475ccb055",
+      "bytes": 43344
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/binary.json",
+      "sha256": "1d8cf28a912701b1fdd3af78340cc2843b12fa95982719da963a92bd611140d7",
+      "bytes": 44939
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/01.stdout",
+      "sha256": "12d6f86fa6911fb67f35748576c2bc1ba5be98a6519187e89f569a58a4942042",
+      "bytes": 9239
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/build.jsonl",
+      "sha256": "9474dcaca9a5c3f0e214e6e92774e5ea10a07cff1e6469988cb2e8ca39c7ea25",
+      "bytes": 404864
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/structure-baselines.json",
+      "sha256": "d859f40b4b09dfb51f71eb41ed5c3d3f8d4359623a332d338a90c76dbd2987c0",
+      "bytes": 775
+    },
+    {
+      "path": "target/candidate-consumers-production-checks-20261008/root-visual.json",
+      "sha256": "c1fbc20b7e8f8e968a746326f2f7766a04329bfeca7f0a517e0df91c3755fe5e",
+      "bytes": 1982
+    },
+    {
+      "path": "target/hfc-truth-consumer-cli-qa-20261008/FREEZE.json",
+      "sha256": "f794343aa1a378af956057c30dd2f2d639cbf516d8e84c19260289ea64595f83",
+      "bytes": 11648
+    },
+    {
+      "path": "target/hfc-truth-consumer-cli-qa-20261008/check.py",
+      "sha256": "3f3fb48e9fdb02c2573bcce7938a4facde8811a55a2ee8304980cd95c8eebfe8",
+      "bytes": 9025
+    },
+    {
+      "path": "target/hfc-truth-consumer-cli-qa-20261008/run-01/result.json",
+      "sha256": "6d3dd969ea55ae2e805cfbc8c6929ca7e96ac372c16e70e7c78cb7d896900e60",
+      "bytes": 5129
+    },
+    {
+      "path": "target/hfc-truth-consumer-cli-qa-20261008/ARTIFACTS.json",
+      "sha256": "2dda2fd3bdfda88721a851e39af84605d0edcede1594c9bb5fb397a15c764fd4",
+      "bytes": 3996
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/actual-build-process.json",
+      "sha256": "9642b6d25b4f73fe6350da68fee31aed2546cde93e86b034133394726a4a76d6",
+      "bytes": 92144
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/build.json",
+      "sha256": "7be6626922cedffaa5c4126e4df9d2ee8f9b3a0ba37733eda06d30533e9d7d3b",
+      "bytes": 116675
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/summary.json",
+      "sha256": "9d0c2d305ddc28bccde518a928bea46fb31d0d7862f1e1afcde3bccd5a0efb73",
+      "bytes": 11503
+    },
+    {
+      "path": "target/repetition-workbench-review-20261008/static.json",
+      "sha256": "78ba6b6161e2ee554d856cd576d4baad2932133d44e98687643abcf8bbfc8d0c",
+      "bytes": 6625
+    },
+    {
+      "path": "target/repetition-workbench-review-20261008/qa-oracle-revision03.json",
+      "sha256": "4afb44694041580003c83540ab4a5ad24f34b59134da344402cafd652c4a54d2",
+      "bytes": 2450
+    },
+    {
+      "path": "target/repetition-workbench-review-20261008/visual.json",
+      "sha256": "e5c34129a8720d31bc222a533635ef870bfc3badcc6f1bcd8825bfc594f96eb9",
+      "bytes": 6548
+    },
+    {
+      "path": "target/hfc-truth-consumer-review-20261008/static.json",
+      "sha256": "e69143b8f44d1f0920f2df4ec13db4af07ee4f331374bd664d05f58ea8f11663",
+      "bytes": 7122
+    },
+    {
+      "path": "target/repetition-workbench-qa-20261008-revision03/diagnosis.json",
+      "sha256": "327693e56807a997297b04000f8bbe0b820d84131009a10198ecb0826a1f86be",
+      "bytes": 3215
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/run.json",
+      "sha256": "82fca7c819e866e8f74f6fa9ca55be3c04941bf804662ad0616ae2937f340a0d",
+      "bytes": 193505
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/process.json",
+      "sha256": "5052c56567727093fda0d0478e44c25ff59333d4414ad4b1c6726d2b9bf5f57b",
+      "bytes": 59548
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/metadata.json",
+      "sha256": "97783fda1eed4db546204057b1f6abafd1593baffab004defce51ece31e21646",
+      "bytes": 51676
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/run.json",
+      "sha256": "6273a7ac8fbfa2a1558b3a0997db9f7d884bc8b0a40656dc22704cbdc18094d6",
+      "bytes": 189344
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/process.json",
+      "sha256": "0d226d2d88ce10c49beb41d006724a07c0b7da2d130b313a647d612b621f7230",
+      "bytes": 55768
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/metadata.json",
+      "sha256": "7b6226d86286c08df08eb575e3195eedfbbaeed9ca59ae9dce55abf69755b35a",
+      "bytes": 44946
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/source-interval.png",
+      "sha256": "f7c185d818d3c103713d086e7cc72ebb0f28123544d2ebadb440eee43ac5a9b6",
+      "bytes": 294356
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/target-interval.png",
+      "sha256": "0e7a734871e838109d456e7049be63a7ed043c68b156a2fd969ff353e0f5a8eb",
+      "bytes": 295634
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-three-left-origin/details-bottom-paused.png",
+      "sha256": "c399611305bda192bdb30624500999aeda8130e1a213d4a18aa24cc73766ea34",
+      "bytes": 227729
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/source-interval.png",
+      "sha256": "2afd98ef39e1607af676e1c06d1fa789d474804c7baef1cf3389d57856f0f19f",
+      "bytes": 79110
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/target-interval.png",
+      "sha256": "4aca568b089684b4b36db24de3b6e0852f04dd6f00649c13a837e1af38bf7436",
+      "bytes": 80602
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008-revision03/run-two-right-origin/details-bottom-paused.png",
+      "sha256": "ab571e31285dd1c9ed1e56eb557027f49b5f3f1b0274a15b7e45f6fe70c2432f",
+      "bytes": 87076
+    },
+    {
+      "path": "target/repetition-workbench-native-run-20261008/run-three-left-origin/run.json",
+      "sha256": "67496de20cde54f3849389a32be6f2307e5cf13028293380ebfb7eff1ef4ab22",
+      "bytes": 232279
+    }
+  ]
+}

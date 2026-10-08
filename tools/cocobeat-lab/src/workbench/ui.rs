@@ -1144,11 +1144,11 @@ fn paint_wave(
                     })
                 }))
                 .chain(selected.map(|bin| (bin.start_frame, bin.end_frame, [112, 189, 223, 255])));
-            for (start, end, color) in intervals {
-                let left = (start as i64).max(doc.start);
-                let right = (end as i64).min(doc.start + doc.span);
+            let mut interval = |start: i64, end: i64, color, top, bottom| {
+                let left = start.max(doc.start);
+                let right = end.min(doc.start + doc.span);
                 if left >= right {
-                    continue;
+                    return;
                 }
                 // Original half-open support remains intact; only raster columns are merged
                 let first = ((left - doc.start) as u64 * u64::from(width) / doc.span as u64) as u32;
@@ -1156,7 +1156,15 @@ fn paint_wave(
                     .div_ceil(doc.span as u64)
                     .min(u64::from(width)) as u32;
                 for x in first..last {
-                    line(x, height * 68 / 100, height * 72 / 100, color);
+                    line(x, height * top / 100, height * bottom / 100, color);
+                }
+            };
+            for (start, end, color) in intervals {
+                interval(start as i64, end as i64, color, 68, 72);
+            }
+            if let Some(spans) = candidates.selected_repetition_spans() {
+                for (start, end) in spans {
+                    interval(start, end, [112, 189, 223, 255], 60, 64);
                 }
             }
         }
@@ -1862,6 +1870,37 @@ mod tests {
         assert!(!detail.contains("proposed_anchor"));
         let title = &texts.iter().find(|(_, title, _)| *title).unwrap().2;
         assert_eq!(title, Locale::EnUs.text("native_beats.title"));
+    }
+
+    #[test]
+    fn selected_repetition_raster_uses_original_support_without_replacing_descriptor_bins() {
+        let mut state = super::super::tests::state();
+        state.candidates = Some(candidates::repetition_fixture());
+        state.document =
+            Document::from_anchors(49_153, state.document.original.clone(), vec![]).unwrap();
+        let pixels = waveform_pixels(&state.wave, &state.document, 300, 100);
+        for row in [5, 6] {
+            state.select(row);
+            state.document.cursor = -1;
+            let raster = paint_wave(
+                &pixels,
+                &state.document,
+                None,
+                state.candidates.as_ref(),
+                None,
+                300,
+                100,
+            );
+            let bytes = raster.data.as_ref().unwrap();
+            let color = |x: usize, y: usize| &bytes[(y * 300 + x) * 4..(y * 300 + x + 1) * 4];
+            assert_eq!(color(10, 60), &[112, 189, 223, 255]);
+            assert_eq!(color(250, 60), &[112, 189, 223, 255]);
+            assert_ne!(color(150, 60), &[112, 189, 223, 255]);
+            assert_eq!(color(299, 60), &[112, 189, 223, 255]);
+            assert_eq!(color(150, 68), &[133, 148, 164, 255]);
+        }
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.is_read_only());
     }
 
     #[test]

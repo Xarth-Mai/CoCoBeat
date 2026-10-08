@@ -72,7 +72,11 @@ cargo run --locked -p cocobeat-lab -- compile-repetition-candidate /path/to/pack
 
 成功包保存原半开 source / target 四端点，repetition capability 为 `Candidate / Algorithm / confidence=None`、各关系confidence为None，支持分数保留于diagnostics而非校准置信度。仅 repetition capability / payload、analysis profile / diagnostics改变，原音频与N、整份chart、sections、SectionCue、Anchor及其他分析事实保持；发布前再次完整核对原Source，diagnostics绑定来源旧CID、音频hash及原repetition状态，新analysis使完整CID改变
 
-当前生产 media85 / Lab85、两包全目标Clippy、格式、workspace边界与Lab构建均通过。17份原创WAV的原PCM34项与真实编码回读34项预登记控制均通过，各为13项正向exit0 / 21项预期拒绝exit1、TP17 / FP0 / FN0；原PCM四端点容差0、canonical四端点各24576帧，精确关系数量与原oracle保持。canonical批次121条实际命令为93次exit0 / 28次exit1，另10项目标保护 / 确定性 / 旧结构四对象回归 / 作者记录非fallback控制通过，source373、输入、旧包及两冻结二进制保持，全部owned进程组退出，见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
+同一 `workbench-candidates PACKAGE --structure left|right` 现可审阅已编译 repetition：原谱形 bin 列表后，每条原关系追加 `repetition[index].source` / `.target` 两行，详情保留原 source_start / source_end / target_start / target_end。选择任一行同时标出两个原半开区间，独立于原 bin / 相似邻居条带；选择只把工作台光标定位至该侧起点，明确使用 Seek 才跳转试听，原立体声播放、源包和 chart 保持
+
+header 的 `inspection_channel` 是本次谱形诊断声道，`origin_channel` 仅在编译 profile、Algorithm 来源及 diagnostics 的音频 hash / N 相符时显示原记录声道，不用本次 left / right 改写来源。未知 profile、损坏 diagnostics 或 Authored / legacy 元数据保留未知来源，原 capability / confidence 和 diagnostics 另列；1280×800中文 / 640×480法语两窗口软件行为及6张PNG指定目检通过，原鼠标QA期望FAIL与仅一行预期修复保留，见[消费者观察](../testdata/synthetic/candidate-consumers-observations-20261008.json)
+
+重复候选编译批次的生产 media85 / Lab85、两包全目标Clippy、格式、workspace边界与Lab构建均通过。17份原创WAV的原PCM34项与真实编码回读34项预登记控制均通过，各为13项正向exit0 / 21项预期拒绝exit1、TP17 / FP0 / FN0；原PCM四端点容差0、canonical四端点各24576帧，精确关系数量与原oracle保持。canonical批次121条实际命令为93次exit0 / 28次exit1，另10项目标保护 / 确定性 / 旧结构四对象回归 / 作者记录非fallback控制通过，source373、输入、旧包及两冻结二进制保持，全部owned进程组退出，见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
 
 首次Clippy的构造测试范围循环FAIL与等价迭代器修复保留。68项控制是原创配方机制oracle，不证明音乐重复语义、变速 / 转调、置信校准或自动舞台编排；600秒成本单独取证，完整MIR与旧wholeSpect / 音乐质量FAIL保持，沿用现有原生依赖，不新增GPL或产品Python分析运行时
 
@@ -99,3 +103,5 @@ cargo run --locked -p cocobeat-lab -- compile-repetition-candidate /path/to/pack
 新增 dormant `automatic-structure` 观察场景复用现 library observer，默认游戏不安装；旧场景保持原Update顺序，新场景在scene / UI更新后采样，不写Game / Session / 输入状态。runtime174项、Clippy、Game构建、格式及边界检查通过，6张实际1280×800 zh-CN PNG分别目检，Ready图只展示场景 / HUD，不作为菜单面板证明，见[原生接线观察](../testdata/synthetic/automatic-structure-native-observations-20261008.json)
 
 首次Clippy tuple类型复杂度拒绝与两次85秒Ready窗口FAIL保留：最初QA少了主控接管后的第二次新确认，game / wrapper exit0不能覆盖失败；只补QA输入顺序及类型别名后，冻结新源码 / Game重新实际运行通过，生产输入规则、候选算法和包均未改。实际Mesh读回和PNG不作为逐顶点理论证明，原生日志的ICU4X Chinese/Japanese分段数据警告保留；音乐质量、物理输入 / 音频、600秒成本和新四目标验收继续独立进行
+
+2026-10-08 · 工作台消费者补验：Lab92项、Clippy、格式、边界与构建通过；新版Lab对两份既有重复包的实际谱形回读均exit0，大小两窗经真实输入选择每条关系两侧、显式Seek、Kira源游标推进 / Pause / Stop、详情到底与原bin半开点击 / EOF通过，源码373及源包 / 基准 / 二进制保持，进程组全部释放。相邻source / target会形成连续同色条带，四端点以原详情和行区间保留；原首窗FAIL是QA将点击帧错当选bin后的游标，只修冻结QA的一行预期，生产逻辑保持，声学 / 物理输入 / 音乐质量和当前来源四目标另验

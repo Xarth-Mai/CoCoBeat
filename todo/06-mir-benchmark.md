@@ -69,4 +69,8 @@
 
 - [x] 显式自动分析软件候选：`import-experimental-analysis` 增加真实 HFC onset 与原相邻 beat 区间 tempo，`compile-structure-candidate` 明确生成 sections / cues 新包；media83 / Lab85、Clippy / 格式 / 边界 / 构建、原 PCM32与编码回读32项机制控制及实际 SDK / reader 消费通过，见[自动导入](../docs/native-beat-candidate.md#显式自动分析候选导入)与[结构候选](../docs/native-structure-features.md#显式编译结构候选包)，confidence未知、不自动 Anchor，音乐质量与真人参考未准入
 
+- [x] 自动 HFC onset 的 MusicTruth 对照消费者软件验收：固定自动 profile 报告 v2，原帧 / strength / 独立 records 按显式容差与 reviewed 覆盖对照，Candidate 空流保留漏检，Unsupported 保留原因与空 comparison；旧 beat-only 报告 v1 保持，Lab92项与必要检查、4条实际CLI及600秒七资源reader通过，旧v1完整字节保持；音乐质量和置信校准另验，见[候选对照](../docs/music-truth.md#对照原生候选)
+
 - [x] 原生重复关系软件候选：`compile-repetition-candidate` 固定网格 / 原速原调、完整非零bin、至多64个种子lag及64条非重叠关系，Candidate / Algorithm / None，原音频 / chart / sections / cues / Anchor保持；生产media85 / Lab85、Clippy / 格式 / 边界 / Lab构建已通过，原PCM34 / canonical34项预登记机制控制已PASS，600秒同源repetition实际发布18关系并通过typed守恒，wall97.871086秒 / kernel RSS72360 KiB；结构600秒capErr保留，成功出版成本另验，见[重复候选契约](../docs/native-structure-features.md#显式编译重复关系候选包)，完整MIR / 音乐语义 / 校准退出保持未完成
+
+- [x] 重复关系工作台消费者：同一结构模式展示两侧原端点与双区间、区分origin / inspection声道，显式Seek保持；Lab92项、两份生产回读、大小两窗及6PNG指定目检通过，首QA期望FAIL保留，见[消费者观察](../testdata/synthetic/candidate-consumers-observations-20261008.json)，音乐质量与当前来源四目标另验
