@@ -17,8 +17,8 @@ const MAX_REPORT_BYTES: usize = 4 * MAX_BYTES;
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Source {
-    origin_content_id: String,
+pub(crate) struct Source {
+    pub(crate) origin_content_id: String,
     audio_blake3: String,
     canonical_frames: u64,
     canonical_sample_rate: u32,
@@ -27,7 +27,7 @@ struct Source {
 }
 
 impl Source {
-    fn from_snapshot(source: &labels::Source) -> Self {
+    pub(crate) fn from_snapshot(source: &labels::Source) -> Self {
         Self {
             origin_content_id: source.content_id.clone(),
             audio_blake3: source.audio_blake3.clone(),
@@ -73,7 +73,7 @@ impl Source {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
-enum Channel {
+pub(crate) enum Channel {
     Stereo,
     Left,
     Right,
@@ -81,16 +81,16 @@ enum Channel {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Interval {
-    start_frame: u64,
-    end_frame: u64,
+pub(crate) struct Interval {
+    pub(crate) start_frame: u64,
+    pub(crate) end_frame: u64,
 }
 
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Track {
-    reviewed: Vec<Interval>,
-    frames: Vec<u64>,
+pub(crate) struct Track {
+    pub(crate) reviewed: Vec<Interval>,
+    pub(crate) frames: Vec<u64>,
 }
 
 impl Track {
@@ -125,10 +125,10 @@ impl Track {
 
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Tracks {
+pub(crate) struct Tracks {
     onset: Track,
-    beat: Track,
-    downbeat: Track,
+    pub(crate) beat: Track,
+    pub(crate) downbeat: Track,
 }
 
 impl Tracks {
@@ -139,12 +139,12 @@ impl Tracks {
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Document {
+pub(crate) struct Document {
     schema_version: u32,
-    source: Source,
-    reviewer: String,
-    channel: Channel,
-    tracks: Tracks,
+    pub(crate) source: Source,
+    pub(crate) reviewer: String,
+    pub(crate) channel: Channel,
+    pub(crate) tracks: Tracks,
 }
 
 impl Document {
@@ -181,7 +181,7 @@ impl Document {
     }
 }
 
-fn load(path: &Path, expected: &Source) -> Result<(Document, blake3::Hash), String> {
+pub(crate) fn load(path: &Path, expected: &Source) -> Result<(Document, blake3::Hash), String> {
     if !fs::symlink_metadata(path)
         .map_err(|error| format!("Inspect music truth: {error}"))?
         .is_file()

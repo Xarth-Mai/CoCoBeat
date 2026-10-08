@@ -1,0 +1,2017 @@
+{
+  "schema_version": 1,
+  "status": "PASS_ACTUAL_COMPARE_CLI_SOFTWARE_CONTROLS",
+  "scope": "Actual compare CLI with explicitly constructed software oracles; no human truth, model/codec/GPU/audio/hardware or admission",
+  "source_binding": {
+    "head_before_uncommitted_batch": "64c8205c98edca03043748964376dfe3bc47e804",
+    "compiled_inputs": 470,
+    "inputs_before_after_equal": true,
+    "changed_frozen_source": [
+      {
+        "path": "target/native-beat-compare-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+        "bytes": 15418,
+        "sha256": "665fa2aec0f91dbd6df37ff1984a65832040c064476ad6d2497b2d9d67194199"
+      },
+      {
+        "path": "target/native-beat-compare-delivery-20261008/build-01/source/tools/cocobeat-lab/src/music_truth.rs",
+        "bytes": 24894,
+        "sha256": "c7d721e91a216c74fb63a88a39ef54a347344c0a95f6a31828e781560d227399"
+      },
+      {
+        "path": "target/native-beat-compare-delivery-20261008/build-01/source/tools/cocobeat-lab/src/native_beat_compare.rs",
+        "bytes": 25079,
+        "sha256": "e959efcf921c4b325f36d7ca9750a5f6df938e2af6408f1d3953e8899374ce96"
+      }
+    ],
+    "historical_root_apply": {
+      "path": "target/native-beat-compare-delivery-20261008/root-apply.json",
+      "bytes": 753,
+      "sha256": "a660aab7b860f0ea161ca38b2116cf0fcb248193be4f1371fa8515161eb81996"
+    },
+    "history_boundary": "Initial root apply main_connection PENDING and candidate NOT_RUN fields are historical; final source/build/checks/CLI receipts bind this delivered batch"
+  },
+  "build": {
+    "command": [
+      "cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "-j",
+      "2",
+      "-p",
+      "cocobeat-lab",
+      "--message-format=json"
+    ],
+    "exit_code": 0,
+    "source_inputs": 470,
+    "inputs_unchanged": true,
+    "head": "64c8205c98edca03043748964376dfe3bc47e804",
+    "scope": "Accepted native cancellation head plus reviewed native comparison2, single test borrow fix and main mod/route/usage; snapshot of actual software compiler inputs, no SDK model execution",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+    "binary_sha256": "8df22646077d3f76c335692be31d8c43d4f14ec8987fd00c852bab164a0ab88e"
+  },
+  "build_receipt": {
+    "path": "target/native-beat-compare-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+    "bytes": 141795,
+    "sha256": "81e408dc9de5f36117d26cd733e9eccf8d602b05699881b89bdb879d41c90eea"
+  },
+  "checks": [
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/clippy-02.json",
+        "bytes": 649,
+        "sha256": "4e9a37250319577533085ea3a97ccd2175d28e63b2e19f9e0f7f7ce0952cf944"
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "test_summary": []
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/clippy.json",
+        "bytes": 646,
+        "sha256": "da3a5da2cd2a05ea0aa5ff7e94704160c941961b5ae0dde40d24cf41019ab2c2"
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "test_summary": []
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/compare-tests-02.json",
+        "bytes": 672,
+        "sha256": "b2045f6b273cb07700cd0890cf59e6c92a1ee1f77efb9ff40006b904add5527e"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "native_beat_compare::tests",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "test_summary": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.27s"
+      ]
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/compare-tests.json",
+        "bytes": 667,
+        "sha256": "92d6d417c5b839612d5345efc48063715f356f144ee7fef1b980785351fa46cb"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "native_beat_compare::tests",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "test_summary": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.28s"
+      ]
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/fmt-02.json",
+        "bytes": 489,
+        "sha256": "e6be6db5331ed38c5e63430ba7e6438a43cd87fbfb57b1b8ec5cc5767ebebc9d"
+      },
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "test_summary": []
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/fmt.json",
+        "bytes": 524,
+        "sha256": "e47dc744c3c84cdb9917672cf92ac35d734289872e9dc9ff7e9d51956e835545"
+      },
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 1,
+      "test_summary": []
+    },
+    {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/checks/lab-tests.json",
+        "bytes": 625,
+        "sha256": "a08f0f98e5874eb9a095fee44b319acb533e85cf1242da719df940afac1d35cc"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "test_summary": [
+        "test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.93s"
+      ]
+    }
+  ],
+  "actual_independent_review": {
+    "path": "target/native-beat-compare-delivery-20261008/actual-result-review.json",
+    "bytes": 7259,
+    "sha256": "b3543233fdf3ed32c7edac8a48dd0249a484dd43fd555aa57797b829ce466fff"
+  },
+  "CLI": {
+    "wrapper_command": {
+      "argv": [
+        "python",
+        "target/native-beat-compare-qa-20261008/check.py",
+        "target/native-beat-compare-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+        "8df22646077d3f76c335692be31d8c43d4f14ec8987fd00c852bab164a0ab88e",
+        "target/native-beat-compare-delivery-20261008/cli-run-01"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 60.229750144993886
+    },
+    "commands_receipt": {
+      "path": "target/native-beat-compare-delivery-20261008/cli-run-01/commands.json",
+      "bytes": 748610,
+      "sha256": "eda8e269eb9b085c501346abb4033f470fdef898348ea92628740cc8fb1db515"
+    },
+    "process_count": 16,
+    "successful_commands": 8,
+    "expected_rejections": 8,
+    "processes": [
+      {
+        "name": "template-left",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "music-truth-template",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "software-oracle-not-human",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/left-template.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/template-left",
+        "pid": 5,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-left/process.json",
+          "bytes": 2617,
+          "sha256": "6dc542fece3089d02c8bbac59085b10935bf763f5cefd3eb10704a566b674a97"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-left/stdout",
+          "bytes": 711,
+          "sha256": "5babe41317f2e9978fc3859c353db62dfd6ccaac8cedf9255144c68a4b0ec1ca"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-left/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "template-right",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "music-truth-template",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-right/bundle/package",
+          "software-oracle-not-human",
+          "right",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/right-template.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/template-right",
+        "pid": 6,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-right/process.json",
+          "bytes": 2622,
+          "sha256": "4b8cbc479ca688c27d597743d6db8f3b6b903a1137968a7c3fbb3f1b7a9ee919"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-right/stdout",
+          "bytes": 713,
+          "sha256": "898553b281fd87951817e2645c8c0c53133c8fcae9f0b367b8c1f81f68a60d79"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/template-right/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "full-left",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-left.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-left",
+        "pid": 7,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-left/process.json",
+          "bytes": 9460,
+          "sha256": "e536201724f42028681468942fc4644a1aa9aa44ac564763a3a40278c455ee21"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-left/stdout",
+          "bytes": 718,
+          "sha256": "0eff6bd73aa9f3a167f7148a95f04008f610e2cb2f730a3e8882c4ebf48e98f1"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-left/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "full",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 63,
+              "matched_count": 1
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 43,
+              "matched_count": 1
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 41,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "full-right",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-right/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-right/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-right.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-right.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-right",
+        "pid": 8,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-right/process.json",
+          "bytes": 9468,
+          "sha256": "79d8114d8496a1a3e6ef88a6da6e579adee936f95022c2e4474c89c2771435b6"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-right/stdout",
+          "bytes": 719,
+          "sha256": "cf4619e492cadaf48e77d730aa33b66b9ac43aa4e2d73fb8d1bcc40112f49e80"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-right/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "full",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 63,
+              "matched_count": 1
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 43,
+              "matched_count": 1
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 41,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "tolerance-edge",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/tolerance-edge.json",
+          "2",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge",
+        "pid": 9,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge/process.json",
+          "bytes": 9480,
+          "sha256": "1501482edf17677c04591752322dbfca96018afdb59cf01a81c963917240526b"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge/stdout",
+          "bytes": 723,
+          "sha256": "9ef503518881a11a8edbb51e1f8845d43b8ca7b8e1201727e0678c3208e05c4f"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "tolerance-edge",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 63,
+              "matched_count": 1
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 43,
+              "matched_count": 1
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 41,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "gap",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/gap.json",
+          "8640",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/gap.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/gap",
+        "pid": 10,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/gap/process.json",
+          "bytes": 9440,
+          "sha256": "09493cb1a51909da9809a40d27f658776f89ceb50d35c16711fdae2e5a4d4aef"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/gap/stdout",
+          "bytes": 715,
+          "sha256": "1598cd11c0ecb34b6ae9920b482095fc0e52aecc0b3651bdf9f1248b096eec05"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/gap/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "gap",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 1,
+              "matched_count": 1
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 2,
+              "matched_count": 1
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 1,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "unreviewed",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/unreviewed.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed",
+        "pid": 11,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed/process.json",
+          "bytes": 9465,
+          "sha256": "2f1b9541cdc539ed00c674d4d74218de4d4ea0aaa036e51024b46d2e3121c8d4"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed/stdout",
+          "bytes": 719,
+          "sha256": "2b46d35eb3176a939e289dc8aaf7dfa537dec963ff93ec8c03549d4e1d941f74"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "unreviewed",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 0,
+              "matched_count": 0
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 0,
+              "matched_count": 0
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 0,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "reviewed-zero",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/reviewed-zero.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero",
+        "pid": 12,
+        "exit": 0,
+        "expected_exit": 0,
+        "expected_message": null,
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero/process.json",
+          "bytes": 9477,
+          "sha256": "498e0d3ea58911d04f8e6a64fad97bbc835173fa8aece89107c8a8c9b897f07d"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero/stdout",
+          "bytes": 722,
+          "sha256": "5384d7bfb3d30a2ff640073c28a98a0b65ba1af78f6ba231712493f301a42ba6"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero/stderr",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json",
+        "mechanical_oracle": {
+          "basis": "hand-counted single exact events, explicit 2-frame edge and two one-frame gap components",
+          "mode": "reviewed-zero",
+          "human_music_quality": "NOT_RUN",
+          "three_stream_counts": {
+            "raw_beat": {
+              "candidate_total": 63,
+              "candidate_inside_coverage": 63,
+              "matched_count": 0
+            },
+            "raw_downbeat": {
+              "candidate_total": 43,
+              "candidate_inside_coverage": 43,
+              "matched_count": 0
+            },
+            "package_aligned": {
+              "candidate_total": 41,
+              "candidate_inside_coverage": 41,
+              "matched_count": 0
+            }
+          }
+        }
+      },
+      {
+        "name": "wrong-channel",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/wrong-channel.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/wrong-channel.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/wrong-channel",
+        "pid": 13,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Native comparison requires MusicTruth left",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/wrong-channel/process.json",
+          "bytes": 9476,
+          "sha256": "d4dc7a7241840aa2d20dcc600d59fd5f2aa58b16b4cb5077dcc04b403e54200c"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/wrong-channel/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/wrong-channel/stderr",
+          "bytes": 116,
+          "sha256": "a4c2217aceb27ac096bee704a79826f5931be0a8369f99cb673a9989873c2ff9"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "stereo",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/stereo.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/stereo.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/stereo",
+        "pid": 14,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Native comparison requires MusicTruth left",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stereo/process.json",
+          "bytes": 9448,
+          "sha256": "cfb3b2a88ca008215356ebf37bc93bfadf4bc80daac5456071aadb4d25eaaf1b"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stereo/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stereo/stderr",
+          "bytes": 116,
+          "sha256": "a4c2217aceb27ac096bee704a79826f5931be0a8369f99cb673a9989873c2ff9"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "stale-audio",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/stale-audio.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/stale-audio.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/stale-audio",
+        "pid": 15,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Music truth audio identity or basis differs",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stale-audio/process.json",
+          "bytes": 9468,
+          "sha256": "736d1b0d9fa4196cf13f1151bd3e0afddf7a6427c5fed0d34166a5165d07ddd2"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stale-audio/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/stale-audio/stderr",
+          "bytes": 71,
+          "sha256": "a222ef4bdd4ecb97ce2cf27ffd6cbdb0896c169cdb83b27b36c848ee0c5771bb"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "invalid-tolerance",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "not-an-integer",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/invalid-tolerance.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/invalid-tolerance",
+        "pid": 16,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Tolerance frames must be an unsigned integer",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/invalid-tolerance/process.json",
+          "bytes": 9488,
+          "sha256": "fdb03bdbaf2aca82ffa216db39bdafe828d187f78004b3a7d9a9e3532ab48830"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/invalid-tolerance/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/invalid-tolerance/stderr",
+          "bytes": 45,
+          "sha256": "a144097031f1988031dc02d4d5a35ac486abbd07356443d4cea36e466948a095"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "outside-tolerance",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "1536001",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/outside-tolerance.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/outside-tolerance",
+        "pid": 17,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "tolerance must be 0..=canonical_frames",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/outside-tolerance/process.json",
+          "bytes": 9482,
+          "sha256": "46f1379e797f7f92610e05e1f4e25d1d9a05894b2bd84a014cfde387f65b4670"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/outside-tolerance/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/outside-tolerance/stderr",
+          "bytes": 57,
+          "sha256": "935c4fc258f352f251b4b4e423bcf44c55e8b88e6e4e25c805ddd90e8797d81b"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "existing-report",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/full-left.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/existing-report",
+        "pid": 18,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Create new independent label document",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/existing-report/process.json",
+          "bytes": 9777,
+          "sha256": "d54f7dbc590a0d70b7423d099968cef99bcffeb5e3df9ff7082ca58f0f2f1b8d"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/existing-report/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/existing-report/stderr",
+          "bytes": 65,
+          "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "inside-package",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/inside-owned-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/inside-owned-package/report.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/inside-package",
+        "pid": 19,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "must be written outside the source package",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/inside-package/process.json",
+          "bytes": 9423,
+          "sha256": "bb2508e0ce7f9e4996b04ea40034d8cf80ba64c60f706287cd3a1b7db8666323"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/inside-package/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/inside-package/stderr",
+          "bytes": 74,
+          "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      },
+      {
+        "name": "bad-evidence",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence-fixture",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence",
+        "pid": 20,
+        "exit": 1,
+        "expected_exit": 1,
+        "expected_message": "Native summary does not match package analysis",
+        "status": "PASS_PROCESS_OBSERVATION",
+        "timeout": false,
+        "ownedgone": true,
+        "inputs_equal": true,
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        },
+        "receipt": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence/process.json",
+          "bytes": 4636,
+          "sha256": "2c8f31899688b06685c386a633598d7777b2c35d17103b854e89a6930f3ebcb1"
+        },
+        "stdout": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence/stdout",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stderr": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/bad-evidence/stderr",
+          "bytes": 47,
+          "sha256": "78a638d06911341c77c801ba7c038bc5b7750d0aa05cf3febb78cdcc1f509ae4"
+        },
+        "input_identities": "Complete original inputs_before/inputs_after remain in this process receipt and commands.json"
+      }
+    ],
+    "comparison_reports": [
+      {
+        "validated_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+        "validated_audio": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "left",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 0,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "d911ec733657717573ae4bf53c84604e5b2a457e328779fb1228b6c6c5ba03ea"
+        },
+        "tolerance_frames": 0,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "full-left",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-left.json",
+          "bytes": 41751,
+          "sha256": "a7e8e3e2d85c084eee84e83031f3a94a2d2afcbc4c1ecb015749afa4195f4033"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-left.json",
+          "bytes": 857,
+          "sha256": "46212401db217709db6f0a4d56446db63bf5d3f296e6a68f8b88d2fcaa587232"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 63,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 62,
+            "matches": [
+              {
+                "record_index": 5,
+                "candidate_frame": 112320,
+                "truth_frame": 112320,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "raw_downbeat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 43,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 42,
+            "matches": [
+              {
+                "record_index": 4,
+                "candidate_frame": 103680,
+                "truth_frame": 103680,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "package_aligned": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 41,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 0,
+            "unmatched_truth_count": 1,
+            "unmatched_candidate_inside_count": 41,
+            "matches": [],
+            "unmatched_truth_frames": [
+              103680
+            ],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      },
+      {
+        "validated_content_id": "package-blake3:ec4c8feb242a0e2485ac2e9872b0cd812e6c13f8ea11d800d88a0ea2d4626ec5",
+        "validated_audio": {
+          "content_id": "package-blake3:ec4c8feb242a0e2485ac2e9872b0cd812e6c13f8ea11d800d88a0ea2d4626ec5",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:ec4c8feb242a0e2485ac2e9872b0cd812e6c13f8ea11d800d88a0ea2d4626ec5",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "right",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 1,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "158de5b25a04dbb1c00001f67f72b7fa848dc77e31ac088ef317cab5f6935c0b"
+        },
+        "tolerance_frames": 0,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "full-right",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/full-right.json",
+          "bytes": 41752,
+          "sha256": "b4544627d44c050da93c917e12146d764596ddc9051730ab1cc353569a2abd53"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/full-right.json",
+          "bytes": 858,
+          "sha256": "6cd0f6ea2b000eb129d5394cdff004c532a94021330f161f71ed97370b5e25c5"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 63,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 62,
+            "matches": [
+              {
+                "record_index": 5,
+                "candidate_frame": 112320,
+                "truth_frame": 112320,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "raw_downbeat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 43,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 42,
+            "matches": [
+              {
+                "record_index": 4,
+                "candidate_frame": 103680,
+                "truth_frame": 103680,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "package_aligned": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 41,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 0,
+            "unmatched_truth_count": 1,
+            "unmatched_candidate_inside_count": 41,
+            "matches": [],
+            "unmatched_truth_frames": [
+              103680
+            ],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      },
+      {
+        "validated_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+        "validated_audio": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "left",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 0,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "d911ec733657717573ae4bf53c84604e5b2a457e328779fb1228b6c6c5ba03ea"
+        },
+        "tolerance_frames": 2,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "tolerance-edge",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/tolerance-edge.json",
+          "bytes": 41752,
+          "sha256": "6e2756a0eaa7de7c5908a3c346db515f4c72098734fe6bd7945098213c61b830"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/tolerance-edge.json",
+          "bytes": 857,
+          "sha256": "ea0b285eaf5266388f10a4cbe9e07c19d7f9611356cedfec8f6379850c23cbcd"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 63,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 62,
+            "matches": [
+              {
+                "record_index": 5,
+                "candidate_frame": 112320,
+                "truth_frame": 112322,
+                "signed_error_frames": -2
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 2.0,
+            "p95_absolute_error_frames": 2,
+            "max_absolute_error_frames": 2
+          },
+          "raw_downbeat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 43,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 42,
+            "matches": [
+              {
+                "record_index": 4,
+                "candidate_frame": 103680,
+                "truth_frame": 103680,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "package_aligned": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 41,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 1,
+            "matched_count": 0,
+            "unmatched_truth_count": 1,
+            "unmatched_candidate_inside_count": 41,
+            "matches": [],
+            "unmatched_truth_frames": [
+              103680
+            ],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      },
+      {
+        "validated_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+        "validated_audio": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "left",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 0,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "d911ec733657717573ae4bf53c84604e5b2a457e328779fb1228b6c6c5ba03ea"
+        },
+        "tolerance_frames": 8640,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "gap",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/gap.json",
+          "bytes": 42221,
+          "sha256": "fda319c60cdb4efc3d324a23eef791c82611cb9de717f7d76703db1977d76075"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/gap.json",
+          "bytes": 1033,
+          "sha256": "180d48f77c593d8c2275e703152ed9a6e44b085d25dd68439e832ee042c8b7f9"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "coverage_frames": 2,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 1,
+            "candidate_outside_coverage": 62,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 0,
+            "matches": [
+              {
+                "record_index": 5,
+                "candidate_frame": 112320,
+                "truth_frame": 112320,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "raw_downbeat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "coverage_frames": 2,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 2,
+            "candidate_outside_coverage": 41,
+            "truth_inside_coverage": 1,
+            "matched_count": 1,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 1,
+            "matches": [
+              {
+                "record_index": 4,
+                "candidate_frame": 103680,
+                "truth_frame": 103680,
+                "signed_error_frames": 0
+              }
+            ],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": 0.0,
+            "p95_absolute_error_frames": 0,
+            "max_absolute_error_frames": 0
+          },
+          "package_aligned": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 103680,
+                "end_frame": 103681
+              },
+              {
+                "start_frame": 112320,
+                "end_frame": 112321
+              }
+            ],
+            "coverage_frames": 2,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 1,
+            "candidate_outside_coverage": 40,
+            "truth_inside_coverage": 1,
+            "matched_count": 0,
+            "unmatched_truth_count": 1,
+            "unmatched_candidate_inside_count": 1,
+            "matches": [],
+            "unmatched_truth_frames": [
+              103680
+            ],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      },
+      {
+        "validated_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+        "validated_audio": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "left",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 0,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "d911ec733657717573ae4bf53c84604e5b2a457e328779fb1228b6c6c5ba03ea"
+        },
+        "tolerance_frames": 0,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "unreviewed",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/unreviewed.json",
+          "bytes": 41097,
+          "sha256": "a3efde2b106612e42a84008e134f5afbf863e045a7be52f562a2d09e6360b597"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/unreviewed.json",
+          "bytes": 641,
+          "sha256": "3d007ffd9be177712c54e985618ad8dee31fd794d2c9f584898d30fa95fc2e46"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "NO_COMPARABLE_COVERAGE",
+            "reviewed": [],
+            "matching_components": [],
+            "coverage_frames": 0,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 0,
+            "candidate_outside_coverage": 63,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 0,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          },
+          "raw_downbeat": {
+            "status": "NO_COMPARABLE_COVERAGE",
+            "reviewed": [],
+            "matching_components": [],
+            "coverage_frames": 0,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 0,
+            "candidate_outside_coverage": 43,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 0,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          },
+          "package_aligned": {
+            "status": "NO_COMPARABLE_COVERAGE",
+            "reviewed": [],
+            "matching_components": [],
+            "coverage_frames": 0,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 0,
+            "candidate_outside_coverage": 41,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 0,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      },
+      {
+        "validated_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+        "validated_audio": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_declared_source": {
+          "origin_content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "canonical_sample_rate": 48000,
+          "channels": 2,
+          "audio_basis": "canonical_decoded"
+        },
+        "truth_reviewer": "software-oracle-not-human",
+        "channel": "left",
+        "native": {
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "channel": 0,
+          "canonical_frames": 1536000,
+          "resampled_frames": 705600,
+          "spectrogram_frames": 1601,
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "model_blake3": "8fef35421f1babeec49fa74e4601a708048cbe1af9547fdab3d0a5368d577a90",
+          "summary_blake3": "d911ec733657717573ae4bf53c84604e5b2a457e328779fb1228b6c6c5ba03ea"
+        },
+        "tolerance_frames": 0,
+        "matching_policy": "earliest_feasible_one_to_one_in_connected_reviewed_components_inclusive_tolerance",
+        "candidate_state": "Candidate",
+        "confidence": null,
+        "beat_unit": null,
+        "meter": null,
+        "reference_semantics": "unrecorded_in_music_truth_v1",
+        "quality_status": "UNASSESSED",
+        "production_admission": false,
+        "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+        "old_music_quality": "FAIL_PRESERVED",
+        "onset": "NO_CANDIDATE_STREAM",
+        "name": "reviewed-zero",
+        "report": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/reviewed-zero.json",
+          "bytes": 41589,
+          "sha256": "f371fae9e307290dfc75bbe578698bfbdbbcce13167e0430aa4516865b3834f2"
+        },
+        "oracle": {
+          "path": "target/native-beat-compare-delivery-20261008/cli-run-01/oracles/reviewed-zero.json",
+          "bytes": 813,
+          "sha256": "9746e5215107ae7c3cb8890bf5b4e9ce53e5e73ae17e2cfb56e61d8dc2c734d2"
+        },
+        "streams": {
+          "raw_beat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 63,
+            "candidate_inside_coverage": 63,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 63,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          },
+          "raw_downbeat": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 43,
+            "candidate_inside_coverage": 43,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 43,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          },
+          "package_aligned": {
+            "status": "MECHANICAL_FRAME_COMPARISON",
+            "reviewed": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "matching_components": [
+              {
+                "start_frame": 0,
+                "end_frame": 1536000
+              }
+            ],
+            "coverage_frames": 1536000,
+            "candidate_total": 41,
+            "candidate_inside_coverage": 41,
+            "candidate_outside_coverage": 0,
+            "truth_inside_coverage": 0,
+            "matched_count": 0,
+            "unmatched_truth_count": 0,
+            "unmatched_candidate_inside_count": 41,
+            "matches": [],
+            "unmatched_truth_frames": [],
+            "median_absolute_error_frames": null,
+            "p95_absolute_error_frames": null,
+            "max_absolute_error_frames": null
+          }
+        },
+        "full_candidate_records_and_unmatched_arrays": "Retained verbatim in referenced actual report, not duplicated here"
+      }
+    ],
+    "reference_basis": "Actual previously imported native bundles plus explicitly constructed single-event, inclusive tolerance edge, separated reviewed gaps, unreviewed and reviewed-zero software oracles; reviewer software-oracle-not-human",
+    "postflight": {
+      "receipt": {
+        "path": "target/native-beat-compare-delivery-20261008/cli-run-01/commands.json",
+        "bytes": 748610,
+        "sha256": "eda8e269eb9b085c501346abb4033f470fdef898348ea92628740cc8fb1db515"
+      },
+      "json_pointer": "/postflight",
+      "path_count": 969,
+      "current_source_count": 470,
+      "frozen_source_count": 470,
+      "source_and_frozen_equal_build470_at_actual_postflight": true,
+      "equal": true,
+      "read_errors_before": {},
+      "read_errors_after": {},
+      "scope": "Original actual receipt namespace/process groups; no host PID namespace equivalence or fresh current-source readback by sealer"
+    },
+    "all_process_groups_gone": true,
+    "timeouts": 0,
+    "cleanup_signals": [],
+    "owned_cwd_session_cache": "All 16 actual command receipts record absent before/after, limited to owned command cwd"
+  },
+  "boundaries": {
+    "human_truth": "NOT_RUN",
+    "music_quality": "UNASSESSED",
+    "production_admission": false,
+    "SDK_model_execution_this_batch": "NOT_RUN; reader consumes existing evidence, no fresh inference",
+    "codec_GPU_audio_device_four_platform": "NOT_RUN",
+    "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+    "old_music_quality": "FAIL_PRESERVED",
+    "raw_sha_scope": "Selected small raw artifacts rehashed; large binary/audio/PCM/spectrogram SHA identities referenced from actual producers, not rehashed",
+    "production_or_git_mutation_by_sealer": "NONE"
+  },
+  "raw_index": {
+    "future_path": "testdata/synthetic/native-beat-compare-observations-20261008-raw-index.json",
+    "candidate_path": "target/native-beat-compare-delivery-20261008/observation-draft/revision02/native-beat-compare-observations-20261008-raw-index.json",
+    "bytes": 52491,
+    "sha256": "b96b08e70959ab1a59da50b39b8c45c15a06e9b2fae7e563b040f6cb99c73428"
+  }
+}
