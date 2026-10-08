@@ -53,6 +53,19 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $version = (rustc --version).Split(' ')[1]
           "version=$version" >> $env:GITHUB_OUTPUT
+      - name: Verify preinstalled Visual Studio Clang for BTT
+        run: |
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $toolsArch = if ($env:BUILD_TARGET -eq 'aarch64-pc-windows-msvc') { 'ARM64' } else { 'x86.x64' }
+          $hostFolder = if ($env:RUNNER_ARCH -eq 'ARM64') { 'ARM64' } else { 'x64' }
+          $vs = & $vswhere -latest -products '*' -requires "Microsoft.VisualStudio.Component.VC.Tools.$toolsArch" Microsoft.VisualStudio.Component.VC.Llvm.Clang -property installationPath
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not $vs) { throw 'Visual Studio C++ Clang compiler component is missing' }
+          $clang = Join-Path $vs "VC/Tools/LLVM/$hostFolder/bin/clang-cl.exe"
+          if (-not (Test-Path -LiteralPath $clang -PathType Leaf)) { throw "Missing native VS clang-cl: $clang" }
+          Write-Host "target=$env:BUILD_TARGET runner_arch=$env:RUNNER_ARCH image=$env:ImageOS/$env:ImageVersion clang_cl=$clang"
+          & $clang --version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/cache@v6
         with: &release-cache
           path: |
@@ -60,7 +73,7 @@ jobs:
             ~/.cargo/git
             target/${{ inputs.target }}/release
             target/release
-          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h') }}
+          key: release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h', 'crates/cocobeat-btt/**/*.c', 'crates/cocobeat-btt/**/*.h') }}
           restore-keys: |
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
             release-${{ runner.os }}-${{ inputs.target }}-${{ steps.rust.outputs.version }}-
@@ -168,6 +181,7 @@ jobs:
             if ($report -notmatch '(?<![a-z])beat: AnalysisCapability \{ state: Candidate, source: Algorithm, confidence: None \}') { throw 'Missing Candidate beat capability' }
             if ($report -notmatch 'downbeat: AnalysisCapability \{ state: Candidate, source: Algorithm, confidence: None \}') { throw 'Missing Candidate downbeat capability' }
             if ((Invoke-Lab "$channel-stage" @('inspect-stage', "$work/$channel/package", '0')) -ne 0) { throw 'Stage inspection failed' }
+            if ((Invoke-Lab "$channel-tempo" @('inspect-native-tempo', "$work/$channel/package", $channel, "$work/$channel-tempo.json")) -ne 0) { throw 'Native tempo inspection failed' }
           }
           $resource = (Resolve-Path dist/smoke/assets/models/beat-this/small0.onnx).Path
           Move-Item $resource "$resource.missing-control"
@@ -341,6 +355,7 @@ jobs:
             grep -F ' beat: AnalysisCapability { state: Candidate, source: Algorithm, confidence: None }' "$work/$channel-verify-stdout.txt"
             grep -F 'downbeat: AnalysisCapability { state: Candidate, source: Algorithm, confidence: None }' "$work/$channel-verify-stdout.txt"
             run_lab "$channel-stage" inspect-stage "$work/$channel/package" 0
+            run_lab "$channel-tempo" inspect-native-tempo "$work/$channel/package" "$channel" "$work/$channel-tempo.json"
           done
           resource="$PWD/dist/smoke/assets/models/beat-this/small0.onnx"
           mv "$resource" "$resource.missing-control"

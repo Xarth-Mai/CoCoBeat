@@ -1794,6 +1794,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "cocobeat-btt"
+version = "0.1.0"
+dependencies = [
+ "cc",
+]
+
+[[package]]
 name = "cocobeat-core"
 version = "0.1.0"
 dependencies = [
@@ -1842,6 +1849,7 @@ name = "cocobeat-media"
 version = "0.1.0"
 dependencies = [
  "blake3",
+ "cocobeat-btt",
  "cocobeat-schema",
  "ort",
  "oximedia-audio",

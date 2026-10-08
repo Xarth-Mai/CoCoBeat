@@ -26,6 +26,12 @@
 | [rcgen](https://github.com/rustls/rcgen) | 0.14.10 | net：每次会话自签证书 | MIT OR Apache-2.0 |
 | [tokio](https://github.com/tokio-rs/tokio) | 1.53.1 | net：单线程网络 runtime、有界队列与超时 | MIT |
 | [embed-resource](https://github.com/nabijaczleweli/rust-embed-resource) | 3.0.11 | game：仅 Windows 构建时嵌入 EXE 图标 | MIT |
+| [cc](https://github.com/rust-lang/cc-rs) | 1.5.1 | btt：仅构建时编译固定 BTT C 静态库，复用已有锁定依赖 | MIT OR Apache-2.0 |
+| [BTT](https://github.com/michaelkrzyzaniak/Beat-and-Tempo-Tracking) | c039090f1af771092d95c3ffc402e557940f7384 | btt/media/Lab：显式 canonical 原始 tempo 报告，固定 48 kHz 配置，无 callback | MIT |
+
+BTT 的六个 C 文件、六个必要头文件与 MIT LICENSE 保持固定上游 commit 原字节，逐文件 SHA-256、来源与构建边界见 [BTT 来源目录](btt/README.md)，[MIT 原许可](btt/LICENSE) 随现有 licenses 目录进入发行包；专用 cocobeat-btt 绑定 / shim 使用 MPL-2.0，crate 组合许可为 MPL-2.0 AND MIT，unsafe Rust 只存在于其私有 FFI 所有权模块，media / runtime 保持 forbid；cc 是已有 registry 包的新增直接 build 依赖，BTT 是 vendored native 源而非新增 registry 包，不增加本 CSV 的包名 / 版本行
+
+BTT 返回原始滚动 BPM、周期和未校准 histogram certainty，不提供 beat unit / meter / 校准 confidence 或可靠 TempoRegion；本接线保持 UNSCORED_NO_ADMISSION_THRESHOLD 与 production_admission=false，既有 Linux 软件研究不替代新绑定及 Windows/Linux x64/ARM64 的实际编译、链接与运行验收
 
 Vorbis 路径的 Rust binding BSD、Vorbis / libogg COPYING 以及编译路径中的 LPC 独立 notice 原文与实际归档身份保留在 [vorbis-rs 来源目录](vorbis-rs/README.md)，随现有 licenses 目录进入发行包；Vorbis sys 四文件修补和 libogg sys 两文件官方修补及原归档身份分别见 [Vorbis UPSTREAM](../vendor/aotuv_lancer_vorbis_sys/UPSTREAM.md) 与 [libogg UPSTREAM](../vendor/ogg_next_sys/UPSTREAM.md)；完整文本收录不替代编码器及四目标发行验证
 

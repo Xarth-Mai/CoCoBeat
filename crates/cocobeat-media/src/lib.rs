@@ -15,6 +15,7 @@ mod encode;
 mod native_beat;
 mod native_beat_evidence;
 mod native_cancellation;
+mod native_tempo;
 mod package;
 mod resample;
 
@@ -34,6 +35,7 @@ pub use native_beat_evidence::{
     NativeDownbeatAlignment, NativePeakMember, read_native_beat_evidence,
 };
 pub use native_cancellation::NativeBeatCancellation;
+pub use native_tempo::{NativeTempoEvidence, NativeTempoRecord, inspect_native_tempo_package};
 pub use package::{
     MAX_RECEIVED_PACKAGE_BYTES, PACKAGE_OBJECT_LIMITS, PACKAGE_OBJECT_NAMES, PackageBuildInput,
     ReceivedPackage, ValidatedPackage, build_package, export_anchors, read_package,

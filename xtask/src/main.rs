@@ -115,7 +115,8 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
                 ],
                 false,
             ),
-            "cocobeat-media" => (&["cocobeat-schema"], true),
+            "cocobeat-media" => (&["cocobeat-schema", "cocobeat-btt"], true),
+            "cocobeat-btt" => (&[], false),
             "cocobeat-net" => (
                 &[
                     "cocobeat-schema",
@@ -175,6 +176,13 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
             // crates cannot be used to tunnel through a workspace boundary.
             let external =
                 !dependency["source"].is_null() && !dependency_name.starts_with("cocobeat-");
+            let btt_compiler_build = name == "cocobeat-btt"
+                && dependency_name == "cc"
+                && dependency["kind"] == "build"
+                && dependency["target"].is_null()
+                && dependency["source"]
+                    .as_str()
+                    .is_some_and(|source| source.starts_with("registry+"));
             let windows_icon_build = name == "cocobeat-game"
                 && dependency_name == "embed-resource"
                 && dependency["kind"] == "build"
@@ -183,6 +191,7 @@ fn verify_graph(metadata: &Value) -> Result<(), String> {
             if !allowed.contains(&dependency_name)
                 && !(allow_external && external)
                 && !windows_icon_build
+                && !btt_compiler_build
             {
                 return Err(format!("Forbidden dependency: {name} -> {dependency_name}"));
             }
@@ -239,6 +248,14 @@ mod tests {
             ("cocobeat-runtime", "cocobeat-editor"),
             ("cocobeat-net", "cocobeat-runtime"),
             ("cocobeat-media", "cocobeat-net"),
+            ("cocobeat-schema", "cocobeat-btt"),
+            ("cocobeat-core", "cocobeat-btt"),
+            ("cocobeat-stage", "cocobeat-btt"),
+            ("cocobeat-editor", "cocobeat-btt"),
+            ("cocobeat-runtime", "cocobeat-btt"),
+            ("cocobeat-game", "cocobeat-btt"),
+            ("cocobeat-net", "cocobeat-btt"),
+            ("cocobeat-lab", "cocobeat-btt"),
         ] {
             assert!(
                 verify_graph(&graph(
@@ -266,7 +283,45 @@ mod tests {
             ))
             .is_ok()
         );
+        assert!(
+            verify_graph(&graph(
+                "cocobeat-media",
+                json!([{"name": "cocobeat-btt", "source": null}])
+            ))
+            .is_ok()
+        );
         assert!(verify_graph(&graph("cocobeat-surprise", json!([]))).is_err());
+    }
+
+    #[test]
+    fn btt_owns_only_an_unconditional_registry_cc_build_dependency() {
+        let registry = Some("registry+https://example.invalid");
+        for (dependency, kind, target, source, accepted) in [
+            ("cc", Some("build"), None, registry, true),
+            ("cc", None, None, registry, false),
+            ("cc", Some("dev"), None, registry, false),
+            ("cc", Some("build"), Some("cfg(windows)"), registry, false),
+            ("cc", Some("build"), None, None, false),
+            (
+                "cc",
+                Some("build"),
+                None,
+                Some("git+https://example.invalid"),
+                false,
+            ),
+            ("serde", Some("build"), None, registry, false),
+            ("unlisted-local-helper", Some("build"), None, None, false),
+            ("cocobeat-schema", None, None, None, false),
+        ] {
+            let metadata = graph(
+                "cocobeat-btt",
+                json!([{
+                    "name": dependency, "rename": "cc_alias", "kind": kind,
+                    "target": target, "source": source
+                }]),
+            );
+            assert_eq!(verify_graph(&metadata).is_ok(), accepted, "{metadata}");
+        }
     }
 
     #[test]

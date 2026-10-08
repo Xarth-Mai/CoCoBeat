@@ -1,0 +1,739 @@
+{
+  "schema_version": 1,
+  "status": "SEALED_SELECTED_RECEIPTS_AND_PRODUCER_RECORDED_RAW_HASHES",
+  "scope": "This single-package BTT software batch only; small receipts directly hashed, raw reports/12MB PCM use already produced hashes; no recursive historical40/vendor/model/artifact scan",
+  "files": [
+    {
+      "path": "target/native-tempo-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+      "bytes": 142296,
+      "sha256": "41d5acb21e88955ba6930d1b84b635a10b1648363280cc953e66bd01f86b2c5d",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/build-01/inputs-before.json",
+      "bytes": 60512,
+      "sha256": "67269f6fba8bffc95e57baa6ed41bec752f586d79881667e2067344f9f80c394",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/build-01/inputs-after.json",
+      "bytes": 60512,
+      "sha256": "67269f6fba8bffc95e57baa6ed41bec752f586d79881667e2067344f9f80c394",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/helper-01/build.json",
+      "bytes": 81376,
+      "sha256": "6142ff90171d37a6101cb144326c07c401cc905cf0ba8d224bf9e76da9598381",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/helper-01/prepared.json",
+      "bytes": 691,
+      "sha256": "ba30e1872b13ebea22333c553c495d469eea0dc4fb8b9ce5a4b8a9cd01694759",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/helper-01/source/main.rs",
+      "bytes": 2767,
+      "sha256": "ec729a6571d802d7e98945b72e791122d105227b3e453b325e1b31adb9b5ff34",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/helper-01/instrumentation.patch",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/helper-01/build.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/audit-runtime-root-delta/review.json",
+      "bytes": 7309,
+      "sha256": "6b7b09ba3f6fb91b474d3070eb6866a91a57f34206cd3148a4178bb16209fc48",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-prepare-command.json",
+      "bytes": 232,
+      "sha256": "7484a0084f1bfbcaa210b825f2c10931eff0000a10a597221f6f3bacc07b4541",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-prepare.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-prepare.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-build-command.json",
+      "bytes": 386,
+      "sha256": "b75cc0dfa24efae311faeedd18c52a023d28912226df4d5770318e754f38fd9a",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-build.stdout",
+      "bytes": 108,
+      "sha256": "4898f0c69a3b0c6f18b18f38c5927ca40d9e531a91ed10daa51265bcaa7388ad",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-build.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run-command.json",
+      "bytes": 287,
+      "sha256": "507367a159fc8b958f7a3147fb1d30ec470867f973dbefbe6cf889326f24fa66",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run.stderr",
+      "bytes": 70028,
+      "sha256": "a2947560f8609e1f067576b774e5ca057e6ec5331da8b5623f10ab0d823fa778",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run-02-command.json",
+      "bytes": 286,
+      "sha256": "d39ec5d0375a3016df590aa322de5595b0d80e6882ce5b6a90a4c80d107e4efe",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run-02.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/qa-run-02.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/btt-tests.json",
+      "bytes": 149,
+      "sha256": "2dc261570637cab8d163ac8a82f2f275ba794dda2620661ba69bbbc679e103ce",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/btt-tests.stdout",
+      "bytes": 386,
+      "sha256": "540c760c6d4f40f51ea11a5d3bd96bfa048f4c5772c33642a67ce006f9764014",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/btt-tests.stderr",
+      "bytes": 2607,
+      "sha256": "336cfb118806bb5465e5bdc6b2031592ddeac0d101538a945680a68045cc23f1",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-native-tempo-tests.json",
+      "bytes": 186,
+      "sha256": "fde2f5b964677016d869a96b5d2e0501f6a888517df471e11112a7497139b3d9",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-native-tempo-tests.stdout",
+      "bytes": 401,
+      "sha256": "337e10f2d3d584abd5449e72b5bcd813fd5f2a26b4db5154c61c2d1859675acb",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-native-tempo-tests.stderr",
+      "bytes": 2587,
+      "sha256": "7dac3a02962b228297c2ceb9582090618cec7ce74af267f5ad57189514c72a9b",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-native-tempo-tests.json",
+      "bytes": 185,
+      "sha256": "283545c8ee5c2ee267c61ac3b42fd501474e3a73152985a2bcdf265a92e0c2e8",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-native-tempo-tests.stdout",
+      "bytes": 229,
+      "sha256": "4986f672681e4af991db55d3b4c5cb4e7ed2f43882e9722ddfc5d8b6989bd092",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-native-tempo-tests.stderr",
+      "bytes": 2852,
+      "sha256": "1abc86b6b882042e22b16e03bf2dc08d5fa7cf35f27f9f6e8e10e840c151a646",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-tests.json",
+      "bytes": 167,
+      "sha256": "e096a7785484e87449028922be286304e6c3f1470b605974af6245d0b15c11c3",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-tests.stdout",
+      "bytes": 6742,
+      "sha256": "2e31118999f03a27cba56f96ce3983eb76ce7ebaa7d9fe537905ad4257478256",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/media-tests.stderr",
+      "bytes": 2615,
+      "sha256": "ad107069d13fc3190e64b7329dd933c7ff34392eb69d417fc579de7f9672d8c5",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-tests.json",
+      "bytes": 164,
+      "sha256": "60ef0e4d8daf9921e6edb07ee3e207681db70f265bde345fa8611cf23b17ec9f",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-tests.stdout",
+      "bytes": 7915,
+      "sha256": "8ba13cde8eedc5fd4cc3ac899c1ee2f1a221680e4dd61f8afb8466b1316a8503",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/lab-tests.stderr",
+      "bytes": 2496,
+      "sha256": "b480ecaaaabac600754d7c257524590b0ee89be0394c37ff31991b230230b10b",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/xtask-tests.json",
+      "bytes": 158,
+      "sha256": "e9dd2b4c2780851e98dc3b49af6d74c83396040a14c55cae6a33a8563894bde8",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/xtask-tests.stdout",
+      "bytes": 583,
+      "sha256": "21511fda67440e39683fee7b21829a899bfdd4a1430ab0790b95cc4a5910b501",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/xtask-tests.stderr",
+      "bytes": 216,
+      "sha256": "9f03e616fac7631f058ddc7dc878ca25610b3e117c815a5f52fc3d97bbf72263",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/boundaries.json",
+      "bytes": 121,
+      "sha256": "2c0eb69f0d430bde6552b5a2536d5bef8157f37ba33df2160d8b2aaafca410a7",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/boundaries.stdout",
+      "bytes": 78,
+      "sha256": "c1dd38d0fcaf97787d833c0ee1ceb0d75c34d1c25ccb7e0f785f00217e8b5ace",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/boundaries.stderr",
+      "bytes": 182,
+      "sha256": "af575c69f91859abb2adcde6358f3b6f04feb39f01feefaa70bdb0a67d2217c8",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/clippy.json",
+      "bytes": 308,
+      "sha256": "5c5d37d81a11f3e897a5977f475ffd0de35d502127f53471fab30497c7be7b4c",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/clippy.stderr",
+      "bytes": 3370,
+      "sha256": "71a4552f07e4756d063b86149d91a723f92a4c1d9741f47c97729e841f977641",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/fmt.json",
+      "bytes": 139,
+      "sha256": "a2aed45e90b17a3f70f614183f7ab98369559f619e7b9b2be677fd2fe5775dfc",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/metadata.json",
+      "bytes": 173,
+      "sha256": "63889bf70e0654ffcf2bee5554becb7fb50e3ad2bfff7bbed8561e6334b03439",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/metadata.stdout",
+      "bytes": 3376673,
+      "sha256": "3b5c2ffcc5cbd7ab9eddf9f0a1e074f036a5b9d9834518fa725105fd90d8b2f1",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/checks/metadata.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008/FREEZE.json",
+      "bytes": 963,
+      "sha256": "f7ec88b402207ef1fcb954cc9cef3b63913085f82f0f2095cd08456182271e44",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/FREEZE.json",
+      "bytes": 1194,
+      "sha256": "9bd6432d3727e430aa40fe9f0273fbe236b4d615da69940ad28685b7d6e32918",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008/static-checks.json",
+      "bytes": 582,
+      "sha256": "a00025975e37578a4bbcb1b9297f60be9ed15a77bfc1b1c59e456c2c8c0f1258",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/static-checks.json",
+      "bytes": 698,
+      "sha256": "44dd56906b07f2c336654e47ab52b1acb67a63703e7213c11fc747d760211990",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008/independent-review.json",
+      "bytes": 17694,
+      "sha256": "5051e3d6cdca9e26fd25ab0008c4958be8cf766049fea69ff8328fc1817fbefa",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/independent-review.json",
+      "bytes": 4025,
+      "sha256": "201a8866e00c6e08bdef5c59cbcbc71280512e2d0902c4cb0fee1054fd74c9a0",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/driver.rs",
+      "bytes": 2767,
+      "sha256": "ec729a6571d802d7e98945b72e791122d105227b3e453b325e1b31adb9b5ff34",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/check.py",
+      "bytes": 14624,
+      "sha256": "bdf1e59cdcef4d7df2b9fb19b156ad36abec82e394562a72828b96440c994308",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/IDENTITY.json",
+      "bytes": 10226,
+      "sha256": "15eb56ecd6025edc2776907179520385f05f4e318068679c2335737c3059bbec",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/revision.patch",
+      "bytes": 2442,
+      "sha256": "d8a30921e038990200a1d709e073bb1b0a8bf3409958508a386b1bc9344b1d10",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-equivalence-qa-20261008-revision02/PLAN.md",
+      "bytes": 5050,
+      "sha256": "ad3129396358aad5c9bfe6b5f64667ed96a055be5469e21085363fca4096985b",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-candidate-20261008/manifest.json",
+      "bytes": 8376,
+      "sha256": "ed3a01883ac19b54ab50c927f7442105fc04b100f4528b59195180fc71135f59",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-candidate-20261008/INTEGRATION.md",
+      "bytes": 7454,
+      "sha256": "74f4db0450bcfa7af37ed6012aa592dc61d89fc640adb967c64cf30b85bd27ec",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-cancellation-qa-20261008/revision02/check.py",
+      "bytes": 21099,
+      "sha256": "0704dd158a0b882fda1d5bc9b1af2e9007e5fd1ab6d15f4159c29816da677aa6",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "tools/replay-workbench-check/check.py",
+      "bytes": 12153,
+      "sha256": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/driver.c",
+      "bytes": 6787,
+      "sha256": "d89d1b207d3cd75758ef5b2dbf76808dbffdf0f8d708d0ed70c8991d01312936",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/build.sh",
+      "bytes": 1121,
+      "sha256": "e40c29757437b9edcfb245fd4edbbd513a575bc2ad812e8a9609c3537ec03c8a",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-20261007/prepared-v1/frozen/check.py",
+      "bytes": 18301,
+      "sha256": "ee0afcebbcd5ef9effad715007353d1062b3323e1a81e2dfd160e5e3d464d134",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-20261007/prepared-v1/source-files.sha256",
+      "bytes": 2096,
+      "sha256": "0acd03d059ee4c177a51c5ec6ec83608adaa7b190f1ceed26f3b2cc6394eaa3d",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "bytes": 182691,
+      "sha256": "9af1fed7818b537afc1fcf7f61b8870d13e90a2c7c9a6303beb4723e392d1e1a",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/strict-pcm-export/process.json",
+      "bytes": 2530,
+      "sha256": "c7777e8c16cb01d42130f807c8380caaca5cb95b3f88b2714c973275be21e9ad",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/strict-pcm-export/stdout",
+      "bytes": 481,
+      "sha256": "f02147a0ebe920be2df8e9689b7fed98ca51774f31b7fcde1ef741a66d043f6d",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/strict-pcm-export/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-left/process.json",
+      "bytes": 2539,
+      "sha256": "7a52a97c9c0223ef99cb7170a54c807a5617ef2ba8b76eea95747e5dea91f494",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-left/stdout",
+      "bytes": 588,
+      "sha256": "4fd1f4e0ed4679ab6aca093d87584e57309fa22be51d1170fc9f3ba8ad9175ce",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-left/process.json",
+      "bytes": 1909,
+      "sha256": "9579f1f9dfc8e1e957daa8f1d6214303b7ea5560cf731d722dc251e3329fba4e",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-left/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-right/process.json",
+      "bytes": 2542,
+      "sha256": "bebbdae1d21530e90743bac30613fc7c1c2b992aab73ec39cdc40f03431515c7",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-right/stdout",
+      "bytes": 589,
+      "sha256": "5d938bceb08b696a5f152cf67957d2658755cef2ba8ec291bba76c1c294bbda1",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/production-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-right/process.json",
+      "bytes": 1911,
+      "sha256": "799e411e0f49e95daeaddb2bd2ad9d5cf4e842e442fe4c1455de74bc30d81981",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-right/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/old-c-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/canonical.f32le",
+      "bytes": 12288000,
+      "sha256": "78df73ab33f4716aa1aafae3a5b0e985fa9252314fed101bd98bd30dd02eb212",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "producer_field": "output_file_index.canonical.f32le"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/left.json",
+      "bytes": 3413775,
+      "sha256": "eba72ed61b0f2fcea336abab9ed40d101293f9fd8224069465ad02b88090c96b",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "producer_field": "output_file_index.left.json"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/left-old.jsonl",
+      "bytes": 2809468,
+      "sha256": "e4c86d80ba338c26d2c7d1e33c94c62df0b5863b6c74999244ceb8921f40d3c4",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "producer_field": "output_file_index.left-old.jsonl"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/right.json",
+      "bytes": 3413775,
+      "sha256": "9b0f30b0f0391e672432b16d974f521fe4b2ea09e69f8089628ad58c93e97742",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "producer_field": "output_file_index.right.json"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-01/right-old.jsonl",
+      "bytes": 2809468,
+      "sha256": "f677520a696a80610d441868c2986cfc77f852fb24833cfc7f3524bd13392759",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-01/run.json",
+      "producer_field": "output_file_index.right-old.jsonl"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "bytes": 182828,
+      "sha256": "006f309b39bc293290db8ec4c8b93d9ab23e5a727feaa299ecb3924fc3d34c5b",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/strict-pcm-export/process.json",
+      "bytes": 2529,
+      "sha256": "56cf937a6047d075f8cce8c71511f7252b3694772272ef0ac222461de11499cd",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/strict-pcm-export/stdout",
+      "bytes": 481,
+      "sha256": "f02147a0ebe920be2df8e9689b7fed98ca51774f31b7fcde1ef741a66d043f6d",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/strict-pcm-export/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-left/process.json",
+      "bytes": 2538,
+      "sha256": "80e813aa49b647d02638974555977d0048eb1734372b6f10a6f9c4f8c081ded3",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-left/stdout",
+      "bytes": 588,
+      "sha256": "5b7feec81c48b5b08e5fd518292e06754e4246d1be254252efedf9cbc070da89",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-left/process.json",
+      "bytes": 1908,
+      "sha256": "b632127bb1845d00a221df76a1a0447b06f99a38b5c4ae6d2c92c2518b56d514",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-left/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-left/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-right/process.json",
+      "bytes": 2541,
+      "sha256": "4953305aeed9614af6277afbdd472fd6243b4ad167acbd8058207993621c0634",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-right/stdout",
+      "bytes": 589,
+      "sha256": "26a1762542482f0250b511ce98477025fb1a5010fcb0c88ed502a03d52ac71c7",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/production-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-right/process.json",
+      "bytes": 1910,
+      "sha256": "bc6d31381d10c101a4d3e1935fcc351c9dbe5ae7ec234f67ab3ebce968c76915",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-right/stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/old-c-right/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/canonical.f32le",
+      "bytes": 12288000,
+      "sha256": "78df73ab33f4716aa1aafae3a5b0e985fa9252314fed101bd98bd30dd02eb212",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "producer_field": "output_file_index.canonical.f32le"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/left.json",
+      "bytes": 3413775,
+      "sha256": "eba72ed61b0f2fcea336abab9ed40d101293f9fd8224069465ad02b88090c96b",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "producer_field": "output_file_index.left.json"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/left-old.jsonl",
+      "bytes": 2809468,
+      "sha256": "e4c86d80ba338c26d2c7d1e33c94c62df0b5863b6c74999244ceb8921f40d3c4",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "producer_field": "output_file_index.left-old.jsonl"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/right.json",
+      "bytes": 3413775,
+      "sha256": "9b0f30b0f0391e672432b16d974f521fe4b2ea09e69f8089628ad58c93e97742",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "producer_field": "output_file_index.right.json"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-run-02/right-old.jsonl",
+      "bytes": 2809468,
+      "sha256": "f677520a696a80610d441868c2986cfc77f852fb24833cfc7f3524bd13392759",
+      "hash_method": "producer_recorded_sha256_not_rehashed_by_formal_draft",
+      "producer_receipt": "target/native-tempo-delivery-20261008/actual-run-02/run.json",
+      "producer_field": "output_file_index.right-old.jsonl"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/root-source-postflight.json",
+      "bytes": 222,
+      "sha256": "7417af6c747197241ed7a250920fbbfc36a90a1992e424a757a0a3b68108672e",
+      "hash_method": "direct_small_file_readback"
+    },
+    {
+      "path": "target/native-tempo-delivery-20261008/actual-review.json",
+      "bytes": 5474,
+      "sha256": "138b3e313ee32e2b88a8fcad798d9047b60a4a928b8419a613bee13446ba1914",
+      "hash_method": "direct_small_file_readback"
+    }
+  ],
+  "original_package": {
+    "path": "target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+    "four_objects_sha256": {
+      "analysis.bin": "c8d8d5bdcfe24055dd3f934f8140954bd1d9519eb22dfc9b92728424e4f585a6",
+      "chart.bin": "e0ef44fafb7e279571eafc770887bde209c6134c6cfd1f9529c7abd3bd53e42d",
+      "song.audio.ogg": "fee07fd3134cba974915b67b472219b6179c88976a7784c005ca16043f6c30c8",
+      "song.package": "92a757c8396e6197aeafa1501875a23578ed0485a8f3bc36f5480dade9bc92c5"
+    },
+    "before_after_equal": true
+  },
+  "compiled_artifacts_recorded_not_rehashed": {
+    "Lab": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-tempo-delivery-20261008/build-01/bin/cocobeat-lab",
+      "sha256": "886556450c756abcd3c50a8a0a9a9ac53fc516a470a9b48c75cf458e2bf56257"
+    },
+    "QA_export": {
+      "path": "/home/lzzz/MyProjects/CoCoBeat/target/native-tempo-delivery-20261008/helper-01/replay-workbench-check",
+      "sha256": "7bea1effbc9cfd1d75537f6ed57086f741019b3c8bc00fb2dc8316fedb142b34"
+    },
+    "btt_rlib_and_archive": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/debug/deps/libcocobeat_btt-b11438fb379c1bdf.rlib": "bc28e832748d3d02d57b0fb2f85bae73761b2618dbf3f76c9c8aaf8e120d3b1c",
+      "/home/lzzz/MyProjects/CoCoBeat/target/debug/build/cocobeat-btt-dcea6c1735cb1bbe/out/libcocobeat_btt_48000.a": "d8f0388042824099350b957ed6fb13a64f5285a53d8606e9fff3d870e46ecbb1"
+    },
+    "old_C_driver": {
+      "path": "target/native-tempo-20261007/pilot-v1/build-native/native-tempo-check",
+      "sha256": "1175bf8d27a21d691048ce0aab026f91c2a52f363a787875972cf57ff0e7257f"
+    }
+  }
+}

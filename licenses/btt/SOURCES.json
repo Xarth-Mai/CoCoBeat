@@ -1,0 +1,99 @@
+{
+  "repository": "https://github.com/michaelkrzyzaniak/Beat-and-Tempo-Tracking",
+  "commit": "c039090f1af771092d95c3ffc402e557940f7384",
+  "license": "MIT",
+  "modifications": [],
+  "files": [
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/BTT.h",
+      "upstream_path": "BTT.h",
+      "git_blob": "ccd1850cbe7f342b34a07ad8d4a4bb7457e8f8bb",
+      "bytes": 10554,
+      "sha256": "311d25e681b5b712e7af44192439d7cd69f0bc0afd9a52799b124474d56ca032"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/LICENSE",
+      "upstream_path": "LICENSE",
+      "git_blob": "6e906d35597066b98d0982ac6ef2fdb58bb9e9f6",
+      "bytes": 1074,
+      "sha256": "74400a6ea5b29562c7b128ff1ae0921e8f39af5c56f65e569c3bc8d69fefe829"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/BTT.c",
+      "upstream_path": "src/BTT.c",
+      "git_blob": "17f2abaa9f7728619bf342b9b47524220bab38e5",
+      "bytes": 41730,
+      "sha256": "75a95836ab862006a1dc0e488697584a993955a63c2c0a8cddbd771cecffefb2"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/DFT.c",
+      "upstream_path": "src/DFT.c",
+      "git_blob": "01c971ff29bb2024388f2013b0d68ed0aa1d16dc",
+      "bytes": 24258,
+      "sha256": "8c24a060cadfb11f87c3f152a701d523ca7dc5b08cf8178a773c8b1a84f11da2"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/DFT.h",
+      "upstream_path": "src/DFT.h",
+      "git_blob": "6d5e35bd3d0ea8383566eb858c224363d9a31820",
+      "bytes": 4005,
+      "sha256": "646cf25435697e5d9359957f56c034bcb57addd74e6967dc30cd4db195dbbbc2"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/Filter.c",
+      "upstream_path": "src/Filter.c",
+      "git_blob": "717ee905ba7370f4c6918d7136adbcd552ae9d78",
+      "bytes": 9151,
+      "sha256": "46b1dce0e1e4fa5acd9f8d1edb3387e279d638fa6439be5ffb8827f08ab01b24"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/Filter.h",
+      "upstream_path": "src/Filter.h",
+      "git_blob": "62141f82b5c6f324545fe52309bde9689dd7069c",
+      "bytes": 1483,
+      "sha256": "ea1ba1fd659b293cdc9c98eab95c63d95deb21f7ee204e7d95aeeff698997477"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/STFT.c",
+      "upstream_path": "src/STFT.c",
+      "git_blob": "17cd4dd309455b44460f165ac23325077a4cf87a",
+      "bytes": 10974,
+      "sha256": "d22b42143e94362ed7a94cac75c9874049525210d13eae21edbd3ea529201230"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/STFT.h",
+      "upstream_path": "src/STFT.h",
+      "git_blob": "70305fa35f6cc2f4fc6c0d84f72251cfd9d7a23e",
+      "bytes": 1561,
+      "sha256": "75d70342afced34a500fddb4ad56882d250fcd017c9c1f27226370b0f53c6e10"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/Statistics.c",
+      "upstream_path": "src/Statistics.c",
+      "git_blob": "1e23cd07379487a8159b3eaa9b6bfd705c11dd67",
+      "bytes": 16861,
+      "sha256": "99962f5eeadd2cfd3fef1fe583f359d3593cbcd0c7269c4daac2eca644129f37"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/Statistics.h",
+      "upstream_path": "src/Statistics.h",
+      "git_blob": "3b602143a396937c0a007dfedb81890c2060e110",
+      "bytes": 7084,
+      "sha256": "9c42fc0035dfa25c4826836db5fb7f67811bd03fb61e44b3f46752357b183334"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/fastsin.c",
+      "upstream_path": "src/fastsin.c",
+      "git_blob": "14363a1613ad0c1014526ce1d8947509c001a0a1",
+      "bytes": 48367,
+      "sha256": "8ac02d8d7fc98766148be52e411552db4135a659b681bf435a93f793786dc3e7"
+    },
+    {
+      "path": "crates/cocobeat-btt/vendor/btt/src/fastsin.h",
+      "upstream_path": "src/fastsin.h",
+      "git_blob": "de34ecd53e5114c9f9ddf5523d5e20effdba175e",
+      "bytes": 1165,
+      "sha256": "6525ef5b2b27dac7823b2b04e00d366f004c312a28cf64f49367a8046ae6fecd"
+    }
+  ]
+}

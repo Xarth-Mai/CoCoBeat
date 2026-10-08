@@ -9,6 +9,8 @@ on:
       - '**/*.rs'
       - 'vendor/**/*.c'
       - 'vendor/**/*.h'
+      - 'crates/cocobeat-btt/**/*.c'
+      - 'crates/cocobeat-btt/**/*.h'
       - '**/Cargo.toml'
       - Cargo.lock
       - rust-toolchain.toml
@@ -49,12 +51,12 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target/debug
-          key: light-${{ runner.os }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h') }}
+          key: light-${{ runner.os }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-${{ hashFiles('**/*.rs', 'vendor/**/*.c', 'vendor/**/*.h', 'crates/cocobeat-btt/**/*.c', 'crates/cocobeat-btt/**/*.h') }}
           restore-keys: |
             light-${{ runner.os }}-${{ steps.rust.outputs.version }}-${{ hashFiles('**/Cargo.toml', 'Cargo.lock') }}-
             light-${{ runner.os }}-${{ steps.rust.outputs.version }}-
       - run: cargo fmt --all -- --check
       - run: cargo xtask boundaries
       # Rules, source decoding, headless networking and tooling; no engine/device/GPU compilation
-      - run: cargo clippy --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-stage -p cocobeat-editor -p cocobeat-net -p xtask --all-targets -- -D warnings
-      - run: cargo test --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-stage -p cocobeat-editor -p cocobeat-net -p xtask
+      - run: cargo clippy --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-btt -p cocobeat-stage -p cocobeat-editor -p cocobeat-net -p xtask --all-targets -- -D warnings
+      - run: cargo test --locked -p cocobeat-schema -p cocobeat-core -p cocobeat-replay -p cocobeat-media -p cocobeat-btt -p cocobeat-stage -p cocobeat-editor -p cocobeat-net -p xtask

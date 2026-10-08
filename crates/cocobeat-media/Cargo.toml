@@ -8,6 +8,7 @@ publish.workspace = true
 
 [dependencies]
 cocobeat-schema.workspace = true
+cocobeat-btt.workspace = true
 symphonia.workspace = true
 oximedia-audio.workspace = true
 oximedia-core.workspace = true

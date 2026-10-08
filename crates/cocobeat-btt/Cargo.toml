@@ -1,0 +1,16 @@
+[package]
+name = "cocobeat-btt"
+version.workspace = true
+edition.workspace = true
+license = "MPL-2.0 AND MIT"
+repository.workspace = true
+publish.workspace = true
+
+[build-dependencies]
+cc.workspace = true
+
+[lints.rust]
+unsafe_code = "deny"
+
+[lints.clippy]
+all = "warn"

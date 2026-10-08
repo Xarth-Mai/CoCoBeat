@@ -8,6 +8,7 @@ members = [
     "crates/cocobeat-runtime",
     "crates/cocobeat-replay",
     "crates/cocobeat-media",
+    "crates/cocobeat-btt",
     "crates/cocobeat-stage",
     "crates/cocobeat-editor",
     "crates/cocobeat-net",
@@ -28,6 +29,7 @@ cocobeat-core = { path = "crates/cocobeat-core" }
 cocobeat-runtime = { path = "crates/cocobeat-runtime" }
 cocobeat-replay = { path = "crates/cocobeat-replay" }
 cocobeat-media = { path = "crates/cocobeat-media" }
+cocobeat-btt = { path = "crates/cocobeat-btt" }
 cocobeat-stage = { path = "crates/cocobeat-stage" }
 cocobeat-editor = { path = "crates/cocobeat-editor" }
 cocobeat-net = { path = "crates/cocobeat-net" }
@@ -47,6 +49,7 @@ bevy = { version = "0", default-features = false, features = ["std", "async_exec
 fontique = { version = "0", default-features = false, features = ["std"] }
 kira = { version = "0", default-features = false, features = ["cpal"] }
 embed-resource = "3"
+cc = "1"
 winit = { version = "0", default-features = false }
 sys-locale = "0"
 winsafe = { version = "0", default-features = false, features = ["user"] }
