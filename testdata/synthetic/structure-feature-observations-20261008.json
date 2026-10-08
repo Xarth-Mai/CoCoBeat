@@ -1,0 +1,781 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T05:44:50.946969+00:00",
+  "status": "PASS_BOUNDED_CANDIDATE_SNAPSHOT_CLI_ONLY",
+  "profile": "canonical-spectrum-1024x24-v1-candidate",
+  "scope": "Actual local debug snapshot Lab imports and raw structural descriptor reports; not production integration or music quality admission",
+  "identity": {
+    "root_head": "8cdda9deed27818229e928bc7ef8552a7c43a982",
+    "snapshot_freeze": "target/structure-feature-delivery-20261008/revision02/FREEZE.json",
+    "binary": "target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+    "binary_sha256": "87ce72639f795a1818f1a6e0ad5c29d3cc02d7816609d37ef42e30b0ec07e82b",
+    "qa_freeze": "target/structure-feature-cli-qa-20261008/FREEZE.json",
+    "generated_input_record": "target/structure-feature-cli-qa-20261008/INPUTS.json",
+    "source_sets": [
+      {
+        "name": "production_base_8c",
+        "source_root": ".",
+        "manifest": "target/structure-feature-delivery-20261008/revision02/production-inputs-before.json",
+        "members": 492,
+        "bytes": 52121832,
+        "current_stream_sha256_verification": "PASS",
+        "changed_paths": []
+      },
+      {
+        "name": "revision02_snapshot",
+        "source_root": "target/structure-feature-delivery-20261008/revision02/snapshot",
+        "manifest": "target/structure-feature-delivery-20261008/revision02/snapshot-inputs-before.json",
+        "members": 499,
+        "bytes": 52168646,
+        "current_stream_sha256_verification": "PASS",
+        "changed_paths": []
+      }
+    ]
+  },
+  "build_history": {
+    "first_snapshot": {
+      "status": "FAIL_PRESERVED",
+      "source_count": 497,
+      "clippy_exit_code": 101,
+      "reason": "Snapshot source closure omitted two already-declared native Vorbis example sources; no candidate algorithm change",
+      "result": "target/structure-feature-delivery-20261008/checks-result.json",
+      "raw_error": "target/structure-feature-delivery-20261008/checks/clippy/stderr",
+      "missing_example_sources": [
+        "tools/native-vorbis-check/driver.rs",
+        "tools/native-vorbis-check/fixture.rs"
+      ]
+    },
+    "revision02": {
+      "status": "PASS",
+      "source_count": 499,
+      "counts": {
+        "production_base": 492,
+        "test_fixtures": 3,
+        "example_source_closure": 2,
+        "candidate_new_modules": 2
+      },
+      "media_focused_tests": 5,
+      "lab_focused_tests": 2,
+      "checks": [
+        {
+          "name": "media-focused",
+          "argv": [
+            "cargo",
+            "test",
+            "--offline",
+            "--locked",
+            "-j",
+            "2",
+            "--manifest-path",
+            "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/snapshot/Cargo.toml",
+            "-p",
+            "cocobeat-media",
+            "structure_features",
+            "--",
+            "--test-threads=1"
+          ],
+          "pid": 8,
+          "exit_code": 0,
+          "stdout": "target/structure-feature-delivery-20261008/revision02/checks/media-focused/stdout",
+          "stderr": "target/structure-feature-delivery-20261008/revision02/checks/media-focused/stderr"
+        },
+        {
+          "name": "lab-focused",
+          "argv": [
+            "cargo",
+            "test",
+            "--offline",
+            "--locked",
+            "-j",
+            "2",
+            "--manifest-path",
+            "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/snapshot/Cargo.toml",
+            "-p",
+            "cocobeat-lab",
+            "structure_features",
+            "--",
+            "--test-threads=1"
+          ],
+          "pid": 440,
+          "exit_code": 0,
+          "stdout": "target/structure-feature-delivery-20261008/revision02/checks/lab-focused/stdout",
+          "stderr": "target/structure-feature-delivery-20261008/revision02/checks/lab-focused/stderr"
+        },
+        {
+          "name": "clippy",
+          "argv": [
+            "cargo",
+            "clippy",
+            "--offline",
+            "--locked",
+            "-j",
+            "2",
+            "--manifest-path",
+            "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/snapshot/Cargo.toml",
+            "-p",
+            "cocobeat-media",
+            "-p",
+            "cocobeat-lab",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "pid": 1499,
+          "exit_code": 0,
+          "stdout": "target/structure-feature-delivery-20261008/revision02/checks/clippy/stdout",
+          "stderr": "target/structure-feature-delivery-20261008/revision02/checks/clippy/stderr"
+        },
+        {
+          "name": "fmt",
+          "argv": [
+            "cargo",
+            "fmt",
+            "--manifest-path",
+            "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/snapshot/Cargo.toml",
+            "--all",
+            "--",
+            "--check"
+          ],
+          "pid": 1580,
+          "exit_code": 0,
+          "stdout": "target/structure-feature-delivery-20261008/revision02/checks/fmt/stdout",
+          "stderr": "target/structure-feature-delivery-20261008/revision02/checks/fmt/stderr"
+        },
+        {
+          "name": "build",
+          "argv": [
+            "cargo",
+            "build",
+            "--offline",
+            "--locked",
+            "-j",
+            "2",
+            "--manifest-path",
+            "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/snapshot/Cargo.toml",
+            "-p",
+            "cocobeat-lab",
+            "--message-format=json"
+          ],
+          "pid": 1583,
+          "exit_code": 0,
+          "stdout": "target/structure-feature-delivery-20261008/revision02/checks/build/stdout",
+          "stderr": "target/structure-feature-delivery-20261008/revision02/checks/build/stderr"
+        }
+      ],
+      "build_receipt": "target/structure-feature-delivery-20261008/revision02/build-01/cocobeat-lab-build-result.json",
+      "receipt_note": "source_inputs=499 and frozen manifests are authoritative; receipt scope prose retains obsolete Actual497 wording"
+    }
+  },
+  "budget_and_accounting": {
+    "fixed_before_execution_seconds_per_case": 180,
+    "case_count": 12,
+    "automatic_retries": false,
+    "timeouts": 0,
+    "measurement": "Each fresh Python driver process launched exactly one Lab child; Linux RUSAGE_CHILDREN user/system seconds and ru_maxrss KiB; /usr/bin/time unavailable",
+    "cpu_total": "user + system; parent Python report validation excluded",
+    "pid_scope": "PID 3 is the observed PID in each isolated invocation namespace, not one continuing process",
+    "rss_rule": "Independent per-child high-water marks; not subtracted, accumulated or treated as static feature storage",
+    "driver_exit_codes": "Root execution supervision reported all 12 driver exits 0; persisted result records independently contain PASS, not outer shell exit-code receipts"
+  },
+  "result_counts": {
+    "manual_imports": 2,
+    "positive_inspections": 6,
+    "expected_rejections": 4,
+    "lab_exit_0": 8,
+    "lab_exit_1_expected": 4,
+    "all_cases_pass": 12
+  },
+  "input_provenance": {
+    "existing_accelerando": "Same unchanged final 1536000-frame canonical package inspected left/right; prior native music-quality labels not adopted",
+    "existing_dev64": "Actual 3072000-frame package reused with frozen historical four-object hashes and prior successful import/verify; old overall summary remains FAIL from GPU unavailable",
+    "new_short_and_long": "Original deterministic PCM16 stereo QA sine/change sources generated after static/source freeze; N=24577 and N=28800000; one manually authored full-length qa_input_extent interval and zero anchors; not music truth"
+  },
+  "cases": [
+    {
+      "case": "import-short",
+      "scope": "manual_import",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/short.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/short.authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.2140483340190258,
+        "child_user_seconds": 0.132945,
+        "child_system_seconds": 0.010069,
+        "child_max_rss_kib": 55684,
+        "child_cpu_total_seconds": 0.143014
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/import-short/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/import-short/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/import-short/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/import-short/stderr.txt"
+      },
+      "package_hash": "5581395027b0e42dc9807e2afee7e461b7758aee84defd303993da168bcfa638",
+      "package_files": {
+        "target/structure-feature-cli-qa-20261008/packages/short/song.audio.ogg": "c6c9a49bd952dbdf55aa9950ab13b88b97608d0837bef86d7742e01e6fe737f5",
+        "target/structure-feature-cli-qa-20261008/packages/short/analysis.bin": "b690d9ccc653b9fa268cb1bb9942500c8e6ac3327ec5c1d9926ae56a483f590d",
+        "target/structure-feature-cli-qa-20261008/packages/short/chart.bin": "ce428873f4627233951a0860c4a996ffb1c9730301c6c0808629075238b11d31",
+        "target/structure-feature-cli-qa-20261008/packages/short/song.package": "1a2dba1996cd8d378429d69a69d24b36f93e0ae60713bc42273d2e562c879858"
+      }
+    },
+    {
+      "case": "short-left",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/short-left/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.11387959099374712,
+        "child_user_seconds": 0.05885,
+        "child_system_seconds": 0.006984,
+        "child_max_rss_kib": 60576,
+        "child_cpu_total_seconds": 0.065834
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/short-left/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/short-left/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/short-left/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/short-left/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/short-left/report.json",
+        "saved_blake3_cli": "78f69df494e1164fa6ee6c63cdb6c05b928fa9aa8d89cb7c8343222cb0eb0b4a",
+        "source": {
+          "content_id": "package-blake3:5581395027b0e42dc9807e2afee7e461b7758aee84defd303993da168bcfa638",
+          "audio_blake3": "e61037bed946de96e2dd4a506c36da17e72f0f2bb6eb1da5a4eec63233355c84",
+          "canonical_frames": 24577,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 2,
+        "complete_windows": 24,
+        "partial_tail_frames": 1,
+        "nonzero_descriptor_bins": 1,
+        "channel": 0,
+        "sections_context": {
+          "declared_feature_count": 1,
+          "capability": {
+            "state": "not_run",
+            "source": "authored",
+            "confidence": null
+          }
+        },
+        "maximum_neighbors": 0,
+        "all_driver_semantic_checks": "PASS",
+        "actual_tail_bin": {
+          "index": 1,
+          "start_frame": 24576,
+          "end_frame": 24577,
+          "rms": 0.10954487323760986,
+          "peak": 0.10954487323760986,
+          "spectral_frames": 0,
+          "partial_tail_frames": 1,
+          "spectrum_status": "INSUFFICIENT_FULL_WINDOW",
+          "mean_band_power": null,
+          "log_band_power": null,
+          "neighbors": []
+        }
+      }
+    },
+    {
+      "case": "short-right",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+        "right",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/short-right/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.11410732500371523,
+        "child_user_seconds": 0.059348,
+        "child_system_seconds": 0.007038,
+        "child_max_rss_kib": 59504,
+        "child_cpu_total_seconds": 0.066386
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/short-right/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/short-right/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/short-right/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/short-right/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/short-right/report.json",
+        "saved_blake3_cli": "ae5d00e7cadc2f2ad9bcf354e766172dbfac2d4e060355ff22f8f4d2045efe92",
+        "source": {
+          "content_id": "package-blake3:5581395027b0e42dc9807e2afee7e461b7758aee84defd303993da168bcfa638",
+          "audio_blake3": "e61037bed946de96e2dd4a506c36da17e72f0f2bb6eb1da5a4eec63233355c84",
+          "canonical_frames": 24577,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 2,
+        "complete_windows": 24,
+        "partial_tail_frames": 1,
+        "nonzero_descriptor_bins": 1,
+        "channel": 1,
+        "sections_context": {
+          "declared_feature_count": 1,
+          "capability": {
+            "state": "not_run",
+            "source": "authored",
+            "confidence": null
+          }
+        },
+        "maximum_neighbors": 0,
+        "all_driver_semantic_checks": "PASS",
+        "actual_tail_bin": {
+          "index": 1,
+          "start_frame": 24576,
+          "end_frame": 24577,
+          "rms": 0.07790213078260422,
+          "peak": 0.07790213078260422,
+          "spectral_frames": 0,
+          "partial_tail_frames": 1,
+          "spectrum_status": "INSUFFICIENT_FULL_WINDOW",
+          "mean_band_power": null,
+          "log_band_power": null,
+          "neighbors": []
+        }
+      }
+    },
+    {
+      "case": "invalid-channel",
+      "scope": "expected_rejection",
+      "status": "PASS",
+      "lab_exit_code": 1,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+        "stereo",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/invalid-channel/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.0157231250195764,
+        "child_user_seconds": 0.0019549999999999997,
+        "child_system_seconds": 0.006835,
+        "child_max_rss_kib": 45960,
+        "child_cpu_total_seconds": 0.00879
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/invalid-channel/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/invalid-channel/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/invalid-channel/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/invalid-channel/stderr.txt"
+      },
+      "rejection_diagnostic": "Structure features require an explicit left or right channel"
+    },
+    {
+      "case": "existing-output",
+      "scope": "expected_rejection",
+      "status": "PASS",
+      "lab_exit_code": 1,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/existing-output/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.11389673501253128,
+        "child_user_seconds": 0.057248999999999994,
+        "child_system_seconds": 0.007892999999999999,
+        "child_max_rss_kib": 59060,
+        "child_cpu_total_seconds": 0.06514199999999999
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/existing-output/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/existing-output/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/existing-output/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/existing-output/stderr.txt"
+      },
+      "rejection_diagnostic": "Create new independent label document: File exists (os error 17)",
+      "preserved_sentinel": "target/structure-feature-cli-qa-20261008/runs/existing-output/report.json"
+    },
+    {
+      "case": "inside-package",
+      "scope": "expected_rejection",
+      "status": "PASS",
+      "lab_exit_code": 1,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short/qa-inside-report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.015808442985871807,
+        "child_user_seconds": 0.003149,
+        "child_system_seconds": 0.0062889999999999995,
+        "child_max_rss_kib": 47476,
+        "child_cpu_total_seconds": 0.009437999999999998
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/inside-package/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/inside-package/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/inside-package/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/inside-package/stderr.txt"
+      },
+      "rejection_diagnostic": "Independent labels and reports must be written outside the source package"
+    },
+    {
+      "case": "corrupt-source",
+      "scope": "expected_rejection",
+      "status": "PASS",
+      "lab_exit_code": 1,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/corrupt-source/corrupt-package",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/corrupt-source/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 0.01568731598672457,
+        "child_user_seconds": 0.001913,
+        "child_system_seconds": 0.008598999999999999,
+        "child_max_rss_kib": 53352,
+        "child_cpu_total_seconds": 0.010511999999999999
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/corrupt-source/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/corrupt-source/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/corrupt-source/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/corrupt-source/stderr.txt"
+      },
+      "rejection_diagnostic": "Object identity mismatch: song.audio.ogg"
+    },
+    {
+      "case": "accelerando-left",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/accelerando-left/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 2.216849643999012,
+        "child_user_seconds": 2.169521,
+        "child_system_seconds": 0.008956,
+        "child_max_rss_kib": 60996,
+        "child_cpu_total_seconds": 2.178477
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/accelerando-left/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/accelerando-left/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/accelerando-left/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/accelerando-left/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/accelerando-left/report.json",
+        "saved_blake3_cli": "4d0a84214023164cfd5499a28213416bffc0785dc2a6bca4b025551ec1d07ddb",
+        "source": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 63,
+        "complete_windows": 1500,
+        "partial_tail_frames": 0,
+        "nonzero_descriptor_bins": 61,
+        "channel": 0,
+        "sections_context": {
+          "declared_feature_count": 1,
+          "capability": {
+            "state": "not_run",
+            "source": "authored",
+            "confidence": null
+          }
+        },
+        "maximum_neighbors": 4,
+        "all_driver_semantic_checks": "PASS"
+      }
+    },
+    {
+      "case": "accelerando-right",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-matrix-qa-20261008/actual-batch-03/02-accelerando_90_150-source_wav-left/bundle/package",
+        "right",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/accelerando-right/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 2.2171688840026036,
+        "child_user_seconds": 2.150376,
+        "child_system_seconds": 0.009953,
+        "child_max_rss_kib": 60324,
+        "child_cpu_total_seconds": 2.160329
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/accelerando-right/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/accelerando-right/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/accelerando-right/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/accelerando-right/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/accelerando-right/report.json",
+        "saved_blake3_cli": "d00835524e0467419294cb72e12e5720cd59ce0bda015c2bd1a7186194ed1257",
+        "source": {
+          "content_id": "package-blake3:08d586414c43c635542de5c41ec61b156405436ccf218da20fbdc7f2e68af42e",
+          "audio_blake3": "62b91ce387f82ab993897b162bbb47621e143249d2df32704712de08d56304e5",
+          "canonical_frames": 1536000,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 63,
+        "complete_windows": 1500,
+        "partial_tail_frames": 0,
+        "nonzero_descriptor_bins": 61,
+        "channel": 1,
+        "sections_context": {
+          "declared_feature_count": 1,
+          "capability": {
+            "state": "not_run",
+            "source": "authored",
+            "confidence": null
+          }
+        },
+        "maximum_neighbors": 4,
+        "all_driver_semantic_checks": "PASS"
+      }
+    },
+    {
+      "case": "dev64-left",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-final/original-64s-package",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/dev64-left/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 5.121511163015384,
+        "child_user_seconds": 5.042789,
+        "child_system_seconds": 0.012945,
+        "child_max_rss_kib": 62588,
+        "child_cpu_total_seconds": 5.055734
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/dev64-left/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/dev64-left/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/dev64-left/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/dev64-left/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/dev64-left/report.json",
+        "saved_blake3_cli": "29e55f9aba7ba0619155ac591626955e65453e8f4f84d957bbd203d907ff02a9",
+        "source": {
+          "content_id": "package-blake3:84da8cb615e1e5afa2dfc8c9ceb9174ef52e9d04d7d8cd800329964ec859acac",
+          "audio_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e",
+          "canonical_frames": 3072000,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 125,
+        "complete_windows": 3000,
+        "partial_tail_frames": 0,
+        "nonzero_descriptor_bins": 111,
+        "channel": 0,
+        "sections_context": {
+          "declared_feature_count": 6,
+          "capability": null
+        },
+        "maximum_neighbors": 4,
+        "all_driver_semantic_checks": "PASS"
+      }
+    },
+    {
+      "case": "import-long",
+      "scope": "manual_import",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "import-authored-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/long.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/long.authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/long"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 104.87716129698674,
+        "child_user_seconds": 104.334639,
+        "child_system_seconds": 0.155229,
+        "child_max_rss_kib": 65152,
+        "child_cpu_total_seconds": 104.489868
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/import-long/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/import-long/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/import-long/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/import-long/stderr.txt"
+      },
+      "package_hash": "19c01f570c6b2fd764f36a7ff3093fec3dee846026f82e3b93e95f1b35178370",
+      "package_files": {
+        "target/structure-feature-cli-qa-20261008/packages/long/song.audio.ogg": "c927f39ab8993e4c4065321ea1b93b28ad3bbd022b9787574642c197775d3d55",
+        "target/structure-feature-cli-qa-20261008/packages/long/analysis.bin": "8c53c3cadf3205d34ccc39909547d5cfdb1261f597efe6d7bac598583d77e79a",
+        "target/structure-feature-cli-qa-20261008/packages/long/chart.bin": "32c4fa2ccff75d41da8dc9d43c58716bbc005dfdba8895face73566d469b08f2",
+        "target/structure-feature-cli-qa-20261008/packages/long/song.package": "d98d72cb50dfbbee0d0f472b728b84746450cf01e571d9012128a93ac19e5567"
+      }
+    },
+    {
+      "case": "long-left",
+      "scope": "raw_structure_inspection",
+      "status": "PASS",
+      "lab_exit_code": 0,
+      "timed_out": false,
+      "budget_seconds": 180,
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-delivery-20261008/revision02/build-01/bin/cocobeat-lab",
+        "inspect-structure-features",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/long",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/runs/long-left/report.json"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat",
+      "observed_pid": 3,
+      "cost": {
+        "wall_seconds": 45.285950425983174,
+        "child_user_seconds": 45.062052,
+        "child_system_seconds": 0.022899,
+        "child_max_rss_kib": 71352,
+        "child_cpu_total_seconds": 45.084951000000004
+      },
+      "protected_inputs_equal": true,
+      "raw": {
+        "command.json": "target/structure-feature-cli-qa-20261008/runs/long-left/command.json",
+        "result.json": "target/structure-feature-cli-qa-20261008/runs/long-left/result.json",
+        "stdout.txt": "target/structure-feature-cli-qa-20261008/runs/long-left/stdout.txt",
+        "stderr.txt": "target/structure-feature-cli-qa-20261008/runs/long-left/stderr.txt"
+      },
+      "report": {
+        "raw": "target/structure-feature-cli-qa-20261008/runs/long-left/report.json",
+        "saved_blake3_cli": "e2c9b8c1f96428b2883d37b921685a39da24ec4648cc88e3fc55d57484b1438e",
+        "source": {
+          "content_id": "package-blake3:19c01f570c6b2fd764f36a7ff3093fec3dee846026f82e3b93e95f1b35178370",
+          "audio_blake3": "5a247fda6be9b258751bfb6d31b00bd29fad8e1bcc30c363f8ce73c136ac8423",
+          "canonical_frames": 28800000,
+          "audio_basis": "canonical_decoded"
+        },
+        "bin_count": 1172,
+        "complete_windows": 28125,
+        "partial_tail_frames": 0,
+        "nonzero_descriptor_bins": 1172,
+        "channel": 0,
+        "sections_context": {
+          "declared_feature_count": 1,
+          "capability": {
+            "state": "not_run",
+            "source": "authored",
+            "confidence": null
+          }
+        },
+        "maximum_neighbors": 4,
+        "all_driver_semantic_checks": "PASS"
+      }
+    }
+  ],
+  "semantic_observations": [
+    "Six reports passed fixed profile, actual N, half-open bin support, ceil(N/24576), floor(N/1024), tail and no-padding checks",
+    "Finite supported RMS/peak/band/log/cosine/distance; log1p and reported top-four neighbors checked against all valid candidates with predeclared 1e-9 tolerance, without music similarity thresholds",
+    "Short left/right preserve actual final one frame with nonzero RMS/peak, null spectra, no neighbors and null adjacent similarity/distance",
+    "All-silent or incomplete descriptors did not create matches; every positive fixture had at least one nonzero valid descriptor",
+    "Unknown beat_unit/meter/confidence, UNASSESSED quality and false production_admission preserved",
+    "Source binding, package objects, WAV/authoring and static inputs retain exact recorded SHA256"
+  ],
+  "integrity_notes": {
+    "producer_verification": "Each indexed raw file stream-hashed once here and compared with existing expected hashes where available; production492/snapshot499 independently rehashed against manifests",
+    "later_review": "Large indexed files may be checked by unchanged size against producer hash; small referenced records can be independently hashed",
+    "blake3": "saved_blake3 values are actual CLI stdout values; no b3sum was installed or independently used to recompute them; report bytes independently SHA256 verified",
+    "new_outputs": "Only observations and raw index newly written; immutable plan/driver/FREEZE/INPUTS and runs preserved"
+  },
+  "not_run_or_not_claimed": [
+    "Production source integration",
+    "New feature four-platform builds or native architecture acceptance",
+    "SDK/model inference, GPU, hardware audio latency or playback quality",
+    "Musical section/repetition labels, beat quality, confidence calibration or production admission",
+    "Concurrent source mutation freshness testing"
+  ],
+  "raw_index": "structure-feature-observations-20261008-raw-index.json"
+}

@@ -1,0 +1,233 @@
+{
+  "status": "PASS_LOCAL_PRODUCTION_STRUCTURE_DIAGNOSTIC_SOFTWARE",
+  "base_head": "09a68d9ebff85a94ab3c09e3bade2703ebb15f6a",
+  "source_files": [
+    {
+      "path": "crates/cocobeat-media/src/lib.rs",
+      "sha256": "2bd821f87e4fb4de66ecc26194622f3092e626169f7764d87186c0ee96334595",
+      "matches_validated_snapshot": true
+    },
+    {
+      "path": "crates/cocobeat-media/src/structure_features.rs",
+      "sha256": "b647007a3d36704bf123b8935ead1e7353ecb85ddc98947ef937a3f85c45b77f",
+      "matches_validated_snapshot": true
+    },
+    {
+      "path": "tools/cocobeat-lab/src/main.rs",
+      "sha256": "8d12a0097f29dcb164bd91fa7228220bcada9f8f510da98ebb20ea1323558e35",
+      "matches_validated_snapshot": true
+    },
+    {
+      "path": "tools/cocobeat-lab/src/structure_features.rs",
+      "sha256": "cc230b9a1d893542e96034b1570ae13674f7f4fa42d6ab6562e8462cb26107d8",
+      "matches_validated_snapshot": true
+    }
+  ],
+  "checks": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "cocobeat-media",
+        "-p",
+        "cocobeat-lab"
+      ],
+      "pid": 4,
+      "exit": 0,
+      "elapsed_seconds": 35.184062222979264,
+      "started_utc": "2026-10-08T05:51:47.707585+00:00",
+      "stdout": "01.stdout",
+      "stderr": "01.stderr"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "cocobeat-media",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "pid": 1866,
+      "exit": 0,
+      "elapsed_seconds": 9.095238668000093,
+      "started_utc": "2026-10-08T05:52:22.891917+00:00",
+      "stdout": "02.stdout",
+      "stderr": "02.stderr"
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "pid": 1913,
+      "exit": 0,
+      "elapsed_seconds": 0.8522016879869625,
+      "started_utc": "2026-10-08T05:52:31.987383+00:00",
+      "stdout": "03.stdout",
+      "stderr": "03.stderr"
+    },
+    {
+      "argv": [
+        "cargo",
+        "xtask",
+        "boundaries"
+      ],
+      "pid": 1916,
+      "exit": 0,
+      "elapsed_seconds": 0.15692889501224272,
+      "started_utc": "2026-10-08T05:52:32.839823+00:00",
+      "stdout": "04.stdout",
+      "stderr": "04.stderr"
+    }
+  ],
+  "tests": {
+    "cocobeat_lab": 82,
+    "cocobeat_media": 72,
+    "failed": 0
+  },
+  "build": {
+    "argv": [
+      "cargo",
+      "build",
+      "--locked",
+      "-p",
+      "cocobeat-lab"
+    ],
+    "pid": 4,
+    "exit": 0,
+    "elapsed_seconds": 10.38548034298583
+  },
+  "actual_production_cli": {
+    "argv": [
+      "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+      "inspect-structure-features",
+      "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/short",
+      "left",
+      "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-production-checks-20261008/production-short-left.json"
+    ],
+    "pid": 288,
+    "exit": 0,
+    "elapsed_seconds": 0.11397985997609794,
+    "binary_sha256": "a1c368e52a7468c727185650c638db9f066652ff691e8dff05b08d4970d30ac4",
+    "package_before": {
+      "song.audio.ogg": "c6c9a49bd952dbdf55aa9950ab13b88b97608d0837bef86d7742e01e6fe737f5",
+      "analysis.bin": "b690d9ccc653b9fa268cb1bb9942500c8e6ac3327ec5c1d9926ae56a483f590d",
+      "chart.bin": "ce428873f4627233951a0860c4a996ffb1c9730301c6c0808629075238b11d31",
+      "song.package": "1a2dba1996cd8d378429d69a69d24b36f93e0ae60713bc42273d2e562c879858"
+    },
+    "package_after": {
+      "song.audio.ogg": "c6c9a49bd952dbdf55aa9950ab13b88b97608d0837bef86d7742e01e6fe737f5",
+      "analysis.bin": "b690d9ccc653b9fa268cb1bb9942500c8e6ac3327ec5c1d9926ae56a483f590d",
+      "chart.bin": "ce428873f4627233951a0860c4a996ffb1c9730301c6c0808629075238b11d31",
+      "song.package": "1a2dba1996cd8d378429d69a69d24b36f93e0ae60713bc42273d2e562c879858"
+    },
+    "unchanged": true,
+    "report_exact_snapshot_equal": true,
+    "report_sha256": "6d177628d737b57be6d78b58e599463f73aab2d231fb572056e705f701ff44b1"
+  },
+  "raw_refs": [
+    {
+      "path": "target/structure-feature-production-checks-20261008/01.stderr",
+      "bytes": 3190,
+      "sha256": "7b826ef2bffb81e15f48e20b9f3a154af8651e487ca9fcaa49f9ced80910245e"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/01.stdout",
+      "bytes": 15384,
+      "sha256": "20d0afe75c8a47e8f726729a8232cca564893eb63350b85e999300a71112c8f9"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/02.stderr",
+      "bytes": 2989,
+      "sha256": "4906fb6febf82c6b84c4b348d3402b743181bcf17fa659232e4aa724ba8d5982"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/02.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/03.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/03.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/04.stderr",
+      "bytes": 117,
+      "sha256": "372584ffaad16c73a503a2929c2e3d1db762c867f73cbfbd6f7041c7b5348d75"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/04.stdout",
+      "bytes": 78,
+      "sha256": "c1dd38d0fcaf97787d833c0ee1ceb0d75c34d1c25ccb7e0f785f00217e8b5ace"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/05.stderr",
+      "bytes": 2496,
+      "sha256": "6348d1a201867a4d12c891e76c6d6125bc1383dbfe59b7de06674b3f27fe21fb"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/05.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/06.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/06.stdout",
+      "bytes": 634,
+      "sha256": "a2713decb1c5561154ebfecbcebd8e756308d045c08db687944088bc50186b3f"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/build.json",
+      "bytes": 156,
+      "sha256": "5f55e0a206a48a49200ca63ec458c919029838eaa56d425c9435584aac48d18d"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/checks.json",
+      "bytes": 1271,
+      "sha256": "90b6d473e3f3761d8ddc2b863db79a2dbe2fbe67d47c0a6a6247f96ea7ef0c49"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/production-cli.json",
+      "bytes": 1396,
+      "sha256": "83312310f2b7dc535f471bce56b077437e043fe346ad8e1581b8c841d355746a"
+    },
+    {
+      "path": "target/structure-feature-production-checks-20261008/production-short-left.json",
+      "bytes": 2709,
+      "sha256": "6d177628d737b57be6d78b58e599463f73aab2d231fb572056e705f701ff44b1"
+    }
+  ],
+  "full_12_cli_scope": "Separate immutable candidate snapshot records; this production record adds one exact-report replay",
+  "binary_identity_scope": "Actual SHA captured after build; no repeat full binary SHA pass claimed",
+  "hardware_music_quality_four_native_targets": "NOT_RUN_FOR_THIS_NEW_FEATURE",
+  "quality_status": "UNASSESSED",
+  "production_admission": false,
+  "candidate_record_promotion": {
+    "source_path": "target/structure-feature-cli-qa-20261008/observations-revision02.json",
+    "source_sha256": "8d59d27862e15baeb95ac3d512ff582d4199f106f13a55ff52190b18159c48a3",
+    "formal_path": "testdata/synthetic/structure-feature-observations-20261008.json",
+    "only_semantic_delta": "raw_index sibling filename resolves to formal structure-feature-observations-20261008-raw-index.json",
+    "original_target_preserved": true
+  }
+}

@@ -18,6 +18,7 @@ mod native_cancellation;
 mod native_tempo;
 mod package;
 mod resample;
+mod structure_features;
 
 pub use anchors::{
     ANCHOR_COMPILER_VERSION, AnchorDecision, AnchorEvidence, AnchorPolicy, AnchorProposal,
@@ -42,3 +43,7 @@ pub use package::{
     validate_package, validate_package_objects,
 };
 pub use resample::{ResampledSource, resample_source};
+pub use structure_features::{
+    StructureAdjacentChange, StructureFeatureBin, StructureFeatureEvidence, StructureNeighbor,
+    inspect_structure_features_package,
+};

@@ -56,6 +56,7 @@
 - [x] AudioFlux 短矩阵 sanitizer 验证：保留环境失败，宿主同二进制同参数完整执行，无诊断，质量仍 FAIL
 - [x] BTT MIT 原生 tempo 软件研究：固定 48 kHz、native / sanitizer 各 16 项边界控制与原 source / canonical 两声道各 40 条完整记录通过软件检查；原始输出一致，质量未设准入门槛，13/20 编码前后曲线有变化，精确 onset / beat 与完整分析继续未准入，见[研究结果](../tools/native-tempo-check/results-2026-10-07.json)
 - [x] 原生 tempo 观察软件入口：`inspect-native-tempo` 从同次完整验证 canonical 音频取显式左 / 右声道，按真实 128 帧 / EOF 保留 raw BPM / period / certainty 与未知音乐语义；BTT 2 / media 67 / Lab 80 / xtask 6、Clippy / 格式 / 边界及 492 输入构建通过，32 秒同包左右各 12000 行原值一致，首轮 QA 整体 FAIL 保留；见[原生 tempo 观察](../docs/native-tempo-candidate.md)，部分尾、平台 / 长曲与音乐质量 / TempoRegion 尚未准入
+- [x] 原生谱形变化与相似度诊断软件入口：`inspect-structure-features PACKAGE left|right NEW_REPORT` 复用最终 canonical 音频，真实1024窗 / 24窗 bin、原频带特征 / 相邻变化 / top4邻居和 EOF 支持只读保存；生产 media72 / Lab82、Clippy / 格式 / 边界通过，候选快照另有5 / 2窄测、12条实际 CLI 与600秒45.286秒 / RSS71352 KiB单次 debug 成本，见[原生谱形诊断](../docs/native-structure-features.md)；UNASSESSED / confidence未知且不自动采用，旧 wholeSpect / 音乐质量 FAIL 与新入口四目标原生 NOT_RUN 保持
 
 - [x] 显式原生 beat / downbeat 候选软件入口：最终 canonical 音频、固定 CPU SDK / 模型、MusicAnalysis v2 Candidate / confidence=None、四对象包加原始 evidence 已由 Lab 消费；media 46 / xtask 5、12 条成功命令、四组同实际 spect 数值对照及 13 项事务 / 资源控制通过，普通手工导入四对象保持，见[原生候选](../docs/native-beat-candidate.md)
 - [x] 原生 beat / raw downbeat 候选复核消费者：`workbench-beats` 校验 evidence 与包 analysis 绑定，原 q / frame、成员 raw logit、nearest / aligned 关系和未知 confidence 分开显示，共用 canonical stereo 试听；软件检查、首版三窗口软件控制与修正图例后的新版法语单窗口指定视觉补验分别通过，旧视觉 FAIL 保留，见[原生工作台](../docs/native-beat-candidate.md#原生候选工作台)，完整 MIR 算法 / 音乐质量与置信校准仍未准入
