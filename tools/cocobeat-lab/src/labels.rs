@@ -260,7 +260,11 @@ pub(crate) fn save_comparison(path: &Path, comparison: &Comparison) -> Result<()
     write_new(path, comparison, MAX_COMPARISON_BYTES).map(|_| ())
 }
 
-fn write_new(path: &Path, value: &impl Serialize, limit: usize) -> Result<blake3::Hash, String> {
+pub(crate) fn write_new(
+    path: &Path,
+    value: &impl Serialize,
+    limit: usize,
+) -> Result<blake3::Hash, String> {
     let mut bytes = serde_json::to_vec_pretty(value).map_err(|error| error.to_string())?;
     bytes.push(b'\n');
     if bytes.len() > limit {

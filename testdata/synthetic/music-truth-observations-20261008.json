@@ -1,0 +1,1456 @@
+{
+  "schema": "cocobeat-music-truth-software-observations-v1",
+  "date": "2026-10-08",
+  "state": "FROZEN_ACTUAL_SOFTWARE_OBSERVATIONS",
+  "scope": "constructed_not_human manual coverage/source identity/exact mutual-overlap comparison mechanism; no music quality or human truth",
+  "initial_application": {
+    "head": "a9a1cf5d0de5d469367c66b11bc11b1a5c763358",
+    "files": {
+      "tools/cocobeat-lab/src/music_truth.rs": "fd8164bd56411205146ec6d85da41846d9124b858d50883636e2395b6286611f",
+      "tools/cocobeat-lab/src/labels.rs": "6dd9664ec2d9320fa60131b79d6a159a1800c30a027932867833833f8ad8625b",
+      "tools/cocobeat-lab/src/main.rs": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431"
+    },
+    "main_reversible_to_base": true,
+    "candidate_patch": {
+      "path": "target/music-truth-implementation-20261008/music-truth.patch",
+      "sha256": "3c83768b9767bebf5f9e7d25fe1bcd73ae010fd9320366a0a3bdb3d4706cba70",
+      "bytes": 26170
+    },
+    "boundary": "Product Rust/std/current deps only; four new commands, existing routes preserved"
+  },
+  "initial_fmt": {
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "exit_code": 1,
+    "diagnostic": "labels.rs write_new pub(crate) signature requires rustfmt line breaks",
+    "root_resolution": "rustfmt --edition 2024 tools/cocobeat-lab/src/labels.rs; recheck recorded next",
+    "product_behavior_delta": "None; visibility candidate plus signature whitespace"
+  },
+  "final_candidate": {
+    "schema": "cocobeat-target-candidate-handoff-v1",
+    "status": "ROOT_APPLIED_REVISION02_AFTER_ACTUAL_TESTS_AND_LINT",
+    "head_at_freeze": "d8a1ecfd510933f80f9922a97e6116017811a154",
+    "plan": {
+      "path": "target/music-truth-plan-20261008/PLAN.md",
+      "sha256": "509bd1ab4f3477c62b633b309c70d91082ddf7ef4d69c4e85086d7e2b855a7af",
+      "bytes": 11041
+    },
+    "candidate_files": [
+      {
+        "path": "target/music-truth-delivery-20261008/candidate-revision02/music_truth.rs",
+        "sha256": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab",
+        "bytes": 24685
+      },
+      {
+        "path": "target/music-truth-delivery-20261008/candidate-revision02/labels.rs",
+        "sha256": "5e811c046c18e20060ce8a3728b188fee74480437d06c179690ac007850cda12",
+        "bytes": 15756
+      }
+    ],
+    "patch": {
+      "path": "target/music-truth-implementation-20261008/music-truth.patch",
+      "sha256": "3c83768b9767bebf5f9e7d25fe1bcd73ae010fd9320366a0a3bdb3d4706cba70",
+      "bytes": 26170
+    },
+    "production_base_files": [
+      {
+        "path": "tools/cocobeat-lab/src/main.rs",
+        "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742",
+        "bytes": 13394
+      },
+      {
+        "path": "tools/cocobeat-lab/src/labels.rs",
+        "sha256": "5b93b0bf4cdbf358a32c1e69f04a97481559db92bf57ee323e5e72415faa686a",
+        "bytes": 15730
+      },
+      {
+        "path": "tools/cocobeat-lab/src/labels_cli.rs",
+        "sha256": "590bdd7f333e5648f969c820be15d5f5ca49d579e636b21af3f61d4c18e6af93",
+        "bytes": 7781
+      },
+      {
+        "path": "crates/cocobeat-media/src/package.rs",
+        "sha256": "1d62a85638ace493612e3fde66f60683b5850449539df9b284012fd9ea05f225",
+        "bytes": 61986
+      },
+      {
+        "path": "crates/cocobeat-schema/src/content.rs",
+        "sha256": "4cc6c5f64794fb669423dbcdad02ba5bb868bc25bac8f30fb977131bd513ed84",
+        "bytes": 22498
+      }
+    ],
+    "production_edits": "NONE; root owns main wiring and production application after native window handback",
+    "labels_delta": "Only fn write_new -> pub(crate) fn write_new; no other labels.rs bytes changed",
+    "main_wiring": {
+      "module_declaration": "mod music_truth;",
+      "routes": [
+        {
+          "argv": "music-truth-source PACKAGE",
+          "call": "music_truth::inspect_source(Path::new(package))"
+        },
+        {
+          "argv": "music-truth-template PACKAGE REVIEWER CHANNEL NEW_JSON",
+          "call": "music_truth::template(Path::new(package), reviewer, channel, Path::new(destination))"
+        },
+        {
+          "argv": "import-music-truth PACKAGE MANUAL_JSON NEW_JSON",
+          "call": "music_truth::import(Path::new(package), Path::new(input), Path::new(destination))"
+        },
+        {
+          "argv": "compare-music-truth PACKAGE LEFT_JSON RIGHT_JSON NEW_REPORT",
+          "call": "music_truth::compare(Path::new(package), Path::new(left), Path::new(right), Path::new(destination))"
+        }
+      ],
+      "result": "All four pub(crate) entry points return Result<(), String>; use existing report(...) and exact argv arms, preserve existing routes and append usage",
+      "source_stdout": "Source JSON only after full package validation",
+      "other_stdout": "Success receipt after sync_all; failures propagate with no success receipt"
+    },
+    "contract": {
+      "source_key": "audio_blake3 + canonical_frames + canonical_sample_rate=48000 + channels=2 + canonical_decoded; declared origin_content_id retained across same-audio chart/analysis versions",
+      "freshness": "Initial full labels::Source freshly revalidated before every output; actual current CID and declared origin are distinct",
+      "reviewed": "Per-kind strictly ordered nonoverlapping half-open coverage; adjacent allowed; events strictly increasing/in bounds and inside own kind coverage; no normalization",
+      "comparison": "Exact frames in same-kind mutual reviewed coverage only; one-sided within overlap is disagreement, outside overlap uncompared; no tolerance/F-score/automatic consensus",
+      "limits": {
+        "input_bytes": 1048576,
+        "events_total": 65536,
+        "intervals_total": 1024,
+        "report_bytes": 4194304
+      },
+      "raw_hash": "BLAKE3 from same bounded input Vec parsed and validated; distinct saved_blake3 from exact serialized Vec written",
+      "output": "Existing canonical-parent outside_package + create_new/write_all/sync_all/owned error cleanup reused; actual pretty-serialized byte limits checked before create_new",
+      "count_vs_byte_limit": "Count-legal compact input can expand above pretty output byte ceiling; reject without file creation, never truncate. Fourth defined test covers this and full 2x65536 report preservation",
+      "report_source": "report.source is current validated source, report.validated_content_id explicit; left/right_declared_origin_content_id preserve each input historical claim",
+      "scope": "Manual declarations only; no human truth proof, music quality, calibration, algorithm admission, AnchorLabels or package version change"
+    },
+    "checks": {
+      "rustfmt_module": {
+        "command": "rustfmt --edition 2024 --check target/music-truth-implementation-20261008/candidate/tools/cocobeat-lab/src/music_truth.rs",
+        "exit_code": 0,
+        "result": "PASS_FORMAT_ONLY"
+      },
+      "git_apply_check": {
+        "command": "git apply --check target/music-truth-implementation-20261008/music-truth.patch",
+        "exit_code": 0,
+        "stdout": {
+          "path": "target/music-truth-implementation-20261008/apply-check.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        },
+        "stderr": {
+          "path": "target/music-truth-implementation-20261008/apply-check.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      },
+      "cargo": "NOT_RUN",
+      "tests": "4 new test groups defined, NOT_RUN",
+      "native_gpu_sdk_model": "NOT_RUN"
+    },
+    "defined_tests": [
+      "coverage_and_frame_validation_rejects_invented_or_ambiguous_records",
+      "comparison_limits_disagreement_to_mutual_half_open_coverage",
+      "event_count_and_serialized_output_limits_are_checked_separately",
+      "raw_input_identity_and_same_audio_cross_chart_import_preserve_sources"
+    ],
+    "root_followup": "Root static review, apply two-file patch after exclusive window return, main wiring, narrow Cargo/Clippy/fmt and frozen real CLI controls before docs/formal/stage; keep native beat quality failures and human NOT_RUN",
+    "revision": "module only test int_plus_one equivalence; labels pubcrate signature rustfmt wrapping; no product behavior delta",
+    "actual_initial_tests": "72PASS including4new",
+    "actual_initial_clippy": "101 one test int_plus_one, original streams preserved"
+  },
+  "inherited_candidate_metadata_boundary": {
+    "scope": "final_candidate is the original candidate HANDOFF transcribed with the root revision02 candidate_files update; its remaining original provenance/planned-state fields are historical metadata, not the final root acceptance state",
+    "historical_fields": [
+      "head_at_freeze=d8a1ecfd510933f80f9922a97e6116017811a154",
+      "production_edits=NONE",
+      "labels_delta=only visibility",
+      "checks including Cargo/tests NOT_RUN",
+      "original patch identity and root_followup"
+    ],
+    "current_proof": "Current root baseline is build.head=a9a1cf5d0de5d469367c66b11bc11b1a5c763358; revision02 frozen music_truth.rs=01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab; labels.rs=5e811c046c18e20060ce8a3728b188fee74480437d06c179690ac007850cda12; main.rs=bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431; actual checks/build/root_postflight/actual_cli fields support current acceptance, while inherited planned checks do not negate or establish these results",
+    "labels_final_delta": "Original visibility change plus rustfmt signature wrapping; bytes are bound by final changed_sources, not only the historical labels_delta sentence"
+  },
+  "checks": [
+    {
+      "receipt": {
+        "path": "target/music-truth-delivery-20261008/checks/clippy-02.json",
+        "bytes": 634,
+        "sha256": "83ad80bdd65ab2c00364c4eb95a316537e4a8dd8fd85eb7df76f78b8f5fb8f88"
+      },
+      "actual_command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 2.6048202514648438,
+      "test_counts": [],
+      "local_process_pid": "NOT_CAPTURED by postcompletion root Cargo receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/music-truth-delivery-20261008/checks/clippy.json",
+        "bytes": 630,
+        "sha256": "d097ed1ab4ac370df42bcffc67d99aea42f67db4c9a39cc38ebcf2465840b6aa"
+      },
+      "actual_command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 3.9497227668762207,
+      "test_counts": [],
+      "local_process_pid": "NOT_CAPTURED by postcompletion root Cargo receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/music-truth-delivery-20261008/checks/fmt.json",
+        "bytes": 508,
+        "sha256": "26d98eaf0392cf5ba01cd66f81014beceb4e2caf753897bdcf85da43756a24e0"
+      },
+      "actual_command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.8206548690795898,
+      "test_counts": [],
+      "local_process_pid": "NOT_CAPTURED by postcompletion root Cargo receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/music-truth-delivery-20261008/checks/lab-tests.json",
+        "bytes": 608,
+        "sha256": "1a5e5859a43e753d0b7609aea598b597a83273145db1d048fa4edb392bc02b23"
+      },
+      "actual_command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 45.96640372276306,
+      "test_counts": [
+        {
+          "passed": 72,
+          "failed": 0
+        }
+      ],
+      "local_process_pid": "NOT_CAPTURED by postcompletion root Cargo receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/music-truth-delivery-20261008/checks/music-truth-tests-02.json",
+        "bytes": 650,
+        "sha256": "fce9f47412110900290b1312c76631da416d11237536d26c8bf5c4f09b5114a2"
+      },
+      "actual_command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "music_truth",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 39.907992362976074,
+      "test_counts": [
+        {
+          "passed": 4,
+          "failed": 0
+        }
+      ],
+      "local_process_pid": "NOT_CAPTURED by postcompletion root Cargo receipt"
+    }
+  ],
+  "build": {
+    "head": "a9a1cf5d0de5d469367c66b11bc11b1a5c763358",
+    "status": "PASS",
+    "command": [
+      "cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "-j",
+      "2",
+      "-p",
+      "cocobeat-lab",
+      "--message-format=json"
+    ],
+    "exit_code": 0,
+    "source_inputs": 468,
+    "inputs_unchanged": true,
+    "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/source",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+    "binary_sha256": "7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb",
+    "scope": "Current accepted head plus MusicTruth module, write_new visibility and four Lab CLI routes; frozen software build only, no model or native windows",
+    "source_manifests": [
+      {
+        "path": "target/music-truth-delivery-20261008/build-01/inputs-before.json",
+        "bytes": 57835,
+        "sha256": "e0649737ecba5f706649e038361943638adab14a9218e327df89f318985cfbe8"
+      },
+      {
+        "path": "target/music-truth-delivery-20261008/build-01/inputs-after.json",
+        "bytes": 57835,
+        "sha256": "e0649737ecba5f706649e038361943638adab14a9218e327df89f318985cfbe8"
+      }
+    ],
+    "changed_sources": [
+      {
+        "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+        "bytes": 14579,
+        "sha256": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431"
+      },
+      {
+        "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/labels.rs",
+        "bytes": 15756,
+        "sha256": "5e811c046c18e20060ce8a3728b188fee74480437d06c179690ac007850cda12"
+      },
+      {
+        "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/music_truth.rs",
+        "bytes": 24685,
+        "sha256": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab"
+      }
+    ],
+    "large_artifact_boundary": "Actual frozen build receipt binds binary and dependency artifacts; raw selected index does not copy or rehash these large bytes"
+  },
+  "actual_cli": {
+    "status": "PASS_SOFTWARE_CLI_CONTROLS",
+    "scope": "constructed_not_human",
+    "description": "Actual CLI manual declarations and exact coverage controls; not music truth or algorithm admission",
+    "runner": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/check.py",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+    "receipt": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+    "fixture_receipt": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/fixture-receipt.json",
+    "planned_command_count": 20,
+    "commands": [
+      {
+        "name": "source-original",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "music-truth-source",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791425998149288129,
+        "pid": 3,
+        "owned_process_group": 3,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {},
+        "destination": null,
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/source-original.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/source-original.stderr",
+        "stdout_sha256": "3d49d0a706e8e28717a57d79ab7155590689a384584f82ce6d85cabfb0105167",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {},
+        "end_ns": 1791426000218709690
+      },
+      {
+        "name": "source-changed-chart",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "music-truth-source",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426000220740292,
+        "pid": 4,
+        "owned_process_group": 4,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "input_before_sha256": {},
+        "destination": null,
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/source-changed-chart.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/source-changed-chart.stderr",
+        "stdout_sha256": "0a4c2ef787972a171351b7aa7238407ffca6d85b7095ec5e20187c92c5a6c13a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "input_after_sha256": {},
+        "end_ns": 1791426002290236445
+      },
+      {
+        "name": "template-empty",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "music-truth-template",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "constructed_not_human-a",
+          "stereo",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426002292419308,
+        "pid": 5,
+        "owned_process_group": 5,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {},
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/template-empty.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/template-empty.stderr",
+        "stdout_sha256": "03baaa07e22bdc7e9a83c9eca22b1ddee3b8a857edd53d0ef9ccd02d382cd603",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {},
+        "destination_after_sha256": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac",
+        "end_ns": 1791426006414870308
+      },
+      {
+        "name": "import-a",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426006417411287,
+        "pid": 6,
+        "owned_process_group": 6,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-a.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-a.stderr",
+        "stdout_sha256": "afb0ac3d95c9e53eec1be67802f05595490e87c2f6f275685bab7896d667cdad",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination_after_sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+        "end_ns": 1791426010539612368
+      },
+      {
+        "name": "import-b",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/b-saved.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426010541863052,
+        "pid": 7,
+        "owned_process_group": 7,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/b-saved.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-b.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-b.stderr",
+        "stdout_sha256": "4511effe76f1367d3df7667d5b58913aaa1627fa9c0767468b6b8550825a96f6",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f"
+        },
+        "destination_after_sha256": "fadf344772a902d1f650727df74948076d7fa45bfbae0aff66da30f04d2e7142",
+        "end_ns": 1791426014663759150
+      },
+      {
+        "name": "import-saved-a",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved-again.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426014666247027,
+        "pid": 8,
+        "owned_process_group": 8,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved-again.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-saved-a.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-saved-a.stderr",
+        "stdout_sha256": "0bdaf69154fef801cc82492b9a33d3d986ae3029abebf07d162a19c09161e596",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+        },
+        "destination_after_sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+        "end_ns": 1791426018788677368
+      },
+      {
+        "name": "compare-mutual",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426018790982602,
+        "pid": 9,
+        "owned_process_group": 9,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/compare-mutual.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/compare-mutual.stderr",
+        "stdout_sha256": "a991bdca508c17427610841815c2a32e9bba1f3799fa11a9e26035e132407357",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f"
+        },
+        "destination_after_sha256": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542",
+        "end_ns": 1791426022913012026
+      },
+      {
+        "name": "import-cross-cid",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/cross-cid-import.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426022915393981,
+        "pid": 10,
+        "owned_process_group": 10,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/cross-cid-import.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-cross-cid.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/import-cross-cid.stderr",
+        "stdout_sha256": "58f0721239a784c8f6ca800eb7de0e0a3d4e9e0fc63e80699b55603cc13af615",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+          "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination_after_sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+        "end_ns": 1791426027037558178
+      },
+      {
+        "name": "compare-zero-versus-unreviewed",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/zero-unreviewed-report.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 0,
+        "expected_error": null,
+        "begin_ns": 1791426027040281478,
+        "pid": 11,
+        "owned_process_group": 11,
+        "exit_code": 0,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json": "3e85eefcf9d778038f380bc990957de548d00d65991a6c927e60c1dcbd5b2da5",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json": "f6eb401a696f642ef326ac48476524bc2eacdeaaa521722bcfe813f6abe19471"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/zero-unreviewed-report.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/compare-zero-versus-unreviewed.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/compare-zero-versus-unreviewed.stderr",
+        "stdout_sha256": "22231ad5c95e9d51cfb7a6630cff027850334fe160bfd44ad58a63c041de720a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json": "3e85eefcf9d778038f380bc990957de548d00d65991a6c927e60c1dcbd5b2da5",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json": "f6eb401a696f642ef326ac48476524bc2eacdeaaa521722bcfe813f6abe19471"
+        },
+        "destination_after_sha256": "acc0ef6486428a8e2c5bf35f7d0e783679f0d030b8419ff7515c5be893acc6e3",
+        "end_ns": 1791426031161851012
+      },
+      {
+        "name": "reject-overwrite",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "Create new",
+        "begin_ns": 1791426031164242067,
+        "pid": 12,
+        "owned_process_group": 12,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json",
+        "destination_before_sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-overwrite.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-overwrite.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "end_ns": 1791426035285569800
+      },
+      {
+        "name": "reject-duplicate",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "strictly increasing",
+        "begin_ns": 1791426035288138516,
+        "pid": 13,
+        "owned_process_group": 13,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json": "8bbef21d881a08a66e0cadf97aa740c731a78d2d62bd7ab314fdb0c90b524879"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-duplicate.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-duplicate.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "279bd5343cd8d8c8e7278bf811c6168922906b40db93c96a1ea7414a05075b9d",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json": "8bbef21d881a08a66e0cadf97aa740c731a78d2d62bd7ab314fdb0c90b524879"
+        },
+        "end_ns": 1791426037356976942
+      },
+      {
+        "name": "reject-oob",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "inside the song",
+        "begin_ns": 1791426037359575149,
+        "pid": 14,
+        "owned_process_group": 14,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json": "6ba96378effce4c24919d100dc7c1db0809b042c368eb9b75d3ac2155a65646a"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-oob.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-oob.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "279bd5343cd8d8c8e7278bf811c6168922906b40db93c96a1ea7414a05075b9d",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json": "6ba96378effce4c24919d100dc7c1db0809b042c368eb9b75d3ac2155a65646a"
+        },
+        "end_ns": 1791426039428585977
+      },
+      {
+        "name": "reject-uncovered",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "outside this kind",
+        "begin_ns": 1791426039431234715,
+        "pid": 15,
+        "owned_process_group": 15,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json": "8dcf742acbb3c2d6b949804e68076e7ca06499289f5f60da78a71bd6c77b4a13"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-uncovered.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-uncovered.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "391ce19fa25796c7465c4adc5792e9b897d70cfd5f01e4ee24fc1b77f116a328",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json": "8dcf742acbb3c2d6b949804e68076e7ca06499289f5f60da78a71bd6c77b4a13"
+        },
+        "end_ns": 1791426041500155794
+      },
+      {
+        "name": "reject-overlap",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "nonoverlapping",
+        "begin_ns": 1791426041502784651,
+        "pid": 16,
+        "owned_process_group": 16,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json": "c8af1daa5b103bfd429444dc1cda605580c580f3c6c0115de1750ad7c34bc0a5"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-overlap.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-overlap.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "c1db536b1efacd5ab792b527dfdd9e43824201ae6a89adbe73201534a222ed68",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json": "c8af1daa5b103bfd429444dc1cda605580c580f3c6c0115de1750ad7c34bc0a5"
+        },
+        "end_ns": 1791426043572250350
+      },
+      {
+        "name": "reject-channel",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "compare-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/channel-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "same channel",
+        "begin_ns": 1791426043574986409,
+        "pid": 17,
+        "owned_process_group": 17,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json": "9a285d6cd4743a7f97a21ed002ad68ca0af6def15edf6b8a19818a86a6ef5803"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/channel-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-channel.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-channel.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "9d5a2e347828c0e2e5dd92144fa2a7aac63cd5271e3643ff0c2b3c3a96c2eb06",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json": "9a285d6cd4743a7f97a21ed002ad68ca0af6def15edf6b8a19818a86a6ef5803"
+        },
+        "end_ns": 1791426045643922162
+      },
+      {
+        "name": "reject-audio",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "audio identity",
+        "begin_ns": 1791426045646571049,
+        "pid": 18,
+        "owned_process_group": 18,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json": "25c2d6b0297b05aca8e283e32ef7a6575bf5544fa66a3767d09ea757272c60ad"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-audio.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-audio.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "a222ef4bdd4ecb97ce2cf27ffd6cbdb0896c169cdb83b27b36c848ee0c5771bb",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json": "25c2d6b0297b05aca8e283e32ef7a6575bf5544fa66a3767d09ea757272c60ad"
+        },
+        "end_ns": 1791426047715690089
+      },
+      {
+        "name": "reject-schema",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "Unsupported music truth schema",
+        "begin_ns": 1791426047718392277,
+        "pid": 19,
+        "owned_process_group": 19,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json": "227795792a0dfadb458a617a122c55c7e34d1acf2be4d17cb0d7876d07bbfe56"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-schema.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-schema.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "06a01969fcd716f9b3659cb02ad3f4b4a64fe207d3044f163772c13e509fc4b4",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json": "227795792a0dfadb458a617a122c55c7e34d1acf2be4d17cb0d7876d07bbfe56"
+        },
+        "end_ns": 1791426049787246726
+      },
+      {
+        "name": "reject-bytes",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/bytes-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "exceeds 1 MiB",
+        "begin_ns": 1791426049791269742,
+        "pid": 20,
+        "owned_process_group": 20,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/bytes-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-bytes.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-bytes.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "62a203481e8630b15b387334f433c49c1e27c4068f2668d0b8f52c4c56e63949",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee"
+        },
+        "end_ns": 1791426051861049368
+      },
+      {
+        "name": "reject-package-output",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "outside the source package",
+        "begin_ns": 1791426051863572723,
+        "pid": 21,
+        "owned_process_group": 21,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-package-output.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-package-output.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+        },
+        "end_ns": 1791426053932415640
+      },
+      {
+        "name": "reject-nonfinite",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/bin/cocobeat-lab",
+          "import-music-truth",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite-must-not-exist.json"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space",
+        "expected_exit": 1,
+        "expected_error": "Invalid music truth JSON",
+        "begin_ns": 1791426053935084907,
+        "pid": 22,
+        "owned_process_group": 22,
+        "exit_code": 1,
+        "timed_out": false,
+        "process_waited": true,
+        "cleanup_signals": [],
+        "owned_group_gone": true,
+        "status": "PASS",
+        "package_before_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_before_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json": "83bfb91bbb676f4f4349031ebed57354af789068127fdecd64672b4693920071"
+        },
+        "destination": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite-must-not-exist.json",
+        "destination_before_sha256": null,
+        "stdout": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-nonfinite.stdout",
+        "stderr": "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/logs/reject-nonfinite.stderr",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "028ec918ac02befbb40750684a4723b7517be1d02de99de531ba6e0e84a8c302",
+        "package_after_sha256": {
+          "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+          "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+        },
+        "input_after_sha256": {
+          "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json": "83bfb91bbb676f4f4349031ebed57354af789068127fdecd64672b4693920071"
+        },
+        "end_ns": 1791426056003990430
+      }
+    ],
+    "command_status_basis": "Process exit/error/input protection checks; semantic oracle failures are batch errors in summary",
+    "not_run": [
+      "Human listening/independence/coverage truth and musical quality/calibration",
+      "GUI/audio/device/cross-platform acceptance or model/SDK inference",
+      "Full concurrent source replacement, write fault, timeout/descendant failure injection",
+      "Independent external BLAKE3 recomputation; writer/reader unit hash checks belong to root Cargo batch"
+    ],
+    "binary_before_sha256": "7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb",
+    "binary_after_sha256": "7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb",
+    "binary_unchanged": true,
+    "error": null,
+    "postflight_errors": [],
+    "protected_before_sha256": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/check.py": "9fd9b458dcde49e5aa5627f2bada46711f698e677160da3d6215d3d622af1d37",
+      "/home/lzzz/MyProjects/CoCoBeat/tools/replay-workbench-check/check.py": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/cocobeat-lab-build-result.json": "202dba00bd2fda092b97e3244a782445133dd1f55ecd43a1801102e389dfffea",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/fixture-receipt.json": "d3b45398fb3c12c95f4552b57d7bed7a0190577c8c7af87d1a67ebd6374274df",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/candidate-revision02/HANDOFF.json": "67188373bbc1df84cdbb1e4f8e2b4c6a40f79a8d60614373b0780811f194985b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/music_truth.rs": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab",
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/summary.json": "c76b011ed48173315b86104d0bdebcc7d93ef0bba2dd6729bd325376278ac4a9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/b-saved.json": "fadf344772a902d1f650727df74948076d7fa45bfbae0aff66da30f04d2e7142",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved-again.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/cross-cid-import.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json": "3e85eefcf9d778038f380bc990957de548d00d65991a6c927e60c1dcbd5b2da5",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json": "f6eb401a696f642ef326ac48476524bc2eacdeaaa521722bcfe813f6abe19471",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/zero-unreviewed-report.json": "acc0ef6486428a8e2c5bf35f7d0e783679f0d030b8419ff7515c5be893acc6e3",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json": "8bbef21d881a08a66e0cadf97aa740c731a78d2d62bd7ab314fdb0c90b524879",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json": "6ba96378effce4c24919d100dc7c1db0809b042c368eb9b75d3ac2155a65646a",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json": "8dcf742acbb3c2d6b949804e68076e7ca06499289f5f60da78a71bd6c77b4a13",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json": "c8af1daa5b103bfd429444dc1cda605580c580f3c6c0115de1750ad7c34bc0a5",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json": "9a285d6cd4743a7f97a21ed002ad68ca0af6def15edf6b8a19818a86a6ef5803",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json": "25c2d6b0297b05aca8e283e32ef7a6575bf5544fa66a3767d09ea757272c60ad",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json": "227795792a0dfadb458a617a122c55c7e34d1acf2be4d17cb0d7876d07bbfe56",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json": "83bfb91bbb676f4f4349031ebed57354af789068127fdecd64672b4693920071"
+    },
+    "protected_after_sha256": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/check.py": "9fd9b458dcde49e5aa5627f2bada46711f698e677160da3d6215d3d622af1d37",
+      "/home/lzzz/MyProjects/CoCoBeat/tools/replay-workbench-check/check.py": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/cocobeat-lab-build-result.json": "202dba00bd2fda092b97e3244a782445133dd1f55ecd43a1801102e389dfffea",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/fixture-receipt.json": "d3b45398fb3c12c95f4552b57d7bed7a0190577c8c7af87d1a67ebd6374274df",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/candidate-revision02/HANDOFF.json": "67188373bbc1df84cdbb1e4f8e2b4c6a40f79a8d60614373b0780811f194985b",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/music_truth.rs": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab",
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/summary.json": "c76b011ed48173315b86104d0bdebcc7d93ef0bba2dd6729bd325376278ac4a9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/b-saved.json": "fadf344772a902d1f650727df74948076d7fa45bfbae0aff66da30f04d2e7142",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved-again.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/cross-cid-import.json": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json": "3e85eefcf9d778038f380bc990957de548d00d65991a6c927e60c1dcbd5b2da5",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json": "f6eb401a696f642ef326ac48476524bc2eacdeaaa521722bcfe813f6abe19471",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/zero-unreviewed-report.json": "acc0ef6486428a8e2c5bf35f7d0e783679f0d030b8419ff7515c5be893acc6e3",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json": "8bbef21d881a08a66e0cadf97aa740c731a78d2d62bd7ab314fdb0c90b524879",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json": "6ba96378effce4c24919d100dc7c1db0809b042c368eb9b75d3ac2155a65646a",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json": "8dcf742acbb3c2d6b949804e68076e7ca06499289f5f60da78a71bd6c77b4a13",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json": "c8af1daa5b103bfd429444dc1cda605580c580f3c6c0115de1750ad7c34bc0a5",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json": "9a285d6cd4743a7f97a21ed002ad68ca0af6def15edf6b8a19818a86a6ef5803",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json": "25c2d6b0297b05aca8e283e32ef7a6575bf5544fa66a3767d09ea757272c60ad",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json": "227795792a0dfadb458a617a122c55c7e34d1acf2be4d17cb0d7876d07bbfe56",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee",
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json": "83bfb91bbb676f4f4349031ebed57354af789068127fdecd64672b4693920071"
+    },
+    "packages_before_sha256": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+        "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+        "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+      }
+    },
+    "packages_after_sha256": {
+      "/home/lzzz/MyProjects/CoCoBeat/target/authored-source-delivery-20261008/cli/original-64s-package": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "song.package": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/label-adoption-cli-qa-20261008/actual-01/selected-package": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+        "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+      },
+      "/home/lzzz/MyProjects/CoCoBeat/target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart": {
+        "song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "analysis.bin": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba",
+        "chart.bin": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45",
+        "song.package": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+      }
+    },
+    "command_count": 20,
+    "not_run_commands": []
+  },
+  "root_postflight": {
+    "status": "PASS_ROOT_POSTFLIGHT",
+    "current_inputs_equal_frozen_build": true,
+    "input_count": 468,
+    "cli_commands": 20,
+    "exit_code": 0,
+    "boundary": "QA recorded owned groups gone; no root host PID namespace equivalence claim; no hardware, human, algorithm quality acceptance",
+    "actual_summary_sha256": "778abdf42ecf225e468286058a876c8edadf4ce28b5b27d53278cb4f3e8a6a35"
+  },
+  "test_revision_boundary": "Full Lab72 actual passes correspond to original module; final narrow4 and Clippy/fmt correspond to revision02 equivalent int_plus_one/format changes, not a repeated full72 batch",
+  "final_source_bound_by": "Final revision02 candidate SHA matches frozen module/labels; final main identified by build468 manifest and copied source; initial root-apply SHA retained as history",
+  "boundaries": {
+    "manual_declarations": "Controlled QA fixture identities and event/coverage values are constructed, not human annotations",
+    "source_identity": "Final canonical audio identity carries across distinct chart/CID while current validated CID and declared origin retained separately",
+    "coverage": "Strict half-open intervals per kind; exact events in mutual reviewed coverage only; zero detections inside reviewed area differs from unreviewed",
+    "comparison": "No tolerance, F-score, consensus, normalization or algorithm admission",
+    "native_model_sdk_gui_audio_devices": "NOT_RUN",
+    "human_independent_annotations_music_quality_calibration": "NOT_RUN",
+    "automatic_anchors": "NOT_RUN; MusicTruth mechanism does not mutate authored chart/AnchorLabels",
+    "cross_target_current_source": "NOT_RUN",
+    "large_artifacts": "Only existing actual build source/dependency/binary receipts bind omitted assets, no binary/model/vendor recursive index",
+    "development_qa_python": "Target-only QA supervisor, never product analysis/runtime or release dependency"
+  },
+  "raw_index_candidate": "testdata/synthetic/music-truth-observations-20261008-raw-index.json",
+  "formal_revision": 2
+}

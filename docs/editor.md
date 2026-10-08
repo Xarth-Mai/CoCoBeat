@@ -79,6 +79,8 @@ Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表�
 
 新增 Labels 软件验证与分版原生补验见[观察记录](independent-labels.md#原生-labels-工作台)：首轮小窗口视觉失败和修复保留，最终 31 条文案 / 13 语言字形与固定法语小窗口补验通过，OS IME / 设备 / 真人盲标仍未验收；标签保存后通过 [`adopt-labeled-anchors`](independent-labels.md#明确采用为-anchor) 选择肯定精确点并导出新包，UI 不新增采用按钮
 
+onset / beat / 每小节第一拍 downbeat 的独立人工记录使用[MusicTruth CLI](music-truth.md)，按同一 canonical 音频精确帧与分轨覆盖比较，不复用 AnchorLabels 的应 / 不应标签；现工作台不会自动写入 MusicTruth，拍号 / 节拍单位与真人审阅须另行记录
+
 ## 使用方式
 
 从仓库根目录运行，先验证源包并取得 `Package BLAKE3`，把完整 64 个小写十六进制字符加上 `package-blake3:` 前缀，填入补丁的 `source_content_id`

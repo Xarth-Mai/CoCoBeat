@@ -12,6 +12,7 @@
 - [x] 独立 Labels 编辑软件：隐藏作者 / 算法提示，共用最终立体声波形 / 试听，人工 point / interval 与三态判断、原生文本、Apply / Cancel 草稿和固定新侧车保存已接通；正式 57 项 Lab 测试、Clippy 与冻结构建通过，已补分版原生软件验证及最终法语小窗口指定范围目检，首轮视觉失败保留；OS IME / 设备 / 真人验收单独记录，见[独立标签](../docs/independent-labels.md#原生-labels-工作台)
 
 - [ ] 物理输入、DAC / 扬声器与设备计时验收；Replay v1 / v2 不含设备 timestamp，软件消费等待不能从歌曲帧推算成物理延迟
+- [x] 独立音乐事件来源 / 空模板 / 导入 / 精确对照 CLI：另存新文件，声明 origin CID 与本次 validated CID 分开，交集外事件保持 uncompared；20 条实际 CLI 软件控制通过，见[MusicTruth](../docs/music-truth.md)，本项不包含新 GUI、真人或算法对照
 - [x] 固定带版本/长度限制的 SongPackage / Replay 及 CLI 诊断契约，校验损坏与不支持版本
 - [x] 编辑导出再载入无损，同一 core headless 重放结果一致；真实改谱必须使用匹配新身份的录制
 

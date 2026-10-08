@@ -1,0 +1,615 @@
+{
+  "schema": "cocobeat-selected-raw-artifact-index-v1",
+  "state": "FROZEN_ACTUAL_SOFTWARE_OBSERVATIONS",
+  "scope": "constructed_not_human manual coverage/source identity/exact mutual-overlap comparison mechanism; no music quality or human truth",
+  "file_count": 121,
+  "total_bytes": 7106398,
+  "selection": "Actual small source/check/build/QA receipts and actual CLI work-area package copies/manual fixtures/output/log files; no full source dependency assets, model/SDK/vendor/Cargo binaries or old release archives",
+  "files": [
+    {
+      "path": "target/music-truth-cli-qa-20261008/HANDOFF.json",
+      "bytes": 2218,
+      "sha256": "04c5412eddcff3f3f53af7178855a51dfd29f05d36efbe37aaad38bde4528554"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/README.md",
+      "bytes": 5207,
+      "sha256": "563749d57f79e337234dba0e3c9473355ab340fe61986d9fc4352b38e3b9a846"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/commands.json",
+      "bytes": 61057,
+      "sha256": "5f527636753eff83734db4eeb22dd248746184b0c6bc6292407ac6885a5956ed"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/compare-mutual.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/compare-mutual.stdout",
+      "bytes": 884,
+      "sha256": "a991bdca508c17427610841815c2a32e9bba1f3799fa11a9e26035e132407357"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/compare-zero-versus-unreviewed.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/compare-zero-versus-unreviewed.stdout",
+      "bytes": 893,
+      "sha256": "22231ad5c95e9d51cfb7a6630cff027850334fe160bfd44ad58a63c041de720a"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-a.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-a.stdout",
+      "bytes": 804,
+      "sha256": "afb0ac3d95c9e53eec1be67802f05595490e87c2f6f275685bab7896d667cdad"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-b.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-b.stdout",
+      "bytes": 804,
+      "sha256": "4511effe76f1367d3df7667d5b58913aaa1627fa9c0767468b6b8550825a96f6"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-cross-cid.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-cross-cid.stdout",
+      "bytes": 813,
+      "sha256": "58f0721239a784c8f6ca800eb7de0e0a3d4e9e0fc63e80699b55603cc13af615"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-saved-a.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/import-saved-a.stdout",
+      "bytes": 810,
+      "sha256": "0bdaf69154fef801cc82492b9a33d3d986ae3029abebf07d162a19c09161e596"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-audio.stderr",
+      "bytes": 71,
+      "sha256": "a222ef4bdd4ecb97ce2cf27ffd6cbdb0896c169cdb83b27b36c848ee0c5771bb"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-audio.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-bytes.stderr",
+      "bytes": 35,
+      "sha256": "62a203481e8630b15b387334f433c49c1e27c4068f2668d0b8f52c4c56e63949"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-bytes.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-channel.stderr",
+      "bytes": 73,
+      "sha256": "9d5a2e347828c0e2e5dd92144fa2a7aac63cd5271e3643ff0c2b3c3a96c2eb06"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-channel.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-duplicate.stderr",
+      "bytes": 72,
+      "sha256": "279bd5343cd8d8c8e7278bf811c6168922906b40db93c96a1ea7414a05075b9d"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-duplicate.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-nonfinite.stderr",
+      "bytes": 62,
+      "sha256": "028ec918ac02befbb40750684a4723b7517be1d02de99de531ba6e0e84a8c302"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-nonfinite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-oob.stderr",
+      "bytes": 72,
+      "sha256": "279bd5343cd8d8c8e7278bf811c6168922906b40db93c96a1ea7414a05075b9d"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-oob.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-overlap.stderr",
+      "bytes": 84,
+      "sha256": "c1db536b1efacd5ab792b527dfdd9e43824201ae6a89adbe73201534a222ed68"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-overlap.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-overwrite.stderr",
+      "bytes": 65,
+      "sha256": "aa0ab20bfad169fca48355b1c22101ae6952066f3635d818d62d76610d3c0d19"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-overwrite.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-package-output.stderr",
+      "bytes": 74,
+      "sha256": "27c435d00e5fa38066b0354e39600ff30908d06db2de82c6aeca016f41d55ae4"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-package-output.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-schema.stderr",
+      "bytes": 31,
+      "sha256": "06a01969fcd716f9b3659cb02ad3f4b4a64fe207d3044f163772c13e509fc4b4"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-schema.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-uncovered.stderr",
+      "bytes": 68,
+      "sha256": "391ce19fa25796c7465c4adc5792e9b897d70cfd5f01e4ee24fc1b77f116a328"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/reject-uncovered.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/source-changed-chart.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/source-changed-chart.stdout",
+      "bytes": 315,
+      "sha256": "0a4c2ef787972a171351b7aa7238407ffca6d85b7095ec5e20187c92c5a6c13a"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/source-original.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/source-original.stdout",
+      "bytes": 315,
+      "sha256": "3d49d0a706e8e28717a57d79ab7155590689a384584f82ce6d85cabfb0105167"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/template-empty.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/logs/template-empty.stdout",
+      "bytes": 710,
+      "sha256": "03baaa07e22bdc7e9a83c9eca22b1ddee3b8a857edd53d0ef9ccd02d382cd603"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/summary.json",
+      "bytes": 75447,
+      "sha256": "778abdf42ecf225e468286058a876c8edadf4ce28b5b27d53278cb4f3e8a6a35"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved-again.json",
+      "bytes": 858,
+      "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json",
+      "bytes": 858,
+      "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/b-saved.json",
+      "bytes": 875,
+      "sha256": "fadf344772a902d1f650727df74948076d7fa45bfbae0aff66da30f04d2e7142"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/cross-cid-import.json",
+      "bytes": 858,
+      "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json",
+      "bytes": 1930,
+      "sha256": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/nonfinite.json",
+      "bytes": 565,
+      "sha256": "83bfb91bbb676f4f4349031ebed57354af789068127fdecd64672b4693920071"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/analysis.bin",
+      "bytes": 65673,
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/chart.bin",
+      "bytes": 205,
+      "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/song.audio.ogg",
+      "bytes": 2330678,
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/original/song.package",
+      "bytes": 319,
+      "sha256": "42889d0719754b02b01620e0d1fe9cf7b26956b4e9ff3ad80fa3a2f0a5c6d5b8"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/oversized.json",
+      "bytes": 1048577,
+      "sha256": "9d78de4e5b12fc166bed811cd230621ea1e1e353553fe31b92a73bfbf45d68ee"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-audio-input.json",
+      "bytes": 858,
+      "sha256": "25c2d6b0297b05aca8e283e32ef7a6575bf5544fa66a3767d09ea757272c60ad"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-duplicate-input.json",
+      "bytes": 835,
+      "sha256": "8bbef21d881a08a66e0cadf97aa740c731a78d2d62bd7ab314fdb0c90b524879"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-oob-input.json",
+      "bytes": 828,
+      "sha256": "6ba96378effce4c24919d100dc7c1db0809b042c368eb9b75d3ac2155a65646a"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-overlap-input.json",
+      "bytes": 935,
+      "sha256": "c8af1daa5b103bfd429444dc1cda605580c580f3c6c0115de1750ad7c34bc0a5"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-schema-input.json",
+      "bytes": 858,
+      "sha256": "227795792a0dfadb458a617a122c55c7e34d1acf2be4d17cb0d7876d07bbfe56"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reject-uncovered-input.json",
+      "bytes": 824,
+      "sha256": "8dcf742acbb3c2d6b949804e68076e7ca06499289f5f60da78a71bd6c77b4a13"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewed-zero-events.json",
+      "bytes": 723,
+      "sha256": "3e85eefcf9d778038f380bc990957de548d00d65991a6c927e60c1dcbd5b2da5"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-a-constructed.json",
+      "bytes": 575,
+      "sha256": "6c4e390d0c14e04fe617adee6468c738ff66b07be0b547b70116e8916f85fbe3"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/reviewer-b-constructed.json",
+      "bytes": 583,
+      "sha256": "bb092f5845817a9bde842b8bec47e0efd9c4570a7146b297f1e4060e6d895d3f"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart/analysis.bin",
+      "bytes": 65673,
+      "sha256": "e3f956a4ef8dcb87f5a2f4d607a6a3a9055aeef010a434c070f39f132c2174ba"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart/chart.bin",
+      "bytes": 173,
+      "sha256": "c5c4832522192d66d0c63dafbd74cab98f1f0ed8380d512681c6ed8387d86b45"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart/song.audio.ogg",
+      "bytes": 2330678,
+      "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/same_audio_changed_chart/song.package",
+      "bytes": 318,
+      "sha256": "241458ae53f87f0590e264a623e2acf235b45f1085b0b93c207fccb493d86394"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json",
+      "bytes": 641,
+      "sha256": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/unreviewed.json",
+      "bytes": 650,
+      "sha256": "f6eb401a696f642ef326ac48476524bc2eacdeaaa521722bcfe813f6abe19471"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/wrong-channel.json",
+      "bytes": 873,
+      "sha256": "9a285d6cd4743a7f97a21ed002ad68ca0af6def15edf6b8a19818a86a6ef5803"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/zero-unreviewed-report.json",
+      "bytes": 1702,
+      "sha256": "acc0ef6486428a8e2c5bf35f7d0e783679f0d030b8419ff7515c5be893acc6e3"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/check.py",
+      "bytes": 21749,
+      "sha256": "9fd9b458dcde49e5aa5627f2bada46711f698e677160da3d6215d3d622af1d37"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/fixture-receipt.json",
+      "bytes": 2280,
+      "sha256": "d3b45398fb3c12c95f4552b57d7bed7a0190577c8c7af87d1a67ebd6374274df"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/independent-review.json",
+      "bytes": 9449,
+      "sha256": "0f21b513cbee3dfd69229f5295fad29bcf72afa129e70ae6adcac3ad1768dd0b"
+    },
+    {
+      "path": "target/music-truth-cli-qa-20261008/static-check.json",
+      "bytes": 869,
+      "sha256": "7a1d13ccaade73606f074cc2e61c4f0f26785ac64e511079a31a2a495a7f1e82"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/build-result.json",
+      "bytes": 141471,
+      "sha256": "88f174564e6b92a09cd8b0f95869d2440b926f08a61f062baef46a7418c1a1ec"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/build.jsonl",
+      "bytes": 403064,
+      "sha256": "675dd31d8b0599b5280b885f8469016b47dffd97c3cf84449bc791069a2cb0c5"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/build.py",
+      "bytes": 2722,
+      "sha256": "ef325139194e25a9641357ef43e3806129411c2fa476e9e9c2d4c02f388f10b2"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/build.stderr",
+      "bytes": 158,
+      "sha256": "2c46e6ca5e4e93550a48c8126228e3496c3b8d9b1503913d3bec102edc707448"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+      "bytes": 141741,
+      "sha256": "202dba00bd2fda092b97e3244a782445133dd1f55ecd43a1801102e389dfffea"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/inputs-after.json",
+      "bytes": 57835,
+      "sha256": "e0649737ecba5f706649e038361943638adab14a9218e327df89f318985cfbe8"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/inputs-before.json",
+      "bytes": 57835,
+      "sha256": "e0649737ecba5f706649e038361943638adab14a9218e327df89f318985cfbe8"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/labels.rs",
+      "bytes": 15756,
+      "sha256": "5e811c046c18e20060ce8a3728b188fee74480437d06c179690ac007850cda12"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+      "bytes": 14579,
+      "sha256": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/build-01/source/tools/cocobeat-lab/src/music_truth.rs",
+      "bytes": 24685,
+      "sha256": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/candidate-revision02/HANDOFF.json",
+      "bytes": 6720,
+      "sha256": "67188373bbc1df84cdbb1e4f8e2b4c6a40f79a8d60614373b0780811f194985b"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/candidate-revision02/labels.rs",
+      "bytes": 15756,
+      "sha256": "5e811c046c18e20060ce8a3728b188fee74480437d06c179690ac007850cda12"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/candidate-revision02/music_truth.rs",
+      "bytes": 24685,
+      "sha256": "01c27bca4f3563584d949cb89f7b81cbe9a4d17c477d23cd261bb2bc741811ab"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy-02.json",
+      "bytes": 634,
+      "sha256": "83ad80bdd65ab2c00364c4eb95a316537e4a8dd8fd85eb7df76f78b8f5fb8f88"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy-02.stderr",
+      "bytes": 157,
+      "sha256": "b0b2274dfec75f7e537f8549f83c7fdc5ac11ca4fcdd0c7a380f935c7e30a336"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy-02.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy.json",
+      "bytes": 630,
+      "sha256": "d097ed1ab4ac370df42bcffc67d99aea42f67db4c9a39cc38ebcf2465840b6aa"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy.stderr",
+      "bytes": 919,
+      "sha256": "58044d907043f95c70d4219290405c2d5f7dfdf4df8438b27558948f36c029ac"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/clippy.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/fmt.json",
+      "bytes": 508,
+      "sha256": "26d98eaf0392cf5ba01cd66f81014beceb4e2caf753897bdcf85da43756a24e0"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/fmt.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/fmt.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/lab-tests.json",
+      "bytes": 608,
+      "sha256": "1a5e5859a43e753d0b7609aea598b597a83273145db1d048fa4edb392bc02b23"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/lab-tests.stderr",
+      "bytes": 338,
+      "sha256": "43747de7a7345be429bb1d12689ff86121dc30014cb5d6abfdaca488f59df69b"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/lab-tests.stdout",
+      "bytes": 7064,
+      "sha256": "c7289bc133730d199b2dfba2e3548cbfca6d66124b0f792c1daac34f1f629e69"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/music-truth-tests-02.json",
+      "bytes": 650,
+      "sha256": "fce9f47412110900290b1312c76631da416d11237536d26c8bf5c4f09b5114a2"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/music-truth-tests-02.stderr",
+      "bytes": 244,
+      "sha256": "f4031fa7625195d11302224055cc55a21d2e5534b29bf175db63b00b2aff987d"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/checks/music-truth-tests-02.stdout",
+      "bytes": 504,
+      "sha256": "f862f2b97afa244975bcd643bb28b119cba95d53c1ea900aedcbc18a33acf89a"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/fmt-initial.json",
+      "bytes": 368,
+      "sha256": "b3e2a5990eadacb254b4bb89824751609a84f7c3ff43622d3034056b589e4c44"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/main-after.rs",
+      "bytes": 14579,
+      "sha256": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/main-before.rs",
+      "bytes": 13394,
+      "sha256": "57f31d396f76d2572a00725fbea8c51f90378d0db333ac39a167376776d3c742"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/main-integration-review-revision02.json",
+      "bytes": 3366,
+      "sha256": "783671a6fdeead768ea648731e49d9e4cf5c6bde689835a20ff937552a7028ec"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/main-integration-review.json",
+      "bytes": 4468,
+      "sha256": "fe77636934f451b87394d29dbdc7020200c51e8527969b2187487e1cad710efe"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/root-apply.json",
+      "bytes": 739,
+      "sha256": "118ada910ea3e4cff90a0e639442c57c3155cd6629e22369ab416cb67abff159"
+    },
+    {
+      "path": "target/music-truth-delivery-20261008/root-postflight.json",
+      "bytes": 384,
+      "sha256": "105f6b16ab2976c1a81f99b139ed27358252def4e848dc188499f2508cdc960f"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/HANDOFF.json",
+      "bytes": 6481,
+      "sha256": "47c673c3a94c7acba8e9b1c849f3d5d9754842178078f298b8e5853f03c5051b"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/REVIEW.md",
+      "bytes": 1635,
+      "sha256": "803e2d6fd2f32fb9a2eafad09a27b94cfc3d8764e531a9bdf8e8ba7a93e18669"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/apply-check.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/apply-check.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/candidate/tools/cocobeat-lab/src/labels.rs",
+      "bytes": 15741,
+      "sha256": "6dd9664ec2d9320fa60131b79d6a159a1800c30a027932867833833f8ad8625b"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/candidate/tools/cocobeat-lab/src/music_truth.rs",
+      "bytes": 24690,
+      "sha256": "fd8164bd56411205146ec6d85da41846d9124b858d50883636e2395b6286611f"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/independent-review.json",
+      "bytes": 7472,
+      "sha256": "8d901be98e52951e8a2c8d18bd48d1700f202cd3b3fa8c93772641771a37cce0"
+    },
+    {
+      "path": "target/music-truth-implementation-20261008/music-truth.patch",
+      "bytes": 26170,
+      "sha256": "3c83768b9767bebf5f9e7d25fe1bcd73ae010fd9320366a0a3bdb3d4706cba70"
+    },
+    {
+      "path": "target/music-truth-plan-20261008/PLAN.md",
+      "bytes": 11041,
+      "sha256": "509bd1ab4f3477c62b633b309c70d91082ddf7ef4d69c4e85086d7e2b855a7af"
+    },
+    {
+      "path": "tools/replay-workbench-check/check.py",
+      "bytes": 12153,
+      "sha256": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590"
+    }
+  ]
+}
