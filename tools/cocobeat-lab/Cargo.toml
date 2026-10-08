@@ -15,7 +15,9 @@ cocobeat-media.workspace = true
 cocobeat-stage.workspace = true
 cocobeat-editor.workspace = true
 cocobeat-net.workspace = true
-bevy.workspace = true
+bevy = { workspace = true, features = ["bevy_input_focus"] }
+bevy_ui_widgets = { version = "0", default-features = false }
+bevy_picking = { version = "0", default-features = false }
 serde.workspace = true
 serde_json.workspace = true
 blake3.workspace = true

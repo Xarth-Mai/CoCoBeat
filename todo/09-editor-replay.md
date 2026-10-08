@@ -8,6 +8,8 @@
 - [x] 图形界面显示 Replay 输入、水位、Anchor 判定与 Free Sync 配对，保留原始整数和事实关联
 - [x] 三种工作台共用 canonical PCM 试听，独立显示源游标和请求起点，暂停 / 恢复 / 停止 / 选择跳转保留原编辑与 Replay 帧
 - [x] 关联显式本机软件计时 sidecar，按精确 Replay 原字节和原 Hit fact_index 展示观察、消费等待、真实 mapping anchor 与独立音频历史；共享 / runtime / lab、实际 CLI 和原生详情软件验证通过，物理设备另验
+- [x] 独立 Labels 编辑软件：隐藏作者 / 算法提示，共用最终立体声波形 / 试听，人工 point / interval 与三态判断、原生文本、Apply / Cancel 草稿和固定新侧车保存已接通；正式 57 项 Lab 测试、Clippy 与冻结构建通过，已补分版原生软件验证及最终法语小窗口指定范围目检，首轮视觉失败保留；OS IME / 设备 / 真人验收单独记录，见[独立标签](../docs/independent-labels.md#原生-labels-工作台)
+
 - [ ] 物理输入、DAC / 扬声器与设备计时验收；Replay v1 / v2 不含设备 timestamp，软件消费等待不能从歌曲帧推算成物理延迟
 - [x] 固定带版本/长度限制的 SongPackage / Replay 及 CLI 诊断契约，校验损坏与不支持版本
 - [x] 编辑导出再载入无损，同一 core headless 重放结果一致；真实改谱必须使用匹配新身份的录制

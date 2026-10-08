@@ -7,7 +7,7 @@ use bevy::{
         keyboard::KeyboardInput,
         mouse::{MouseButtonInput, MouseWheel},
     },
-    window::{WindowCloseRequested, WindowFocused},
+    window::{Ime, WindowCloseRequested, WindowFocused},
 };
 use cocobeat_runtime::{MenuAccess, menu_access};
 use std::collections::HashSet;
@@ -21,7 +21,9 @@ pub(super) struct Controls {
     axes: HashSet<(Entity, GamepadAxis)>,
     mouse: bool,
     drag_offset: i64,
-    focused: bool,
+    pub(super) focused: bool,
+    pub(super) native_blocked: bool,
+    pub(super) ime_busy: bool,
 }
 
 impl Default for Controls {
@@ -35,6 +37,8 @@ impl Default for Controls {
             mouse: false,
             drag_offset: 0,
             focused: true,
+            native_blocked: false,
+            ime_busy: false,
         }
     }
 }
@@ -51,6 +55,7 @@ impl Controls {
         match menu_access(&mut self.owner, source, claim) {
             MenuAccess::Action => true,
             MenuAccess::Claimed => {
+                self.native_blocked = true;
                 state.audition.pause();
                 state.document.cancel();
                 false
@@ -92,6 +97,8 @@ impl Controls {
 #[derive(SystemParam)]
 pub(super) struct Events<'w, 's> {
     keys: MessageReader<'w, 's, KeyboardInput>,
+    ime: MessageReader<'w, 's, Ime>,
+    text: Query<'w, 's, &'static bevy::text::EditableText, With<label_text::LabelText>>,
     mouse: MessageReader<'w, 's, MouseButtonInput>,
     wheel: MessageReader<'w, 's, MouseWheel>,
     focus: MessageReader<'w, 's, WindowFocused>,
@@ -112,6 +119,16 @@ pub(super) fn capture(
     let Ok((window_id, window)) = windows.single() else {
         return;
     };
+    controls.native_blocked = false;
+    let incoming_ime = events.ime.read().fold(false, |incoming, event| {
+        incoming
+            | match event {
+                Ime::Preedit { window, .. } | Ime::Commit { window, .. } => *window == window_id,
+                Ime::Enabled { .. } | Ime::Disabled { .. } => false,
+            }
+    });
+    controls.ime_busy =
+        state.labels.is_some() && (incoming_ime || events.text.iter().any(label_text::pending));
     if state.is_read_only() {
         state.document.cancel();
     }
@@ -121,21 +138,51 @@ pub(super) fn capture(
         .map_or(view.canvas, |(_, node, transform)| {
             ui::logical_rect(node, transform)
         });
-    let mut used = state.saving.is_some();
+    let closing = state.pending_label_action == Some(Action::Back);
+    controls.native_blocked |= closing;
+    let mut used = state.saving.is_some() || closing;
     for event in events
         .focus
         .read()
         .filter(|event| event.window == window_id)
     {
         controls.focused = event.focused;
+        controls.native_blocked = true;
         if !event.focused {
             state.audition.pause();
         }
         state.document.cancel();
         used = true;
     }
+    let key_events: Vec<_> = events
+        .keys
+        .read()
+        .filter(|event| event.window == window_id)
+        .collect();
+    // Apply/save must wait until native edits have reached PostUpdate and sync
+    let raw_control = controls.control()
+        || key_events.iter().any(|event| {
+            event.state.is_pressed()
+                && matches!(event.key_code, KeyCode::ControlLeft | KeyCode::ControlRight)
+        });
+    let pending_text = matches!(state.focus, Focus::Label(field) if field.is_text())
+        && key_events.iter().any(|event| {
+            event.state.is_pressed()
+                && ((event.text.as_ref().is_some_and(|text| !text.is_empty())
+                    && !matches!(event.key_code, KeyCode::Tab | KeyCode::Escape)
+                    && !(event.key_code == KeyCode::Enter
+                        && state.focus == Focus::Label(label_text::Field::Reviewer)))
+                    || matches!(event.key_code, KeyCode::Backspace | KeyCode::Delete)
+                    || (event.key_code == KeyCode::Enter
+                        && state.focus == Focus::Label(label_text::Field::Reason))
+                    || (raw_control && matches!(event.key_code, KeyCode::KeyV | KeyCode::KeyX)))
+        });
     if events.close.read().any(|event| event.window == window_id) {
-        state.close(&mut exit);
+        if state.labels.is_some() && (controls.ime_busy || pending_text) {
+            state.pending_label_action = Some(Action::Back);
+        } else {
+            state.close(&mut exit);
+        }
         used = true;
     }
     let changed: HashSet<_> = events
@@ -158,7 +205,7 @@ pub(super) fn capture(
         })
         .collect();
 
-    for event in events.keys.read().filter(|event| event.window == window_id) {
+    for event in key_events {
         let edge = controls.key_edge(
             event.key_code,
             event.state == ButtonState::Pressed,
@@ -176,6 +223,18 @@ pub(super) fn capture(
             used |= before != controls.owner;
             continue;
         }
+        if state.labels.is_some()
+            && (controls.ime_busy
+                || (pending_text
+                    && matches!(state.focus, Focus::Label(field) if field.is_text())
+                    && matches!(
+                        event.key_code,
+                        KeyCode::Tab | KeyCode::Escape | KeyCode::Enter
+                    )))
+        {
+            continue;
+        }
+        let previous_focus = state.focus;
         used = key(
             &mut state,
             &controls,
@@ -183,6 +242,12 @@ pub(super) fn capture(
             canvas.width(),
             &mut exit,
         );
+        if used
+            && state.focus != previous_focus
+            && matches!(state.focus, Focus::Label(field) if field.is_text())
+        {
+            controls.native_blocked = true;
+        }
     }
     for event in events.pads.read() {
         let (pad, button, axis) = match event {
@@ -235,6 +300,9 @@ pub(super) fn capture(
             used |= before != controls.owner;
             continue;
         }
+        if state.labels.is_some() && (controls.ime_busy || pending_text) {
+            continue;
+        }
         pad_command(&mut state, command, canvas.width(), &mut exit);
         used = true;
     }
@@ -274,13 +342,22 @@ pub(super) fn capture(
         let hit = targets
             .iter()
             .filter(|(_, node, _)| node.size.min_element() > 0.0)
-            .find(|(hit, node, transform)| {
+            .filter(|(hit, node, transform)| {
                 (!state.close_confirm
                     || matches!(hit, ui::Hit::Action(Action::Keep | Action::Discard)))
                     && ui::logical_rect(node, transform).contains(cursor)
             })
+            .min_by_key(|(hit, _, _)| match hit {
+                ui::Hit::LabelField(_) => 0,
+                ui::Hit::Action(_) => 1,
+                ui::Hit::Row(_) => 2,
+                _ => 3,
+            })
             .map(|(hit, node, transform)| (*hit, ui::logical_rect(node, transform)));
         if let Some((hit, bounds)) = hit {
+            if state.labels.is_some() && (controls.ime_busy || pending_text) {
+                continue;
+            }
             click(
                 &mut state,
                 &view,
@@ -403,7 +480,43 @@ fn digit(key: KeyCode) -> Option<char> {
 
 fn cycle_focus(state: &mut Workbench, backwards: bool) {
     let toolbar = state.toolbar().len();
-    let panels: &[Focus] = if state.is_read_only() {
+    use label_text::Field;
+    let label_panels: &[Focus] = match state
+        .labels
+        .as_ref()
+        .and_then(|labels| labels.draft.as_ref())
+    {
+        Some(draft) if draft.kind == labels::LocationKind::Interval => &[
+            Focus::Timeline,
+            Focus::List,
+            Focus::Label(Field::Reviewer),
+            Focus::Label(Field::Kind),
+            Focus::Label(Field::Start),
+            Focus::Label(Field::End),
+            Focus::Label(Field::Decision),
+            Focus::Label(Field::Reason),
+            Focus::Details,
+        ],
+        Some(_) => &[
+            Focus::Timeline,
+            Focus::List,
+            Focus::Label(Field::Reviewer),
+            Focus::Label(Field::Kind),
+            Focus::Label(Field::Frame),
+            Focus::Label(Field::Decision),
+            Focus::Label(Field::Reason),
+            Focus::Details,
+        ],
+        None => &[
+            Focus::Timeline,
+            Focus::List,
+            Focus::Label(Field::Reviewer),
+            Focus::Details,
+        ],
+    };
+    let panels: &[Focus] = if state.labels.is_some() {
+        label_panels
+    } else if state.is_read_only() {
         &[Focus::Timeline, Focus::List, Focus::Details]
     } else {
         &[Focus::Timeline, Focus::List, Focus::Frame, Focus::Details]
@@ -424,7 +537,10 @@ fn cycle_focus(state: &mut Workbench, backwards: bool) {
     } else {
         panels[index - toolbar]
     };
-    if matches!(state.focus, Focus::Frame | Focus::Details) {
+    if let Focus::Label(field) = state.focus {
+        focus_label(state, field);
+    }
+    if matches!(state.focus, Focus::Frame | Focus::Details | Focus::Label(_)) {
         state.details = true;
     }
     if state.focus == Focus::List {
@@ -459,8 +575,35 @@ fn key(
         }
         return true;
     }
+    if matches!(state.focus, Focus::Label(field) if field.is_text()) {
+        match key {
+            KeyCode::Tab => cycle_focus(state, controls.shift()),
+            KeyCode::Enter if state.focus == Focus::Label(label_text::Field::Reviewer) => {
+                cycle_focus(state, false);
+            }
+            KeyCode::Escape => {
+                if state
+                    .labels
+                    .as_ref()
+                    .is_some_and(|labels| labels.draft.is_some())
+                {
+                    state.action(Action::LabelCancel, true, width, exit);
+                } else {
+                    state.close(exit);
+                }
+            }
+            _ => return false,
+        }
+        return true;
+    }
     if key == KeyCode::Escape {
-        if state.document.drag.is_some() || state.document.editing_frame {
+        if state
+            .labels
+            .as_ref()
+            .is_some_and(|labels| labels.draft.is_some())
+        {
+            state.action(Action::LabelCancel, true, width, exit);
+        } else if state.document.drag.is_some() || state.document.editing_frame {
             state.document.cancel();
         } else {
             state.close(exit);
@@ -470,6 +613,9 @@ fn key(
     if key == KeyCode::Tab {
         cycle_focus(state, controls.shift());
         return true;
+    }
+    if let Focus::Label(field) = state.focus {
+        return label_key(state, field, key, width, exit);
     }
     if controls.control() {
         match key {
@@ -496,28 +642,11 @@ fn key(
         if !state.document.editing_frame {
             state.document.begin_frame();
         }
-        let doc = &mut state.document;
-        match key {
-            KeyCode::Enter => state.action(Action::Apply, true, width, exit),
-            KeyCode::ArrowLeft => doc.caret = doc.caret.saturating_sub(1),
-            KeyCode::ArrowRight => doc.caret = (doc.caret + 1).min(doc.frame.len()),
-            KeyCode::Home => doc.caret = 0,
-            KeyCode::End => doc.caret = doc.frame.len(),
-            KeyCode::Backspace if doc.caret > 0 => {
-                doc.caret -= 1;
-                doc.frame.remove(doc.caret);
-            }
-            KeyCode::Delete if doc.caret < doc.frame.len() => {
-                doc.frame.remove(doc.caret);
-            }
-            _ => {
-                if let Some(digit) = digit(key)
-                    && doc.frame.len() < 20
-                {
-                    doc.frame.insert(doc.caret, digit);
-                    doc.caret += 1;
-                }
-            }
+        if key == KeyCode::Enter {
+            state.action(Action::Apply, true, width, exit);
+        } else {
+            let doc = &mut state.document;
+            ascii_frame_key(&mut doc.frame, &mut doc.caret, key);
         }
         return key == KeyCode::Enter;
     }
@@ -527,7 +656,16 @@ fn key(
         KeyCode::Delete => state.action(Action::Remove, true, width, exit),
         KeyCode::Enter => match state.focus {
             Focus::Toolbar(i) => state.action(state.toolbar()[i], true, width, exit),
-            Focus::List => state.action(Action::Details, true, width, exit),
+            Focus::List => state.action(
+                if state.labels.is_some() {
+                    Action::LabelEdit
+                } else {
+                    Action::Details
+                },
+                true,
+                width,
+                exit,
+            ),
             _ => {}
         },
         KeyCode::Home => {
@@ -551,6 +689,110 @@ fn key(
     true
 }
 
+fn focus_label(state: &mut Workbench, field: label_text::Field) {
+    state.focus = Focus::Label(field);
+    state.details = true;
+    state.detail_scroll = 0.0;
+    state.document.caret = state
+        .labels
+        .as_ref()
+        .and_then(|labels| labels.draft.as_ref())
+        .and_then(|draft| frame_text(draft, field))
+        .map_or(0, String::len);
+}
+
+fn frame_text(draft: &labels::LabelDraft, field: label_text::Field) -> Option<&String> {
+    use label_text::Field;
+    match field {
+        Field::Frame => Some(&draft.frame),
+        Field::Start => Some(&draft.start_frame),
+        Field::End => Some(&draft.end_frame),
+        _ => None,
+    }
+}
+
+fn label_key(
+    state: &mut Workbench,
+    field: label_text::Field,
+    key: KeyCode,
+    width: f32,
+    exit: &mut MessageWriter<AppExit>,
+) -> bool {
+    use crate::labels::AnchorDecision;
+    use label_text::Field;
+    if key == KeyCode::Enter {
+        state.action(Action::Apply, true, width, exit);
+        return true;
+    }
+    let Some(draft) = state
+        .labels
+        .as_mut()
+        .and_then(|labels| labels.draft.as_mut())
+    else {
+        return false;
+    };
+    let direction = match key {
+        KeyCode::ArrowLeft => -1,
+        KeyCode::ArrowRight => 1,
+        _ => 0,
+    };
+    match field {
+        Field::Kind if direction != 0 => {
+            draft.kind = match draft.kind {
+                labels::LocationKind::Point => labels::LocationKind::Interval,
+                labels::LocationKind::Interval => labels::LocationKind::Point,
+            }
+        }
+        Field::Decision if direction != 0 => {
+            let decisions = [
+                AnchorDecision::ShouldAnchor,
+                AnchorDecision::ShouldNotAnchor,
+                AnchorDecision::Uncertain,
+            ];
+            let index = decisions
+                .iter()
+                .position(|decision| *decision == draft.decision)
+                .unwrap();
+            draft.decision = decisions[(index as i32 + direction).rem_euclid(3) as usize];
+        }
+        Field::Frame | Field::Start | Field::End => {
+            let value = match field {
+                Field::Frame => &mut draft.frame,
+                Field::Start => &mut draft.start_frame,
+                _ => &mut draft.end_frame,
+            };
+            ascii_frame_key(value, &mut state.document.caret, key);
+        }
+        _ => {}
+    }
+    false
+}
+
+fn ascii_frame_key(value: &mut String, caret: &mut usize, key: KeyCode) {
+    *caret = (*caret).min(value.len());
+    match key {
+        KeyCode::ArrowLeft => *caret = caret.saturating_sub(1),
+        KeyCode::ArrowRight => *caret = (*caret + 1).min(value.len()),
+        KeyCode::Home => *caret = 0,
+        KeyCode::End => *caret = value.len(),
+        KeyCode::Backspace if *caret > 0 => {
+            *caret -= 1;
+            value.remove(*caret);
+        }
+        KeyCode::Delete if *caret < value.len() => {
+            value.remove(*caret);
+        }
+        _ => {
+            if let Some(digit) = digit(key)
+                && value.len() < 20
+            {
+                value.insert(*caret, digit);
+                *caret += 1;
+            }
+        }
+    }
+}
+
 fn navigate(state: &mut Workbench, direction: i32, fast: bool) {
     match state.focus {
         Focus::Toolbar(i) => {
@@ -570,7 +812,7 @@ fn navigate(state: &mut Workbench, direction: i32, fast: bool) {
         Focus::Details => {
             state.detail_scroll = (state.detail_scroll + direction as f32 * 48.0).max(0.0)
         }
-        Focus::Frame => {}
+        Focus::Frame | Focus::Label(_) => {}
     }
 }
 
@@ -656,7 +898,7 @@ fn pad_command(
         GamepadButton::South => match state.focus {
             Focus::Toolbar(i) => state.action(state.toolbar()[i], false, width, exit),
             Focus::List => state.action(Action::Details, false, width, exit),
-            Focus::Frame => state.action(Action::Frame, false, width, exit),
+            Focus::Frame | Focus::Label(_) => state.action(Action::Frame, false, width, exit),
             _ => {}
         },
         GamepadButton::DPadLeft | GamepadButton::DPadRight => {
@@ -711,6 +953,7 @@ fn click(
             state.select(view.first_row + row);
             state.focus = Focus::List;
         }
+        ui::Hit::LabelField(field) => focus_label(state, field),
         ui::Hit::Details => {
             state.focus = Focus::Details;
             state.document.cancel();
@@ -721,7 +964,7 @@ fn click(
             state.document.cursor = state
                 .document
                 .at_pixel(cursor.x, bounds.min.x, bounds.width());
-            if state.is_read_only() {
+            if state.is_read_only() || state.labels.is_some() {
                 if let Some(candidates) = &state.candidates {
                     let tolerance = (state.document.span as f64 * 7.0 / f64::from(bounds.width()))
                         .ceil() as i64;
@@ -782,6 +1025,7 @@ mod tests {
             .init_resource::<Controls>()
             .add_message::<AppExit>()
             .add_message::<KeyboardInput>()
+            .add_message::<Ime>()
             .add_message::<MouseButtonInput>()
             .add_message::<MouseWheel>()
             .add_message::<WindowFocused>()
@@ -829,6 +1073,147 @@ mod tests {
                 },
                 if pressed { 1.0 } else { 0.0 },
             )));
+    }
+
+    fn labels_mode(app: &mut App) {
+        let mut state = app.world_mut().resource_mut::<Workbench>();
+        let mut labels = label_text::fixture();
+        labels.document.reviewer = "reviewer".into();
+        labels.begin_add(500).unwrap();
+        state.labels = Some(labels);
+        state.document.cursor = 500;
+    }
+
+    #[test]
+    fn label_numeric_fields_and_enums_never_move_authored_anchors() {
+        let (mut app, window, _, _) = app();
+        labels_mode(&mut app);
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Keyboard);
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            focus_label(&mut state, label_text::Field::Frame);
+        }
+        for code in [KeyCode::Home, KeyCode::Delete, KeyCode::Digit9] {
+            tap(&mut app, window, code);
+        }
+        {
+            let state = app.world().resource::<Workbench>();
+            assert_eq!(
+                state.labels.as_ref().unwrap().draft.as_ref().unwrap().frame,
+                "900"
+            );
+            assert_eq!(state.document.editor.anchors()[0].song_time.frames(), 500);
+            assert_eq!(state.document.cursor, 500);
+            assert!(!state.document.editing_frame);
+        }
+        app.world_mut().resource_mut::<Workbench>().focus = Focus::Label(label_text::Field::Kind);
+        tap(&mut app, window, KeyCode::ArrowRight);
+        tap(&mut app, window, KeyCode::Tab);
+        assert_eq!(
+            app.world().resource::<Workbench>().focus,
+            Focus::Label(label_text::Field::Start)
+        );
+        app.world_mut().resource_mut::<Workbench>().focus =
+            Focus::Label(label_text::Field::Decision);
+        tap(&mut app, window, KeyCode::ArrowRight);
+        let state = app.world().resource::<Workbench>();
+        let draft = state.labels.as_ref().unwrap().draft.as_ref().unwrap();
+        assert_eq!(draft.kind, labels::LocationKind::Interval);
+        assert_eq!(draft.decision, crate::labels::AnchorDecision::ShouldAnchor);
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+    }
+
+    #[test]
+    fn native_text_focus_uses_the_menu_owner_and_blocks_raw_shortcuts_and_new_preedit() {
+        let (mut app, window, pad_id, _) = app();
+        labels_mode(&mut app);
+        app.init_resource::<bevy::input_focus::InputFocus>()
+            .add_systems(Update, label_text::bridge.after(capture));
+        let entity = app
+            .world_mut()
+            .spawn((
+                label_text::LabelText(label_text::Field::Reviewer),
+                label_text::settled_text("reviewer"),
+            ))
+            .id();
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            state.focus = Focus::Label(label_text::Field::Reviewer);
+        }
+        app.world_mut().resource_mut::<Controls>().owner = Some(InputSource::Pad(pad_id));
+        tap(&mut app, window, KeyCode::Space);
+        assert!(
+            app.world()
+                .resource::<bevy::input_focus::InputFocus>()
+                .get()
+                .is_none()
+        );
+        key(&mut app, window, KeyCode::Enter, true);
+        app.update();
+        assert_eq!(
+            app.world().resource::<Controls>().owner,
+            Some(InputSource::Keyboard)
+        );
+        assert!(
+            app.world()
+                .resource::<bevy::input_focus::InputFocus>()
+                .get()
+                .is_none()
+        );
+        key(&mut app, window, KeyCode::Enter, false);
+        app.update();
+        assert_eq!(
+            app.world()
+                .resource::<bevy::input_focus::InputFocus>()
+                .get(),
+            Some(entity)
+        );
+        for code in [KeyCode::Space, KeyCode::Delete, KeyCode::Home] {
+            tap(&mut app, window, code);
+        }
+        key(&mut app, window, KeyCode::ControlLeft, true);
+        tap(&mut app, window, KeyCode::KeyS);
+        tap(&mut app, window, KeyCode::KeyZ);
+        key(&mut app, window, KeyCode::ControlLeft, false);
+        app.world_mut().write_message(Ime::Preedit {
+            window,
+            value: "中文".into(),
+            cursor: Some((0, 6)),
+        });
+        key(&mut app, window, KeyCode::Tab, true);
+        app.update();
+        {
+            let state = app.world().resource::<Workbench>();
+            assert_eq!(state.focus, Focus::Label(label_text::Field::Reviewer));
+            assert!(!state.audition.playing);
+            assert_eq!(state.document.cursor, 500);
+            assert_eq!(state.document.editor.anchors(), state.document.original);
+            assert!(state.saving.is_none());
+            assert!(state.pending_label_action.is_none());
+        }
+        pad(&mut app, pad_id, GamepadButton::Start, true);
+        app.update();
+        assert_eq!(
+            app.world().resource::<Controls>().owner,
+            Some(InputSource::Pad(pad_id))
+        );
+        assert!(
+            app.world()
+                .resource::<bevy::input_focus::InputFocus>()
+                .get()
+                .is_none()
+        );
+        app.world_mut().write_message(WindowFocused {
+            window,
+            focused: false,
+        });
+        app.update();
+        assert!(
+            app.world()
+                .resource::<bevy::input_focus::InputFocus>()
+                .get()
+                .is_none()
+        );
     }
 
     #[test]

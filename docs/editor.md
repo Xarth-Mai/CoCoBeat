@@ -69,6 +69,12 @@ Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表�
 
 [观察记录](../testdata/synthetic/candidates-workbench-observations-20261007.json)保留 28 项软件测试、三组原生 GPU 窗口与 11 张目检 PNG，以及修正前的实际失败；构造候选仅验证证据查看和只读行为，不证明 MIR 质量、输出设备试听或物理输入
 
+## 独立人工 Labels
+
+`workbench-labels PACKAGE NEW_LABELS_JSON [--locale CODE]` 共用 canonical 立体声波形、试听和原生主控，隐藏作者 Anchor / SectionCue 与模型提示，新增人工点 / 半开区间、应 / 不应 / 不确定判断和原生文本理由；Apply / Cancel 分开处理草稿，只保存为固定的新侧车文件，失败保留并 join worker，不改谱面或自动采用标签。具体操作、数据限制、软件事件验证及尚未进行的 OS IME / 真人盲标验收见[独立标签](independent-labels.md#原生-labels-工作台)
+
+新增 Labels 软件验证与分版原生补验见[观察记录](independent-labels.md#原生-labels-工作台)：首轮小窗口视觉失败和修复保留，最终 31 条文案 / 13 语言字形与固定法语小窗口补验通过，OS IME / 设备 / 真人盲标仍未验收，标签采用尚未接线
+
 ## 使用方式
 
 从仓库根目录运行，先验证源包并取得 `Package BLAKE3`，把完整 64 个小写十六进制字符加上 `package-blake3:` 前缀，填入补丁的 `source_content_id`

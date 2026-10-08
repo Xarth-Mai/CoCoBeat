@@ -1,10 +1,12 @@
 # 第三方依赖台账
 
-项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-08 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 595 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
+项目源代码使用 [MPL-2.0](../LICENSE)。本台账于 2026-10-08 根据 `cargo metadata --offline --locked --format-version 1` 整理，完整解析图见 [THIRD_PARTY.csv](THIRD_PARTY.csv)，共 597 个第三方包，与当前 `Cargo.lock` 一致，包含未激活平台及可选依赖，含本地回移官方修复的 sys 第三方副本，不等同于最终发行二进制清单
 
 | 直接依赖 | 锁定版本 | 使用方与用途 | 上游声明许可证 |
 |---|---|---|---|
 | [bevy](https://github.com/bevyengine/bevy) | 0.19.1 | runtime：窗口、输入、3D 与 UI；lab：原生时间线工作台 | MIT OR Apache-2.0 |
+| [bevy_picking](https://github.com/bevyengine/bevy) | 0.19.1 | lab：Labels 文本输入复用 Pointer Release 类型与 Pickable | MIT OR Apache-2.0 |
+| [bevy_ui_widgets](https://github.com/bevyengine/bevy) | 0.19.1 | lab：Labels 工作台的 EditableTextInput 与 IME 事件处理 | MIT OR Apache-2.0 |
 | [kira](https://github.com/tesselode/kira) | 0.12.5 | runtime：音乐与即时反馈音频 | MIT OR Apache-2.0 |
 | [fontique](https://github.com/linebender/parley) | 0.9.0 | runtime：复用 Bevy 已解析的字体集合，为嵌入 Noto 配置原生跨脚本回退 | Apache-2.0 OR MIT |
 | [symphonia](https://github.com/pdeljanov/Symphonia) | 0.6.1 | media：有上限的源音频解码，以及 runtime 歌曲包的严格 Ogg Vorbis 读回 | MPL-2.0 |
@@ -29,7 +31,11 @@ Vorbis 路径的 Rust binding BSD、Vorbis / libogg COPYING 以及编译路径�
 
 新增解析包为 ort / ort-sys 2.0.0-rc.13、libloading 0.9.0、ndarray 0.17.2、matrixmultiply 0.3.11 和 rawpointer 0.2.1，原 589 行的 name/version/license/repository 保持一致；新增包与既有 cfg-if / smallvec / windows-link 的原始版权和许可文本见 [ort-rs 目录](ort-rs/README.md)，逐文件身份与 registry 原包 checksum 对齐
 
-本次完整 metadata 的 ort features 为 api-17 至 api-28、load-dynamic、preload-dylibs、std，ort-sys 为 api-17 至 api-28、disable-linking、std；未启用 default、download-binaries、fetch-models 或 provider features；完整 resolve 图仍列出 ndarray / tracing 可选边，其 std 弱依赖和全解析条目不能充当该平台实际 compile/link 清单，四目标实际 offline/locked 过滤 metadata 的第三方包数分别为 Linux x64 443、Linux ARM64 442、Windows x64 418、Windows ARM64 417，四图的 ort / ort-sys feature 集合相同，libloading 在 Linux 的解析依赖为 cfg-if、Windows 为 windows-link；过滤图仅证明 resolver 配置，发行二进制链接、解包许可交付和 SDK Run 需独立证据
+本次完整 metadata 的 ort features 为 api-17 至 api-28、load-dynamic、preload-dylibs、std，ort-sys 为 api-17 至 api-28、disable-linking、std；未启用 default、download-binaries、fetch-models 或 provider features；完整 resolve 图仍列出 ndarray / tracing 可选边，其 std 弱依赖和全解析条目不能充当该平台实际 compile/link 清单，四目标实际 offline/locked 过滤 metadata 的第三方包数分别为 Linux x64 445、Linux ARM64 444、Windows x64 420、Windows ARM64 419，四图的 ort / ort-sys feature 集合相同，libloading 在 Linux 的解析依赖为 cfg-if、Windows 为 windows-link；过滤图仅证明 resolver 配置，发行二进制链接、解包许可交付和 SDK Run 需独立证据
+
+独立 Labels UI 新增 bevy_picking / bevy_ui_widgets 0.19.1 两个官方 registry 包，台账由 595 行增至 597 行，原 589 行及 ORT 新增六行的全部原字段保持一致；两份原 crate 归档 SHA-256 与 Cargo.lock checksum 对齐，四份原始 MIT / Apache-2.0 文本见 [Labels 输入许可目录](bevy-label-input/README.md)
+
+Lab 私有依赖使用 `0` 系列范围并关闭新增两包的默认 features，workspace Bevy 开启 bevy_input_focus；本次完整和 Linux x64 / Linux ARM64 / Windows x64 / Windows ARM64 过滤 metadata 中，新增两包 features 均为空，既有 bevy_input_focus 为 bevy_reflect、default、gamepad、keyboard、mouse、std；这些查询仅证明 resolver 配置，不表示组件已在四平台编译、链接或完成原生 Labels UI 验收
 
 原生 SDK 的原 MIT LICENSE、完整 70 项声明 notices、version/commit 与 [Eigen 对应源说明](onnxruntime/SOURCE-AVAILABILITY.md) 单独保留；small0 模型和官方 minimal 移植共用 [Beat This 原 MIT 许可及 JKU 2024 版权](beat-this/LICENSE)，来源、导出和受信模型身份见 [模型说明](../assets/models/beat-this/README.md)，开发 Python reference/export 不进入产品分析 runtime；完整 Rust/native/source 对齐与四目标最终包许可验收尚未完成
 

@@ -1,0 +1,1613 @@
+{
+  "schema_version": 1,
+  "status": "PASS_FINAL_SCOPED_SMALL_RAW_SHA_SIZE_INDEX",
+  "scope": "Full small frozen raw references across all revisions and final31catalog, with independently checked SHA/size; large binary/dependency/native archive/font contents excluded and bound by producer/root receipts; historical performance or otherplatform acceptance not inferred",
+  "file_count": 378,
+  "evidence_sha256": {
+    "target/independent-label-ui-compact-20261008/revision-01/BASE.json": {
+      "sha256": "46e70b9416b57b323db91ef52ae8f9fd2ca9d40c7a0ae02074ac6c796286cf1a",
+      "bytes": 281
+    },
+    "target/independent-label-ui-compact-20261008/revision-01/PLAN.md": {
+      "sha256": "ad7d0666e190aa9c70688b078d032974f8f7f2f148a72aa69eecbf780e7dec9e",
+      "bytes": 992
+    },
+    "target/independent-label-ui-compact-20261008/revision-01/base-ui.rs": {
+      "sha256": "5648b8bcf4403b2f77baa7eb264455eac2c7c753d515b664409172082d7c34b2",
+      "bytes": 68243
+    },
+    "target/independent-label-ui-compact-20261008/revision-01/compact-review.json": {
+      "sha256": "255f5ec1a1eab56b18920eacd60efeee12158a99cd6eb947ea4682a34cea45b2",
+      "bytes": 3444
+    },
+    "target/independent-label-ui-compact-20261008/revision-01/compact-ui.patch": {
+      "sha256": "b25cc2bb06e9eea78da758ab6431c63d8de4ba4b7c4ffdf31ffccffee68c55eb",
+      "bytes": 4143
+    },
+    "target/independent-label-ui-compact-20261008/revision-01/ui.rs": {
+      "sha256": "c9601fb9121a8b8eff11a5abcd4c58eb16d4c1e6e638ef891cb8a609fe3c7712",
+      "bytes": 69642
+    },
+    "target/independent-label-ui-compact-20261008/revision-02/BASE.json": {
+      "sha256": "d44a7e594d33f6782985db90f6b73440582d5ede2f631e837d8ffcf42bcae293",
+      "bytes": 239
+    },
+    "target/independent-label-ui-compact-20261008/revision-02/base-ui.rs": {
+      "sha256": "c9601fb9121a8b8eff11a5abcd4c58eb16d4c1e6e638ef891cb8a609fe3c7712",
+      "bytes": 69642
+    },
+    "target/independent-label-ui-compact-20261008/revision-02/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-compact-20261008/revision-02/word-wrap-review.json": {
+      "sha256": "97ac46d2322d2e5670c38d3f8b033e80d1daaf904e1ac8942d1d36277b2910dc",
+      "bytes": 1613
+    },
+    "target/independent-label-ui-compact-20261008/revision-02/word-wrap.patch": {
+      "sha256": "cbdb827b164abfc19edec73617b802d8295f25155729edd2409398a23073d46c",
+      "bytes": 531
+    },
+    "target/independent-label-ui-delivery-20261008/apply-result.json": {
+      "sha256": "fd8743339b7a30c34274b4707830db1e5b6c0a62e9ad6b8d727d41356fbd623c",
+      "bytes": 8800
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/build-result.json": {
+      "sha256": "b6b9b639764ac267af1c9321a4c7deb685f18669a4df07ca1b440ba4a68b5840",
+      "bytes": 141520
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/build.jsonl": {
+      "sha256": "555d4af11e06a932773b319252aa9b859b9a65414bd41caf049967cbf5de56c0",
+      "bytes": 403064
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/build.py": {
+      "sha256": "595cae47ff552c59410d1e0adc94766b346fc3efc3adea8ac6e4cb1b05c3bc53",
+      "bytes": 2771
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/build.stderr": {
+      "sha256": "0783f6356d32f21d7296f9e40ddff6c596991c6a5a866cad5c37146655e78175",
+      "bytes": 158
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/cocobeat-lab-build-result.json": {
+      "sha256": "b70d3a15ba4ffce1c2d85254addcb634ac4450ed802e7743abad7b53c9efcd9d",
+      "bytes": 141799
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/inputs-after.json": {
+      "sha256": "3ca5a298e6cc38235f82f1afe25bf65a95940b142ffd1961965a09eb84a9047a",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/inputs-before.json": {
+      "sha256": "3ca5a298e6cc38235f82f1afe25bf65a95940b142ffd1961965a09eb84a9047a",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/Cargo.lock": {
+      "sha256": "11e834778655bd2dfef5fe036f218810a59d46e3a356a8a70927f6ff8df1771f",
+      "bytes": 160986
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "7cbb7b09ef5365836126b2b5c633a1e80f1e9c4a143a5fc4760c97eb7e299f49",
+      "bytes": 739
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "592aeba736ed78d7b0486a102658c245409c69893d05ccd91b486d1bbc2e14a0",
+      "bytes": 12577
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "20e1600f0eeeb998e7d255386aec70625126dd625cc6076b9fa652e96021e28c",
+      "bytes": 35755
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/build-01/source/tools/cocobeat-lab/src/workbench/ui.rs": {
+      "sha256": "5648b8bcf4403b2f77baa7eb264455eac2c7c753d515b664409172082d7c34b2",
+      "bytes": 68243
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/build-result.json": {
+      "sha256": "dd7a3e8c721df3f3bc95edf54403eb98b5f339bb1abd3624767bd18dce826104",
+      "bytes": 141539
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/build.jsonl": {
+      "sha256": "759348bf17889c9c85f75779267f05a38344b1a3e3ae751b4ce13a591c584b19",
+      "bytes": 403064
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/build.py": {
+      "sha256": "ba46f4b58aa4c1c35c1cf92d6270cc8045d34b0742b63cabe34a9514703c9deb",
+      "bytes": 2790
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/build.stderr": {
+      "sha256": "8428a12ffc009c2305b82b6abec973e66e3004a7b5c365a94b8239c84c8617ac",
+      "bytes": 158
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/cocobeat-lab-build-result.json": {
+      "sha256": "9dbb36d1471637f9368082374d58bdc8e1368b8861cfc47787b8e03fdde84ffb",
+      "bytes": 141818
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/helper-inputs-before.json": {
+      "sha256": "00f521f8a976f602b41342852ca6363a6cb10830fc391644757258cbb2eb94b4",
+      "bytes": 200816
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/inputs-after.json": {
+      "sha256": "839e6c4a478558e973906483e0e5a537e83408a0b99bc53dcb44e95a57f526a9",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/inputs-before.json": {
+      "sha256": "839e6c4a478558e973906483e0e5a537e83408a0b99bc53dcb44e95a57f526a9",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/Cargo.lock": {
+      "sha256": "11e834778655bd2dfef5fe036f218810a59d46e3a356a8a70927f6ff8df1771f",
+      "bytes": 160986
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "7cbb7b09ef5365836126b2b5c633a1e80f1e9c4a143a5fc4760c97eb7e299f49",
+      "bytes": 739
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "592aeba736ed78d7b0486a102658c245409c69893d05ccd91b486d1bbc2e14a0",
+      "bytes": 12577
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "20e1600f0eeeb998e7d255386aec70625126dd625cc6076b9fa652e96021e28c",
+      "bytes": 35755
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/build-02/source/tools/cocobeat-lab/src/workbench/ui.rs": {
+      "sha256": "c9601fb9121a8b8eff11a5abcd4c58eb16d4c1e6e638ef891cb8a609fe3c7712",
+      "bytes": 69642
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/build-result.json": {
+      "sha256": "d07ab56771c98e3d03a04411e1360ed8ac211e604ccf843a280e466d4543b02b",
+      "bytes": 141586
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/build.jsonl": {
+      "sha256": "d46e50ffd2d0c02aacd1c101006808dd1810b09efff61b1d3c381c192720fa7c",
+      "bytes": 403065
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/build.py": {
+      "sha256": "185d9b11847e57ee1f02602a17d27ecb76529c80965e5934710edb8846a1546f",
+      "bytes": 2837
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/build.stderr": {
+      "sha256": "ca60bb1536e13f4f557050c4f76410b7fcfbabb97bf437cc8e27190bb3c6e4fc",
+      "bytes": 252
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/cocobeat-lab-build-result.json": {
+      "sha256": "db0e9fc57f2afcba52036410dac36248fff3e20a951bc6f91f1c8e6ea82fe16f",
+      "bytes": 141865
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/helper-inputs-before.json": {
+      "sha256": "bfffaf20b4b4c03f25b47c27f6fa29affb5c67bd7eafbac5c7c8b74a0cf58fea",
+      "bytes": 200810
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/inputs-after.json": {
+      "sha256": "f7d93d58bb185a96134a8266754b2b49ef71b5bfe643c7dfbd885e432e429738",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/inputs-before.json": {
+      "sha256": "f7d93d58bb185a96134a8266754b2b49ef71b5bfe643c7dfbd885e432e429738",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/Cargo.lock": {
+      "sha256": "11e834778655bd2dfef5fe036f218810a59d46e3a356a8a70927f6ff8df1771f",
+      "bytes": 160986
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "7cbb7b09ef5365836126b2b5c633a1e80f1e9c4a143a5fc4760c97eb7e299f49",
+      "bytes": 739
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "592aeba736ed78d7b0486a102658c245409c69893d05ccd91b486d1bbc2e14a0",
+      "bytes": 12577
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "20e1600f0eeeb998e7d255386aec70625126dd625cc6076b9fa652e96021e28c",
+      "bytes": 35755
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/build-03/source/tools/cocobeat-lab/src/workbench/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/build-result.json": {
+      "sha256": "512f5d0c5c89778f10a09594135b476946b85e97ed0d38a2cf2a06faa4dfdac8",
+      "bytes": 141640
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/build.jsonl": {
+      "sha256": "f73ec756812be9f9462074d888e59342c32b4973fcadb9d9c4589c526d5bd35a",
+      "bytes": 403064
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/build.py": {
+      "sha256": "8d6ae1e86b59db9088758ac1e56742ea5f09ccebc606bdc6c3251014a54af63d",
+      "bytes": 2891
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/build.stderr": {
+      "sha256": "2f25741fa7cd136eb789817d2295bab00535cc0985eefab388d0fbce0c780d2a",
+      "bytes": 158
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/cocobeat-lab-build-result.json": {
+      "sha256": "d6fca55014c184e6d342774bb2ceb016cdcb828999f149223e88ad258d380ad5",
+      "bytes": 141919
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/helper-inputs-before.json": {
+      "sha256": "411d9a04537d11491e9eb036f4ed80d77d73b22bae861a2a6705c8aed1e24866",
+      "bytes": 200800
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/inputs-after.json": {
+      "sha256": "733a51ee57e193db504957656b9681ae0f5d10635dea1a4a9472db10917570c8",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/inputs-before.json": {
+      "sha256": "733a51ee57e193db504957656b9681ae0f5d10635dea1a4a9472db10917570c8",
+      "bytes": 57487
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/Cargo.lock": {
+      "sha256": "11e834778655bd2dfef5fe036f218810a59d46e3a356a8a70927f6ff8df1771f",
+      "bytes": 160986
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/fonts/verify.py": {
+      "sha256": "f6557891570ee1e1e1a182504ec5d0f4c48a114bdb6d28612d21866e6771c5d7",
+      "bytes": 4433
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/de.json": {
+      "sha256": "bd845c5ab601c5152e843dfb67229ea84bf84ff7f01fac010be09c1717706e5a",
+      "bytes": 19766
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/en-GB.json": {
+      "sha256": "59bfd360760041b544af4787dd267aa723b9c18900112fdf8e1fe9528fdf45e4",
+      "bytes": 17749
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/en-US.json": {
+      "sha256": "59bfd360760041b544af4787dd267aa723b9c18900112fdf8e1fe9528fdf45e4",
+      "bytes": 17749
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/es-419.json": {
+      "sha256": "b2b2fcd8f59ccbf6f5fb2cef7f473d80e8faa5b1527efead7f422579af673724",
+      "bytes": 19682
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/fr.json": {
+      "sha256": "315f3363d69c1eaa89f3f56049d01fedf41168537704be31c2cb842c8a87039d",
+      "bytes": 20525
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/ja.json": {
+      "sha256": "7ae6fa56fae90d5f4a0b9097b35265a793c8710f93d312a91b7eb62f54cff232",
+      "bytes": 22519
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/ko.json": {
+      "sha256": "6f532e53631b81c0a4b1d190c102b1cc3012178f217badc694056574b516ac64",
+      "bytes": 21123
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/pt-BR.json": {
+      "sha256": "bae244b96ffa1b656fc740389765ad9055c5973aa9f2c18bc6f7138618f45263",
+      "bytes": 19389
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/ru.json": {
+      "sha256": "56fef025dc0ea68f115bfd2f8446c394a06fad6f3ee384e04cbf08c313c3f266",
+      "bytes": 26633
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/uk.json": {
+      "sha256": "da579921687215dd3a9f2d0d9d058e602ede95de74f9a4790e8b055761ebc13c",
+      "bytes": 26404
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/zh-CN.json": {
+      "sha256": "e058ad47a60dba4ee0bfc577435d44f50646538cf84a25bc4f19dcae59e7f097",
+      "bytes": 17653
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/zh-HK.json": {
+      "sha256": "4af58e03eeac379f832d4aa690e1d0a7a67eb6df70557688b928f3c4e6e2f349",
+      "bytes": 17761
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/assets/i18n/zh-TW.json": {
+      "sha256": "03fe4984fc2329b76620d4c40cb4b8578eee9e766a0126381243c37305365bf0",
+      "bytes": 17806
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/Cargo.toml": {
+      "sha256": "7cbb7b09ef5365836126b2b5c633a1e80f1e9c4a143a5fc4760c97eb7e299f49",
+      "bytes": 739
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/main.rs": {
+      "sha256": "592aeba736ed78d7b0486a102658c245409c69893d05ccd91b486d1bbc2e14a0",
+      "bytes": 12577
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/workbench.rs": {
+      "sha256": "20e1600f0eeeb998e7d255386aec70625126dd625cc6076b9fa652e96021e28c",
+      "bytes": 35755
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/build-04/source/tools/cocobeat-lab/src/workbench/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/de.json": {
+      "sha256": "39a23885f878e4024f8db786a9321d6bf6e44310df54ddde0b3d1bd4403ebcc8",
+      "bytes": 20454
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/en-GB.json": {
+      "sha256": "cc6d93f6142af1387ecfc590f41abce6e00eac76b4f4b830bb5306c0cfa52bdb",
+      "bytes": 18381
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/en-US.json": {
+      "sha256": "cc6d93f6142af1387ecfc590f41abce6e00eac76b4f4b830bb5306c0cfa52bdb",
+      "bytes": 18381
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/es-419.json": {
+      "sha256": "88bbe9cb20f8d6e98db96af71b059e935840c0e055bf589fc2ddb98c45f306ba",
+      "bytes": 20383
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/fr.json": {
+      "sha256": "aa299dfed4242fef18a75cb4e94b47ba0303b8c9e76c7d0ab59979a7978c544f",
+      "bytes": 21218
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/de.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/de.txt": {
+      "sha256": "0684e5a3a6356cfac66efb67dcb7746e32179132642ae95ac3b9dce9ca23e9be",
+      "bytes": 1131
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/en-GB.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/en-GB.txt": {
+      "sha256": "6dfe5b9a985dea756b3c96cf899924acdc2565592154b49d9d7da17b85390763",
+      "bytes": 926
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/en-US.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/en-US.txt": {
+      "sha256": "6dfe5b9a985dea756b3c96cf899924acdc2565592154b49d9d7da17b85390763",
+      "bytes": 926
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/es-419.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/es-419.txt": {
+      "sha256": "124f60ed4046c076e146ce5883750e8238fd38698cfe51c04de0a55be0b98f39",
+      "bytes": 1113
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/fr.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/fr.txt": {
+      "sha256": "6a22d5b9c6014701c8c5a416f12eefbe19dce8810c471d5265d5caa1a9018357",
+      "bytes": 1207
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ja.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ja.txt": {
+      "sha256": "f5353b3ac6d4b850b4cfef8eada38e28081973694ea0d7ba1806b23641118700",
+      "bytes": 1206
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ko.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ko.txt": {
+      "sha256": "c1b6102adca8e7b711ac1bb91284102c4f67b462b1aaa88561fbb4863df846b2",
+      "bytes": 1116
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/pt-BR.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/pt-BR.txt": {
+      "sha256": "5673862d8e95ec20e90fe72c6b2d7db130be05adb6f083f3069265016b8d440b",
+      "bytes": 1100
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/result.json": {
+      "sha256": "4605c54436d1da7f2295f3b69a93461154949d57a90f2248fdadedc4ce361a6d",
+      "bytes": 6728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ru.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/ru.txt": {
+      "sha256": "0158b65e9f314d3bcbeaa44eaf0d60d97687f2289437266cce1c17e8ab1486be",
+      "bytes": 1706
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/uk.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/uk.txt": {
+      "sha256": "1c6558944761ca23b4c415e11c230e87fbe42e78b77f58a8d5bec33fe342512a",
+      "bytes": 1719
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-CN.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-CN.txt": {
+      "sha256": "30e0b0c1477fb3e43d362a7083014ba2a621ce51ed34ad408b277239cdebdd2c",
+      "bytes": 872
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-HK.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-HK.txt": {
+      "sha256": "3ac4e65a16cd52afd14a6a1fae439ec9751f23d8a5d5fcd6a0ba97e08bc55e27",
+      "bytes": 890
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-TW.log": {
+      "sha256": "e10df32e6fcbdd137ec9b23a834d415027028fe2b4cadbe71800df375c6a0cd9",
+      "bytes": 728
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/glyph/zh-TW.txt": {
+      "sha256": "08caa5300c15d84d31702e3651670e128c3a703835d429e89333453755a6b345",
+      "bytes": 890
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/ja.json": {
+      "sha256": "50fcffa2243c14e8e65f125a7da0f88f9785ab752cb9df99d153774d2c931842",
+      "bytes": 23316
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/ko.json": {
+      "sha256": "53f3fcf0d6610e152ab49dd9df9559b62b6fe9116f0d451977c2b7c57aac5854",
+      "bytes": 21849
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/pt-BR.json": {
+      "sha256": "2d157813ee6839e99c4a785986f405b5a3b4db867eadc5593bda3553714ba4d3",
+      "bytes": 20081
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/result.json": {
+      "sha256": "63ef7cf0ff93fff61b26e982f1a8f648092ecc635de77782fdf2a5c62ad24e58",
+      "bytes": 4577
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/ru.json": {
+      "sha256": "311bc9fa0695c71f137faea508dcdc8c9e1e35873d5d370fa87aa862ed402a83",
+      "bytes": 27573
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/uk.json": {
+      "sha256": "afa70499b49bc6cf53ad14b6ea712a74dd5a41672b390c2a017048664d281bff",
+      "bytes": 27350
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/zh-CN.json": {
+      "sha256": "2c94a53157883e8b67e48ec377a4785af09d833d798a65782763bb4b92779e5b",
+      "bytes": 18241
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/zh-HK.json": {
+      "sha256": "76d0232b5f9e016991b4d21a1bbe5c5ce474e38dfde61c9c6036bebf280eb8ce",
+      "bytes": 18355
+    },
+    "target/independent-label-ui-delivery-20261008/catalog-cleanup/zh-TW.json": {
+      "sha256": "1ed4659c952470bcf27b67212194d03a60e9d323959a74a39ab8483c4e0f0ee2",
+      "bytes": 18400
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-01-result.json": {
+      "sha256": "2b2e69d692e4371664268b7b416e02a990e4c59088f2cb798d09ace1b3399d85",
+      "bytes": 319
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-01.log": {
+      "sha256": "32253812d5b770467bebe671c076865432051ad602533127b10f61b13e3a3a00",
+      "bytes": 651
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-02-result.json": {
+      "sha256": "0478673837d46a06f889b75af3ee7316cfd0000a20ab31cd74175bd0e97d4bf5",
+      "bytes": 267
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-02.log": {
+      "sha256": "4d30490305d2be0e14e08ad554ee0de5108fadf3fa7950cd7e568200db598144",
+      "bytes": 157
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-03-result.json": {
+      "sha256": "c1042234a882f42fb49154dc67f11a39233843d7c6f14a3899deb0373dc12390",
+      "bytes": 266
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-03.log": {
+      "sha256": "56fbe6352d8ebd983a144bef797d7a607668a0a11b69da590460aa7d144150b0",
+      "bytes": 251
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-04-result.json": {
+      "sha256": "f00935fcb37f743968a29ddae5b7c06d26af2bb2e547a9d8f5dffe9f36852073",
+      "bytes": 266
+    },
+    "target/independent-label-ui-delivery-20261008/clippy-04.log": {
+      "sha256": "5dd878629b3db0ea7480d91a88d0905db35de17f7c55cfe480bb02c31459341c",
+      "bytes": 251
+    },
+    "target/independent-label-ui-delivery-20261008/compact-apply-result.json": {
+      "sha256": "2f2477169b78c9126d1af110857dbe4d37a43c144ed3d084969ce733371939e3",
+      "bytes": 304
+    },
+    "target/independent-label-ui-delivery-20261008/docs-promote.json": {
+      "sha256": "153af1f9787392631959149aa7b8bac2362065b6adc0874f415744b326e93000",
+      "bytes": 766
+    },
+    "target/independent-label-ui-delivery-20261008/fmt-03-result.json": {
+      "sha256": "3363195902cb5ba159dc9653619ccbc15cc27b03d5b61d613b301ee7841ba872",
+      "bytes": 153
+    },
+    "target/independent-label-ui-delivery-20261008/fmt-03.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/fmt-04-result.json": {
+      "sha256": "b9eb9e40749eee0e16da16f8cd68277cd2f1f6a4c2a98d20f8d998bf2991972e",
+      "bytes": 153
+    },
+    "target/independent-label-ui-delivery-20261008/fmt-04.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/formal-candidates/run-02-history/REVIEW.json": {
+      "sha256": "35f0f2bd9f887ab8330c32061df8c902653b72f5aece186c4534706f96094da0",
+      "bytes": 4753
+    },
+    "target/independent-label-ui-delivery-20261008/formal-candidates/run-02-history/independent-label-ui-observations-20261008.json": {
+      "sha256": "e94a3d3e9b16bdcaf97951aacca62aaae068898440b96d67e2985ab4573d0dda",
+      "bytes": 94489
+    },
+    "target/independent-label-ui-delivery-20261008/formal-candidates/run-02-history/raw-index.json": {
+      "sha256": "738d1febb38a1645ee461026e29abfffaa608315da9259bf4f233a4ffdcad300",
+      "bytes": 37711
+    },
+    "target/independent-label-ui-delivery-20261008/formal-candidates/run-03-history/independent-label-ui-observations-20261008.json": {
+      "sha256": "a4fe6a0588755fd26b2013f0e8fef7d701ae33bbe6208845d8529cd5c6925e18",
+      "bytes": 128385
+    },
+    "target/independent-label-ui-delivery-20261008/formal-candidates/run-03-history/raw-index.json": {
+      "sha256": "0a531e1c0f4009eb6a8b0a04374f251b4915063d0a56dcfdd864a0839b50ac54",
+      "bytes": 55987
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/build.json": {
+      "sha256": "32bdc71b7b20146e8d0d00ba4a2414b23eca7fd26ee4ee5efe98f213855f4dea",
+      "bytes": 80154
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/details.png": {
+      "sha256": "3df2cfa0ccf77c888677fc984b9182e25cf2d975ca7d279cf01249b094f34ce3",
+      "bytes": 134092
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/first-screen.png": {
+      "sha256": "3361af4e8cb9c05038199fb06d0e7c73b2de5358717ea3a09ba004ed7d248fb2",
+      "bytes": 184631
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/labels.json": {
+      "sha256": "809e05481f82fa68f479032a8201973bb91de3293b1de5bf20b3817ab5188ae8",
+      "bytes": 42
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/list-tail.png": {
+      "sha256": "2a2105035bfbdb57ee58c1e1d3eb186360e5e62091365b6b94cd9c57c9159a26",
+      "bytes": 232786
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/metadata.json": {
+      "sha256": "a276fbfa4ad595b9115e7d9264b7852872c5ab85021fb2fed148d80b556505de",
+      "bytes": 17836
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/run.log": {
+      "sha256": "b0248566891e4f330e993ea5e8e799b71ed9911a4db013515f4c45e5a04f8b4e",
+      "bytes": 140095
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-1280/savefailure.png": {
+      "sha256": "e2f897004a1b43f5df7d013019346ee5f5dbb803367357a659417664efc41905",
+      "bytes": 244194
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/details.png": {
+      "sha256": "8b6fdac31976750f366d06a16c9c17c97f56aa7a40df4630676fa51f466d6028",
+      "bytes": 71120
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/first-screen.png": {
+      "sha256": "a5d1cdd491e5f6a7cd6cba008418a8b37de0e6ddd127ce237e338b672de68685",
+      "bytes": 67598
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/labels.json": {
+      "sha256": "809e05481f82fa68f479032a8201973bb91de3293b1de5bf20b3817ab5188ae8",
+      "bytes": 42
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/list-tail.png": {
+      "sha256": "0e12f0f719647bb0666f20a66cac124a0fe6c7555e2f7e6a9db2cf8785fa65c0",
+      "bytes": 71756
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/metadata.json": {
+      "sha256": "2a7f344967e3a35cf58e91e1e88566f401cce6f583d2177349bc6c688220a382",
+      "bytes": 17807
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/run.log": {
+      "sha256": "54746fa51ac4115b843bb0c29b09535368c9d2793ba3d1008c72579a9967f34d",
+      "bytes": 131622
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/existing-output-640/savefailure.png": {
+      "sha256": "10faf8567258a0e0f3ec3906b1e2fe677f0e24cf879c001d960772d119b96dce",
+      "bytes": 79442
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/instrumentation.patch": {
+      "sha256": "ea41f6b4bccc1674a5cae1aa52040b8b913bf64e30a7edd50d5f2eec7911e42c",
+      "bytes": 1099
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/post-build-native-archive-observation.json": {
+      "sha256": "0c1b87137a657c850754e74635d102a35c808282bf879f1f0ac04f82687f5397",
+      "bytes": 2340
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/prepared.json": {
+      "sha256": "ab8d211258f3692255dd4a06648e1fb08fb8e13d7d1c09ba6d8da43bed2ab631",
+      "bytes": 2971
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/root-frozen-artifact-binding.json": {
+      "sha256": "ad4c8a8b34f98d8fadef1d02646dd93b99b54bc3da27d8f754d3e6a1fc55dd8f",
+      "bytes": 4046
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/run.json": {
+      "sha256": "f72226abeccf1644d58ab2eec8cba1a71e78f67fe2d1fe4217c38e09bf776c8c",
+      "bytes": 369320
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/main.rs": {
+      "sha256": "133fb4051220104eb08fb1702b58d550866a0a217103602215a21b679cba434b",
+      "bytes": 951
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench.rs": {
+      "sha256": "dcf54becfe8c8e86daaf499ac905a0ba69972255f75137f9bdc05355fff9d581",
+      "bytes": 36006
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/qa.rs": {
+      "sha256": "d44af5a61a618672d98493fae8b0a62ab7b731f7bcc782ea64e4eacfdba5816b",
+      "bytes": 21784
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/source/workbench/ui.rs": {
+      "sha256": "5648b8bcf4403b2f77baa7eb264455eac2c7c753d515b664409172082d7c34b2",
+      "bytes": 68243
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/details.png": {
+      "sha256": "3df2cfa0ccf77c888677fc984b9182e25cf2d975ca7d279cf01249b094f34ce3",
+      "bytes": 134092
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/first-screen.png": {
+      "sha256": "3361af4e8cb9c05038199fb06d0e7c73b2de5358717ea3a09ba004ed7d248fb2",
+      "bytes": 184631
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/list-tail.png": {
+      "sha256": "2a2105035bfbdb57ee58c1e1d3eb186360e5e62091365b6b94cd9c57c9159a26",
+      "bytes": 232786
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/metadata.json": {
+      "sha256": "36ad0430ade840ba87f95f77d952e5084412f2d5541533df5ef669ab6433ad49",
+      "bytes": 11192
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/run.log": {
+      "sha256": "ded427141bdd5ab15ea2a7c08fe074036492dd51f09c59917d6e67cb09396254",
+      "bytes": 130676
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/validate.log": {
+      "sha256": "3782f4415e35704a3b5eaf5cf3072a0efa7ed96e43201e1bf1bdb1693cfef000",
+      "bytes": 466
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-1280/validated-labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/details.png": {
+      "sha256": "8b6fdac31976750f366d06a16c9c17c97f56aa7a40df4630676fa51f466d6028",
+      "bytes": 71120
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/first-screen.png": {
+      "sha256": "a5d1cdd491e5f6a7cd6cba008418a8b37de0e6ddd127ce237e338b672de68685",
+      "bytes": 67598
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/list-tail.png": {
+      "sha256": "0e12f0f719647bb0666f20a66cac124a0fe6c7555e2f7e6a9db2cf8785fa65c0",
+      "bytes": 71756
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/metadata.json": {
+      "sha256": "e253523e127d8619c0a689207e2206a982c15a6b98ef09a8abb43319b6794080",
+      "bytes": 11170
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/run.log": {
+      "sha256": "1e2ccacfed1cd7c69a54a453f740d6e3dd2bd7dcd6aead4583c09d7beb7e7126",
+      "bytes": 122210
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/validate.log": {
+      "sha256": "56194e1ebf81d2c8b642d44df5cd5d966b3eab0991ab082a4ab21f9cebd792ee",
+      "bytes": 465
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-01/success-640/validated-labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/build.json": {
+      "sha256": "abbfce8babc3a0780d4d6ea7fb676d09cd1997ae229ca54ce4e0b2abf5d234a1",
+      "bytes": 80154
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/details.png": {
+      "sha256": "368b8517274d8f8dd759f50b2a16614a2efdb46c75b04f1b0f69a04d91c67a16",
+      "bytes": 135681
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/first-screen.png": {
+      "sha256": "ab92053ee471f65464a5301fa669eebde5b68b7827b2c3dbdb47b29de7fbb370",
+      "bytes": 186220
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/labels.json": {
+      "sha256": "809e05481f82fa68f479032a8201973bb91de3293b1de5bf20b3817ab5188ae8",
+      "bytes": 42
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/list-tail.png": {
+      "sha256": "cf76584d24b909bef9ed7d682c9d745aeb01cb21bb0498e9459dae7a50f8248b",
+      "bytes": 234375
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/metadata.json": {
+      "sha256": "d191851562b5229b9188ef76a3387f890aa58799515294d869fb05bcf71a3fcb",
+      "bytes": 17929
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/run.log": {
+      "sha256": "3c3c5cb6c0a0d5c4b7cff01425e53e29ef0893500f0b0d64bec1b0cdbda19af4",
+      "bytes": 140220
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-1280-zh-CN/savefailure.png": {
+      "sha256": "d30a586af165234f6be2426a04ce00b0f689e120a162587c42c4e6509b4d3e8a",
+      "bytes": 245783
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/details.png": {
+      "sha256": "09787f42f6ca0f01df8df0e52dcdf4dab8bf20d07863041d6441b67054c48b9c",
+      "bytes": 83681
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/first-screen.png": {
+      "sha256": "4ff66a130d6ed399f122df96145d8c5cba782b246fa8ab796a38766680ec41cc",
+      "bytes": 67265
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/labels.json": {
+      "sha256": "809e05481f82fa68f479032a8201973bb91de3293b1de5bf20b3817ab5188ae8",
+      "bytes": 42
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/list-tail.png": {
+      "sha256": "86d31a150583fb8167879d7d8401f7caed4321155ae896c08fb01e4f45b2d012",
+      "bytes": 85696
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/metadata.json": {
+      "sha256": "39e7fdd4f4e353a4d068ead09cd7b1ee6157326e0851f65991c6914b6c9fc20f",
+      "bytes": 17909
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/run.log": {
+      "sha256": "07f25000fc15defae8633c84241d5be55b2b2b6a48a4f829054f44832586742c",
+      "bytes": 138501
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/existing-output-640-zh-CN/savefailure.png": {
+      "sha256": "7da0cc2c2af5c8bab239d514842755409d2ba3c04bd1c498696b9c0f231203d2",
+      "bytes": 126376
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/instrumentation.patch": {
+      "sha256": "ea41f6b4bccc1674a5cae1aa52040b8b913bf64e30a7edd50d5f2eec7911e42c",
+      "bytes": 1099
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/prepared.json": {
+      "sha256": "0ecc41514be374ffe8079cf80dc71542d384c9833ec28c37679af8b40ef1daea",
+      "bytes": 2971
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/root-frozen-artifact-binding.json": {
+      "sha256": "e8400b36086baf9b52964c2d8a78c9bbb9d9331e9e6ff4ee165abda115030cdc",
+      "bytes": 2336
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/root-post-run-binding.json": {
+      "sha256": "74243da46cf46bd739c5df4007dd4459b5e6611a2b467b8fbb18e90a500d3e52",
+      "bytes": 649
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/root-visual-review-02.json": {
+      "sha256": "3553b903af9e946bd8ca1f62625ba28243f4924defac5099ece226c846fc01f3",
+      "bytes": 2843
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/run.json": {
+      "sha256": "b62ab27a966748cfe1d0685e6e1d16e503798cfe775c3e73259fc1de76513a99",
+      "bytes": 453075
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench.rs": {
+      "sha256": "dcf54becfe8c8e86daaf499ac905a0ba69972255f75137f9bdc05355fff9d581",
+      "bytes": 36006
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/qa.rs": {
+      "sha256": "727397339cf864dfea9f36b47f543dadfa032e1bd5127f70a2f61ea283f72b64",
+      "bytes": 22403
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/source/workbench/ui.rs": {
+      "sha256": "c9601fb9121a8b8eff11a5abcd4c58eb16d4c1e6e638ef891cb8a609fe3c7712",
+      "bytes": 69642
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/details.png": {
+      "sha256": "368b8517274d8f8dd759f50b2a16614a2efdb46c75b04f1b0f69a04d91c67a16",
+      "bytes": 135681
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/first-screen.png": {
+      "sha256": "ab92053ee471f65464a5301fa669eebde5b68b7827b2c3dbdb47b29de7fbb370",
+      "bytes": 186220
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/list-tail.png": {
+      "sha256": "cf76584d24b909bef9ed7d682c9d745aeb01cb21bb0498e9459dae7a50f8248b",
+      "bytes": 234375
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/metadata.json": {
+      "sha256": "ace1a8e3eeb3db2a423c8da9f02b78f6c63cf6e7d74407c4da0aa1878096b78c",
+      "bytes": 11266
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/run.log": {
+      "sha256": "c97ade0d3584cc689540ee12f344870773fb49f91984d0e80f2dc2f2e2ba6616",
+      "bytes": 130790
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/validate.log": {
+      "sha256": "2f7d04f3f5ee8c8e9943e128a9b25d88bc3a96a9c0850d4fcaa708a97fb79e34",
+      "bytes": 472
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-1280-zh-CN/validated-labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/details.png": {
+      "sha256": "8a493b54b265988f6f5d8a65f8922d3332c6e9ffee717a2bb806ddf5b55050e5",
+      "bytes": 98272
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/first-screen.png": {
+      "sha256": "df4b0b82f71ea3b13ced33482f9b5236fe183d1f2a839a47ca52df215f2c4b08",
+      "bytes": 86604
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/list-tail.png": {
+      "sha256": "d89ddac59638ec8ca418ef994d6e9c27d414ed6e4c5490a8924529161a2e5a48",
+      "bytes": 101589
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/metadata.json": {
+      "sha256": "3ae60db4f1cb7786303de50e1045b37b9485d025b129d87882f541d6c9c8ff3f",
+      "bytes": 11127
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/run.log": {
+      "sha256": "a0bcfbd92f0a189d0c60fbf05460ef3e1f43de6381cf1936ec1cf30f9d695193",
+      "bytes": 51643
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/validate.log": {
+      "sha256": "b490c5ab6d6ed6de853139078749972850a13b7312e3e82dc358921c4bdb8df6",
+      "bytes": 467
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-fr/validated-labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/details.png": {
+      "sha256": "09787f42f6ca0f01df8df0e52dcdf4dab8bf20d07863041d6441b67054c48b9c",
+      "bytes": 83681
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/first-screen.png": {
+      "sha256": "4ff66a130d6ed399f122df96145d8c5cba782b246fa8ab796a38766680ec41cc",
+      "bytes": 67265
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/list-tail.png": {
+      "sha256": "86d31a150583fb8167879d7d8401f7caed4321155ae896c08fb01e4f45b2d012",
+      "bytes": 85696
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/metadata.json": {
+      "sha256": "529de03fd6fab29c47e0501a334a29c04999203ccfa98ab839fbe2ee296f07ed",
+      "bytes": 11246
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/run.log": {
+      "sha256": "a146a4f3f712bc4f553b84aa4be17b1adc1543402cd6e22a76a32e37819d5b15",
+      "bytes": 129071
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/validate.log": {
+      "sha256": "3e0dd05b51ccf2ac7fceafd8fda40ac10367c440034d0776cbfd86ff3987ca3f",
+      "bytes": 471
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-02/success-640-zh-CN/validated-labels.json": {
+      "sha256": "4eaa2e5915c53f29266af9d5902de7e41f7a231391bf2913d2b1c493d7cb3df3",
+      "bytes": 3941
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/instrumentation.patch": {
+      "sha256": "8d08d845be3328b5d5a73009ea2d4c9f348a9472e60acde808978e73754e0bc4",
+      "bytes": 1135
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/prepared.json": {
+      "sha256": "a1918bd2f4d57bae319ba7fcc091cd8897cbd32a21c2896252a8c4b52ae292bb",
+      "bytes": 2971
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench.rs": {
+      "sha256": "2618d6100d690166ce0ca789f1897ba1fc2df3c3d385900987b4b1d15730f1df",
+      "bytes": 36042
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/qa.rs": {
+      "sha256": "1af1d198e5d7f365baf3e1ffe3060357774f13aa520231f7831e1524b8fda295",
+      "bytes": 23942
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-03/source/workbench/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/build.json": {
+      "sha256": "437c5af8793ff1fc666a4a624658782d5fb269a398185f8bc2631421fb3247fb",
+      "bytes": 80154
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/instrumentation.patch": {
+      "sha256": "8d08d845be3328b5d5a73009ea2d4c9f348a9472e60acde808978e73754e0bc4",
+      "bytes": 1135
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/prepared.json": {
+      "sha256": "8b9348c37a1fb90c856b7203c017ebe02db93fb7285838f5b3404f63be03c4d8",
+      "bytes": 2971
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/root-frozen-artifact-binding.json": {
+      "sha256": "4cc937a494f6df02351472ee49bfb7998499e909cf566b2ee0514f0fb314314e",
+      "bytes": 2165
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/root-post-run-binding.json": {
+      "sha256": "254227737e4d4f048665f4775b17e60771e30d1fbb9c908edf622274220668e6",
+      "bytes": 627
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/root-visual-review-03.json": {
+      "sha256": "2f94aa02efd18401621b9cea651afc6e22935b52b7e94edda49bb2c97ae5314a",
+      "bytes": 1806
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/run.json": {
+      "sha256": "2c8c7f39c276f74f250592662e871faaad57537eb98a4812539645b022db0f17",
+      "bytes": 88623
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench.rs": {
+      "sha256": "2618d6100d690166ce0ca789f1897ba1fc2df3c3d385900987b4b1d15730f1df",
+      "bytes": 36042
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/qa.rs": {
+      "sha256": "1af1d198e5d7f365baf3e1ffe3060357774f13aa520231f7831e1524b8fda295",
+      "bytes": 23942
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/source/workbench/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/details.png": {
+      "sha256": "f6df6c94188c2c9dd4366ecbb5b6f0e67f1c99215bef570838b5905624c12d24",
+      "bytes": 98401
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/first-screen.png": {
+      "sha256": "867b86cdf32e8a632919916e5535d86c39f2da58c7eb22a6c37f128545b98b1c",
+      "bytes": 86733
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/list-tail.png": {
+      "sha256": "cd6f3989cd7014f0f0f81cb92cb384a8b33cab27017cfbeeb6fd41568354b034",
+      "bytes": 101718
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/metadata.json": {
+      "sha256": "207618fff33eaeae6adf7c5dd92d9e20ce34cf3644fe70fa8f9e53256b225d58",
+      "bytes": 14565
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/reason-edit.png": {
+      "sha256": "54206f432f2d947845524c3ebd24d0521c5347c801c71199504b5b5c788e7153",
+      "bytes": 101821
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/run.log": {
+      "sha256": "c23e284cabe437f4116a8513296bc8ff2c9054b2710c7f6bf27d9a06532ee523",
+      "bytes": 53958
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/validate.log": {
+      "sha256": "90241f4555ed769810ceb4dc988179e743561149b97f59e6cfdd08da08b89cef",
+      "bytes": 467
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-04/success-640-fr/validated-labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/build.json": {
+      "sha256": "b2aeea059fbb1668240d8df48abf2ee8c1c422e3ebcf3a13b66cea5838c76bfd",
+      "bytes": 80154
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/build.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/instrumentation.patch": {
+      "sha256": "8d08d845be3328b5d5a73009ea2d4c9f348a9472e60acde808978e73754e0bc4",
+      "bytes": 1135
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/prepared.json": {
+      "sha256": "8b9348c37a1fb90c856b7203c017ebe02db93fb7285838f5b3404f63be03c4d8",
+      "bytes": 2971
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/root-frozen-artifact-binding.json": {
+      "sha256": "edc347246d63f1faae7aeeec63eb5070bd81dd81b86dd49c0afdd3050ffc3473",
+      "bytes": 2131
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/root-post-run-binding.json": {
+      "sha256": "93c2b1f5feb329a39db0e5e5170e6a4e110342f080f49ec61a2ec33ea5d55703",
+      "bytes": 604
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/root-visual-review-final.json": {
+      "sha256": "4208740a71891ac3b4b8ca58730fe791e5378102eed56ff88fab99af012e7afd",
+      "bytes": 1771
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/run.json": {
+      "sha256": "4dcc15d6f5a9c94e73c5a640dd09463ab2ed6db3dfbbdb829e0e7d4c65af15ba",
+      "bytes": 88623
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/anchors.rs": {
+      "sha256": "f025fc1267621e352c9472bebe553f30eb42920224d1cacf326653ba90ce2bbd",
+      "bytes": 25405
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/labels.rs": {
+      "sha256": "6ac16366449b20a30bb187c550a6b507c46c454c0cd44952cee920552793a56f",
+      "bytes": 15453
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/labels_cli.rs": {
+      "sha256": "543903256d146a761a7981bd669ac1d9565a3e320d9aef9e4ac93567db1061b5",
+      "bytes": 7703
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/replay.rs": {
+      "sha256": "4154d8502e8a19cc287364fbdeba717ca8ae6180749f51d797831b4a934c4a66",
+      "bytes": 45533
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench.rs": {
+      "sha256": "2618d6100d690166ce0ca789f1897ba1fc2df3c3d385900987b4b1d15730f1df",
+      "bytes": 36042
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/audition.rs": {
+      "sha256": "cd8561dfae59edf13e78d75ae200b0343787afda7d055f520eff7123321edc3c",
+      "bytes": 7854
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/candidates.rs": {
+      "sha256": "75882f35ea3c0067231cb2e2dd2bc8adba3415a81b337559b3850be37e1786f6",
+      "bytes": 11233
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/input.rs": {
+      "sha256": "e445d19d710006aa7ee0982652d0f48e0b471162ed0a6f885110eca0e1a5d6c6",
+      "bytes": 66347
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/label_text.rs": {
+      "sha256": "624bd5dfc2ed358b26e05d14df168afcf6614b72306d5a8eedbafe45ebd2cccf",
+      "bytes": 23616
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/labels.rs": {
+      "sha256": "c8c4399e53eccb92eacd7ece64fcd44fecc043ba6d4deb6eccdada90cf27e5fd",
+      "bytes": 13727
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/qa.rs": {
+      "sha256": "1af1d198e5d7f365baf3e1ffe3060357774f13aa520231f7831e1524b8fda295",
+      "bytes": 23942
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/replay.rs": {
+      "sha256": "04c7d3dc1c4c467ef13dbd9acd5bbb9f62572cc248a069c5a269802172cd6376",
+      "bytes": 13609
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/source/workbench/ui.rs": {
+      "sha256": "e880ffbd1c6002f18cf99428f72514e1b1c0b9c05da03ccea240865157a0042a",
+      "bytes": 69645
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/details.png": {
+      "sha256": "f6df6c94188c2c9dd4366ecbb5b6f0e67f1c99215bef570838b5905624c12d24",
+      "bytes": 98401
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/first-screen.png": {
+      "sha256": "867b86cdf32e8a632919916e5535d86c39f2da58c7eb22a6c37f128545b98b1c",
+      "bytes": 86733
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/list-tail.png": {
+      "sha256": "cd6f3989cd7014f0f0f81cb92cb384a8b33cab27017cfbeeb6fd41568354b034",
+      "bytes": 101718
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/metadata.json": {
+      "sha256": "7df29004fcc1673a7354d0e25575d45b350bba369550c5ed0b9d8611b04387c0",
+      "bytes": 14565
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/reason-edit.png": {
+      "sha256": "54206f432f2d947845524c3ebd24d0521c5347c801c71199504b5b5c788e7153",
+      "bytes": 101821
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/run.log": {
+      "sha256": "9305cb0ae6e5b0ddac3747e201e9eccc203f4ddd79a1033e939b10bf07908a80",
+      "bytes": 53958
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/validate.log": {
+      "sha256": "0e7b43986cc25ec6c4cd8cffd4b08d1902a0898caea5d8f1b13549db5636d890",
+      "bytes": 467
+    },
+    "target/independent-label-ui-delivery-20261008/gui-build-05/success-640-fr/validated-labels.json": {
+      "sha256": "ee4055324c94e728c8849ea9bf77a5f0da868693a859f6b78a76f883b9c1b93e",
+      "bytes": 3891
+    },
+    "target/independent-label-ui-delivery-20261008/license-promote.json": {
+      "sha256": "68709d642e608a0a9072b7a5286cfb2434c399c635a042d44b1d7fd575af98ad",
+      "bytes": 1104
+    },
+    "target/independent-label-ui-delivery-20261008/native-owned-process-absence-final.json": {
+      "sha256": "953c35f77974786f8e98a908e81f43fb05757d98e347e4ad75e9d3059ea4922e",
+      "bytes": 2031
+    },
+    "target/independent-label-ui-delivery-20261008/native-owned-process-absence.json": {
+      "sha256": "a91438c699921920e098fcfd43ea66252ad78a584f39d7a0065a42925e27f101",
+      "bytes": 1885
+    },
+    "target/independent-label-ui-delivery-20261008/review/production-final.json": {
+      "sha256": "af1a89d3c9e7f3c390b781c5047fadfeee4cc2bf9ac1ebdb81c1d44795e1259c",
+      "bytes": 19772
+    },
+    "target/independent-label-ui-delivery-20261008/review/production-initial.json": {
+      "sha256": "37e0f798f18beae3bea85843206412f9917281f1e523f73dab768e467de469f3",
+      "bytes": 10005
+    },
+    "target/independent-label-ui-delivery-20261008/tests-01-result.json": {
+      "sha256": "afada57d86f70cb90a862b3234c7bd11715fd6949f81a58760710176bcd5dcd4",
+      "bytes": 260
+    },
+    "target/independent-label-ui-delivery-20261008/tests-01.log": {
+      "sha256": "4652e28368d4889fb0d842e7a49e120c53fcf00597e35154a38e0531247fbe87",
+      "bytes": 6310
+    },
+    "target/independent-label-ui-delivery-20261008/tests-02-result.json": {
+      "sha256": "16b8f269c52cfb2a823f650bb4c0b8ca954fe29b2a9524f178f03dbbf1e76e33",
+      "bytes": 344
+    },
+    "target/independent-label-ui-delivery-20261008/tests-02.log": {
+      "sha256": "48a2c459d0903b013c04d2fb6df5c676d50d512d07c2f99f24dfdca30843158f",
+      "bytes": 5816
+    },
+    "target/independent-label-ui-delivery-20261008/tests-03-result.json": {
+      "sha256": "8a500ded3229db61bb5e879a3143a555fe1fb95d4acef61459e3b6c496f6664f",
+      "bytes": 207
+    },
+    "target/independent-label-ui-delivery-20261008/tests-03.log": {
+      "sha256": "a66fc96d8c4017e88568e5adb66308a4b9fb69de1a468ccea22a2928d04a0228",
+      "bytes": 5910
+    },
+    "target/independent-label-ui-delivery-20261008/tests-04-result.json": {
+      "sha256": "76d22328f5551c28165c4182279b893bed17e765fbcceea7ab6b567821649566",
+      "bytes": 208
+    },
+    "target/independent-label-ui-delivery-20261008/tests-04.log": {
+      "sha256": "dd18aba780ecf5f8292524d63120cb5a6f631e3a8cfe30f7b24a694aba8b3f8d",
+      "bytes": 5910
+    },
+    "target/independent-label-ui-delivery-20261008/word-wrap-apply-result.json": {
+      "sha256": "2c3d303a947888ac3998cce943bde6c56acf0fa3ea9cddbcc80b2a12232b9538",
+      "bytes": 287
+    },
+    "target/independent-label-ui-native-qa-02-20261008/check.py": {
+      "sha256": "f1a4ecd2c2488dc26e4fe3d823210665aaca59f4808c01dd0fb43993573f448c",
+      "bytes": 8504
+    },
+    "target/independent-label-ui-native-qa-02-20261008/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-native-qa-02-20261008/qa.rs": {
+      "sha256": "727397339cf864dfea9f36b47f543dadfa032e1bd5127f70a2f61ea283f72b64",
+      "bytes": 22403
+    },
+    "target/independent-label-ui-native-qa-03-20261008/BASE-SHA.json": {
+      "sha256": "eeb728eacf0f9dc597fc58063b3d0329f351ac5445d00065956c071dd7edf10b",
+      "bytes": 1153
+    },
+    "target/independent-label-ui-native-qa-03-20261008/NEXT-BUILD-HANDOFF.md": {
+      "sha256": "5ea8ff8283528be0f9353314a49b2b154455b5ca4908cbf48a7e32b580cb51ec",
+      "bytes": 2120
+    },
+    "target/independent-label-ui-native-qa-03-20261008/README.md": {
+      "sha256": "92ea08f1f4376b7e23729b5780eb683645e52e3973179f3348d4973d066926c2",
+      "bytes": 2224
+    },
+    "target/independent-label-ui-native-qa-03-20261008/check.py": {
+      "sha256": "06cd846e05e188c9f5c3267110705152ce583c8f2bf4a2352b840c06023dcb8e",
+      "bytes": 8361
+    },
+    "target/independent-label-ui-native-qa-03-20261008/check.py.delta.patch": {
+      "sha256": "157972442d142a93c5417b1699a1d94de4a686192ef82ff34ff251f8d519f3f4",
+      "bytes": 2365
+    },
+    "target/independent-label-ui-native-qa-03-20261008/checks.json": {
+      "sha256": "757a32d05d518da1faa1733f4873f39bf8c03eac687edf15634f2ea069c4106a",
+      "bytes": 240
+    },
+    "target/independent-label-ui-native-qa-03-20261008/main.rs": {
+      "sha256": "37741cbca3931daa09d476e1f69647f44265802c58078af78f55d52040cbc78c",
+      "bytes": 1247
+    },
+    "target/independent-label-ui-native-qa-03-20261008/main.rs.delta.patch": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "target/independent-label-ui-native-qa-03-20261008/native-adapter-review.json": {
+      "sha256": "13d07a627aef81343e7820d4067cf396c3d687addcb4c8f5b7b2bc4adfae06cf",
+      "bytes": 5004
+    },
+    "target/independent-label-ui-native-qa-03-20261008/qa-pre-review.rs": {
+      "sha256": "62537588c02e735ad4e5a57f07637accbeeaa120062b79cd2129a81b996a4183",
+      "bytes": 23939
+    },
+    "target/independent-label-ui-native-qa-03-20261008/qa.rs": {
+      "sha256": "1af1d198e5d7f365baf3e1ffe3060357774f13aa520231f7831e1524b8fda295",
+      "bytes": 23942
+    },
+    "target/independent-label-ui-native-qa-03-20261008/qa.rs.delta.patch": {
+      "sha256": "1b5d8be896321fa5ab2a1c5b73f68841b5a0c745c2f3291681c16e70839019ad",
+      "bytes": 4742
+    },
+    "target/independent-label-ui-native-qa-03-20261008/review-fix.json": {
+      "sha256": "d641bb70a0945b95eb294383a18cf403038277be52a806ff8ee23318e25f5c5d",
+      "bytes": 466
+    },
+    "target/independent-label-ui-native-qa-20261008/BUILD-HANDOFF.json": {
+      "sha256": "ebf9b8f50d1199dc205e1cf97661827873afc9151ee61f776851760c6340e784",
+      "bytes": 3217
+    },
+    "target/independent-label-ui-native-qa-20261008/README.md": {
+      "sha256": "062f8c9e6fc28a397efc2eae6cdb79b58d5e12fdc0f2586b74c9224102351e12",
+      "bytes": 2852
+    },
+    "target/independent-label-ui-native-qa-20261008/check.py": {
+      "sha256": "f95ca11154ab5b8f47d905bb1cfe8685cf5deb6d673c02e3f8a23a81b2b9ac69",
+      "bytes": 8329
+    },
+    "target/independent-label-ui-native-qa-20261008/main.rs": {
+      "sha256": "133fb4051220104eb08fb1702b58d550866a0a217103602215a21b679cba434b",
+      "bytes": 951
+    },
+    "target/independent-label-ui-native-qa-20261008/native-adapter-review.json": {
+      "sha256": "714659fc94ccade079ada392ec9f62dabcf789ba2e4e9d9497191bae248e5ea4",
+      "bytes": 5648
+    },
+    "target/independent-label-ui-native-qa-20261008/qa.rs": {
+      "sha256": "d44af5a61a618672d98493fae8b0a62ab7b731f7bcc782ea64e4eacfdba5816b",
+      "bytes": 21784
+    },
+    "target/independent-label-ui-plan-20261008/implementation-final-review.json": {
+      "sha256": "bb052e3a9aec6a3d5733de16125b80fd2ce9824a7ac47a60f5133946a828a1ed",
+      "bytes": 8693
+    },
+    "target/independent-label-ui-plan-20261008/labels-ui.patch": {
+      "sha256": "15f9173868e281e2fda0929928d3967bc6986e649b4ef39970ca950465944f90",
+      "bytes": 159379
+    },
+    "target/independent-label-ui-plan-20261008/patch-manifest.json": {
+      "sha256": "a3183fa7ac39d27aa55c183a3103671960fb24add44df9ee5e1aa726a2663756",
+      "bytes": 8883
+    },
+    "tools/replay-workbench-check/check.py": {
+      "sha256": "751d1277139ac97443702f2904af915421b74a9a86cfdc8059a09a6c12126590",
+      "bytes": 12153
+    }
+  },
+  "binary_identities": {
+    "build-01": {
+      "status": "PASS",
+      "receipt": "target/independent-label-ui-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+      "source_inputs": 465,
+      "inputs_unchanged": true,
+      "base_commit": "046a05b624a6bda13ea15dd58602515830c154da",
+      "scope": "Frozen 046a05b plus independent Labels UI; exact21 patch with Bevy native EditableText input gate; software build only; no native window, OS IME, physical controllers or human acceptance",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-ui-delivery-20261008/build-01/bin/cocobeat-lab",
+        "sha256": "c5e7093a2027e87ad0bcde2643a2ad856d289b3402f0c17338befb5ed190acdc",
+        "bytes": 1541859448,
+        "identity_evidence": "Actual compiler/copy build receipt only; executable not rehashed by archiver"
+      },
+      "inputs_before": "target/independent-label-ui-delivery-20261008/build-01/inputs-before.json",
+      "inputs_after": "target/independent-label-ui-delivery-20261008/build-01/inputs-after.json"
+    },
+    "build-02": {
+      "status": "PASS",
+      "receipt": "target/independent-label-ui-delivery-20261008/build-02/cocobeat-lab-build-result.json",
+      "source_inputs": 465,
+      "inputs_unchanged": true,
+      "base_commit": "046a05b624a6bda13ea15dd58602515830c154da",
+      "scope": "Frozen 046a05b plus independent Labels UI and compact layout revision-01 b25cc2; Bevy native EditableText input gate; software build only; no native window, OS IME, physical controllers or human acceptance",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-ui-delivery-20261008/build-02/bin/cocobeat-lab",
+        "sha256": "b3be250d337b84e9a797f793f1de1087266f2359557025a2e365fc303bec6475",
+        "bytes": 1542132928,
+        "identity_evidence": "Actual compiler/copy build receipt only; executable not rehashed by archiver"
+      },
+      "inputs_before": "target/independent-label-ui-delivery-20261008/build-02/inputs-before.json",
+      "inputs_after": "target/independent-label-ui-delivery-20261008/build-02/inputs-after.json"
+    },
+    "build-03": {
+      "status": "PASS",
+      "receipt": "target/independent-label-ui-delivery-20261008/build-03/cocobeat-lab-build-result.json",
+      "source_inputs": 465,
+      "inputs_unchanged": true,
+      "base_commit": "47015a1cc00a335c9dd225b7a741d7e83452c4f2",
+      "scope": "Frozen 046a05b plus independent Labels UI and compact layout revision-01 b25cc2 plus revision-02 cbdb827b native word wrapping; Bevy native EditableText input gate; software build only; no native window, OS IME, physical controllers or human acceptance",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-ui-delivery-20261008/build-03/bin/cocobeat-lab",
+        "sha256": "20537c6dd9274949fde7b3d6e25c21c22b6a9bda36fea6175786952958ae6e22",
+        "bytes": 1542132928,
+        "identity_evidence": "Actual compiler/copy/root receipts; executable not rehashed by archiver"
+      },
+      "inputs_before": "target/independent-label-ui-delivery-20261008/build-03/inputs-before.json",
+      "inputs_after": "target/independent-label-ui-delivery-20261008/build-03/inputs-after.json",
+      "selected_frozen_sources": [
+        "tools/cocobeat-lab/src/main.rs",
+        "tools/cocobeat-lab/src/workbench.rs",
+        "tools/cocobeat-lab/src/workbench/input.rs",
+        "tools/cocobeat-lab/src/workbench/ui.rs",
+        "tools/cocobeat-lab/src/workbench/labels.rs",
+        "tools/cocobeat-lab/src/workbench/label_text.rs",
+        "Cargo.lock",
+        "tools/cocobeat-lab/Cargo.toml"
+      ]
+    },
+    "build-04": {
+      "status": "PASS",
+      "receipt": "target/independent-label-ui-delivery-20261008/build-04/cocobeat-lab-build-result.json",
+      "source_inputs": 465,
+      "inputs_unchanged": true,
+      "base_commit": "47015a1cc00a335c9dd225b7a741d7e83452c4f2",
+      "scope": "Frozen 046a05b plus independent Labels UI and compact layout revision-01 b25cc2 plus revision-02 cbdb827b native word wrapping and removal of eight unused Labels strings per locale; Bevy native EditableText input gate; software build only; no native window, OS IME, physical controllers or human acceptance",
+      "binary": {
+        "path": "/home/lzzz/MyProjects/CoCoBeat/target/independent-label-ui-delivery-20261008/build-04/bin/cocobeat-lab",
+        "sha256": "dc02f41377c8ea008bb7dfb4b41fc6c69fce69db42802eece9c5c4cc6fd9ba06",
+        "bytes": 1542124736,
+        "identity_evidence": "Compiler/copy/root pre/postrun receipts only; executable not rehashed by archiver"
+      },
+      "inputs_before": "target/independent-label-ui-delivery-20261008/build-04/inputs-before.json",
+      "inputs_after": "target/independent-label-ui-delivery-20261008/build-04/inputs-after.json",
+      "selected_frozen_sources": [
+        "tools/cocobeat-lab/src/main.rs",
+        "tools/cocobeat-lab/src/workbench.rs",
+        "tools/cocobeat-lab/src/workbench/input.rs",
+        "tools/cocobeat-lab/src/workbench/ui.rs",
+        "tools/cocobeat-lab/src/workbench/labels.rs",
+        "tools/cocobeat-lab/src/workbench/label_text.rs",
+        "Cargo.lock",
+        "tools/cocobeat-lab/Cargo.toml"
+      ]
+    }
+  },
+  "total_bytes": 16423851,
+  "native_helper_identities": {
+    "gui-build-01": "a47954031635cd8989cbb63a715cc68c2c6537c6479670f78f2cad8722f3656f",
+    "gui-build-02": "ffab8f2f969473ed417cdb768d9530a13a494adac2b48800c65d8db50040e4aa",
+    "gui-build-04": "ebefdb095dc48197ef529665cba4574febd3ac32c6d1c2224cbc6dc1920df0e4",
+    "gui-build-05": "feb55f06c7a9c632d4d4dbb16d49f8ccd470549d2e624581502db83eb7b349e2"
+  }
+}

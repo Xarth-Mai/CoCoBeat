@@ -72,6 +72,7 @@ bevy_math,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_mesh,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_mikktspace,1.0.0,Zlib AND (MIT OR Apache-2.0),https://github.com/bevyengine/bevy_mikktspace
 bevy_pbr,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
+bevy_picking,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_platform,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_post_process,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_ptr,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
@@ -90,6 +91,7 @@ bevy_time,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_transform,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_ui,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_ui_render,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
+bevy_ui_widgets,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_utils,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_window,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy
 bevy_winit,0.19.1,MIT OR Apache-2.0,https://github.com/bevyengine/bevy

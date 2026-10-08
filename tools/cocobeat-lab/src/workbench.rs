@@ -9,11 +9,14 @@ use std::{
     collections::BTreeSet,
     path::{Path, PathBuf},
     sync::{Mutex, mpsc},
+    thread::JoinHandle,
 };
 
 mod audition;
 mod candidates;
 mod input;
+mod label_text;
+mod labels;
 mod replay;
 mod ui;
 
@@ -21,12 +24,16 @@ const BIN_FRAMES: i64 = 64;
 
 pub enum Mode<'a> {
     Edit(&'a Path),
+    Labels(&'a Path),
     Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
 }
 
 pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> {
-    let destination = if let Mode::Edit(destination) = mode {
+    let labeling = matches!(mode, Mode::Labels(_));
+    let destination = if let Mode::Labels(path) = mode {
+        Some(crate::labels_cli::outside_package(source, path)?)
+    } else if let Mode::Edit(destination) = mode {
         let parent = destination
             .parent()
             .filter(|path| !path.as_os_str().is_empty())
@@ -60,7 +67,17 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         );
         Ok(())
     })?;
-    let mut document = Document::new(&package)?;
+    let mut document = if labeling {
+        Document::from_anchors(
+            package.manifest.canonical_frames as i64,
+            Vec::new(),
+            Vec::new(),
+        )?
+    } else {
+        Document::new(&package)?
+    };
+    let labels =
+        labeling.then(|| labels::LabelView::new(crate::labels::Source::from_package(&package)));
     let replay = if let Mode::Replay(path, timing) = mode {
         let mut replay = replay::ReplayView::load(&package, path, timing)?;
         document.cursor = replay.select(0).unwrap_or(0);
@@ -78,31 +95,40 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         None
     };
     let mut app = App::new();
-    app.add_plugins(
-        DefaultPlugins.set(WindowPlugin {
-            close_when_requested: false,
-            primary_window: Some(Window {
-                title: locale
-                    .text(if replay.is_some() {
-                        "replay.title"
-                    } else if candidates.is_some() {
-                        "candidates.title"
-                    } else {
-                        "workbench.title"
-                    })
-                    .into(),
-                name: Some("cocobeat-workbench".into()),
-                resolution: (1280, 800).into(),
-                resize_constraints: WindowResizeConstraints {
-                    min_width: 640.0,
-                    min_height: 480.0,
-                    ..default()
-                },
+    let plugins = DefaultPlugins.set(WindowPlugin {
+        close_when_requested: false,
+        primary_window: Some(Window {
+            title: locale
+                .text(if labeling {
+                    "labels.title"
+                } else if replay.is_some() {
+                    "replay.title"
+                } else if candidates.is_some() {
+                    "candidates.title"
+                } else {
+                    "workbench.title"
+                })
+                .into(),
+            name: Some("cocobeat-workbench".into()),
+            resolution: (1280, 800).into(),
+            resize_constraints: WindowResizeConstraints {
+                min_width: 640.0,
+                min_height: 480.0,
                 ..default()
-            }),
+            },
             ..default()
         }),
-    );
+        ..default()
+    });
+    app.add_plugins(if labeling {
+        plugins.disable::<bevy::input_focus::InputDispatchPlugin>()
+    } else {
+        plugins
+    });
+    if labeling {
+        app.add_message::<bevy_picking::events::Pointer<bevy_picking::events::Release>>()
+            .add_plugins(bevy_ui_widgets::EditableTextInputPlugin);
+    }
     install_ui_assets(&mut app)?;
     app.insert_non_send(audition::Output::new(pcm))
         .insert_resource(Workbench {
@@ -110,6 +136,8 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
             destination,
             replay,
             candidates,
+            labels,
+            pending_label_action: None,
             source_hash: package.manifest.package_hash,
             locale,
             document,
@@ -125,11 +153,39 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
         })
         .init_resource::<input::Controls>()
         .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
-        .add_systems(Startup, ui::setup)
-        .add_systems(
+        .add_systems(Startup, ui::setup);
+    if labeling {
+        app.add_systems(Update, (poll_save, audition::update, ui::update).chain())
+            .add_systems(
+                PreUpdate,
+                (input::capture, label_text::bridge)
+                    .chain()
+                    .after(bevy::input::InputSystems)
+                    .before(bevy::input_focus::InputFocusSystems::Dispatch)
+                    .before(bevy_ui_widgets::ImeSystems::HandleEvents),
+            )
+            .add_systems(
+                PreUpdate,
+                bevy::input_focus::dispatch_focused_input::<bevy::input::keyboard::KeyboardInput>
+                    .in_set(bevy::input_focus::InputFocusSystems::Dispatch)
+                    .after(label_text::bridge),
+            )
+            .add_systems(
+                PostUpdate,
+                label_text::sync.after(bevy::text::EditableTextSystems),
+            )
+            .add_systems(
+                PostUpdate,
+                ui::keep_label_field_visible
+                    .after(bevy::ui::UiSystems::Layout)
+                    .after(label_text::sync),
+            );
+    } else {
+        app.add_systems(
             Update,
             (poll_save, input::capture, audition::update, ui::update).chain(),
         );
+    }
     match app.run() {
         AppExit::Success => Ok(()),
         error => Err(format!("Workbench exited: {error:?}")),
@@ -358,6 +414,7 @@ enum Focus {
     List,
     Frame,
     Details,
+    Label(label_text::Field),
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -381,6 +438,8 @@ enum Action {
     Apply,
     Keep,
     Discard,
+    LabelEdit,
+    LabelCancel,
 }
 
 const TOOLBAR: [Action; 11] = [
@@ -397,12 +456,22 @@ const TOOLBAR: [Action; 11] = [
     Action::Back,
 ];
 
+enum SaveOutcome {
+    Package { hash: [u8; 32], count: usize },
+    Labels { destination: PathBuf, count: usize },
+}
+struct SaveWorker {
+    receiver: Mutex<mpsc::Receiver<Result<SaveOutcome, String>>>,
+    worker: JoinHandle<()>,
+}
 #[derive(Resource)]
 struct Workbench {
     source: PathBuf,
     destination: Option<PathBuf>,
     replay: Option<replay::ReplayView>,
     candidates: Option<candidates::CandidateView>,
+    labels: Option<labels::LabelView>,
+    pending_label_action: Option<Action>,
     source_hash: [u8; 32],
     locale: Locale,
     document: Document,
@@ -413,7 +482,7 @@ struct Workbench {
     close_confirm: bool,
     discard_selected: bool,
     notice: String,
-    saving: Option<Mutex<mpsc::Receiver<Result<ValidatedPackage, String>>>>,
+    saving: Option<SaveWorker>,
     audition: audition::Audition,
 }
 
@@ -423,7 +492,9 @@ impl Workbench {
     }
 
     fn record_count(&self) -> usize {
-        if let Some(replay) = &self.replay {
+        if let Some(labels) = &self.labels {
+            labels.document.labels.len()
+        } else if let Some(replay) = &self.replay {
             replay.len()
         } else if let Some(candidates) = &self.candidates {
             candidates.len()
@@ -433,7 +504,9 @@ impl Workbench {
     }
 
     fn selected_index(&self) -> usize {
-        if let Some(replay) = &self.replay {
+        if let Some(labels) = &self.labels {
+            labels.selected
+        } else if let Some(replay) = &self.replay {
             replay.selected
         } else if let Some(candidates) = &self.candidates {
             candidates.selected
@@ -448,7 +521,20 @@ impl Workbench {
     }
 
     fn toolbar(&self) -> &[Action] {
-        if self.is_read_only() {
+        if self.labels.is_some() {
+            &[
+                Action::PlayPause,
+                Action::Stop,
+                Action::Seek,
+                Action::Add,
+                Action::LabelEdit,
+                Action::Remove,
+                Action::ZoomIn,
+                Action::ZoomOut,
+                Action::Export,
+                Action::Back,
+            ]
+        } else if self.is_read_only() {
             &[
                 Action::PlayPause,
                 Action::Stop,
@@ -463,7 +549,17 @@ impl Workbench {
     }
 
     fn select(&mut self, index: usize) {
-        if let Some(replay) = &mut self.replay {
+        if let Some(labels) = &mut self.labels {
+            labels.select(index);
+            if let Some(label) = labels.document.labels.get(labels.selected) {
+                self.document.cursor = match label.location {
+                    crate::labels::Location::Point { frame } => frame,
+                    crate::labels::Location::Interval { start_frame, .. } => start_frame,
+                };
+                self.document.keep_cursor_visible();
+            }
+            self.detail_scroll = 0.0;
+        } else if let Some(replay) = &mut self.replay {
             if let Some(frame) = replay.select(index) {
                 self.document.cursor = frame;
                 self.document.keep_cursor_visible();
@@ -483,7 +579,11 @@ impl Workbench {
     }
 
     fn browse(&mut self, step: i32) {
-        if self.is_read_only() {
+        if let Some(labels) = &mut self.labels {
+            labels.browse(step);
+            let selected = labels.selected;
+            self.select(selected);
+        } else if self.is_read_only() {
             self.select(
                 (self.selected_index() as i64 + i64::from(step))
                     .clamp(0, self.record_count().saturating_sub(1) as i64)
@@ -509,7 +609,32 @@ impl Workbench {
         self.focus = Focus::Details;
     }
 
+    fn refresh_label_dirty(&mut self) {
+        if let Some(labels) = &self.labels {
+            self.document.dirty = labels.dirty();
+        }
+    }
+    fn finish_label_action(&mut self) {
+        match self.pending_label_action.take() {
+            Some(Action::Apply) => {
+                let result = self.labels.as_mut().unwrap().apply();
+                match result {
+                    Ok(index) => {
+                        self.select(index);
+                        self.document.revision += 1;
+                        self.notice.clear();
+                        self.focus = Focus::Details;
+                    }
+                    Err(reason) => self.error(reason),
+                }
+            }
+            Some(Action::Export) => self.save(),
+            _ => {}
+        }
+        self.refresh_label_dirty();
+    }
     fn close(&mut self, exit: &mut MessageWriter<AppExit>) {
+        self.refresh_label_dirty();
         if self.saving.is_some() {
             return;
         }
@@ -550,6 +675,53 @@ impl Workbench {
                 self.details = true;
                 self.detail_scroll = 0.0;
             }
+            return;
+        }
+        if self.labels.is_some()
+            && matches!(
+                action,
+                Action::Add
+                    | Action::LabelEdit
+                    | Action::LabelCancel
+                    | Action::Remove
+                    | Action::Apply
+                    | Action::Export
+            )
+        {
+            if !keyboard {
+                self.error(self.locale.text("workbench.keyboard_required").into());
+                return;
+            }
+            let result = match action {
+                Action::Add => self
+                    .labels
+                    .as_mut()
+                    .unwrap()
+                    .begin_add(self.document.cursor),
+                Action::LabelEdit => self.labels.as_mut().unwrap().begin_edit(),
+                Action::Remove => self.labels.as_mut().unwrap().remove_selected(),
+                Action::LabelCancel => {
+                    self.labels.as_mut().unwrap().cancel();
+                    Ok(())
+                }
+                Action::Apply | Action::Export => {
+                    self.pending_label_action = Some(action);
+                    Ok(())
+                }
+                _ => unreachable!(),
+            };
+            if let Err(reason) = result {
+                self.error(reason);
+            } else {
+                self.details = true;
+                self.focus = if self.labels.as_ref().unwrap().draft.is_some() {
+                    Focus::Label(label_text::Field::Reason)
+                } else {
+                    Focus::Details
+                };
+            }
+            self.document.revision += 1;
+            self.refresh_label_dirty();
             return;
         }
         let result = match action {
@@ -642,6 +814,7 @@ impl Workbench {
                 self.save();
                 Ok(())
             }
+            Action::LabelEdit | Action::LabelCancel => Ok(()),
         };
         if let Err(reason) = result {
             self.error(reason);
@@ -664,20 +837,55 @@ impl Workbench {
         let Some(destination) = self.destination.clone() else {
             return;
         };
+        if self.saving.is_some() {
+            return;
+        }
+        if self
+            .labels
+            .as_ref()
+            .is_some_and(|labels| labels.draft.is_some())
+        {
+            self.error(self.locale.text("labels.draft").into());
+            return;
+        }
         self.audition.pause();
         self.document.cancel();
         let source = self.source.clone();
         let hash = self.source_hash;
         let anchors = self.document.editor.anchors().to_vec();
+        let original_label_source = self.labels.as_ref().map(|labels| labels.source().clone());
+        let labels = self.labels.as_ref().map(|labels| labels.document.clone());
         let (send, receive) = mpsc::channel();
         match std::thread::Builder::new()
-            .name("anchor-export".into())
+            .name("workbench-save".into())
             .spawn(move || {
-                let result = cocobeat_media::export_anchors(source, hash, &anchors, destination);
+                let result = if let Some(document) = labels {
+                    (|| {
+                        let destination =
+                            crate::labels_cli::outside_package(&source, &destination)?;
+                        let expected = original_label_source.unwrap();
+                        crate::labels_cli::require_fresh_source(&source, &expected)?;
+                        crate::labels::save(&destination, &expected, &document)?;
+                        Ok(SaveOutcome::Labels {
+                            destination,
+                            count: document.labels.len(),
+                        })
+                    })()
+                } else {
+                    cocobeat_media::export_anchors(source, hash, &anchors, destination).map(
+                        |package| SaveOutcome::Package {
+                            hash: package.manifest.package_hash,
+                            count: package.chart.anchors.len(),
+                        },
+                    )
+                };
                 let _ = send.send(result);
             }) {
-            Ok(_) => {
-                self.saving = Some(Mutex::new(receive));
+            Ok(worker) => {
+                self.saving = Some(SaveWorker {
+                    receiver: Mutex::new(receive),
+                    worker,
+                });
                 self.notice = self.locale.text("workbench.saving").into();
                 self.details = true;
                 self.focus = Focus::Details;
@@ -698,36 +906,42 @@ fn identity(hash: [u8; 32]) -> String {
 }
 
 fn poll_save(mut workbench: ResMut<Workbench>, mut exit: MessageWriter<AppExit>) {
-    let Some(receiver) = &workbench.saving else {
+    let Some(saving) = &workbench.saving else {
         return;
     };
-    let result = receiver
+    let result = saving
+        .receiver
         .lock()
-        .expect("Export receiver is only accessed on the main thread")
+        .expect("Save receiver is accessed on the main thread")
         .try_recv();
+    let result = match result {
+        Ok(result) => result,
+        Err(mpsc::TryRecvError::Disconnected) => Err("Save worker stopped without a result".into()),
+        Err(mpsc::TryRecvError::Empty) => return,
+    };
+    let saving = workbench.saving.take().unwrap();
+    if saving.worker.join().is_err() {
+        workbench.error("Save worker panicked".into());
+        return;
+    }
     match result {
-        Ok(Ok(package)) => {
+        Ok(SaveOutcome::Package { hash, count }) => {
             println!(
                 "{}",
-                serde_json::json!({
-                    "source_content_id": identity(workbench.source_hash),
-                    "content_id": identity(package.manifest.package_hash),
-                    "destination": workbench.destination,
-                    "anchor_count": package.chart.anchors.len(),
-                })
+                serde_json::json!({"source_content_id":identity(workbench.source_hash),"content_id":identity(hash),"destination":workbench.destination,"anchor_count":count})
             );
             workbench.document.dirty = false;
             exit.write(AppExit::Success);
         }
-        Ok(Err(error)) => {
-            workbench.saving = None;
-            workbench.error(error);
+        Ok(SaveOutcome::Labels { destination, count }) => {
+            println!(
+                "{}",
+                serde_json::json!({"source":workbench.labels.as_ref().unwrap().document.source,"label_count":count,"destination":destination,"scope":"manual_records_only"})
+            );
+            workbench.document.dirty = false;
+            exit.write(AppExit::Success);
         }
-        Err(mpsc::TryRecvError::Disconnected) => {
-            workbench.saving = None;
-            workbench.error("Anchor export worker stopped without a result".into());
-        }
-        Err(mpsc::TryRecvError::Empty) => {}
+        Err(reason) => workbench.error(reason),
     }
 }
 
@@ -741,6 +955,8 @@ mod tests {
             destination: Some(PathBuf::from("new-package")),
             replay: None,
             candidates: None,
+            labels: None,
+            pending_label_action: None,
             source_hash: [7; 32],
             locale: Locale::EnUs,
             document: Document::from_anchors(
@@ -816,5 +1032,59 @@ mod tests {
         doc.start = 200;
         doc.span = 1_000;
         assert_eq!(doc.at_pixel(10.5, 10.0, 100.0), 205);
+    }
+    #[test]
+    fn save_worker_error_joins_and_keeps_dirty_manual_draft() {
+        use bevy::ecs::system::RunSystemOnce;
+        use std::sync::{
+            Arc,
+            atomic::{AtomicBool, Ordering},
+        };
+        let mut state = state();
+        state.labels = Some(labels::LabelView::new(crate::labels::Source {
+            content_id: format!("package-blake3:{}", "07".repeat(32)),
+            audio_blake3: "08".repeat(32),
+            canonical_frames: 48_000,
+            audio_basis: crate::labels::AudioBasis::CanonicalDecoded,
+        }));
+        let labels = state.labels.as_mut().unwrap();
+        labels.document.reviewer = "reviewer".into();
+        labels.begin_add(123).unwrap();
+        labels.draft.as_mut().unwrap().reason = "keep this draft".into();
+        state.refresh_label_dirty();
+        let joined = Arc::new(AtomicBool::new(false));
+        let completed = joined.clone();
+        let (sender, receiver) = mpsc::channel();
+        let (ready, wait) = mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            sender.send(Err("fresh source changed".into())).unwrap();
+            ready.send(()).unwrap();
+            completed.store(true, Ordering::SeqCst);
+        });
+        state.saving = Some(SaveWorker {
+            receiver: Mutex::new(receiver),
+            worker,
+        });
+        wait.recv().unwrap();
+        let mut app = App::new();
+        app.add_message::<AppExit>().insert_resource(state);
+        app.world_mut().run_system_once(poll_save).unwrap();
+        assert!(joined.load(Ordering::SeqCst));
+        let state = app.world().resource::<Workbench>();
+        assert!(state.saving.is_none());
+        assert!(state.document.dirty);
+        assert_eq!(
+            state
+                .labels
+                .as_ref()
+                .unwrap()
+                .draft
+                .as_ref()
+                .unwrap()
+                .reason,
+            "keep this draft"
+        );
+        assert!(state.notice.contains("fresh source changed"));
+        assert!(app.world().resource::<Messages<AppExit>>().is_empty());
     }
 }

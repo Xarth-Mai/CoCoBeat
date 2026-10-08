@@ -15,6 +15,7 @@ pub(super) enum Hit {
     Timeline,
     Row(usize),
     Details,
+    LabelField(label_text::Field),
 }
 
 #[derive(Component)]
@@ -29,6 +30,8 @@ pub(super) enum Part {
     DetailText,
     FrameText,
     ModalTitle,
+    LabelCaption(label_text::Field),
+    LabelValue(label_text::Field),
 }
 
 #[derive(Component)]
@@ -71,6 +74,12 @@ struct PaintKey {
     record_selection: Option<usize>,
 }
 
+#[derive(Component)]
+pub(super) enum LabelFormPart {
+    Field(label_text::Field),
+    Buttons,
+}
+
 fn key(action: Action) -> &'static str {
     match action {
         Action::PlayPause => "audition.toggle",
@@ -92,6 +101,8 @@ fn key(action: Action) -> &'static str {
         Action::Apply => "workbench.apply",
         Action::Keep => "workbench.keep",
         Action::Discard => "workbench.discard",
+        Action::LabelEdit => "labels.edit",
+        Action::LabelCancel => "labels.cancel",
     }
 }
 
@@ -134,9 +145,23 @@ pub(super) fn setup(
                 BoxPart::Toolbar(index),
             ))
             .with_child((
-                Text::new(state.locale.text(key(action))),
-                font(13.0),
+                Text::new(state.locale.text(if state.labels.is_some() {
+                    match action {
+                        Action::Add => "labels.add",
+                        Action::Remove => "labels.remove",
+                        Action::Export => "labels.save_exit",
+                        _ => key(action),
+                    }
+                } else {
+                    key(action)
+                })),
+                font(if state.labels.is_some() { 14.0 } else { 13.0 }),
                 TextColor(INK),
+                if state.labels.is_some() {
+                    TextLayout::new(Justify::Left, bevy::text::LineBreak::WordOrCharacter)
+                } else {
+                    TextLayout::default()
+                },
             ));
     }
     let image = images.add(Image::new_fill(
@@ -219,7 +244,7 @@ pub(super) fn setup(
                 Part::Row(index),
             ));
     }
-    commands
+    let detail = commands
         .spawn((
             Node {
                 flex_direction: FlexDirection::Column,
@@ -243,7 +268,11 @@ pub(super) fn setup(
                 ..default()
             },
             Part::DetailText,
-        ));
+        ))
+        .id();
+    if state.labels.is_some() {
+        setup_label_form(&mut commands, detail, &state, &fonts);
+    }
     commands
         .spawn((
             Node {
@@ -343,14 +372,21 @@ fn rect(x: f32, y: f32, w: f32, h: f32) -> Rect {
     Rect::from_corners(Vec2::new(x, y), Vec2::new(x + w, y + h))
 }
 
+type LabelFormOnly = (Without<BoxPart>, Without<Part>);
+
 pub(super) fn update(
     mut state: ResMut<Workbench>,
     (controls, windows): (Res<input::Controls>, Query<&Window>),
-    mut view: ResMut<View>,
-    mut boxes: Query<(&BoxPart, &mut Node, Option<&mut BorderColor>)>,
+    (mut view, mut images): (ResMut<View>, ResMut<Assets<Image>>),
+    mut boxes: Query<(
+        &BoxPart,
+        &mut Node,
+        Option<&mut BorderColor>,
+        Option<&ComputedNode>,
+    )>,
     mut texts: Query<(&Part, &mut Text, &mut Node), Without<BoxPart>>,
     mut scrolls: Query<(&Hit, &ComputedNode, &mut ScrollPosition)>,
-    mut images: ResMut<Assets<Image>>,
+    mut forms: Query<(&LabelFormPart, &mut Node, &mut BorderColor), LabelFormOnly>,
 ) {
     let Ok(window) = windows.single() else {
         return;
@@ -358,11 +394,32 @@ pub(super) fn update(
     let w = window.width().max(1.0);
     let h = window.height().max(1.0);
     let compact = w < 1000.0;
-    let columns = state.toolbar().len().min(if compact { 4 } else { 8 });
+    let compact_labels = state.labels.is_some() && h < 600.0;
+    let columns = state.toolbar().len().min(if compact_labels {
+        5
+    } else if compact {
+        4
+    } else {
+        8
+    });
     let toolbar_y = 65.0;
-    let toolbar_height = state.toolbar().len().div_ceil(columns) as f32 * 38.0;
+    let mut toolbar_rows: Vec<f32> =
+        vec![if compact_labels { 32.0 } else { 34.0 }; state.toolbar().len().div_ceil(columns)];
+    if compact_labels {
+        for (part, _, _, computed) in &boxes {
+            if let (BoxPart::Toolbar(i), Some(computed)) = (part, computed) {
+                toolbar_rows[*i / columns] =
+                    toolbar_rows[*i / columns].max(computed.size.y * computed.inverse_scale_factor);
+            }
+        }
+    }
+    let toolbar_height = toolbar_rows.iter().map(|height| height + 4.0).sum::<f32>();
     let wave_y = toolbar_y + toolbar_height + 10.0;
-    let wave_height = (h * 0.27).clamp(80.0, 240.0);
+    let wave_height = if compact_labels {
+        72.0
+    } else {
+        (h * 0.27).clamp(80.0, 240.0)
+    };
     let bottom_y = wave_y + wave_height + 66.0;
     let bottom_height = (h - bottom_y - 12.0).max(30.0);
     let full_width = (w - 24.0).max(1.0);
@@ -390,14 +447,18 @@ pub(super) fn update(
     if selected_index >= view.first_row + view.row_count {
         view.first_row = selected_index + 1 - view.row_count;
     }
-    for (part, mut node, border) in &mut boxes {
+    for (part, mut node, border, _) in &mut boxes {
         let (position, visible, focused) = match *part {
             BoxPart::Toolbar(i) => {
                 let width = (full_width - (columns - 1) as f32 * 6.0) / columns as f32;
                 (
                     rect(
                         12.0 + (i % columns) as f32 * (width + 6.0),
-                        toolbar_y + (i / columns) as f32 * 38.0,
+                        toolbar_y
+                            + toolbar_rows[..i / columns]
+                                .iter()
+                                .map(|height| height + 4.0)
+                                .sum::<f32>(),
                         width,
                         34.0,
                     ),
@@ -431,7 +492,7 @@ pub(super) fn update(
                     detail_width * 0.65 - 6.0,
                     32.0,
                 ),
-                detail_visible && !state.is_read_only(),
+                detail_visible && !state.is_read_only() && state.labels.is_none(),
                 state.focus == Focus::Frame,
             ),
             BoxPart::Apply => (
@@ -441,11 +502,11 @@ pub(super) fn update(
                     detail_width * 0.35,
                     32.0,
                 ),
-                detail_visible && !state.is_read_only(),
+                detail_visible && !state.is_read_only() && state.labels.is_none(),
                 false,
             ),
             BoxPart::Detail => {
-                let offset = if state.is_read_only() {
+                let offset = if state.is_read_only() || state.labels.is_some() {
                     if compact { 36.0 } else { 0.0 }
                 } else if compact {
                     74.0
@@ -480,6 +541,12 @@ pub(super) fn update(
             ),
         };
         place(&mut node, position, visible);
+        if matches!(part, BoxPart::Toolbar(_)) && compact_labels {
+            node.height = auto();
+            node.min_height = px(32.0);
+        } else if matches!(part, BoxPart::Toolbar(_)) {
+            node.min_height = px(0.0);
+        }
         if let Some(mut border) = border {
             *border = BorderColor::all(if focused {
                 Color::srgb(0.55, 0.82, 0.96)
@@ -488,6 +555,31 @@ pub(super) fn update(
             });
         }
     }
+    for (part, mut node, mut border) in &mut forms {
+        let visible = state.labels.as_ref().is_some_and(|labels| match *part {
+            LabelFormPart::Field(label_text::Field::Reviewer) => true,
+            LabelFormPart::Field(field) => labels.draft.as_ref().is_some_and(|draft| match field {
+                label_text::Field::Frame => draft.kind == labels::LocationKind::Point,
+                label_text::Field::Start | label_text::Field::End => {
+                    draft.kind == labels::LocationKind::Interval
+                }
+                _ => true,
+            }),
+            LabelFormPart::Buttons => labels.draft.is_some(),
+        });
+        node.display = if visible {
+            Display::Flex
+        } else {
+            Display::None
+        };
+        let active =
+            matches!(*part, LabelFormPart::Field(field) if state.focus == Focus::Label(field));
+        *border = BorderColor::all(if active {
+            Color::srgb(0.55, 0.82, 0.96)
+        } else {
+            Color::srgb(0.17, 0.23, 0.34)
+        });
+    }
     let doc = &state.document;
     for (part, mut text, mut node) in &mut texts {
         let value = match *part {
@@ -495,6 +587,8 @@ pub(super) fn update(
                 place(&mut node, rect(12.0, 8.0, full_width, 26.0), true);
                 if state.replay.is_some() {
                     state.locale.text("replay.title").into()
+                } else if state.labels.is_some() {
+                    state.locale.text("labels.title").into()
                 } else if state.candidates.is_some() {
                     state.locale.text("candidates.title").into()
                 } else {
@@ -537,7 +631,14 @@ pub(super) fn update(
                     rect(12.0, wave_y + wave_height + 2.0, full_width, 18.0),
                     true,
                 );
-                if state.replay.is_some() {
+                if state.labels.is_some() {
+                    format!(
+                        "{}–{} · {}",
+                        doc.start,
+                        doc.start + doc.span,
+                        state.locale.text("labels.blind_scope")
+                    )
+                } else if state.replay.is_some() {
                     format!(
                         "{}–{} · {}",
                         doc.start,
@@ -609,6 +710,8 @@ pub(super) fn update(
             Part::Row(i) => {
                 if let Some(replay) = &state.replay {
                     replay.row(view.first_row + i, state.locale)
+                } else if let Some(labels) = &state.labels {
+                    label_row(labels, view.first_row + i, state.locale)
                 } else if let Some(candidates) = &state.candidates {
                     candidates.row(view.first_row + i, state.locale)
                 } else {
@@ -619,6 +722,9 @@ pub(super) fn update(
                             format!("{}  ·  {}", a.id, a.song_time.frames())
                         })
                 }
+            }
+            Part::ListTab if state.labels.is_some() => {
+                format!("{} ({length})", state.locale.text("labels.records"))
             }
             Part::ListTab => state.text(
                 if state.replay.is_some() {
@@ -641,6 +747,45 @@ pub(super) fn update(
                     value.insert(doc.caret, '|');
                 }
                 format!("{}: {value}", state.locale.text("workbench.frame"))
+            }
+            Part::LabelCaption(field) => label_caption(&state, field),
+            Part::LabelValue(field) => label_value(&state, field),
+            Part::DetailText if state.labels.is_some() => {
+                let labels = state.labels.as_ref().unwrap();
+                [
+                    state.notice.clone(),
+                    labels.draft.as_ref().map_or_else(String::new, |draft| {
+                        format!("{}: {}", state.locale.text("labels.item_id"), draft.item_id)
+                    }),
+                    labels
+                        .document
+                        .labels
+                        .get(labels.selected)
+                        .map_or_else(String::new, |label| {
+                            format!(
+                                "{}\n{}: {}",
+                                label_row(labels, labels.selected, state.locale),
+                                state.locale.text("labels.reason"),
+                                label.reason
+                            )
+                        }),
+                    state.text(
+                        "labels.source",
+                        [
+                            ("content_id", labels.source().content_id.clone()),
+                            ("audio_hash", labels.source().audio_blake3.clone()),
+                            ("frames", labels.source().canonical_frames.to_string()),
+                        ],
+                    ),
+                    state.locale.text("labels.audio_basis").into(),
+                    state.locale.text("labels.help").into(),
+                    state.locale.text("labels.ime_help").into(),
+                    state.locale.text("labels.clipboard_scope").into(),
+                ]
+                .into_iter()
+                .filter(|value| !value.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n\n")
             }
             Part::DetailText if state.replay.is_some() => {
                 let replay = state
@@ -791,7 +936,8 @@ pub(super) fn update(
         selected: doc.selected,
         drag: doc.drag,
         revision: doc.revision,
-        record_selection: state.is_read_only().then_some(state.selected_index()),
+        record_selection: (state.is_read_only() || state.labels.is_some())
+            .then_some(state.selected_index()),
     };
     if view
         .raster
@@ -805,7 +951,7 @@ pub(super) fn update(
     }
     if view.last_paint.as_ref() != Some(&paint) {
         if let Some(mut image) = images.get_mut(&view.image) {
-            *image = paint_wave(
+            let mut painted = paint_wave(
                 &view
                     .raster
                     .as_ref()
@@ -818,6 +964,10 @@ pub(super) fn update(
                 width,
                 height,
             );
+            if let Some(labels) = &state.labels {
+                paint_labels(&mut painted, doc, labels, width, height);
+            }
+            *image = painted;
         }
         view.last_paint = Some(paint);
     }
@@ -1009,6 +1159,291 @@ fn paint_wave(
 pub(super) fn logical_rect(computed: &ComputedNode, transform: &UiGlobalTransform) -> Rect {
     let scale = computed.inverse_scale_factor;
     Rect::from_center_size(transform.translation * scale, computed.size * scale)
+}
+
+fn decision_key(decision: crate::labels::AnchorDecision) -> &'static str {
+    match decision {
+        crate::labels::AnchorDecision::ShouldAnchor => "labels.should_anchor",
+        crate::labels::AnchorDecision::ShouldNotAnchor => "labels.should_not_anchor",
+        crate::labels::AnchorDecision::Uncertain => "labels.uncertain",
+    }
+}
+fn label_row(labels: &labels::LabelView, index: usize, locale: Locale) -> String {
+    let Some(label) = labels.document.labels.get(index) else {
+        return locale.text("labels.empty").into();
+    };
+    let mut args = vec![
+        ("id", label.item_id.to_string()),
+        (
+            "decision",
+            locale.text(decision_key(label.anchor_decision)).into(),
+        ),
+    ];
+    let key = match label.location {
+        crate::labels::Location::Point { frame } => {
+            args.push(("frame", frame.to_string()));
+            "labels.point_row"
+        }
+        crate::labels::Location::Interval {
+            start_frame,
+            end_frame,
+        } => {
+            args.push(("start", start_frame.to_string()));
+            args.push(("end", end_frame.to_string()));
+            "labels.interval_row"
+        }
+    };
+    Message::with(key, args).render(locale)
+}
+fn field_key(field: label_text::Field) -> &'static str {
+    use label_text::Field;
+    match field {
+        Field::Reviewer => "labels.reviewer",
+        Field::Kind => "labels.point",
+        Field::Frame => "labels.frame",
+        Field::Start => "labels.start_frame",
+        Field::End => "labels.end_frame",
+        Field::Decision => "labels.decision",
+        Field::Reason => "labels.reason",
+    }
+}
+fn label_caption(state: &Workbench, field: label_text::Field) -> String {
+    let label = if field == label_text::Field::Kind {
+        format!(
+            "{} / {}",
+            state.locale.text("labels.point"),
+            state.locale.text("labels.interval")
+        )
+    } else {
+        state.locale.text(field_key(field)).into()
+    };
+    let Some(labels) = &state.labels else {
+        return String::new();
+    };
+    let bytes = match field {
+        label_text::Field::Reviewer => Some((labels.document.reviewer.len(), 64)),
+        label_text::Field::Reason => Some((
+            labels.draft.as_ref().map_or(0, |draft| draft.reason.len()),
+            2048,
+        )),
+        _ => None,
+    };
+    match bytes {
+        None => label,
+        Some((used, max)) => format!(
+            "{label} · {}",
+            state.text(
+                "labels.bytes",
+                [("used", used.to_string()), ("max", max.to_string())]
+            )
+        ),
+    }
+}
+fn label_value(state: &Workbench, field: label_text::Field) -> String {
+    let Some(draft) = state
+        .labels
+        .as_ref()
+        .and_then(|labels| labels.draft.as_ref())
+    else {
+        return String::new();
+    };
+    use label_text::Field;
+    match field {
+        Field::Kind => state
+            .locale
+            .text(if draft.kind == labels::LocationKind::Point {
+                "labels.point"
+            } else {
+                "labels.interval"
+            })
+            .into(),
+        Field::Frame => draft.frame.clone(),
+        Field::Start => draft.start_frame.clone(),
+        Field::End => draft.end_frame.clone(),
+        Field::Decision => state.locale.text(decision_key(draft.decision)).into(),
+        _ => String::new(),
+    }
+}
+fn setup_label_form(commands: &mut Commands, parent: Entity, state: &Workbench, fonts: &UiAssets) {
+    use label_text::Field;
+    for field in [
+        Field::Reviewer,
+        Field::Kind,
+        Field::Frame,
+        Field::Start,
+        Field::End,
+        Field::Decision,
+        Field::Reason,
+    ] {
+        let row = commands
+            .spawn((
+                Node {
+                    width: percent(100),
+                    flex_direction: FlexDirection::Column,
+                    padding: UiRect::all(px(5)),
+                    border: UiRect::all(px(1)),
+                    margin: UiRect::top(px(7)),
+                    flex_shrink: 0.,
+                    ..default()
+                },
+                BorderColor::all(Color::srgb(0.17, 0.23, 0.34)),
+                BackgroundColor(Color::srgb(0.04, 0.06, 0.10)),
+                Hit::LabelField(field),
+                LabelFormPart::Field(field),
+            ))
+            .with_child((
+                Text::new(state.locale.text(field_key(field))),
+                TextFont::from_font_size(12.).with_font(fonts.font(state.locale)),
+                TextColor(INK),
+                Part::LabelCaption(field),
+            ))
+            .id();
+        commands.entity(parent).add_child(row);
+        if field.is_text() {
+            let input = commands
+                .spawn((
+                    bevy::text::EditableText {
+                        max_characters: Some(if field == Field::Reviewer { 64 } else { 2048 }),
+                        allow_newlines: field == Field::Reason,
+                        visible_lines: Some(if field == Field::Reviewer { 1. } else { 4. }),
+                        ..default()
+                    },
+                    Node {
+                        width: percent(100),
+                        min_height: px(if field == Field::Reviewer { 24. } else { 80. }),
+                        ..default()
+                    },
+                    TextFont::from_font_size(14.).with_font(fonts.font(state.locale)),
+                    TextColor(INK),
+                    bevy::text::TextCursorStyle::default(),
+                    label_text::LabelText(field),
+                    bevy_picking::Pickable::IGNORE,
+                ))
+                .id();
+            commands.entity(row).add_child(input);
+        } else {
+            commands.entity(row).with_child((
+                Text::default(),
+                TextFont::from_font_size(14.).with_font(fonts.font(state.locale)),
+                TextColor(INK),
+                Part::LabelValue(field),
+            ));
+        }
+    }
+    let buttons = commands
+        .spawn((
+            Node {
+                width: percent(100),
+                column_gap: px(8),
+                margin: UiRect::top(px(8)),
+                flex_shrink: 0.,
+                ..default()
+            },
+            BorderColor::all(INK),
+            LabelFormPart::Buttons,
+        ))
+        .id();
+    commands.entity(parent).add_child(buttons);
+    for action in [Action::Apply, Action::LabelCancel] {
+        let button = commands
+            .spawn((
+                Node {
+                    width: percent(45),
+                    padding: UiRect::all(px(8)),
+                    ..default()
+                },
+                BackgroundColor(Color::srgb(0.08, 0.13, 0.20)),
+                Hit::Action(action),
+            ))
+            .with_child((
+                Text::new(state.locale.text(if action == Action::Apply {
+                    "labels.apply"
+                } else {
+                    "labels.cancel"
+                })),
+                TextFont::from_font_size(14.).with_font(fonts.font(state.locale)),
+                TextColor(INK),
+            ))
+            .id();
+        commands.entity(buttons).add_child(button);
+    }
+}
+fn paint_labels(
+    image: &mut Image,
+    doc: &Document,
+    labels: &labels::LabelView,
+    width: u32,
+    height: u32,
+) {
+    let data = image.data.as_mut().unwrap();
+    let column = |frame: i64| {
+        (((frame - doc.start) as f64 / doc.span as f64 * f64::from(width)).round() as i64)
+            .clamp(0, i64::from(width) - 1) as u32
+    };
+    for (index, label) in labels.document.labels.iter().enumerate() {
+        let (start, end) = match label.location {
+            crate::labels::Location::Point { frame } => (frame, frame),
+            crate::labels::Location::Interval {
+                start_frame,
+                end_frame,
+            } => (start_frame, end_frame),
+        };
+        if end < doc.start || start > doc.start + doc.span {
+            continue;
+        }
+        let color = if index == labels.selected {
+            [216, 231, 247, 255]
+        } else {
+            match label.anchor_decision {
+                crate::labels::AnchorDecision::ShouldAnchor => [83, 181, 171, 255],
+                crate::labels::AnchorDecision::ShouldNotAnchor => [193, 122, 153, 255],
+                crate::labels::AnchorDecision::Uncertain => [187, 175, 123, 255],
+            }
+        };
+        for x in column(start)..=column(end) {
+            for y in height * 75 / 100..height * 84 / 100 {
+                let at = ((y * width + x) * 4) as usize;
+                data[at..at + 4].copy_from_slice(&color);
+            }
+        }
+    }
+}
+
+// Scroll the actual focused form row into the existing detail viewport
+pub(super) fn keep_label_field_visible(
+    mut state: ResMut<Workbench>,
+    rows: Query<(&LabelFormPart, &ComputedNode, &UiGlobalTransform)>,
+    panels: Query<(&BoxPart, &ComputedNode, &UiGlobalTransform)>,
+) {
+    let Focus::Label(field) = state.focus else {
+        return;
+    };
+    if state.labels.is_none() || state.close_confirm {
+        return;
+    }
+    let Some((_, panel_node, panel_transform)) = panels
+        .iter()
+        .find(|(part, _, _)| matches!(part, BoxPart::Detail))
+    else {
+        return;
+    };
+    let Some((_, row_node, row_transform)) = rows.iter().find(|(part, node, _)| {
+        matches!(part,LabelFormPart::Field(found) if *found==field) && node.size.min_element() > 0.
+    }) else {
+        return;
+    };
+    let panel = logical_rect(panel_node, panel_transform);
+    let row = logical_rect(row_node, row_transform);
+    let delta = if row.height() > panel.height() || row.min.y < panel.min.y {
+        row.min.y - panel.min.y
+    } else if row.max.y > panel.max.y {
+        row.max.y - panel.max.y
+    } else {
+        0.
+    };
+    let maximum =
+        ((panel_node.content_size.y - panel_node.size.y) * panel_node.inverse_scale_factor).max(0.);
+    state.detail_scroll = (state.detail_scroll + delta).clamp(0., maximum);
 }
 
 #[cfg(test)]
@@ -1352,5 +1787,121 @@ mod tests {
                 }
             }
         }
+    }
+    #[test]
+    fn labels_setup_shows_manual_form_without_authored_hints() {
+        let mut state = super::super::tests::state();
+        state.document = Document::from_anchors(48_000, Vec::new(), Vec::new()).unwrap();
+        state.labels = Some(labels::LabelView::new(crate::labels::Source {
+            content_id: format!("package-blake3:{}", "07".repeat(32)),
+            audio_blake3: "08".repeat(32),
+            canonical_frames: 48_000,
+            audio_basis: crate::labels::AudioBasis::CanonicalDecoded,
+        }));
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        app.world_mut().spawn(Window {
+            resolution: (640, 480).into(),
+            ..default()
+        });
+        app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut().run_system_once(update).unwrap();
+        let state = app.world().resource::<Workbench>();
+        assert_eq!(state.record_count(), 0);
+        assert!(state.document.editor.anchors().is_empty());
+        assert!(state.document.sections.is_empty());
+        let fields = app
+            .world_mut()
+            .query::<&label_text::LabelText>()
+            .iter(app.world())
+            .count();
+        assert_eq!(fields, 2);
+        for (part, node) in app
+            .world_mut()
+            .query::<(&BoxPart, &Node)>()
+            .iter(app.world())
+        {
+            if matches!(part, BoxPart::Frame | BoxPart::Apply) {
+                assert_eq!(node.display, Display::None);
+            }
+        }
+        let rendered = app
+            .world_mut()
+            .query::<(&Part, &Text)>()
+            .iter(app.world())
+            .filter_map(|(part, text)| matches!(part, Part::DetailText).then_some(text.0.clone()))
+            .collect::<Vec<_>>()
+            .join("\n");
+        assert!(rendered.contains("package-blake3:"));
+        assert!(rendered.contains("48000"));
+        assert!(!rendered.contains("18446744073709551615"));
+    }
+    #[test]
+    fn applied_manual_reason_remains_visible_without_editing() {
+        let mut state = super::super::tests::state();
+        state.document = Document::from_anchors(48_000, Vec::new(), Vec::new()).unwrap();
+        let mut labels = labels::LabelView::new(crate::labels::Source {
+            content_id: format!("package-blake3:{}", "07".repeat(32)),
+            audio_blake3: "08".repeat(32),
+            canonical_frames: 48_000,
+            audio_basis: crate::labels::AudioBasis::CanonicalDecoded,
+        });
+        labels.document.reviewer = "reviewer".into();
+        labels.begin_add(123).unwrap();
+        labels.draft.as_mut().unwrap().reason = "原创节拍听感".into();
+        labels.apply().unwrap();
+        state.labels = Some(labels);
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        app.world_mut().spawn(Window {
+            resolution: (640, 480).into(),
+            ..default()
+        });
+        app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut().run_system_once(update).unwrap();
+        let text = app
+            .world_mut()
+            .query::<(&Part, &Text)>()
+            .iter(app.world())
+            .find_map(|(part, text)| matches!(part, Part::DetailText).then_some(text.0.clone()))
+            .unwrap();
+        assert!(text.contains("原创节拍听感"));
+        assert!(text.contains("123"));
+        assert!(
+            app.world()
+                .resource::<Workbench>()
+                .labels
+                .as_ref()
+                .unwrap()
+                .draft
+                .is_none()
+        );
+        {
+            let mut state = app.world_mut().resource_mut::<Workbench>();
+            let labels = state.labels.as_mut().unwrap();
+            labels.begin_add(400).unwrap();
+            labels.draft.as_mut().unwrap().reason = "second visible row".into();
+            labels.apply().unwrap();
+            labels.select(0);
+            labels.begin_edit().unwrap();
+            labels.select(1);
+        }
+        app.world_mut().run_system_once(update).unwrap();
+        let text = app
+            .world_mut()
+            .query::<(&Part, &Text)>()
+            .iter(app.world())
+            .find_map(|(part, text)| matches!(part, Part::DetailText).then_some(text.0.clone()))
+            .unwrap();
+        assert!(text.contains("Item ID: 0"));
+        assert!(text.contains("second visible row"));
     }
 }
