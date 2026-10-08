@@ -1831,6 +1831,7 @@ dependencies = [
  "cocobeat-runtime",
  "cocobeat-schema",
  "cocobeat-stage",
+ "ctrlc",
  "kira",
  "serde",
  "serde_json",

@@ -3,7 +3,7 @@
 `cocobeat-lab import-experimental-beat SOURCE_AUDIO AUTHORING_JSON left|right NEW_BUNDLE` 是显式实验入口，沿用源快照、唯一生产编码器、严格最终读回和手工作者内容事务，再从同一最终 canonical 音频生成 beat / downbeat 候选；Ready 菜单及普通手工导入不运行此分析
 
 ```sh
-/path/to/release/bin/cocobeat-lab import-experimental-beat /path/to/source.wav /path/to/authoring.json left /path/to/new-bundle
+ORT_DISABLE_TELEMETRY=1 /path/to/release/bin/cocobeat-lab import-experimental-beat /path/to/source.wav /path/to/authoring.json left /path/to/new-bundle
 /path/to/release/bin/cocobeat-lab verify-package /path/to/new-bundle/package
 /path/to/release/bin/cocobeat-lab inspect-stage /path/to/new-bundle/package 0
 ```
@@ -26,7 +26,7 @@ MusicAnalysis v2 的 beat / downbeat capability 标为 `Candidate / Algorithm`�
 
 48 bytes 上限控制仅有 1 frame 真实 payload，header 声明 600 秒加 1 frame，实际拒绝原因确为十分钟上限，因此只通过 declared-duration header guard；完整超长音频和本 600 秒样本的独立 Python 数值对照仍为 NOT_RUN。首轮源生成的最终 print TypeError 与 staging glob 漏记均保留，后续只读文件快照及 mtime 标记不能补成精确内部阶段计时；长样本仍为 Candidate / Algorithm / confidence None，成本样本不作为音乐真值
 
-旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。各目标原生发行接线与实际 tag Release 按[构建发行](build-release.md)逐版本另验；发行 CPU/RSS 预算、十分钟产品取消、同进程 ORT 重试、真实音乐 / 设备 / 真人验收仍为 NOT_RUN
+旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。各目标原生发行接线与实际 tag Release 按[构建发行](build-release.md)逐版本另验；发行 CPU/RSS 预算、Windows 控制台取消、真实音乐 / 设备 / 真人验收仍为 NOT_RUN；Linux 实验导入取消与同进程 API fresh 重试按下文软件记录限定
 
 ## 原生候选工作台
 
@@ -64,4 +64,28 @@ cargo run --locked -p cocobeat-lab -- workbench-beats /path/to/bundle/package /p
 
 每个序列都有同样 6 项 `both_empty`：四个静默输入和单侧有声样本的两个左声道输入；其空集合匹配不能代表有声音乐检测成功。软件导入与绑定校验通过，旧 wholeSpect / 音乐质量 FAIL、`Candidate / Algorithm`、confidence=None 和 `production_admission=false` 保持，独立真人参考与置信校准继续另验
 
-本矩阵使用冻结 Lab SHA-256 `7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb`，未应用后续取消或 SDK 初始化修复。40 次会话各保留 51 bytes 的 SDK `.ses` 副产物，固定官方源码静态溯源定位到 ONNX Runtime 1.30.0 的 Microsoft 1DS 会话文件初始化；当前 `with_telemetry(false)` 发生在该初始化之后，不能阻止此工作目录写入。实际网络发送未观测，修复与副产物消失验证尚未运行，本批结果不能作为修复 PASS；完整命令、来源日程、计数、副产物和溯源见[矩阵观察](../testdata/synthetic/native-beat-matrix-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-beat-matrix-observations-20261008-raw-index.json)
+本矩阵使用冻结 Lab SHA-256 `7cbad66df2ec1a86282e2b5985ebbe4ca0dd27f4b30e5ce10d8bedeb5282dddb`，未应用后续取消或 SDK 初始化修复。40 次会话各保留 51 bytes 的 SDK `.ses` 副产物，固定官方源码静态溯源定位到 ONNX Runtime 1.30.0 的 Microsoft 1DS 会话文件初始化；当前 `with_telemetry(false)` 发生在该初始化之后，不能阻止此工作目录写入。实际网络发送未观测，本矩阵运行时修复与副产物消失验证尚未运行，本批结果不能作为修复 PASS；完整命令、来源日程、计数、副产物和溯源见[矩阵观察](../testdata/synthetic/native-beat-matrix-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-beat-matrix-observations-20261008-raw-index.json)
+
+## Ctrl+C 取消原生候选导入
+
+```sh
+ORT_DISABLE_TELEMETRY=1 /path/to/release/bin/cocobeat-lab import-experimental-beat /path/to/source.wav /path/to/authoring.json left /path/to/new-bundle
+```
+
+Linux 直接执行实验导入须在进程启动前设置 `ORT_DISABLE_TELEMETRY=1`，缺少或值不符时在固定 SDK 初始化前拒绝。此保护要求变量在 CreateEnv 前就已设置，SDK 在 CreateEnv 期间读取 flag 并跳过 Microsoft 1DS 本地会话持久化初始化，不把之后的 `.with_telemetry(false)` 当作持久化保护；应用不在运行中修改进程环境。Linux TAR 解包 workflow 已给原生实验 smoke 步骤设置该变量，新的实际发行运行另验；Windows 命令不要求此 Linux guard，控制台取消另验
+
+Ctrl+C 只向本次原生 Lab CLI 导入提出取消请求，随后等待真实函数返回和正常资源释放。Ready / 曲库 / 工作台没有新增取消或交互 Retry，不更改模型、profile、推理数学、普通手工导入和唯一编码器。取消在源快照、解码 / 重采样、编码 / 最终读回、能量、文件复制 / 校验、前处理每 q、chunk 和 evidence 写入等消费边界检查；同步 I/O、Ogg 预校验和 SDK 环境初始化仍可能等到前后检查点
+
+模型装载用 LoadCanceler 发出 best-effort 请求，每个真实 Run 用独立 RunOptions 发出 termination 请求；请求接受或调用返回 Ok 不等于底层已中断，`backend_registered` 只说明句柄已登记，不证明请求时处于 graph / kernel 计算中。真实 ORT / I/O 错误保留；装载若仍返回 Session，则在后续检查点正常释放，Run 若仍返回输出，则先保留实际 raw 输出再检查取消
+
+最终 bundle 发布与取消共用同一门：取消先赢则不执行最终 rename，发布先赢则后续请求记为 late，按 rename 的真实结果返回，不删除已提交目标。注册句柄、Session / outputs 和 encoder 正常释放后才报告最终状态，四对象清理只处理本次拥有的对象，失败 outer staging / evidence 保留，部分目录不作为有效 bundle
+
+stderr 诊断分别记录接受 / late、检查点、backend 请求与真实返回、发布和 finished。`failed.json` 是 attempt 内的失败快照，写入时可能 `finished=false`，wrapper 随后结束 attempt；最终 CLI 诊断或 API 返回后再读句柄的 `finished=true` 才表示实际终态。墙钟 `*_ns` 供本机审计，耗时用同一控制进程的单调时钟另测，不跨进程相减
+
+公开 `NativeBeatCancellation` 句柄仅用于一个 attempt；同进程 API 重试须等上次真实返回，再用新 handle / 新目标串行调用。CLI 没有 Retry：上一次正常退出后重新运行命令并选择新目标；失败目录不用于补造 confidence 或 Ready 状态
+
+本批 Linux x86-64 软件检查为 media 64 项、Lab 72 项、Clippy / 格式和 469 项冻结输入构建通过；首次 E0425 来自旧测试函数名字失去 `super::*` 导入，仅补 `crate::prepare_canonical_audio` 的测试限定后通过，原失败保留。冻结 Lab SHA-256 为 `f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256`，七项真实控制为缺失 flag 拒绝、64 秒正常导入 / 校验、已有目标拒绝、装载请求 / fresh 重试、Run 请求 / fresh 重试及 600 秒 CLI 取消；各进程正常结束，输入与保护文件保持，未用超时 TERM / KILL 收尾
+
+装载与 Run 分别保留 SDK 原 Err `Graph loading canceled due to user request` 和 `Exiting due to terminate flag being set to true`，之后在同一 namespace PID 13 / 17 下用新句柄、新目标重试成功，完整包校验、no-op 四对象与作者 Anchor / Stage 对照通过。600 秒样本先完成模型装载，SIGINT 在完整 native-shape 标记后发出，最终在 `native chunk preparation` 检查点观察到取消、`backend_requests=[]`、零最终发布；它不证明运行图被中断。请求到观测退出为 35527433 ns，包含 5 ms 轮询，是本次单调时钟观察而非信号响应 SLA
+
+缺失 flag 的独占目录内 29 bytes 哨兵保持，六个设置 flag 的独占 CWD 前后均未产生 SDK 会话缓存；旧 40 项矩阵副产物保留，仓库根未知会话文件未读取或清理，实际网络发送未观测。完整原错误、失败快照、同进程重试和源身份见[取消观察](../testdata/synthetic/native-cancellation-observations-20261008.json)与[原始证据索引](../testdata/synthetic/native-cancellation-observations-20261008-raw-index.json)；Windows 控制台、GUI / Ready 取消、graph 占用 / 延迟预算、实体设备 / 真人、同 ref 完整四目标发行和音乐质量仍按各自门槛验收，旧 wholeSpect / 音乐质量 FAIL 与 confidence=None 保持

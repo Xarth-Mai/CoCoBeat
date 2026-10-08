@@ -2,12 +2,12 @@
 
 use crate::{
     PreparedCanonicalAudio,
+    audio_asset::prepare_canonical_audio_checked,
     content_codec::{
         MAX_ANALYSIS_BYTES, MAX_CHART_BYTES, MAX_PACKAGE_BYTES, decode_analysis, decode_chart,
         decode_package, encode_analysis, encode_chart, encode_package, package_hash,
     },
     decode::{MAX_SOURCE_BYTES, decode_canonical_bytes},
-    prepare_canonical_audio,
 };
 use cocobeat_schema::{
     Anchor, AssetRef, CANONICAL_SAMPLE_RATE, CONTENT_SCHEMA_VERSION, CompiledChart,
@@ -195,28 +195,48 @@ pub fn build_package(
     destination: impl AsRef<Path>,
     build_content: impl FnOnce(&Path, &PreparedCanonicalAudio) -> Result<PackageBuildInput, String>,
 ) -> Result<ValidatedPackage, String> {
+    build_package_checked(
+        source_audio,
+        expected_frames,
+        destination,
+        build_content,
+        &|| Ok(()),
+    )
+}
+
+pub(crate) fn build_package_checked(
+    source_audio: impl AsRef<Path>,
+    expected_frames: u64,
+    destination: impl AsRef<Path>,
+    build_content: impl FnOnce(&Path, &PreparedCanonicalAudio) -> Result<PackageBuildInput, String>,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<ValidatedPackage, String> {
     let source_audio = source_audio.as_ref();
     let destination = destination.as_ref();
-    let (staging, audio) = stage_audio(source_audio, expected_frames, destination)?;
+    let (staging, audio) = stage_audio_checked(source_audio, expected_frames, destination, check)?;
     let mut created = vec![staging.join(PACKAGE_OBJECT_NAMES[0])];
     let result = (|| {
+        check()?;
         let input = build_content(&staging.join(&audio.asset.file_name), &audio)?;
+        check()?;
         if input.analysis.audio_hash != audio.asset.blake3
             || input.chart.audio_hash != audio.asset.blake3
         {
             return Err("Analysis and chart must reference the exact canonical audio hash".into());
         }
-        let analysis = write_object(
+        let analysis = write_object_checked(
             &staging,
             PACKAGE_OBJECT_NAMES[1],
             &encode_analysis(&input.analysis, audio.canonical_frames)?,
             &mut created,
+            check,
         )?;
-        let chart = write_object(
+        let chart = write_object_checked(
             &staging,
             PACKAGE_OBJECT_NAMES[2],
             &encode_chart(&input.chart, audio.canonical_frames)?,
             &mut created,
+            check,
         )?;
         let mut manifest = SongPackage {
             schema_version: CONTENT_SCHEMA_VERSION,
@@ -232,14 +252,16 @@ pub fn build_package(
             chart_version: input.chart_version,
             package_hash: [0; 32],
         };
+        check()?;
         manifest.package_hash = package_hash(&manifest)?;
-        write_object(
+        write_object_checked(
             &staging,
             PACKAGE_OBJECT_NAMES[3],
             &encode_package(&manifest)?,
             &mut created,
+            check,
         )?;
-        publish_package(&staging, destination)
+        publish_package_checked(&staging, destination, check)
     })();
     result.map_err(|error| cleanup_staging(&staging, &created, error))
 }
@@ -364,6 +386,15 @@ fn read_package_snapshot(
     root: &Path,
     consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
 ) -> Result<(ValidatedPackage, Vec<u8>), String> {
+    read_package_snapshot_checked(root, consume, &|| Ok(()))
+}
+
+fn read_package_snapshot_checked(
+    root: &Path,
+    mut consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<(ValidatedPackage, Vec<u8>), String> {
+    check()?;
     if !fs::symlink_metadata(root)
         .map_err(|error| format!("Cannot inspect package directory: {error}"))?
         .is_dir()
@@ -371,6 +402,7 @@ fn read_package_snapshot(
         return Err("Package root must be a directory, not a symlink".into());
     }
     for entry in fs::read_dir(root).map_err(|error| error.to_string())? {
+        check()?;
         let entry = entry.map_err(|error| error.to_string())?;
         if !PACKAGE_OBJECT_NAMES
             .iter()
@@ -379,20 +411,34 @@ fn read_package_snapshot(
             return Err("Package directory must contain only its four declared objects".into());
         }
     }
-    let manifest_bytes = read_object(&root.join(PACKAGE_OBJECT_NAMES[3]), MAX_PACKAGE_BYTES)?;
+    let manifest_bytes = read_object_checked(
+        &root.join(PACKAGE_OBJECT_NAMES[3]),
+        MAX_PACKAGE_BYTES,
+        check,
+    )?;
+    check()?;
     let manifest = decode_package(&manifest_bytes)?;
     if package_hash(&manifest)? != manifest.package_hash {
         return Err("Package manifest hash does not match its canonical bytes".into());
     }
-    let analysis_bytes = read_referenced(root, &manifest.analysis, MAX_ANALYSIS_BYTES)?;
-    let chart_bytes = read_referenced(root, &manifest.chart, MAX_CHART_BYTES)?;
+    let analysis_bytes =
+        read_referenced_checked(root, &manifest.analysis, MAX_ANALYSIS_BYTES, check)?;
+    let chart_bytes = read_referenced_checked(root, &manifest.chart, MAX_CHART_BYTES, check)?;
+    check()?;
     let analysis = decode_analysis(&analysis_bytes, manifest.canonical_frames)?;
+    check()?;
     let chart = decode_chart(&chart_bytes, manifest.canonical_frames)?;
     if analysis.audio_hash != manifest.audio.blake3 || chart.audio_hash != manifest.audio.blake3 {
         return Err("Analysis or chart references a different canonical audio hash".into());
     }
-    let audio = read_referenced(root, &manifest.audio, MAX_SOURCE_BYTES as usize)?;
-    decode_canonical_bytes(audio, manifest.canonical_frames, consume)?;
+    let audio = read_referenced_checked(root, &manifest.audio, MAX_SOURCE_BYTES as usize, check)?;
+    check()?;
+    decode_canonical_bytes(audio, manifest.canonical_frames, |frames| {
+        check()?;
+        consume(frames)?;
+        check()
+    })?;
+    check()?;
     Ok((
         ValidatedPackage {
             manifest,
@@ -408,9 +454,21 @@ fn stage_audio(
     expected_frames: u64,
     destination: &Path,
 ) -> Result<(PathBuf, PreparedCanonicalAudio), String> {
+    stage_audio_checked(source_audio, expected_frames, destination, &|| Ok(()))
+}
+
+pub(crate) fn stage_audio_checked(
+    source_audio: &Path,
+    expected_frames: u64,
+    destination: &Path,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<(PathBuf, PreparedCanonicalAudio), String> {
+    check()?;
     drop(open_object(source_audio, MAX_SOURCE_BYTES)?);
     let path = staging_path(destination)?;
-    prepare_canonical_audio(source_audio, expected_frames, &path).map(|audio| (path, audio))
+    check()?;
+    prepare_canonical_audio_checked(source_audio, expected_frames, &path, check)
+        .map(|audio| (path, audio))
 }
 
 fn staging_path(destination: &Path) -> Result<PathBuf, String> {
@@ -441,8 +499,17 @@ fn staging_path(destination: &Path) -> Result<PathBuf, String> {
 }
 
 fn publish_package(staging: &Path, destination: &Path) -> Result<ValidatedPackage, String> {
-    let validated = validate_package(staging)?;
-    publish_validated_package(staging, destination, validated)
+    publish_package_checked(staging, destination, &|| Ok(()))
+}
+
+fn publish_package_checked(
+    staging: &Path,
+    destination: &Path,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<ValidatedPackage, String> {
+    check()?;
+    let (validated, _) = read_package_snapshot_checked(staging, |_| Ok(()), check)?;
+    publish_validated_package_checked(staging, destination, validated, check)
 }
 
 fn publish_validated_package(
@@ -450,7 +517,17 @@ fn publish_validated_package(
     destination: &Path,
     validated: ValidatedPackage,
 ) -> Result<ValidatedPackage, String> {
+    publish_validated_package_checked(staging, destination, validated, &|| Ok(()))
+}
+
+fn publish_validated_package_checked(
+    staging: &Path,
+    destination: &Path,
+    validated: ValidatedPackage,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<ValidatedPackage, String> {
     require_absent(destination)?;
+    check()?;
     // Concurrent builders publish nonempty directories, which rename cannot replace
     fs::rename(staging, destination)
         .map_err(|error| format!("Cannot publish package directory: {error}"))?;
@@ -485,11 +562,19 @@ fn open_object(path: &Path, max_bytes: u64) -> Result<(File, u64), String> {
     Ok((file, metadata.len()))
 }
 
-fn read_object(path: &Path, max_bytes: usize) -> Result<Vec<u8>, String> {
+fn read_object_checked(
+    path: &Path,
+    max_bytes: usize,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<Vec<u8>, String> {
+    check()?;
     let (mut file, length) = open_object(path, max_bytes as u64)?;
     let mut bytes = vec![0; length as usize];
-    file.read_exact(&mut bytes)
-        .map_err(|error| error.to_string())?;
+    for chunk in bytes.chunks_mut(32 * 1024) {
+        check()?;
+        file.read_exact(chunk).map_err(|error| error.to_string())?;
+    }
+    check()?;
     if file.read(&mut [0]).map_err(|error| error.to_string())? != 0 {
         return Err("Object changed length while being read".into());
     }
@@ -497,9 +582,22 @@ fn read_object(path: &Path, max_bytes: usize) -> Result<Vec<u8>, String> {
 }
 
 fn read_referenced(root: &Path, reference: &AssetRef, max_bytes: usize) -> Result<Vec<u8>, String> {
-    let bytes = read_object(&root.join(&reference.file_name), max_bytes)?;
-    if bytes.len() as u64 != reference.byte_len
-        || *blake3::hash(&bytes).as_bytes() != reference.blake3
+    read_referenced_checked(root, reference, max_bytes, &|| Ok(()))
+}
+
+fn read_referenced_checked(
+    root: &Path,
+    reference: &AssetRef,
+    max_bytes: usize,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<Vec<u8>, String> {
+    let bytes = read_object_checked(&root.join(&reference.file_name), max_bytes, check)?;
+    let mut hasher = blake3::Hasher::new();
+    for chunk in bytes.chunks(32 * 1024) {
+        check()?;
+        hasher.update(chunk);
+    }
+    if bytes.len() as u64 != reference.byte_len || *hasher.finalize().as_bytes() != reference.blake3
     {
         return Err(format!("Object identity mismatch: {}", reference.file_name));
     }
@@ -512,6 +610,17 @@ fn write_object(
     bytes: &[u8],
     created: &mut Vec<PathBuf>,
 ) -> Result<AssetRef, String> {
+    write_object_checked(root, name, bytes, created, &|| Ok(()))
+}
+
+fn write_object_checked(
+    root: &Path,
+    name: &str,
+    bytes: &[u8],
+    created: &mut Vec<PathBuf>,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<AssetRef, String> {
+    check()?;
     let path = root.join(name);
     let mut file = OpenOptions::new()
         .write(true)
@@ -519,12 +628,19 @@ fn write_object(
         .open(&path)
         .map_err(|error| format!("Cannot create package object {name}: {error}"))?;
     created.push(path);
-    file.write_all(bytes).map_err(|error| error.to_string())?;
+    let mut hasher = blake3::Hasher::new();
+    for chunk in bytes.chunks(32 * 1024) {
+        check()?;
+        file.write_all(chunk).map_err(|error| error.to_string())?;
+        hasher.update(chunk);
+    }
+    check()?;
     file.sync_all().map_err(|error| error.to_string())?;
+    check()?;
     Ok(AssetRef {
         file_name: name.into(),
         byte_len: bytes.len() as u64,
-        blake3: *blake3::hash(bytes).as_bytes(),
+        blake3: *hasher.finalize().as_bytes(),
     })
 }
 
@@ -1457,7 +1573,7 @@ mod tests {
         assert_eq!(fs::read(&source).unwrap(), STEREO);
 
         let interrupted = root.0.join("interrupted");
-        prepare_canonical_audio(&source, 4_800, &interrupted).unwrap();
+        crate::prepare_canonical_audio(&source, 4_800, &interrupted).unwrap();
         assert!(validate_package(&interrupted).is_err());
         let foreign = interrupted.join("keep");
         fs::write(&foreign, b"not created by the package transaction").unwrap();
@@ -1531,5 +1647,133 @@ mod tests {
         symlink(root.0.join("missing"), &alias).unwrap();
         assert!(build_package(source, 4_800, &alias, |_, _| Ok(input)).is_err());
         assert!(fs::symlink_metadata(alias).unwrap().is_symlink());
+    }
+    #[test]
+    fn checked_builder_cancels_before_publication_and_keeps_content_error() {
+        use std::cell::Cell;
+        let root = TestDirectory::new();
+        let (source, input) = root.source_and_input();
+        let destination = root.0.join("cancelled-package");
+        let requested = Cell::new(false);
+        let cancelled = build_package_checked(
+            &source,
+            4_800,
+            &destination,
+            |_, _| {
+                requested.set(true);
+                Ok(input.clone())
+            },
+            &|| {
+                if requested.get() {
+                    Err("cancel after content".into())
+                } else {
+                    Ok(())
+                }
+            },
+        );
+        assert_eq!(cancelled.unwrap_err(), "cancel after content");
+        assert!(!destination.exists());
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 1);
+        requested.set(false);
+        let failure = build_package_checked(
+            &source,
+            4_800,
+            &destination,
+            |_, _| {
+                requested.set(true);
+                Err("actual content failure".into())
+            },
+            &|| {
+                if requested.get() {
+                    Err("cancel requested".into())
+                } else {
+                    Ok(())
+                }
+            },
+        );
+        assert_eq!(failure.unwrap_err(), "actual content failure");
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 1);
+        // All four staged objects have been written, but the cancellation checkpoint still prevents rename
+        let failure = build_package_checked(
+            &source,
+            4_800,
+            &destination,
+            |_, _| Ok(input.clone()),
+            &|| {
+                let complete = fs::read_dir(&root.0)
+                    .unwrap()
+                    .filter_map(Result::ok)
+                    .any(|entry| {
+                        entry
+                            .file_name()
+                            .to_string_lossy()
+                            .starts_with(".cocobeat-package-")
+                            && fs::metadata(entry.path().join("song.package"))
+                                .is_ok_and(|v| v.len() > 0)
+                    });
+                if complete {
+                    Err("cancel complete staged package".into())
+                } else {
+                    Ok(())
+                }
+            },
+        );
+        assert_eq!(failure.unwrap_err(), "cancel complete staged package");
+        assert!(!destination.exists());
+        assert_eq!(fs::read_dir(&root.0).unwrap().count(), 1);
+        assert_eq!(fs::read(&source).unwrap(), STEREO);
+    }
+
+    #[test]
+    fn checked_package_readback_and_final_gate_do_not_publish_after_cancel() {
+        use std::cell::Cell;
+        let root = TestDirectory::new();
+        let (source, input) = root.source_and_input();
+        let ordinary = root.0.join("ordinary");
+        let checked = root.0.join("checked");
+        let public = build_package(&source, 4_800, &ordinary, |_, _| Ok(input.clone())).unwrap();
+        let result =
+            build_package_checked(&source, 4_800, &checked, |_, _| Ok(input.clone()), &|| {
+                Ok(())
+            })
+            .unwrap();
+        assert_eq!(result, public);
+        for name in PACKAGE_OBJECT_NAMES {
+            assert_eq!(
+                fs::read(ordinary.join(name)).unwrap(),
+                fs::read(checked.join(name)).unwrap()
+            );
+        }
+        let consumed = Cell::new(false);
+        let error = read_package_snapshot_checked(
+            &checked,
+            |_| {
+                consumed.set(true);
+                Ok(())
+            },
+            &|| {
+                if consumed.get() {
+                    Err("cancel actual package PCM readback".into())
+                } else {
+                    Ok(())
+                }
+            },
+        )
+        .unwrap_err();
+        assert_eq!(error, "cancel actual package PCM readback");
+        assert!(consumed.get());
+        let unpublished = root.0.join("unpublished");
+        let error = publish_validated_package_checked(&checked, &unpublished, result, &|| {
+            Err("cancel before package rename".into())
+        })
+        .unwrap_err();
+        assert_eq!(error, "cancel before package rename");
+        assert!(!unpublished.exists());
+        for name in PACKAGE_OBJECT_NAMES {
+            assert_eq!(
+                fs::read(ordinary.join(name)).unwrap(),
+                fs::read(checked.join(name)).unwrap()
+            );
+        }
     }
 }

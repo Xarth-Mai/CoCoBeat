@@ -46,13 +46,29 @@ pub fn import_experimental_beat(
         "right" => 1,
         _ => return Err("Explicit experimental channel must be left or right".into()),
     };
-    let validated = cocobeat_media::import_experimental_beat_package(
+    let cancel = cocobeat_media::NativeBeatCancellation::default();
+    let signal = cancel.clone();
+    ctrlc::try_set_handler(move || {
+        if signal.request() {
+            eprintln!("Native import cancellation requested; waiting for owned cleanup");
+        } else {
+            eprintln!("Native import already publishing or finished; late Ctrl+C ignored");
+        }
+    })
+    .map_err(|error| format!("Cannot register native Ctrl+C handler: {error}"))?;
+    let result = cocobeat_media::import_experimental_beat_package_with_cancellation(
         source,
         authoring_path,
         channel,
         destination,
         &format!("cocobeat-lab/{}", env!("CARGO_PKG_VERSION")),
-    )?;
+        &cancel,
+    );
+    let diagnostic = cancel.diagnostics();
+    if result.is_err() || !diagnostic["late_request_ns"].is_null() {
+        eprintln!("Native cancellation diagnostics: {diagnostic}");
+    }
+    let validated = result?;
     summary(&validated);
     println!(
         "Experimental Candidate/Algorithm, confidence=None; frontend and music quality FAIL preserved"

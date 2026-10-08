@@ -14,6 +14,7 @@ mod encode;
 ))]
 mod native_beat;
 mod native_beat_evidence;
+mod native_cancellation;
 mod package;
 mod resample;
 
@@ -24,6 +25,7 @@ pub use anchors::{
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
 pub use authored::{
     build_authored_package, import_authored_package, import_experimental_beat_package,
+    import_experimental_beat_package_with_cancellation,
 };
 pub use decode::{DecodedSource, decode_canonical, decode_source};
 pub use encode::{CANONICAL_ENCODER_PROFILE, MAX_ENCODER_PCM_PEAK, encode_canonical_audio};
@@ -31,6 +33,7 @@ pub use native_beat_evidence::{
     NativeBeatEvidence, NativeBeatKind, NativeBeatMetadata, NativeBeatRecord,
     NativeDownbeatAlignment, NativePeakMember, read_native_beat_evidence,
 };
+pub use native_cancellation::NativeBeatCancellation;
 pub use package::{
     MAX_RECEIVED_PACKAGE_BYTES, PACKAGE_OBJECT_LIMITS, PACKAGE_OBJECT_NAMES, PackageBuildInput,
     ReceivedPackage, ValidatedPackage, build_package, export_anchors, read_package,

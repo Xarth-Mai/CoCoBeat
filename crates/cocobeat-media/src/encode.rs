@@ -26,13 +26,23 @@ pub fn encode_canonical_audio(
     source: impl AsRef<Path>,
     new_output: impl AsRef<Path>,
 ) -> Result<ResampledSource, String> {
-    let output = new_output.as_ref();
+    encode_canonical_audio_checked(source.as_ref(), new_output.as_ref(), &|| Ok(()))
+}
+
+pub(crate) fn encode_canonical_audio_checked(
+    source: &Path,
+    new_output: &Path,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<ResampledSource, String> {
+    check()?;
+    let output = new_output;
     let file = OpenOptions::new()
         .write(true)
         .create_new(true)
         .open(output)
         .map_err(|error| format!("Cannot create canonical audio output: {error}"))?;
     let result: Result<ResampledSource, String> = (|| {
+        check()?;
         let mut builder = VorbisEncoderBuilder::new_with_serial(
             NonZeroU32::new(CANONICAL_SAMPLE_RATE).unwrap(),
             NonZeroU8::new(2).unwrap(),
@@ -49,9 +59,11 @@ pub fn encode_canonical_audio(
         let mut encoder = builder
             .build()
             .map_err(|error| format!("Cannot initialize canonical Vorbis encoder: {error}"))?;
+        check()?;
         let mut planar = [Vec::with_capacity(1024), Vec::with_capacity(1024)];
         let mut input_frames = 0_u64;
         let source = resample_source(source, |frames| {
+            check()?;
             let next_frames = input_frames
                 .checked_add(frames.len() as u64)
                 .filter(|frames| *frames <= u64::from(CANONICAL_SAMPLE_RATE) * MAX_SOURCE_SECONDS)
@@ -74,20 +86,24 @@ pub fn encode_canonical_audio(
                 .encode_audio_block([planar[0].as_slice(), planar[1].as_slice()])
                 .map_err(|error| format!("Cannot encode canonical audio block: {error}"))?;
             input_frames = next_frames;
-            Ok(())
+            check()
         })?;
         if input_frames == 0 || input_frames != source.output_frames {
             return Err("Canonical encoder input count differs from resampler output".into());
         }
+        check()?;
         let writer = encoder
             .finish()
             .map_err(|error| format!("Cannot finish canonical Vorbis stream: {error}"))?;
+        check()?;
         writer
             .file
             .sync_all()
             .map_err(|error| format!("Cannot sync canonical audio output: {error}"))?;
         drop(writer);
-        decode_canonical(output, input_frames, |_| Ok(()))?;
+        check()?;
+        decode_canonical(output, input_frames, |_| check())?;
+        check()?;
         Ok(source)
     })();
     result.map_err(|mut error| {
@@ -246,5 +262,50 @@ mod tests {
         writer.write_all(b"c").unwrap();
         writer.flush().unwrap();
         assert_eq!(fs::read(output).unwrap(), b"abc");
+    }
+    #[test]
+    fn checked_encoder_preserves_noop_bytes_and_cleans_late_cancellation() {
+        use std::cell::Cell;
+        let root = TestDirectory::new();
+        let source = root.0.join("checked-source.wav");
+        let output = root.0.join("checked.ogg");
+        wav(&source, 48_000, &vec![[0.25, -0.5]; 2_049]);
+        let original = fs::read(&source).unwrap();
+        let public = encode_canonical_audio(&source, &output).unwrap();
+        let bytes = fs::read(&output).unwrap();
+        fs::remove_file(&output).unwrap();
+        let calls = Cell::new(0);
+        let checked = encode_canonical_audio_checked(&source, &output, &|| {
+            calls.set(calls.get() + 1);
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(checked, public);
+        assert_eq!(fs::read(&output).unwrap(), bytes);
+        fs::remove_file(&output).unwrap();
+        // Cancel at the final observed checkpoint after the strict readback has completed
+        let total = calls.get();
+        calls.set(0);
+        let error = encode_canonical_audio_checked(&source, &output, &|| {
+            calls.set(calls.get() + 1);
+            if calls.get() == total {
+                Err("cancel after encoder readback".into())
+            } else {
+                Ok(())
+            }
+        })
+        .unwrap_err();
+        assert_eq!(error, "cancel after encoder readback");
+        assert!(!output.exists());
+        assert_eq!(fs::read(&source).unwrap(), original);
+        fs::write(&output, b"existing output").unwrap();
+        assert_eq!(
+            encode_canonical_audio_checked(&source, &output, &|| Err(
+                "cancel before encoding".into()
+            ))
+            .unwrap_err(),
+            "cancel before encoding"
+        );
+        assert_eq!(fs::read(&output).unwrap(), b"existing output");
     }
 }

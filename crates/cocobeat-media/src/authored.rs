@@ -65,8 +65,8 @@ pub fn build_authored_package(
         load_authoring(authoring_path)?,
         destination,
         importer_version,
-        None,
         |_, _, _| Ok(None),
+        &|_| Ok(()),
     )
 }
 
@@ -96,77 +96,81 @@ fn build_authored(
     authoring: Authoring,
     destination: &Path,
     importer_version: &str,
-    provenance: Option<String>,
     enrich: impl FnOnce(
         &Path,
         &PreparedCanonicalAudio,
         &mut MusicAnalysis,
     ) -> Result<Option<String>, String>,
+    check: &dyn Fn(&'static str) -> Result<(), String>,
 ) -> Result<ValidatedPackage, String> {
-    crate::build_package(audio, frames, destination, |staged, prepared| {
-        let audio_hash = prepared.asset.blake3;
-        let energy = measure_energy(staged, prepared.canonical_frames)?;
-        let mut analysis = MusicAnalysis {
-            capabilities: Some(AnalysisCapabilities::authored()),
-            tempo_regions: Vec::new(),
-            repetitions: Vec::new(),
-            schema_version: ANALYSIS_SCHEMA_VERSION,
-            audio_hash,
-            beats: Vec::new(),
-            onsets: Vec::new(),
-            sections: authoring
-                .sections
-                .iter()
-                .map(|section| SectionFeature {
-                    start: SongTime::from_frames(section.start_frame),
-                    end: SongTime::from_frames(section.end_frame),
-                    confidence: None,
-                    label: section.label.clone(),
-                })
-                .collect(),
-            energy,
-            diagnostics: format!(
-                "Energy measured from final canonical PCM in 1024-frame blocks; beat/onset analysis not run; sections and anchors manually authored: {}",
-                match &provenance {
-                    Some(provenance) =>
-                        format!("{}; source import: {provenance}", authoring.source_note),
-                    None => authoring.source_note.clone(),
-                }
-            ),
-        };
-        let analysis_version = enrich(staged, prepared, &mut analysis)?
-            .unwrap_or_else(|| "canonical-rms-1024-v2".into());
-        let chart = CompiledChart {
-            schema_version: CONTENT_SCHEMA_VERSION,
-            audio_hash,
-            ruleset_id: authoring.ruleset_id,
-            anchors: authoring
-                .anchors
-                .into_iter()
-                .map(|anchor| Anchor {
-                    id: anchor.id,
-                    song_time: SongTime::from_frames(anchor.frame),
-                })
-                .collect(),
-            sections: authoring
-                .sections
-                .into_iter()
-                .map(|section| SectionCue {
-                    id: section.id,
-                    time: SongTime::from_frames(section.start_frame),
-                    label: section.label,
-                })
-                .collect(),
-        };
-        Ok(PackageBuildInput {
-            song_id: authoring.song_id,
-            importer_version: importer_version.into(),
-            analysis_version,
-            chart_version: "manual-anchors-v1".into(),
-            analysis,
-            chart,
-        })
-    })
+    crate::package::build_package_checked(
+        audio,
+        frames,
+        destination,
+        |staged, prepared| {
+            let audio_hash = prepared.asset.blake3;
+            let energy = measure_energy_checked(staged, prepared.canonical_frames, &|| {
+                check("canonical energy")
+            })?;
+            let mut analysis = MusicAnalysis {
+                capabilities: Some(AnalysisCapabilities::authored()),
+                tempo_regions: Vec::new(),
+                repetitions: Vec::new(),
+                schema_version: ANALYSIS_SCHEMA_VERSION,
+                audio_hash,
+                beats: Vec::new(),
+                onsets: Vec::new(),
+                sections: authoring
+                    .sections
+                    .iter()
+                    .map(|section| SectionFeature {
+                        start: SongTime::from_frames(section.start_frame),
+                        end: SongTime::from_frames(section.end_frame),
+                        confidence: None,
+                        label: section.label.clone(),
+                    })
+                    .collect(),
+                energy,
+                diagnostics: format!(
+                    "Energy measured from final canonical PCM in 1024-frame blocks; beat/onset analysis not run; sections and anchors manually authored: {}",
+                    authoring.source_note
+                ),
+            };
+            let analysis_version = enrich(staged, prepared, &mut analysis)?
+                .unwrap_or_else(|| "canonical-rms-1024-v2".into());
+            let chart = CompiledChart {
+                schema_version: CONTENT_SCHEMA_VERSION,
+                audio_hash,
+                ruleset_id: authoring.ruleset_id,
+                anchors: authoring
+                    .anchors
+                    .into_iter()
+                    .map(|anchor| Anchor {
+                        id: anchor.id,
+                        song_time: SongTime::from_frames(anchor.frame),
+                    })
+                    .collect(),
+                sections: authoring
+                    .sections
+                    .into_iter()
+                    .map(|section| SectionCue {
+                        id: section.id,
+                        time: SongTime::from_frames(section.start_frame),
+                        label: section.label,
+                    })
+                    .collect(),
+            };
+            Ok(PackageBuildInput {
+                song_id: authoring.song_id,
+                importer_version: importer_version.into(),
+                analysis_version,
+                chart_version: "manual-anchors-v1".into(),
+                analysis,
+                chart,
+            })
+        },
+        &|| check("package transaction"),
+    )
 }
 
 /// Imports the exact owned source snapshot through the sole production encoder
@@ -178,16 +182,17 @@ pub fn import_authored_package(
     destination: &Path,
     importer_version: &str,
 ) -> Result<ValidatedPackage, String> {
-    import_authored_package_with_analysis(
+    import_authored_package_with_analysis_checked(
         source,
         authoring_path,
         destination,
         importer_version,
         |_, _, _| Ok(None),
+        &|_| Ok(()),
     )
 }
 
-pub(crate) fn import_authored_package_with_analysis(
+pub(crate) fn import_authored_package_with_analysis_checked(
     source: &Path,
     authoring_path: &Path,
     destination: &Path,
@@ -197,11 +202,13 @@ pub(crate) fn import_authored_package_with_analysis(
         &PreparedCanonicalAudio,
         &mut MusicAnalysis,
     ) -> Result<Option<String>, String>,
+    check: &dyn Fn(&'static str) -> Result<(), String>,
 ) -> Result<ValidatedPackage, String> {
+    check("before authored source import")?;
     if importer_version.is_empty() {
         return Err("Importer version must identify the calling tool".into());
     }
-    let authoring = load_authoring(authoring_path)?;
+    let mut authoring = load_authoring(authoring_path)?;
     match fs::symlink_metadata(destination) {
         Ok(_) => return Err("Package destination already exists".into()),
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
@@ -234,9 +241,13 @@ pub(crate) fn import_authored_package_with_analysis(
     let mut created = Vec::new();
     let result = (|| {
         let snapshot = staging.join("source.audio");
-        let (length, hash) = snapshot_source(source, &snapshot, &mut created)?;
+        let (length, hash) = snapshot_source(source, &snapshot, &mut created, &|| {
+            check("source snapshot")
+        })?;
         let audio = staging.join("canonical.ogg");
-        let metadata = crate::encode_canonical_audio(&snapshot, &audio)?;
+        let metadata = crate::encode::encode_canonical_audio_checked(&snapshot, &audio, &|| {
+            check("canonical encoder")
+        })?;
         created.push(audio.clone());
         let provenance = serde_json::json!({
             "source_blake3": hash,
@@ -247,14 +258,15 @@ pub(crate) fn import_authored_package_with_analysis(
             "encoder_profile": crate::CANONICAL_ENCODER_PROFILE,
         })
         .to_string();
+        authoring.source_note = format!("{}; source import: {provenance}", authoring.source_note);
         build_authored(
             &audio,
             metadata.output_frames,
             authoring,
             destination,
             &format!("{importer_version}/{}", crate::CANONICAL_ENCODER_PROFILE),
-            Some(provenance),
             enrich,
+            check,
         )
     })();
     let mut cleanup = Vec::new();
@@ -289,6 +301,47 @@ pub fn import_experimental_beat_package(
     destination: &Path,
     importer_version: &str,
 ) -> Result<ValidatedPackage, String> {
+    import_experimental_beat_package_with_cancellation(
+        source,
+        authoring_path,
+        channel,
+        destination,
+        importer_version,
+        &crate::NativeBeatCancellation::default(),
+    )
+}
+
+/// Each attempt uses a fresh handle; retry only after the previous call actually returns
+pub fn import_experimental_beat_package_with_cancellation(
+    source: &Path,
+    authoring_path: &Path,
+    channel: usize,
+    destination: &Path,
+    importer_version: &str,
+    cancel: &crate::NativeBeatCancellation,
+) -> Result<ValidatedPackage, String> {
+    cancel.begin()?;
+    let result = import_experimental_beat_attempt(
+        source,
+        authoring_path,
+        channel,
+        destination,
+        importer_version,
+        cancel,
+    );
+    cancel.finish();
+    result
+}
+
+fn import_experimental_beat_attempt(
+    source: &Path,
+    authoring_path: &Path,
+    channel: usize,
+    destination: &Path,
+    importer_version: &str,
+    cancel: &crate::NativeBeatCancellation,
+) -> Result<ValidatedPackage, String> {
+    cancel.check("before native import")?;
     #[cfg(not(any(
         all(target_os = "linux", target_arch = "x86_64", target_env = "gnu"),
         all(target_os = "linux", target_arch = "aarch64", target_env = "gnu"),
@@ -354,8 +407,8 @@ pub fn import_experimental_beat_package(
                 &evidence.join("started.json"),
                 &serde_json::json!({"status":"RUNNING","source":source,"authoring":authoring_path,"channel":channel,"analysis_version":crate::native_beat::ANALYSIS_VERSION,"confidence":null,"production_admission":false}),
             )?;
-            let mut session = crate::native_beat::load_session(&evidence)?;
-            let validated = import_authored_package_with_analysis(
+            let mut session = crate::native_beat::load_session(&evidence, cancel)?;
+            let validated = import_authored_package_with_analysis_checked(
                 source,
                 authoring_path,
                 &package,
@@ -368,11 +421,14 @@ pub fn import_experimental_beat_package(
                         channel,
                         &evidence,
                         analysis,
+                        cancel,
                     )?;
                     Ok(Some(crate::native_beat::ANALYSIS_VERSION.into()))
                 },
+                &|phase| cancel.check(phase),
             )?;
             drop(session);
+            cancel.check("before package complete receipt")?;
             crate::native_beat::write_json(
                 &evidence.join("package-complete.json"),
                 &serde_json::json!({"status":"CANDIDATE_ONLY","package_hash":blake3::Hash::from(validated.manifest.package_hash).to_hex().to_string(),"confidence":null,"production_admission":false,"old_frontend_numeric":"FAIL_PRESERVED","old_music_quality":"FAIL_PRESERVED"}),
@@ -382,8 +438,10 @@ pub fn import_experimental_beat_package(
                 Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
                 Err(e) => return Err(format!("Inspect final experimental output: {e}")),
             }
-            fs::rename(&stage, destination)
-                .map_err(|e| format!("Publish experimental bundle: {e}"))?;
+            cancel.publish(|| {
+                fs::rename(&stage, destination)
+                    .map_err(|e| format!("Publish experimental bundle: {e}"))
+            })?;
             Ok(validated)
         })();
         result.map_err(|mut failure:String| {
@@ -400,7 +458,7 @@ pub fn import_experimental_beat_package(
                 }
                 if let Err(e)=fs::remove_dir(&package) {failure.push_str(&format!("; remove owned package directory: {e}"));}
             }
-            if let Err(e)=crate::native_beat::write_json(&evidence.join("failed.json"), &serde_json::json!({"status":"FAIL","reason":failure,"remaining_steps":"NOT_RUN","confidence":null,"production_admission":false})) {
+            if let Err(e)=crate::native_beat::write_json(&evidence.join("failed.json"), &serde_json::json!({"status":"FAIL","reason":failure,"cancellation":cancel.diagnostics(),"remaining_steps":"NOT_RUN","confidence":null,"production_admission":false})) {
                 failure.push_str(&format!("; failure receipt incomplete: {e}"));
             }
             failure.push_str(&format!("; owned staging path {}; evidence path {}; evidence may be partial",stage.display(),evidence.display()));
@@ -413,7 +471,9 @@ fn snapshot_source(
     source: &Path,
     snapshot: &Path,
     created: &mut Vec<PathBuf>,
+    check: &dyn Fn() -> Result<(), String>,
 ) -> Result<(u64, String), String> {
+    check()?;
     if !fs::symlink_metadata(source)
         .map_err(|error| format!("Cannot inspect source: {error}"))?
         .is_file()
@@ -436,6 +496,7 @@ fn snapshot_source(
     let mut count = 0_u64;
     let mut block = [0; 8192];
     loop {
+        check()?;
         let bytes = input
             .read(&mut block)
             .map_err(|error| format!("Cannot read source: {error}"))?;
@@ -475,7 +536,17 @@ fn regular_file(path: &Path) -> Result<File, String> {
     Ok(file)
 }
 
+#[cfg(test)]
 fn measure_energy(path: &Path, expected: u64) -> Result<Vec<EnergySample>, String> {
+    measure_energy_checked(path, expected, &|| Ok(()))
+}
+
+fn measure_energy_checked(
+    path: &Path,
+    expected: u64,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<Vec<EnergySample>, String> {
+    check()?;
     let mut result = Vec::new();
     let mut start = 0;
     let mut count = 0;
@@ -488,6 +559,7 @@ fn measure_energy(path: &Path, expected: u64) -> Result<Vec<EnergySample>, Strin
         peak,
     };
     crate::decode_canonical(path, expected, |frames| {
+        check()?;
         for frame in frames {
             for channel in 0..2 {
                 sum[channel] += f64::from(frame[channel]).powi(2);
@@ -740,5 +812,114 @@ mod tests {
         assert!(!failed.exists());
         assert_eq!(fs::read_dir(&root).unwrap().count(), 3);
         fs::remove_dir_all(root).unwrap();
+    }
+    #[test]
+    fn checked_authored_cancel_cleans_owned_staging_and_keeps_real_enrichment_error() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-native-cancel-source-{}-{}",
+            std::process::id(),
+            NEXT_IMPORT.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir(&root).unwrap();
+        let source = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../testdata/synthetic/media-import/stereo-canonical.ogg");
+        let original = fs::read(&source).unwrap();
+        let authoring = root.join("authoring.json");
+        let document = serde_json::to_vec(&serde_json::json!({"schema_version":CONTENT_SCHEMA_VERSION,"song_id":"cancel-source","ruleset_id":"duo-watermark-v1","source_note":"Original stereo; manual test","anchors":[],"sections":[]})).unwrap();
+        fs::write(&authoring, &document).unwrap();
+        for phase in ["source snapshot", "canonical encoder", "canonical energy"] {
+            let cancel = crate::NativeBeatCancellation::default();
+            cancel.begin().unwrap();
+            let calls = std::cell::Cell::new(0);
+            let target = root.join("cancelled");
+            let failure = import_authored_package_with_analysis_checked(
+                &source,
+                &authoring,
+                &target,
+                IMPORTER,
+                |_, _, _| Ok(None),
+                &|current| {
+                    if current == phase {
+                        calls.set(calls.get() + 1);
+                        if calls.get() == 2 {
+                            cancel.request();
+                        }
+                    }
+                    cancel.check(current)
+                },
+            )
+            .unwrap_err();
+            cancel.finish();
+            assert!(
+                failure.contains(&format!("cancellation observed at {phase}")),
+                "{failure}"
+            );
+            assert!(!target.exists());
+            assert_eq!(fs::read_dir(&root).unwrap().count(), 1);
+        }
+        let cancel = crate::NativeBeatCancellation::default();
+        cancel.begin().unwrap();
+        let failure = import_authored_package_with_analysis_checked(
+            &source,
+            &authoring,
+            &root.join("actual-error"),
+            IMPORTER,
+            |_, _, _| {
+                cancel.request();
+                Err("actual enrichment failure".into())
+            },
+            &|phase| cancel.check(phase),
+        )
+        .unwrap_err();
+        cancel.finish();
+        assert_eq!(failure, "actual enrichment failure");
+        assert_eq!(fs::read_dir(&root).unwrap().count(), 1);
+        // This is a checked ordinary importer retry, not an ORT Session lifecycle claim
+        let target = root.join("retry");
+        let package = import_authored_package(&source, &authoring, &target, IMPORTER).unwrap();
+        assert_eq!(package, crate::validate_package(&target).unwrap());
+        assert_eq!(fs::read(&source).unwrap(), original);
+        assert_eq!(fs::read(&authoring).unwrap(), document);
+        fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn pre_cancelled_native_attempt_does_not_load_ort_or_create_staging() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-native-cancel-early-{}-{}",
+            std::process::id(),
+            NEXT_IMPORT.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir(&root).unwrap();
+        let cancel = crate::NativeBeatCancellation::default();
+        assert!(cancel.request());
+        let failure = import_experimental_beat_package_with_cancellation(
+            &root.join("not-read.audio"),
+            &root.join("not-read.json"),
+            0,
+            &root.join("output"),
+            IMPORTER,
+            &cancel,
+        )
+        .unwrap_err();
+        assert_eq!(
+            failure,
+            "Native import cancellation observed at before native import"
+        );
+        assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
+        assert!(!cancel.request());
+        assert!(
+            import_experimental_beat_package_with_cancellation(
+                &root.join("source"),
+                &root.join("authoring"),
+                0,
+                &root.join("output"),
+                IMPORTER,
+                &cancel
+            )
+            .unwrap_err()
+            .contains("one-attempt")
+        );
+        fs::remove_dir(&root).unwrap();
     }
 }

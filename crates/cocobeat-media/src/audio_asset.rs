@@ -24,12 +24,26 @@ pub fn prepare_canonical_audio(
     expected_frames: u64,
     new_staging_dir: impl AsRef<Path>,
 ) -> Result<PreparedCanonicalAudio, String> {
+    prepare_canonical_audio_checked(
+        source.as_ref(),
+        expected_frames,
+        new_staging_dir.as_ref(),
+        &|| Ok(()),
+    )
+}
+
+pub(crate) fn prepare_canonical_audio_checked(
+    source: &Path,
+    expected_frames: u64,
+    new_staging_dir: &Path,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<PreparedCanonicalAudio, String> {
+    check()?;
     if !(1..=u64::from(CANONICAL_SAMPLE_RATE) * MAX_SOURCE_SECONDS).contains(&expected_frames) {
         return Err(
             "Expected canonical frames must cover more than zero and at most ten minutes".into(),
         );
     }
-    let source = source.as_ref();
     if !source.is_file() {
         return Err("Canonical audio source must be a regular file".into());
     }
@@ -39,13 +53,15 @@ pub fn prepare_canonical_audio(
     if !metadata.is_file() || metadata.len() > MAX_SOURCE_BYTES {
         return Err("Canonical audio source must be a regular file no larger than 512 MiB".into());
     }
-    let directory = new_staging_dir.as_ref();
+    check()?;
+    let directory = new_staging_dir;
     fs::create_dir(directory)
         .map_err(|error| format!("Cannot create new audio staging directory: {error}"))?;
     let file_name = "song.audio.ogg";
     let output = directory.join(file_name);
     let mut created = false;
     let result: Result<PreparedCanonicalAudio, String> = (|| {
+        check()?;
         let mut writer = OpenOptions::new()
             .write(true)
             .create_new(true)
@@ -58,6 +74,7 @@ pub fn prepare_canonical_audio(
         let mut byte_len = 0;
         let mut buffer = [0; 32 * 1024];
         loop {
+            check()?;
             let read = source
                 .read(&mut buffer)
                 .map_err(|error| format!("Cannot read canonical audio source: {error}"))?;
@@ -75,11 +92,14 @@ pub fn prepare_canonical_audio(
                 .map_err(|error| format!("Cannot write staged canonical audio: {error}"))?;
             hasher.update(&buffer[..read]);
         }
+        check()?;
         writer
             .sync_all()
             .map_err(|error| format!("Cannot sync staged canonical audio: {error}"))?;
         drop(writer);
-        let canonical_frames = decode_canonical(&output, expected_frames, |_| Ok(()))?;
+        check()?;
+        let canonical_frames = decode_canonical(&output, expected_frames, |_| check())?;
+        check()?;
         Ok(PreparedCanonicalAudio {
             asset: AssetRef {
                 file_name: file_name.into(),
@@ -213,5 +233,36 @@ mod tests {
             assert_eq!(fs::read(&source).unwrap(), bytes);
             assert_eq!(fs::read_dir(&root.0).unwrap().count(), 1);
         }
+    }
+    #[test]
+    fn checked_audio_copy_cleans_owned_file_and_reports_foreign_content() {
+        let root = TestDirectory::new();
+        let source = root.0.join("source.ogg");
+        let stage = root.0.join("checked-stage");
+        fs::write(&source, STEREO).unwrap();
+        let error = prepare_canonical_audio_checked(&source, 4_800, &stage, &|| {
+            if fs::metadata(stage.join("song.audio.ogg")).is_ok_and(|v| v.len() > 0) {
+                fs::write(stage.join("keep"), b"foreign staging content").unwrap();
+                Err("cancel after audio copy".into())
+            } else {
+                Ok(())
+            }
+        })
+        .unwrap_err();
+        assert!(error.starts_with("cancel after audio copy"));
+        assert!(error.contains("remove audio staging directory"));
+        assert!(!stage.join("song.audio.ogg").exists());
+        assert_eq!(
+            fs::read(stage.join("keep")).unwrap(),
+            b"foreign staging content"
+        );
+        assert_eq!(fs::read(&source).unwrap(), STEREO);
+        fs::remove_file(stage.join("keep")).unwrap();
+        fs::remove_dir(&stage).unwrap();
+        let checked = prepare_canonical_audio_checked(&source, 4_800, &stage, &|| Ok(())).unwrap();
+        let ordinary =
+            prepare_canonical_audio(&source, 4_800, root.0.join("ordinary-stage")).unwrap();
+        assert_eq!(checked, ordinary);
+        assert_eq!(fs::read(stage.join("song.audio.ogg")).unwrap(), STEREO);
     }
 }

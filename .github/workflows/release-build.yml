@@ -310,6 +310,8 @@ jobs:
           # Tar retains the executable bit; artifact ZIP alone does not.
           tar -czf "dist/cocobeat-$BUILD_TARGET.tar.gz" -C dist/package .
       - name: Run experimental native software smoke from the unpacked TAR
+        env:
+          ORT_DISABLE_TELEMETRY: '1'
         run: |
           work="$RUNNER_TEMP/cocobeat-native-smoke"
           mkdir -p "$work"

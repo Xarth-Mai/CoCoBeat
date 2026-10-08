@@ -1,17 +1,17 @@
 //! Explicit experimental beat/downbeat candidates; unknown confidence and old quality FAIL remain
-//! ponytail: synchronous Lab-only CPU work; add measured resource/cancellation gates before game UI use
+//! ponytail: synchronous Lab-only CPU work; add measured resource gates before game UI use
 
 // Minimal postprocessing adapted from Beat This! (MIT)
 // Copyright (c) 2024 Institute of Computational Perception, JKU Linz, Austria
 // Original permission and notice: licenses/beat-this/LICENSE
 
-use crate::PreparedCanonicalAudio;
+use crate::{NativeBeatCancellation, PreparedCanonicalAudio};
 use cocobeat_schema::{
     AnalysisCapability, AnalysisSource, AnalysisState, BeatFeature, MusicAnalysis, SongTime,
 };
 use ort::{
     ep::CPU,
-    session::{Session, builder::GraphOptimizationLevel},
+    session::{RunOptions, Session, builder::GraphOptimizationLevel},
     value::{DynValue, Tensor, TensorElementType, ValueType},
 };
 use serde::{Deserialize, Serialize};
@@ -19,7 +19,7 @@ use std::{
     fs::{self, File, OpenOptions},
     io::{BufWriter, Read, Seek, Write},
     path::{Path, PathBuf},
-    sync::OnceLock,
+    sync::{Arc, OnceLock},
 };
 
 #[path = "native_beat_assets.rs"]
@@ -52,8 +52,20 @@ pub(super) fn write_json(path: &Path, value: &impl Serialize) -> Result<(), Stri
 }
 
 fn write_f32(path: &Path, values: impl IntoIterator<Item = f32>) -> Result<(), String> {
+    write_f32_checked(path, values, &|| Ok(()))
+}
+
+fn write_f32_checked(
+    path: &Path,
+    values: impl IntoIterator<Item = f32>,
+    check: &dyn Fn() -> Result<(), String>,
+) -> Result<(), String> {
+    check()?;
     let mut file = BufWriter::new(new_file(path)?);
-    for value in values {
+    for (index, value) in values.into_iter().enumerate() {
+        if index % 1024 == 0 {
+            check()?;
+        }
         file.write_all(&value.to_le_bytes())
             .map_err(|e| error("Write raw Float32", e))?;
     }
@@ -81,7 +93,9 @@ fn verified_asset(
     hash: &[u8; 32],
     evidence: &Path,
     name: &str,
+    cancel: &NativeBeatCancellation,
 ) -> Result<Vec<u8>, String> {
+    cancel.check("fixed asset validation")?;
     let metadata = fs::symlink_metadata(path)
         .map_err(|e| error(&format!("Unsupported artifact {}", path.display()), e))?;
     if !metadata.is_file()
@@ -96,12 +110,23 @@ fn verified_asset(
     let mut data = Vec::new();
     data.try_reserve_exact(usize::try_from(bytes).map_err(|e| error("Artifact size", e))?)
         .map_err(|e| error("Allocate artifact bytes", e))?;
-    File::open(path)
+    let mut input = File::open(path)
         .map_err(|e| error("Open artifact", e))?
-        .take(bytes + 1)
-        .read_to_end(&mut data)
-        .map_err(|e| error("Read artifact", e))?;
-    let actual = blake3::hash(&data);
+        .take(bytes + 1);
+    let mut actual_hasher = blake3::Hasher::new();
+    let mut buffer = [0; 32768];
+    loop {
+        cancel.check("fixed asset read/hash")?;
+        let read = input
+            .read(&mut buffer)
+            .map_err(|e| error("Read artifact", e))?;
+        if read == 0 {
+            break;
+        }
+        data.extend_from_slice(&buffer[..read]);
+        actual_hasher.update(&buffer[..read]);
+    }
+    let actual = actual_hasher.finalize();
     write_json(
         &evidence.join(format!("artifact-{name}.json")),
         &serde_json::json!({"path":path,"actual_bytes":data.len(),"expected_bytes":bytes,"actual_blake3":actual.to_hex().to_string(),"expected_blake3":blake3::Hash::from(*hash).to_hex().to_string()}),
@@ -142,7 +167,19 @@ fn validate_library_header(data: &[u8]) -> Result<(), String> {
 }
 
 /// One Session per explicit import; paths and expected hashes come from the shipping binary
-pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
+pub(crate) fn load_session(
+    evidence: &Path,
+    cancel: &NativeBeatCancellation,
+) -> Result<Session, String> {
+    // Linux 1DS initializes during CreateEnv, before DisableTelemetryEvents
+    if cfg!(target_os = "linux")
+        && std::env::var_os("ORT_DISABLE_TELEMETRY").as_deref() != Some(std::ffi::OsStr::new("1"))
+    {
+        return Err(
+            "Linux native ORT requires ORT_DISABLE_TELEMETRY=1 before SDK initialization".into(),
+        );
+    }
+    cancel.check("before fixed SDK validation")?;
     let executable = std::env::current_exe()
         .map_err(|e| error("Locate executable", e))?
         .canonicalize()
@@ -172,6 +209,7 @@ pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
         &assets::SDK_BLAKE3,
         evidence,
         "core",
+        cancel,
     )?;
     validate_library_header(&core_bytes)?;
     drop(core_bytes);
@@ -181,6 +219,7 @@ pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
         &assets::PROVIDER_BLAKE3,
         evidence,
         "provider",
+        cancel,
     )?;
     validate_library_header(&provider_bytes)?;
     drop(provider_bytes);
@@ -190,7 +229,9 @@ pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
         &assets::MODEL_BLAKE3,
         evidence,
         "model",
+        cancel,
     )?;
+    cancel.check("before fixed SDK initialization")?;
     if OWN_ORT_ENVIRONMENT.get().is_none() {
         if !ort::init_from(&core)
             .map_err(|e| error("Unsupported ORT loader", e))?
@@ -204,7 +245,8 @@ pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
             |_| "Concurrent ORT initialization is unsupported by this synchronous Lab adapter",
         )?;
     }
-    let session = Session::builder()
+    cancel.check("after fixed SDK initialization")?;
+    let mut builder = Session::builder()
         .map_err(|e| error("ORT Session builder", e))?
         .with_intra_threads(2)
         .map_err(|e| error("ORT intra threads", e))?
@@ -217,9 +259,18 @@ pub(crate) fn load_session(evidence: &Path) -> Result<Session, String> {
         .with_intra_op_spinning(false)
         .map_err(|e| error("ORT intra spinning", e))?
         .with_optimization_level(GraphOptimizationLevel::All)
-        .map_err(|e| error("ORT optimization", e))?
-        .commit_from_memory(&model)
-        .map_err(|e| error("ORT fixed model", e))?;
+        .map_err(|e| error("ORT optimization", e))?;
+    let registration = cancel.register_load(builder.canceler());
+    cancel.check("before ORT model load")?;
+    let result = builder.commit_from_memory(&model);
+    cancel.backend_return(
+        "ORT model load",
+        result.as_ref().err().map(ToString::to_string),
+    );
+    drop(registration);
+    let session = result.map_err(|e| error("ORT fixed model", e))?;
+    // Best-effort load may still return a Session; this checkpoint drops it normally
+    cancel.check("after ORT model load")?;
     write_json(
         &evidence.join("session-metadata.json"),
         &serde_json::json!({"build_info":ort::info(),"inputs":format!("{:?}",session.inputs()),"outputs":format!("{:?}",session.outputs()),"cpu_intra_requested":2,"cpu_inter_requested":1,"telemetry_events":false,"production_admission":false,"ort_consumer_contract":"Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization"}),
@@ -311,6 +362,7 @@ fn infer(
     session: &mut Session,
     spect: &frontend::Spectrogram,
     evidence: &Path,
+    cancel: &NativeBeatCancellation,
 ) -> Result<[Vec<f32>; 2], String> {
     if spect.values.len()
         != spect
@@ -325,6 +377,7 @@ fn infer(
     write_json(&evidence.join("chunk-starts.json"), &starts)?;
     let mut chunks = Vec::new();
     for (index, start) in starts.iter().copied().enumerate() {
+        cancel.check("native chunk preparation")?;
         let values = chunk_input(spect, start)?;
         let frames = values.len() / 128;
         write_f32(
@@ -333,9 +386,16 @@ fn infer(
         )?;
         let tensor = Tensor::<f32>::from_array(([1usize, frames, 128], values.into_boxed_slice()))
             .map_err(|e| error("Create actual spect tensor", e))?;
-        let outputs = session
-            .run(ort::inputs!["spect" => tensor])
-            .map_err(|e| error("ORT actual Run", e))?;
+        let options = Arc::new(RunOptions::new().map_err(|e| error("ORT RunOptions", e))?);
+        let registration = cancel.register_run(Arc::clone(&options));
+        cancel.check("before ORT chunk Run")?;
+        let result = session.run_with_options(ort::inputs!["spect" => tensor], &options);
+        cancel.backend_return(
+            "ORT chunk Run",
+            result.as_ref().err().map(ToString::to_string),
+        );
+        drop(registration);
+        let outputs = result.map_err(|e| error("ORT actual Run", e))?;
         let mut failures = Vec::new();
         if outputs.len() != 2 {
             failures.push("Actual output count is not two".to_owned());
@@ -361,11 +421,15 @@ fn infer(
         if !failures.is_empty() {
             return Err(failures.join("; "));
         }
+        // Preserve both returned raw outputs before honoring a request received during Run
+        drop(outputs);
+        cancel.check("after ORT chunk output capture")?;
         chunks.push((start, pair));
     }
     let mut result = [vec![0.0; spect.frames], vec![0.0; spect.frames]];
     let mut coverage = vec![false; spect.frames];
     for (start, pair) in chunks.iter().rev() {
+        cancel.check("native chunk aggregation")?;
         let left =
             usize::try_from(start + BORDER as i64).map_err(|e| error("Aggregate start", e))?;
         let count = pair[0]
@@ -523,6 +587,7 @@ fn copy_final_evidence(
     staged: &Path,
     prepared: &PreparedCanonicalAudio,
     evidence: &Path,
+    cancel: &NativeBeatCancellation,
 ) -> Result<PathBuf, String> {
     let path = evidence.join("final-canonical.ogg");
     let mut input = File::open(staged)
@@ -533,6 +598,7 @@ fn copy_final_evidence(
     let mut count = 0u64;
     let mut buffer = [0; 32768];
     loop {
+        cancel.check("final canonical evidence copy")?;
         let read = input
             .read(&mut buffer)
             .map_err(|e| error("Read final Ogg evidence", e))?;
@@ -565,28 +631,41 @@ pub(crate) fn analyze_staged(
     channel: usize,
     evidence: &Path,
     analysis: &mut MusicAnalysis,
+    cancel: &NativeBeatCancellation,
 ) -> Result<(), String> {
+    cancel.check("before native analysis")?;
     if channel > 1 || analysis.audio_hash != prepared.asset.blake3 {
         return Err("Invalid channel or analysis audio identity".into());
     }
-    let final_copy = copy_final_evidence(staged, prepared, evidence)?;
-    let pcm = frontend::resample_canonical_22050(&final_copy, prepared.canonical_frames, evidence)?;
-    write_f32(
+    let final_copy = copy_final_evidence(staged, prepared, evidence, cancel)?;
+    let pcm = frontend::resample_canonical_22050(
+        &final_copy,
+        prepared.canonical_frames,
+        evidence,
+        &|| cancel.check("native resample PCM"),
+    )?;
+    write_f32_checked(
         &evidence.join("resampled-stereo.f32"),
         pcm.iter().flatten().copied(),
+        &|| cancel.check("native resampled evidence"),
     )?;
-    let spect = frontend::log_mel_spectrogram(&pcm, channel, evidence)?;
-    write_f32(
+    let spect = frontend::log_mel_spectrogram(&pcm, channel, evidence, &|| {
+        cancel.check("native FFT original q")
+    })?;
+    write_f32_checked(
         &evidence.join("native-spect.f32"),
         spect.values.iter().copied(),
+        &|| cancel.check("native spect evidence"),
     )?;
     write_json(
         &evidence.join("native-shape.json"),
         &serde_json::json!({"N":prepared.canonical_frames,"M":pcm.len(),"F":spect.frames,"shape":[1,spect.frames,128],"channel":channel,"profile":ANALYSIS_VERSION,"old_frontend_numeric":"FAIL_PRESERVED_19_OF_28","old_music_quality":"FAIL_PRESERVED","confidence":null,"production_admission":false}),
     )?;
     drop(pcm);
-    let logits = infer(session, &spect, evidence)?;
+    let logits = infer(session, &spect, evidence, cancel)?;
+    cancel.check("before minimal candidates")?;
     let candidates = minimal(&logits, prepared.canonical_frames, evidence)?;
+    cancel.check("after minimal candidates")?;
     let capabilities = analysis
         .capabilities
         .as_mut()
@@ -615,6 +694,7 @@ pub(crate) fn analyze_staged(
         "minimal-raw-groups.json",
         "minimal-alignment.json",
     ] {
+        cancel.check("native evidence summary")?;
         let bytes = fs::read(evidence.join(name))
             .map_err(|e| error("Read completed evidence for summary", e))?;
         evidence_files.push(serde_json::json!({"name":name,"bytes":bytes.len(),"blake3":blake3::hash(&bytes).to_hex().as_str()}));
@@ -635,6 +715,7 @@ pub(crate) fn analyze_staged(
     );
     analysis.diagnostics.push_str(&format!("; experimental={ANALYSIS_VERSION}; model_blake3={}; evidence_summary_blake3={summary_hash}; channel={channel}; N={}; M={}; F={}; confidence=None; frontend/quality FAIL preserved; raw evidence accompanies package",blake3::Hash::from_bytes(assets::MODEL_BLAKE3),prepared.canonical_frames,(prepared.canonical_frames*22050).div_ceil(48000),spect.frames));
     analysis.validate(prepared.canonical_frames)?;
+    cancel.check("before analysis complete receipt")?;
     write_json(
         &evidence.join("analysis-complete.json"),
         &serde_json::json!({"status":"CANDIDATE_ONLY","beats":analysis.beats.len(),"downbeats":analysis.beats.iter().filter(|v|v.downbeat_probability.is_some()).count(),"confidence":null,"production_admission":false}),
@@ -671,7 +752,7 @@ fn record_audio_frame(
 
 mod frontend {
     //! Research draft only: final canonical PCM -> native 22.05 kHz -> per-channel spect
-    //! ponytail: synchronous research functions; add existing import-worker cancellation before production use
+    //! ponytail: synchronous Lab-only functions; game UI ownership remains a separate milestone
 
     use super::{new_file, record_audio_frame, write_f32, write_f64};
     use crate::decode_canonical;
@@ -702,7 +783,9 @@ mod frontend {
         path: &Path,
         expected_frames: u64,
         evidence: &Path,
+        check: &dyn Fn() -> Result<(), String>,
     ) -> Result<Vec<[f32; 2]>, String> {
+        check()?;
         let mut raw = new_file(&evidence.join("resampler-output.bin"))?;
         let mut metadata = new_file(&evidence.join("resampler-output.jsonl"))?;
         if !(1..=CANONICAL_RATE * MAX_SOURCE_SECONDS).contains(&expected_frames) {
@@ -723,6 +806,7 @@ mod frontend {
         let mut pushed = 0u64;
         decode_canonical(path, expected_frames, |block| {
             for chunk in block.chunks(1024) {
+                check()?;
                 let bytes: Vec<_> = chunk
                     .iter()
                     .flatten()
@@ -754,6 +838,7 @@ mod frontend {
         if pushed != expected_frames {
             return Err("Canonical decoder did not deliver the original complete N".into());
         }
+        check()?;
         let tail = converter
             .flush()
             .map_err(|error| format!("Cannot flush native resampler: {error}"))?;
@@ -830,7 +915,9 @@ mod frontend {
         pcm: &[[f32; 2]],
         channel: usize,
         evidence: &Path,
+        check: &dyn Fn() -> Result<(), String>,
     ) -> Result<Spectrogram, String> {
+        check()?;
         if channel > 1
             || pcm.len() <= FFT / 2
             || pcm.len() > RATE as usize * MAX_SOURCE_SECONDS as usize
@@ -865,6 +952,7 @@ mod frontend {
         }
         let mut windowed = [0.0f64; FFT];
         for q in 0..frames {
+            check()?;
             for (j, slot) in windowed.iter_mut().enumerate() {
                 let index = q as isize * HOP as isize + j as isize - (FFT / 2) as isize;
                 *slot = f64::from(pcm[reflect(index, pcm.len())][channel] * window[j]);
@@ -981,14 +1069,38 @@ mod frontend {
         }
 
         #[test]
+        fn fft_checkpoint_returns_without_fabricating_spect_and_can_retry() {
+            let evidence = std::env::temp_dir();
+            let pcm = vec![[0.1, -0.1]; 882];
+            let calls = std::cell::Cell::new(0);
+            let failure = log_mel_spectrogram(&pcm, 0, &evidence, &|| {
+                calls.set(calls.get() + 1);
+                if calls.get() == 2 {
+                    Err("cancel at original q loop".into())
+                } else {
+                    Ok(())
+                }
+            })
+            .err()
+            .unwrap();
+            assert_eq!(failure, "cancel at original q loop");
+            let retry = log_mel_spectrogram(&pcm, 0, &evidence, &|| Ok(())).unwrap();
+            assert_eq!(retry.frames, 3);
+            assert_eq!(retry.values.len(), 3 * 128);
+        }
+
+        #[test]
         fn native_shape_reflection_channel_and_invalid_input_contract() {
             let evidence = evidence_dir();
             assert_eq!((reflect(-512, 513), reflect(1023, 513)), (512, 1));
             assert_eq!((reflect(-1, 513), reflect(513, 513)), (1, 511));
-            assert!(log_mel_spectrogram(&vec![[0.0; 2]; 512], 0, &evidence).is_err());
-            assert!(log_mel_spectrogram(&vec![[0.0; 2]; 513], 2, &evidence).is_err());
-            assert!(log_mel_spectrogram(&vec![[f32::NAN, 0.0]; 513], 1, &evidence).is_err());
-            let silent = log_mel_spectrogram(&vec![[0.0; 2]; 882], 0, &evidence).unwrap();
+            assert!(log_mel_spectrogram(&vec![[0.0; 2]; 512], 0, &evidence, &|| Ok(())).is_err());
+            assert!(log_mel_spectrogram(&vec![[0.0; 2]; 513], 2, &evidence, &|| Ok(())).is_err());
+            assert!(
+                log_mel_spectrogram(&vec![[f32::NAN, 0.0]; 513], 1, &evidence, &|| Ok(())).is_err()
+            );
+            let silent =
+                log_mel_spectrogram(&vec![[0.0; 2]; 882], 0, &evidence, &|| Ok(())).unwrap();
             assert_eq!((silent.frames, silent.values.len()), (3, 3 * MELS));
             assert!(silent.values.iter().all(|value| *value == 0.0));
             let antiphase: Vec<_> = (0..2205)
@@ -997,20 +1109,20 @@ mod frontend {
                     [sample, -sample]
                 })
                 .collect();
-            let left = log_mel_spectrogram(&antiphase, 0, &evidence).unwrap();
-            let right = log_mel_spectrogram(&antiphase, 1, &evidence).unwrap();
+            let left = log_mel_spectrogram(&antiphase, 0, &evidence, &|| Ok(())).unwrap();
+            let right = log_mel_spectrogram(&antiphase, 1, &evidence, &|| Ok(())).unwrap();
             assert_eq!(left.frames, 6);
             assert!(left.values.iter().any(|value| *value > 0.0));
             assert_eq!(left.values, right.values);
             let independent: Vec<_> = antiphase.iter().map(|frame| [frame[0], 0.0]).collect();
             assert_eq!(
-                log_mel_spectrogram(&independent, 0, &evidence)
+                log_mel_spectrogram(&independent, 0, &evidence, &|| Ok(()))
                     .unwrap()
                     .values,
                 left.values
             );
             assert!(
-                log_mel_spectrogram(&independent, 1, &evidence)
+                log_mel_spectrogram(&independent, 1, &evidence, &|| Ok(()))
                     .unwrap()
                     .values
                     .iter()
@@ -1028,13 +1140,13 @@ mod frontend {
                 include_bytes!("../../../testdata/synthetic/media-import/stereo-canonical.ogg"),
             )
             .unwrap();
-            let pcm = resample_canonical_22050(&fixture, 4800, &evidence).unwrap();
+            let pcm = resample_canonical_22050(&fixture, 4800, &evidence, &|| Ok(())).unwrap();
             assert_eq!(pcm.len(), 2205);
             assert!(pcm.iter().flatten().all(|sample| sample.is_finite()));
             assert!(pcm.iter().any(|frame| frame[0] != frame[1]));
             for n in [4801, 0] {
                 let rejected = evidence_dir();
-                assert!(resample_canonical_22050(&fixture, n, &rejected).is_err());
+                assert!(resample_canonical_22050(&fixture, n, &rejected, &|| Ok(())).is_err());
                 std::fs::remove_dir_all(rejected).unwrap();
             }
             std::fs::remove_dir_all(evidence).unwrap();

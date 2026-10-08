@@ -1,0 +1,2038 @@
+{
+  "schema": "cocobeat-native-cancellation-observations-v1",
+  "date": "2026-10-08",
+  "state": "FROZEN_ACTUAL_SOFTWARE_OBSERVATIONS",
+  "scope": "Linux x86-64 debug CPU-only public experimental native import cancellation, accepted backend request and serial fresh same-PID retry, owned Linux SDK initialization flag guard and actual frontend-complete CLI SIGINT checkpoint; Candidate only",
+  "inheritance_boundary": "Initial application/static/QA planning NOT_RUN and first E0425/old helper findings/control epochs remain immutable history; current software outcomes derive from actual complete seven-case run and final independent/root postflight, not rewritten prior records",
+  "build": {
+    "status": "PASS",
+    "head": "e4addf4e882ca0e02245299b6f94a77a785b7010",
+    "command": [
+      "cargo",
+      "build",
+      "--offline",
+      "--locked",
+      "-j",
+      "2",
+      "-p",
+      "cocobeat-lab",
+      "--message-format=json"
+    ],
+    "exit_code": 0,
+    "source_inputs": 469,
+    "inputs_unchanged": true,
+    "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/source",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+    "binary_sha256": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256",
+    "scope": "Current accepted head plus reviewed native cancellation10, Linux guard03, single qualified legacy test fix and Linux TAR telemetry env; frozen software build only, no SDK model execution"
+  },
+  "build_binding": {
+    "receipt": {
+      "path": "target/native-cancellation-delivery-20261008/build-01/cocobeat-lab-build-result.json",
+      "bytes": 141797,
+      "sha256": "cf4c092c0a3d7d6a80b8641475cff70daba03b176358acf516c645f480a6f575"
+    },
+    "before_manifest": {
+      "path": "target/native-cancellation-delivery-20261008/build-01/inputs-before.json",
+      "bytes": 57957,
+      "sha256": "a961bf7c567639f1a3f20003342a67fd0404986228ee3428be08e57c775c8a6b"
+    },
+    "after_manifest": {
+      "path": "target/native-cancellation-delivery-20261008/build-01/inputs-after.json",
+      "bytes": 57957,
+      "sha256": "a961bf7c567639f1a3f20003342a67fd0404986228ee3428be08e57c775c8a6b"
+    },
+    "469_before_equals_after": true,
+    "source_head_boundary": "Reported Git head plus reviewed uncommitted source10/guard03/test namespace fix; full source identity is469 copied/manifest hashes, not Git head alone",
+    "scoped_final_snapshots": [
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/.cargo/config.toml",
+        "bytes": 50,
+        "sha256": "07e75f80544a833951c1532649fadd0ee21712b40e55b6e74b880b3c11259e36"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/Cargo.lock",
+        "bytes": 160996,
+        "sha256": "4a4595cc47f106a587dd23f1570251efe5bac3b4d4a59f58fb3d16e7114d164b"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/Cargo.toml",
+        "bytes": 2929,
+        "sha256": "c844d474309f7c6645e26b77c650e2c95c5f07ee915b68b612b73c69a6a80019"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/Cargo.toml",
+        "bytes": 665,
+        "sha256": "350514a44be51b35331b062c944985f0cd376134697b1e227a9f0520dcbdc046"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/anchors.rs",
+        "bytes": 16220,
+        "sha256": "696d78496c649bb6dabbe7b24a77d551388084f08c0a5316375bab3c21ae9949"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/audio_asset.rs",
+        "bytes": 9907,
+        "sha256": "ee6a569116d0be63accf0656b0c260c4d80b7c5bc55305d14781ce4c81450ecb"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/authored.rs",
+        "bytes": 36479,
+        "sha256": "24c3f604f85c68c7dc1777ecd787a218eb2ce0256a9ecd7f7c30ea05cacf94eb"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/content_codec.rs",
+        "bytes": 31378,
+        "sha256": "bf3c37315553cdf49479ce111fb5433603e3416f949434ba80ae46c6279cb266"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/decode.rs",
+        "bytes": 26262,
+        "sha256": "65ea388b579c9b8e79f7f90aed5d3a4146d46e8f3e207f7675dc9b40992e1714"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/encode.rs",
+        "bytes": 11887,
+        "sha256": "613818b42cbf404870e2b874e319e26cb2792a82ad28560ec4aee8f47a471509"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/lib.rs",
+        "bytes": 1666,
+        "sha256": "c5df9781d9102af575aa73b8bc7fc6d1011a1ab4a2cd15e5ecda0cb93e6a7b55"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat.rs",
+        "bytes": 48344,
+        "sha256": "a683a4c6cb97f13d786f857a392cd2faa19026ebae4648769ec37c8ca6ba1e16"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat_assets.rs",
+        "bytes": 4410,
+        "sha256": "738424a3e75d259e8b372c6ab16fb701c70158eb258b0026da736abba2b4f00c"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_beat_evidence.rs",
+        "bytes": 45526,
+        "sha256": "20594c7dd5cd027a2991ffd22eb67500aa893d4cabe7888f926a057376c1bd6c"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/native_cancellation.rs",
+        "bytes": 8510,
+        "sha256": "4d55facdb478097dda1062bf24f712b69c9cbe917aeaf1111758c3122d2ba9d4"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/package.rs",
+        "bytes": 69729,
+        "sha256": "e42833074f88ae6ad1cca189d543e9c4bd64c71d57e8dadf8735c4452acff8eb"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-media/src/resample.rs",
+        "bytes": 12233,
+        "sha256": "a7a22c7930df4b1e508b145561a9bc5b350d2b1b1b1943e58e1a40dfc8e4ed78"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/Cargo.toml",
+        "bytes": 189,
+        "sha256": "8ad4451fec42fc610797fe664aeab2d974119611e06c40911e472827a43f7418"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/src/asset.rs",
+        "bytes": 212,
+        "sha256": "55ede882c498ebbb3a3bb0079edb67111144996ae24e8c091e4fd944e9411dbe"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/src/content.rs",
+        "bytes": 22498,
+        "sha256": "4cc6c5f64794fb669423dbcdad02ba5bb868bc25bac8f30fb977131bd513ed84"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/src/gameplay.rs",
+        "bytes": 3328,
+        "sha256": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/src/lib.rs",
+        "bytes": 938,
+        "sha256": "5f118404beaa4173934062e6af96af70d2d2dfd06ff8e188c0ce7493f447878f"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-schema/src/time.rs",
+        "bytes": 5114,
+        "sha256": "c3056e9f2d61e4b6c46f6b75fd9d76ea96bd4bd27e79c754c3a8706f5f066024"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-stage/Cargo.toml",
+        "bytes": 237,
+        "sha256": "708d88baef39eb7ac600fdd6d678c5ee6dbeb97d6617a8270d0d34b243cbd64c"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/crates/cocobeat-stage/src/lib.rs",
+        "bytes": 25289,
+        "sha256": "4c2ed3afbc61b0b11a40a913d1d9eabfa9a5fd71a3d7356f29b48f698032cc5f"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/licenses/beat-this/LICENSE",
+        "bytes": 1113,
+        "sha256": "909ab6549794a18e9bb243aacfadda4a5f308436fc2846f350755c53c4f06ae1"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/licenses/onnxruntime/SOURCE-AVAILABILITY.md",
+        "bytes": 3243,
+        "sha256": "3c9de27422ce8428976784a82c0f76887b14a178f58fc08202a9c610c7c4b7af"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/tools/cocobeat-lab/Cargo.toml",
+        "bytes": 751,
+        "sha256": "3307e7ca508f1a59bc1ad73a028f5db9edc8a1cf9f282ef70248e70a1fe433e2"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/tools/cocobeat-lab/src/main.rs",
+        "bytes": 14579,
+        "sha256": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431"
+      },
+      {
+        "path": "target/native-cancellation-delivery-20261008/build-01/source/tools/cocobeat-lab/src/package.rs",
+        "bytes": 3526,
+        "sha256": "b29e648a8ff7e4c711cd5b0d2d3431f31921a05d5c2c94ddd440f4659f5b84d2"
+      }
+    ],
+    "large_byte_boundary": "Frozen Lab/dependency/SDK/model/sourceWAV content identities derive from actual build and133-input runtime postflight, not rehashed by sealer"
+  },
+  "initial_application": {
+    "status": "APPLIED_EXACT_REVIEWED_SOURCE10_AND_LINUX_GUARD03",
+    "head": "e4addf4e882ca0e02245299b6f94a77a785b7010",
+    "files": {
+      "Cargo.lock": "4a4595cc47f106a587dd23f1570251efe5bac3b4d4a59f58fb3d16e7114d164b",
+      "crates/cocobeat-media/src/audio_asset.rs": "ee6a569116d0be63accf0656b0c260c4d80b7c5bc55305d14781ce4c81450ecb",
+      "crates/cocobeat-media/src/authored.rs": "24c3f604f85c68c7dc1777ecd787a218eb2ce0256a9ecd7f7c30ea05cacf94eb",
+      "crates/cocobeat-media/src/encode.rs": "613818b42cbf404870e2b874e319e26cb2792a82ad28560ec4aee8f47a471509",
+      "crates/cocobeat-media/src/lib.rs": "c5df9781d9102af575aa73b8bc7fc6d1011a1ab4a2cd15e5ecda0cb93e6a7b55",
+      "crates/cocobeat-media/src/native_beat.rs": "a683a4c6cb97f13d786f857a392cd2faa19026ebae4648769ec37c8ca6ba1e16",
+      "crates/cocobeat-media/src/native_cancellation.rs": "4d55facdb478097dda1062bf24f712b69c9cbe917aeaf1111758c3122d2ba9d4",
+      "crates/cocobeat-media/src/package.rs": "9547b1ac245aebee4b9d8b6fc0e0f66c38b3890936968ab8865b335b1ce0c307",
+      "tools/cocobeat-lab/Cargo.toml": "3307e7ca508f1a59bc1ad73a028f5db9edc8a1cf9f282ef70248e70a1fe433e2",
+      "tools/cocobeat-lab/src/package.rs": "b29e648a8ff7e4c711cd5b0d2d3431f31921a05d5c2c94ddd440f4659f5b84d2"
+    },
+    "main_unchanged_sha256": "bf53b4741806cf488e9f39f9f6c74f05eaa84d856d51269809fe3fa2690c4431",
+    "matrix_old_source_scope": "Actual40completed before application; immutable oldbinary and source receipts retained",
+    "cpu_sdk_actual": "NOT_RUN"
+  },
+  "supplementary_test_namespace_and_linux_release_env": {
+    "receipt": {
+      "path": "target/native-cancellation-delivery-20261008/supplementary-review.json",
+      "bytes": 4697,
+      "sha256": "3f5a99d989b38ba0c42830cc0b07aa67a665a64c5bdab9b40db0adb581ab3aee"
+    },
+    "initial_media_test_E0425": "FAIL_PRESERVED in checks/media-tests.json + stdout/stderr",
+    "minimal_fix": "crate::prepare_canonical_audio only in old test; actual media64+Lab72/Clippy/fmt after fix retained below",
+    "release_workflow_execution": "NOT_RUN for this updated env; static Linux-only TAR smoke env change is distinct from current local seven-case SDK run"
+  },
+  "checks": [
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/clippy.json",
+        "bytes": 674,
+        "sha256": "be3d11751bd0906916c0c5e367fc7cab60298ff6980f24f1dbe333e2e10bd670"
+      },
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "-p",
+        "cocobeat-lab",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 6.95824056697893,
+      "test_result_counts": [],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/ctrlc-license-feature.json",
+        "bytes": 1737,
+        "sha256": "82c737394cc3a9ec04148ff1883ca1e534b0ec38e16bf3986745c7921f514dbe"
+      },
+      "command": [
+        "cargo",
+        "tree",
+        "--offline",
+        "--locked",
+        "-p",
+        "cocobeat-lab",
+        "-i",
+        "ctrlc",
+        "-e",
+        "features"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": null,
+      "test_result_counts": [],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/fmt.json",
+        "bytes": 523,
+        "sha256": "c04a8e032795733cad00c4d333ab01061edbbab451e7e88f5d076958c20c0576"
+      },
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.839958870987175,
+      "test_result_counts": [],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/lab-tests.json",
+        "bytes": 623,
+        "sha256": "f1b2ca1a8f031d7b7d8881bf416c85cc94a100200ec9ba07fef0db5f6447bb18"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-lab",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.9303994680231,
+      "test_result_counts": [
+        {
+          "passed": 72,
+          "failed": 0
+        }
+      ],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/media-tests-02.json",
+        "bytes": 636,
+        "sha256": "b699f556ecc36004686df092cc9e41b65bb880ae1ae69e106e4f8468cbdcb84a"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 7.814890503999777,
+      "test_result_counts": [
+        {
+          "passed": 64,
+          "failed": 0
+        },
+        {
+          "passed": 0,
+          "failed": 0
+        }
+      ],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    },
+    {
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/checks/media-tests.json",
+        "bytes": 632,
+        "sha256": "a43ce5fb92487a20c46ec961cba523ffec4d8e62a467998836b9927ccca0602e"
+      },
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "-j",
+        "2",
+        "-p",
+        "cocobeat-media",
+        "--",
+        "--test-threads=1"
+      ],
+      "exit_code": 101,
+      "elapsed_seconds": 2.735132932662964,
+      "test_result_counts": [],
+      "outer_pid": "NOT_CAPTURED in completed root command receipt"
+    }
+  ],
+  "dependency_license_feature": {
+    "status": "PASS",
+    "lock_changes": [
+      {
+        "key": "cocobeat-lab:0.1.0",
+        "before": {
+          "name": "cocobeat-lab",
+          "version": "0.1.0",
+          "dependencies": [
+            "bevy",
+            "bevy_picking",
+            "bevy_ui_widgets",
+            "blake3",
+            "cocobeat-core",
+            "cocobeat-editor",
+            "cocobeat-media",
+            "cocobeat-net",
+            "cocobeat-replay",
+            "cocobeat-runtime",
+            "cocobeat-schema",
+            "cocobeat-stage",
+            "kira",
+            "serde",
+            "serde_json"
+          ]
+        },
+        "after": {
+          "name": "cocobeat-lab",
+          "version": "0.1.0",
+          "dependencies": [
+            "bevy",
+            "bevy_picking",
+            "bevy_ui_widgets",
+            "blake3",
+            "cocobeat-core",
+            "cocobeat-editor",
+            "cocobeat-media",
+            "cocobeat-net",
+            "cocobeat-replay",
+            "cocobeat-runtime",
+            "cocobeat-schema",
+            "cocobeat-stage",
+            "ctrlc",
+            "kira",
+            "serde",
+            "serde_json"
+          ]
+        }
+      }
+    ],
+    "registry_license_row": [
+      "ctrlc,3.5.2,MIT/Apache-2.0,https://github.com/Detegr/rust-ctrlc.git"
+    ],
+    "command": [
+      "cargo",
+      "tree",
+      "--offline",
+      "--locked",
+      "-p",
+      "cocobeat-lab",
+      "-i",
+      "ctrlc",
+      "-e",
+      "features"
+    ],
+    "exit_code": 0,
+    "actual_feature_graph": {
+      "path": "target/native-cancellation-delivery-20261008/checks/ctrlc-license-feature.txt",
+      "sha256": "133e811b61316dd7a994e0258c7addbd3278a085e78d3863297604d03cda2518"
+    },
+    "scope": "new direct Lab edge reuses existing locked permissive dependency/default feature; not a whole repository license audit"
+  },
+  "actual_command": {
+    "command": [
+      "python",
+      "target/native-cancellation-qa-20261008/revision02/check.py",
+      "run",
+      "target/native-cancellation-delivery-20261008/api-build-01",
+      "target/native-cancellation-delivery-20261008/actual-run-01",
+      "target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+      "assets/dev/vertical_slice/authoring.json",
+      "target/native-beat-cost-20261008/repeat-600.wav",
+      "target/native-beat-cost-20261008/authoring.json"
+    ],
+    "exit_code": 0,
+    "elapsed_seconds": 415.78853853797773,
+    "streams": {
+      "stdout": {
+        "path": "target/native-cancellation-delivery-20261008/qa-run-01.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "target/native-cancellation-delivery-20261008/qa-run-01.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    "scope": "actual Linux CPU native importer/public cancellation API/real SIGINT/new same PID retry with reviewed QA; no game/GPU/hardware/Windows/music quality acceptance"
+  },
+  "actual_command_receipt": {
+    "path": "target/native-cancellation-delivery-20261008/qa-run-01-command.json",
+    "bytes": 1096,
+    "sha256": "302756bf2ec0970ddf240ec898332ee7661bb0fbe32d7cb386d74d29767e6b1b"
+  },
+  "actual_run_receipt": {
+    "path": "target/native-cancellation-delivery-20261008/actual-run-01/run.json",
+    "bytes": 236189,
+    "sha256": "83bf20eaaaafdc6da778f832dbc17ab752abdb77fae029f18bd1ccc40834e5b3"
+  },
+  "actual_status": "PASS_SOFTWARE_ACCEPTED_CANCEL_AND_RETRY",
+  "actual_case_count": 7,
+  "actual_cases": [
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "import-experimental-beat",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag/published"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag",
+      "pid": 5,
+      "exit": 1,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "absent"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "owned_sentinel": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag/:memory:.ses",
+        "owned_cwd_session_cache": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag/:memory:.ses"
+      },
+      "inputs_before": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256",
+        "owned_sentinel": "b2909129b2b964127e25160ed736983a12fd0246fce05453cb6c6f0c13231604",
+        "owned_cwd_session_cache": "b2909129b2b964127e25160ed736983a12fd0246fce05453cb6c6f0c13231604"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256",
+        "owned_sentinel": "b2909129b2b964127e25160ed736983a12fd0246fce05453cb6c6f0c13231604",
+        "owned_cwd_session_cache": "b2909129b2b964127e25160ed736983a12fd0246fce05453cb6c6f0c13231604"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 20767193,
+      "after_owned_cleanup_elapsed_ns": 1119548902,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "58d31927bf872b6b904f79b774bc8f62e4374c854e4637513eddb2d769013abc",
+      "log_read_errors": {},
+      "failure_stage_index": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag/.cocobeat-native-beat-5-0": {
+          "evidence/failed.json": "cfbf03d79bf7c558d97c56d1a3b3fcfef1d43841289b2518385c9dae6dbb006a",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c"
+        }
+      },
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": true,
+        "exists_after": true,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "destination_exists": false,
+      "name": "missing-telemetry-flag"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "import-experimental-beat",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64/published"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64",
+      "pid": 7,
+      "exit": 0,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab"
+      },
+      "inputs_before": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 32300764557,
+      "after_owned_cleanup_elapsed_ns": 33397523508,
+      "stdout_sha256": "076fddfa6e1fc0da93a0f8f26607a66cb66eecb19c58b83699e6ee9d359fa0ca",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_read_errors": {},
+      "failure_stage_index": {},
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "published_index": {
+        "evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+        "evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+        "evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+        "evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+        "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+        "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+        "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+        "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+        "evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+        "evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+        "evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+        "evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+        "evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+        "evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+        "evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+        "evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+        "evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+        "evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+        "evidence/final-canonical-identity.json": "d249da28b93db81f0b36e76d7cfdc663df9f8e9d17f1307121d458610b7c50e7",
+        "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+        "evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+        "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+        "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+        "evidence/package-complete.json": "d0650258100828e01828fa1ac8227ce84ca6b563cd28c0581b3faab2ea98e798",
+        "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+        "evidence/session-metadata.json": "09914f0928cdaad7c2ea6d52c53edfc1e036e4eeff128017c96d315c4bcc41ea",
+        "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+        "package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+        "package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "package/song.package": "b307f558ff706b0d206ecd179b6ca2e5721b2d5f19e8aa70e35104906acd92a2"
+      },
+      "name": "normal64"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "verify-package",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64/published/package"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/verify64",
+      "pid": 10,
+      "exit": 0,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "bundle": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64/published",
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab"
+      },
+      "inputs_before": {
+        "bundle": {
+          "evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+          "evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+          "evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+          "evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+          "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+          "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+          "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+          "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+          "evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+          "evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+          "evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+          "evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+          "evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+          "evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+          "evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+          "evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+          "evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+          "evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+          "evidence/final-canonical-identity.json": "d249da28b93db81f0b36e76d7cfdc663df9f8e9d17f1307121d458610b7c50e7",
+          "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+          "evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+          "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+          "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+          "evidence/package-complete.json": "d0650258100828e01828fa1ac8227ce84ca6b563cd28c0581b3faab2ea98e798",
+          "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+          "evidence/session-metadata.json": "09914f0928cdaad7c2ea6d52c53edfc1e036e4eeff128017c96d315c4bcc41ea",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+          "package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+          "package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "package/song.package": "b307f558ff706b0d206ecd179b6ca2e5721b2d5f19e8aa70e35104906acd92a2"
+        },
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "bundle": {
+          "evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+          "evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+          "evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+          "evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+          "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+          "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+          "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+          "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+          "evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+          "evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+          "evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+          "evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+          "evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+          "evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+          "evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+          "evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+          "evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+          "evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+          "evidence/final-canonical-identity.json": "d249da28b93db81f0b36e76d7cfdc663df9f8e9d17f1307121d458610b7c50e7",
+          "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+          "evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+          "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+          "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+          "evidence/package-complete.json": "d0650258100828e01828fa1ac8227ce84ca6b563cd28c0581b3faab2ea98e798",
+          "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+          "evidence/session-metadata.json": "09914f0928cdaad7c2ea6d52c53edfc1e036e4eeff128017c96d315c4bcc41ea",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+          "package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+          "package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "package/song.package": "b307f558ff706b0d206ecd179b6ca2e5721b2d5f19e8aa70e35104906acd92a2"
+        },
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 2046352816,
+      "after_owned_cleanup_elapsed_ns": 3160403408,
+      "stdout_sha256": "a4f2e3172f2c77b86205044a02371e57ca337f2587bddf1b6cafd60dcceec4b1",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_read_errors": {},
+      "failure_stage_index": {},
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "name": "verify64"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "import-experimental-beat",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64/published"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/existing-output",
+      "pid": 11,
+      "exit": 1,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "existing_bundle": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/normal64/published",
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab"
+      },
+      "inputs_before": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "existing_bundle": {
+          "evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+          "evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+          "evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+          "evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+          "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+          "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+          "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+          "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+          "evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+          "evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+          "evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+          "evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+          "evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+          "evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+          "evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+          "evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+          "evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+          "evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+          "evidence/final-canonical-identity.json": "d249da28b93db81f0b36e76d7cfdc663df9f8e9d17f1307121d458610b7c50e7",
+          "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+          "evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+          "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+          "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+          "evidence/package-complete.json": "d0650258100828e01828fa1ac8227ce84ca6b563cd28c0581b3faab2ea98e798",
+          "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+          "evidence/session-metadata.json": "09914f0928cdaad7c2ea6d52c53edfc1e036e4eeff128017c96d315c4bcc41ea",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+          "package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+          "package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "package/song.package": "b307f558ff706b0d206ecd179b6ca2e5721b2d5f19e8aa70e35104906acd92a2"
+        },
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "existing_bundle": {
+          "evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+          "evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+          "evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+          "evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+          "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+          "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+          "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+          "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+          "evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+          "evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+          "evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+          "evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+          "evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+          "evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+          "evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+          "evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+          "evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+          "evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+          "evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+          "evidence/final-canonical-identity.json": "d249da28b93db81f0b36e76d7cfdc663df9f8e9d17f1307121d458610b7c50e7",
+          "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+          "evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+          "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+          "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+          "evidence/package-complete.json": "d0650258100828e01828fa1ac8227ce84ca6b563cd28c0581b3faab2ea98e798",
+          "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+          "evidence/session-metadata.json": "09914f0928cdaad7c2ea6d52c53edfc1e036e4eeff128017c96d315c4bcc41ea",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+          "package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+          "package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+          "package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "package/song.package": "b307f558ff706b0d206ecd179b6ca2e5721b2d5f19e8aa70e35104906acd92a2"
+        },
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 10621362,
+      "after_owned_cleanup_elapsed_ns": 1130419182,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "87d0cde621977233cbcc9706fbbd9648b796da1c6972758eafd865b7711ba712",
+      "log_read_errors": {},
+      "failure_stage_index": {},
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "name": "existing-output"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/api-build-01/bin/cancellation-api-check",
+        "load",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load",
+      "pid": 13,
+      "exit": 0,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "driver": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/api-build-01/bin/cancellation-api-check"
+      },
+      "inputs_before": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "driver": "0a2b820dc428c4f4e33c5878ebb63991af8c072bda176cbb019c0ea43a5cf06a"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "driver": "0a2b820dc428c4f4e33c5878ebb63991af8c072bda176cbb019c0ea43a5cf06a"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 40019562424,
+      "after_owned_cleanup_elapsed_ns": 40088830673,
+      "stdout_sha256": "7bc8df0ca1fc569ad30109f63d29fac980438d94901e2797255878051fd15c08",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_read_errors": {},
+      "failure_stage_index": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs/.cocobeat-native-beat-13-0": {
+          "evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+          "evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+          "evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+          "evidence/failed.json": "a4bb975cbabfde022c762e09608f06f098b070f52f2570e4fa32d03e3961f2c6",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c"
+        }
+      },
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "output_index": {
+        ".cocobeat-native-beat-13-0/evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+        ".cocobeat-native-beat-13-0/evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+        ".cocobeat-native-beat-13-0/evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+        ".cocobeat-native-beat-13-0/evidence/failed.json": "a4bb975cbabfde022c762e09608f06f098b070f52f2570e4fa32d03e3961f2c6",
+        ".cocobeat-native-beat-13-0/evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+        "noop/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+        "noop/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "noop/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "noop/song.package": "0d04a7e9628cf65ff316e9864c7bbfab0146c7d01ab32d2ac5b083de8561d624",
+        "result.json": "212a6abf47f95ec005536be4ca0514ec205e6c4bbaad47d068c28ab6133b3528",
+        "retry/evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+        "retry/evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+        "retry/evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+        "retry/evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+        "retry/evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+        "retry/evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+        "retry/evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+        "retry/evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+        "retry/evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+        "retry/evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+        "retry/evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+        "retry/evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+        "retry/evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+        "retry/evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+        "retry/evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+        "retry/evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+        "retry/evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+        "retry/evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+        "retry/evidence/final-canonical-identity.json": "168874712196b86a537ccb1bcecf03dd0e06dc90194a6672bf40425b3c41026c",
+        "retry/evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "retry/evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+        "retry/evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+        "retry/evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+        "retry/evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+        "retry/evidence/package-complete.json": "deeeba27df2c960265717eba5fbe5da930bc22a29fe5f3269375c3af1fd48929",
+        "retry/evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "retry/evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "retry/evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+        "retry/evidence/session-metadata.json": "628709b08314c20efad1916bf48d6575db739a801f96cf0e83dc161c08f0a253",
+        "retry/evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+        "retry/package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+        "retry/package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "retry/package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "retry/package/song.package": "0d04a7e9628cf65ff316e9864c7bbfab0146c7d01ab32d2ac5b083de8561d624"
+      },
+      "api_result": {
+        "actual_error": "ORT fixed model: /onnxruntime_src/onnxruntime/core/graph/graph.cc:1313 onnxruntime::Graph::Graph(const onnxruntime::Model&, onnx::GraphProto*, const std::unordered_map<std::__cxx11::basic_string<char>, int>&, onnxruntime::Version, onnxruntime::IOnnxRuntimeOpSchemaCollectionPtr, onnxruntime::Graph*, const onnxruntime::Node*, const onnxruntime::logging::Logger&, bool) Graph loading canceled due to user request.\n; owned staging path /home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs/.cocobeat-native-beat-13-0; evidence path /home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs/.cocobeat-native-beat-13-0/evidence; evidence may be partial",
+        "backend_after_observation": [
+          {
+            "actual_failure": "/onnxruntime_src/onnxruntime/core/graph/graph.cc:1313 onnxruntime::Graph::Graph(const onnxruntime::Model&, onnx::GraphProto*, const std::unordered_map<std::__cxx11::basic_string<char>, int>&, onnxruntime::Version, onnxruntime::IOnnxRuntimeOpSchemaCollectionPtr, onnxruntime::Graph*, const onnxruntime::Node*, const onnxruntime::logging::Logger&, bool) Graph loading canceled due to user request.\n",
+            "phase": "ORT model load",
+            "returned_ns": 1791429630291032003
+          }
+        ],
+        "backend_request_called": true,
+        "cancellation": {
+          "backend_registered": null,
+          "backend_requests": [
+            {
+              "phase": "ORT model load",
+              "request_result": null,
+              "returned_ns": 1791429630281004884,
+              "scope": "request API returned; actual backend result recorded separately"
+            }
+          ],
+          "backend_returns": [
+            {
+              "actual_failure": "/onnxruntime_src/onnxruntime/core/graph/graph.cc:1313 onnxruntime::Graph::Graph(const onnxruntime::Model&, onnx::GraphProto*, const std::unordered_map<std::__cxx11::basic_string<char>, int>&, onnxruntime::Version, onnxruntime::IOnnxRuntimeOpSchemaCollectionPtr, onnxruntime::Graph*, const onnxruntime::Node*, const onnxruntime::logging::Logger&, bool) Graph loading canceled due to user request.\n",
+              "phase": "ORT model load",
+              "returned_ns": 1791429630291032003
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429630292887104,
+          "late_request_ns": 1791429630292891184,
+          "observed_checkpoint": null,
+          "publication_started": false,
+          "request_accepted": true,
+          "requested_ns": 1791429630281002454
+        },
+        "cancellation_scope": "registered request and later actual backend return; in-graph timing not distinguished",
+        "cancelled_call_return_elapsed_ns": 55540585,
+        "destination_exists": false,
+        "hardware_windows_graph_interruption": "NOT_RUN",
+        "input_blake3_after": [
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97",
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97"
+        ],
+        "input_blake3_before": [
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97",
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97"
+        ],
+        "input_paths": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json"
+        ],
+        "phase": "ORT model load",
+        "pid": 13,
+        "request": {
+          "accepted": true,
+          "before_request": {
+            "backend_registered": "ORT model load",
+            "backend_requests": [],
+            "backend_returns": [],
+            "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+            "finished": false,
+            "finished_ns": null,
+            "late_request_ns": null,
+            "observed_checkpoint": null,
+            "publication_started": false,
+            "request_accepted": false,
+            "requested_ns": null
+          },
+          "observed_registration_elapsed_ns": 43654665,
+          "repeated_request_accepted_or_late": true,
+          "request_return_elapsed_ns": 43667535
+        },
+        "request_observation_to_import_return_ns": 11885920,
+        "retry_cancellation": {
+          "backend_registered": null,
+          "backend_requests": [],
+          "backend_returns": [
+            {
+              "actual_failure": null,
+              "phase": "ORT model load",
+              "returned_ns": 1791429630746143314
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429658505054884
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429659243790830
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429659861769005
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429662083513913,
+          "late_request_ns": null,
+          "observed_checkpoint": null,
+          "publication_started": true,
+          "request_accepted": false,
+          "requested_ns": null
+        },
+        "retry_error": null,
+        "retry_late_request": {
+          "backend_registered": null,
+          "backend_requests": [],
+          "backend_returns": [
+            {
+              "actual_failure": null,
+              "phase": "ORT model load",
+              "returned_ns": 1791429630746143314
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429658505054884
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429659243790830
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429659861769005
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429662083513913,
+          "late_request_ns": 1791429662087380465,
+          "observed_checkpoint": null,
+          "publication_started": true,
+          "request_accepted": false,
+          "requested_ns": null
+        },
+        "same_process_retry": {
+          "canonical_frames": 3072000,
+          "complete_validate": true,
+          "noop_anchor_and_stage_equal": true,
+          "objects": {
+            "analysis.bin": {
+              "noop_blake3": "c7034b8271d3aca577bf6de57fd00418a0005111ba8c1dac587e03958e13a9eb",
+              "retry_blake3": "c7034b8271d3aca577bf6de57fd00418a0005111ba8c1dac587e03958e13a9eb"
+            },
+            "chart.bin": {
+              "noop_blake3": "991d7e3a0a4a123298aed0c8e2bcd6447d16b780fb587e232eb3637007bb1e55",
+              "retry_blake3": "991d7e3a0a4a123298aed0c8e2bcd6447d16b780fb587e232eb3637007bb1e55"
+            },
+            "song.audio.ogg": {
+              "noop_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e",
+              "retry_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e"
+            },
+            "song.package": {
+              "noop_blake3": "53b401a90ea3f4ad82690e00d2239eaaa417c13e7d7b049dc9e060bf8ae507df",
+              "retry_blake3": "53b401a90ea3f4ad82690e00d2239eaaa417c13e7d7b049dc9e060bf8ae507df"
+            }
+          },
+          "pid": 13,
+          "stage_compiler": 2,
+          "stage_segments": 8
+        },
+        "status": "PASS_ACCEPTED_ATTEMPT_AND_SAME_PROCESS_RETRY",
+        "termination_observation": "actual error after accepted request; cancellation causality not distinguished"
+      },
+      "helper_result": {
+        "error": null,
+        "event": "helper_result",
+        "exit": 0,
+        "pid": 13
+      },
+      "owned_failure_package_exists": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs/.cocobeat-native-beat-13-0": false
+      },
+      "name": "api-load"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/api-build-01/bin/cancellation-api-check",
+        "run",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run",
+      "pid": 17,
+      "exit": 0,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+        "driver": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/api-build-01/bin/cancellation-api-check"
+      },
+      "inputs_before": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "driver": "0a2b820dc428c4f4e33c5878ebb63991af8c072bda176cbb019c0ea43a5cf06a"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3390dd080cb536fd4a598ea933618dd99b4bf697c0b2874ff5cb0e220feb09e8",
+        "authoring": "7eb6b8ad5971367e37099dec41b9729c98523895fe70f73df4a61a618281637e",
+        "driver": "0a2b820dc428c4f4e33c5878ebb63991af8c072bda176cbb019c0ea43a5cf06a"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": null,
+      "exit_observed_elapsed_ns": 67397293657,
+      "after_owned_cleanup_elapsed_ns": 67451652974,
+      "stdout_sha256": "d52a06d8c79b327ab1244a849bdc3a85058a4ef52c26a2d47ca220dedd91c4f3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_read_errors": {},
+      "failure_stage_index": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs/.cocobeat-native-beat-17-0": {
+          "evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+          "evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+          "evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+          "evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+          "evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+          "evidence/failed.json": "38f5dc991bc569a35bc4212c76913356245fafbab6a734ff3497e9e396dd1309",
+          "evidence/final-canonical-identity.json": "61b4a942ef68a69435d780ba3169a6300cd0cea099e9bdd9ce1bf66f45354d33",
+          "evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+          "evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+          "evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+          "evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+          "evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+          "evidence/session-metadata.json": "5e735d914f383b922073db1c18ca9752cec06b39bc940b154f985365c353a972",
+          "evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c"
+        }
+      },
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "status": "PASS_PROCESS_OBSERVATION",
+      "output_index": {
+        ".cocobeat-native-beat-17-0/evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+        ".cocobeat-native-beat-17-0/evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+        ".cocobeat-native-beat-17-0/evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+        ".cocobeat-native-beat-17-0/evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+        ".cocobeat-native-beat-17-0/evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+        ".cocobeat-native-beat-17-0/evidence/failed.json": "38f5dc991bc569a35bc4212c76913356245fafbab6a734ff3497e9e396dd1309",
+        ".cocobeat-native-beat-17-0/evidence/final-canonical-identity.json": "61b4a942ef68a69435d780ba3169a6300cd0cea099e9bdd9ce1bf66f45354d33",
+        ".cocobeat-native-beat-17-0/evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        ".cocobeat-native-beat-17-0/evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+        ".cocobeat-native-beat-17-0/evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+        ".cocobeat-native-beat-17-0/evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        ".cocobeat-native-beat-17-0/evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        ".cocobeat-native-beat-17-0/evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+        ".cocobeat-native-beat-17-0/evidence/session-metadata.json": "5e735d914f383b922073db1c18ca9752cec06b39bc940b154f985365c353a972",
+        ".cocobeat-native-beat-17-0/evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+        "noop/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+        "noop/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "noop/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "noop/song.package": "0d04a7e9628cf65ff316e9864c7bbfab0146c7d01ab32d2ac5b083de8561d624",
+        "result.json": "06871de6975f676c386cb7f7ec842f71af4cca7c41c054d0c0030518c9f5acf2",
+        "retry/evidence/aggregate-beat.f32": "2ec32cec4b2374291e3f9b00f4fc0b6e317aff3b9dd65e2c41624bc7defe59e8",
+        "retry/evidence/aggregate-coverage.bin": "a6f012c35d710e5b28663486974f913236ca9098bf90f4928d42c1cf39bbd40a",
+        "retry/evidence/aggregate-downbeat.f32": "793a389e52aec65a6a9e260e5fa9cffee13f5de60c878b219b9af7458857233e",
+        "retry/evidence/analysis-complete.json": "a5791cc4d137dc7893aa91f2fa251a1ff534cdff5b7adc1f525daa63d8bfc01d",
+        "retry/evidence/artifact-core.json": "8b77e1a97fe834120df15513070ac236272c94e5d69544a07ec81db4c565ffed",
+        "retry/evidence/artifact-model.json": "5b725ec79981e34e6d8abd0893a2ca2f80212e61ff02037d3e0fa6ad33aef274",
+        "retry/evidence/artifact-provider.json": "5b174702404b8d643fa34774d14bb135ece70a9247d16c1a415da04e72199158",
+        "retry/evidence/chunk-starts.json": "568e7a427436199e2c600c1220c583a723ba8f14385c5d23c87a757b632923ae",
+        "retry/evidence/chunk000-beat.f32": "f582db00eea8ad45610a55034b1d6bf321c69d81324d4be7aeeda03fdde135a9",
+        "retry/evidence/chunk000-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk000-downbeat.f32": "1a41ff97e7a3eece16b900dc9b6edac6df1e540e2bfac98ef6363e431ef3b904",
+        "retry/evidence/chunk000-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk000-spect.f32": "c4a7d57f1ed05a825023f73fca94290a2b0c28f3061b5ab552d226ff9e6b72d4",
+        "retry/evidence/chunk001-beat.f32": "e1237473201291796a5f8b62a78d8f5412f239ddf8bc075774b5d28844ed8866",
+        "retry/evidence/chunk001-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk001-downbeat.f32": "bfec23fe42d7d119ded75ed3316492f6b46286af1a8dd90e8baafc7e6a735626",
+        "retry/evidence/chunk001-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk001-spect.f32": "c5e83bf1788802a29b18d9d6b9822f44169cc2989fa6194f5def3b93a56fdf5e",
+        "retry/evidence/chunk002-beat.f32": "46dfd58fea8f8b02d64275e7a1c1fae8f22ff220cc372130b568f8396e0b8eed",
+        "retry/evidence/chunk002-beat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk002-downbeat.f32": "7cdd2c2ecbcffea58ef220ea2ff4c54e3c03822a66d844484c1aaed7109c0baf",
+        "retry/evidence/chunk002-downbeat.metadata.json": "ddb46bfa1ccdac00ac85b060ac16a52c9eef81702aa6f444d59831b23c7a171a",
+        "retry/evidence/chunk002-spect.f32": "3933c3a1e73615b25f0bfac6018330f87efeb80db20ab66e4de5ce56334c6352",
+        "retry/evidence/evidence-summary.json": "4f99b0f9d931b782bf8219ac032b165ea49e22707f1bd8e9b13b9fcf23f3d1e6",
+        "retry/evidence/final-canonical-identity.json": "e16bc072d5a64411c34bfe366a53dd79161cb4ba0505d1ec3c018057f42eea30",
+        "retry/evidence/final-canonical.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "retry/evidence/minimal-alignment.json": "9a83369a7c1c2e0d6b8a4e2c7bd0c8af4c9e95f7ef7ee143e02fd231cfbfc7b7",
+        "retry/evidence/minimal-raw-groups.json": "8883eb520a4a771a3d0e37afef727e74bfaf0ad4b3e8496a39382625c83f75cd",
+        "retry/evidence/native-shape.json": "2d9ac338695a13859c8849ab2614aabf213ef260e0c4b6e243a125d7ff86bc6e",
+        "retry/evidence/native-spect.f32": "98127416177e8811865fa1ad20829f3b44968cdafc6e47a029c0ee1fcefb46d9",
+        "retry/evidence/package-complete.json": "deeeba27df2c960265717eba5fbe5da930bc22a29fe5f3269375c3af1fd48929",
+        "retry/evidence/resampled-stereo.f32": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "retry/evidence/resampler-output.bin": "b624cb3ad267896cdb054f39130f9e37919b4814dbbd6a2be36949cc75fb952b",
+        "retry/evidence/resampler-output.jsonl": "c3e142dba4c94db1aeb0ca61419a77cceb127a1e8162120e5de09e05505385bb",
+        "retry/evidence/session-metadata.json": "b2bb99abd586cdd5587b2d6f4bccc6b2ddc6b23cb1261fdc21a967149a857cf5",
+        "retry/evidence/started.json": "befcb0a725e09f5c1603e81a9d857166cc3d56f872f896a33d2ecd54a919424c",
+        "retry/package/analysis.bin": "57ede9b8a61c51a70036cfd2e3d2b9c0f9e9b81f372666d1a625f478b712827b",
+        "retry/package/chart.bin": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+        "retry/package/song.audio.ogg": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+        "retry/package/song.package": "0d04a7e9628cf65ff316e9864c7bbfab0146c7d01ab32d2ac5b083de8561d624"
+      },
+      "api_result": {
+        "actual_error": "ORT actual Run: Exiting due to terminate flag being set to true.; owned staging path /home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs/.cocobeat-native-beat-17-0; evidence path /home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs/.cocobeat-native-beat-17-0/evidence; evidence may be partial",
+        "backend_after_observation": [
+          {
+            "actual_failure": "Exiting due to terminate flag being set to true.",
+            "phase": "ORT chunk Run",
+            "returned_ns": 1791429697891888501
+          }
+        ],
+        "backend_request_called": true,
+        "cancellation": {
+          "backend_registered": null,
+          "backend_requests": [
+            {
+              "phase": "ORT chunk Run",
+              "request_result": null,
+              "returned_ns": 1791429697890498983,
+              "scope": "request API returned; actual backend result recorded separately"
+            }
+          ],
+          "backend_returns": [
+            {
+              "actual_failure": null,
+              "phase": "ORT model load",
+              "returned_ns": 1791429670898846741
+            },
+            {
+              "actual_failure": "Exiting due to terminate flag being set to true.",
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429697891888501
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429697901219455,
+          "late_request_ns": 1791429697901223065,
+          "observed_checkpoint": null,
+          "publication_started": false,
+          "request_accepted": true,
+          "requested_ns": 1791429697890496273
+        },
+        "cancellation_scope": "registered request and later actual backend return; in-graph timing not distinguished",
+        "cancelled_call_return_elapsed_ns": 27493134343,
+        "destination_exists": false,
+        "hardware_windows_graph_interruption": "NOT_RUN",
+        "input_blake3_after": [
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97",
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97"
+        ],
+        "input_blake3_before": [
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97",
+          "547206ffcea1b12a384e34b4eac03a628c9dddd2cfd5a800a940c8d9a67189b8",
+          "bb4868c7e80cc223b4baf08a4e49ddd68db91ce41d5a3d1bb63842186ce1ff97"
+        ],
+        "input_paths": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+          "/home/lzzz/MyProjects/CoCoBeat/target/workbench-milestone-20261005/audio-source/cocobeat-64.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/assets/dev/vertical_slice/authoring.json"
+        ],
+        "phase": "ORT chunk Run",
+        "pid": 17,
+        "request": {
+          "accepted": true,
+          "before_request": {
+            "backend_registered": "ORT chunk Run",
+            "backend_requests": [],
+            "backend_returns": [
+              {
+                "actual_failure": null,
+                "phase": "ORT model load",
+                "returned_ns": 1791429670898846741
+              }
+            ],
+            "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+            "finished": false,
+            "finished_ns": null,
+            "late_request_ns": null,
+            "observed_checkpoint": null,
+            "publication_started": false,
+            "request_accepted": false,
+            "requested_ns": null
+          },
+          "observed_registration_elapsed_ns": 27482410131,
+          "repeated_request_accepted_or_late": true,
+          "request_return_elapsed_ns": 27482427021
+        },
+        "request_observation_to_import_return_ns": 10724212,
+        "retry_cancellation": {
+          "backend_registered": null,
+          "backend_requests": [],
+          "backend_returns": [
+            {
+              "actual_failure": null,
+              "phase": "ORT model load",
+              "returned_ns": 1791429698374030614
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429726113325074
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429726855300761
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429727480237145
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429729632675693,
+          "late_request_ns": null,
+          "observed_checkpoint": null,
+          "publication_started": true,
+          "request_accepted": false,
+          "requested_ns": null
+        },
+        "retry_error": null,
+        "retry_late_request": {
+          "backend_registered": null,
+          "backend_requests": [],
+          "backend_returns": [
+            {
+              "actual_failure": null,
+              "phase": "ORT model load",
+              "returned_ns": 1791429698374030614
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429726113325074
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429726855300761
+            },
+            {
+              "actual_failure": null,
+              "phase": "ORT chunk Run",
+              "returned_ns": 1791429727480237145
+            }
+          ],
+          "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+          "finished": true,
+          "finished_ns": 1791429729632675693,
+          "late_request_ns": 1791429729636703185,
+          "observed_checkpoint": null,
+          "publication_started": true,
+          "request_accepted": false,
+          "requested_ns": null
+        },
+        "same_process_retry": {
+          "canonical_frames": 3072000,
+          "complete_validate": true,
+          "noop_anchor_and_stage_equal": true,
+          "objects": {
+            "analysis.bin": {
+              "noop_blake3": "c7034b8271d3aca577bf6de57fd00418a0005111ba8c1dac587e03958e13a9eb",
+              "retry_blake3": "c7034b8271d3aca577bf6de57fd00418a0005111ba8c1dac587e03958e13a9eb"
+            },
+            "chart.bin": {
+              "noop_blake3": "991d7e3a0a4a123298aed0c8e2bcd6447d16b780fb587e232eb3637007bb1e55",
+              "retry_blake3": "991d7e3a0a4a123298aed0c8e2bcd6447d16b780fb587e232eb3637007bb1e55"
+            },
+            "song.audio.ogg": {
+              "noop_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e",
+              "retry_blake3": "55367ebdd39e48eb659c7a0a0ce68add3029a3b40a295e23cfe29b9035655d3e"
+            },
+            "song.package": {
+              "noop_blake3": "53b401a90ea3f4ad82690e00d2239eaaa417c13e7d7b049dc9e060bf8ae507df",
+              "retry_blake3": "53b401a90ea3f4ad82690e00d2239eaaa417c13e7d7b049dc9e060bf8ae507df"
+            }
+          },
+          "pid": 17,
+          "stage_compiler": 2,
+          "stage_segments": 8
+        },
+        "status": "PASS_ACCEPTED_ATTEMPT_AND_SAME_PROCESS_RETRY",
+        "termination_observation": "actual error after accepted request; cancellation causality not distinguished"
+      },
+      "helper_result": {
+        "error": null,
+        "event": "helper_result",
+        "exit": 0,
+        "pid": 17
+      },
+      "owned_failure_package_exists": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs/.cocobeat-native-beat-17-0": false
+      },
+      "name": "api-run"
+    },
+    {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab",
+        "import-experimental-beat",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-cost-20261008/repeat-600.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-cost-20261008/authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel/published"
+      ],
+      "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel",
+      "pid": 21,
+      "exit": 1,
+      "environment_override": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "input_paths": {
+        "source": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-cost-20261008/repeat-600.wav",
+        "authoring": "/home/lzzz/MyProjects/CoCoBeat/target/native-beat-cost-20261008/authoring.json",
+        "binary": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/build-01/bin/cocobeat-lab"
+      },
+      "inputs_before": {
+        "source": "3eab427cc62a4e3a88e78ce92343a01e879dfc2520a82fb27d520a3188913be0",
+        "authoring": "fb80df0445de10ca889b7cfa165a3f876cfe8bf7a9d199e2679f38d6ffc85fb8",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_before": {},
+      "timeout": false,
+      "cleanup_signals": [],
+      "ownedgone": true,
+      "inputs_after": {
+        "source": "3eab427cc62a4e3a88e78ce92343a01e879dfc2520a82fb27d520a3188913be0",
+        "authoring": "fb80df0445de10ca889b7cfa165a3f876cfe8bf7a9d199e2679f38d6ffc85fb8",
+        "binary": "f6c7c3a8473bd628d80bb6f8dba77ac7f3b40e15d607ad894d0e463b4da33256"
+      },
+      "input_read_errors_after": {},
+      "inputs_equal": true,
+      "request": {
+        "signal": "SIGINT",
+        "actual_pid": 21,
+        "request_elapsed_ns": 257294085148,
+        "delivery_error": null,
+        "marker": "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel/.cocobeat-native-beat-21-0/evidence/native-shape.json",
+        "marker_sha256": "95c3a3e3bddd66d380cbb18a93a72616c6f6e3e7b4182d519ace0ca9489878bb",
+        "marker_data": {
+          "F": 30001,
+          "M": 13230000,
+          "N": 28800000,
+          "channel": 0,
+          "confidence": null,
+          "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+          "old_music_quality": "FAIL_PRESERVED",
+          "production_admission": false,
+          "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+          "shape": [
+            1,
+            30001,
+            128
+          ]
+        },
+        "scope": "actual complete native-shape observed; graph phase not distinguished"
+      },
+      "exit_observed_elapsed_ns": 257329612581,
+      "after_owned_cleanup_elapsed_ns": 258702404068,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "156874cfd7c5d1f4802fe013988d72bcbc5c377dca01d2a719dcc6956b9dd948",
+      "log_read_errors": {},
+      "failure_stage_index": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel/.cocobeat-native-beat-21-0": {
+          "evidence/artifact-core.json": "4ee21528db66cfe47d72e518c0d685385dda722b8bd9a655a46809a026b79395",
+          "evidence/artifact-model.json": "08f7abff947e4458921245a0d6e64fe71b5ce2a258366956f57e1a2c5e617715",
+          "evidence/artifact-provider.json": "6c9837c948b6be4d2c52fbd7b0f98e12a1cf7d9bbbb8327e326f0c7e90fd24aa",
+          "evidence/chunk-starts.json": "afde1b978ea6aa14051d603b3762a1d76395bbe753d9a4ef72574a3f08c491f6",
+          "evidence/failed.json": "f28aedd42462aa93b2ef1b2729662ddec41679a2c8ad65635d8fff50c12a0bee",
+          "evidence/final-canonical-identity.json": "caec654f99dec40c0c56615f6584d48a11e4c191d5bfaf53ccd063440859ebc7",
+          "evidence/final-canonical.ogg": "d5f94637d5a52ae4484fe52e0b36b0f6efe7e5542dc4418c6132aa8169e8a859",
+          "evidence/native-shape.json": "95c3a3e3bddd66d380cbb18a93a72616c6f6e3e7b4182d519ace0ca9489878bb",
+          "evidence/native-spect.f32": "0ed1a2e0bc7c3a839dfd04a009e58b6dd325bc66bd4f456660f7c674bbffaa42",
+          "evidence/resampled-stereo.f32": "4c124d15bb2590e786d42b5d84f030534e1a9d0321546e3a22ae8c8faeb61f51",
+          "evidence/resampler-output.bin": "4c124d15bb2590e786d42b5d84f030534e1a9d0321546e3a22ae8c8faeb61f51",
+          "evidence/resampler-output.jsonl": "57ed5c9afb3a953c14bacee9f8fc08ce04b9a7e5c2a1b323f7ca52c7dabef424",
+          "evidence/session-metadata.json": "a34cdb9002d6415be7cc3c548618134065f5ea8021f9c77de6827955bc0aecec",
+          "evidence/started.json": "d673c6b9c4d32609f3415d4db3186bb6c53e134ba00fd88eaecdb2f4e866005d"
+        }
+      },
+      "stage_read_errors": {},
+      "owned_cwd_session_cache": {
+        "existed_before": false,
+        "exists_after": false,
+        "equal": true
+      },
+      "request_to_observed_exit_ns": 35527433,
+      "observation_poll_ms": 5,
+      "status": "PASS_PROCESS_OBSERVATION",
+      "destination_exists": false,
+      "owned_failure_package_exists": {
+        "/home/lzzz/MyProjects/CoCoBeat/target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel/.cocobeat-native-beat-21-0": false
+      },
+      "name": "cli600-cancel"
+    }
+  ],
+  "failed_attempt_diagnostic_snapshots": [
+    {
+      "case": "missing-telemetry-flag",
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/actual-run-01/missing-telemetry-flag/.cocobeat-native-beat-5-0/evidence/failed.json",
+        "bytes": 604,
+        "sha256": "cfbf03d79bf7c558d97c56d1a3b3fcfef1d43841289b2518385c9dae6dbb006a"
+      },
+      "reason": "Linux native ORT requires ORT_DISABLE_TELEMETRY=1 before SDK initialization",
+      "cancellation": {
+        "backend_registered": null,
+        "backend_requests": [],
+        "backend_returns": [],
+        "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+        "finished": false,
+        "finished_ns": null,
+        "late_request_ns": null,
+        "observed_checkpoint": null,
+        "publication_started": false,
+        "request_accepted": false,
+        "requested_ns": null
+      },
+      "snapshot_lifecycle": "Written inside failed attempt cleanup before wrapper cancel.finish; finished=false is retained exactly, final API result diagnostics/actual CLI exit and gone-group separately establish returned attempt"
+    },
+    {
+      "case": "api-load",
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/actual-run-01/api-load/outputs/.cocobeat-native-beat-13-0/evidence/failed.json",
+        "bytes": 1698,
+        "sha256": "a4bb975cbabfde022c762e09608f06f098b070f52f2570e4fa32d03e3961f2c6"
+      },
+      "reason": "ORT fixed model: /onnxruntime_src/onnxruntime/core/graph/graph.cc:1313 onnxruntime::Graph::Graph(const onnxruntime::Model&, onnx::GraphProto*, const std::unordered_map<std::__cxx11::basic_string<char>, int>&, onnxruntime::Version, onnxruntime::IOnnxRuntimeOpSchemaCollectionPtr, onnxruntime::Graph*, const onnxruntime::Node*, const onnxruntime::logging::Logger&, bool) Graph loading canceled due to user request.\n",
+      "cancellation": {
+        "backend_registered": null,
+        "backend_requests": [
+          {
+            "phase": "ORT model load",
+            "request_result": null,
+            "returned_ns": 1791429630281004884,
+            "scope": "request API returned; actual backend result recorded separately"
+          }
+        ],
+        "backend_returns": [
+          {
+            "actual_failure": "/onnxruntime_src/onnxruntime/core/graph/graph.cc:1313 onnxruntime::Graph::Graph(const onnxruntime::Model&, onnx::GraphProto*, const std::unordered_map<std::__cxx11::basic_string<char>, int>&, onnxruntime::Version, onnxruntime::IOnnxRuntimeOpSchemaCollectionPtr, onnxruntime::Graph*, const onnxruntime::Node*, const onnxruntime::logging::Logger&, bool) Graph loading canceled due to user request.\n",
+            "phase": "ORT model load",
+            "returned_ns": 1791429630291032003
+          }
+        ],
+        "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+        "finished": false,
+        "finished_ns": null,
+        "late_request_ns": null,
+        "observed_checkpoint": null,
+        "publication_started": false,
+        "request_accepted": true,
+        "requested_ns": 1791429630281002454
+      },
+      "snapshot_lifecycle": "Written inside failed attempt cleanup before wrapper cancel.finish; finished=false is retained exactly, final API result diagnostics/actual CLI exit and gone-group separately establish returned attempt"
+    },
+    {
+      "case": "api-run",
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/actual-run-01/api-run/outputs/.cocobeat-native-beat-17-0/evidence/failed.json",
+        "bytes": 1124,
+        "sha256": "38f5dc991bc569a35bc4212c76913356245fafbab6a734ff3497e9e396dd1309"
+      },
+      "reason": "ORT actual Run: Exiting due to terminate flag being set to true.",
+      "cancellation": {
+        "backend_registered": null,
+        "backend_requests": [
+          {
+            "phase": "ORT chunk Run",
+            "request_result": null,
+            "returned_ns": 1791429697890498983,
+            "scope": "request API returned; actual backend result recorded separately"
+          }
+        ],
+        "backend_returns": [
+          {
+            "actual_failure": null,
+            "phase": "ORT model load",
+            "returned_ns": 1791429670898846741
+          },
+          {
+            "actual_failure": "Exiting due to terminate flag being set to true.",
+            "phase": "ORT chunk Run",
+            "returned_ns": 1791429697891888501
+          }
+        ],
+        "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+        "finished": false,
+        "finished_ns": null,
+        "late_request_ns": null,
+        "observed_checkpoint": null,
+        "publication_started": false,
+        "request_accepted": true,
+        "requested_ns": 1791429697890496273
+      },
+      "snapshot_lifecycle": "Written inside failed attempt cleanup before wrapper cancel.finish; finished=false is retained exactly, final API result diagnostics/actual CLI exit and gone-group separately establish returned attempt"
+    },
+    {
+      "case": "cli600-cancel",
+      "receipt": {
+        "path": "target/native-cancellation-delivery-20261008/actual-run-01/cli600-cancel/.cocobeat-native-beat-21-0/evidence/failed.json",
+        "bytes": 824,
+        "sha256": "f28aedd42462aa93b2ef1b2729662ddec41679a2c8ad65635d8fff50c12a0bee"
+      },
+      "reason": "Native import cancellation observed at native chunk preparation",
+      "cancellation": {
+        "backend_registered": null,
+        "backend_requests": [],
+        "backend_returns": [
+          {
+            "actual_failure": null,
+            "phase": "ORT model load",
+            "returned_ns": 1791429739610084407
+          }
+        ],
+        "clock": "local wall-clock epoch nanoseconds; measure latency separately with Instant",
+        "finished": false,
+        "finished_ns": null,
+        "late_request_ns": null,
+        "observed_checkpoint": {
+          "observed_ns": 1791429996410074637,
+          "phase": "native chunk preparation"
+        },
+        "publication_started": false,
+        "request_accepted": true,
+        "requested_ns": 1791429996394417508
+      },
+      "snapshot_lifecycle": "Written inside failed attempt cleanup before wrapper cancel.finish; finished=false is retained exactly, final API result diagnostics/actual CLI exit and gone-group separately establish returned attempt"
+    }
+  ],
+  "observed_software_intervals": {
+    "api_load_request_observation_to_import_return_ns": 11885920,
+    "api_run_request_observation_to_import_return_ns": 10724212,
+    "cli600_request_to_observed_exit_ns": 35527433,
+    "cli600_observation_poll_ms": 5,
+    "scope": "Instant/monotonic software observations, not signal-handler arrival, in-graph interruption timing, physical latency or shipping SLA; API registered phase is not an in-graph clock",
+    "cli600_observation": "Complete N28800000/F30001 frontend marker observed, then actual ownPID SIGINT; model load had returned successfully, no backend request, cancellation checkpoint native chunk preparation; no interrupted Run claim"
+  },
+  "owned_sdk_cache_guard": {
+    "scope": "Only these seven newly owned cwd cases: one missing-flag sentinel unchanged, six explicit child env=1 cases absent before/after; no network-transmission measurement, no repository-root unknown session file interaction and no rewrite of old40 observations",
+    "guard": {
+      "path": "target/native-cancellation-implementation-20261008/revision03/linux-telemetry-prerequisite.patch",
+      "bytes": 716,
+      "sha256": "51fa5bf04e12063717ddc83736f2d0c27a3618037205cc888db394bc028cd785"
+    },
+    "cases": [
+      {
+        "name": "missing-telemetry-flag",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "absent"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": true,
+          "exists_after": true,
+          "equal": true
+        }
+      },
+      {
+        "name": "normal64",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      },
+      {
+        "name": "verify64",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      },
+      {
+        "name": "existing-output",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      },
+      {
+        "name": "api-load",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      },
+      {
+        "name": "api-run",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      },
+      {
+        "name": "cli600-cancel",
+        "environment_override": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "owned_cwd_session_cache": {
+          "existed_before": false,
+          "exists_after": false,
+          "equal": true
+        }
+      }
+    ]
+  },
+  "postflight": {
+    "root_final_receipt": {
+      "path": "target/native-cancellation-delivery-20261008/root-build-final-postflight.json",
+      "bytes": 1976,
+      "sha256": "ed48652f15b7e52f8028ca6d16c076f29de813dbf93f408fb7303137f580a119"
+    },
+    "root_final": {
+      "status": "PASS_CURRENT_SOURCE_AND_ACTUAL_SOFTWARE_POSTFLIGHT",
+      "compiler_inputs": 469,
+      "before_equals_after_equals_current": true,
+      "head": "1ac5002aae036e10a3c1aa4d09eca089aacf393a",
+      "actual_command_receipt": "target/native-cancellation-delivery-20261008/qa-run-01-command.json",
+      "actual_run_sha256": "83bf20eaaaafdc6da778f832dbc17ab752abdb77fae029f18bd1ccc40834e5b3",
+      "cases": [
+        {
+          "name": "missing-telemetry-flag",
+          "pid": 5,
+          "exit": 1,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "normal64",
+          "pid": 7,
+          "exit": 0,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "verify64",
+          "pid": 10,
+          "exit": 0,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "existing-output",
+          "pid": 11,
+          "exit": 1,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "api-load",
+          "pid": 13,
+          "exit": 0,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "api-run",
+          "pid": 17,
+          "exit": 0,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": null,
+          "sdk_session_cache_equal": true
+        },
+        {
+          "name": "cli600-cancel",
+          "pid": 21,
+          "exit": 1,
+          "ownedgone": true,
+          "request_to_observed_exit_ns": 35527433,
+          "sdk_session_cache_equal": true
+        }
+      ],
+      "scope": "same469 compiler graph; complete seven observed Linux CPU software cases; SDK/largePCM/binary already bound by original actual postflight, not read again; repository root unknown session file untouched; no Windows/physical/in-graph SLA/music/GUI/ordinary Ready cancellation claim"
+    },
+    "runtime_protected_inputs": 133,
+    "before_after_equal": true,
+    "all469_current_binding": "Root final postflight only; sealing agent hashed explicitly scoped frozen copies, not all current source or large assets"
+  },
+  "independent_actual_review": {
+    "receipt": {
+      "path": "target/native-cancellation-delivery-20261008/actual-seven-review.json",
+      "bytes": 56578,
+      "sha256": "295aa521f3e8f9669b0bdd7307a4ad12c881d122ceb3aad977c064b268094f62"
+    },
+    "status": "PASS_INDEPENDENT_ACTUAL_SEVEN_CASE_REVIEW",
+    "conclusion": "Lean already. Ship.",
+    "reviewer": "/root/authored_final_review",
+    "scope": "Actual final review independent of target QA author and this formal record owner; its selected small refs/large receipt binding remain separately scoped"
+  },
+  "qa_history": {
+    "initial": {
+      "freeze": {
+        "path": "target/native-cancellation-qa-20261008/FREEZE.json",
+        "bytes": 1213,
+        "sha256": "6352911669a4e744ef3b0c9ca8ba18389b55953ab1336430b53b9d25438aacdd"
+      },
+      "review": {
+        "path": "target/native-cancellation-qa-20261008/independent-review.json",
+        "bytes": 7321,
+        "sha256": "b095d6047d2900abb0657e9109d521a5298203d5b95bfee1853b34e44276acb2"
+      },
+      "findings": "R1 wrong retry outerbundle package root; R2 firstFAIL output/postflight receipt gaps retained"
+    },
+    "revision02": {
+      "freeze": {
+        "path": "target/native-cancellation-qa-20261008/revision02/FREEZE.json",
+        "bytes": 2106,
+        "sha256": "867745c9397ea9efbd39580fec740ace3f03c2d3cdebf323b520a0e77b9dd9af"
+      },
+      "review": {
+        "path": "target/native-cancellation-qa-20261008/revision02/independent-review.json",
+        "bytes": 7985,
+        "sha256": "45833a96361ca20568d218ac988a679cc610c4b0b03cc5a950db81f70b61f433"
+      },
+      "final_file_mock_controls": {
+        "path": "target/native-cancellation-qa-20261008/revision02/exception-check-final.json",
+        "bytes": 4107,
+        "sha256": "88070ca13962148abe5b21d87fed078a3cc4f485ffa455f4af487cf2add58647"
+      },
+      "epoch": "Original78d5 controls retained as oldcandidate; final0704 wrapper3controls bound by actual final raw receipts, mockPID424242 is not a real child"
+    },
+    "primary10": {
+      "patch": {
+        "path": "target/native-cancellation-implementation-20261008/implementation.patch",
+        "bytes": 75241,
+        "sha256": "23cc9a80fcd600025a3de60d470c830fdbdafed8c8baf09c44fb2563a4cdf5fc"
+      },
+      "review": {
+        "path": "target/native-cancellation-implementation-20261008/independent-review.json",
+        "bytes": 9955,
+        "sha256": "52d3edb84040eae5a0ab0164d7bdc9629ae0f340b268e36283474efda858b000"
+      }
+    },
+    "guard03": {
+      "patch": {
+        "path": "target/native-cancellation-implementation-20261008/revision03/linux-telemetry-prerequisite.patch",
+        "bytes": 716,
+        "sha256": "51fa5bf04e12063717ddc83736f2d0c27a3618037205cc888db394bc028cd785"
+      },
+      "review": {
+        "path": "target/native-cancellation-implementation-20261008/revision03/independent-review.json",
+        "bytes": 3739,
+        "sha256": "08c57f641552c57521cc1b32a651cee4b8117dd5a3f72fe5de67219d05a751d6"
+      }
+    }
+  },
+  "boundaries": {
+    "production_admission": false,
+    "confidence": null,
+    "frontend_numeric": "FAIL_PRESERVED; this batch does not change original frontend numerical admission",
+    "music_quality": "FAIL_PRESERVED; source64/repeat600 are original synthetic content, not human beat truth",
+    "source_audio": "Both64s/600s fixtures are actual PCM16 stereo48k headers; final reencoded canonical audio bound by actual package/evidence identity, no rescore against old schedule",
+    "ordinary_ready_source_import": "NOT_RUN; this cancellation API/CLI applies to explicit experimental beat import, no ordinary Ready GUI cancellation integration proof",
+    "windows_ctrl_c_ctrl_break": "NOT_RUN",
+    "game_GUI_retry_controller_CPAL_audio_physical_signal_human_acceptance": "NOT_RUN",
+    "backend_inflight_interruption_and_latency_SLA": "NOT_RUN; original actual SDK errors/request-result retained, not generalized cancellation cause or graph-active timing",
+    "four_target_release_current_cancellation": "NOT_RUN; prior release observations remain separate immutable history",
+    "atomic_publication_late_request_race": "Actual pure Rust software tests retained; no new physical late-SIGINT publication probe",
+    "production_Python_GPL": "No product Python runtime/GPL analysis added; target Python file/mock/native supervisor is QA only; current direct ctrlc license/feature edge recorded, not a fresh whole-repo license audit",
+    "old40": "Historical native40 imported-final software/quality FAIL observations preserved unchanged",
+    "sealer_execution": "No Cargo/compiler/SDK/model/native/signal/GPU or Git mutation; only selected small-byte reads and metadata writes"
+  },
+  "raw_index_candidate": "testdata/synthetic/native-cancellation-observations-20261008-raw-index.json"
+}
