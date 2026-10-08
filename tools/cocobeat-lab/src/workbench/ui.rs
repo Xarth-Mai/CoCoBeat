@@ -592,7 +592,9 @@ pub(super) fn update(
                 } else if let Some(candidates) = &state.candidates {
                     state
                         .locale
-                        .text(if candidates.is_native() {
+                        .text(if candidates.is_structure() {
+                            "structure.title"
+                        } else if candidates.is_native() {
                             "native_beats.title"
                         } else {
                             "candidates.title"
@@ -657,7 +659,9 @@ pub(super) fn update(
                         "{}–{} · {}",
                         doc.start,
                         doc.start + doc.span,
-                        state.locale.text(if candidates.is_native() {
+                        state.locale.text(if candidates.is_structure() {
+                            "structure.legend"
+                        } else if candidates.is_native() {
                             "native_beats.legend"
                         } else {
                             "candidates.legend"
@@ -740,6 +744,12 @@ pub(super) fn update(
             Part::ListTab => state.text(
                 if state.replay.is_some() {
                     "replay.records"
+                } else if state
+                    .candidates
+                    .as_ref()
+                    .is_some_and(|view| view.is_structure())
+                {
+                    "structure.records"
                 } else if state.candidates.is_some() {
                     "candidates.records"
                 } else {
@@ -822,13 +832,15 @@ pub(super) fn update(
                 let details = candidates.details(state.locale);
                 let help = state
                     .locale
-                    .text(if candidates.is_native() {
+                    .text(if candidates.is_structure() {
+                        "structure.help"
+                    } else if candidates.is_native() {
                         "native_beats.help"
                     } else {
                         "candidates.help"
                     })
                     .to_owned();
-                let (first, second) = if candidates.is_native() {
+                let (first, second) = if candidates.is_native() || candidates.is_structure() {
                     (help, details)
                 } else {
                     (details, help)
@@ -1038,6 +1050,7 @@ fn paint_wave(
     height: u32,
 ) -> Image {
     let mut data = pixels.to_vec();
+    let structure = candidates.is_some_and(|view| view.is_structure());
     let mut line = |x: u32, top: u32, bottom: u32, color: [u8; 4]| {
         for y in top.min(height)..bottom.min(height) {
             let offset = ((y * width + x.min(width - 1)) * 4) as usize;
@@ -1062,7 +1075,7 @@ fn paint_wave(
             x as u32,
             top,
             height * 87 / 100,
-            if *count == 1 {
+            if *count == 1 || structure {
                 [211, 222, 236, 255]
             } else {
                 [230, 187, 112, 255]
@@ -1078,7 +1091,11 @@ fn paint_wave(
             column(cue.time.frames()),
             height * 90 / 100,
             height,
-            [149, 167, 226, 255],
+            if structure {
+                [211, 222, 236, 255]
+            } else {
+                [149, 167, 226, 255]
+            },
         );
     }
     if let Some(replay) = replay {
@@ -1111,6 +1128,38 @@ fn paint_wave(
         }
     }
     if let Some(candidates) = candidates {
+        if let Some(evidence) = candidates.structure_evidence() {
+            let selected = evidence.bins.get(candidates.selected);
+            let intervals = evidence
+                .bins
+                .iter()
+                .map(|bin| (bin.start_frame, bin.end_frame, [133, 148, 164, 255]))
+                .chain(selected.into_iter().flat_map(|bin| {
+                    bin.neighbors.iter().map(|neighbor| {
+                        (
+                            neighbor.start_frame,
+                            neighbor.end_frame,
+                            [165, 152, 209, 255],
+                        )
+                    })
+                }))
+                .chain(selected.map(|bin| (bin.start_frame, bin.end_frame, [112, 189, 223, 255])));
+            for (start, end, color) in intervals {
+                let left = (start as i64).max(doc.start);
+                let right = (end as i64).min(doc.start + doc.span);
+                if left >= right {
+                    continue;
+                }
+                // Original half-open support remains intact; only raster columns are merged
+                let first = ((left - doc.start) as u64 * u64::from(width) / doc.span as u64) as u32;
+                let last = ((right - doc.start) as u64 * u64::from(width))
+                    .div_ceil(doc.span as u64)
+                    .min(u64::from(width)) as u32;
+                for x in first..last {
+                    line(x, height * 68 / 100, height * 72 / 100, color);
+                }
+            }
+        }
         for (frame, accepted) in candidates
             .points()
             .filter(|(frame, _)| (doc.start..=doc.start + doc.span).contains(frame))
@@ -1813,6 +1862,101 @@ mod tests {
         assert!(!detail.contains("proposed_anchor"));
         let title = &texts.iter().find(|(_, title, _)| *title).unwrap().2;
         assert_eq!(title, Locale::EnUs.text("native_beats.title"));
+    }
+
+    #[test]
+    fn structure_interval_raster_and_small_window_keep_original_tail_and_read_only_controls() {
+        let mut state = super::super::tests::state();
+        state.destination = None;
+        state.candidates = Some(candidates::structure_fixture());
+        state.document = Document::from_anchors(
+            49_153,
+            state.document.original.clone(),
+            vec![SectionCue {
+                id: 7,
+                time: SongTime::from_frames(12_000),
+                label: "constructed author context".into(),
+            }],
+        )
+        .unwrap();
+        state.select(0);
+        state.document.cursor = -1;
+        let pixels = waveform_pixels(&state.wave, &state.document, 100, 100);
+        let raster = paint_wave(
+            &pixels,
+            &state.document,
+            None,
+            state.candidates.as_ref(),
+            None,
+            100,
+            100,
+        );
+        let color = |image: &Image, x: usize| {
+            image.data.as_ref().unwrap()[(68 * 100 + x) * 4..(68 * 100 + x + 1) * 4].to_vec()
+        };
+        assert_eq!(color(&raster, 25), [112, 189, 223, 255]);
+        assert_eq!(color(&raster, 75), [165, 152, 209, 255]);
+        let bytes = raster.data.as_ref().unwrap();
+        let cue_column =
+            (state.document.sections[0].time.frames() as f64 / 49_153.0 * 100.0).round() as usize;
+        assert_eq!(
+            &bytes[(95 * 100 + cue_column) * 4..(95 * 100 + cue_column + 1) * 4],
+            &[211, 222, 236, 255]
+        );
+        state.select(2);
+        assert_eq!(state.document.cursor, 49_152);
+        state.document.cursor = -1;
+        let raster = paint_wave(
+            &pixels,
+            &state.document,
+            None,
+            state.candidates.as_ref(),
+            None,
+            100,
+            100,
+        );
+        assert_eq!(color(&raster, 99), [112, 189, 223, 255]);
+        assert_eq!(state.document.editor.anchors(), state.document.original);
+        assert!(state.is_read_only());
+        let mut app = App::new();
+        app.init_resource::<Assets<Font>>()
+            .init_resource::<Assets<Image>>()
+            .init_resource::<input::Controls>()
+            .insert_resource(state);
+        install_ui_assets(&mut app).unwrap();
+        app.world_mut().spawn(Window {
+            resolution: (640, 480).into(),
+            ..default()
+        });
+        app.world_mut().run_system_once(setup).unwrap();
+        app.world_mut().resource_mut::<Workbench>().details = true;
+        app.world_mut().run_system_once(update).unwrap();
+        assert_eq!(app.world().resource::<Workbench>().record_count(), 3);
+        let mut toolbars = 0;
+        for (part, node) in app
+            .world_mut()
+            .query::<(&BoxPart, &Node)>()
+            .iter(app.world())
+        {
+            match part {
+                BoxPart::Toolbar(_) => toolbars += 1,
+                BoxPart::Frame | BoxPart::Apply => assert_eq!(node.display, Display::None),
+                _ => {}
+            }
+        }
+        assert_eq!(toolbars, 6);
+        for (part, text) in app.world_mut().query::<(&Part, &Text)>().iter(app.world()) {
+            match part {
+                Part::Title => assert_eq!(text.0, Locale::EnUs.text("structure.title")),
+                Part::DetailText => {
+                    assert!(text.0.contains("INSUFFICIENT_FULL_WINDOW"));
+                    assert!(text.0.contains("\"confidence\": null"));
+                    assert!(text.0.contains("\"end_frame\": 49153"));
+                    assert!(!text.0.contains("proposed_anchor"));
+                }
+                _ => {}
+            }
+        }
     }
 
     #[test]

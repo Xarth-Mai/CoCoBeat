@@ -75,8 +75,21 @@ pub fn inspect_structure_features_package(
     root: impl AsRef<Path>,
     channel: usize,
 ) -> Result<(ValidatedPackage, StructureFeatureEvidence), String> {
+    read_structure_features_package(root, channel, |_| Ok(()))
+}
+
+/// Shares the same provisional PCM with consumers such as waveform and stereo audition
+/// Consumers must discard their accumulated state if this call returns an error
+pub fn read_structure_features_package(
+    root: impl AsRef<Path>,
+    channel: usize,
+    mut consume: impl FnMut(&[[f32; 2]]) -> Result<(), String>,
+) -> Result<(ValidatedPackage, StructureFeatureEvidence), String> {
     let mut features = Features::new(channel)?;
-    let package = read_package(root, |frames| features.push(frames))?;
+    let package = read_package(root, |frames| {
+        features.push(frames)?;
+        consume(frames)
+    })?;
     if features.consumed != package.manifest.canonical_frames {
         return Err("Structure features differ from the validated canonical extent".into());
     }
@@ -438,6 +451,84 @@ mod tests {
         let short = inspect(&[[1.0, 0.0]], 0, 1);
         assert_eq!(short.bins[0].spectrum_status, "INSUFFICIENT_FULL_WINDOW");
         assert!(short.bins[0].neighbors.is_empty());
+    }
+
+    #[test]
+    fn shared_pcm_callback_keeps_actual_stereo_tail_and_propagates_early_failure() {
+        use std::fs;
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-structure-shared-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos(),
+        ));
+        fs::create_dir(&root).unwrap();
+        let audio = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../testdata/synthetic/media-import/stereo-canonical.ogg");
+        let authoring = root.join("authoring.json");
+        fs::write(
+            &authoring,
+            serde_json::to_vec(&serde_json::json!({
+                "schema_version": 1,
+                "song_id": "shared-structure-callback",
+                "ruleset_id": "duo-watermark-v1",
+                "source_note": "Constructed software callback control",
+                "anchors": [],
+                "sections": [],
+            }))
+            .unwrap(),
+        )
+        .unwrap();
+        let destination = root.join("package");
+        let expected_package = crate::build_authored_package(
+            &audio,
+            4800,
+            &authoring,
+            &destination,
+            "structure-callback-test/v1",
+        )
+        .unwrap();
+        let protected =
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap());
+        let mut expected_pcm = Vec::new();
+        crate::decode_canonical(&audio, 4800, |frames| {
+            expected_pcm.extend_from_slice(frames);
+            Ok(())
+        })
+        .unwrap();
+        let mut seen = Vec::new();
+        let (package, evidence) = read_structure_features_package(&destination, 1, |frames| {
+            seen.extend_from_slice(frames);
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(
+            package.manifest.package_hash,
+            expected_package.manifest.package_hash
+        );
+        assert_eq!(seen, expected_pcm);
+        assert_eq!(evidence.canonical_frames, 4800);
+        assert_eq!(evidence.channel, 1);
+        assert_eq!(evidence.complete_windows, 4);
+        assert_eq!(evidence.partial_tail_frames, 704);
+        let squares: f64 = expected_pcm.iter().map(|v| f64::from(v[1]).powi(2)).sum();
+        assert_eq!(evidence.bins[0].rms, (squares / 4800.0).sqrt());
+        assert!(evidence.bins[0].rms > 0.0);
+        let mut calls = 0;
+        let error = read_structure_features_package(&destination, 0, |_| {
+            calls += 1;
+            Err("consumer-first-block-failure".into())
+        })
+        .unwrap_err();
+        assert_eq!(error, "consumer-first-block-failure");
+        assert_eq!(calls, 1);
+        assert_eq!(
+            protected,
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap())
+        );
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

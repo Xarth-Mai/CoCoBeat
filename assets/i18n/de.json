@@ -284,5 +284,10 @@
   "labels.bytes": "UTF-8-Bytes: {used} / {max}",
   "native_beats.title": "CoCoBeat · Beat/downbeat-Kandidaten",
   "native_beats.legend": "Candidate: beat/raw downbeat · Quell-Anchor: Autor",
-  "native_beats.help": "Nur Lesen · q ist die Koordinate im ursprünglichen 50-Hz-Spektrogrammraster; q×960 entspricht ganzzahligen Frames im 48-kHz-Audio · raw downbeat behält seine ursprüngliche Position; Beziehungen zu nearest/aligned beat werden getrennt angezeigt · confidence ist unbekannt (null); raw logit, sigmoid, strength und downbeat_probability sind unkalibrierte Werte, keine Konfidenzwerte · Keine automatischen Anchor · Nutzt die vorhandene Wellenform und das Probehören in canonical stereo"
+  "native_beats.help": "Nur Lesen · q ist die Koordinate im ursprünglichen 50-Hz-Spektrogrammraster; q×960 entspricht ganzzahligen Frames im 48-kHz-Audio · raw downbeat behält seine ursprüngliche Position; Beziehungen zu nearest/aligned beat werden getrennt angezeigt · confidence ist unbekannt (null); raw logit, sigmoid, strength und downbeat_probability sind unkalibrierte Werte, keine Konfidenzwerte · Keine automatischen Anchor · Nutzt die vorhandene Wellenform und das Probehören in canonical stereo",
+  "structure.title": "Diagnose der Spektralform (nur Lesen)",
+  "structure.legend": "Blau=ausgewählt · Violett=ähnlich · Weiß=Autor",
+  "structure.help": "Ursprüngliche halboffene Intervalle bleiben erhalten · Rohe Ähnlichkeit bestimmt keine Musikabschnitte · Unbekannte Werte bleiben erhalten, Qualität UNASSESSED · Keine automatischen Anchor · Autorenkontext sichtbar; keine Blindannotation",
+  "structure.records": "Intervalle ({count})",
+  "structure.row": "#{index} [{start},{end})"
 }

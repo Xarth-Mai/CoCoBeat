@@ -284,5 +284,10 @@
   "labels.bytes": "Байты UTF-8: {used} / {max}",
   "native_beats.title": "CoCoBeat · Кандидаты beat/downbeat",
   "native_beats.legend": "Candidate: beat/raw downbeat · Anchor источника: автор",
-  "native_beats.help": "Только чтение · q — координата исходной сетки спектрограммы 50 Hz; q×960 соответствует целочисленным кадрам аудио 48 kHz · raw downbeat сохраняет исходную позицию; связи с nearest/aligned beat показаны отдельно · confidence неизвестен (null); raw logit, sigmoid, strength и downbeat_probability — некалиброванные оценки, а не значения уверенности · Anchor не создаются автоматически · Используются существующая волновая форма и прослушивание canonical stereo"
+  "native_beats.help": "Только чтение · q — координата исходной сетки спектрограммы 50 Hz; q×960 соответствует целочисленным кадрам аудио 48 kHz · raw downbeat сохраняет исходную позицию; связи с nearest/aligned beat показаны отдельно · confidence неизвестен (null); raw logit, sigmoid, strength и downbeat_probability — некалиброванные оценки, а не значения уверенности · Anchor не создаются автоматически · Используются существующая волновая форма и прослушивание canonical stereo",
+  "structure.title": "Диагностика формы спектра (только чтение)",
+  "structure.legend": "Синий=выбрано · Фиолетовый=сходство · Белый=автор",
+  "structure.help": "Исходные полуоткрытые интервалы сохранены · Сырая оценка сходства не определяет музыкальные разделы · Неизвестные значения сохранены, качество UNASSESSED · Без автоматических Anchor · Контекст автора виден; разметка не слепая",
+  "structure.records": "Интервалы ({count})",
+  "structure.row": "#{index} [{start},{end})"
 }

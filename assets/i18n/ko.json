@@ -284,5 +284,10 @@
   "labels.bytes": "UTF-8 바이트: {used} / {max}",
   "native_beats.title": "CoCoBeat · Beat/downbeat 후보",
   "native_beats.legend": "Candidate: beat/raw downbeat · 원본 Anchor: 작성자",
-  "native_beats.help": "읽기 전용 · q는 원본 50 Hz 스펙트로그램 격자 좌표이며 q×960으로 48 kHz 오디오의 정수 프레임에 대응합니다 · raw downbeat는 원래 위치를 유지하며 nearest/aligned beat와의 관계는 별도로 표시합니다 · confidence는 알 수 없음(null)입니다. raw logit, sigmoid, strength, downbeat_probability는 보정되지 않은 점수이며 신뢰도가 아닙니다 · Anchor를 자동 생성하지 않습니다 · 기존 파형과 canonical stereo 미리 듣기를 재사용합니다"
+  "native_beats.help": "읽기 전용 · q는 원본 50 Hz 스펙트로그램 격자 좌표이며 q×960으로 48 kHz 오디오의 정수 프레임에 대응합니다 · raw downbeat는 원래 위치를 유지하며 nearest/aligned beat와의 관계는 별도로 표시합니다 · confidence는 알 수 없음(null)입니다. raw logit, sigmoid, strength, downbeat_probability는 보정되지 않은 점수이며 신뢰도가 아닙니다 · Anchor를 자동 생성하지 않습니다 · 기존 파형과 canonical stereo 미리 듣기를 재사용합니다",
+  "structure.title": "스펙트럼 형태 진단 (읽기 전용)",
+  "structure.legend": "파랑=선택 · 보라=유사 · 흰색=작성자",
+  "structure.help": "원본 반열린 구간 유지 · raw 유사도는 음악적 구조 구간을 뜻하지 않음 · 알 수 없는 값 유지, 품질 UNASSESSED · Anchor 자동 생성 없음 · 작성자 맥락 표시, 블라인드 라벨링 아님",
+  "structure.records": "구간 ({count})",
+  "structure.row": "#{index} [{start},{end})"
 }

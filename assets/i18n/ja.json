@@ -284,5 +284,10 @@
   "labels.bytes": "UTF-8 バイト：{used} / {max}",
   "native_beats.title": "CoCoBeat · Beat/downbeat 候補",
   "native_beats.legend": "Candidate：beat/raw downbeat · 元譜面 Anchor：作者",
-  "native_beats.help": "読み取り専用 · q は元の 50 Hz スペクトログラムのグリッド座標で、q×960 により 48 kHz 音声の整数フレームに対応します · raw downbeat は元の位置を保持し、nearest/aligned beat との関係は別に表示します · confidence は不明（null）です。raw logit、sigmoid、strength、downbeat_probability は未校正のスコアで、信頼度ではありません · Anchor は自動生成しません · 既存の波形と canonical stereo の試聴を再利用します"
+  "native_beats.help": "読み取り専用 · q は元の 50 Hz スペクトログラムのグリッド座標で、q×960 により 48 kHz 音声の整数フレームに対応します · raw downbeat は元の位置を保持し、nearest/aligned beat との関係は別に表示します · confidence は不明（null）です。raw logit、sigmoid、strength、downbeat_probability は未校正のスコアで、信頼度ではありません · Anchor は自動生成しません · 既存の波形と canonical stereo の試聴を再利用します",
+  "structure.title": "スペクトル形状診断（読み取り専用）",
+  "structure.legend": "青=選択 · 紫=類似 · 白=作者",
+  "structure.help": "元の半開区間を保持 · raw 類似度は曲の構成区間を表しません · 不明な値はそのまま、品質は UNASSESSED · Anchor の自動生成なし · 作者の文脈を表示するため、ブラインド評価ではありません",
+  "structure.records": "区間（{count}）",
+  "structure.row": "#{index} [{start},{end})"
 }

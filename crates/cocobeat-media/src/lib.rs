@@ -45,5 +45,5 @@ pub use package::{
 pub use resample::{ResampledSource, resample_source};
 pub use structure_features::{
     StructureAdjacentChange, StructureFeatureBin, StructureFeatureEvidence, StructureNeighbor,
-    inspect_structure_features_package,
+    inspect_structure_features_package, read_structure_features_package,
 };

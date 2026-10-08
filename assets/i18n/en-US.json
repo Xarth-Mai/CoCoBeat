@@ -284,5 +284,10 @@
   "labels.bytes": "UTF-8 bytes: {used} / {max}",
   "native_beats.title": "CoCoBeat · Beat/downbeat candidates",
   "native_beats.legend": "Candidate: beat/raw downbeat · Source Anchors: authored",
-  "native_beats.help": "Read only · q is the original 50 Hz spectrogram grid coordinate; q×960 maps to integer frames in 48 kHz audio · Raw downbeat retains its original position; nearest/aligned beat relationships are shown separately · confidence is unknown (null); raw logit, sigmoid, strength and downbeat_probability are uncalibrated scores, not confidence · No automatic Anchors · Reuses the existing waveform and canonical stereo audition"
+  "native_beats.help": "Read only · q is the original 50 Hz spectrogram grid coordinate; q×960 maps to integer frames in 48 kHz audio · Raw downbeat retains its original position; nearest/aligned beat relationships are shown separately · confidence is unknown (null); raw logit, sigmoid, strength and downbeat_probability are uncalibrated scores, not confidence · No automatic Anchors · Reuses the existing waveform and canonical stereo audition",
+  "structure.title": "Spectral shape diagnostics (read only)",
+  "structure.legend": "Blue=selected · Purple=similar · White=author",
+  "structure.help": "Original half-open intervals retained · Raw similarity does not identify musical sections · Unknown values retained, quality UNASSESSED · No automatic Anchor · Author context shown; not blind labeling",
+  "structure.records": "Intervals ({count})",
+  "structure.row": "#{index} [{start},{end})"
 }

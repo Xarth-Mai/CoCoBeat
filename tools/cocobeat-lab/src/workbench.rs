@@ -28,6 +28,7 @@ pub enum Mode<'a> {
     Replay(&'a Path, Option<&'a Path>),
     Candidates(&'a Path),
     NativeBeats(&'a Path),
+    StructureFeatures(usize),
 }
 
 pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> {
@@ -56,7 +57,7 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
     };
     let mut wave = Waveform::default();
     let mut pcm = Vec::new();
-    let package = cocobeat_media::read_package(source, |frames| {
+    let mut consume = |frames: &[[f32; 2]]| {
         wave.push(frames)?;
         // ponytail: validated static PCM is capped at 230 MB; stream if songs exceed ten minutes
         pcm.try_reserve(frames.len())
@@ -67,7 +68,14 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
                 .map(|&[left, right]| kira::Frame::new(left, right)),
         );
         Ok(())
-    })?;
+    };
+    let (package, structure) = if let Mode::StructureFeatures(channel) = mode {
+        let (package, evidence) =
+            cocobeat_media::read_structure_features_package(source, channel, &mut consume)?;
+        (package, Some(evidence))
+    } else {
+        (cocobeat_media::read_package(source, &mut consume)?, None)
+    };
     let mut document = if labeling {
         Document::from_anchors(
             package.manifest.canonical_frames as i64,
@@ -90,6 +98,10 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
     let mut candidates = match mode {
         Mode::Candidates(path) => Some(candidates::CandidateView::load(&package, path)?),
         Mode::NativeBeats(path) => Some(candidates::CandidateView::load_native(&package, path)?),
+        Mode::StructureFeatures(_) => Some(candidates::CandidateView::from_structure(
+            &package,
+            structure.expect("Structure mode returned features from the same package read"),
+        )),
         _ => None,
     };
     if let Some(candidates) = &mut candidates {
@@ -106,7 +118,9 @@ pub fn run(source: &Path, mode: Mode<'_>, locale: Locale) -> Result<(), String> 
                 } else if replay.is_some() {
                     "replay.title"
                 } else if let Some(candidates) = &candidates {
-                    if candidates.is_native() {
+                    if candidates.is_structure() {
+                        "structure.title"
+                    } else if candidates.is_native() {
                         "native_beats.title"
                     } else {
                         "candidates.title"

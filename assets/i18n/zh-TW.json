@@ -284,5 +284,10 @@
   "labels.bytes": "UTF-8 位元組：{used} / {max}",
   "native_beats.title": "CoCoBeat · Beat/downbeat 候選",
   "native_beats.legend": "Candidate：beat/raw downbeat · 來源 Anchor：作者",
-  "native_beats.help": "唯讀 · q 是原 50 Hz 頻譜圖網格座標，以 q×960 對應到 48 kHz 音訊的整數影格 · raw downbeat 保留原位置，nearest/aligned beat 另行表示關係 · confidence 未知（null）；raw logit、sigmoid、strength、downbeat_probability 均為未校準分數，並非信賴度 · 不自動產生 Anchor · 沿用現有波形與 canonical stereo 試聽"
+  "native_beats.help": "唯讀 · q 是原 50 Hz 頻譜圖網格座標，以 q×960 對應到 48 kHz 音訊的整數影格 · raw downbeat 保留原位置，nearest/aligned beat 另行表示關係 · confidence 未知（null）；raw logit、sigmoid、strength、downbeat_probability 均為未校準分數，並非信賴度 · 不自動產生 Anchor · 沿用現有波形與 canonical stereo 試聽",
+  "structure.title": "譜形診斷（唯讀）",
+  "structure.legend": "藍=選取 · 紫=相似 · 白=作者",
+  "structure.help": "保留原始半開區間 · raw 相似度不代表音樂段落 · 未知值保留，品質 UNASSESSED · 不自動產生 Anchor · 顯示作者脈絡，非盲標",
+  "structure.records": "區間（{count}）",
+  "structure.row": "#{index} [{start},{end})"
 }

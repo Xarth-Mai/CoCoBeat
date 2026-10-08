@@ -37,7 +37,7 @@ cargo run --locked -p cocobeat-lab -- workbench /path/to/song-package /path/to/n
 
 ## 歌曲试听
 
-三种工作台共用包校验时得到的 canonical PCM，不另读原来源或转码；播放从当前选中帧开始，已有暂停声音可以恢复，停止后再次播放使用当前选择，EOF 不能作为新起点。暂停期间跳转只更新请求目标，下次明确播放才创建新声音；播放期间跳转从该帧重新开始
+各工作台共用包校验时得到的 canonical PCM，不另读原来源或转码；播放从当前选中帧开始，已有暂停声音可以恢复，停止后再次播放使用当前选择，EOF 不能作为新起点。暂停期间跳转只更新请求目标，下次明确播放才创建新声音；播放期间跳转从该帧重新开始
 
 白色编辑 / Replay 光标保留精确原值，另色音频线显示已观察到的 Kira source position，请求目标与源游标分别标注；负水位或 EOF 后的原始 Replay 帧不会因试听被改写，也不能直接作为音频起点。Starting / Pausing / Paused / Playing / Ended 来自声音状态，初始 handle 位置不冒充已推进的 callback
 
@@ -72,6 +72,12 @@ Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表�
 ## 原生 beat / raw downbeat 证据
 
 `workbench-beats PACKAGE EVIDENCE [--locale CODE]` 复用同一波形、试听和主控，保留 raw 帧与单独最近 beat 对齐关系、未知置信度和独立列表行；只读证据绑定与本批分版验证见[原生候选工作台](native-beat-candidate.md#原生候选工作台)。此入口没有采用或编辑 / 导出按钮，作者 Anchor 仍可见，独立 Labels 的隐藏提示边界保持
+
+## 只读谱形与相似区间
+
+`workbench-candidates PACKAGE --structure left|right [--locale CODE]` 从同次完整包读取计算原生谱形诊断，列表显示原 bin 编号与 `[start,end)`，蓝色选中、紫色相似邻居、白色作者 Anchor / SectionCue；详情保留原数值、尾部状态和 Unknown，EOF 不映射到 bin，原选中记录保持。此模式只读，复用现有 13 语言、主控、滚动及真实 Kira 立体声试听，不自动 Anchor，分析声道不改播放声道
+
+固定算法、输入绑定、本轮软件结果与原生窗口验证范围见[原生谱形诊断](native-structure-features.md#只读结构工作台)；作者提示仍可见，音乐段落 / 重复关系和真人参考另验
 
 ## 独立人工 Labels
 

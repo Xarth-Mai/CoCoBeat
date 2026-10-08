@@ -230,6 +230,19 @@ fn main() -> ExitCode {
                 )
             }))
         }
+        [command, input, flag, options @ ..]
+            if command == "workbench-candidates" && flag == "--structure" =>
+        {
+            report(
+                structure_workbench_options(options).and_then(|(channel, locale)| {
+                    workbench::run(
+                        Path::new(input),
+                        workbench::Mode::StructureFeatures(channel),
+                        locale,
+                    )
+                }),
+            )
+        }
         [command, input, target, options @ ..]
             if command == "workbench"
                 || command == "workbench-replay"
@@ -286,7 +299,7 @@ fn main() -> ExitCode {
         ),
         _ => {
             eprintln!(
-                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | import-authored-package <source-audio> <authoring.json> <new-package-dir> | import-experimental-beat <source-audio> <authoring.json> <left|right> <new-output-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | inspect-native-tempo <package-dir> <left|right> <new-report.json> | inspect-structure-features <package-dir> <left|right> <new-report.json> | verify-package <package-dir> | music-truth-source <package-dir> | music-truth-template <package-dir> <reviewer> <stereo|left|right> <new-json> | import-music-truth <package-dir> <manual.json> <new-json> | compare-music-truth <package-dir> <reviewer-a.json> <reviewer-b.json> <new-report.json> | compare-native-beats <package-dir> <evidence-dir> <music-truth.json> <tolerance-frames> <new-report.json> | label-source <package-dir> | import-labels <package-dir> <manual-labels.json> <new-labels.json> | compare-labels <package-dir> <reviewer-a.json> <reviewer-b.json> <new-comparison.json> | adopt-labeled-anchors <package-dir> <labels.json> <selection.json> <new-package-dir> | inspect-stage-plan <package-dir> | inspect-stage <package-dir> <frame> | inspect-replay-stage <package-dir> <replay.json> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> [--timing SIDECAR] | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir> | net-receive <new-package-dir> <local-replay.json> <invite.json> <new-output-dir> | workbench-labels <package-dir> <new-labels.json> [--locale CODE] | workbench <package-dir> <new-package-dir> [--locale CODE] | workbench-replay <package-dir> <replay.json> [--timing SIDECAR] [--locale CODE] | workbench-candidates <package-dir> <proposal.json> [--locale CODE] | workbench-beats <package-dir> <evidence-dir> [--locale CODE]"
+                "Usage: cocobeat-lab time-smoke | timing-sim [output-dir] | generate-dev [output-dir] | audio-probe <30|64|300|600> <output-dir> | decode-audio <input> <new-output.f32le> | resample-audio <input> <new-output.f32le> | readback-canonical <input.ogg> <expected-frames> <new-output.f32le> | prepare-audio <final.ogg> <expected-frames> <new-staging-dir> | import-authored-package <source-audio> <authoring.json> <new-package-dir> | import-experimental-beat <source-audio> <authoring.json> <left|right> <new-output-dir> | build-authored-package <final.ogg> <expected-frames> <authoring.json> <new-package-dir> | inspect-native-tempo <package-dir> <left|right> <new-report.json> | inspect-structure-features <package-dir> <left|right> <new-report.json> | verify-package <package-dir> | music-truth-source <package-dir> | music-truth-template <package-dir> <reviewer> <stereo|left|right> <new-json> | import-music-truth <package-dir> <manual.json> <new-json> | compare-music-truth <package-dir> <reviewer-a.json> <reviewer-b.json> <new-report.json> | compare-native-beats <package-dir> <evidence-dir> <music-truth.json> <tolerance-frames> <new-report.json> | label-source <package-dir> | import-labels <package-dir> <manual-labels.json> <new-labels.json> | compare-labels <package-dir> <reviewer-a.json> <reviewer-b.json> <new-comparison.json> | adopt-labeled-anchors <package-dir> <labels.json> <selection.json> <new-package-dir> | inspect-stage-plan <package-dir> | inspect-stage <package-dir> <frame> | inspect-replay-stage <package-dir> <replay.json> <frame> | edit-anchors <package-dir> <patch.json> <new-package-dir> | propose-anchors <package-dir> <min-confidence> <min-gap-frames> <new-report.json> | adopt-anchor-proposal <package-dir> <report.json> <selection.json> <new-package-dir> | inspect-replay <package-dir> <replay.json> <new-report.jsonl> [--timing SIDECAR] | net-host <package-dir> <local-replay.json> <IP:port> <new-invite.json> <new-output-dir> | net-join <package-dir> <local-replay.json> <invite.json> <new-output-dir> | net-receive <new-package-dir> <local-replay.json> <invite.json> <new-output-dir> | workbench-labels <package-dir> <new-labels.json> [--locale CODE] | workbench <package-dir> <new-package-dir> [--locale CODE] | workbench-replay <package-dir> <replay.json> [--timing SIDECAR] [--locale CODE] | workbench-candidates <package-dir> <proposal.json> [--locale CODE] | workbench-candidates <package-dir> --structure <left|right> [--locale CODE] | workbench-beats <package-dir> <evidence-dir> [--locale CODE]"
             );
             if args.is_empty() {
                 ExitCode::SUCCESS
@@ -329,6 +342,20 @@ fn workbench_locale(options: &[String]) -> Result<cocobeat_runtime::Locale, Stri
     }
 }
 
+fn structure_workbench_options(
+    options: &[String],
+) -> Result<(usize, cocobeat_runtime::Locale), String> {
+    let Some((channel, options)) = options.split_first() else {
+        return Err("Structure workbench requires an explicit left or right channel".into());
+    };
+    let channel = match channel.as_str() {
+        "left" => 0,
+        "right" => 1,
+        _ => return Err("Structure workbench requires an explicit left or right channel".into()),
+    };
+    workbench_locale(options).map(|locale| (channel, locale))
+}
+
 fn report<E: std::fmt::Display>(result: Result<(), E>) -> ExitCode {
     match result {
         Ok(()) => ExitCode::SUCCESS,
@@ -342,6 +369,30 @@ fn report<E: std::fmt::Display>(result: Result<(), E>) -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn structure_workbench_requires_channel_and_only_known_locale_options() {
+        let options = |args: &[&str]| args.iter().map(|v| (*v).to_owned()).collect::<Vec<_>>();
+        for (channel, expected) in [("left", 0), ("right", 1)] {
+            let parsed =
+                structure_workbench_options(&options(&[channel, "--locale", "fr"])).unwrap();
+            assert_eq!(parsed, (expected, cocobeat_runtime::Locale::Fr));
+        }
+        for args in [
+            vec![],
+            vec!["stereo"],
+            vec!["--locale", "fr"],
+            vec!["left", "--locale"],
+            vec!["left", "--locale", "unknown"],
+            vec!["right", "extra"],
+            vec!["left", "--locale", "fr", "--locale", "fr"],
+        ] {
+            assert!(
+                structure_workbench_options(&options(&args)).is_err(),
+                "{args:?}"
+            );
+        }
+    }
 
     #[test]
     fn audio_probe_requires_an_explicit_supported_duration() {

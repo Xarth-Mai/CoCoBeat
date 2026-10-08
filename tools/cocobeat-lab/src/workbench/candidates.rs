@@ -1,6 +1,7 @@
 use crate::anchors::{self, Decision, Evidence, Report};
 use cocobeat_media::{
-    NativeBeatEvidence, NativeBeatKind, ValidatedPackage, read_native_beat_evidence,
+    NativeBeatEvidence, NativeBeatKind, StructureFeatureEvidence, ValidatedPackage,
+    read_native_beat_evidence,
 };
 use cocobeat_runtime::{Locale, Message};
 use cocobeat_schema::MusicAnalysis;
@@ -10,6 +11,7 @@ use std::path::Path;
 enum CandidateData {
     Onsets(Report),
     Native(NativeBeatEvidence),
+    Structure(StructureFeatureEvidence),
 }
 
 pub(super) struct CandidateView {
@@ -74,6 +76,54 @@ impl CandidateView {
         }
     }
 
+    pub(super) fn from_structure(
+        package: &ValidatedPackage,
+        evidence: StructureFeatureEvidence,
+    ) -> Self {
+        let header = json!({
+            "source": crate::labels::Source::from_package(package),
+            "profile": evidence.profile,
+            "sample_rate": evidence.sample_rate,
+            "channels": evidence.channels,
+            "channel": evidence.channel,
+            "canonical_frames": evidence.canonical_frames,
+            "fft_frames": evidence.fft_frames,
+            "windows_per_bin": evidence.windows_per_bin,
+            "bin_frames": evidence.bin_frames,
+            "band_edges": evidence.band_edges,
+            "window": evidence.window,
+            "power_convention": evidence.power_convention,
+            "padded_frames": evidence.padded_frames,
+            "complete_windows": evidence.complete_windows,
+            "partial_tail_frames": evidence.partial_tail_frames,
+            "confidence": evidence.confidence,
+            "beat_unit": evidence.beat_unit,
+            "meter": evidence.meter,
+            "quality_status": evidence.quality_status,
+            "production_admission": evidence.production_admission,
+            "source_chart_anchor_count": package.chart.anchors.len(),
+            "declared_section_count": package.analysis.sections.len(),
+            "analysis_capabilities": package.analysis.capabilities.map(|c| format!("{c:?}")),
+        });
+        Self {
+            data: CandidateData::Structure(evidence),
+            analysis: package.analysis.clone(),
+            header,
+            selected: 0,
+        }
+    }
+
+    pub(super) fn is_structure(&self) -> bool {
+        matches!(self.data, CandidateData::Structure(_))
+    }
+
+    pub(super) fn structure_evidence(&self) -> Option<&StructureFeatureEvidence> {
+        match &self.data {
+            CandidateData::Structure(evidence) => Some(evidence),
+            _ => None,
+        }
+    }
+
     pub(super) fn is_native(&self) -> bool {
         matches!(self.data, CandidateData::Native(_))
     }
@@ -82,6 +132,7 @@ impl CandidateView {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.len(),
             CandidateData::Native(evidence) => evidence.records.len(),
+            CandidateData::Structure(evidence) => evidence.bins.len(),
         }
     }
 
@@ -89,6 +140,9 @@ impl CandidateView {
         match &self.data {
             CandidateData::Onsets(report) => report.evidence.get(index).map(|e| e.frame),
             CandidateData::Native(evidence) => evidence.records.get(index).map(|e| e.frame),
+            CandidateData::Structure(evidence) => {
+                evidence.bins.get(index).map(|b| b.start_frame as i64)
+            }
         }
     }
 
@@ -99,12 +153,22 @@ impl CandidateView {
     }
 
     pub(super) fn nearest(&self, frame: i64, tolerance: i64) -> Option<usize> {
+        if let Some(evidence) = self.structure_evidence() {
+            let frame = u64::try_from(frame).ok()?;
+            let index = evidence.bins.partition_point(|bin| bin.end_frame <= frame);
+            return evidence
+                .bins
+                .get(index)
+                .filter(|bin| bin.start_frame <= frame)
+                .map(|_| index);
+        }
         let tolerance = u64::try_from(tolerance).ok()?;
         let after = match &self.data {
             CandidateData::Onsets(report) => report.evidence.partition_point(|e| e.frame < frame),
             CandidateData::Native(evidence) => {
                 evidence.records.partition_point(|e| e.frame < frame)
             }
+            CandidateData::Structure(_) => unreachable!("Structure uses interval containment"),
         };
         [after.checked_sub(1), Some(after)]
             .into_iter()
@@ -116,13 +180,14 @@ impl CandidateView {
     }
 
     pub(super) fn points(&self) -> impl Iterator<Item = (i64, bool)> + '_ {
-        (0..self.len()).map(|index| {
+        (0..if self.is_structure() { 0 } else { self.len() }).map(|index| {
             let accepted = match &self.data {
                 CandidateData::Onsets(report) => matches!(
                     report.evidence[index].decision,
                     Decision::SelectedByExperimentalPolicy { .. }
                 ),
                 CandidateData::Native(_) => false,
+                CandidateData::Structure(_) => unreachable!("Structure has no point events"),
             };
             (
                 self.frame(index)
@@ -133,6 +198,9 @@ impl CandidateView {
     }
 
     pub(super) fn selected_points(&self) -> Vec<(i64, bool)> {
+        if self.is_structure() {
+            return Vec::new();
+        }
         let Some(frame) = self.frame(self.selected) else {
             return Vec::new();
         };
@@ -152,11 +220,26 @@ impl CandidateView {
                     points.push((alignment.beat_frame, true));
                 }
             }
+            CandidateData::Structure(_) => unreachable!("Structure has no selected point event"),
         }
         points
     }
 
     pub(super) fn row(&self, index: usize, locale: Locale) -> String {
+        if let Some(evidence) = self.structure_evidence() {
+            let Some(bin) = evidence.bins.get(index) else {
+                return String::new();
+            };
+            return Message::with(
+                "structure.row",
+                [
+                    ("index", bin.index.to_string()),
+                    ("start", bin.start_frame.to_string()),
+                    ("end", bin.end_frame.to_string()),
+                ],
+            )
+            .render(locale);
+        }
         let Some(frame) = self.frame(index) else {
             return String::new();
         };
@@ -185,6 +268,7 @@ impl CandidateView {
                     },
                 )
             }
+            CandidateData::Structure(_) => unreachable!("Structure uses interval rows"),
         };
         Message::with(
             "candidates.row",
@@ -279,6 +363,21 @@ impl CandidateView {
 
     pub(super) fn details(&self, locale: Locale) -> String {
         let report = match &self.data {
+            CandidateData::Structure(evidence) => {
+                let adjacent: Vec<_> = evidence
+                    .adjacent
+                    .iter()
+                    .filter(|pair| {
+                        pair.left_index == self.selected || pair.right_index == self.selected
+                    })
+                    .collect();
+                return serde_json::to_string_pretty(&json!({
+                    "bin": evidence.bins.get(self.selected),
+                    "adjacent": adjacent,
+                    "header": self.header,
+                }))
+                .expect("Measured structure descriptors contain valid JSON");
+            }
             CandidateData::Onsets(report) => report,
             CandidateData::Native(evidence) => {
                 return serde_json::to_string_pretty(&json!({
@@ -384,14 +483,127 @@ pub(super) fn native_fixture() -> CandidateView {
     view
 }
 
+// Constructed display-only intervals, not a validated long audio package or music truth
+#[cfg(test)]
+pub(super) fn structure_fixture() -> CandidateView {
+    use cocobeat_media::{StructureAdjacentChange, StructureFeatureBin, StructureNeighbor};
+    let (root, mut package) = anchors::tests::fixture("structure-candidate-view");
+    let (_, mut evidence) =
+        cocobeat_media::inspect_structure_features_package(root.join("source"), 0).unwrap();
+    let bin = |index, start_frame, end_frame, band: Option<usize>| {
+        let log = band.map(|band| std::array::from_fn(|i| if i == band { 1.0 } else { 0.0 }));
+        StructureFeatureBin {
+            index,
+            start_frame,
+            end_frame,
+            rms: if band.is_some() { 1.0 } else { 2.0 },
+            peak: if band.is_some() { 1.0 } else { 2.0 },
+            spectral_frames: if band.is_some() { 24_576 } else { 0 },
+            partial_tail_frames: if band.is_some() { 0 } else { 1 },
+            spectrum_status: if band.is_some() {
+                "MEASURED"
+            } else {
+                "INSUFFICIENT_FULL_WINDOW"
+            },
+            mean_band_power: log.map(|v| v.map(f64::exp_m1)),
+            log_band_power: log,
+            neighbors: Vec::new(),
+        }
+    };
+    let mut first = bin(0, 0, 24_576, Some(0));
+    first.neighbors.push(StructureNeighbor {
+        index: 1,
+        start_frame: 24_576,
+        end_frame: 49_152,
+        raw_cosine: 0.0,
+    });
+    let mut second = bin(1, 24_576, 49_152, Some(1));
+    second.neighbors.push(StructureNeighbor {
+        index: 0,
+        start_frame: 0,
+        end_frame: 24_576,
+        raw_cosine: 0.0,
+    });
+    evidence.profile = "constructed-view-only";
+    evidence.canonical_frames = 49_153;
+    evidence.complete_windows = 48;
+    evidence.partial_tail_frames = 1;
+    evidence.bins = vec![first, second, bin(2, 49_152, 49_153, None)];
+    evidence.adjacent = vec![
+        StructureAdjacentChange {
+            left_index: 0,
+            right_index: 1,
+            raw_cosine: Some(0.0),
+            descriptor_distance: Some(1.0),
+        },
+        StructureAdjacentChange {
+            left_index: 1,
+            right_index: 2,
+            raw_cosine: None,
+            descriptor_distance: None,
+        },
+    ];
+    package.manifest.canonical_frames = 49_153;
+    let view = CandidateView::from_structure(&package, evidence);
+    std::fs::remove_dir_all(root).unwrap();
+    view
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
+    fn structure_intervals_keep_half_open_edges_and_do_not_become_point_events() {
+        let mut view = structure_fixture();
+        assert!(view.is_structure());
+        assert!(!view.is_native());
+        assert_eq!(view.len(), 3);
+        for (frame, index) in [(0, 0), (24_575, 0), (24_576, 1), (49_151, 1), (49_152, 2)] {
+            assert_eq!(view.nearest(frame, 0), Some(index));
+        }
+        for frame in [-1, 49_153, i64::MAX] {
+            assert_eq!(view.nearest(frame, i64::MAX), None);
+        }
+        assert_eq!(view.select(2), Some(49_152));
+        assert_eq!(view.select(3), None);
+        assert_eq!(view.selected, 2);
+        assert!(view.points().next().is_none());
+        assert!(view.selected_points().is_empty());
+        let tail: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(tail["bin"]["start_frame"], 49_152);
+        assert_eq!(tail["bin"]["end_frame"], 49_153);
+        assert_eq!(tail["bin"]["spectral_frames"], 0);
+        assert_eq!(tail["bin"]["partial_tail_frames"], 1);
+        assert!(tail["bin"]["mean_band_power"].is_null());
+        assert!(tail["bin"]["log_band_power"].is_null());
+        assert_eq!(tail["bin"]["neighbors"], json!([]));
+        assert_eq!(tail["bin"]["spectrum_status"], "INSUFFICIENT_FULL_WINDOW");
+        assert_eq!(tail["adjacent"].as_array().unwrap().len(), 1);
+        assert!(tail["adjacent"][0]["raw_cosine"].is_null());
+        assert!(tail["header"]["confidence"].is_null());
+        assert!(tail["header"]["meter"].is_null());
+        assert!(tail["header"]["beat_unit"].is_null());
+        assert!(tail["header"]["analysis_capabilities"].is_null());
+        assert_eq!(tail["header"]["quality_status"], "UNASSESSED");
+        assert_eq!(tail["header"]["production_admission"], false);
+        view.select(0).unwrap();
+        let measured: Value = serde_json::from_str(&view.details(Locale::EnUs)).unwrap();
+        assert_eq!(measured["bin"]["neighbors"][0]["index"], 1);
+        assert_eq!(measured["bin"]["neighbors"][0]["start_frame"], 24_576);
+        assert_eq!(measured["bin"]["neighbors"][0]["end_frame"], 49_152);
+        assert_eq!(measured["bin"]["neighbors"][0]["raw_cosine"], 0.0);
+        assert_eq!(measured["adjacent"][0]["descriptor_distance"], 1.0);
+        assert!(view.row(0, Locale::EnUs).contains("24576"));
+        assert!(view.row(3, Locale::EnUs).is_empty());
+    }
+
+    #[test]
     fn nearby_candidates_preserve_indices_blockers_and_unknown_scores() {
         let mut view = fixture();
         assert_eq!(view.len(), 6);
+        assert!(!view.is_structure());
+        assert!(view.structure_evidence().is_none());
         assert_eq!(view.select(0), Some(0));
         let record = view.test_record(0);
         assert_eq!(record["candidate"]["confidence"], Value::Null);
@@ -465,6 +677,8 @@ mod tests {
     fn native_navigation_keeps_raw_downbeat_position_and_unknown_confidence() {
         let mut view = native_fixture();
         assert!(view.is_native());
+        assert!(!view.is_structure());
+        assert!(view.structure_evidence().is_none());
         assert_eq!(view.len(), 4);
         assert_eq!(
             view.points().collect::<Vec<_>>(),
