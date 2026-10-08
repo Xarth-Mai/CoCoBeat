@@ -40,6 +40,24 @@ cargo run --locked -p cocobeat-lab -- workbench-candidates /path/to/package --st
 
 首轮两个窗口 FAIL 保留：未启用 float_roundtrip 的 QA JSON 解析产生462 / 3处一 ULP 读回差异；仅修正 target 验收脚本，统一解析路径并另核全部原始 binary64 叶值，生产算法、原报告和容差未改。软件 callback / 注入输入不证明声学输出、物理手柄、鼠标一帧精度或真人音乐参考，十分钟 GUI 成本与新功能四目标原生构建仍未验
 
+## 显式编译结构候选包
+
+`compile-structure-candidate PACKAGE left|right NEW_PACKAGE` 从已验证的 analysis v2 包生成真实候选 sections 和对应 SectionCue，输出到源包外的全新目录
+
+```sh
+cargo run --locked -p cocobeat-lab -- compile-structure-candidate /path/to/package left /path/to/new-structure-package
+```
+
+固定 profile 为 `canonical-logbands-4x4-novelty-v1-candidate`：复用原1024×24谱形 bin，边界两侧各聚合4个完整非零 bin，以 `0.5*(1-cosine)+0.5*min(abs(log(RMS_right/RMS_left))/log(4),1)` 求 novelty。分数至少0.35，原位置为 bin 端点；两侧各自最大 / 最小 RMS 比不超过2、每个 bin 与本侧均值描述符距离不超过0.15，检查前后2位置的局部峰。边界离首尾及彼此至少8个 bin（4.096秒），最多64个支持边界；不足完整上下文、没有支持边界或超限均返回错误，不用作者旧段落或全曲单段作 fallback
+
+成功包的 sections 覆盖 `[0,N)`，以 `structure-candidate-0000` 等机械标签保存，cues 位于各候选段落起点；sections capability 为 `Candidate / Algorithm / confidence=None`，不推断 Verse / Chorus、重复关系或音乐语义。原 analysis sections / chart cues 被明确替换，最终音频、N、作者 Anchor、ruleset 和其他分析事实保持；发布前重新验证原 Source，原包与已有目标保持
+
+新包的 analysis / chart 和完整 CID 改变，diagnostics 记录来源旧 CID、原 sections/cues 数量及原 capability。旧 beat evidence 仍属于原 analysis / CID，不能改写为新结构包的证据；需要分别保留来源身份和本次输出身份
+
+本轮预先声明的14组 / 16份原创 WAV 控制按左右声道完成原 PCM 32项和真实编码回读32项，64项机制检查通过，包括预期无支持 / 短输入 / 超限拒绝；这是合成配方 oracle，编码回读容差为24576帧，不是真人段落或音质真值。生产 media83 / Lab85、两包全目标 Clippy、格式、边界和 Lab 构建通过，实际左右候选新包均已生成，左包另经验证及 Stage CLI 消费，见[自动分析软件观察](../testdata/synthetic/automatic-analysis-observations-20261008.json)
+
+本批新 Game / UI、600秒成本及四目标原生运行尚未验收；旧 wholeSpect / 音乐质量 FAIL、未知置信度和独立真人参考边界保持
+
 ## 软件观察与成本
 
 完整 499 文件候选快照完成 media 5 项 / Lab 2 项窄测、两包全目标 Clippy、格式及 debug Lab 构建；499 由 492 项生产基底、3 项测试 fixture、2 项已有 example 和 2 个新增模块组成。首次 497 文件快照遗漏两个已声明的 native Vorbis example，Clippy exit101 保留；只补源闭包后通过，候选算法不变。以下 CLI 结果绑定该快照冻结 Lab，不能改绑为后来生产二进制的实际运行

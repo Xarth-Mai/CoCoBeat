@@ -165,8 +165,8 @@ mod backend {
     }
 
     // Author source_note can contain diagnostic-looking text; only the producer's final annotation owns these keys
-    fn annotation(diagnostics: &str) -> Result<&str, String> {
-        let marker = format!("; experimental={}", native_beat::ANALYSIS_VERSION);
+    fn annotation<'a>(diagnostics: &'a str, profile: &str) -> Result<&'a str, String> {
+        let marker = format!("; experimental={profile};");
         let start = diagnostics
             .rfind(marker.as_str())
             .ok_or("Missing final native producer annotation")?;
@@ -337,19 +337,29 @@ mod backend {
             .analysis
             .capabilities
             .ok_or("Native evidence requires v2 capabilities")?;
+        let profile = package.manifest.analysis_version.as_str();
+        let include_auto = match profile {
+            native_beat::ANALYSIS_VERSION => false,
+            native_beat::AUTO_ANALYSIS_VERSION => true,
+            _ => return Err("Unsupported native analysis profile".into()),
+        };
+        let onset = if include_auto && n >= crate::native_onset::MIN_ONSET_FRAMES {
+            candidate
+        } else {
+            unsupported
+        };
         if capabilities.beat != candidate
             || capabilities.downbeat != candidate
-            || capabilities.tempo != unsupported
-            || capabilities.onset != unsupported
+            || capabilities.tempo != if include_auto { candidate } else { unsupported }
+            || capabilities.onset != onset
             || capabilities.repetition != unsupported
-            || package.manifest.analysis_version != native_beat::ANALYSIS_VERSION
         {
             return Err(
                 "Native profile/capability must be Candidate/Algorithm with unknown confidence"
                     .into(),
             );
         }
-        let diagnostics = annotation(&package.analysis.diagnostics)?;
+        let diagnostics = annotation(&package.analysis.diagnostics, profile)?;
         let summary_bytes = read(&evidence.join("evidence-summary.json"), SUMMARY_LIMIT)?;
         let summary_hash = blake3::hash(&summary_bytes);
         if summary_hash != hash(diagnostic(diagnostics, "evidence_summary_blake3")?)? {
@@ -357,7 +367,7 @@ mod backend {
         }
         let summary: Summary = serde_json::from_slice(&summary_bytes)
             .map_err(|e| format!("Native summary JSON: {e}"))?;
-        if summary.profile != native_beat::ANALYSIS_VERSION
+        if summary.profile != profile
             || !summary.confidence.is_null()
             || summary.production_admission
             || hash(&summary.model_blake3)? != blake3::Hash::from_bytes(native_beat::MODEL_BLAKE3)
@@ -368,11 +378,15 @@ mod backend {
         {
             return Err("Native summary profile/model/audio/nullable admission mismatch".into());
         }
-        if summary.files.len() != FILES.len() {
-            return Err("Native summary requires exactly six resources".into());
+        let mut names = FILES.to_vec();
+        if include_auto {
+            names.push(native_beat::AUTO_RESOURCE);
         }
-        let mut resources = Vec::with_capacity(FILES.len());
-        for name in FILES {
+        if summary.files.len() != names.len() {
+            return Err("Native summary resource count differs from its fixed profile".into());
+        }
+        let mut resources = Vec::with_capacity(names.len());
+        for name in names {
             let mut matching = summary.files.iter().filter(|v| v.name == name);
             let resource = matching
                 .next()
@@ -393,7 +407,7 @@ mod backend {
             || shape.f != f
             || shape.shape != [1, f, 128]
             || shape.channel > 1
-            || shape.profile != summary.profile
+            || shape.profile != native_beat::ANALYSIS_VERSION
             || !shape.confidence.is_null()
             || shape.production_admission
             || shape.old_frontend_numeric != "FAIL_PRESERVED_19_OF_28"
@@ -462,6 +476,10 @@ mod backend {
                 return Err("Native original scores/coordinates do not match package beats".into());
             }
         }
+        if include_auto {
+            let bytes = read_resource(evidence, resources[6], native_beat::AUTO_RESOURCE_LIMIT)?;
+            validate_auto_evidence(package, shape.channel, &bytes)?;
+        }
         let mut records = Vec::with_capacity(groups.beat.len() + groups.downbeat.len());
         for (slot, (kind, groups, frames)) in [
             (NativeBeatKind::Beat, &groups.beat, &beat_frames),
@@ -511,6 +529,60 @@ mod backend {
             },
             records,
         })
+    }
+
+    fn validate_auto_evidence(
+        package: &ValidatedPackage,
+        channel: usize,
+        bytes: &[u8],
+    ) -> Result<(), String> {
+        let auto: native_beat::AutoAnalysisEvidence = serde_json::from_slice(bytes)
+            .map_err(|e| format!("Automatic analysis evidence JSON: {e}"))?;
+        let n = package.manifest.canonical_frames;
+        let reason =
+            (n < crate::native_onset::MIN_ONSET_FRAMES).then_some("insufficient_analysis_frames");
+        if auto.onset_profile != crate::native_onset::ONSET_PROFILE
+            || auto.tempo_profile != crate::native_tempo::INTERBEAT_PROFILE
+            || auto.channel != channel
+            || auto.canonical_frames != n
+            || hash(&auto.audio_blake3)?.as_bytes() != &package.analysis.audio_hash
+            || auto.unsupported_reason.as_deref() != reason
+            || !auto.confidence.is_null()
+            || auto.production_admission
+        {
+            return Err(
+                "Automatic analysis profile/source/support/nullable metadata mismatch".into(),
+            );
+        }
+        let onsets = crate::native_onset::onsets_from_records(&auto.records, n)?;
+        if onsets.len() != package.analysis.onsets.len()
+            || onsets
+                .iter()
+                .zip(&package.analysis.onsets)
+                .any(|(expected, actual)| {
+                    expected.time != actual.time
+                        || expected.strength.to_bits() != actual.strength.to_bits()
+                        || actual.confidence.is_some()
+                })
+        {
+            return Err("Automatic onset records differ from package analysis".into());
+        }
+        let tempo = crate::native_tempo::interbeat_tempo(&package.analysis.beats, n)?;
+        if tempo.len() != package.analysis.tempo_regions.len()
+            || tempo
+                .iter()
+                .zip(&package.analysis.tempo_regions)
+                .any(|(expected, actual)| {
+                    expected.start != actual.start
+                        || expected.end != actual.end
+                        || expected.bpm.to_bits() != actual.bpm.to_bits()
+                        || actual.beat_unit.is_some()
+                        || actual.confidence.is_some()
+                })
+        {
+            return Err("Automatic tempo differs from the original adjacent beat intervals".into());
+        }
+        Ok(())
     }
 
     #[cfg(test)]
@@ -706,6 +778,164 @@ mod backend {
             fn drop(&mut self) {
                 let _ = fs::remove_dir_all(&self.root);
             }
+        }
+
+        // Beat logits remain a controlled fixture; onset, canonical snapshot and summary use production paths
+        fn enrich_fixture(fixture: &Fixture) -> (ValidatedPackage, PathBuf) {
+            let evidence = fixture.root.join("auto-evidence");
+            fs::create_dir(&evidence).unwrap();
+            for name in FILES {
+                fs::copy(fixture.evidence().join(name), evidence.join(name)).unwrap();
+            }
+            let package = build_package(
+                fixture.root.join("source.ogg"),
+                4_800,
+                fixture.root.join("auto-package"),
+                |staged, prepared| {
+                    let mut analysis = fixture.package.analysis.clone();
+                    let cancel = crate::NativeBeatCancellation::default();
+                    native_beat::enrich_auto_analysis(
+                        staged,
+                        prepared,
+                        1,
+                        &evidence,
+                        &mut analysis,
+                        &cancel,
+                    )?;
+                    native_beat::finish_analysis_evidence(
+                        &evidence,
+                        &mut analysis,
+                        4_800,
+                        1,
+                        6,
+                        true,
+                        &cancel,
+                    )?;
+                    Ok(PackageBuildInput {
+                        song_id: fixture.package.manifest.song_id.clone(),
+                        importer_version: "controlled-logits-real-onset-producer".into(),
+                        analysis_version: native_beat::AUTO_ANALYSIS_VERSION.into(),
+                        chart_version: fixture.package.manifest.chart_version.clone(),
+                        analysis,
+                        chart: fixture.package.chart.clone(),
+                    })
+                },
+            )
+            .unwrap();
+            (package, evidence)
+        }
+
+        #[test]
+        fn real_auto_producer_roundtrips_with_legacy_beats_and_authored_chart() {
+            let mut fixture = Fixture::tie();
+            let legacy = fixture.read().unwrap();
+            fixture.package = export_anchors(
+                fixture.root.join("package"),
+                fixture.package.manifest.package_hash,
+                &[Anchor {
+                    id: 7,
+                    song_time: SongTime::from_frames(1024),
+                }],
+                fixture.root.join("authored-anchors"),
+            )
+            .unwrap();
+            let (package, evidence) = enrich_fixture(&fixture);
+            let current = read_native_beat_evidence(&package, &evidence).unwrap();
+            assert_eq!(current.metadata.profile, native_beat::AUTO_ANALYSIS_VERSION);
+            assert_eq!(current.records, legacy.records);
+            assert_eq!(package.chart, fixture.package.chart);
+            assert_eq!(package.analysis.energy, fixture.package.analysis.energy);
+            assert_eq!(package.analysis.tempo_regions.len(), 1);
+            let interval = package.analysis.tempo_regions[0];
+            assert_eq!(
+                (interval.start.frames(), interval.end.frames(), interval.bpm),
+                (480, 2400, 1500.0)
+            );
+            assert_eq!(fixture.read().unwrap().records, legacy.records);
+            let summary: Value =
+                serde_json::from_slice(&fs::read(evidence.join("evidence-summary.json")).unwrap())
+                    .unwrap();
+            assert_eq!(summary["files"].as_array().unwrap().len(), 7);
+            let proposal = crate::compile_anchor_proposal(
+                &package.analysis,
+                4_800,
+                crate::AnchorPolicy {
+                    min_confidence: 0.5,
+                    min_gap_frames: 100,
+                },
+            )
+            .unwrap();
+            assert!(proposal.anchors.is_empty());
+            assert!(
+                proposal
+                    .evidence
+                    .iter()
+                    .all(|row| row.decision == crate::AnchorDecision::UnknownConfidence)
+            );
+        }
+
+        #[test]
+        fn auto_evidence_mutations_are_checked_against_the_real_producer_summary() {
+            let fixture = Fixture::tie();
+            let (package, evidence) = enrich_fixture(&fixture);
+            let original = fs::read(evidence.join(native_beat::AUTO_RESOURCE)).unwrap();
+            let mut changed = original.clone();
+            changed.push(b' ');
+            fs::write(evidence.join(native_beat::AUTO_RESOURCE), &changed).unwrap();
+            assert!(read_native_beat_evidence(&package, &evidence).is_err());
+            fs::write(evidence.join(native_beat::AUTO_RESOURCE), &original).unwrap();
+            let mut changed = package.clone();
+            changed.analysis.tempo_regions[0].bpm += 1.0;
+            assert!(
+                read_native_beat_evidence(&changed, &evidence)
+                    .unwrap_err()
+                    .contains("adjacent beat")
+            );
+            let mut changed = package.clone();
+            changed.analysis.onsets.clear();
+            changed.analysis.onsets.push(cocobeat_schema::OnsetFeature {
+                time: SongTime::from_frames(512),
+                strength: 0.25,
+                confidence: None,
+            });
+            if changed.analysis.onsets == package.analysis.onsets {
+                changed.analysis.onsets[0].strength = 0.5;
+            }
+            assert!(
+                read_native_beat_evidence(&changed, &evidence)
+                    .unwrap_err()
+                    .contains("onset records")
+            );
+            // Rebind the actual produced resource only to reach its semantic checks
+            let mut value: Value = serde_json::from_slice(&original).unwrap();
+            value["tempo_profile"] = json!("default-120-bpm");
+            let changed_bytes = serde_json::to_vec(&value).unwrap();
+            fs::write(evidence.join(native_beat::AUTO_RESOURCE), &changed_bytes).unwrap();
+            let mut summary: Value =
+                serde_json::from_slice(&fs::read(evidence.join("evidence-summary.json")).unwrap())
+                    .unwrap();
+            let resource = summary["files"]
+                .as_array_mut()
+                .unwrap()
+                .iter_mut()
+                .find(|r| r["name"] == native_beat::AUTO_RESOURCE)
+                .unwrap();
+            resource["bytes"] = json!(changed_bytes.len());
+            resource["blake3"] = json!(blake3::hash(&changed_bytes).to_hex().to_string());
+            let summary_bytes = serde_json::to_vec(&summary).unwrap();
+            let old_summary =
+                blake3::hash(&fs::read(evidence.join("evidence-summary.json")).unwrap());
+            fs::write(evidence.join("evidence-summary.json"), &summary_bytes).unwrap();
+            let mut changed = package.clone();
+            changed.analysis.diagnostics = changed.analysis.diagnostics.replace(
+                &format!("evidence_summary_blake3={old_summary}"),
+                &format!("evidence_summary_blake3={}", blake3::hash(&summary_bytes)),
+            );
+            assert!(
+                read_native_beat_evidence(&changed, &evidence)
+                    .unwrap_err()
+                    .contains("metadata mismatch")
+            );
         }
 
         #[test]

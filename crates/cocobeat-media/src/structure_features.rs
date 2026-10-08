@@ -1,4 +1,4 @@
-//! Bounded canonical spectral descriptors, without musical section or repetition adoption
+//! Bounded canonical descriptors and explicitly compiled candidate sections
 
 use crate::{ValidatedPackage, read_package};
 use cocobeat_schema::{CANONICAL_SAMPLE_RATE, MAX_CANONICAL_FRAMES};
@@ -94,6 +94,287 @@ pub fn read_structure_features_package(
         return Err("Structure features differ from the validated canonical extent".into());
     }
     Ok((package, features.finish()?))
+}
+
+pub const STRUCTURE_SEGMENTATION_PROFILE: &str = "canonical-logbands-4x4-novelty-v1-candidate";
+const CONTEXT_BINS: usize = 4;
+const MIN_SECTION_FRAMES: u64 = 8 * BIN_FRAMES;
+const MAX_BOUNDARIES: usize = 64;
+
+/// Publishes candidate sections and matching cues from the same staged canonical audio
+/// No supported boundary is an error; authored sections are never a fallback
+pub fn compile_structure_candidate_package(
+    source: impl AsRef<Path>,
+    channel: usize,
+    destination: impl AsRef<Path>,
+) -> Result<ValidatedPackage, String> {
+    let source = source.as_ref();
+    let destination = destination.as_ref();
+    if channel > 1 {
+        return Err(
+            "Structure segmentation requires explicit left (0) or right (1) channel".into(),
+        );
+    }
+    let original = crate::validate_package(source)?;
+    if original.analysis.schema_version != cocobeat_schema::ANALYSIS_SCHEMA_VERSION
+        || original.analysis.capabilities.is_none()
+    {
+        return Err(
+            "Structure segmentation requires analysis v2 with original capabilities".into(),
+        );
+    }
+    let source_root = std::fs::canonicalize(source).map_err(|e| e.to_string())?;
+    let parent = destination
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    let parent = std::fs::canonicalize(parent).map_err(|e| e.to_string())?;
+    if parent.starts_with(&source_root) {
+        return Err("Structure candidate output must be outside the source package".into());
+    }
+    let destination = parent.join(
+        destination
+            .file_name()
+            .ok_or("Structure output must name a new directory")?,
+    );
+    crate::build_package(
+        source.join(&original.manifest.audio.file_name),
+        original.manifest.canonical_frames,
+        destination,
+        |staged, prepared| {
+            if prepared.asset != original.manifest.audio {
+                return Err(
+                    "Staged structure audio differs from the validated source asset".into(),
+                );
+            }
+            let mut features = Features::new(channel)?;
+            crate::decode_canonical(staged, original.manifest.canonical_frames, |frames| {
+                features.push(frames)
+            })?;
+            let evidence = features.finish()?;
+            let boundaries = section_boundaries(&evidence.bins, evidence.canonical_frames)?;
+            let content = section_content(&original, channel, &boundaries)?;
+            if crate::validate_package(source)? != original {
+                return Err("Structure source package changed after initial validation".into());
+            }
+            Ok(content)
+        },
+    )
+}
+
+#[derive(Clone, Copy, Debug)]
+struct Boundary {
+    frame: u64,
+    novelty: f64,
+}
+
+#[derive(Clone, Copy)]
+struct Novelty {
+    score: f64,
+    sustained: bool,
+}
+
+struct Context {
+    descriptor: [f64; 8],
+    rms: f64,
+    sustained: bool,
+}
+
+fn context(bins: &[StructureFeatureBin]) -> Result<Option<Context>, String> {
+    let mut descriptor = [0.0; 8];
+    let mut squares = 0.0;
+    let mut min_rms = f64::INFINITY;
+    let mut max_rms: f64 = 0.0;
+    for bin in bins {
+        let Some(log) = bin.log_band_power else {
+            return Ok(None);
+        };
+        if bin.spectral_frames != BIN_FRAMES
+            || bin.rms <= 0.0
+            || cosine(Some(log), Some(log)).is_none()
+        {
+            return Ok(None);
+        }
+        if !bin.rms.is_finite() || log.iter().any(|v| !v.is_finite()) {
+            return Err("Non-finite structure context".into());
+        }
+        for (sum, value) in descriptor.iter_mut().zip(log) {
+            *sum += value;
+        }
+        squares += bin.rms * bin.rms;
+        min_rms = min_rms.min(bin.rms);
+        max_rms = max_rms.max(bin.rms);
+    }
+    for value in &mut descriptor {
+        *value /= CONTEXT_BINS as f64;
+    }
+    let rms = (squares / CONTEXT_BINS as f64).sqrt();
+    let mut sustained = max_rms / min_rms <= 2.0;
+    for bin in bins {
+        let Some(similarity) = cosine(bin.log_band_power, Some(descriptor)) else {
+            return Ok(None);
+        };
+        sustained &= 1.0 - similarity <= 0.15;
+    }
+    if !rms.is_finite() || descriptor.iter().any(|v| !v.is_finite()) {
+        return Err("Non-finite pooled structure context".into());
+    }
+    Ok(Some(Context {
+        descriptor,
+        rms,
+        sustained,
+    }))
+}
+
+fn section_boundaries(bins: &[StructureFeatureBin], frames: u64) -> Result<Vec<Boundary>, String> {
+    let full = (frames / BIN_FRAMES) as usize;
+    if full < 16 {
+        return Err(
+            "Structure segmentation has insufficient complete context and minimum duration".into(),
+        );
+    }
+    let mut scores = vec![None; full + 1];
+    for k in CONTEXT_BINS..=full - CONTEXT_BINS {
+        let (Some(left), Some(right)) = (
+            context(&bins[k - CONTEXT_BINS..k])?,
+            context(&bins[k..k + CONTEXT_BINS])?,
+        ) else {
+            continue;
+        };
+        let Some(similarity) = cosine(Some(left.descriptor), Some(right.descriptor)) else {
+            continue;
+        };
+        let energy_change = ((right.rms / left.rms).ln().abs() / 4.0_f64.ln()).min(1.0);
+        let score = 0.5 * (1.0 - similarity) + 0.5 * energy_change;
+        if !score.is_finite() {
+            return Err("Non-finite structure novelty".into());
+        }
+        scores[k] = Some(Novelty {
+            score,
+            sustained: left.sustained && right.sustained,
+        });
+    }
+    let mut candidates = Vec::new();
+    for k in CONTEXT_BINS + 2..=full - CONTEXT_BINS - 2 {
+        let Some(current) = scores[k] else { continue };
+        let frame = k as u64 * BIN_FRAMES;
+        if !current.sustained
+            || current.score < 0.35
+            || frame < MIN_SECTION_FRAMES
+            || frames - frame < MIN_SECTION_FRAMES
+        {
+            continue;
+        }
+        if (1..=2).all(|offset| {
+            scores[k - offset].is_some_and(|v| current.score > v.score)
+                && scores[k + offset].is_some_and(|v| current.score >= v.score)
+        }) {
+            candidates.push(Boundary {
+                frame,
+                novelty: current.score,
+            });
+        }
+    }
+    candidates.sort_unstable_by(|a, b| b.novelty.total_cmp(&a.novelty).then(a.frame.cmp(&b.frame)));
+    let mut accepted: Vec<Boundary> = Vec::new();
+    for candidate in candidates {
+        if accepted
+            .iter()
+            .all(|v| v.frame.abs_diff(candidate.frame) >= MIN_SECTION_FRAMES)
+        {
+            accepted.push(candidate);
+            if accepted.len() > MAX_BOUNDARIES {
+                return Err("Structure segmentation exceeds 64 supported boundaries".into());
+            }
+        }
+    }
+    if accepted.is_empty() {
+        return Err("Structure segmentation found no supported persistent boundary".into());
+    }
+    accepted.sort_unstable_by_key(|v| v.frame);
+    Ok(accepted)
+}
+
+fn section_content(
+    original: &ValidatedPackage,
+    channel: usize,
+    boundaries: &[Boundary],
+) -> Result<crate::PackageBuildInput, String> {
+    use cocobeat_schema::{
+        AnalysisCapability, AnalysisSource, AnalysisState, SectionCue, SectionFeature, SongTime,
+    };
+    let mut analysis = original.analysis.clone();
+    let mut chart = original.chart.clone();
+    let capabilities = analysis
+        .capabilities
+        .as_mut()
+        .ok_or("Structure segmentation requires original capabilities")?;
+    let old = capabilities.sections;
+    capabilities.sections = AnalysisCapability {
+        state: AnalysisState::Candidate,
+        source: AnalysisSource::Algorithm,
+        confidence: None,
+    };
+    analysis.sections.clear();
+    chart.sections.clear();
+    let mut start = 0;
+    for (index, end) in boundaries
+        .iter()
+        .map(|v| v.frame)
+        .chain(std::iter::once(original.manifest.canonical_frames))
+        .enumerate()
+    {
+        let label = format!("structure-candidate-{index:04}");
+        analysis.sections.push(SectionFeature {
+            start: SongTime::from_frames(start as i64),
+            end: SongTime::from_frames(end as i64),
+            confidence: None,
+            label: label.clone(),
+        });
+        chart.sections.push(SectionCue {
+            id: index as u64,
+            time: SongTime::from_frames(start as i64),
+            label,
+        });
+        start = end;
+    }
+    let old_state = match old.state {
+        AnalysisState::NotRun => "not_run",
+        AnalysisState::Unsupported => "unsupported",
+        AnalysisState::Candidate => "candidate",
+        AnalysisState::Validated => "validated",
+    };
+    let old_source = match old.source {
+        AnalysisSource::Algorithm => "algorithm",
+        AnalysisSource::Authored => "authored",
+        AnalysisSource::Measured => "measured",
+    };
+    analysis.diagnostics = serde_json::to_string(&serde_json::json!({
+        "profile": STRUCTURE_SEGMENTATION_PROFILE,
+        "channel": channel,
+        "source_content_id": blake3::Hash::from_bytes(original.manifest.package_hash).to_hex().as_str(),
+        "audio_blake3": blake3::Hash::from_bytes(original.manifest.audio.blake3).to_hex().as_str(),
+        "canonical_frames": original.manifest.canonical_frames,
+        "original_analysis_version": original.manifest.analysis_version,
+        "original_sections": original.analysis.sections.len(),
+        "original_cues": original.chart.sections.len(),
+        "original_sections_capability": { "state": old_state, "source": old_source, "confidence": old.confidence },
+        "original_diagnostics_blake3": blake3::hash(original.analysis.diagnostics.as_bytes()).to_hex().as_str(),
+        "boundaries_frame_novelty": boundaries.iter().map(|v| (v.frame, v.novelty)).collect::<Vec<_>>(),
+        "confidence": null,
+        "production_admission": false,
+    })).map_err(|e| e.to_string())?;
+    if analysis.diagnostics.len() > cocobeat_schema::MAX_CONTENT_DIAGNOSTICS_BYTES {
+        return Err("Structure diagnostics exceed the schema byte limit".into());
+    }
+    Ok(crate::PackageBuildInput {
+        song_id: original.manifest.song_id.clone(),
+        importer_version: original.manifest.importer_version.clone(),
+        analysis_version: STRUCTURE_SEGMENTATION_PROFILE.into(),
+        chart_version: "structure-candidate-cues-v1".into(),
+        analysis,
+        chart,
+    })
 }
 
 struct Features {
@@ -454,7 +735,7 @@ mod tests {
     }
 
     #[test]
-    fn shared_pcm_callback_keeps_actual_stereo_tail_and_propagates_early_failure() {
+    fn shared_callback_compile_failure_and_constructed_section_content_preserve_source() {
         use std::fs;
         let root = std::env::temp_dir().join(format!(
             "cocobeat-structure-shared-{}-{}",
@@ -528,7 +809,169 @@ mod tests {
             protected,
             crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap())
         );
+        let failed = root.join("unsupported-segmentation");
+        assert!(compile_structure_candidate_package(&destination, 0, &failed).is_err());
+        assert!(!failed.exists());
+        assert_eq!(
+            protected,
+            crate::PACKAGE_OBJECT_NAMES.map(|name| fs::read(destination.join(name)).unwrap())
+        );
+        assert!(
+            compile_structure_candidate_package(&destination, 2, root.join("wrong-channel"))
+                .is_err()
+        );
+        assert!(
+            compile_structure_candidate_package(&destination, 0, destination.join("inside"))
+                .is_err()
+        );
+        fs::write(&failed, b"keep existing output").unwrap();
+        assert!(compile_structure_candidate_package(&destination, 0, &failed).is_err());
+        assert_eq!(fs::read(&failed).unwrap(), b"keep existing output");
+        let mut constructed = expected_package;
+        constructed.manifest.canonical_frames = 32 * BIN_FRAMES + 1;
+        constructed.analysis.energy = vec![cocobeat_schema::EnergySample {
+            start: cocobeat_schema::SongTime::ZERO,
+            frames: constructed.manifest.canonical_frames as u32,
+            rms: [0.25; 2],
+            peak: [0.5; 2],
+        }];
+        constructed.chart.anchors = vec![cocobeat_schema::Anchor {
+            id: 77,
+            song_time: cocobeat_schema::SongTime::from_frames(123),
+        }];
+        let content = section_content(
+            &constructed,
+            1,
+            &[Boundary {
+                frame: 16 * BIN_FRAMES,
+                novelty: 0.5,
+            }],
+        )
+        .unwrap();
+        assert_eq!(content.chart.anchors, constructed.chart.anchors);
+        assert_eq!(content.chart.ruleset_id, constructed.chart.ruleset_id);
+        assert_eq!(content.analysis.energy, constructed.analysis.energy);
+        assert_eq!(content.analysis.beats, constructed.analysis.beats);
+        assert_eq!(content.analysis.onsets, constructed.analysis.onsets);
+        assert_eq!(
+            content.analysis.tempo_regions,
+            constructed.analysis.tempo_regions
+        );
+        assert_eq!(
+            content.analysis.repetitions,
+            constructed.analysis.repetitions
+        );
+        let mut expected_caps = constructed.analysis.capabilities.unwrap();
+        expected_caps.sections = cocobeat_schema::AnalysisCapability {
+            state: cocobeat_schema::AnalysisState::Candidate,
+            source: cocobeat_schema::AnalysisSource::Algorithm,
+            confidence: None,
+        };
+        assert_eq!(content.analysis.capabilities, Some(expected_caps));
+        let sections = &content.analysis.sections;
+        assert_eq!(sections.len(), 2);
+        assert_eq!(sections[0].start.frames(), 0);
+        assert_eq!(sections[0].end.frames(), (16 * BIN_FRAMES) as i64);
+        assert_eq!(sections[1].start, sections[0].end);
+        assert_eq!(sections[1].end.frames(), (32 * BIN_FRAMES + 1) as i64);
+        for (index, (section, cue)) in sections.iter().zip(&content.chart.sections).enumerate() {
+            assert_eq!(cue.id, index as u64);
+            assert_eq!(cue.time, section.start);
+            assert_eq!(cue.label, format!("structure-candidate-{index:04}"));
+            assert_eq!(section.label, cue.label);
+            assert_eq!(section.confidence, None);
+        }
+        content
+            .analysis
+            .validate(constructed.manifest.canonical_frames)
+            .unwrap();
+        content
+            .chart
+            .validate(constructed.manifest.canonical_frames)
+            .unwrap();
         fs::remove_dir_all(root).unwrap();
+    }
+
+    // Hand-built descriptors are pure algorithm controls, not decoded musical truth
+    fn segmentation_bins(kinds: &[(usize, f64)]) -> Vec<StructureFeatureBin> {
+        kinds
+            .iter()
+            .enumerate()
+            .map(|(index, &(band, rms))| {
+                let mut log = [0.0; 8];
+                log[band] = 1.0;
+                StructureFeatureBin {
+                    index,
+                    start_frame: index as u64 * BIN_FRAMES,
+                    end_frame: (index + 1) as u64 * BIN_FRAMES,
+                    rms,
+                    peak: rms,
+                    spectral_frames: BIN_FRAMES,
+                    partial_tail_frames: 0,
+                    spectrum_status: "HAND_BUILT_ALGORITHM_CONTROL",
+                    mean_band_power: None,
+                    log_band_power: Some(log),
+                    neighbors: Vec::new(),
+                }
+            })
+            .collect()
+    }
+
+    #[test]
+    fn persistent_colour_energy_changes_and_real_tail_follow_independent_oracles() {
+        let mut kinds = vec![(0, 0.25); 16];
+        kinds.extend(vec![(7, 0.25); 16]);
+        let bins = segmentation_bins(&kinds);
+        let boundaries = section_boundaries(&bins, 32 * BIN_FRAMES + 1).unwrap();
+        assert_eq!(boundaries.len(), 1);
+        assert_eq!(boundaries[0].frame, 16 * BIN_FRAMES);
+        assert_eq!(boundaries[0].novelty, 0.5);
+        let mut kinds = vec![(0, 0.125); 16];
+        kinds.extend(vec![(0, 0.5); 16]);
+        let energy = section_boundaries(&segmentation_bins(&kinds), 32 * BIN_FRAMES).unwrap();
+        assert_eq!(energy.len(), 1);
+        assert_eq!(energy[0].frame, 16 * BIN_FRAMES);
+        assert_eq!(energy[0].novelty, 0.5);
+        let pool = context(&segmentation_bins(&[
+            (0, 1.0),
+            (0, 1.0),
+            (0, 2.0),
+            (0, 2.0),
+        ]))
+        .unwrap()
+        .unwrap();
+        assert_eq!(pool.rms, 2.5_f64.sqrt());
+        assert!(pool.sustained);
+    }
+
+    #[test]
+    fn silence_constant_short_and_unsustained_transients_never_fallback_to_one_section() {
+        for kinds in [vec![(0, 0.25); 32], vec![(0, 0.0); 32], vec![(0, 0.25); 8]] {
+            assert!(
+                section_boundaries(&segmentation_bins(&kinds), kinds.len() as u64 * BIN_FRAMES)
+                    .is_err()
+            );
+        }
+        for transient in [(7, 1.0), (0, 2.0)] {
+            let mut kinds = vec![(0, 0.25); 32];
+            kinds[16] = transient;
+            assert!(section_boundaries(&segmentation_bins(&kinds), 32 * BIN_FRAMES).is_err());
+        }
+    }
+
+    #[test]
+    fn equal_scored_close_boundaries_choose_earlier_and_65_boundaries_are_not_truncated() {
+        let mut kinds = vec![(0, 0.25); 8];
+        kinds.extend(vec![(7, 0.25); 4]);
+        kinds.extend(vec![(0, 0.25); 8]);
+        let boundaries = section_boundaries(&segmentation_bins(&kinds), 20 * BIN_FRAMES).unwrap();
+        assert_eq!(boundaries.len(), 1);
+        assert_eq!(boundaries[0].frame, 8 * BIN_FRAMES);
+        let kinds: Vec<_> = (0..66)
+            .flat_map(|i| std::iter::repeat_n((if i % 2 == 0 { 0 } else { 7 }, 0.25), 8))
+            .collect();
+        let error = section_boundaries(&segmentation_bins(&kinds), 528 * BIN_FRAMES).unwrap_err();
+        assert!(error.contains("exceeds 64"));
     }
 
     #[test]

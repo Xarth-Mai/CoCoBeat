@@ -328,6 +328,30 @@ pub fn import_experimental_beat_package_with_cancellation(
         destination,
         importer_version,
         cancel,
+        false,
+    );
+    cancel.finish();
+    result
+}
+
+/// Explicit onset and interbeat candidates share the original atomic bundle and cancellation owner
+pub fn import_experimental_analysis_package_with_cancellation(
+    source: &Path,
+    authoring_path: &Path,
+    channel: usize,
+    destination: &Path,
+    importer_version: &str,
+    cancel: &crate::NativeBeatCancellation,
+) -> Result<ValidatedPackage, String> {
+    cancel.begin()?;
+    let result = import_experimental_beat_attempt(
+        source,
+        authoring_path,
+        channel,
+        destination,
+        importer_version,
+        cancel,
+        true,
     );
     cancel.finish();
     result
@@ -340,6 +364,7 @@ fn import_experimental_beat_attempt(
     destination: &Path,
     importer_version: &str,
     cancel: &crate::NativeBeatCancellation,
+    include_auto: bool,
 ) -> Result<ValidatedPackage, String> {
     cancel.check("before native import")?;
     #[cfg(not(any(
@@ -355,6 +380,7 @@ fn import_experimental_beat_attempt(
             channel,
             destination,
             importer_version,
+            include_auto,
         );
         Err("Unsupported experimental native beat platform; manual import remains available".into())
     }
@@ -365,6 +391,11 @@ fn import_experimental_beat_attempt(
         all(target_os = "windows", target_arch = "aarch64", target_env = "msvc")
     ))]
     {
+        let analysis_version = if include_auto {
+            crate::native_beat::AUTO_ANALYSIS_VERSION
+        } else {
+            crate::native_beat::ANALYSIS_VERSION
+        };
         if channel > 1 || importer_version.is_empty() {
             return Err(
                 "Experimental import requires explicit channel 0/1 and importer identity".into(),
@@ -405,7 +436,7 @@ fn import_experimental_beat_attempt(
             fs::create_dir(&evidence).map_err(|e| format!("Create experimental evidence: {e}"))?;
             crate::native_beat::write_json(
                 &evidence.join("started.json"),
-                &serde_json::json!({"status":"RUNNING","source":source,"authoring":authoring_path,"channel":channel,"analysis_version":crate::native_beat::ANALYSIS_VERSION,"confidence":null,"production_admission":false}),
+                &serde_json::json!({"status":"RUNNING","source":source,"authoring":authoring_path,"channel":channel,"analysis_version":analysis_version,"confidence":null,"production_admission":false}),
             )?;
             let mut session = crate::native_beat::load_session(&evidence, cancel)?;
             let validated = import_authored_package_with_analysis_checked(
@@ -414,7 +445,7 @@ fn import_experimental_beat_attempt(
                 &package,
                 importer_version,
                 |staged, prepared, analysis| {
-                    crate::native_beat::analyze_staged(
+                    let (canonical, spectrogram_frames) = crate::native_beat::analyze_staged(
                         &mut session,
                         staged,
                         prepared,
@@ -423,7 +454,21 @@ fn import_experimental_beat_attempt(
                         analysis,
                         cancel,
                     )?;
-                    Ok(Some(crate::native_beat::ANALYSIS_VERSION.into()))
+                    if include_auto {
+                        crate::native_beat::enrich_auto_analysis(
+                            &canonical, prepared, channel, &evidence, analysis, cancel,
+                        )?;
+                    }
+                    crate::native_beat::finish_analysis_evidence(
+                        &evidence,
+                        analysis,
+                        prepared.canonical_frames,
+                        channel,
+                        spectrogram_frames,
+                        include_auto,
+                        cancel,
+                    )?;
+                    Ok(Some(analysis_version.into()))
                 },
                 &|phase| cancel.check(phase),
             )?;
@@ -907,6 +952,31 @@ mod tests {
             "Native import cancellation observed at before native import"
         );
         assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
+        let automatic = crate::NativeBeatCancellation::default();
+        assert!(automatic.request());
+        let automatic_failure = import_experimental_analysis_package_with_cancellation(
+            &root.join("not-read.audio"),
+            &root.join("not-read.json"),
+            1,
+            &root.join("auto-output"),
+            IMPORTER,
+            &automatic,
+        )
+        .unwrap_err();
+        assert_eq!(automatic_failure, failure);
+        assert_eq!(fs::read_dir(&root).unwrap().count(), 0);
+        assert!(
+            import_experimental_analysis_package_with_cancellation(
+                &root.join("not-read.audio"),
+                &root.join("not-read.json"),
+                1,
+                &root.join("auto-output"),
+                IMPORTER,
+                &automatic,
+            )
+            .unwrap_err()
+            .contains("one-attempt")
+        );
         assert!(!cancel.request());
         assert!(
             import_experimental_beat_package_with_cancellation(

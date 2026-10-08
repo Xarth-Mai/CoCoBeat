@@ -15,6 +15,7 @@ mod encode;
 mod native_beat;
 mod native_beat_evidence;
 mod native_cancellation;
+mod native_onset;
 mod native_tempo;
 mod package;
 mod resample;
@@ -26,7 +27,8 @@ pub use anchors::{
 };
 pub use audio_asset::{PreparedCanonicalAudio, prepare_canonical_audio};
 pub use authored::{
-    build_authored_package, import_authored_package, import_experimental_beat_package,
+    build_authored_package, import_authored_package,
+    import_experimental_analysis_package_with_cancellation, import_experimental_beat_package,
     import_experimental_beat_package_with_cancellation,
 };
 pub use decode::{DecodedSource, decode_canonical, decode_source};
@@ -44,6 +46,7 @@ pub use package::{
 };
 pub use resample::{ResampledSource, resample_source};
 pub use structure_features::{
-    StructureAdjacentChange, StructureFeatureBin, StructureFeatureEvidence, StructureNeighbor,
+    STRUCTURE_SEGMENTATION_PROFILE, StructureAdjacentChange, StructureFeatureBin,
+    StructureFeatureEvidence, StructureNeighbor, compile_structure_candidate_package,
     inspect_structure_features_package, read_structure_features_package,
 };

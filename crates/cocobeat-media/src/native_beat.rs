@@ -26,6 +26,9 @@ use std::{
 mod assets;
 
 pub(crate) const ANALYSIS_VERSION: &str = "native-small0-high22050-f64fma-minimal-v1-candidate";
+pub(crate) const AUTO_ANALYSIS_VERSION: &str = "native-small0-hfc1024-interbeat-v1-candidate";
+pub(crate) const AUTO_RESOURCE: &str = "auto-analysis.json";
+pub(crate) const AUTO_RESOURCE_LIMIT: u64 = 16 * 1024 * 1024;
 pub(crate) const MODEL_BLAKE3: [u8; 32] = assets::MODEL_BLAKE3;
 // Lab is the sole ORT consumer; rc.13 cannot detect another caller loading a library without committing an environment
 static OWN_ORT_ENVIRONMENT: OnceLock<()> = OnceLock::new();
@@ -632,7 +635,7 @@ pub(crate) fn analyze_staged(
     evidence: &Path,
     analysis: &mut MusicAnalysis,
     cancel: &NativeBeatCancellation,
-) -> Result<(), String> {
+) -> Result<(PathBuf, usize), String> {
     cancel.check("before native analysis")?;
     if channel > 1 || analysis.audio_hash != prepared.asset.blake3 {
         return Err("Invalid channel or analysis audio identity".into());
@@ -685,21 +688,137 @@ pub(crate) fn analyze_staged(
     capabilities.onset = unsupported;
     capabilities.repetition = unsupported;
     analysis.beats = candidates;
-    let mut evidence_files = Vec::new();
-    for name in [
+    Ok((final_copy, spect.frames))
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct AutoAnalysisEvidence {
+    pub onset_profile: String,
+    pub tempo_profile: String,
+    pub channel: usize,
+    pub canonical_frames: u64,
+    pub audio_blake3: String,
+    #[serde(deserialize_with = "Option::deserialize")]
+    pub unsupported_reason: Option<String>,
+    pub records: Vec<crate::native_onset::NativeOnsetRecord>,
+    pub confidence: serde_json::Value,
+    pub production_admission: bool,
+}
+
+pub(crate) fn enrich_auto_analysis(
+    canonical: &Path,
+    prepared: &PreparedCanonicalAudio,
+    channel: usize,
+    evidence: &Path,
+    analysis: &mut MusicAnalysis,
+    cancel: &NativeBeatCancellation,
+) -> Result<(), String> {
+    cancel.check("before canonical onset snapshot")?;
+    if channel > 1 || analysis.audio_hash != prepared.asset.blake3 {
+        return Err("Automatic analysis channel/audio mismatch".into());
+    }
+    let n = prepared.canonical_frames;
+    let bytes = verified_asset(
+        canonical,
+        prepared.asset.byte_len,
+        &prepared.asset.blake3,
+        evidence,
+        "auto-audio",
+        cancel,
+    )?;
+    let mut mono = Vec::new();
+    mono.try_reserve_exact(n as usize)
+        .map_err(|e| format!("Cannot reserve bounded onset PCM: {e}"))?;
+    crate::decode::decode_canonical_bytes(bytes, n, |block| {
+        cancel.check("canonical onset PCM")?;
+        if block.len() as u64 > n.saturating_sub(mono.len() as u64) {
+            return Err("Onset PCM exceeds canonical extent".into());
+        }
+        mono.extend(block.iter().map(|frame| frame[channel]));
+        Ok(())
+    })?;
+    if mono.len() as u64 != n {
+        return Err("Onset PCM differs from canonical extent".into());
+    }
+    cancel.check("before offline onset detection")?;
+    let detected = crate::native_onset::analyze_onsets(&mono)?;
+    drop(mono);
+    cancel.check("after offline onset detection")?;
+    let tempo = crate::native_tempo::interbeat_tempo(&analysis.beats, n)?;
+    let record = AutoAnalysisEvidence {
+        onset_profile: crate::native_onset::ONSET_PROFILE.into(),
+        tempo_profile: crate::native_tempo::INTERBEAT_PROFILE.into(),
+        channel,
+        canonical_frames: n,
+        audio_blake3: blake3::Hash::from_bytes(prepared.asset.blake3)
+            .to_hex()
+            .to_string(),
+        unsupported_reason: detected.unsupported_reason.map(str::to_owned),
+        records: detected.records,
+        confidence: serde_json::Value::Null,
+        production_admission: false,
+    };
+    let encoded = serde_json::to_vec_pretty(&record)
+        .map_err(|e| format!("Serialize automatic analysis evidence: {e}"))?;
+    if encoded.len() as u64 > AUTO_RESOURCE_LIMIT {
+        return Err("Automatic analysis evidence exceeds bounded resource limit".into());
+    }
+    write_json(&evidence.join(AUTO_RESOURCE), &record)?;
+    let capabilities = analysis
+        .capabilities
+        .as_mut()
+        .ok_or("Automatic analysis requires v2")?;
+    capabilities.onset = AnalysisCapability {
+        state: detected.state,
+        source: AnalysisSource::Algorithm,
+        confidence: None,
+    };
+    capabilities.tempo = AnalysisCapability {
+        state: AnalysisState::Candidate,
+        source: AnalysisSource::Algorithm,
+        confidence: None,
+    };
+    analysis.onsets = detected.onsets;
+    analysis.tempo_regions = tempo;
+    analysis.validate(n)?;
+    cancel.check("after automatic analysis evidence")
+}
+
+pub(crate) fn finish_analysis_evidence(
+    evidence: &Path,
+    analysis: &mut MusicAnalysis,
+    n: u64,
+    channel: usize,
+    f: usize,
+    include_auto: bool,
+    cancel: &NativeBeatCancellation,
+) -> Result<(), String> {
+    let profile = if include_auto {
+        AUTO_ANALYSIS_VERSION
+    } else {
+        ANALYSIS_VERSION
+    };
+    let m = (n * 22_050).div_ceil(48_000);
+    let mut names = vec![
         "native-shape.json",
         "native-spect.f32",
         "aggregate-beat.f32",
         "aggregate-downbeat.f32",
         "minimal-raw-groups.json",
         "minimal-alignment.json",
-    ] {
+    ];
+    if include_auto {
+        names.push(AUTO_RESOURCE);
+    }
+    let mut evidence_files = Vec::new();
+    for name in names {
         cancel.check("native evidence summary")?;
         let bytes = fs::read(evidence.join(name))
             .map_err(|e| error("Read completed evidence for summary", e))?;
         evidence_files.push(serde_json::json!({"name":name,"bytes":bytes.len(),"blake3":blake3::hash(&bytes).to_hex().as_str()}));
     }
-    let summary = serde_json::to_vec_pretty(&serde_json::json!({"profile":ANALYSIS_VERSION,"model_blake3":blake3::Hash::from_bytes(assets::MODEL_BLAKE3).to_hex().as_str(),"audio_blake3":blake3::Hash::from_bytes(prepared.asset.blake3).to_hex().as_str(),"files":evidence_files,"confidence":null,"production_admission":false})).map_err(|e| error("Serialize evidence summary", e))?;
+    let summary = serde_json::to_vec_pretty(&serde_json::json!({"profile":profile,"model_blake3":blake3::Hash::from_bytes(assets::MODEL_BLAKE3).to_hex().as_str(),"audio_blake3":blake3::Hash::from_bytes(analysis.audio_hash).to_hex().as_str(),"files":evidence_files,"confidence":null,"production_admission":false})).map_err(|e| error("Serialize evidence summary", e))?;
     let summary_hash = blake3::hash(&summary);
     let mut summary_file = new_file(&evidence.join("evidence-summary.json"))?;
     summary_file
@@ -710,11 +829,15 @@ pub(crate) fn analyze_staged(
         .map_err(|e| error("Sync evidence summary", e))?;
     analysis.diagnostics = analysis.diagnostics.replacen(
         "; beat/onset analysis not run;",
-        "; experimental beat/downbeat candidates; onset unsupported;",
+        if include_auto {
+            "; experimental beat/downbeat, HFC onset and interbeat tempo candidates;"
+        } else {
+            "; experimental beat/downbeat candidates; onset unsupported;"
+        },
         1,
     );
-    analysis.diagnostics.push_str(&format!("; experimental={ANALYSIS_VERSION}; model_blake3={}; evidence_summary_blake3={summary_hash}; channel={channel}; N={}; M={}; F={}; confidence=None; frontend/quality FAIL preserved; raw evidence accompanies package",blake3::Hash::from_bytes(assets::MODEL_BLAKE3),prepared.canonical_frames,(prepared.canonical_frames*22050).div_ceil(48000),spect.frames));
-    analysis.validate(prepared.canonical_frames)?;
+    analysis.diagnostics.push_str(&format!("; experimental={profile}; model_blake3={}; evidence_summary_blake3={summary_hash}; channel={channel}; N={n}; M={m}; F={f}; confidence=None; frontend/quality FAIL preserved; raw evidence accompanies package",blake3::Hash::from_bytes(assets::MODEL_BLAKE3)));
+    analysis.validate(n)?;
     cancel.check("before analysis complete receipt")?;
     write_json(
         &evidence.join("analysis-complete.json"),

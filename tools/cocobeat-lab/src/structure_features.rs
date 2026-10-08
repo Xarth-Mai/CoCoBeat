@@ -83,6 +83,38 @@ pub(crate) fn inspect(package: &Path, channel: &str, destination: &Path) -> Resu
     Ok(())
 }
 
+/// Builds a new four-object package; the embedded diagnostics retain the captured source CID
+pub(crate) fn compile(package: &Path, channel: &str, destination: &Path) -> Result<(), String> {
+    let channel = match channel {
+        "left" => 0,
+        "right" => 1,
+        _ => {
+            return Err("Structure segmentation requires an explicit left or right channel".into());
+        }
+    };
+    let destination = labels_cli::outside_package(package, destination)?;
+    let built =
+        cocobeat_media::compile_structure_candidate_package(package, channel, &destination)?;
+    println!(
+        "{}",
+        serde_json::json!({
+            "content_id": blake3::Hash::from_bytes(built.manifest.package_hash).to_hex().as_str(),
+            "destination": destination,
+            "audio_blake3": blake3::Hash::from_bytes(built.manifest.audio.blake3).to_hex().as_str(),
+            "canonical_frames": built.manifest.canonical_frames,
+            "channel": channel,
+            "section_count": built.analysis.sections.len(),
+            "cue_count": built.chart.sections.len(),
+            "profile": built.manifest.analysis_version,
+            "confidence": null,
+            "production_admission": false,
+            "diagnostics": built.analysis.diagnostics,
+            "scope": "candidate_sections_and_cues_not_musical_quality_admission",
+        })
+    );
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

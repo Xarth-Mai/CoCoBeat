@@ -1,0 +1,564 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "status": "PASS_SCOPED_AUTOMATIC_CANDIDATE_SOFTWARE",
+  "base_head": "a230cac1ff41642a0d4862fcc542a425180fd8b9",
+  "source_binding": {
+    "compiled_file_count": 373,
+    "before_after_equal": true,
+    "current_source_matches": true,
+    "record": {
+      "path": "target/automatic-analysis-production-checks-20261008/source-before.json",
+      "bytes": 43344,
+      "sha256": "b1dad12ed267e48167e8db68a29e85ceaba942bc611a001140458b38d9303eb5"
+    }
+  },
+  "binary": {
+    "path": "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+    "bytes": 1549363216,
+    "sha256": "0334719c0df3e8335cb8828baed601a1ea315a5af5f9138f2c7dac2693c96fef",
+    "source_record": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/source-before.json",
+    "cargo_json": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/build.jsonl",
+    "actual_command_result": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-production-checks-20261008/result.json",
+    "base_head": "a230cac1ff41642a0d4862fcc542a425180fd8b9",
+    "scope": "Current union automatic sections and onset/interbeat candidate source; no musical quality admission"
+  },
+  "implementation": {
+    "new_dependencies": [],
+    "structure_cli": "compile-structure-candidate PACKAGE left|right NEW_PACKAGE",
+    "structure_profile": "canonical-logbands-4x4-novelty-v1-candidate",
+    "analysis_cli": "import-experimental-analysis SOURCE AUTHORING left|right NEW_BUNDLE",
+    "analysis_profile": "native-small0-hfc1024-interbeat-v1-candidate",
+    "onset_profile": "oximedia-hfc-48k-1024-512-v1",
+    "tempo_profile": "adjacent-native-beat-interval-v1",
+    "onset_coordinate": "original left window: grid_index*512, full support [frame,frame+1024)",
+    "onset_strength": "HFC divided by whole-channel maximum HFC; not confidence",
+    "tempo_coordinate": "adjacent native beat intervals only; no extrapolation or beat-unit inference",
+    "structure_output": "new sections and aligned cues, fresh CID, original final audio/N/Anchor/ruleset preserved",
+    "old_evidence_binding": "old native beat evidence remains bound to original source CID, not rewritten structure CID",
+    "confidence": null,
+    "production_admission": false,
+    "repetition": "Unsupported",
+    "music_quality": "UNASSESSED",
+    "product_GPL": false,
+    "product_Python": false,
+    "cancellation": "onset whole-channel synchronous library call checks before/after; no per-window claim"
+  },
+  "production_checks": {
+    "media_tests_passed": 83,
+    "lab_tests_passed": 85,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-media",
+          "-p",
+          "cocobeat-lab"
+        ],
+        "pid": 5,
+        "exit_code": 0,
+        "elapsed_seconds": 31.5209085480019,
+        "stdout": "target/automatic-analysis-production-checks-20261008/01.stdout",
+        "stderr": "target/automatic-analysis-production-checks-20261008/01.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-media",
+          "-p",
+          "cocobeat-lab",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 1748,
+        "exit_code": 0,
+        "elapsed_seconds": 8.22370486499858,
+        "stdout": "target/automatic-analysis-production-checks-20261008/02.stdout",
+        "stderr": "target/automatic-analysis-production-checks-20261008/02.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 1783,
+        "exit_code": 0,
+        "elapsed_seconds": 0.858543564012507,
+        "stdout": "target/automatic-analysis-production-checks-20261008/03.stdout",
+        "stderr": "target/automatic-analysis-production-checks-20261008/03.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 1786,
+        "exit_code": 0,
+        "elapsed_seconds": 0.15201261499896646,
+        "stdout": "target/automatic-analysis-production-checks-20261008/04.stdout",
+        "stderr": "target/automatic-analysis-production-checks-20261008/04.stderr"
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "pid": 1797,
+        "exit_code": 0,
+        "elapsed_seconds": 12.84923690999858,
+        "stdout": "target/automatic-analysis-production-checks-20261008/build.jsonl",
+        "stderr": "target/automatic-analysis-production-checks-20261008/05.stderr"
+      }
+    ],
+    "source_unchanged": true
+  },
+  "structure_controls": {
+    "fixture_groups": 14,
+    "wave_files": 16,
+    "oracle": "predeclared synthetic recipe, not independently labeled music",
+    "raw": {
+      "status": "PASS_RAW32_DECLARED_SOFTWARE_ORACLES",
+      "cases_passed": 32,
+      "owned_groups_gone": true,
+      "protected_equal": true,
+      "aligned_tolerance_frames": 0,
+      "off_bin_tolerance_frames": 24576,
+      "result": {
+        "path": "target/structure-segmentation-raw-run-01/run.json",
+        "bytes": 193316,
+        "sha256": "7d7d0428daaeaaa1f958852eb893dc99a703e83f6bf075e1afdea8c60c0c5850"
+      }
+    },
+    "canonical": {
+      "status": "PASS_CANONICAL32",
+      "cases_passed": 32,
+      "actual_commands": 48,
+      "commands_include": "16 source imports and 32 candidate compilations with expected successes/refusals",
+      "tolerance_frames": 24576,
+      "original_four_objects_unchanged": true,
+      "source_fixtures_unchanged": true,
+      "result": {
+        "path": "target/structure-segmentation-canonical-run-01/result.json",
+        "bytes": 68924,
+        "sha256": "e9800e525e853b28fe284307138c450f1c0cd655306df37b245f9676706951f5"
+      }
+    },
+    "negative_cases": "constant/silence/transient-only/insufficient context/65 supported boundaries refuse, no fake full-song/old-authored fallback or truncation",
+    "real_tail": "24T+1 actual tail retained; final B phase-zero sample is +0",
+    "smoke": {
+      "status": "PASS_SCOPED_CANONICAL_COLOUR_CONTROL",
+      "actual_commands": 5,
+      "left_and_right_new_packages": true,
+      "validator_and_stage_CLI_consumed_left": true
+    }
+  },
+  "native_analysis_actual": {
+    "required_env": {
+      "ORT_DISABLE_TELEMETRY": "1"
+    },
+    "shipping_layout": {
+      "path": "target/automatic-analysis-runtime-20261008/layout.json",
+      "bytes": 1409,
+      "sha256": "c166423d9ba34b3678de1c17a0972c906ac2a1a5b4b2fc681fc085081eede6e0"
+    },
+    "first_two_configuration_rejections": [
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "import-experimental-analysis",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.authoring.json",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/colour-auto-bundle"
+        ],
+        "pid": 4,
+        "exit_code": 1,
+        "elapsed_seconds": 0.015522641013376415,
+        "stdout": "auto-import.stdout",
+        "stderr": "auto-import.stderr",
+        "scope": "Actual new candidate producer and SDK; synthetic colour input, not musical quality admission"
+      },
+      {
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "import-experimental-analysis",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.authoring.json",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/colour-auto-bundle-02"
+        ],
+        "required_env": {
+          "ORT_DISABLE_TELEMETRY": "1"
+        },
+        "pid": 4,
+        "exit_code": 1,
+        "elapsed_seconds": 0.03168057699804194,
+        "stdout": "auto-import-02.stdout",
+        "stderr": "auto-import-02.stderr",
+        "scope": "Actual new candidate producer and SDK; explicit telemetry disabled; synthetic control, no musical quality admission"
+      }
+    ],
+    "configuration_errors": [
+      "missing Linux telemetry-disable flag",
+      "direct debug executable has no required sibling ONNX Runtime library layout"
+    ],
+    "guard_relaxed": false,
+    "colour_success": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-runtime-20261008/bin/cocobeat-lab",
+        "import-experimental-analysis",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/colour-change.authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/colour-auto-bundle-03"
+      ],
+      "required_env": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "pid": 4,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 8.88003529398702,
+      "stdout": "auto-import-03.stdout",
+      "stderr": "auto-import-03.stderr",
+      "shipping_layout": "target/automatic-analysis-runtime-20261008/layout.json",
+      "scope": "Actual new candidate producer and SDK; synthetic control, no musical quality admission"
+    },
+    "nonempty_transient_success": {
+      "argv": [
+        "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-runtime-20261008/bin/cocobeat-lab",
+        "import-experimental-analysis",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/short-transients.wav",
+        "/home/lzzz/MyProjects/CoCoBeat/target/structure-segmentation-controls-20261008/inputs/short-transients.authoring.json",
+        "left",
+        "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle"
+      ],
+      "required_env": {
+        "ORT_DISABLE_TELEMETRY": "1"
+      },
+      "pid": 4,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 8.978367152012652,
+      "stdout": "transients-import.stdout",
+      "stderr": "transients-import.stderr",
+      "scope": "Actual new onset and interbeat producer; synthetic transient control, no musical quality admission"
+    },
+    "canonical_frames": 786432,
+    "onsets": 46,
+    "tempo_regions": 19,
+    "original_chart_anchors": 1,
+    "original_chart_cues": 0,
+    "proposal_source": {
+      "content_id": "package-blake3:45ac101dc09b2eef8439cb9e0fe409529c963bf8c72bd8ac6eef612a58a91fd8",
+      "analysis_blake3": "63020aa0daf14eb62745eac3607f26c47a2e73bd15e7a1b40c6c270346d22e43",
+      "audio_blake3": "5aa78811ab46a9d1327ad9d85e8739897f3c1bdfa9e35a28193ff4dcc517f493",
+      "chart_blake3": "14500bf742b1ab7ea50459882a64b8822180cde663d61bcccfd598031feea6bd",
+      "canonical_frames": 786432,
+      "analysis_version": "native-small0-hfc1024-interbeat-v1-candidate",
+      "ruleset_id": "duo-watermark-v1"
+    },
+    "proposal_anchors": 0,
+    "proposal_unknown_confidence_entries": 46,
+    "consumers": [
+      {
+        "case": "transients-verify",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "verify-package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/package"
+        ],
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 0.5143102720030583,
+        "stdout": "transients-verify.stdout",
+        "stderr": "transients-verify.stderr"
+      },
+      {
+        "case": "transients-proposal",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "propose-anchors",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/package",
+          "0.9",
+          "9600",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-proposal.json"
+        ],
+        "pid": 5,
+        "exit_code": 0,
+        "elapsed_seconds": 0.514294663007604,
+        "stdout": "transients-proposal.stdout",
+        "stderr": "transients-proposal.stderr"
+      },
+      {
+        "case": "transients-truth",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "music-truth-template",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/package",
+          "qa-software",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-empty-truth.json"
+        ],
+        "pid": 6,
+        "exit_code": 0,
+        "elapsed_seconds": 0.9650237180176191,
+        "stdout": "transients-truth.stdout",
+        "stderr": "transients-truth.stderr"
+      },
+      {
+        "case": "transients-reader",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/debug/cocobeat-lab",
+          "compare-native-beats",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-auto-bundle/evidence",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-empty-truth.json",
+          "0",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-cli-20261008/transients-native-comparison.json"
+        ],
+        "pid": 7,
+        "exit_code": 0,
+        "elapsed_seconds": 0.966590987984091,
+        "stdout": "transients-reader.stdout",
+        "stderr": "transients-reader.stderr"
+      }
+    ],
+    "strict_reader": "PASS_INTEGRITY_ONLY; new seven-resource profile accepted",
+    "empty_music_truth_status": "NO_COMPARABLE_COVERAGE",
+    "beat_comparison_onset": "NO_CANDIDATE_STREAM",
+    "onset_quality": "UNASSESSED; peaks in synthetic tonal control are not validated attacks"
+  },
+  "historical_failures_preserved": {
+    "wholeSpect": "19 PASS / 9 FAIL; overall FAIL",
+    "music_quality": "FAIL_PRESERVED"
+  },
+  "not_run": [
+    "new automatic-candidate Game/native GUI",
+    "600-second new-analysis CPU/RSS budget",
+    "current-source four native targets",
+    "physical controllers or hybrid input",
+    "acoustic timing or musical quality",
+    "independent human labels and calibrated automatic Anchor",
+    "tag Release"
+  ],
+  "goal": "active; full MIR admission and project acceptance remain open",
+  "raw_references": [
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/result.json",
+      "bytes": 2186,
+      "sha256": "b93bf55c2fb631555fdb15753bb6bb308e20c292b0944cc5bb2144c8f9de5eee"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/checks.json",
+      "bytes": 1873,
+      "sha256": "eac1307dd1706f9753cd21f92db291890d0b883b9dbdeb12eb934545e2280a2a"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/binary.json",
+      "bytes": 715,
+      "sha256": "1a1c42f9904660295fe8d9862dd49d8946d066a371b72dc46962085f19aa83eb"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/source-before.json",
+      "bytes": 43344,
+      "sha256": "b1dad12ed267e48167e8db68a29e85ceaba942bc611a001140458b38d9303eb5"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/source-after.json",
+      "bytes": 43344,
+      "sha256": "b1dad12ed267e48167e8db68a29e85ceaba942bc611a001140458b38d9303eb5"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/01.stdout",
+      "bytes": 16895,
+      "sha256": "b861b1d485619567a4f8e8b234e164e9f3eca5eda5519ff62911fa60ed0e316f"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/01.stderr",
+      "bytes": 2966,
+      "sha256": "9ca69f786f0ecbf2444f76056271b284453766a565bf11d935a0f4d6935c7bee"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/02.stderr",
+      "bytes": 2765,
+      "sha256": "5ef1bf3b6a624603824cf4971b9fa5164bf59a991b9954f18144b4e27936a31a"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/03.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/04.stdout",
+      "bytes": 78,
+      "sha256": "c1dd38d0fcaf97787d833c0ee1ceb0d75c34d1c25ccb7e0f785f00217e8b5ace"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/build.jsonl",
+      "bytes": 404864,
+      "sha256": "e75b64b7b1aa8aba0a776d6638a5ff86bb161347da83c915b9396055f1973284"
+    },
+    {
+      "path": "target/automatic-analysis-production-checks-20261008/05.stderr",
+      "bytes": 2496,
+      "sha256": "4b67ff9ad06eff73502e0369bec39a8df9bfde0fe982d522639030dbf5ae74e0"
+    },
+    {
+      "path": "target/structure-segmentation-profile-20261008/revision-02/PLAN.md",
+      "bytes": 11924,
+      "sha256": "d8f69c26d9fd659e62230a30aacd29033bc2a37aa79b733f1f059deb5ca4b655"
+    },
+    {
+      "path": "target/next-auto-analysis-20261008/PLAN.md",
+      "bytes": 6065,
+      "sha256": "4da0a36ad97e7cf7ef3498d346b8b2a40313594b28015a007c2532525c650829"
+    },
+    {
+      "path": "target/structure-segmentation-candidate-20261008/review.json",
+      "bytes": 6742,
+      "sha256": "1b3074f765c91f124bdeac72e59953e5eefba1d5197d727a5d9beb4a78f18023"
+    },
+    {
+      "path": "target/auto-analysis-candidate-20261008/review.json",
+      "bytes": 8117,
+      "sha256": "3a7263f1314e6329f91667fc76d5f6e5f613e7bad66737cffc1aaec902743eac"
+    },
+    {
+      "path": "target/structure-segmentation-controls-20261008/FREEZE.json",
+      "bytes": 3274,
+      "sha256": "9dd8f6b635d7aa781ede0e44647fa9c4a29f166b22e5df96d7b0acf8089e6bcd"
+    },
+    {
+      "path": "target/structure-segmentation-controls-20261008/fixtures.json",
+      "bytes": 42478,
+      "sha256": "063efe0b38a7eb5a93c697a11a97ac3c314d20f6b98328b2f4bcb2c9d865f94a"
+    },
+    {
+      "path": "target/structure-segmentation-raw-qa-20261008/FREEZE.json",
+      "bytes": 2249,
+      "sha256": "a46bbdb0b0241199e2b32139527d6b79f68c77740a542c51978ffa4d86ec9eba"
+    },
+    {
+      "path": "target/structure-segmentation-raw-build-02/prepared.json",
+      "bytes": 52841,
+      "sha256": "337cc66448505a3c6235b772cdfb60734b5474c277f18bb6ddfa47bc1032bf99"
+    },
+    {
+      "path": "target/structure-segmentation-raw-run-01/run.json",
+      "bytes": 193316,
+      "sha256": "7d7d0428daaeaaa1f958852eb893dc99a703e83f6bf075e1afdea8c60c0c5850"
+    },
+    {
+      "path": "target/structure-segmentation-canonical-run-01/result.json",
+      "bytes": 68924,
+      "sha256": "e9800e525e853b28fe284307138c450f1c0cd655306df37b245f9676706951f5"
+    },
+    {
+      "path": "target/automatic-analysis-runtime-20261008/layout.json",
+      "bytes": 1409,
+      "sha256": "c166423d9ba34b3678de1c17a0972c906ac2a1a5b4b2fc681fc085081eede6e0"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/smoke-result.json",
+      "bytes": 3216,
+      "sha256": "c44e661e15ff776315406f9e915965f0198ba61d6f2d8bc3b8f598e91a31c087"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/smoke-commands.json",
+      "bytes": 2823,
+      "sha256": "841ca738bff9b9c82835fc1287c8c26ce992436e15dddc7c802bb695a4091e90"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/stage-left.stdout",
+      "bytes": 728,
+      "sha256": "a139efcf53e10ac83666db5828d6b4c5ac2bf2f23cab99439a7610451d1b2ab7"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import-command.json",
+      "bytes": 708,
+      "sha256": "5335ac93bafbaece67ae58f58c50b275fb4c56c0eaa201ac098171c71b0fb225"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import.stderr",
+      "bytes": 700,
+      "sha256": "13736c6eb58b4924b9660a26fdfd9a46d42f6ea4bc23fe1c4a29368d251ef102"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import-02-command.json",
+      "bytes": 797,
+      "sha256": "beca253a51dae4c5c4a2dec16ef86eac8afa7956d4f390e358adc6d009358f11"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import-02.stderr",
+      "bytes": 764,
+      "sha256": "ea562ff05a57bcb72138b5c7c94ea420908b70da01d3ee00bb988b4539798c77"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import-03-command.json",
+      "bytes": 900,
+      "sha256": "5a40fdf057641567f4ee98cb6c4b415874c0f17d454dffea22ecb5ea9919ddc1"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/auto-import-03.stdout",
+      "bytes": 1323,
+      "sha256": "317ec3c8835c563ab8e516607704f0ecba9dd2689ec47df54a483ed9fed6eb37"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-import-command.json",
+      "bytes": 847,
+      "sha256": "a96aaea9d86a56eb9c00b7379ca0649d317ea1852b07667a3775e40b0709d50f"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-import.stdout",
+      "bytes": 1327,
+      "sha256": "b0c3d44656202b9b3c1bb58555d3177bd8d8a81a038694eb784f4d3e651a77ea"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-import.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-consumer-commands.json",
+      "bytes": 2320,
+      "sha256": "57e6ebfccaa6ebbf3a65cf43a251532fd63970a0a5f0042190d0a83793a6cb6a"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-verify.stdout",
+      "bytes": 1011,
+      "sha256": "1d4a83895eeead6c53d2275392e715c014d2dcab4a4ba95251b8289d58c262c1"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-proposal.json",
+      "bytes": 5644,
+      "sha256": "a7702d80acd186aef06944076e3aa20b9b66b94d11bddca68df6624b7463cbbf"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-native-comparison.json",
+      "bytes": 12936,
+      "sha256": "e8fedcc016a32ac378fd1f47ff9e920385afcdae96101e3ca49753f3676e88be"
+    },
+    {
+      "path": "target/automatic-analysis-cli-20261008/transients-auto-bundle/evidence/auto-analysis.json",
+      "bytes": 8522,
+      "sha256": "579f39acd5f7ab267bc19adbe048ef7e8916517abfef2a4d02f10300d5c2095c"
+    }
+  ]
+}

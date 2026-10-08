@@ -195,9 +195,54 @@ impl CanonicalBlocks {
     }
 }
 
+pub(crate) const INTERBEAT_PROFILE: &str = "adjacent-native-beat-interval-v1";
+
+/// Each region describes only the interval between two observed beats, with unknown beat unit
+pub(crate) fn interbeat_tempo(
+    beats: &[cocobeat_schema::BeatFeature],
+    n: u64,
+) -> Result<Vec<cocobeat_schema::TempoRegion>, String> {
+    use cocobeat_schema::{MAX_CONTENT_ITEMS, TempoRegion};
+
+    if !(1..=MAX_CANONICAL_FRAMES).contains(&n) || beats.len() > MAX_CONTENT_ITEMS {
+        return Err("Interbeat tempo requires bounded canonical extent and beat count".into());
+    }
+    let mut previous = None;
+    for beat in beats {
+        let frame = beat.time.frames();
+        if frame < 0
+            || frame as u64 >= n
+            || previous.is_some_and(|previous| frame <= previous)
+            || !beat.strength.is_finite()
+            || beat.strength < 0.0
+            || [beat.downbeat_probability, beat.confidence]
+                .into_iter()
+                .flatten()
+                .any(|value| !value.is_finite() || !(0.0..=1.0).contains(&value))
+        {
+            return Err(
+                "Interbeat tempo requires valid beats strictly increasing within the audio".into(),
+            );
+        }
+        previous = Some(frame);
+    }
+    Ok(beats
+        .windows(2)
+        .map(|pair| TempoRegion {
+            start: pair[0].time,
+            end: pair[1].time,
+            bpm: (60.0 * f64::from(CANONICAL_SAMPLE_RATE)
+                / (pair[1].time.frames() - pair[0].time.frames()) as f64) as f32,
+            beat_unit: None,
+            confidence: None,
+        })
+        .collect())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cocobeat_schema::{BeatFeature, SongTime};
 
     #[test]
     fn decoder_chunks_preserve_selected_samples_and_exact_short_eof() {
@@ -296,5 +341,62 @@ mod tests {
             record(zero, 1, 1).unwrap().stale_status,
             "no_retained_tempo"
         );
+    }
+
+    fn beat(frame: i64) -> BeatFeature {
+        BeatFeature {
+            time: SongTime::from_frames(frame),
+            strength: 0.5,
+            downbeat_probability: None,
+            confidence: None,
+        }
+    }
+
+    #[test]
+    fn adjacent_intervals_preserve_endpoints_without_tails_or_invented_units() {
+        let beats = [beat(24_000), beat(48_000), beat(60_000)];
+        let regions = interbeat_tempo(&beats, 96_000).unwrap();
+        assert_eq!(regions.len(), 2);
+        assert_eq!(regions[0].start.frames(), 24_000);
+        assert_eq!(regions[0].end.frames(), 48_000);
+        assert_eq!(regions[0].bpm, 120.0);
+        assert_eq!(regions[1].start.frames(), 48_000);
+        assert_eq!(regions[1].end.frames(), 60_000);
+        assert_eq!(regions[1].bpm, 240.0);
+        assert!(
+            regions
+                .iter()
+                .all(|r| r.beat_unit.is_none() && r.confidence.is_none())
+        );
+        assert!(interbeat_tempo(&[], 96_000).unwrap().is_empty());
+        assert!(interbeat_tempo(&beats[..1], 96_000).unwrap().is_empty());
+        assert_eq!(
+            interbeat_tempo(&[beat(0), beat(1)], 2).unwrap()[0].bpm,
+            2_880_000.0
+        );
+    }
+
+    #[test]
+    fn malformed_beats_or_extents_cannot_become_tempo() {
+        for beats in [
+            vec![beat(-1)],
+            vec![beat(96_000)],
+            vec![beat(24_000), beat(24_000)],
+            vec![beat(48_000), beat(24_000)],
+        ] {
+            assert!(interbeat_tempo(&beats, 96_000).is_err());
+        }
+        for n in [0, MAX_CANONICAL_FRAMES + 1] {
+            assert!(interbeat_tempo(&[], n).is_err());
+        }
+        for field in 0..3 {
+            let mut invalid = beat(1);
+            match field {
+                0 => invalid.strength = f32::NAN,
+                1 => invalid.downbeat_probability = Some(1.01),
+                _ => invalid.confidence = Some(-0.1),
+            }
+            assert!(interbeat_tempo(&[invalid], 96_000).is_err());
+        }
     }
 }

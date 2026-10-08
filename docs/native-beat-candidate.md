@@ -28,6 +28,26 @@ MusicAnalysis v2 的 beat / downbeat capability 标为 `Candidate / Algorithm`�
 
 旧 profile 的 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 全部保留；同输入推理数值一致不证明原生前处理等价官方音乐前处理，也不构成完整 MIR 准入。各目标原生发行接线与实际 tag Release 按[构建发行](build-release.md)逐版本另验；发行 CPU/RSS 预算、Windows 控制台取消、真实音乐 / 设备 / 真人验收仍为 NOT_RUN；Linux 实验导入取消与同进程 API fresh 重试按下文软件记录限定
 
+## 显式自动分析候选导入
+
+`import-experimental-analysis SOURCE_AUDIO AUTHORING_JSON left|right NEW_BUNDLE` 在现有 beat 候选事务中加入真实 HFC onset 和相邻 beat 区间 tempo，继续使用同一最终 canonical 音频、作者内容、取消 owner 与发布门控；普通手工导入和旧 beat-only 命令保持独立
+
+```sh
+ORT_DISABLE_TELEMETRY=1 /path/to/release/bin/cocobeat-lab import-experimental-analysis /path/to/source.wav /path/to/authoring.json left /path/to/new-analysis-bundle
+```
+
+新 profile 为 `native-small0-hfc1024-interbeat-v1-candidate`，沿用上述固定 SDK / 模型和实际可执行文件发行布局，Linux 同样要求启动前设置 `ORT_DISABLE_TELEMETRY=1`。包内 onset / tempo 为 `Candidate / Algorithm / confidence=None`，不足2048帧的 onset 显式 Unsupported；原手工 sections、chart Anchor / cues、实测 energy 保留，repetition 仍 Unsupported
+
+onset 复用当前 OxiMedia 的整声道真实 HFC：1024帧 Hann 窗、512帧 hop、单边 `sum(k*|X(k)|²)`，内部局部峰高于全段均值加1.5倍标准差；strength 为原 HFC / 全段最大 HFC，保留原库版本规则和数值，不作为 confidence。记录采用原左窗坐标 `grid_index*512` 与完整支持 `[frame,frame+1024)`，首尾未覆盖峰不补造，EOF 不补零；同步整段调用只在前后检查取消，不承诺逐窗响应
+
+tempo 的 `adjacent-native-beat-interval-v1` 仅记录原相邻 beat 的 `[start,end)` 与 `60*48000/(end-start)` BPM，beat_unit / confidence 为 None；不外推首尾、不纠正倍速、不判拍号或宣称稳定 TempoRegion
+
+严格 reader 保留旧 profile 的原六资源规则，新 profile 多绑定第七项 `auto-analysis.json` 的字节数 / BLAKE3。先核原 beat / downbeat 证据，再核原 onset 窗支持、strength 与 analysis 的一致性，从原 beat 重算 tempo；缺失、损坏、不同 profile 或字段不匹配均拒绝。该完整性检查不重新运行 HFC，也不证明检测质量
+
+本轮生产 media83 / Lab85、全目标 Clippy、格式、边界和 Lab 构建通过。实际 SDK 对合成短暂音控制产出46个 onset 与19个相邻 tempo 区间，原 chart 1个 Anchor / 0个 cue 保持；`propose-anchors` 返回0个 Anchor，46条证据均为 UnknownConfidence（JSON `unknown_confidence`）。新 evidence 经严格 reader 与空 MusicTruth 比较成功，三流状态为 `NO_COMPARABLE_COVERAGE`，没有人工覆盖的结果不评价质量，见[自动分析软件观察](../testdata/synthetic/automatic-analysis-observations-20261008.json)
+
+最初缺少 Linux 环境 flag 和不符合发行布局的两次实际 CLI 拒绝保留；改用正确固定发行资源布局及 flag 后第3次导入成功，未放宽 guard。新 Game / UI、600秒成本和四目标原生运行仍 NOT_RUN；旧 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 保留，新增候选不升级为 Validated，也不自动采用 Anchor
+
 ## 原生候选工作台
 
 ```sh

@@ -40,6 +40,7 @@ pub fn import_experimental_beat(
     authoring_path: &Path,
     channel: &str,
     destination: &Path,
+    include_auto: bool,
 ) -> Result<(), String> {
     let channel = match channel {
         "left" => 0,
@@ -57,7 +58,12 @@ pub fn import_experimental_beat(
         }
     })
     .map_err(|error| format!("Cannot register native Ctrl+C handler: {error}"))?;
-    let result = cocobeat_media::import_experimental_beat_package_with_cancellation(
+    let import = if include_auto {
+        cocobeat_media::import_experimental_analysis_package_with_cancellation
+    } else {
+        cocobeat_media::import_experimental_beat_package_with_cancellation
+    };
+    let result = import(
         source,
         authoring_path,
         channel,
@@ -105,7 +111,8 @@ fn summary(package: &ValidatedPackage) {
     println!("Package BLAKE3: {hash}");
     println!("Analysis capabilities: {:?}", package.analysis.capabilities);
     println!(
-        "Tempo regions: {}, repetition relations: {}",
+        "Onset candidates: {}, tempo regions: {}, repetition relations: {}",
+        package.analysis.onsets.len(),
         package.analysis.tempo_regions.len(),
         package.analysis.repetitions.len()
     );
