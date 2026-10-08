@@ -52,3 +52,26 @@ cargo run --locked -p cocobeat-game -- --package NEW_PACKAGE
 导出复用 `media::export_anchors` 并再次检查完整源身份：新包保留原音频、analysis 字节和所有 SectionCue / rules，实际改变 Anchor 时重建 chart 与 manifest，完全无变化时保留原四对象字节及身份。输出目录与失败清理沿用 [内容编辑的导出契约](editor.md#原字节保留与内容身份)，原 Replay 继续只适用于原内容身份
 
 纯编译器位于 [media/anchors.rs](../crates/cocobeat-media/src/anchors.rs)，仅消费分析、实际帧数和明确策略；[lab/anchors.rs](../tools/cocobeat-lab/src/anchors.rs) 负责报告、选择和包事务。提案不伪装成缺少 SectionCue 的完整 CompiledChart，现有 SongPackage / Replay v1 格式和 core 判定保持原契约
+
+## 显式实验校准与密度策略
+
+`train-anchor-calibration` 只用训练标签拟合固定 score bin 的 Beta(1,1) 估计，输出训练计数与各预声明策略的计数；`evaluate-anchor-calibration` 先核对训练结果和冻结 Choice，再读取 heldout 标签，报告所选策略计数、已知分母与 Brier。结果始终 `quality_status: "UNASSESSED"`、`production_admission: false`，不自动选择策略或准入曲库
+
+Input 使用严格 schema 1，指定 `scope: "experimental_anchor_calibration"`、`method: "fixed_bin_beta11"`、`score_definition: "original_hfc_normalized_strength_f32_bits"`、固定自动 profile 与声道、2–9 个递增有限 f32 `edge_bits`、明确支持数及 1–8 个策略；每个策略明确 confidence、gap、density window 和 capacity。训练与评估各 1–8 组，绑定原 Source、analysis / native summary / 标签原字节 hash、来源 group、完整 `[0,N)` 范围和至多 1024 条 onset index / frame / scorebits / label item_id 精确点映射；两 split 的音频身份与 group 分离，各有肯定与否定判断，声明本身不证明真人独立审阅
+
+```sh
+cocobeat-lab train-anchor-calibration INPUT.json NEW_TRAINING.json
+cocobeat-lab evaluate-anchor-calibration INPUT.json CHOICE.json NEW_CALIBRATION.json
+cocobeat-lab propose-anchors PACKAGE --calibration INPUT.json CALIBRATION.json CHOICE.json NEW_V2_PROPOSAL.json
+cocobeat-lab adopt-anchor-proposal PACKAGE V2_PROPOSAL.json V2_SELECTION.json NEW_PACKAGE --calibration INPUT.json CALIBRATION.json CHOICE.json
+```
+
+Choice 的 schema 1 明确 `input_blake3`、`train_result_blake3`、`policy_index`；前者是 Input 原文件字节，后者是 typed Training 的 compact 序列化内容，区别于保存训练收据的原字节 hash。用户在训练后、评估前冻结选择，评估不重新拟合 bins；支持不足、分数超范围或判断 uncertain 时估计未知，缺少评估已知正负分母时 `not_applicable` 并拒绝提案
+
+v2 提案将原 `confidence: null` 与独立 `calibrated_estimate` 分开保存，估计记录 probability / bits、原 scorebits、bin、方法和报告原字节 hash；原 analysis 与 native evidence 不修改。临时分析副本供既有选择器使用，confidence 降序 / time 升序和最小间隔保持，随后按从零帧起的固定半开窗口限制数量，末窗口截到 N，拒绝原因 `density_limited` 保留窗口与 capacity
+
+V2 Selection 的 schema 2 明确来源 CID、实际保存提案原字节的 `proposal_blake3`、提案完整五字段 `calibration` context 和 `onset_indices`；采用前完整重算 Input / Training / Choice / Report / 提案，检查原来源和侧车新鲜性，只能选择已接受候选。空选择明确清空 Anchor，导出复用原事务并保留音频、analysis、SectionCue 和 native None；输出在全部声明 package / evidence 和实际传入的源包副本之外
+
+当前只适用于 Input 中完全标注的 evaluation 包，未标签歌曲推断与 v2 图形工作台另行实现；既有 v1 CLI / 报告保持，v1 工作台拒绝 v2。Input / Choice 各最多 1 MiB、校准报告最多 4 MiB，其他提案与选择沿用前述上限
+
+2026-10-08 的 [软件记录](../testdata/synthetic/calibration-drift-observations-20261008.json)包含 Media86 / Lab96、Clippy / 格式 / 边界与当前 Lab 构建、33 条实际校准 CLI（24 成功 / 9 预期拒绝），46 条训练与 69 条新源评估候选、显式采用 1 个 Anchor、原 native reader 和 v1 完整字节回归；固定 index 构造标签验证机制，音乐准入、并发源副本写窗和真人试听仍未验收，首轮 lint 与 QA setup 失败保留

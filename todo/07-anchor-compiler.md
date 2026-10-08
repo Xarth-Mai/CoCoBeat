@@ -4,6 +4,7 @@
 
 - [x] 区分 HitAnchor 与 SectionCue，保留 AnchorEvidence：独立 AnchorProposal 保存全部 onset 决策，采用时保留源包 cue
 - [ ] 依据标注确定置信度、最小间隔和密度策略，精度优先于召回。
+- [x] 显式实验校准软件链：训练计数、预声明 Choice、heldout 对照、独立概率证据、固定窗口密度和 v2 明确采用；完整 CLI 与原 None / 音频 / analysis / v1 保真已验证，构造标签不关闭音乐策略准入，见 [实验校准](../docs/anchors.md#显式实验校准与密度策略)
 - [x] 低置信度留空，记录接受与拒绝原因；未知置信度不补谱
 - [x] 固定排序与 tie-break，同输入/配置产生相同输出
 - [x] 编译后时刻精确表示为整数 SongTime，既有提案 / 采用按原 onset 帧输出，Replay 按完整包身份校验

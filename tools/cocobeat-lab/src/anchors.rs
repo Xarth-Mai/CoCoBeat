@@ -205,6 +205,322 @@ pub fn adopt(
     Ok(())
 }
 
+// v2 is a separate DTO so legacy reports and their workbench reader remain unchanged
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CalibratedReport {
+    report_version: u32,
+    compiler_version: u32,
+    source: Source,
+    policy: crate::anchor_calibration::Policy,
+    scope: String,
+    quality_status: String,
+    production_admission: bool,
+    calibration: crate::anchor_calibration::Context,
+    anchors: Vec<ProposedAnchor>,
+    evidence: Vec<CalibratedEvidence>,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct CalibratedEvidence {
+    onset_index: usize,
+    frame: i64,
+    strength: f32,
+    confidence: Option<f32>,
+    calibrated_estimate: Option<EstimatedEvidence>,
+    decision: CalibratedDecision,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct EstimatedEvidence {
+    probability: f32,
+    probability_bits: u32,
+    bin_index: usize,
+    original_score_bits: u32,
+    method: String,
+    calibration_report_blake3: String,
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+enum CalibratedDecision {
+    Legacy(Decision),
+    Density(DensityDecision),
+}
+
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+enum DensityDecision {
+    DensityLimited {
+        window_start: i64,
+        window_end: i64,
+        max_anchors: usize,
+    },
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct CalibratedSelection {
+    pub(crate) schema_version: u32,
+    pub(crate) source_content_id: String,
+    pub(crate) proposal_blake3: String,
+    pub(crate) calibration: crate::anchor_calibration::Context,
+    pub(crate) onset_indices: Vec<usize>,
+}
+
+pub(crate) fn make_calibrated_report(
+    package: &ValidatedPackage,
+    proposal: &cocobeat_media::AnchorProposal,
+    estimates: &[crate::anchor_calibration::Estimate],
+    policy: crate::anchor_calibration::Policy,
+    calibration: &crate::anchor_calibration::Context,
+) -> Result<CalibratedReport, String> {
+    if package.analysis.onsets.len() != estimates.len()
+        || estimates.len() != proposal.evidence.len()
+    {
+        return Err("Calibrated evidence must preserve all original onset rows".into());
+    }
+    let evidence = package
+        .analysis
+        .onsets
+        .iter()
+        .zip(estimates)
+        .zip(&proposal.evidence)
+        .enumerate()
+        .map(|(index, ((original, estimate), compiled))| {
+            if original.confidence.is_some()
+                || estimate.onset_index != index
+                || compiled.onset_index != index
+                || estimate.original_frame != original.time.frames()
+                || compiled.time != original.time
+                || estimate.original_score_bits != original.strength.to_bits()
+                || compiled.strength.to_bits() != original.strength.to_bits()
+                || compiled.confidence.map(f32::to_bits) != estimate.probability_bits
+            {
+                return Err(
+                    "Calibrated compilation differs from original None/frame/scorebits".to_string(),
+                );
+            }
+            let calibrated_estimate = match estimate.probability_bits {
+                None => None,
+                Some(bits) => {
+                    let probability = f32::from_bits(bits);
+                    if !probability.is_finite() || !(0.0..=1.0).contains(&probability) {
+                        return Err("Invalid calibrated probability bits".to_string());
+                    }
+                    Some(EstimatedEvidence {
+                        probability,
+                        probability_bits: bits,
+                        bin_index: estimate
+                            .bin_index
+                            .ok_or("Known estimate requires its training bin")?,
+                        original_score_bits: estimate.original_score_bits,
+                        method: "fixed_bin_beta11".into(),
+                        calibration_report_blake3: calibration.calibration_report_blake3.clone(),
+                    })
+                }
+            };
+            let decision = match compiled.decision {
+                AnchorDecision::Selected { anchor_id } => {
+                    CalibratedDecision::Legacy(Decision::SelectedByExperimentalPolicy { anchor_id })
+                }
+                AnchorDecision::UnknownConfidence => {
+                    CalibratedDecision::Legacy(Decision::UnknownConfidence {})
+                }
+                AnchorDecision::BelowConfidence => {
+                    CalibratedDecision::Legacy(Decision::BelowConfidence {})
+                }
+                AnchorDecision::TooClose {
+                    blocking_onset_index,
+                    distance_frames,
+                } => CalibratedDecision::Legacy(Decision::TooClose {
+                    blocking_onset_index,
+                    distance_frames,
+                }),
+                AnchorDecision::DensityLimited {
+                    window_start,
+                    window_end,
+                    max_anchors,
+                } => CalibratedDecision::Density(DensityDecision::DensityLimited {
+                    window_start,
+                    window_end,
+                    max_anchors,
+                }),
+            };
+            Ok(CalibratedEvidence {
+                onset_index: index,
+                frame: original.time.frames(),
+                strength: original.strength,
+                confidence: original.confidence,
+                calibrated_estimate,
+                decision,
+            })
+        })
+        .collect::<Result<Vec<_>, String>>()?;
+    Ok(CalibratedReport {
+        report_version: 2,
+        compiler_version: 2,
+        source: source_identity(package),
+        policy,
+        scope: "experimental_anchor_calibration".into(),
+        quality_status: "UNASSESSED".into(),
+        production_admission: false,
+        calibration: calibration.clone(),
+        anchors: proposal
+            .anchors
+            .iter()
+            .map(|anchor| ProposedAnchor {
+                id: anchor.id,
+                frame: anchor.song_time.frames(),
+            })
+            .collect(),
+        evidence,
+    })
+}
+
+pub(crate) fn select_calibrated(
+    report: &CalibratedReport,
+    proposal_hash: &str,
+    selection: &CalibratedSelection,
+) -> Result<Vec<Anchor>, String> {
+    if selection.schema_version != 2
+        || selection.source_content_id != report.source.content_id
+        || selection.proposal_blake3 != proposal_hash
+        || selection.calibration != report.calibration
+        || selection.onset_indices.len() > MAX_CONTENT_ITEMS
+    {
+        return Err(
+            "Calibrated selection must bind the source, exact proposal bytes and complete context"
+                .into(),
+        );
+    }
+    let mut chosen = BTreeSet::new();
+    for &index in &selection.onset_indices {
+        let row = report
+            .evidence
+            .get(index)
+            .ok_or_else(|| format!("Selected onset index is out of range: {index}"))?;
+        let CalibratedDecision::Legacy(Decision::SelectedByExperimentalPolicy { anchor_id }) =
+            &row.decision
+        else {
+            return Err(format!(
+                "Onset {index} was rejected by the calibrated experimental policy"
+            ));
+        };
+        if !chosen.insert(*anchor_id) {
+            return Err(format!("Duplicate selected onset index: {index}"));
+        }
+    }
+    Ok(report
+        .anchors
+        .iter()
+        .filter(|v| chosen.contains(&v.id))
+        .map(|v| Anchor {
+            id: v.id,
+            song_time: SongTime::from_frames(v.frame),
+        })
+        .collect())
+}
+
+pub(crate) fn propose_calibrated(
+    source: &Path,
+    input: &Path,
+    calibration_report: &Path,
+    choice: &Path,
+    destination: &Path,
+) -> Result<(), String> {
+    let package = cocobeat_media::validate_package(source)?;
+    let compilation =
+        crate::anchor_calibration::recompile(&package, input, calibration_report, choice)?;
+    let report = make_calibrated_report(
+        &package,
+        &compilation.proposal,
+        &compilation.estimates,
+        compilation.policy,
+        &compilation.context,
+    )?;
+    let destination = compilation.output_path(source, destination)?;
+    compilation.require_fresh_sources()?;
+    if cocobeat_media::validate_package(source)? != package {
+        return Err("Calibration supplied source changed after load".into());
+    }
+    let hash = crate::labels::write_new(&destination, &report, MAX_REPORT_BYTES)?;
+    println!(
+        "{}",
+        serde_json::json!({
+            "source_content_id": report.source.content_id, "compiler_version": report.compiler_version,
+            "proposal_blake3": hash.to_string(), "calibration": report.calibration,
+            "anchor_count": report.anchors.len(), "candidate_count": report.evidence.len(),
+            "scope": report.scope, "quality_status": report.quality_status, "production_admission": false,
+        })
+    );
+    Ok(())
+}
+
+pub(crate) fn adopt_calibrated(
+    source: &Path,
+    report_path: &Path,
+    selection_path: &Path,
+    destination: &Path,
+    input: &Path,
+    calibration_report: &Path,
+    choice: &Path,
+) -> Result<(), String> {
+    let (report, report_hash): (CalibratedReport, _) =
+        read_document_identified(report_path, MAX_REPORT_BYTES)?;
+    let (selection, selection_hash): (CalibratedSelection, _) =
+        read_document_identified(selection_path, MAX_SELECTION_BYTES)?;
+    let package = cocobeat_media::validate_package(source)?;
+    let compilation =
+        crate::anchor_calibration::recompile(&package, input, calibration_report, choice)?;
+    let expected = make_calibrated_report(
+        &package,
+        &compilation.proposal,
+        &compilation.estimates,
+        compilation.policy,
+        &compilation.context,
+    )?;
+    if report != expected
+        || serde_json::to_vec(&report).map_err(|e| e.to_string())?
+            != serde_json::to_vec(&expected).map_err(|e| e.to_string())?
+    {
+        return Err(
+            "Calibrated proposal differs from complete original-source/context recompilation"
+                .into(),
+        );
+    }
+    let anchors = select_calibrated(&expected, &report_hash.to_string(), &selection)?;
+    let destination = compilation.output_path(source, destination)?;
+    compilation.require_fresh_sources()?;
+    let (_, fresh_report): (CalibratedReport, _) =
+        read_document_identified(report_path, MAX_REPORT_BYTES)?;
+    let (_, fresh_selection): (CalibratedSelection, _) =
+        read_document_identified(selection_path, MAX_SELECTION_BYTES)?;
+    if fresh_report != report_hash || fresh_selection != selection_hash {
+        return Err("Calibrated proposal or selection raw bytes changed after load".into());
+    }
+    let exported = cocobeat_media::export_anchors(
+        source,
+        package.manifest.package_hash,
+        &anchors,
+        &destination,
+    )?;
+    println!(
+        "{}",
+        serde_json::json!({
+            "source_content_id": report.source.content_id,
+            "content_id": format!("package-blake3:{}", hex(exported.manifest.package_hash)),
+            "anchor_count": exported.chart.anchors.len(), "section_cue_count": exported.chart.sections.len(),
+            "changed": exported.manifest.package_hash != package.manifest.package_hash,
+            "proposal_blake3": report_hash.to_string(), "calibration": report.calibration,
+            "scope": report.scope, "quality_status": "UNASSESSED", "production_admission": false,
+        })
+    );
+    Ok(())
+}
+
 pub(crate) fn load_report(package: &ValidatedPackage, path: &Path) -> Result<Report, String> {
     let report: Report = read_document(path, MAX_REPORT_BYTES)?;
     if report.report_version != REPORT_VERSION || report.compiler_version != ANCHOR_COMPILER_VERSION
@@ -254,12 +570,8 @@ fn make_report(package: &ValidatedPackage, policy: Policy) -> Result<Report, Str
         evidence: proposal
             .evidence
             .into_iter()
-            .map(|evidence| Evidence {
-                onset_index: evidence.onset_index,
-                frame: evidence.time.frames(),
-                strength: evidence.strength,
-                confidence: evidence.confidence,
-                decision: match evidence.decision {
+            .map(|evidence| {
+                let decision = match evidence.decision {
                     AnchorDecision::Selected { anchor_id } => {
                         Decision::SelectedByExperimentalPolicy { anchor_id }
                     }
@@ -272,9 +584,19 @@ fn make_report(package: &ValidatedPackage, policy: Policy) -> Result<Report, Str
                         blocking_onset_index,
                         distance_frames,
                     },
-                },
+                    AnchorDecision::DensityLimited { .. } => {
+                        return Err("Legacy proposal cannot contain density decisions".to_string());
+                    }
+                };
+                Ok(Evidence {
+                    onset_index: evidence.onset_index,
+                    frame: evidence.time.frames(),
+                    strength: evidence.strength,
+                    confidence: evidence.confidence,
+                    decision,
+                })
             })
-            .collect(),
+            .collect::<Result<Vec<_>, String>>()?,
     })
 }
 
@@ -295,6 +617,13 @@ fn hex(hash: [u8; 32]) -> String {
 }
 
 pub(crate) fn read_document<T: DeserializeOwned>(path: &Path, limit: usize) -> Result<T, String> {
+    read_document_identified(path, limit).map(|(document, _)| document)
+}
+
+pub(crate) fn read_document_identified<T: DeserializeOwned>(
+    path: &Path,
+    limit: usize,
+) -> Result<(T, blake3::Hash), String> {
     if !fs::symlink_metadata(path)
         .map_err(|error| format!("Inspect JSON document: {error}"))?
         .is_file()
@@ -316,7 +645,9 @@ pub(crate) fn read_document<T: DeserializeOwned>(path: &Path, limit: usize) -> R
     if bytes.len() > limit {
         return Err(format!("JSON document exceeds {limit} bytes"));
     }
-    serde_json::from_slice(&bytes).map_err(|error| format!("Invalid JSON document: {error}"))
+    let document = serde_json::from_slice(&bytes)
+        .map_err(|error| format!("Invalid JSON document: {error}"))?;
+    Ok((document, blake3::hash(&bytes)))
 }
 
 #[cfg(test)]

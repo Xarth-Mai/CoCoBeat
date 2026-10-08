@@ -80,6 +80,14 @@ runtime 的 `--replay` 保持退出式 core 校验；独立 `--watch-replay` 接
 
 [Anchor 编辑](editor.md)的无变化导出保留原身份，可继续生成相同诊断；真实改谱后的新包需要匹配自身身份的新录制，原录制不会自动改绑。本机软件计时关联按上面的显式 sidecar 入口推进；试听校准、物理设备计时和真实输入验收继续独立推进
 
+## 来源出版漂移观察
+
+显式 `--timing SIDECAR` 的既有 CLI 与工作台共同消费原 `audio_history`，在 `local_timing.source_drift` 报告原出版时间区间与最近帧软件游标的速率区间；每端点保留一帧余量，差值留 ±2 帧，ppm 使用整数有向舍入。只统计实际记录的 Running、同 generation / source_id 且推进的来源；Pause、缺来源、过期、读缺口或身份变化分段，重复出版不刷新年龄
+
+有可测段时仅保留 elapsed 下界最长的一段、原首尾出版和原 audio_history 索引，完整原记录仍在侧车；没有可测段输出 `unknown` 和 null。保留 8 KiB 行上限，稀疏读之间未观察的转换未知，结果不表示 DAC 精度或长期漂移已校正
+
+2026-10-08 的 [软件记录](../testdata/synthetic/calibration-drift-observations-20261008.json)包含两份原计时侧车的实际 CLI、无 timing 的旧报告完整字节保持、null 来源 unknown 和错误绑定拒绝；所有原 timing 字段与行保持，独立有理数四角核对区间。最初 null 侧车配错 Replay 的 QA FAIL 保留，补验仅纠正原绑定；新硬件采样、GUI 目检与双端漂移纠正另验
+
 ## 原生只读 Replay 观看
 
 ```sh

@@ -37,6 +37,38 @@ pub enum AnchorDecision {
         blocking_onset_index: usize,
         distance_frames: i64,
     },
+    DensityLimited {
+        window_start: i64,
+        window_end: i64,
+        max_anchors: usize,
+    },
+}
+
+impl AnchorPolicy {
+    /// Explicit frame-zero fixed windows, without changing the ordinary proposal policy
+    pub fn compile_with_density(
+        self,
+        analysis: &MusicAnalysis,
+        canonical_frames: u64,
+        window_frames: i64,
+        max_anchors: usize,
+    ) -> Result<AnchorProposal, String> {
+        if !(1..=canonical_frames as i64).contains(&window_frames)
+            || max_anchors == 0
+            || max_anchors > cocobeat_schema::MAX_CONTENT_ITEMS
+        {
+            return Err(
+                "Anchor density requires an explicit window inside N and capacity 1..=100000"
+                    .into(),
+            );
+        }
+        compile(
+            analysis,
+            canonical_frames,
+            self,
+            Some((window_frames, max_anchors)),
+        )
+    }
 }
 
 /// Supplied confidence is compared as data, without asserting calibration or musical quality
@@ -44,6 +76,15 @@ pub fn compile_anchor_proposal(
     analysis: &MusicAnalysis,
     canonical_frames: u64,
     policy: AnchorPolicy,
+) -> Result<AnchorProposal, String> {
+    compile(analysis, canonical_frames, policy, None)
+}
+
+fn compile(
+    analysis: &MusicAnalysis,
+    canonical_frames: u64,
+    policy: AnchorPolicy,
+    density: Option<(i64, usize)>,
 ) -> Result<AnchorProposal, String> {
     analysis.validate(canonical_frames)?;
     if !policy.min_confidence.is_finite()
@@ -86,6 +127,7 @@ pub fn compile_anchor_proposal(
     });
 
     let mut selected = BTreeMap::<SongTime, usize>::new();
+    let mut window_counts = BTreeMap::<i64, usize>::new();
     for (index, _) in candidates {
         let time = evidence[index].time;
         let blocker = selected
@@ -107,9 +149,22 @@ pub fn compile_anchor_proposal(
                 blocking_onset_index,
                 distance_frames,
             };
-        } else {
-            selected.insert(time, index);
+            continue;
         }
+        if let Some((window_frames, max_anchors)) = density {
+            let window_start = time.frames() / window_frames * window_frames;
+            let count = window_counts.entry(window_start).or_default();
+            if *count == max_anchors {
+                evidence[index].decision = AnchorDecision::DensityLimited {
+                    window_start,
+                    window_end: (window_start + window_frames).min(canonical_frames as i64),
+                    max_anchors,
+                };
+                continue;
+            }
+            *count += 1;
+        }
+        selected.insert(time, index);
     }
     let anchors = selected
         .into_iter()
@@ -127,6 +182,78 @@ mod tests {
     use cocobeat_schema::{
         BeatFeature, EnergySample, MAX_CONTENT_ITEMS, OnsetFeature, SectionFeature,
     };
+
+    #[test]
+    fn density_uses_fixed_half_open_windows_after_gap_and_keeps_unknown_closed() {
+        let input = analysis(
+            100,
+            &[
+                (0, Some(0.8)),
+                (1, None),
+                (8, Some(0.8)),
+                (9, Some(0.9)),
+                (10, Some(0.8)),
+                (19, Some(0.8)),
+                (20, Some(0.8)),
+                (22, Some(0.8)),
+                (99, Some(0.8)),
+            ],
+        );
+        let policy = AnchorPolicy {
+            min_confidence: 0.5,
+            min_gap_frames: 2,
+        };
+        let actual = policy.compile_with_density(&input, 100, 10, 1).unwrap();
+        assert_eq!(
+            actual
+                .anchors
+                .iter()
+                .map(|a| a.song_time.frames())
+                .collect::<Vec<_>>(),
+            [9, 19, 22, 99]
+        );
+        assert_eq!(
+            actual.evidence[1].decision,
+            AnchorDecision::UnknownConfidence
+        );
+        assert_eq!(
+            actual.evidence[2].decision,
+            AnchorDecision::TooClose {
+                blocking_onset_index: 3,
+                distance_frames: 1
+            }
+        );
+        assert_eq!(
+            actual.evidence[0].decision,
+            AnchorDecision::DensityLimited {
+                window_start: 0,
+                window_end: 10,
+                max_anchors: 1
+            }
+        );
+        assert_eq!(
+            actual.evidence[4].decision,
+            AnchorDecision::TooClose {
+                blocking_onset_index: 3,
+                distance_frames: 1
+            }
+        );
+        assert_eq!(
+            compile_anchor_proposal(&input, 100, policy).unwrap(),
+            policy.compile_with_density(&input, 100, 100, 100).unwrap()
+        );
+        assert_eq!(
+            actual,
+            policy.compile_with_density(&input, 100, 10, 1).unwrap()
+        );
+        for (window, capacity) in [(0, 1), (101, 1), (10, 0), (10, 100001)] {
+            assert!(
+                policy
+                    .compile_with_density(&input, 100, window, capacity)
+                    .is_err()
+            );
+        }
+    }
 
     fn analysis(frames: u32, points: &[(i64, Option<f32>)]) -> MusicAnalysis {
         MusicAnalysis {

@@ -225,6 +225,188 @@ pub(crate) fn timing_header(timing: &TimingSidecar) -> Value {
         "audio_sampling_interval_ns": timing.audio_sampling_interval_ns,
         "audio_history_status": timing.audio_history_status,
         "audio_read_count": timing.audio_history.len(),
+        "source_drift": source_drift(timing),
+    })
+}
+
+// Only rounded software cursors and their original publication intervals are compared
+// The interval does not include device latency, and never changes ClockConfig
+fn source_drift_interval(
+    first: cocobeat_replay::timing::SourcePublication,
+    last: cocobeat_replay::timing::SourcePublication,
+) -> Option<(u64, Value)> {
+    let first_frame = SongTime::try_from_seconds_f64(first.position_seconds)?.frames();
+    let last_frame = SongTime::try_from_seconds_f64(last.position_seconds)?.frames();
+    if first_frame < 0 || last_frame < first_frame {
+        return None;
+    }
+    let minimum_ns = last
+        .published_before_ns
+        .checked_sub(first.published_after_ns)?;
+    let maximum_ns = last
+        .published_after_ns
+        .checked_sub(first.published_before_ns)?;
+    if minimum_ns == 0 || maximum_ns < minimum_ns {
+        return None;
+    }
+    let delta_frames = last_frame.checked_sub(first_frame)?;
+    let lower_frames = i128::from(delta_frames).checked_sub(2)?;
+    let upper_frames = i128::from(delta_frames).checked_add(2)?;
+    let ceil = |numerator: i128, denominator: i128| {
+        numerator.div_euclid(denominator) + i128::from(numerator.rem_euclid(denominator) != 0)
+    };
+    let nominal_lower = i128::from(maximum_ns).checked_mul(48_000)?;
+    let nominal_upper = i128::from(minimum_ns).checked_mul(48_000)?;
+    let residual = [
+        i64::try_from(
+            lower_frames
+                .checked_mul(1_000_000_000)?
+                .checked_sub(nominal_lower)?
+                .div_euclid(1_000_000_000),
+        )
+        .ok()?,
+        i64::try_from(ceil(
+            upper_frames
+                .checked_mul(1_000_000_000)?
+                .checked_sub(nominal_upper)?,
+            1_000_000_000,
+        ))
+        .ok()?,
+    ];
+    let ppm = [
+        i64::try_from(
+            lower_frames
+                .checked_mul(1_000_000_000_000_000)?
+                .div_euclid(if lower_frames < 0 {
+                    nominal_upper
+                } else {
+                    nominal_lower
+                })
+                .checked_sub(1_000_000)?,
+        )
+        .ok()?,
+        i64::try_from(
+            ceil(
+                upper_frames.checked_mul(1_000_000_000_000_000)?,
+                nominal_upper,
+            )
+            .checked_sub(1_000_000)?,
+        )
+        .ok()?,
+    ];
+    Some((
+        minimum_ns,
+        json!({
+            "elapsed_ns_interval": [minimum_ns, maximum_ns],
+            "rounded_cursor_delta_frames": delta_frames,
+            "nominal_residual_frames_interval": residual,
+            "software_rate_ppm_interval": ppm,
+            "first_source_publication": first,
+            "last_source_publication": last,
+        }),
+    ))
+}
+
+fn source_drift(timing: &TimingSidecar) -> Value {
+    use cocobeat_replay::timing::{SourcePublication, TimingPhase};
+    let maximum_age_ns = timing.clock.max_extrapolation_ns;
+    let mut first: Option<(usize, SourcePublication)> = None;
+    let mut previous: Option<SourcePublication> = None;
+    let mut previous_read_ns = None;
+    // ponytail: only the longest elapsed lower bound fits the bounded JSONL header;
+    // add per-segment export if needed, all original reads remain in the sidecar
+    let mut longest: Option<(u64, Value)> = None;
+    let mut segments = 0_u64;
+    let mut distinct_publications_used = 0_u64;
+    let mut skipped = BTreeMap::<&str, u64>::new();
+    for (index, read) in timing.audio_history.iter().enumerate() {
+        let gap = previous_read_ns.is_some_and(|before| {
+            read.read_before_ns
+                .checked_sub(before)
+                .is_none_or(|elapsed| elapsed > maximum_age_ns)
+        });
+        previous_read_ns = Some(read.read_before_ns);
+        let reason = if read.phase != TimingPhase::Running {
+            Some("not_running")
+        } else if read.source.is_none() {
+            Some("source_unavailable")
+        } else if gap {
+            Some("unobserved_read_gap")
+        } else {
+            None
+        };
+        if let Some(reason) = reason {
+            *skipped.entry(reason).or_default() += 1;
+            first = None;
+            previous = None;
+            continue;
+        }
+        let source = read.source.expect("available source was checked above");
+        if read
+            .read_after_ns
+            .checked_sub(source.published_before_ns)
+            .is_none_or(|age| age > maximum_age_ns)
+            || SongTime::try_from_seconds_f64(source.position_seconds)
+                .is_none_or(|frame| !(0..=timing.canonical_frames as i64).contains(&frame.frames()))
+        {
+            *skipped
+                .entry("stale_or_unrepresentable_source")
+                .or_default() += 1;
+            first = None;
+            previous = None;
+            continue;
+        }
+        if let Some(last) = previous {
+            if (last.generation, last.source_id) != (source.generation, source.source_id) {
+                *skipped.entry("source_changed").or_default() += 1;
+                first = None;
+            } else if source.sequence == last.sequence && source == last {
+                *skipped.entry("duplicate_publication").or_default() += 1;
+                continue;
+            } else if source.sequence <= last.sequence
+                || source.position_seconds <= last.position_seconds
+                || source.published_before_ns < last.published_after_ns
+            {
+                *skipped
+                    .entry("nonadvancing_or_invalid_publication")
+                    .or_default() += 1;
+                first = None;
+                previous = None;
+                continue;
+            }
+        }
+        previous = Some(source);
+        distinct_publications_used += 1;
+        if let Some((first_index, start)) = first {
+            if let Some((elapsed, mut span)) = source_drift_interval(start, source) {
+                if longest
+                    .as_ref()
+                    .is_none_or(|(duration, _)| elapsed > *duration)
+                {
+                    span["first_audio_read_index"] = (first_index + 1).into();
+                    span["last_audio_read_index"] = (index + 1).into();
+                    longest = Some((elapsed, span));
+                }
+            } else {
+                *skipped.entry("unrepresentable_interval").or_default() += 1;
+                first = Some((index, source));
+                segments += 1;
+            }
+        } else {
+            first = Some((index, source));
+            segments += 1;
+        }
+    }
+    json!({
+        "status": if longest.is_some() { "measured_segments" } else { "unknown" },
+        "method": "original_publication_intervals_rounded_cursor_delta_plus_minus_two_frames",
+        "phase_scope": "observed_running_reads_only_unobserved_transitions_unknown",
+        "physical_output_latency": "not_measured",
+        "maximum_publication_age_and_read_gap_ns": maximum_age_ns,
+        "segments_started": segments,
+        "distinct_publications_used": distinct_publications_used,
+        "skipped_reads": skipped,
+        "longest_segment": longest.map(|(_, span)| span),
     })
 }
 
@@ -1064,6 +1246,237 @@ mod tests {
             );
             assert!(!rejected.exists());
         }
+    }
+
+    #[test]
+    fn source_drift_rounding_bounds_rational_rates_without_float_frame_claims() {
+        use cocobeat_replay::timing::SourcePublication;
+        let source = |frame: i64, at: u64| SourcePublication {
+            generation: 1,
+            source_id: 1,
+            sequence: 1,
+            position_seconds: frame as f64 / 48_000.0,
+            published_before_ns: at,
+            published_after_ns: at,
+        };
+        let first = source(0, 0);
+        let (_, span) = source_drift_interval(first, source(48_000, 1_000_000_000)).unwrap();
+        assert_eq!(span["software_rate_ppm_interval"], json!([-42, 42]));
+        assert_eq!(span["nominal_residual_frames_interval"], json!([-2, 2]));
+        let (_, span) = source_drift_interval(first, source(1, 1_000_000_000)).unwrap();
+        assert_eq!(
+            span["software_rate_ppm_interval"],
+            json!([-1_000_021, -999_937])
+        );
+        let wide_first = SourcePublication {
+            published_after_ns: 500_000,
+            ..first
+        };
+        let wide_last = SourcePublication {
+            sequence: 2,
+            published_before_ns: 1_500_000,
+            published_after_ns: 2_000_000,
+            ..source(1, 0)
+        };
+        let (_, span) = source_drift_interval(wide_first, wide_last).unwrap();
+        assert_eq!(span["elapsed_ns_interval"], json!([1_000_000, 2_000_000]));
+        assert_eq!(
+            span["software_rate_ppm_interval"],
+            json!([-1_020_834, -937_500])
+        );
+        for ppm in [-1000_i128, -100, 0, 100, 1000] {
+            // Independent integer oscillator: the source stays inside a 600-second package
+            let at = (599_i128 * 1_000_000_000_000_000 / (1_000_000 + ppm)) as u64;
+            let mut last = source(599 * 48_000, at);
+            last.published_before_ns -= 500;
+            last.published_after_ns += 500;
+            let (_, span) = source_drift_interval(first, last).unwrap();
+            assert!(i128::from(span["software_rate_ppm_interval"][0].as_i64().unwrap()) <= ppm);
+            assert!(i128::from(span["software_rate_ppm_interval"][1].as_i64().unwrap()) >= ppm);
+            assert_eq!(span["last_source_publication"]["position_seconds"], 599.0);
+            assert!(span.get("raw_frames").is_none());
+        }
+        for invalid in [
+            source(1, 0),
+            SourcePublication {
+                position_seconds: f64::NAN,
+                ..source(1, 1)
+            },
+            SourcePublication {
+                position_seconds: 1e10,
+                ..source(1, 1)
+            },
+            SourcePublication {
+                published_before_ns: 2,
+                published_after_ns: 1,
+                ..source(1, 1)
+            },
+        ] {
+            assert!(source_drift_interval(first, invalid).is_none());
+        }
+        assert!(source_drift_interval(source(1, 2), source(2, 1)).is_none());
+    }
+
+    #[test]
+    fn source_drift_uses_bound_sidecar_facts_and_splits_unknown_intervals() {
+        use cocobeat_replay::{
+            ReplayIdentity,
+            timing::{AudioRead, SourcePublication, TimingClock, TimingPhase},
+        };
+        let replay = Replay::new(
+            ReplayIdentity {
+                content_id: "software-drift-fixture".into(),
+                rules_id: "fixture".into(),
+                build_id: "fixture".into(),
+                stage_compiler_version: None,
+            },
+            cocobeat_schema::SessionEpoch(1),
+        )
+        .unwrap();
+        let raw = replay.encode().unwrap();
+        let mut timing = TimingSidecar::new(
+            &replay,
+            &raw,
+            28_800_000,
+            vec![1],
+            TimingClock {
+                max_extrapolation_ns: 250_000_000,
+                max_drift_ppm: 1000,
+                history_capacity: 256,
+            },
+        )
+        .unwrap();
+        let read = |index: u64| AudioRead {
+            read_before_ns: index * 100_000_000,
+            read_after_ns: index * 100_000_000 + 100,
+            phase: TimingPhase::Running,
+            source: Some(SourcePublication {
+                generation: 1,
+                source_id: 1,
+                sequence: index,
+                position_seconds: index as f64 / 10.0,
+                published_before_ns: index * 100_000_000 - 1_000_000,
+                published_after_ns: index * 100_000_000 - 1_000_000,
+            }),
+            callback: None,
+        };
+        let header = timing_header(&timing);
+        assert_eq!(header["source_drift"]["status"], "unknown");
+        assert!(header["source_drift"]["longest_segment"].is_null());
+        timing.audio_history = (1..=3).map(read).collect();
+        timing.validate(&replay, &raw, 28_800_000).unwrap();
+        let preserved = serde_json::to_vec(&timing).unwrap();
+        let base = source_drift(&timing);
+        assert_eq!(base["status"], "measured_segments");
+        assert_eq!(base["segments_started"], 1);
+        assert_eq!(
+            base["longest_segment"]["software_rate_ppm_interval"],
+            json!([-209, 209])
+        );
+        assert_eq!(serde_json::to_vec(&timing).unwrap(), preserved);
+        assert!(serde_json::to_vec(&timing_header(&timing)).unwrap().len() < MAX_LINE_BYTES);
+        let original_clock = timing.clock;
+        let baseline = timing.audio_history.clone();
+        for (reason, mut boundary) in [
+            (
+                "not_running",
+                AudioRead {
+                    phase: TimingPhase::Paused,
+                    ..read(4)
+                },
+            ),
+            (
+                "source_unavailable",
+                AudioRead {
+                    source: None,
+                    ..read(4)
+                },
+            ),
+            ("unobserved_read_gap", read(7)),
+        ] {
+            // A fresh subsequent source forms a new segment, never bridges the missing interval
+            if reason == "not_running" {
+                boundary.source = read(3).source;
+            }
+            timing.audio_history.clone_from(&baseline);
+            let next = boundary.read_before_ns / 100_000_000 + 1;
+            timing.audio_history.push(boundary);
+            timing.audio_history.push(read(next));
+            timing.validate(&replay, &raw, 28_800_000).unwrap();
+            let measured = source_drift(&timing);
+            assert_eq!(measured["skipped_reads"][reason], 1);
+            assert_eq!(measured["longest_segment"], base["longest_segment"]);
+        }
+        timing.audio_history.clone_from(&baseline);
+        for index in 4..=6 {
+            timing.audio_history.push(AudioRead {
+                source: read(3).source,
+                ..read(index)
+            });
+        }
+        timing.validate(&replay, &raw, 28_800_000).unwrap();
+        let stale = source_drift(&timing);
+        assert_eq!(stale["skipped_reads"]["duplicate_publication"], 2);
+        assert_eq!(stale["skipped_reads"]["stale_or_unrepresentable_source"], 1);
+        assert_eq!(stale["longest_segment"], base["longest_segment"]);
+        timing.audio_history.clone_from(&baseline);
+        timing.audio_history.push(AudioRead {
+            source: read(3).source,
+            ..read(4)
+        });
+        timing.audio_history.push(read(5));
+        timing.validate(&replay, &raw, 28_800_000).unwrap();
+        let duplicate = source_drift(&timing);
+        assert_eq!(duplicate["skipped_reads"]["duplicate_publication"], 1);
+        assert_eq!(duplicate["distinct_publications_used"], 4);
+        assert_eq!(duplicate["longest_segment"]["last_audio_read_index"], 5);
+        timing.audio_history.clone_from(&baseline);
+        let mut changed = read(4);
+        changed.source.as_mut().unwrap().source_id = 2;
+        timing.audio_history.push(changed);
+        timing.validate(&replay, &raw, 28_800_000).unwrap();
+        let changed = source_drift(&timing);
+        assert_eq!(changed["skipped_reads"]["source_changed"], 1);
+        assert_eq!(changed["segments_started"], 2);
+        assert_eq!(changed["longest_segment"], base["longest_segment"]);
+        timing.audio_history.clone_from(&baseline);
+        let mut stalled = read(4);
+        stalled.source.as_mut().unwrap().position_seconds = 0.3;
+        timing.audio_history.push(stalled);
+        timing.validate(&replay, &raw, 28_800_000).unwrap();
+        assert_eq!(
+            source_drift(&timing)["skipped_reads"]["nonadvancing_or_invalid_publication"],
+            1
+        );
+        for source in [
+            SourcePublication {
+                sequence: 2,
+                ..read(4).source.unwrap()
+            },
+            SourcePublication {
+                position_seconds: 0.2,
+                ..read(4).source.unwrap()
+            },
+            SourcePublication {
+                published_before_ns: 1,
+                ..read(4).source.unwrap()
+            },
+        ] {
+            timing.audio_history.clone_from(&baseline);
+            timing.audio_history.push(AudioRead {
+                source: Some(source),
+                ..read(4)
+            });
+            assert!(timing.validate(&replay, &raw, 28_800_000).is_err());
+        }
+        assert_eq!(timing.clock, original_clock);
+        timing.audio_history.clone_from(&baseline);
+        let mut unknown_phase = serde_json::to_value(&timing).unwrap();
+        unknown_phase["audio_history"][0]
+            .as_object_mut()
+            .unwrap()
+            .remove("phase");
+        assert!(serde_json::from_value::<TimingSidecar>(unknown_phase).is_err());
     }
 
     #[test]

@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "base_head": "4cd4c7da1352744b43bf1b0c62a9d320fb31b68d",
+  "status": "PASS_SCOPED_SOFTWARE",
+  "scope": "Explicit experimental Anchor calibration CLI, density policy and original source publication drift consumer; mechanical labels do not admit musical confidence",
+  "software_checks": {
+    "media_tests": 86,
+    "lab_tests": 96,
+    "clippy": "PASS",
+    "fmt": "PASS",
+    "boundaries": "PASS",
+    "current_lab_build": "PASS",
+    "sources": 374
+  },
+  "calibration": {
+    "status": "PASS_SCOPED_SOFTWARE",
+    "source_count": 374,
+    "source_after_equal": true,
+    "runtime_after_equal": true,
+    "commands": 33,
+    "success_commands": 24,
+    "expected_rejections": 9,
+    "train_onsets": 46,
+    "evaluation_onsets": 69,
+    "train_bins": [
+      {
+        "positive": 18,
+        "negative": 18,
+        "probability_bits": 1056964608
+      }
+    ],
+    "known_positive": 28,
+    "known_negative": 27,
+    "v2_original_confidence_all_null": true,
+    "v2_estimates": 55,
+    "eligible": 3,
+    "adopted_receipt": {
+      "anchor_count": 1,
+      "calibration": {
+        "calibration_report_blake3": "1e0563ad1c568d0114d995f29c48dc7e42b449c3a1e51a20003371249a6780c6",
+        "choice_blake3": "3f674870453614a9feffa8004485d131e1e86988ab6996e778ece7a185bd8b83",
+        "input_blake3": "9cd6e92ff5bb9fb21f86b7bcf803bfc83fe8791ab91faf5a24997fbf54975f7f",
+        "policy_index": 0,
+        "train_result_blake3": "5a8f41df5158fefcc92ea71b296012411a77bb7365d5d0248a6cfb40f75ffd97"
+      },
+      "changed": true,
+      "content_id": "package-blake3:0031f789eb3be919e52d9784f15c37ef0baba14e4bce558584d57c15656e0037",
+      "production_admission": false,
+      "proposal_blake3": "575e2d30826282b7f9b05fb9534e6d4c5e81bf702b6c68becf18bf90918fbe0d",
+      "quality_status": "UNASSESSED",
+      "scope": "experimental_anchor_calibration",
+      "section_cue_count": 0,
+      "source_content_id": "package-blake3:17a2a050e951d587ca2d056e04ad74e34fe3a677c4f06844705a3139fd3ca8e7"
+    },
+    "quality_status": "UNASSESSED",
+    "production_admission": false,
+    "preserved_failures": [
+      "first Clippy redundant writes",
+      "drift QA wrong Replay/null Sidecar pair",
+      "cal QA setup missing local plan assets"
+    ],
+    "not_run": [
+      "concurrent mutation during source-copy proposal write window",
+      "musical confidence admission",
+      "unlabeled package inference",
+      "GUI v2 workbench",
+      "DAC/acoustics"
+    ],
+    "calibration_status": "applicable"
+  },
+  "source_drift": {
+    "actual_commands": 5,
+    "source_count": 374,
+    "legacy_no_timing_whole_bytes_equal": true,
+    "all_original_timing_report_fields_and_rows_equal": true,
+    "null_source_status": "unknown",
+    "wrong_binding_refused_without_output": true
+  },
+  "evidence": [
+    {
+      "path": "target/anchor-calibration-cli-run-20261008/summary.json",
+      "sha256": "1a55cf8d735ffdff06d481c6d2adb3cb35ad601cb0c040424395df34e1fbc326",
+      "bytes": 40176
+    },
+    {
+      "path": "target/anchor-calibration-current-cli-qa-20261008/postcheck.json",
+      "sha256": "693650c65b607d6a44bda22fa759abc777ce128da1c037c4d8ee4b811bc8c759",
+      "bytes": 1909
+    },
+    {
+      "path": "target/calibration-drift-final-evidence-20261008/drift-result.json",
+      "sha256": "5cf7dee45c8a0ee25351f399dda2ce59bd36c9edb297b5402c9088f8fd3d13f9",
+      "bytes": 8243
+    },
+    {
+      "path": "target/calibration-drift-final-evidence-20261008/raw-index.json",
+      "sha256": "954de8991cbfd7c46378075dd440e18f65886ec3a7e2e34e9eacb2e2be0587af",
+      "bytes": 36183
+    },
+    {
+      "path": "target/calibration-drift-production-checks-20261008-revision02/result.json",
+      "sha256": "188fce0df7b0d5f01b0468d968193bc14e7935dfd81a154ea069ef45ac1ac276",
+      "bytes": 2207
+    }
+  ],
+  "preserved_failures": [
+    "first Clippy redundant writes",
+    "drift QA wrong Replay/null Sidecar pair",
+    "cal QA setup missing local plan assets"
+  ],
+  "not_run": [
+    "concurrent mutation during source-copy proposal write window",
+    "musical confidence admission",
+    "unlabeled package inference",
+    "GUI v2 workbench",
+    "DAC/acoustics",
+    "fresh four-target release builds",
+    "active QUIC maintenance",
+    "long-term dual-source phase correction",
+    "physical gamepad/mixed-input and two-machine acceptance"
+  ]
+}
