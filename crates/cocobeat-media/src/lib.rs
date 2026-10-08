@@ -46,7 +46,8 @@ pub use package::{
 };
 pub use resample::{ResampledSource, resample_source};
 pub use structure_features::{
-    STRUCTURE_SEGMENTATION_PROFILE, StructureAdjacentChange, StructureFeatureBin,
-    StructureFeatureEvidence, StructureNeighbor, compile_structure_candidate_package,
+    REPETITION_CANDIDATE_PROFILE, STRUCTURE_SEGMENTATION_PROFILE, StructureAdjacentChange,
+    StructureFeatureBin, StructureFeatureEvidence, StructureNeighbor,
+    compile_repetition_candidate_package, compile_structure_candidate_package,
     inspect_structure_features_package, read_structure_features_package,
 };

@@ -58,6 +58,26 @@ cargo run --locked -p cocobeat-lab -- compile-structure-candidate /path/to/packa
 
 上述 CLI 批次当时的新 Game / UI、600秒成本及四目标原生运行尚未验收；旧 wholeSpect / 音乐质量 FAIL、未知置信度和独立真人参考边界保持
 
+## 显式编译重复关系候选包
+
+`compile-repetition-candidate PACKAGE left|right NEW_PACKAGE` 从完整验证的 analysis v2 包生成谱形重复区间，输出父目录须已存在，目标须为源包之外的新目录
+
+```sh
+cargo run --locked -p cocobeat-lab -- compile-repetition-candidate /path/to/package left /path/to/new-repetition-package
+```
+
+固定 profile 为 `canonical-logbands-diagonal-8bin-v1-candidate`，复用原1024×24谱形 bin；只读描述符及其 top4 邻居仍不拼接区间，新的独立编译入口沿这些邻居产生种子。只取目标在后、lag至少8个 bin、cosine至少0.95的完整非零 bin 邻居，按种子数量降序、最大种子cosine降序、lag升序选择至多64个 lag，搜索固定网格、原速原调，不穷举所有重复关系
+
+每个 lag 上连续对齐的两段至少各8个完整 bin（4.096秒），逐对 cosine至少0.95、较大 / 较小 RMS 比不超过2；至少两处相同相邻位置在两侧同时满足 `1-cosine>=0.05`，避免恒定音色形成重复关系。两段互不重叠，只采用完整24576帧 bin，不把真实短尾补齐；关系按原source / target帧排序去重，最多64条，第65条支持关系返回错误，输入不足或没有支持关系也返回错误，不用原重复记录或默认关系作 fallback
+
+成功包保存原半开 source / target 四端点，repetition capability 为 `Candidate / Algorithm / confidence=None`、各关系confidence为None，支持分数保留于diagnostics而非校准置信度。仅 repetition capability / payload、analysis profile / diagnostics改变，原音频与N、整份chart、sections、SectionCue、Anchor及其他分析事实保持；发布前再次完整核对原Source，diagnostics绑定来源旧CID、音频hash及原repetition状态，新analysis使完整CID改变
+
+当前生产 media85 / Lab85、两包全目标Clippy、格式、workspace边界与Lab构建均通过。17份原创WAV的原PCM34项与真实编码回读34项预登记控制均通过，各为13项正向exit0 / 21项预期拒绝exit1、TP17 / FP0 / FN0；原PCM四端点容差0、canonical四端点各24576帧，精确关系数量与原oracle保持。canonical批次121条实际命令为93次exit0 / 28次exit1，另10项目标保护 / 确定性 / 旧结构四对象回归 / 作者记录非fallback控制通过，source373、输入、旧包及两冻结二进制保持，全部owned进程组退出，见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
+
+首次Clippy的构造测试范围循环FAIL与等价迭代器修复保留。68项控制是原创配方机制oracle，不证明音乐重复语义、变速 / 转调、置信校准或自动舞台编排；600秒成本单独取证，完整MIR与旧wholeSpect / 音乐质量FAIL保持，沿用现有原生依赖，不新增GPL或产品Python分析运行时
+
+600秒 / N28800000同源成本现已独立观察：自动analysis实际成功发布并完整校验，wall310.879648秒 / 单child kernel RSS1593272 KiB；结构编译在62.510735秒 / 65820 KiB返回超过64个支持边界的原Err，零发布；repetition在97.871086秒 / 72360 KiB成功发布18条Candidate关系，独立strict验证与typed内容守恒通过，原audio / N / chart / sections保持。所有源码和输入hash保持、进程组退出，预声明wall / RSS操作预算未触发；后验耗时另列，kernel与/proc采样峰值分别保存。该Linux x86-64 debug单样本不是发行性能或音乐质量准入，结构600秒成功出版成本和600秒SDK证据reader对照仍NOT_RUN，完整收据见[重复候选观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)
+
 ## 软件观察与成本
 
 完整 499 文件候选快照完成 media 5 项 / Lab 2 项窄测、两包全目标 Clippy、格式及 debug Lab 构建；499 由 492 项生产基底、3 项测试 fixture、2 项已有 example 和 2 个新增模块组成。首次 497 文件快照遗漏两个已声明的 native Vorbis example，Clippy exit101 保留；只补源闭包后通过，候选算法不变。以下 CLI 结果绑定该快照冻结 Lab，不能改绑为后来生产二进制的实际运行

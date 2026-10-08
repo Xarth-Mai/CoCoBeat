@@ -46,7 +46,9 @@ tempo 的 `adjacent-native-beat-interval-v1` 仅记录原相邻 beat 的 `[start
 
 本轮生产 media83 / Lab85、全目标 Clippy、格式、边界和 Lab 构建通过。实际 SDK 对合成短暂音控制产出46个 onset 与19个相邻 tempo 区间，原 chart 1个 Anchor / 0个 cue 保持；`propose-anchors` 返回0个 Anchor，46条证据均为 UnknownConfidence（JSON `unknown_confidence`）。新 evidence 经严格 reader 与空 MusicTruth 比较成功，三流状态为 `NO_COMPARABLE_COVERAGE`，没有人工覆盖的结果不评价质量，见[自动分析软件观察](../testdata/synthetic/automatic-analysis-observations-20261008.json)
 
-最初缺少 Linux 环境 flag 和不符合发行布局的两次实际 CLI 拒绝保留；改用正确固定发行资源布局及 flag 后第3次导入成功，未放宽 guard。新 Game / UI、600秒成本和四目标原生运行仍 NOT_RUN；旧 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 保留，新增候选不升级为 Validated，也不自动采用 Anchor
+最初缺少 Linux 环境 flag 和不符合发行布局的两次实际 CLI 拒绝保留；改用正确固定发行资源布局及 flag 后第3次导入成功，未放宽 guard。上述短曲批次当时的新 Game / UI、600秒成本和四目标原生运行尚NOT_RUN；旧 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）及音乐质量 FAIL 保留，新增候选不升级为 Validated，也不自动采用 Anchor
+
+2026-10-08 · 新profile另完成600秒 / N28800000实际导入，wall310.879648秒 / 单child kernel RSS1593272 KiB；原最终音频hash / Ogg字节、chart对象保持，两个独立包验证 / Source命令exit0。预算900秒 / 3GiB未触发，源码与原输入hash保持、owned进程组退出，后验耗时与/proc采样峰值独立保存，见[三profile成本观察](../testdata/synthetic/repetition-candidate-observations-20261008.json)。本fixture实际0 onset / 74 tempo仍为未知置信候选，600秒七资源evidence reader对照尚NOT_RUN；单个Linux x86-64 debug成本不关闭发行性能、音乐质量或当前四目标准入
 
 ## 原生候选工作台
 

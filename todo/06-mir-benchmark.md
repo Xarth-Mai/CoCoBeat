@@ -34,7 +34,7 @@
 
 - [x] Beat This! small0 导出与三组后处理窄研究：源 PCM / canonical 回读数值对照及失败质量、短输入、坐标边界和来源证据已保留，研究完成不代表生产准入
 - [x] MusicAnalysis v2 数据契约与手工制作接线：analysis 独立 v2，chart / manifest / authoring 仍 v1；固定七项 capability、四状态、三来源、可未知置信度与有界 TempoRegion / repetition 载荷已实现，新手工包为 `canonical-rms-1024-v2`，energy 为实测、sections 为手工，旧 analysis v1 保留未知 capability 与原字节导出身份，见 [包契约](../docs/song-package.md#分析版本与谱面)
-- [ ] 完整 MIR 生产算法与质量准入：普通手工导入的默认 capability 保持；显式实验 onset / beat / downbeat / interbeat tempo 与结构候选已产出未校准 Candidate，repetition 仍 Unsupported；候选质量准入、置信度校准、自动 Anchor 策略与真人标签继续按各自门槛验收
+- [ ] 完整 MIR 生产算法与质量准入：普通手工导入的默认 capability 保持；显式实验 onset / beat / downbeat / interbeat tempo、结构与重复关系入口已实现未校准 Candidate，默认手工导入的 repetition Unsupported 保持；候选质量准入、置信度校准、自动 Anchor 策略与真人标签继续按各自门槛验收
 - [ ] 合成固定/非整数 BPM、变速、3/4、6/8、弱起、静默、切分、摇摆和立体声边界。
 - [ ] 原始 PCM 与编码回读分别评估，至少部分帧真值独立手工核对。
 - [ ] 明确外部数据集版本、获取方式和许可后再引入适配器。
@@ -68,3 +68,5 @@
 2026-10-08 · 独立标签增加 [`adopt-labeled-anchors`](../docs/independent-labels.md#明确采用为-anchor) 明确采用 CLI，Source CID 与标签原字节 hash 绑定指定肯定点，保存后 hash 由 `import-labels` receipt 提供；[软件验证已通过](../docs/independent-labels.md#明确采用为-anchor)。此接口消费人工记录，不产出自动 onset、置信度或策略校准，完整 MIR 与真实双人标签退出保持未完成
 
 - [x] 显式自动分析软件候选：`import-experimental-analysis` 增加真实 HFC onset 与原相邻 beat 区间 tempo，`compile-structure-candidate` 明确生成 sections / cues 新包；media83 / Lab85、Clippy / 格式 / 边界 / 构建、原 PCM32与编码回读32项机制控制及实际 SDK / reader 消费通过，见[自动导入](../docs/native-beat-candidate.md#显式自动分析候选导入)与[结构候选](../docs/native-structure-features.md#显式编译结构候选包)，confidence未知、不自动 Anchor，音乐质量与真人参考未准入
+
+- [x] 原生重复关系软件候选：`compile-repetition-candidate` 固定网格 / 原速原调、完整非零bin、至多64个种子lag及64条非重叠关系，Candidate / Algorithm / None，原音频 / chart / sections / cues / Anchor保持；生产media85 / Lab85、Clippy / 格式 / 边界 / Lab构建已通过，原PCM34 / canonical34项预登记机制控制已PASS，600秒同源repetition实际发布18关系并通过typed守恒，wall97.871086秒 / kernel RSS72360 KiB；结构600秒capErr保留，成功出版成本另验，见[重复候选契约](../docs/native-structure-features.md#显式编译重复关系候选包)，完整MIR / 音乐语义 / 校准退出保持未完成

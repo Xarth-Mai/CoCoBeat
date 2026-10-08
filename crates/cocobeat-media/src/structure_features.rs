@@ -97,9 +97,15 @@ pub fn read_structure_features_package(
 }
 
 pub const STRUCTURE_SEGMENTATION_PROFILE: &str = "canonical-logbands-4x4-novelty-v1-candidate";
+pub const REPETITION_CANDIDATE_PROFILE: &str = "canonical-logbands-diagonal-8bin-v1-candidate";
 const CONTEXT_BINS: usize = 4;
 const MIN_SECTION_FRAMES: u64 = 8 * BIN_FRAMES;
 const MAX_BOUNDARIES: usize = 64;
+const MIN_REPETITION_BINS: usize = 8;
+const MAX_REPETITION_LAGS: usize = 64;
+const MAX_REPETITIONS: usize = 64;
+const MIN_REPETITION_COSINE: f64 = 0.95;
+const MIN_REPETITION_CHANGE: f64 = 0.05;
 
 /// Publishes candidate sections and matching cues from the same staged canonical audio
 /// No supported boundary is an error; authored sections are never a fallback
@@ -108,8 +114,43 @@ pub fn compile_structure_candidate_package(
     channel: usize,
     destination: impl AsRef<Path>,
 ) -> Result<ValidatedPackage, String> {
-    let source = source.as_ref();
-    let destination = destination.as_ref();
+    compile_structure_features_candidate_package(
+        source.as_ref(),
+        channel,
+        destination.as_ref(),
+        |original, evidence| {
+            let boundaries = section_boundaries(&evidence.bins, evidence.canonical_frames)?;
+            section_content(original, channel, &boundaries)
+        },
+    )
+}
+
+/// Publishes fixed-grid spectral repetition candidates without altering chart or sections
+pub fn compile_repetition_candidate_package(
+    source: impl AsRef<Path>,
+    channel: usize,
+    destination: impl AsRef<Path>,
+) -> Result<ValidatedPackage, String> {
+    compile_structure_features_candidate_package(
+        source.as_ref(),
+        channel,
+        destination.as_ref(),
+        |original, evidence| {
+            let candidates = repetition_candidates(&evidence.bins, evidence.canonical_frames)?;
+            repetition_content(original, channel, &candidates)
+        },
+    )
+}
+
+fn compile_structure_features_candidate_package(
+    source: &Path,
+    channel: usize,
+    destination: &Path,
+    build_content: impl FnOnce(
+        &ValidatedPackage,
+        &StructureFeatureEvidence,
+    ) -> Result<crate::PackageBuildInput, String>,
+) -> Result<ValidatedPackage, String> {
     if channel > 1 {
         return Err(
             "Structure segmentation requires explicit left (0) or right (1) channel".into(),
@@ -152,14 +193,242 @@ pub fn compile_structure_candidate_package(
                 features.push(frames)
             })?;
             let evidence = features.finish()?;
-            let boundaries = section_boundaries(&evidence.bins, evidence.canonical_frames)?;
-            let content = section_content(&original, channel, &boundaries)?;
+            let content = build_content(&original, &evidence)?;
             if crate::validate_package(source)? != original {
                 return Err("Structure source package changed after initial validation".into());
             }
             Ok(content)
         },
     )
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct RepetitionMatch {
+    source: usize,
+    target: usize,
+    length: usize,
+    min_cosine: f64,
+    max_rms_ratio: f64,
+    changes: usize,
+}
+
+#[derive(Debug, PartialEq)]
+struct RepetitionCandidates {
+    seed_lag_count: usize,
+    selected_lags: Vec<usize>,
+    matches: Vec<RepetitionMatch>,
+}
+
+fn repetition_bin_supported(bin: &StructureFeatureBin) -> bool {
+    bin.spectral_frames == BIN_FRAMES
+        && bin.end_frame - bin.start_frame == BIN_FRAMES
+        && bin.partial_tail_frames == 0
+        && bin.rms > 0.0
+        && cosine(bin.log_band_power, bin.log_band_power).is_some_and(f64::is_finite)
+}
+
+fn repetition_candidates(
+    bins: &[StructureFeatureBin],
+    frames: u64,
+) -> Result<RepetitionCandidates, String> {
+    if frames == 0 || frames > MAX_CANONICAL_FRAMES || bins.len() > MAX_BINS {
+        return Err("Repetition input exceeds the canonical extent limit".into());
+    }
+    if bins.len() != frames.div_ceil(BIN_FRAMES) as usize {
+        return Err("Repetition bins differ from the canonical extent".into());
+    }
+    for (index, bin) in bins.iter().enumerate() {
+        if bin.index != index
+            || bin.start_frame != index as u64 * BIN_FRAMES
+            || bin.end_frame != ((index + 1) as u64 * BIN_FRAMES).min(frames)
+            || !bin.rms.is_finite()
+            || bin.rms < 0.0
+            || bin
+                .log_band_power
+                .is_some_and(|v| v.iter().any(|x| !x.is_finite() || *x < 0.0))
+        {
+            return Err("Invalid repetition bin coordinate or descriptor".into());
+        }
+    }
+    let full = (frames / BIN_FRAMES) as usize;
+    if full < 2 * MIN_REPETITION_BINS {
+        return Err("Repetition requires two complete eight-bin intervals".into());
+    }
+    let mut seeds = vec![(0usize, 0.0f64); full];
+    for (i, bin) in bins[..full].iter().enumerate() {
+        if !repetition_bin_supported(bin) {
+            continue;
+        }
+        for neighbor in &bin.neighbors {
+            let j = neighbor.index;
+            if j >= bins.len() || !neighbor.raw_cosine.is_finite() {
+                return Err("Invalid repetition neighbor seed".into());
+            }
+            if j < full
+                && j >= i + MIN_REPETITION_BINS
+                && neighbor.raw_cosine >= MIN_REPETITION_COSINE
+                && repetition_bin_supported(&bins[j])
+            {
+                let seed = &mut seeds[j - i];
+                seed.0 += 1;
+                seed.1 = seed.1.max(neighbor.raw_cosine);
+            }
+        }
+    }
+    let mut lags: Vec<_> = seeds
+        .iter()
+        .enumerate()
+        .filter(|(_, v)| v.0 > 0)
+        .map(|(lag, _)| lag)
+        .collect();
+    let seed_lag_count = lags.len();
+    lags.sort_unstable_by(|a, b| {
+        seeds[*b]
+            .0
+            .cmp(&seeds[*a].0)
+            .then(seeds[*b].1.total_cmp(&seeds[*a].1))
+            .then(a.cmp(b))
+    });
+    lags.truncate(MAX_REPETITION_LAGS);
+    let mut matches = Vec::new();
+    // ponytail: at most64 lags *1172 bins; top4 seeds trade recall for bounded work
+    for &lag in &lags {
+        let mut run: Option<RepetitionMatch> = None;
+        for i in 0..full - lag {
+            let j = i + lag;
+            let score = cosine(bins[i].log_band_power, bins[j].log_band_power);
+            let ratio = (bins[i].rms / bins[j].rms).max(bins[j].rms / bins[i].rms);
+            let supported = repetition_bin_supported(&bins[i])
+                && repetition_bin_supported(&bins[j])
+                && score.is_some_and(|v| v.is_finite() && v >= MIN_REPETITION_COSINE)
+                && ratio <= 2.0;
+            if !supported {
+                if let Some(candidate) = run.take() {
+                    accept_repetition(&mut matches, candidate)?;
+                }
+                continue;
+            }
+            let candidate = run.get_or_insert(RepetitionMatch {
+                source: i,
+                target: j,
+                length: 0,
+                min_cosine: score.unwrap(),
+                max_rms_ratio: 1.0,
+                changes: 0,
+            });
+            if candidate.length > 0 {
+                let source_change =
+                    1.0 - cosine(bins[i - 1].log_band_power, bins[i].log_band_power).unwrap();
+                let target_change =
+                    1.0 - cosine(bins[j - 1].log_band_power, bins[j].log_band_power).unwrap();
+                if source_change >= MIN_REPETITION_CHANGE && target_change >= MIN_REPETITION_CHANGE
+                {
+                    candidate.changes += 1;
+                }
+            }
+            candidate.length += 1;
+            candidate.min_cosine = candidate.min_cosine.min(score.unwrap());
+            candidate.max_rms_ratio = candidate.max_rms_ratio.max(ratio);
+            if candidate.length == lag {
+                accept_repetition(&mut matches, run.take().unwrap())?;
+            }
+        }
+        if let Some(candidate) = run {
+            accept_repetition(&mut matches, candidate)?;
+        }
+    }
+    if matches.is_empty() {
+        return Err("Repetition found no supported nonstatic interval pair".into());
+    }
+    matches.sort_unstable_by_key(|v| (v.source, v.target));
+    matches.dedup_by_key(|v| (v.source, v.target));
+    Ok(RepetitionCandidates {
+        seed_lag_count,
+        selected_lags: lags,
+        matches,
+    })
+}
+
+fn accept_repetition(
+    matches: &mut Vec<RepetitionMatch>,
+    candidate: RepetitionMatch,
+) -> Result<(), String> {
+    if candidate.length >= MIN_REPETITION_BINS && candidate.changes >= 2 {
+        if candidate.source + candidate.length > candidate.target {
+            return Err("Repetition candidate intervals overlap".into());
+        }
+        if matches.len() >= MAX_REPETITIONS {
+            return Err("Repetition exceeds 64 supported relations".into());
+        }
+        matches.push(candidate);
+    }
+    Ok(())
+}
+
+fn repetition_content(
+    original: &ValidatedPackage,
+    channel: usize,
+    candidates: &RepetitionCandidates,
+) -> Result<crate::PackageBuildInput, String> {
+    use cocobeat_schema::{
+        AnalysisCapability, AnalysisSource, AnalysisState, RepetitionFeature, SongTime,
+    };
+    let mut analysis = original.analysis.clone();
+    let capabilities = analysis
+        .capabilities
+        .as_mut()
+        .ok_or("Repetition requires analysis v2 capabilities")?;
+    let old = capabilities.repetition;
+    capabilities.repetition = AnalysisCapability {
+        state: AnalysisState::Candidate,
+        source: AnalysisSource::Algorithm,
+        confidence: None,
+    };
+    analysis.repetitions = candidates
+        .matches
+        .iter()
+        .map(|v| RepetitionFeature {
+            source_start: SongTime::from_frames((v.source as u64 * BIN_FRAMES) as i64),
+            source_end: SongTime::from_frames(((v.source + v.length) as u64 * BIN_FRAMES) as i64),
+            target_start: SongTime::from_frames((v.target as u64 * BIN_FRAMES) as i64),
+            target_end: SongTime::from_frames(((v.target + v.length) as u64 * BIN_FRAMES) as i64),
+            confidence: None,
+        })
+        .collect();
+    analysis.diagnostics = serde_json::to_string(&serde_json::json!({
+        "profile": REPETITION_CANDIDATE_PROFILE,
+        "source_content_id": blake3::Hash::from_bytes(original.manifest.package_hash).to_hex().as_str(),
+        "audio_blake3": blake3::Hash::from_bytes(original.manifest.audio.blake3).to_hex().as_str(),
+        "canonical_frames": original.manifest.canonical_frames,
+        "channel": channel,
+        "bin_frames": BIN_FRAMES,
+        "min_bins": MIN_REPETITION_BINS,
+        "min_cosine": MIN_REPETITION_COSINE,
+        "max_rms_ratio": 2,
+        "min_change": MIN_REPETITION_CHANGE,
+        "min_changes": 2,
+        "max_lags": MAX_REPETITION_LAGS,
+        "max_relations": MAX_REPETITIONS,
+        "seed_lag_count": candidates.seed_lag_count,
+        "selected_lags": candidates.selected_lags,
+        "search_scope": "top4_seeded_fixed_grid_original_speed_pitch_not_exhaustive",
+        "original_repetition_count": original.analysis.repetitions.len(),
+        "original_repetition_capability": { "state": format!("{:?}", old.state), "source": format!("{:?}", old.source), "confidence": old.confidence },
+        "original_diagnostics_blake3": blake3::hash(original.analysis.diagnostics.as_bytes()).to_hex().as_str(),
+        "support_columns": ["relation_index", "min_cosine", "max_rms_ratio", "aligned_change_count"],
+        "support": candidates.matches.iter().enumerate().map(|(i, v)| (i, v.min_cosine, v.max_rms_ratio, v.changes)).collect::<Vec<_>>(),
+        "confidence": null,
+        "production_admission": false,
+    })).map_err(|e| e.to_string())?;
+    analysis.validate(original.manifest.canonical_frames)?;
+    Ok(crate::PackageBuildInput {
+        song_id: original.manifest.song_id.clone(),
+        importer_version: original.manifest.importer_version.clone(),
+        analysis_version: REPETITION_CANDIDATE_PROFILE.into(),
+        chart_version: original.manifest.chart_version.clone(),
+        analysis,
+        chart: original.chart.clone(),
+    })
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -889,6 +1158,42 @@ mod tests {
             .chart
             .validate(constructed.manifest.canonical_frames)
             .unwrap();
+        let candidates = RepetitionCandidates {
+            seed_lag_count: 1,
+            selected_lags: vec![8],
+            matches: vec![RepetitionMatch {
+                source: 0,
+                target: 8,
+                length: 8,
+                min_cosine: 1.0,
+                max_rms_ratio: 1.0,
+                changes: 7,
+            }],
+        };
+        let repetition = repetition_content(&constructed, 1, &candidates).unwrap();
+        let mut expected_analysis = constructed.analysis.clone();
+        expected_analysis.capabilities.as_mut().unwrap().repetition =
+            cocobeat_schema::AnalysisCapability {
+                state: cocobeat_schema::AnalysisState::Candidate,
+                source: cocobeat_schema::AnalysisSource::Algorithm,
+                confidence: None,
+            };
+        expected_analysis.repetitions = repetition.analysis.repetitions.clone();
+        expected_analysis.diagnostics = repetition.analysis.diagnostics.clone();
+        assert_eq!(repetition.analysis, expected_analysis);
+        assert_eq!(repetition.chart, constructed.chart);
+        assert_eq!(repetition.chart_version, constructed.manifest.chart_version);
+        assert_eq!(repetition.analysis.repetitions[0].confidence, None);
+        assert_eq!(
+            repetition.analysis.repetitions[0].target_end.frames(),
+            (16 * BIN_FRAMES) as i64
+        );
+        let diagnostic: serde_json::Value =
+            serde_json::from_str(&repetition.analysis.diagnostics).unwrap();
+        assert_eq!(diagnostic["seed_lag_count"], 1);
+        assert_eq!(diagnostic["selected_lags"], serde_json::json!([8]));
+        assert_eq!(diagnostic["confidence"], serde_json::Value::Null);
+        assert_eq!(diagnostic["production_admission"], false);
         fs::remove_dir_all(root).unwrap();
     }
 
@@ -915,6 +1220,105 @@ mod tests {
                 }
             })
             .collect()
+    }
+
+    #[test]
+    fn repetition_requires_continuous_varied_spans_and_sorts_relations_by_original_frames() {
+        let kinds: Vec<_> = (0..24).map(|i| (i % 8, 0.25)).collect();
+        let mut bins = segmentation_bins(&kinds);
+        relations(&mut bins).unwrap();
+        let candidates = repetition_candidates(&bins, 24 * BIN_FRAMES).unwrap();
+        assert_eq!(candidates.seed_lag_count, 2);
+        assert_eq!(candidates.selected_lags, vec![8, 16]);
+        assert_eq!(
+            candidates
+                .matches
+                .iter()
+                .map(|v| (v.source, v.target, v.length))
+                .collect::<Vec<_>>(),
+            vec![(0, 8, 8), (0, 16, 8), (8, 16, 8)]
+        );
+        assert_eq!(
+            repetition_candidates(&bins, 24 * BIN_FRAMES).unwrap(),
+            candidates
+        );
+        assert!(candidates.matches.iter().all(|v| v.min_cosine == 1.0
+            && v.max_rms_ratio == 1.0
+            && v.changes == 7
+            && v.source + v.length <= v.target));
+        let mut broken = segmentation_bins(&(0..16).map(|i| (i % 8, 0.25)).collect::<Vec<_>>());
+        broken[12].log_band_power = Some([1.0; 8]);
+        relations(&mut broken).unwrap();
+        assert!(repetition_candidates(&broken, 16 * BIN_FRAMES).is_err());
+        let short = segmentation_bins(&(0..14).map(|i| (i % 7, 0.25)).collect::<Vec<_>>());
+        assert!(repetition_candidates(&short, 14 * BIN_FRAMES).is_err());
+    }
+
+    #[test]
+    fn repetition_constant_silence_partial_tail_and_overlap_do_not_produce_relations() {
+        for rms in [0.0, 0.25] {
+            let mut bins = segmentation_bins(&vec![(0, rms); 16]);
+            for (i, bin) in bins.iter_mut().take(8).enumerate() {
+                bin.neighbors.push(StructureNeighbor {
+                    index: i + 8,
+                    start_frame: (i + 8) as u64 * BIN_FRAMES,
+                    end_frame: (i + 9) as u64 * BIN_FRAMES,
+                    raw_cosine: 1.0,
+                });
+            }
+            assert!(repetition_candidates(&bins, 16 * BIN_FRAMES).is_err());
+        }
+        let mut bins = segmentation_bins(&(0..16).map(|i| (i % 8, 0.25)).collect::<Vec<_>>());
+        bins[15].end_frame -= 1;
+        bins[15].spectral_frames -= FFT_FRAMES as u64;
+        bins[15].partial_tail_frames = FFT_FRAMES as u64 - 1;
+        relations(&mut bins).unwrap();
+        assert!(repetition_candidates(&bins, 16 * BIN_FRAMES - 1).is_err());
+        let overlapping = RepetitionMatch {
+            source: 0,
+            target: 7,
+            length: 8,
+            min_cosine: 1.0,
+            max_rms_ratio: 1.0,
+            changes: 7,
+        };
+        let mut matches = Vec::new();
+        assert!(
+            accept_repetition(&mut matches, overlapping)
+                .unwrap_err()
+                .contains("overlap")
+        );
+        assert!(matches.is_empty());
+        for source in 0..64 {
+            accept_repetition(
+                &mut matches,
+                RepetitionMatch {
+                    source,
+                    target: source + 8,
+                    length: 8,
+                    min_cosine: 1.0,
+                    max_rms_ratio: 1.0,
+                    changes: 7,
+                },
+            )
+            .unwrap();
+        }
+        assert!(
+            accept_repetition(
+                &mut matches,
+                RepetitionMatch {
+                    source: 64,
+                    target: 72,
+                    length: 8,
+                    min_cosine: 1.0,
+                    max_rms_ratio: 1.0,
+                    changes: 7
+                }
+            )
+            .unwrap_err()
+            .contains("exceeds 64")
+        );
+        assert_eq!(matches.len(), 64);
     }
 
     #[test]

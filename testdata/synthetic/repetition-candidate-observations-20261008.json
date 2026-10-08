@@ -1,0 +1,1947 @@
+{
+  "schema_version": 1,
+  "observation": "repetition-candidate-20261008",
+  "status": "PASS_SCOPED_SOFTWARE_MECHANISMS",
+  "profile": "canonical-logbands-diagonal-8bin-v1-candidate",
+  "commands": [
+    "compile-repetition-candidate PACKAGE left|right NEW_PACKAGE"
+  ],
+  "build": {
+    "base_head": "8f702b19e308c21206bc17f9278d01c0adfb672f",
+    "scope": "Base plus four repetition production files including the equivalent test-only Clippy iterator fix",
+    "source_count": 373,
+    "production_files": [
+      {
+        "path": "crates/cocobeat-media/src/structure_features.rs",
+        "bytes": 54219,
+        "sha256": "ecc3705ad372f6d0eb261d21aab58e6cebf25729caf3e571794954c146176a8c"
+      },
+      {
+        "path": "crates/cocobeat-media/src/lib.rs",
+        "bytes": 2226,
+        "sha256": "f01e51069c532d148314abee0b21ec7bdf9b4f69516e7f70d2d701adc34632ae"
+      },
+      {
+        "path": "tools/cocobeat-lab/src/main.rs",
+        "bytes": 18772,
+        "sha256": "61e4a303f801dade8e4f561093f94c951b65c4347b5ce8d4f7feb94b77be7a5d"
+      },
+      {
+        "path": "tools/cocobeat-lab/src/structure_features.rs",
+        "bytes": 8458,
+        "sha256": "351375d39e9efd16fdac7aad3fae0e995702ec41423490fd56ef965a36edabe6"
+      }
+    ],
+    "source_map": {
+      "path": "target/repetition-candidate-production-checks-20261008-revision02/source-after.json",
+      "bytes": 43344,
+      "sha256": "a86f8a267341439258752236a2acfcd516d851b01e4f63f23cdc5283f13bd857"
+    },
+    "lab_sha256": "1152b9c330269738e1e078eac946a3743bd43ad19b690ca0ca0d4dc0d080bcde",
+    "raw_driver_sha256": "3b59990e128a411f542f7253de35867c464c53e80ede599189dc3458cbdfa234",
+    "tests": {
+      "media": 85,
+      "lab": 85
+    },
+    "checks": [
+      "test",
+      "all-target Clippy",
+      "fmt",
+      "boundaries",
+      "Lab build"
+    ],
+    "checks_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "oracle": {
+    "origin": "CC0-1.0 original waveform recipes, 16 groups / 17 WAV; not human music truth",
+    "original_seed_and_recipes_unchanged": true,
+    "coordinates": "48k canonical integer frames, source_start/source_end/target_start/target_end half-open",
+    "raw_endpoint_tolerance": 0,
+    "canonical_endpoint_tolerance": 24576,
+    "policy": "exact cardinality; one-to-one four endpoints; no output clipping/coordinate adjustment or oracle changes",
+    "canonical_input": "Each source WAV is imported by the production encoder and then analyzed from actual final canonical decoded audio; raw WAV and canonical are separately observed"
+  },
+  "matrices": {
+    "raw": {
+      "cases": 34,
+      "positive_exit0": 13,
+      "negative_exit1": 21,
+      "TP": 17,
+      "FP": 0,
+      "FN": 0,
+      "status": "PASS_RAW34_DECLARED_SOFTWARE_ORACLES"
+    },
+    "canonical": {
+      "cases": 34,
+      "positive_exit0": 13,
+      "negative_exit1": 21,
+      "TP": 17,
+      "FP": 0,
+      "FN": 0,
+      "status": "PASS_CANONICAL34_AND_SCOPED_CONTROLS",
+      "commands_total": 121,
+      "command_exits": {
+        "0": 93,
+        "1": 28
+      },
+      "timeouts": 0
+    }
+  },
+  "recipes": [
+    {
+      "name": "repeat-two",
+      "group": "repeat-two",
+      "N": 393216,
+      "wav_sha256": "50ad779c1311d97593f693f4dc896f136ac8a3bbadef9327c66f59469caae389",
+      "authoring_sha256": "8c9893da385604ac26d60ced34f9c7dc4ac52402b5e411a873f70650c0bfb88d",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "repeat-three",
+      "group": "repeat-three",
+      "N": 589824,
+      "wav_sha256": "d2a96e5c374a0e8cbbd489f3feb581bf2ee4b54f66aff26a60e7d5e0faa85b17",
+      "authoring_sha256": "d64ccae97740a82f0f5401ad28ef1aeb6c4cef1040524553424e4caf3559cb92",
+      "wav_bytes": 4718636,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ],
+            [
+              0,
+              196608,
+              393216,
+              589824
+            ],
+            [
+              196608,
+              393216,
+              393216,
+              589824
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ],
+              [
+                0,
+                196608,
+                393216,
+                589824
+              ],
+              [
+                196608,
+                393216,
+                393216,
+                589824
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ],
+              [
+                0,
+                196608,
+                393216,
+                589824
+              ],
+              [
+                196608,
+                393216,
+                393216,
+                589824
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ],
+            [
+              0,
+              196608,
+              393216,
+              589824
+            ],
+            [
+              196608,
+              393216,
+              393216,
+              589824
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ],
+              [
+                0,
+                196608,
+                393216,
+                589824
+              ],
+              [
+                196608,
+                393216,
+                393216,
+                589824
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ],
+              [
+                0,
+                196608,
+                393216,
+                589824
+              ],
+              [
+                196608,
+                393216,
+                393216,
+                589824
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "repeat-gap",
+      "group": "repeat-gap",
+      "N": 491520,
+      "wav_sha256": "e5cf295405696f4406f9d94fffc6379af76e60c3a098039f4138df8fa9a294e8",
+      "authoring_sha256": "0a847f6c4f754bee0ab2ac4269d92ec2f31b19162c5739b0ba4153aa4586d84d",
+      "wav_bytes": 3932204,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              294912,
+              491520
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                294912,
+                491520
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                294912,
+                491520
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              294912,
+              491520
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                294912,
+                491520
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                294912,
+                491520
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "gain-within",
+      "group": "gain-within",
+      "N": 393216,
+      "wav_sha256": "e531ddfc5e3f213993e596c92721738d66831d7e649ec291ab6a44256aa3b8c2",
+      "authoring_sha256": "fb25dcc89093d7c8b6bfbb5b15dcffa7306bdfc76f667538585dd176a4e3ac8d",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "gain-outside",
+      "group": "gain-outside",
+      "N": 393216,
+      "wav_sha256": "f31250274f6166f5943e8c4d0ec06abf49cb4f0bf106c3d36eb015dfccdaff79",
+      "authoring_sha256": "c49542fc5a838f8a8cc80bcd821402bb2b1114db1d38072500c24657ca57d494",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "different-LR",
+      "group": "different-LR",
+      "N": 393216,
+      "wav_sha256": "46cefb065ace06a45c7711880810320d35638bc26e97d9d807f1936c9efc4c88",
+      "authoring_sha256": "4a98e05bed600b932ac93f7e4268488a86b4ecf84e8398c8a420cb8d662903bb",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "overall-antiphase",
+      "group": "overall-antiphase",
+      "N": 393216,
+      "wav_sha256": "fb2f03545996ce9d8e5beded20efd6af5767d233c3048a0391e292d030031a34",
+      "authoring_sha256": "6d1aafd5b01b8ea8b9d0b9542ede9dcd1995647bf9f0639bf84519842b028497",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "constant",
+      "group": "constant",
+      "N": 393216,
+      "wav_sha256": "6c096f72e4f30b45c6e8c33bbbb8242eddf94dfb0397ec7528299fea58a5ffd6",
+      "authoring_sha256": "09db144556bc363c03874a093cc0a93678c691d04216aeb32a8a9e08cefd0f2b",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "silence",
+      "group": "silence",
+      "N": 393216,
+      "wav_sha256": "2b77a555864020e2e27ccd4b76be9318fa1a9016691c58c5e8b4b2eaa679183a",
+      "authoring_sha256": "1bbba51f01bab58cc9bbd58990fd11e00503f5f3ec329465b243be3de16ea8b3",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "shuffled",
+      "group": "shuffled",
+      "N": 393216,
+      "wav_sha256": "4d1ab96430209908563b68452563557f982cc2cda31dc42bc1b6e94b979c2f39",
+      "authoring_sha256": "335ebfac60167d89ca1ddbb8a384d9efd9ec569fdeb3adf5216e5b23636805bd",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "seven-match",
+      "group": "seven-match",
+      "N": 393216,
+      "wav_sha256": "a437f509358d93134686859744b8219de5f05ab4e174901ac6006120e4b3eed8",
+      "authoring_sha256": "cf0c3391c633588c5c09ad8fa5d70b771fe861be65238d252310b3dbe3dae538",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "single-match",
+      "group": "single-match",
+      "N": 393216,
+      "wav_sha256": "1e785dbf284c41f3cea0270bdfdac6879118304f83d028a7fa5ef5fb84f13b4d",
+      "authoring_sha256": "5ff637805ca4623b8e6e9626cc3728ea7f40bf5c519866efaf7548b4c91837e5",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "one-change",
+      "group": "one-change",
+      "N": 393216,
+      "wav_sha256": "a876bb3f1fd5293bc5a120cef488bc9115d96c76506df89e7da477c20ca11843",
+      "authoring_sha256": "41f378d55a5feeac374f1555bf1e2da6a17a3c2c64d97e9f8ac9b9664791c4e1",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "overlap",
+      "group": "overlap",
+      "N": 393216,
+      "wav_sha256": "519e684558b4595f2efbd1c3de8a3af53064db833e54896ceecbdf0b98ea801e",
+      "authoring_sha256": "64b549d793352e2a7d55551e305081cad11aa07af8910e4dd10a02bb46ddaa59",
+      "wav_bytes": 3145772,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "tail-preserve",
+      "group": "tail-preserve",
+      "N": 393217,
+      "wav_sha256": "803c89f9f73fd51403cdc23347d31e48a4f46163db927c40c77b1928ee784fa7",
+      "authoring_sha256": "07ceed8cccad7408fec78dd1fac2bd7fb8507a36ee6cebf04b012dde72608ac0",
+      "wav_bytes": 3145780,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [
+            [
+              0,
+              196608,
+              196608,
+              393216
+            ]
+          ],
+          "raw": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "algorithm_status": "ALGORITHM_OK",
+            "error": null
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 0,
+            "actual_four_endpoints": [
+              [
+                0,
+                196608,
+                196608,
+                393216
+              ]
+            ],
+            "endpoint_errors": [
+              [
+                0,
+                0,
+                0,
+                0
+              ]
+            ],
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "name": "tail-insufficient-1023",
+      "group": "tail-insufficient",
+      "N": 566271,
+      "wav_sha256": "bb17ef6790f2b0d8a627b5ceee005de03520f1f13377e40d72c2b5b7bd4d29df",
+      "authoring_sha256": "d1d6a585bbb34cc61aa658bf49770607535dbc183db3097e8b1ca5e1313e7705",
+      "wav_bytes": 4530212,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    },
+    {
+      "name": "tail-insufficient-1024",
+      "group": "tail-insufficient",
+      "N": 566272,
+      "wav_sha256": "d7e7d00d582b840b6206edbb166ebb7da53458eee6a70190f3097b8c5273c195",
+      "authoring_sha256": "4b6aee9bf66b091ec3faa13baceb146dd8429618f1b3accf7105b6d8f6dfb044",
+      "wav_bytes": 4530220,
+      "authoring_anchor_frames": [
+        1024
+      ],
+      "channels": {
+        "left": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        },
+        "right": {
+          "expected_four_endpoints": [],
+          "raw": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "algorithm_status": "ALGORITHM_ERR",
+            "error": "Repetition found no supported nonstatic interval pair"
+          },
+          "canonical": {
+            "status": "PASS",
+            "exit": 1,
+            "actual_four_endpoints": [],
+            "endpoint_errors": [],
+            "error": "Repetition found no supported nonstatic interval pair\n"
+          }
+        }
+      }
+    }
+  ],
+  "extra_controls": [
+    {
+      "case": "repeat-three-determinism",
+      "status": "PASS"
+    },
+    {
+      "case": "old-colour-structure-left",
+      "status": "PASS_ALL_FOUR_BYTES_SAME_CID"
+    },
+    {
+      "case": "old-colour-structure-right",
+      "status": "PASS_ALL_FOUR_BYTES_SAME_CID"
+    },
+    {
+      "case": "reject-existing",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-inside",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-channel",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-v1",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-corrupt",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-authored-left",
+      "status": "PASS"
+    },
+    {
+      "case": "reject-authored-right",
+      "status": "PASS"
+    }
+  ],
+  "protection": {
+    "source373_before_after_equal": true,
+    "raw_protected_before_after_equal": true,
+    "raw34_inputs_equal_groups_gone": true,
+    "canonical_protected_files": 58,
+    "two_executable_before_after_equal": true,
+    "canonical_process_groups_gone": 121,
+    "canonical_source_packages": 17,
+    "evidence_basis": "Original run/prepared/postflight receipts record actual input and binary hashes; this sealer hashes selected JSON/log/source refs, does not re-read all PCM/packages/binaries/rlibs",
+    "selected_ref_count": 29,
+    "all121command_logs": "Referenced through original result/postflight receipts, not individually duplicated",
+    "source_four_object_runtime_guards": "17 actual runtime PASS; full four-object maps in original postflight.json",
+    "root_added_cost_refs": 11
+  },
+  "history": [
+    {
+      "status": "FAIL_PRESERVED",
+      "scope": "Initial production Clippy exit101 needless_range_loop in a constructed test; equivalent bins.iter_mut().take(8).enumerate() correction, no product algorithm change; original result and stderr referenced"
+    },
+    {
+      "status": "EVIDENCE_PARTIAL_TOOL_TRANSCRIPT_ONLY",
+      "scope": "Initial QA static prepare could not find not-yet-created FREEZE and needed groups-key adaptation; empty raw-build-01 directory retained; no compiler/algorithm/process receipt existed, no execution claimed"
+    }
+  ],
+  "quality": {
+    "candidate_state": "Candidate",
+    "source": "Algorithm",
+    "confidence": null,
+    "production_admission": false,
+    "music_quality": "UNASSESSED",
+    "old_wholeSpect": "19 PASS / 9 FAIL, overall FAIL preserved",
+    "old_music_quality": "FAIL preserved",
+    "complete_MIR_or_goal": "NOT_COMPLETE",
+    "music_semantic_arrangement_Anchor_calibration_human": "NOT_ADMITTED"
+  },
+  "not_observed_in_this_record": [
+    "new four-native-target matrix",
+    "new repetition Game/GUI acceptance",
+    "physical audio/input or human music-quality reference",
+    "Successful 600-second structure publication cost (actual 64-boundary cap error preserved)",
+    "600-second seven-resource SDK evidence reader comparison"
+  ],
+  "evidence_refs": [
+    {
+      "path": "target/repetition-candidate-controls-20261008/fixtures.json",
+      "bytes": 80686,
+      "sha256": "8af5cd68b77d330afeee53a80c0f3c73635f476a8259c525be2e6fc2d2030cfa"
+    },
+    {
+      "path": "target/repetition-candidate-controls-20261008/predeclared-oracles.json",
+      "bytes": 72464,
+      "sha256": "34a9b7d5e5395c90fe0f01c390dc4698c68a3b34ccb6804ef1412a3a13a6e6fc"
+    },
+    {
+      "path": "target/repetition-candidate-controls-20261008/FREEZE.json",
+      "bytes": 2431,
+      "sha256": "f3d5368605e456565f1a41088b7035383f5dbbbbf6e3d495ba1b4bdc8c1810ee"
+    },
+    {
+      "path": "target/repetition-candidate-controls-20261008/generation-checks.json",
+      "bytes": 3526,
+      "sha256": "2d34723abdbb41b88827a764d2c4dbcabdb5a7a0f5b9574d5c78acf649960b8c"
+    },
+    {
+      "path": "target/repetition-candidate-raw-run-01/run.json",
+      "bytes": 207021,
+      "sha256": "29e54aed32d93b2d16050538fcf29c9a352ba52e023937418a501e9219c2dd0d"
+    },
+    {
+      "path": "target/repetition-candidate-raw-run-01/summary.json",
+      "bytes": 22632,
+      "sha256": "935c6d8022e77dcf56f694b9f5da094ccd67a3418bcb6c9e28e6748d4c8bd24e"
+    },
+    {
+      "path": "target/repetition-candidate-raw-build-02/prepared.json",
+      "bytes": 53072,
+      "sha256": "e08d325ad0385fa58b457dd713aac0631e27b6d6440fa7f0dc609de579ad8ca0"
+    },
+    {
+      "path": "target/repetition-candidate-raw-build-02/build.json",
+      "bytes": 6880,
+      "sha256": "f7c7bb2c68cd33d52f8c7b14faea70ae8d3c852748a4e6871bd62c8839b27aaa"
+    },
+    {
+      "path": "target/repetition-candidate-controls-20261008/canonical-prepared.json",
+      "bytes": 9609,
+      "sha256": "fad1477c92278f78ace89f87aa83eb1fc036d2c1415b227ff4ec57ce348a47f2"
+    },
+    {
+      "path": "target/repetition-candidate-canonical-run-01/result.json",
+      "bytes": 162174,
+      "sha256": "939116f8a8e408f55c8931f92f1273cd6e0406cef22e28e16946ae57f24ab169"
+    },
+    {
+      "path": "target/repetition-candidate-canonical-run-01/postflight.json",
+      "bytes": 146288,
+      "sha256": "67b9ff1436f127766459b89b8a478b4dbd2971b826e43e41641894692292afc2"
+    },
+    {
+      "path": "target/repetition-candidate-production-checks-20261008-revision02/result.json",
+      "bytes": 2321,
+      "sha256": "301ce26ff2c799eca93efd5f2ef918d0205cfb9e35d155b38d6a676b2562a881"
+    },
+    {
+      "path": "target/repetition-candidate-production-checks-20261008-revision02/binary.json",
+      "bytes": 517,
+      "sha256": "98621ba55d240d0ba42a8c269399985d14350761c7d00a98ed29431531f2d229"
+    },
+    {
+      "path": "target/repetition-candidate-production-checks-20261008-revision02/source-after.json",
+      "bytes": 43344,
+      "sha256": "a86f8a267341439258752236a2acfcd516d851b01e4f63f23cdc5283f13bd857"
+    },
+    {
+      "path": "target/repetition-candidate-production-checks-20261008/result.json",
+      "bytes": 1078,
+      "sha256": "2ea4a0fd9b82fe262136c71ce4bc3cc0ad5e0caf3e75d87824b0f5e225e4a679"
+    },
+    {
+      "path": "target/repetition-candidate-production-checks-20261008/02.stderr",
+      "bytes": 3398,
+      "sha256": "9366c77c9f045737520af6a4d386d4ec1b9658bbc2f94192ca2e79b091d632af"
+    },
+    {
+      "path": "target/repetition-candidate-final-review-20261008/static.json",
+      "bytes": 7072,
+      "sha256": "b2d8ea4077957b06b0523c1b88d176e1a25bbc0473d7d2b6e022bb34baed5520"
+    },
+    {
+      "path": "target/repetition-candidate-raw-qa-20261008/FREEZE.json",
+      "bytes": 2134,
+      "sha256": "91e2d9b04ec6c3236f22b9029b81e9a4c24f4f5169303d19143bd35ee5b56705"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/summary.json",
+      "bytes": 10881,
+      "sha256": "a3f6b1459a84ae25ce47f371816538e57c3490306a62a894481a6df7144f49ea"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/raw-index.json",
+      "bytes": 11437,
+      "sha256": "61d96986e5c91c49bf9819240db87eae4120b2cafe659fe200d95bff2642aaa1"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/FREEZE.json",
+      "bytes": 6503,
+      "sha256": "89bfd7563c4ceaacf64744ca93786091e99047d370c1caa12688c781fe452782"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008/preflight-01/result.json",
+      "bytes": 2681,
+      "sha256": "40113836a44d7302ee3030e718fa1a0c67b2e0e2962abc1a8b2d79b2bf1b94e8"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/process.json",
+      "bytes": 14488,
+      "sha256": "26cec4d7355cb11402bfa57c47a7a26c00a5e3c9245c7d47788885541cca8700"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-structure-01/process.json",
+      "bytes": 2222,
+      "sha256": "af91e54297e4f0b38ca869b08edb589c9076a4e7b606191ff9b35a285593731a"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/process.json",
+      "bytes": 2515,
+      "sha256": "0f8fc1c900b364ec7fef9f78f53d1bb3e51ca4df81505ef5c3752eb44b9d4fde"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/verify-analysis-01/result.json",
+      "bytes": 5528,
+      "sha256": "0536e405cf7ba0ca26f39e86846de6f68da5c45f5d3f8ebc630039d77545b1d3"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/verify-repetition-01/result.json",
+      "bytes": 6960,
+      "sha256": "b4b4c40c9f554e32a3d0b3f0f8760dd8bc2f8da21404d472e4fc693b6e35c978"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/verify-repetition-01/typed-content.json",
+      "bytes": 5944,
+      "sha256": "90a40740dc29dc8ac64491a61169e14530bffa1da5e6c153e19a8d576cb71a91"
+    },
+    {
+      "path": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-structure-01/stderr",
+      "bytes": 55,
+      "sha256": "27d98fa0e59d7c6b5861689af5dc0ff617eb81a2d76cb80e2c6ef2ca84d3c617"
+    }
+  ],
+  "long_cost": {
+    "status": "COMPLETED_TWO_PRODUCTS_AND_STRUCTURE_CAP_ERROR_PRESERVED",
+    "sealed_utc": "2026-10-08T10:06:54.607307+00:00",
+    "binary_sha256": "1152b9c330269738e1e078eac946a3743bd43ad19b690ca0ca0d4dc0d080bcde",
+    "source_count": 373,
+    "all_actual_sources_protected_inputs_equal": true,
+    "all_owned_algorithm_and_verification_groups_gone": true,
+    "execution": "serial CPU; no Cargo/GPU/CPAL; no threshold/input/budget changes or failed-command retries",
+    "telemetry_flag": "ORT_DISABLE_TELEMETRY=1 parent child env",
+    "original_fixture": "Original 600-second long.wav (8-second fixed-frequency alternation), real canonical readback N28800000; not independently scored human truth",
+    "results": [
+      {
+        "status": "OBSERVED_EXIT_ZERO",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+          "import-experimental-analysis",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/long.wav",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/inputs/long.authoring.json",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01",
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 310.87964806499076,
+        "timeout_seconds": 900,
+        "rss_limit_kib": 3145728,
+        "kernel_single_child_peak_rss_kib": 1593272,
+        "sampled_peak_rss_kib": 1594128,
+        "sampled_peak_threads": 3,
+        "child_user_seconds": 316.723925,
+        "child_system_seconds": 4.010997,
+        "owned_group_gone": true,
+        "owned_child_reaped": true,
+        "inputs_equal": true,
+        "destination_exists": true,
+        "supervisor_exit_code": 0,
+        "profile": "native-small0-hfc1024-interbeat-v1-candidate",
+        "pid_scope": "Actual Popen PID inside each independent executor/supervisor namespace; equal numeric PIDs across fresh supervisors are not shared processes",
+        "budget_observation": "within predeclared operational wall/RSS caps; not performance admission",
+        "owned_top_level_ses_files": [],
+        "main_receipt": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/process.json",
+        "verification_receipt": "target/automatic-analysis-long-cost-qa-20261008-revision02/verify-analysis-01/result.json",
+        "verification_commands": [
+          {
+            "argv": [
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+              "verify-package",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published/package"
+            ],
+            "pid": 4,
+            "exit_code": 0,
+            "elapsed_seconds": 17.695199785986915,
+            "owned_group_gone": true
+          },
+          {
+            "argv": [
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+              "label-source",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-analysis-01/published/package"
+            ],
+            "pid": 5,
+            "exit_code": 0,
+            "elapsed_seconds": 17.689859317004448,
+            "owned_group_gone": true
+          }
+        ],
+        "verified_source": {
+          "content_id": "package-blake3:2c31c2a2e5d72780b47eed8df6e4665b48caad6b9403845da06342a0b161df74",
+          "audio_blake3": "5a247fda6be9b258751bfb6d31b00bd29fad8e1bcc30c363f8ce73c136ac8423",
+          "canonical_frames": 28800000,
+          "audio_basis": "canonical_decoded"
+        },
+        "audio_extent_equal": true,
+        "audio_bytes_equal": true,
+        "original_chart_object_bytes_equal": true
+      },
+      {
+        "status": "OBSERVED_NONZERO_PRESERVED",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+          "compile-structure-candidate",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/long",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-structure-01/published"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-structure-01",
+        "pid": 4,
+        "exit_code": 1,
+        "elapsed_seconds": 62.510735115007265,
+        "timeout_seconds": 180,
+        "rss_limit_kib": 524288,
+        "kernel_single_child_peak_rss_kib": 65820,
+        "sampled_peak_rss_kib": 65956,
+        "sampled_peak_threads": 1,
+        "child_user_seconds": 62.250982,
+        "child_system_seconds": 0.028883,
+        "owned_group_gone": true,
+        "owned_child_reaped": true,
+        "inputs_equal": true,
+        "destination_exists": false,
+        "supervisor_exit_code": 1,
+        "profile": "canonical-logbands-4x4-novelty-v1-candidate",
+        "pid_scope": "Actual Popen PID inside each independent executor/supervisor namespace; equal numeric PIDs across fresh supervisors are not shared processes",
+        "budget_observation": "within predeclared operational wall/RSS caps; not performance admission",
+        "owned_top_level_ses_files": [],
+        "main_receipt": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-structure-01/process.json",
+        "actual_error": "Structure segmentation exceeds 64 supported boundaries",
+        "full_publication_cost": "NOT_RUN_CAP_REJECTED",
+        "product_verification": "NOT_RUN_NO_PRODUCT",
+        "owned_residual_staging": []
+      },
+      {
+        "status": "OBSERVED_EXIT_ZERO",
+        "argv": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+          "compile-repetition-candidate",
+          "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/long",
+          "left",
+          "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/published"
+        ],
+        "cwd": "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01",
+        "pid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 97.87108554100269,
+        "timeout_seconds": 180,
+        "rss_limit_kib": 524288,
+        "kernel_single_child_peak_rss_kib": 72360,
+        "sampled_peak_rss_kib": 72680,
+        "sampled_peak_threads": 1,
+        "child_user_seconds": 97.410073,
+        "child_system_seconds": 0.035848,
+        "owned_group_gone": true,
+        "owned_child_reaped": true,
+        "inputs_equal": true,
+        "destination_exists": true,
+        "supervisor_exit_code": 0,
+        "profile": "canonical-logbands-diagonal-8bin-v1-candidate",
+        "pid_scope": "Actual Popen PID inside each independent executor/supervisor namespace; equal numeric PIDs across fresh supervisors are not shared processes",
+        "budget_observation": "within predeclared operational wall/RSS caps; not performance admission",
+        "owned_top_level_ses_files": [],
+        "main_receipt": "target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/process.json",
+        "verification_receipt": "target/automatic-analysis-long-cost-qa-20261008-revision02/verify-repetition-01/result.json",
+        "verification_commands": [
+          {
+            "argv": [
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+              "verify-package",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/published"
+            ],
+            "pid": 4,
+            "exit_code": 0,
+            "elapsed_seconds": 17.692019028007053,
+            "owned_group_gone": true
+          },
+          {
+            "argv": [
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/shipping/bin/cocobeat-lab",
+              "label-source",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/published"
+            ],
+            "pid": 5,
+            "exit_code": 0,
+            "elapsed_seconds": 17.842689037002856,
+            "owned_group_gone": true
+          },
+          {
+            "argv": [
+              "/home/lzzz/MyProjects/CoCoBeat/target/repetition-candidate-raw-build-02/raw-repetition-check",
+              "compare-content",
+              "/home/lzzz/MyProjects/CoCoBeat/target/structure-feature-cli-qa-20261008/packages/long",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/run-repetition-01/published",
+              "/home/lzzz/MyProjects/CoCoBeat/target/automatic-analysis-long-cost-qa-20261008-revision02/verify-repetition-01/typed-content.json"
+            ],
+            "pid": 6,
+            "exit_code": 0,
+            "elapsed_seconds": 35.020164235989796,
+            "owned_group_gone": true
+          }
+        ],
+        "verified_source": {
+          "content_id": "package-blake3:9e0aac5eafcfb3072b7c2e506c1622fbbd22342650da2c150faa90107a918a8e",
+          "audio_blake3": "5a247fda6be9b258751bfb6d31b00bd29fad8e1bcc30c363f8ce73c136ac8423",
+          "canonical_frames": 28800000,
+          "audio_basis": "canonical_decoded"
+        },
+        "audio_extent_equal": true,
+        "audio_bytes_equal": true,
+        "original_chart_object_bytes_equal": true,
+        "typed_content_status": "PASS_TYPED_CONTENT_PRESERVATION",
+        "typed_content_fields": {
+          "analysis_equal_except_repetition_capability_payload_diagnostics": true,
+          "chart_equal": true,
+          "manifest_facts_equal": true,
+          "candidate_metadata": true
+        },
+        "candidate_relation_count": 18
+      }
+    ],
+    "performance_admission": false,
+    "music_quality": "UNASSESSED; None confidence; original quality FAIL retained",
+    "structure_successful_full_profile_cost": "NOT_RUN; cap rejection preserved",
+    "four_platform_hardware_acoustic_timing": "NOT_RUN",
+    "kernel_vs_sampled_RSS": "Both raw values preserved separately, sampled peaks slightly exceed Linux child rusage peak; no normalization",
+    "helper_freeze_scope": "FREEZE explicit protected file list, not whole harness directory; later postcheck.py and result files are separately indexed",
+    "postcheck_source_provenance": "c8f30271 source hash actually recorded before first verifier and remains identical after both verifier executions",
+    "old_preflight_explanatory_error": "Original HANDOFF incorrectly stated no PCM read; revision02 explicitly corrects actual validate_package -> strict readback; original files retained",
+    "raw_index": "raw-index.json",
+    "verification_scope": "Package schema, strict canonical EOF/identity and typed content preservation; does not validate the 600-second SDK evidence through its separate seven-resource reader"
+  }
+}
