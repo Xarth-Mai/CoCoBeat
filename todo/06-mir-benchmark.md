@@ -57,3 +57,5 @@
 - [x] 显式原生 beat / downbeat 候选软件入口：最终 canonical 音频、固定 CPU SDK / 模型、MusicAnalysis v2 Candidate / confidence=None、四对象包加原始 evidence 已由 Lab 消费；media 46 / xtask 5、12 条成功命令、四组同实际 spect 数值对照及 13 项事务 / 资源控制通过，普通手工导入四对象保持，见[原生候选](../docs/native-beat-candidate.md)
 
 旧前处理 wholeSpect 19 PASS / 9 FAIL（整体 FAIL）和音乐质量 FAIL 保留，本批同输入 logits / q 一致不构成前处理等价或生产 MIR 准入；独立真人标签、置信校准、四目标 native run 与十分钟成本 / 取消仍未完成
+
+2026-10-08 · 独立标签增加 [`adopt-labeled-anchors`](../docs/independent-labels.md#明确采用为-anchor) 明确采用 CLI，Source CID 与标签原字节 hash 绑定指定肯定点，保存后 hash 由 `import-labels` receipt 提供；[软件验证已通过](../docs/independent-labels.md#明确采用为-anchor)。此接口消费人工记录，不产出自动 onset、置信度或策略校准，完整 MIR 与真实双人标签退出保持未完成

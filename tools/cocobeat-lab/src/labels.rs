@@ -140,6 +140,13 @@ impl Document {
 }
 
 pub(crate) fn load(path: &Path, expected: &Source) -> Result<Document, String> {
+    load_identified(path, expected).map(|(document, _)| document)
+}
+
+pub(crate) fn load_identified(
+    path: &Path,
+    expected: &Source,
+) -> Result<(Document, blake3::Hash), String> {
     if !std::fs::symlink_metadata(path)
         .map_err(|error| format!("Inspect independent labels: {error}"))?
         .is_file()
@@ -164,11 +171,15 @@ pub(crate) fn load(path: &Path, expected: &Source) -> Result<Document, String> {
     let document: Document = serde_json::from_slice(&bytes)
         .map_err(|error| format!("Invalid independent labels: {error}"))?;
     document.validate(expected)?;
-    Ok(document)
+    Ok((document, blake3::hash(&bytes)))
 }
 
 // Caller revalidates the package immediately before save and keeps output outside it
-pub(crate) fn save(path: &Path, expected: &Source, document: &Document) -> Result<(), String> {
+pub(crate) fn save(
+    path: &Path,
+    expected: &Source,
+    document: &Document,
+) -> Result<blake3::Hash, String> {
     document.validate(expected)?;
     write_new(path, document, MAX_BYTES)
 }
@@ -246,10 +257,10 @@ pub(crate) fn compare(
 }
 
 pub(crate) fn save_comparison(path: &Path, comparison: &Comparison) -> Result<(), String> {
-    write_new(path, comparison, MAX_COMPARISON_BYTES)
+    write_new(path, comparison, MAX_COMPARISON_BYTES).map(|_| ())
 }
 
-fn write_new(path: &Path, value: &impl Serialize, limit: usize) -> Result<(), String> {
+fn write_new(path: &Path, value: &impl Serialize, limit: usize) -> Result<blake3::Hash, String> {
     let mut bytes = serde_json::to_vec_pretty(value).map_err(|error| error.to_string())?;
     bytes.push(b'\n');
     if bytes.len() > limit {
@@ -269,7 +280,7 @@ fn write_new(path: &Path, value: &impl Serialize, limit: usize) -> Result<(), St
             Err(cleanup) => format!("{error}; partial output cleanup failed: {cleanup}"),
         });
     }
-    Ok(())
+    Ok(blake3::hash(&bytes))
 }
 
 #[cfg(test)]

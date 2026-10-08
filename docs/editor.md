@@ -73,7 +73,7 @@ Tab / 肩键在工具栏、时间线、列表和详情间切换焦点；列表�
 
 `workbench-labels PACKAGE NEW_LABELS_JSON [--locale CODE]` 共用 canonical 立体声波形、试听和原生主控，隐藏作者 Anchor / SectionCue 与模型提示，新增人工点 / 半开区间、应 / 不应 / 不确定判断和原生文本理由；Apply / Cancel 分开处理草稿，只保存为固定的新侧车文件，失败保留并 join worker，不改谱面或自动采用标签。具体操作、数据限制、软件事件验证及尚未进行的 OS IME / 真人盲标验收见[独立标签](independent-labels.md#原生-labels-工作台)
 
-新增 Labels 软件验证与分版原生补验见[观察记录](independent-labels.md#原生-labels-工作台)：首轮小窗口视觉失败和修复保留，最终 31 条文案 / 13 语言字形与固定法语小窗口补验通过，OS IME / 设备 / 真人盲标仍未验收，标签采用尚未接线
+新增 Labels 软件验证与分版原生补验见[观察记录](independent-labels.md#原生-labels-工作台)：首轮小窗口视觉失败和修复保留，最终 31 条文案 / 13 语言字形与固定法语小窗口补验通过，OS IME / 设备 / 真人盲标仍未验收；标签保存后通过 [`adopt-labeled-anchors`](independent-labels.md#明确采用为-anchor) 选择肯定精确点并导出新包，UI 不新增采用按钮
 
 ## 使用方式
 

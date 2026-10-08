@@ -20,12 +20,13 @@ pub(crate) fn import(source: &Path, input: &Path, destination: &Path) -> Result<
     let document = labels::load(input, &initial)?;
     let destination = outside_package(source, destination)?;
     require_fresh_source(source, &initial)?;
-    labels::save(&destination, &initial, &document)?;
+    let labels_hash = labels::save(&destination, &initial, &document)?;
     println!(
         "{}",
         serde_json::json!({
             "source": initial,
             "reviewer": document.reviewer,
+            "labels_blake3": labels_hash.to_hex().as_str(),
             "label_count": document.labels.len(),
             "destination": destination,
             "scope": "manual_records_only",

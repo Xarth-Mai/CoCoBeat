@@ -2,7 +2,7 @@
 
 `propose-anchors` 根据已有 MusicAnalysis 的 onset 时间和置信度生成独立提案，记录每个 onset 的处理原因；`adopt-anchor-proposal` 重新核对完整来源与提案，只将明确选中的候选导出到新包。两步均为实验工具，当前生产 MIR 尚未提供通过标注校准的置信度，提案始终标记 `production_admission: "not_assessed"`
 
-手工创作包目前没有 onset，运行提案命令会得到零候选和零 Anchor；命令不会从原手写谱面、能量或段落标签补出结果。人工增删移动已有 Anchor 使用 [内容编辑](editor.md)
+手工创作包目前没有 onset，运行提案命令会得到零候选和零 Anchor；命令不会从原手写谱面、能量或段落标签补出结果。人工增删移动已有 Anchor 使用 [内容编辑](editor.md)；独立人工标签通过 [`adopt-labeled-anchors`](independent-labels.md#明确采用为-anchor) 明确采用肯定精确点，保留 item_id 与原 frame，不把标签或 beat 候选分数转换成 onset confidence
 
 ## 生成与审阅
 

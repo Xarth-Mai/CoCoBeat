@@ -9,6 +9,8 @@ cocobeat-lab import-labels /path/to/package /path/to/reviewer-b-draft.json /path
 cocobeat-lab compare-labels /path/to/package /path/to/new-reviewer-a.json /path/to/new-reviewer-b.json /path/to/new-comparison.json
 ```
 
+`import-labels` 成功 stdout 新增 `labels_blake3`，它是本次成功保存的新文档完整原字节 BLAKE3，包含格式与末尾换行，不是输入草稿的 hash；供下文明确采用时绑定同一个文件
+
 输出父目录必须存在，目标文件必须尚不存在且在源包外；父目录 alias 指向包内也拒绝。保存前重新完整验证包并要求初始与最新 Source 全等，来源漂移拒绝输出，已有标签 / 报告不会被覆盖
 
 输入为 UTF-8 JSON，schema_version=1，source 逐字段使用 `label-source` 的完整对象，reviewer 为 1–64 UTF-8 字节且无首尾空白的本地别名；文档最多1MiB和1024条label，未知或重复字段拒绝。source 绑定完整 package content ID、audio BLAKE3、N 和 canonical_decoded basis，本批不能把原来源 PCM 的记录混入 canonical 基准
@@ -58,4 +60,49 @@ cocobeat-lab compare-labels /path/to/package /path/to/reviewer-a.json /path/to/r
 
 字形历史按原版保留：当时 13 个 locale 各新增 39 条文案，首轮 Noto cmap 为 5 PASS / 8 FAIL，缺少的 `≤` 改成 ASCII `<=` 后第二轮 13 PASS。最终删除每个 locale 的 8 条未用文案，保留 31 条有效 Labels 文案和原 252 条文案值，实际最终 13 × 31 字形检查通过；字形覆盖不替代母语、任意 Unicode 或真实布局验收
 
-原生窗口实际运行使用软件 KeyboardInput / Ime 消息经过正式输入、EditableText 和保存 worker，导出的构造标签经正式 CLI 回读，已有目标保护和自有进程组 / helper 退出有记录；这不是实际 OS 输入法或真人操作。OS IME、物理双手柄 / 混合输入、母语审阅、声学试听 / DAC 计时、原生窗口忙 worker 关闭、真人隐藏提示盲标与 confidence 校准仍为 NOT_RUN，标签采用尚未接线，软件支持不作为实际音乐质量或真人共识
+原生窗口实际运行使用软件 KeyboardInput / Ime 消息经过正式输入、EditableText 和保存 worker，导出的构造标签经正式 CLI 回读，已有目标保护和自有进程组 / helper 退出有记录；这不是实际 OS 输入法或真人操作。OS IME、物理双手柄 / 混合输入、母语审阅、声学试听 / DAC 计时、原生窗口忙 worker 关闭、真人隐藏提示盲标与 confidence 校准仍为 NOT_RUN，该 UI 批次当时未接标签采用；后续 CLI 见下文，软件支持不作为实际音乐质量或真人共识
+
+## 明确采用为 Anchor
+
+`adopt-labeled-anchors PACKAGE LABELS SELECTION NEW_PACKAGE` 将明确选中的人工肯定点替换为新包的完整 Anchor 列表；它消费独立标签，不经过 onset 候选阈值或推算 confidence。标签工作台仍只保存侧车，采用使用此 CLI，没有新增 UI 采用按钮
+
+先保存审阅记录；若记录来自工作台或外部 JSON，用 `import-labels` 另存为准备用于采用的文件，并保留成功 stdout 的 `source.content_id` 与 `labels_blake3`
+
+```sh
+cocobeat-lab import-labels PACKAGE REVIEWED_LABELS.json ADOPTION_LABELS.json
+```
+
+选择 JSON 使用上述完整 Source CID、保存后文件的 raw BLAKE3 以及明确 item_id；以下 `11` 是示意，须替换为这份标签中实际要采用的 ID
+
+```json
+{
+  "schema_version": 1,
+  "source_content_id": "package-blake3:<完整64个小写十六进制字符的包哈希>",
+  "labels_blake3": "<ADOPTION_LABELS.json原字节的64个小写十六进制字符BLAKE3>",
+  "item_ids": [11]
+}
+```
+
+```sh
+cocobeat-lab adopt-labeled-anchors PACKAGE ADOPTION_LABELS.json SELECTION.json NEW_PACKAGE
+cocobeat-lab verify-package NEW_PACKAGE
+cocobeat-lab inspect-stage NEW_PACKAGE 0
+```
+
+LABELS 与 SELECTION 均为最多 1 MiB 的普通文件，读取前及打开后检查文件类型；选择 schema_version 必须为 1，最多 1024 个 u64 item_ids，未知 / 重复字段、版本或身份不符均拒绝。标签从同一次有界读取的原字节解析并计算 hash，仅改变 JSON 空白也必须更新选择所绑定的 hash，不对重序列化结果猜测原文件身份
+
+只允许选择 `should_anchor` 且 `location.kind = point` 的记录，整数 frame 保持原值，item_id 保留为 Anchor ID，最终按 frame 升序排列；未选择的记录不自动加入，缺失 / 重复 ID、所选点重复 frame、`should_not_anchor`、`uncertain` 和 interval 全部拒绝，不取区间中点、合并近邻或自动解决双人分歧
+
+**item_ids 表示完整的新 Anchor 列表，空数组明确清空全部 Anchor**；它不与旧谱面合并，也不改变原标签。选择重复 frame 的拒绝是本采用入口的规则，既有通用 Anchor 编辑与包 schema 的合法范围保持原契约
+
+源包先完整验证，标签 Source 必须同时匹配完整 content ID、audio BLAKE3、N 与 canonical_decoded basis，选择再绑定 Source CID 和标签原字节。导出前 fresh Source 全等检查后复用 `media::export_anchors` 的 expected CID 与事务导出，目标父目录须存在、位于源包外，已有路径和指向包内的父目录 alias 拒绝；这些检查不构成 CLI 读取至发布期间并发来源替换已验收，完整时序替换仍 NOT_RUN
+
+新包保留 `song.audio.ogg` 与 `analysis.bin` 原字节（包括 sections 和未知能力状态），保留 chart 的 SectionCue / rules；实际 Anchor 改变才重写 chart 与 manifest、生成新 CID，完全无变化则保留四对象原字节与原 CID。既有 Stage v2 从未改动的 analysis.sections 生成相同几何，计划仍绑定新包 CID；旧 Replay 不自动迁移到改谱后的身份，新包由原 `--package` / 曲库加载入口消费
+
+成功 stdout 给出源 / 新 CID、labels_blake3、reviewer、按成谱顺序的 item_ids、Anchor / SectionCue 数量、changed、`scope: "explicit_manual_point_adoption"` 和 `production_admission: "not_assessed"`；理由与审阅判断保留在原标签文件，可按 hash 回查，不把侧车或新字段塞入四对象包
+
+2026-10-08 本批正式 Lab 65 项测试（新增 8 项采用窄测及原有 57 项）、最终 Clippy / 格式和 466 项输入冻结构建通过；首次格式检查因 `write_new` 的 Hash 返回签名换行失败，格式修复不改变 token / 行为，原失败与复查结果分别保留。冻结二进制与准确源码身份见[采用观察记录](../testdata/synthetic/label-adoption-observations-20261008.json)，逐命令输出及文件身份见[原始索引](../testdata/synthetic/label-adoption-raw-index-20261008.json)
+
+固定 64 秒包的 46 条真实 CLI 控制通过：27 条成功、19 条正确拒绝，92 份 stdout / stderr 保留且无超时；来源、标签原字节 hash、肯定点选择、空选择与 no-op、错误选择 / 路径 / FIFO、输出防覆盖均符合预期，原包、副本、原标签和已有输出字节保持。五个代表位置的 Stage v2 采样除 CID 外逐字段相同；新身份的构造 Replay 保留四条事实，双方对 item_id 11 / frame 3000 产生 precise 判定，旧 Replay 在新包上拒绝，空包没有 Anchor 判定
+
+构造标签和 Replay 只验证软件机制；完整 CLI 中途来源替换、该入口的原生游戏 / GUI 与其他平台运行、人工标签、听感、可玩性及 confidence 校准仍 NOT_RUN，原 MIR 算法质量 FAIL 和 confidence=None 保持

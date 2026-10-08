@@ -294,7 +294,7 @@ fn hex(hash: [u8; 32]) -> String {
     hash.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
-fn read_document<T: DeserializeOwned>(path: &Path, limit: usize) -> Result<T, String> {
+pub(crate) fn read_document<T: DeserializeOwned>(path: &Path, limit: usize) -> Result<T, String> {
     if !fs::symlink_metadata(path)
         .map_err(|error| format!("Inspect JSON document: {error}"))?
         .is_file()

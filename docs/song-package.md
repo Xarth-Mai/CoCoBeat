@@ -114,7 +114,7 @@ cargo run --locked -p cocobeat-lab -- verify-package target/manual-duet-package
 
 仅需音频对象时可用 `prepare-audio <final.ogg> <expected-frames> <new-staging-dir>`，它只生成 `song.audio.ogg`，不等于完整包；需要导出严格回读 PCM 时可用 `readback-canonical <final.ogg> <expected-frames> <new-output.f32le>`，它不会自动创建分析或谱面
 
-编辑已有包使用 `edit-anchors PACKAGE PATCH NEW_PACKAGE`，对应 Rust 入口为 `export_anchors(source, expected_package_hash, anchors, destination)`；它保留音频和分析原字节，包括旧 analysis v1 的格式与未知能力状态，仅在 Anchor 实际改变时重写 chart 与 manifest 身份，无变化时保留四对象及原身份，目标须为源包外的新目录；补丁、撤销重做与原 Replay 的身份边界见 [Anchor 命令行编辑](editor.md)，时间线 UI 仍未实现
+编辑已有包使用 `edit-anchors PACKAGE PATCH NEW_PACKAGE`，或用 [`adopt-labeled-anchors`](independent-labels.md#明确采用为-anchor) 明确采用独立标签中的肯定点，共用 Rust 入口 `export_anchors(source, expected_package_hash, anchors, destination)`；它保留音频和分析原字节，包括旧 analysis v1 的格式与未知能力状态，仅在 Anchor 实际改变时重写 chart 与 manifest 身份，无变化时保留四对象及原身份，目标须为源包外的新目录；补丁、撤销重做与原 Replay 的身份边界见 [Anchor 命令行编辑](editor.md)，原生时间线编辑见 [工作台](editor.md#原生工作台)
 
 ## 运行时加载与会话
 

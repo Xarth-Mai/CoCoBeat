@@ -124,6 +124,8 @@ cargo run --locked -p cocobeat-lab -- prepare-audio testdata/synthetic/media-imp
 
 `propose-anchors PACKAGE MIN_CONFIDENCE MIN_GAP_FRAMES NEW_REPORT.json` 生成可审阅的实验提案，`adopt-anchor-proposal PACKAGE REPORT.json SELECTION.json NEW_PACKAGE` 完整重编核对后，将明确选中的候选替换为新包的 Anchor；未知或低置信度留空，所有拒绝原因保留。策略必须显式指定，现有手工包没有 onset 时生成空提案，音乐置信度尚未校准；报告、选择和保真导出契约见 [Anchor 提案](docs/anchors.md)
 
+`adopt-labeled-anchors PACKAGE LABELS SELECTION NEW_PACKAGE` 将独立人工标签中明确选择的肯定精确点导出为新包，绑定完整来源和标签原字节 hash，保留 ID / frame 与原音频、分析和段落；空选择明确清空 Anchor，操作与限制见[独立标签采用](docs/independent-labels.md#明确采用为-anchor)
+
 `inspect-replay PACKAGE REPLAY.json NEW_REPORT.jsonl` 使用相同 core 重放真实歌曲包的录制，逐项输出原始 Hit、水位、已确认 Anchor 判定、两类 Sync 与原输入关联；未知水位保持未知，文件和语义错误明确拒绝。报告绑定完整内容身份，不包含音频或推算的设备延迟，字段、限额与使用方式见 [Replay 诊断](docs/replay-diagnostics.md)
 
 手工 `SectionCue` 通过高位段落门预告，与地面的 Anchor 标记区分；提示只描述作者设置的标记，不要求按键或参与评分。辅助字幕优先显示下个标记，最后一个之后显示最近标记，菜单和小窗口中隐藏；暂停沿用冻结的歌曲游标，重开归零，音乐结束后清空

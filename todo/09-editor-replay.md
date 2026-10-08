@@ -51,3 +51,5 @@
 2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计
 
 2026-10-08 · 本机 timing sidecar 已接通正式 `inspect-replay … --timing SIDECAR` 和 `workbench-replay … --timing SIDECAR [--locale CODE]` 消费路径；显式报告 v3，未传时维持 v1 / v2 原内容，旧 CSV 不自动猜关联。core 9 项、replay 11 项、runtime 174 项与 lab 32 项检查通过，32 条实际 CLI、两组原生游戏与原生详情补验通过；首次 QA 焦点失败及指定范围三图目检见[观察记录](../testdata/synthetic/timing-sidecar-observations-20261008.json)，接口与原文件保护见[显式计时关联](../docs/replay-diagnostics.md#显式本机计时关联)
+
+2026-10-08 · Labels 侧车保存后可通过 [`adopt-labeled-anchors`](../docs/independent-labels.md#明确采用为-anchor) 显式选择肯定精确点，导出新包并沿用现有 Stage / Replay 身份校验；工作台继续只编辑标签，没有新增 UI 采用按钮。本批[软件测试与 CLI 验证通过](../docs/independent-labels.md#明确采用为-anchor)，真人标签、听感与物理验收保持另验

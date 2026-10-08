@@ -22,3 +22,5 @@ v2 的 121 项相关测试和独立有理数参考的 60,480 字段比对通过�
 2026-10-07 · 明确几何版本接线：支持按版本 1 / 2 确定性编译，Session 记录实际 StagePlan getter，Replay v1 缺失版本保持未知、v2 严格记录；网络身份在握手、资源完成与实际解码前后核对，未知版本不 Ready。184 项相关测试、Clippy、12 个真实 wire 拒绝及 3 个实际完整 PCM 控制通过，见[持久观察](../testdata/synthetic/stage-version-observations-20261007.json)。`inspect-replay-stage` 为整数几何重建，此处记录当时整数几何证据，后续原生观看见下文
 
 2026-10-07 · 原生只读视觉 Replay 已交付：`--watch-replay` 使用明确 Stage 1 / 2、原事实顺序与实际 Kira acknowledged cursor，完整开场后明确确认才播放；暂停、恢复、原 epoch 重启及返回菜单保持原包 / Replay，完整与 partial 不补造历史。133 项 runtime 测试、最终标题窄测、Clippy / 格式通过，四个实际窗口 case 与最终三张静态标题图分别绑定冻结二进制；证据和历史失败见[观看记录](../testdata/synthetic/visual-replay-observations-20261007.json)，历史 shader、设备计时及真人验收另计
+
+2026-10-08 · 独立标签的明确 Anchor 采用复用既有四对象导出与 Stage v2 加载，analysis.sections 保留原字节，几何规则和版本不变；真正改谱生成新 CID，Stage / Replay 继续绑定该身份，旧录制不自动迁移。本批 Stage / Replay 接线的软件对照通过，见[采用验证](../docs/independent-labels.md#明确采用为-anchor)，自动音乐结构、设备性能与真人体验不由手工采用路径准入
