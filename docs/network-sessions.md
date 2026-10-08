@@ -75,15 +75,25 @@ guest 用可靠 ClockSynced 提交选中的探测，host 核对实际发送的�
 
 每轮维护限 250ms、最多 64 个入站包，每个 epoch 最多 1024 轮；轮次跨一次认证续接保留。初始化仅启动等待期限，ClockSync 仍未校准；丢失、重复和过期回复不能刷新样本。维护以 host 的实际第二时间戳 / guest 的实际第四时间戳计算本端年龄，超过原 2 秒有效期只通过 typed Stale 进入一次续演，其他非法状态仍终止；已用掉续演后再次失效终止。Runtime 保存实际 exchange 并保持 freshness 查询约束，新一局重建状态
 
-[维护软件观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)记录 600 轮仿射时钟控制、实际 loopback、可靠 FIFO 与真实 UDP 黑洞恢复；它更新进程时钟映射，双音源相位比较和长期声卡校正继续开发
+[维护软件观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)记录 600 轮仿射时钟控制、实际 loopback、可靠 FIFO 与真实 UDP 黑洞恢复；它更新进程时钟映射，双音源相位比较见下节，长期校正与完整故障矩阵继续开发
+
+## 原音源相位维护
+
+protocol / ALPN v8 在原 Running worker 内按歌曲进度约每5秒比较两个原音源，在可靠流传递原 generation、source_id、sequence、f64 position bits 与完整 publication 时间区间；每轮绑定一份实际 CBMC 四时间戳，不以时钟区间中点或推算游标代替原出版
+
+实际2ms只读采样窗口最多64条，原出版年龄50ms、收集窗口1秒、可靠交付250ms；共同过去点须被完整不确定性区间夹逼，两个位置与差值全区间必须支持原±2400帧 guard。普通检查保持 Playing / Running 和输入，仅实际超 guard 才进入原句柄暂停与自然追赶流程；后验须使用更新的 CBMC 和实际 source 出版，不能靠 Armed 入队确认恢复
+
+每轮沿原30秒期限，最多128轮 /64次校正，可靠 Phase 控制每方向每轮最多16条、每epoch最多2048条 /32MiB；原输入 FIFO、水位、End/count/EOF 与 FinishAck 保持，控制 Ended 只排空控制 reader，不替代歌曲 End。校正期间屏蔽演奏、歌曲与设置操作，取消和窗口关闭有效，重新开放输入需要新的释放事件
+
+[相位维护软件观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)包含42项 net /179项 runtime 普通测试、三个明确真实 QUIC 窄测及当前原生双方两轮实际 Kira 检查；双方自然完成、846条事实和5个事件一致，两个完整差值区间均为[-514,514]帧。该样本未触发校正，实际暂停追赶闭环、多轮强制漂移、active Phase 的认证续接重绑、设备与双机仍待验证；当前未支持的 active Phase 续接保持失败与真实前缀
 
 ## 身份与输出
 
-每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/7`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
+每次 host 生成新自签证书、256 bit 随机邀请能力和随机 epoch，协议为 `cocobeat-session/8`，旧协议邀请拒绝。客户端先校验邀请内部的证书 BLAKE3，再使用标准 TLS 1.3 信任验证，并在发送能力 secret 前核对远端 leaf DER 完全相等；公开指纹不代替邀请能力，邀请应通过双方认可的渠道传递
 
 邀请严格限制为 16 KiB，证书最多 4 KiB，不接受未知字段或版本；Unix 新文件权限为 0600，Windows 继承实际父目录 ACL。命令状态与 Replay 不输出 token 或私钥，首次连接仍只接受一次尝试；已开始的实时局另有下述独立续演能力，初始握手失败后重新运行会生成新邀请
 
-协议 v7 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 2；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
+协议 v8 延续 v5 的完整会话身份，包含必须出现的 `stage_compiler_version`，headless 使用明确的 `null`，实时使用当前共享版本 3；预装客机在 Hello、接收客机在 Installed 完整比较，接收方在读取资源前拒绝不支持的实时版本。窗口得到 Prepared 后以实际 StagePlan getter 再核对，成功后才能发送本端 Ready；权威 Replay 的 stage 身份再次与会话比较
 
 实时 Replay v2 从实际原生 StagePlan 记录版本，开发歌曲与 headless 没有 StagePlan，因此输出保持 core-only v1；headless 模板即便带明确视觉版本也只提供经过校验的事实，不把模板版本或新 epoch 解释为已经渲染历史舞台
 
@@ -105,7 +115,7 @@ net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识
 
 ## 同 epoch 续演
 
-协议 v7 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset、可靠输入帧 / 伙伴进展 Deadline 和 typed 时钟维护 Stale 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
+协议 v8 的实时局在双方已开始、均未 End、原进程与音乐实例仍存活时，允许一次 30 秒内的续演；传输 TimedOut / Reset、可靠输入帧 / 伙伴进展 Deadline 和 typed 时钟维护 Stale 可触发恢复，应用取消、失焦、队列满、非法事实和结束阶段失败仍为终态。客机回到原受信端点，主机复用原证书；独立的 256 bit 随机续演能力仅留在内存，绑定原内容、epoch、角色和 attempt 1，初始邀请不能代替它
 
 恢复先冻结本地演奏输入，暂停同一个 Kira SoundHandle，保留 PCM、source generation / id、Session、core、seq 和全部原 Replay。两个实际 Paused publication 的前进 sequence 与相同 frame 确认稳定暂停后，worker 在独占 `recovery-1/` 保存自己的已接受 tape、GUI 全历史和恢复元数据；原录制文件保持，token 不进入日志。两端对账完整逐玩家历史，原 owner 前缀必须逐项相同，只有真正缺失的尾部经原 ingest 入口补入一次，重复 seq、倒退水位、改写与重排均终止
 

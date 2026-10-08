@@ -89,7 +89,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
             success = scenario in ("recovery-model", "recovery-unauth-candidate", "recovery-immediate-end", UDP_SCENARIO)
             assert report["same_epoch"] and report["snapshots_unchanged"] and report["player_tape_prefix_preserved"]
             assert report["owned_workers_finished"]
-            assert all(status["mode"] == "live" and status["protocol_version"] == 7 for status in statuses)
+            assert all(status["mode"] == "live" and status["protocol_version"] == 8 for status in statuses)
             assert statuses[0]["epoch"] == statuses[1]["epoch"]
             assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
             expected_ready = [True, True] if success or scenario == "recovery-second-loss" else [False, False]
@@ -166,7 +166,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
             for index, expected_status in enumerate(("FAILED", "COMPLETE"), start=1):
                 directory = destination / f"round-{index}"
                 statuses = [json.loads((directory / side / "status.json").read_text()) for side in ("host", "guest")]
-                assert all(status["mode"] == "live" and status["protocol_version"] == 7 and status["status"] == expected_status for status in statuses)
+                assert all(status["mode"] == "live" and status["protocol_version"] == 8 and status["status"] == expected_status for status in statuses)
                 expected = [93, 27] if index == 2 else [1, 0] if scenario == "reenter-after-hit" else [0, 0]
                 assert all(status["facts"] == expected for status in statuses)
                 assert report["rounds"][index - 1]["owned_workers_finished"]
@@ -190,7 +190,7 @@ def run(driver, package, output, scenarios=SCENARIOS):
         record["report"] = report
         record["statuses"] = statuses
         success = scenario in ("installed", "receive")
-        assert all(status["mode"] == "live" and status["protocol_version"] == 7 for status in statuses)
+        assert all(status["mode"] == "live" and status["protocol_version"] == 8 for status in statuses)
         assert [status["status"] for status in statuses] == (["COMPLETE"] * 2 if success else ["FAILED"] * 2)
         expected = [93, 27] if success else [1, 0] if scenario == "cancel-after-hit" else [0, 0]
         assert all(status["facts"] == expected for status in statuses), scenario

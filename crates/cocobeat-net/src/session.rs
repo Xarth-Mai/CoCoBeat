@@ -458,6 +458,30 @@ impl Session {
         write_new(&output.join("metadata.json"), &metadata_bytes)
     }
 
+    pub(crate) fn record_phase(
+        &self,
+        round: u16,
+        verification: bool,
+        metadata: serde_json::Value,
+    ) -> Result<(), String> {
+        if !(1..=128).contains(&round) {
+            return Err("phase record round outside bounded lifetime".into());
+        }
+        let output = self.output.join(format!("phase-{round}"));
+        fs::create_dir_all(&output)
+            .map_err(|error| format!("create source phase evidence: {error}"))?;
+        let name = if verification {
+            "verification.json"
+        } else {
+            "check.json"
+        };
+        write_new(
+            &output.join(name),
+            &serde_json::to_vec_pretty(&metadata)
+                .map_err(|_| "encode source phase evidence failed")?,
+        )
+    }
+
     pub(crate) fn end_live(
         &mut self,
         player: PlayerId,
@@ -567,8 +591,8 @@ fn same_player_histories(left: &Replay, right: &Replay) -> bool {
 }
 
 pub(crate) struct ControlIo {
-    send: SendStream,
-    recv: RecvStream,
+    pub(crate) send: SendStream,
+    pub(crate) recv: Option<RecvStream>,
     sent: usize,
     received: usize,
 }
@@ -576,7 +600,7 @@ impl ControlIo {
     pub(crate) fn new((send, recv): (SendStream, RecvStream)) -> Self {
         Self {
             send,
-            recv,
+            recv: Some(recv),
             sent: 0,
             received: 0,
         }
@@ -585,7 +609,13 @@ impl ControlIo {
         wire::send_control(&mut self.send, &mut self.sent, &message).await
     }
     pub(crate) async fn recv(&mut self) -> Result<Control, String> {
-        wire::recv_control(&mut self.recv, &mut self.received).await
+        wire::recv_control(
+            self.recv
+                .as_mut()
+                .ok_or("control receiver is owned by live phase")?,
+            &mut self.received,
+        )
+        .await
     }
 }
 
@@ -837,7 +867,13 @@ pub(crate) async fn host_finish(
         {
             return Err("FinishAck does not match this epoch and authority Replay".into());
         }
-        wire::ensure_eof(&mut control.recv).await?;
+        wire::ensure_eof(
+            control
+                .recv
+                .as_mut()
+                .ok_or("control reader was not drained before Finish")?,
+        )
+        .await?;
         Ok::<_, String>(())
     })
     .await
@@ -863,7 +899,13 @@ pub(crate) async fn guest_finish(
             }
             _ => return Err("invalid Finish epoch or authority Replay size".into()),
         };
-        wire::ensure_eof(&mut control.recv).await?;
+        wire::ensure_eof(
+            control
+                .recv
+                .as_mut()
+                .ok_or("control reader was not drained before Finish")?,
+        )
+        .await?;
         let mut stream = connection
             .accept_uni()
             .await

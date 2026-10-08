@@ -83,10 +83,56 @@ pub struct RecoveryObserved {
     pub publications: Vec<RecoveryPublication>,
 }
 
+#[derive(Clone, Copy, Debug)]
+pub struct PhasePublication {
+    pub sequence: u64,
+    pub position_seconds_bits: u64,
+    pub published_between: [std::time::Instant; 2],
+}
+
+#[derive(Clone, Debug)]
+pub struct PhaseObserved {
+    pub generation: u64,
+    pub source_id: u64,
+    pub collected_at: std::time::Instant,
+    pub publications: Vec<PhasePublication>,
+}
+
+#[derive(Clone, Debug)]
+pub struct PhaseFrozen {
+    pub replay: cocobeat_replay::Replay,
+    pub paused_frame: SongTime,
+    pub source_generation: u64,
+    pub source_id: u64,
+    pub paused_at: std::time::Instant,
+    pub publication: PhasePublication,
+}
+
 #[derive(Clone, Debug)]
 pub enum LiveCommand {
     Ready,
     Armed,
+    PhaseSource {
+        epoch: SessionEpoch,
+        generation: u64,
+        source_id: u64,
+        publication: PhasePublication,
+    },
+    PhaseObserved {
+        epoch: SessionEpoch,
+        round: u16,
+        verification: bool,
+        evidence: PhaseObserved,
+    },
+    PhaseFrozen {
+        epoch: SessionEpoch,
+        round: u16,
+        snapshot: Box<PhaseFrozen>,
+    },
+    PhaseArmed {
+        epoch: SessionEpoch,
+        round: u16,
+    },
     Fact(DuoInput),
     End,
     /// Explicit connection maintenance; this is not evidence of packet loss
@@ -138,6 +184,30 @@ pub enum LiveEvent {
         epoch: SessionEpoch,
         round: u64,
         exchange: crate::clock::ClockExchange,
+    },
+    PhaseSampling {
+        epoch: SessionEpoch,
+        round: u16,
+        verification: bool,
+        not_before: std::time::Instant,
+        common_at: std::time::Instant,
+        until: std::time::Instant,
+    },
+    PhasePausing {
+        epoch: SessionEpoch,
+        round: u16,
+    },
+    PhaseScheduled {
+        epoch: SessionEpoch,
+        round: u16,
+        deadline: std::time::Instant,
+        verify_at: std::time::Instant,
+        common_frame: SongTime,
+        timing: NetworkTiming,
+    },
+    PhaseReady {
+        epoch: SessionEpoch,
+        round: u16,
     },
     PeerFacts(Vec<DuoInput>),
     RecoveryPausing {
@@ -530,6 +600,7 @@ async fn host_prepare(
         used: false,
         candidates: 0,
         maintenance_round: 0,
+        phase: PhaseState::default(),
         pending: JoinSet::new(),
     });
     *owned_endpoint = Some(endpoint.clone());
@@ -708,6 +779,7 @@ async fn guest_prepare(
             used: false,
             candidates: 0,
             maintenance_round: 0,
+            phase: PhaseState::default(),
             pending: JoinSet::new(),
         });
         Ok::<_, String>((control, identity))
@@ -833,12 +905,1312 @@ const RECOVERY_REQUESTED: u32 = 0x4343;
 const RECOVERY_TIMEOUT: Duration = Duration::from_secs(30);
 const CANDIDATE_LIMIT: u8 = 4;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum PhaseStep {
+    Sampling,
+    GateAck,
+    Pausing,
+    ScheduleAck,
+    Arming,
+    VerifyClock,
+    AwaitLive,
+}
+
+struct PhaseRound {
+    round: u16,
+    step: PhaseStep,
+    anchor: wire::PhaseAnchor,
+    host_point_ns: u64,
+    verification: bool,
+    deadline: Instant,
+    own: Option<wire::PhaseEvidence>,
+    peer: Option<wire::PhaseEvidence>,
+    own_frozen: Option<Box<PhaseFrozen>>,
+    frozen: [Option<(i64, wire::PhasePublication, u64)>; 2],
+    markers: [Option<u64>; 2],
+    common_frame: Option<i64>,
+    host_common_ns: Option<u64>,
+    host_verify_ns: Option<u64>,
+    own_armed: bool,
+    peer_armed: bool,
+    peer_confirmed: bool,
+    own_confirmed: bool,
+    plan: Option<sync::ResumePlan>,
+    bounds: Option<sync::PhaseBounds>,
+    pending_schedule: Option<wire::PhaseControl>,
+}
+
+#[derive(Default)]
+struct PhaseState {
+    sources: [Option<(u64, u64)>; 2],
+    previous: [Option<wire::PhasePublication>; 2],
+    round: u16,
+    corrections: u8,
+    rounds: sync::PhaseRounds,
+    active: Option<PhaseRound>,
+    next_check_frame: Option<i64>,
+    progress_frame: i64,
+    sent: wire::PhaseBudget,
+    received: wire::PhaseBudget,
+    peer_end_count: Option<u64>,
+    deferred_peer: Vec<Fact>,
+    deferred_end: Option<(u64, i64)>,
+}
+
+fn phase_reader(control: &mut ControlIo, phase: &mut PhaseState) -> Result<PhaseRead, String> {
+    let mut stream = control
+        .recv
+        .take()
+        .ok_or("duplicate phase control reader")?;
+    let mut budget = phase.received.clone();
+    // The shadow retains a maximum pending frame if the old connection is abandoned
+    phase.received.pending_read()?;
+    Ok(Box::pin(async move {
+        let message = wire::recv_phase_control(&mut stream, &mut budget).await;
+        (stream, budget, message)
+    }))
+}
+
+fn phase_anchor(sample: sync::MaintainedClock) -> wire::PhaseAnchor {
+    let exchange = sample.exchange;
+    wire::PhaseAnchor {
+        clock_round: sample.round,
+        guest_send_ns: exchange.guest_send_ns,
+        host_receive_ns: exchange.host_receive_ns,
+        host_send_ns: exchange.host_send_ns,
+        guest_receive_ns: exchange.guest_receive_ns,
+    }
+}
+
+fn phase_sampling_event(
+    session: &Session,
+    round: &PhaseRound,
+    sample: sync::MaintainedClock,
+) -> Result<LiveEvent, String> {
+    if phase_anchor(sample) != round.anchor {
+        return Err("phase sampling anchor differs from the actual maintained exchange".into());
+    }
+    let point = if session.player == PlayerId::P1 {
+        round.host_point_ns
+    } else {
+        u64::try_from(i128::from(round.host_point_ns) - i128::from(sample.estimate.offset_ns))
+            .map_err(|_| "phase sampling center precedes local origin")?
+    };
+    let begin = point
+        .checked_sub(40_000_000)
+        .ok_or("phase sampling start underflow")?;
+    let until = point
+        .checked_add(80_000_000)
+        .ok_or("phase sampling end overflow")?;
+    let anchor = if session.player == PlayerId::P1 {
+        sample.exchange.host_send_ns
+    } else {
+        sample.exchange.guest_receive_ns
+    };
+    if begin < anchor || begin <= sync::now_ns(session.origin)? {
+        return Err(
+            "phase sampling window is not entirely future and after its actual anchor".into(),
+        );
+    }
+    Ok(LiveEvent::PhaseSampling {
+        epoch: session.epoch,
+        round: round.round,
+        verification: round.verification,
+        not_before: sync::local_instant(session.origin, begin)?.into_std(),
+        common_at: sync::local_instant(session.origin, point)?.into_std(),
+        until: sync::local_instant(session.origin, until)?.into_std(),
+    })
+}
+
+async fn phase_send(
+    session: &Session,
+    control: &mut ControlIo,
+    phase: &mut PhaseState,
+    round: u16,
+    deadline: Instant,
+    message: wire::PhaseControl,
+) -> Result<(), String> {
+    tokio::time::timeout_at(
+        deadline,
+        wire::send_phase_control(
+            &mut control.send,
+            &mut phase.sent,
+            &Control::Phase {
+                epoch: session.epoch.0,
+                round,
+                message,
+            },
+        ),
+    )
+    .await
+    .map_err(|_| "phase control write exceeded its fixed deadline")?
+}
+
+fn new_phase_round(
+    round: u16,
+    anchor: wire::PhaseAnchor,
+    point: u64,
+    deadline: Instant,
+) -> PhaseRound {
+    PhaseRound {
+        round,
+        step: PhaseStep::Sampling,
+        anchor,
+        host_point_ns: point,
+        verification: false,
+        deadline,
+        own: None,
+        peer: None,
+        own_frozen: None,
+        frozen: [None; 2],
+        markers: [None; 2],
+        common_frame: None,
+        host_common_ns: None,
+        host_verify_ns: None,
+        own_armed: false,
+        peer_armed: false,
+        peer_confirmed: false,
+        own_confirmed: false,
+        plan: None,
+        bounds: None,
+        pending_schedule: None,
+    }
+}
+
+async fn phase_clock_progress(
+    session: &Session,
+    control: &mut ControlIo,
+    events: &std_mpsc::SyncSender<LiveEvent>,
+    phase: &mut PhaseState,
+    maintained: &mut sync::ClockMaintenance,
+) -> Result<(), String> {
+    if session.ended.iter().any(|ended| *ended) || phase.peer_end_count.is_some() {
+        return Ok(());
+    }
+    let sample = maintained
+        .sample()
+        .ok_or("phase clock progress lacks an actual sample")?;
+    if session.player == PlayerId::P1
+        && phase.active.is_none()
+        && phase.sources.iter().all(Option::is_some)
+        && phase
+            .next_check_frame
+            .is_some_and(|frame| phase.progress_frame >= frame)
+        && phase.progress_frame + 48_000 < session.prepared.end
+    {
+        let round = phase
+            .round
+            .checked_add(1)
+            .filter(|round| *round <= sync::MAX_PHASE_ROUNDS)
+            .ok_or("phase round budget exhausted")?;
+        let now = sync::now_ns(session.origin)?;
+        let point = now
+            .checked_add(250_000_000)
+            .ok_or("phase common point overflow")?;
+        let deadline = Instant::now() + RECOVERY_TIMEOUT;
+        phase.rounds.begin(round, session.epoch, point, now)?;
+        phase.round = round;
+        phase.active = Some(new_phase_round(
+            round,
+            phase_anchor(sample),
+            point,
+            deadline,
+        ));
+        phase_send(
+            session,
+            control,
+            phase,
+            round,
+            deadline,
+            wire::PhaseControl::Check {
+                anchor: phase_anchor(sample),
+                host_point_ns: point,
+            },
+        )
+        .await?;
+        emit(
+            events,
+            phase_sampling_event(session, phase.active.as_ref().unwrap(), sample)?,
+        )?;
+    } else if session.player == PlayerId::P1
+        && phase
+            .active
+            .as_ref()
+            .is_some_and(|round| round.step == PhaseStep::VerifyClock)
+    {
+        let active = phase.active.as_mut().unwrap();
+        let point = active
+            .host_verify_ns
+            .ok_or("phase verification point missing")?;
+        let now = sync::now_ns(session.origin)?;
+        if point
+            .checked_sub(now)
+            .is_some_and(|remaining| (100_000_000..=600_000_000).contains(&remaining))
+            && sample.round > active.anchor.clock_round
+        {
+            active.anchor = phase_anchor(sample);
+            active.host_point_ns = point;
+            active.verification = true;
+            active.own = None;
+            active.peer = None;
+            active.bounds = None;
+            active.step = PhaseStep::Sampling;
+            let event = phase_sampling_event(session, active, sample)?;
+            let (round, deadline, anchor) = (active.round, active.deadline, active.anchor);
+            phase_send(
+                session,
+                control,
+                phase,
+                round,
+                deadline,
+                wire::PhaseControl::Verify {
+                    anchor,
+                    host_point_ns: point,
+                },
+            )
+            .await?;
+            emit(events, event)?;
+        }
+    }
+    Ok(())
+}
+
+async fn phase_try_gate(
+    session: &Session,
+    control: &mut ControlIo,
+    phase: &mut PhaseState,
+    maintained: &mut sync::ClockMaintenance,
+) -> Result<(), String> {
+    if session.player != PlayerId::P1 {
+        return Ok(());
+    }
+    let Some(active) = phase.active.as_mut() else {
+        return Ok(());
+    };
+    if active.step != PhaseStep::Sampling || active.own.is_none() || active.peer.is_none() {
+        return Ok(());
+    }
+    maintained
+        .check_local_time(sync::now_ns(session.origin)?)
+        .map_err(|error| error.to_string())?;
+    let evidence = [
+        active.own.as_ref().unwrap().clone(),
+        active.peer.as_ref().unwrap().clone(),
+    ];
+    let host_received_ns = sync::now_ns(session.origin)?;
+    let bounds = sync::source_phase_bounds(
+        &mut maintained.clock,
+        active.anchor.exchange(session.epoch.0),
+        &evidence,
+        sync::PhaseWindow {
+            epoch: session.epoch,
+            round: active.round,
+            verification: active.verification,
+            sources: phase
+                .sources
+                .map(|source| source.expect("bound phase sources")),
+            previous: phase.previous,
+            end: session.prepared.end,
+            host_point_ns: active.host_point_ns,
+            host_now_ns: host_received_ns,
+        },
+    )?;
+    if active.verification {
+        bounds.verify_original_resume(
+            active
+                .frozen
+                .map(|frozen| frozen.expect("acknowledged pause").1),
+            active.common_frame.ok_or("missing phase common frame")?,
+        )?;
+    }
+    session.record_phase(active.round, active.verification, serde_json::json!({
+        "epoch": session.epoch.0, "round": active.round, "verification": active.verification,
+        "player": session.player.index() + 1, "actual_anchor": active.anchor,
+        "host_point_ns": active.host_point_ns, "host_received_ns": host_received_ns,
+        "own_receipt_ns": sync::now_ns(session.origin)?, "source_evidence": evidence,
+        "source_intervals_frames": bounds.source_frames(), "guest_minus_host_frames": bounds.difference(),
+        "within_guard": bounds.within_guard(), "common_frame": active.common_frame,
+        "original_source_ids": phase.sources, "previous_publications": phase.previous,
+        "frozen_publications": active.frozen.map(|frozen| frozen.map(|value| value.1)),
+        "marker_owner_counts": active.markers,
+    }))?;
+    if !bounds.supports_guard() {
+        return Err(
+            "source phase publication uncertainty is too wide for the unchanged guard".into(),
+        );
+    }
+    let correcting = !bounds.within_guard();
+    active.bounds = Some(bounds);
+    active.step = PhaseStep::GateAck;
+    let (round, deadline, anchor, point, verification) = (
+        active.round,
+        active.deadline,
+        active.anchor,
+        active.host_point_ns,
+        active.verification,
+    );
+    phase_send(
+        session,
+        control,
+        phase,
+        round,
+        deadline,
+        wire::PhaseControl::Gate {
+            anchor,
+            host_point_ns: point,
+            verification,
+            host_received_ns,
+            correcting,
+        },
+    )
+    .await
+}
+
+async fn phase_try_schedule(
+    session: &Session,
+    control: &mut ControlIo,
+    phase: &mut PhaseState,
+    maintained: &mut sync::ClockMaintenance,
+) -> Result<(), String> {
+    if session.player != PlayerId::P1 {
+        return Ok(());
+    }
+    let Some(active) = phase.active.as_mut() else {
+        return Ok(());
+    };
+    if active.step != PhaseStep::Pausing
+        || active.frozen.iter().any(Option::is_none)
+        || active.markers.iter().any(Option::is_none)
+    {
+        return Ok(());
+    }
+    for index in 0..2 {
+        if active.frozen[index].unwrap().2 != active.markers[index].unwrap() {
+            return Err(
+                "phase frozen owner count differs from its ordered pre-pause prefix".into(),
+            );
+        }
+    }
+    maintained
+        .check_local_time(sync::now_ns(session.origin)?)
+        .map_err(|error| error.to_string())?;
+    phase.previous = active.frozen.map(|frozen| Some(frozen.unwrap().1));
+    let paused = active.frozen.map(|frozen| frozen.unwrap().0);
+    let common_frame = *paused.iter().max().unwrap();
+    if paused
+        .iter()
+        .any(|frame| !(0..session.prepared.end).contains(frame))
+        || common_frame
+            .checked_add(4_800)
+            .is_none_or(|frame| frame >= session.prepared.end)
+    {
+        return Err("phase correction needs unfinished original source extent".into());
+    }
+    let delays = paused
+        .map(|frame| sync::catchup_ns(common_frame, frame))
+        .into_iter()
+        .collect::<Result<Vec<_>, _>>()?;
+    let sample = maintained.sample().ok_or("missing phase schedule clock")?;
+    let now = sync::now_ns(session.origin)?;
+    let earliest_verify = now
+        .checked_add(2_100_000_000)
+        .and_then(|time| time.checked_add(*delays.iter().max()?))
+        .ok_or("phase resume common time overflow")?;
+    // Leave the 100 ms source horizon after a future CBMC cadence, rather than across it
+    let since = earliest_verify
+        .checked_sub(sample.exchange.host_receive_ns)
+        .ok_or("phase schedule predates its sample")?;
+    let beats = since.div_ceil(1_000_000_000);
+    let verify = sample
+        .exchange
+        .host_receive_ns
+        .checked_add(
+            beats
+                .checked_mul(1_000_000_000)
+                .ok_or("phase cadence overflow")?,
+        )
+        .and_then(|time| time.checked_add(250_000_000))
+        .ok_or("phase verification time overflow")?;
+    let common = verify
+        .checked_sub(100_000_000)
+        .ok_or("phase resume time underflow")?;
+    phase.rounds.correct(active.round, verify, now)?;
+    phase.corrections = phase
+        .corrections
+        .checked_add(1)
+        .filter(|count| *count <= sync::MAX_PHASE_CORRECTIONS)
+        .ok_or("phase correction budget exhausted")?;
+    active.anchor = phase_anchor(sample);
+    active.common_frame = Some(common_frame);
+    active.host_common_ns = Some(common);
+    active.host_verify_ns = Some(verify);
+    active.step = PhaseStep::ScheduleAck;
+    let local_resume = common
+        .checked_sub(delays[0])
+        .ok_or("phase host resume underflow")?;
+    active.plan = Some(sync::ResumePlan {
+        deadline: sync::local_instant(session.origin, local_resume)?,
+        verify_at: sync::local_instant(session.origin, verify)?,
+        host_verify_ns: verify,
+        common_frame,
+        timing: phase_timing(sample, common, local_resume, 0),
+    });
+    let (round, deadline, anchor) = (active.round, active.deadline, active.anchor);
+    phase_send(
+        session,
+        control,
+        phase,
+        round,
+        deadline,
+        wire::PhaseControl::Schedule {
+            anchor,
+            host_common_ns: common,
+            host_verify_ns: verify,
+            common_frame,
+            paused,
+        },
+    )
+    .await?;
+    // Runtime scheduling is emitted only after the peer validates the whole clock interval
+    Ok(())
+}
+
+fn phase_timing(
+    sample: sync::MaintainedClock,
+    host_common: u64,
+    local_resume: u64,
+    uncertainty: u64,
+) -> NetworkTiming {
+    NetworkTiming {
+        clock: Some(sync::ClockSample {
+            probe_id: sample.round,
+            guest_sample_ns: sample.exchange.guest_receive_ns,
+            offset_ns: sample.estimate.offset_ns,
+            uncertainty_ns: sample.estimate.uncertainty_ns,
+            round_trip_min_ns: sample.estimate.round_trip_min_ns,
+            round_trip_max_ns: sample.estimate.round_trip_max_ns,
+        }),
+        host_start_ns: Some(host_common),
+        local_start_ns: Some(local_resume),
+        start_uncertainty_ns: Some(uncertainty),
+        ..NetworkTiming::default()
+    }
+}
+
+fn phase_scheduled(session: &Session, active: &PhaseRound) -> Result<LiveEvent, String> {
+    let plan = active.plan.as_ref().ok_or("phase schedule is absent")?;
+    if Instant::now()
+        .checked_add(
+            MINIMUM_ARM_LEAD + Duration::from_nanos(plan.timing.start_uncertainty_ns.unwrap_or(0)),
+        )
+        .is_none_or(|ready| ready >= plan.deadline)
+    {
+        return Err("phase original source scheduling lost its full minimum lead".into());
+    }
+    Ok(LiveEvent::PhaseScheduled {
+        epoch: session.epoch,
+        round: active.round,
+        deadline: plan.deadline.into_std(),
+        verify_at: plan.verify_at.into_std(),
+        common_frame: SongTime::from_frames(plan.common_frame),
+        timing: plan.timing.clone(),
+    })
+}
+
+async fn phase_try_confirm(
+    session: &Session,
+    control: &mut ControlIo,
+    phase: &mut PhaseState,
+) -> Result<(), String> {
+    let Some(active) = phase.active.as_mut() else {
+        return Ok(());
+    };
+    if active.step == PhaseStep::Arming
+        && active.own_armed
+        && active.peer_armed
+        && !active.own_confirmed
+    {
+        active.own_confirmed = true;
+        let (round, deadline) = (active.round, active.deadline);
+        phase_send(
+            session,
+            control,
+            phase,
+            round,
+            deadline,
+            wire::PhaseControl::Confirmed {},
+        )
+        .await?;
+    }
+    let active = phase.active.as_mut().unwrap();
+    if active.step == PhaseStep::Arming && active.own_confirmed && active.peer_confirmed {
+        let event = phase_scheduled(session, active)?;
+        // This recheck validates remaining lead, but the source was already scheduled once
+        let _ = event;
+        active.step = PhaseStep::VerifyClock;
+    }
+    Ok(())
+}
+
+async fn phase_finish(
+    session: &mut Session,
+    events: &std_mpsc::SyncSender<LiveEvent>,
+    phase: &mut PhaseState,
+    mode: &mut ExchangeControl<'_>,
+) -> Result<(), String> {
+    let active = phase
+        .active
+        .take()
+        .ok_or("phase completion has no active round")?;
+    let bounds = active
+        .bounds
+        .ok_or("phase completion lacks an original-source proof")?;
+    if !bounds.within_guard()
+        || session.ended.iter().any(|ended| *ended)
+        || phase.peer_end_count.is_some()
+    {
+        return Err("phase cannot reopen ended sources or unverified positions".into());
+    }
+    if session.player == PlayerId::P1 {
+        phase
+            .rounds
+            .complete(active.round, sync::now_ns(session.origin)?, bounds)?;
+    }
+    phase.previous = bounds.last_publications().map(Some);
+    phase.next_check_frame = bounds.source_frames()[0][1].checked_add(240_000);
+    if active.verification {
+        let frozen = active
+            .own_frozen
+            .ok_or("phase completion lost the actual pause acknowledgment")?;
+        let held = std::time::Instant::now()
+            .checked_duration_since(frozen.paused_at)
+            .filter(|held| *held < RECOVERY_TIMEOUT)
+            .ok_or("phase held interval exceeds its fixed deadline")?;
+        mode.deadline = mode
+            .deadline
+            .checked_add(held)
+            .ok_or("phase gate deadline extension overflow")?;
+        mode.running_deadline = mode.deadline;
+    }
+    for batch in std::mem::take(&mut phase.deferred_peer).chunks(64) {
+        accept_peer_batch(session, other(session.player), batch, events)?;
+    }
+    if let Some((count, through)) = phase.deferred_end.take() {
+        session.end_live(other(session.player), count, through)?;
+        return Err("source phase peer ended during the reliable Live handoff".into());
+    }
+    emit(
+        events,
+        LiveEvent::PhaseReady {
+            epoch: session.epoch,
+            round: active.round,
+        },
+    )
+}
+
+async fn phase_command(
+    session: &Session,
+    io: (&mut ControlIo, &mut quinn::SendStream, &mut u64),
+    phase: &mut PhaseState,
+    maintained: &mut sync::ClockMaintenance,
+    command: LiveCommand,
+) -> Result<(), String> {
+    let (control, input_send, input_written) = io;
+    let player = session.player.index();
+    match command {
+        LiveCommand::PhaseSource {
+            epoch,
+            generation,
+            source_id,
+            publication,
+        } if epoch == session.epoch => {
+            if session.ended.iter().any(|ended| *ended) || phase.peer_end_count.is_some() {
+                return Ok(());
+            }
+            if phase.sources[player].is_some() || generation == 0 || source_id == 0 {
+                return Err("original phase source identity is repeated or invalid".into());
+            }
+            let publication = phase_publication_wire(publication, session.origin)?;
+            let frame =
+                SongTime::try_from_seconds_f64(f64::from_bits(publication.position_seconds_bits))
+                    .filter(|frame| (0..session.prepared.end).contains(&frame.frames()))
+                    .ok_or("original phase source is not unfinished")?;
+            if publication.sequence == 0
+                || publication.publication_before_ns > publication.publication_after_ns
+                || publication.publication_after_ns > sync::now_ns(session.origin)?
+            {
+                return Err(
+                    "original phase source publication has no real coherent delivery".into(),
+                );
+            }
+            phase.sources[player] = Some((generation, source_id));
+            phase.previous[player] = Some(publication);
+            if session.player == PlayerId::P1 {
+                phase.next_check_frame = frame.frames().checked_add(240_000);
+            }
+            phase_send(
+                session,
+                control,
+                phase,
+                0,
+                Instant::now() + RECOVERY_TIMEOUT,
+                wire::PhaseControl::Source {
+                    generation,
+                    source_id,
+                    publication,
+                },
+            )
+            .await?;
+        }
+        LiveCommand::PhaseObserved {
+            epoch,
+            round,
+            verification,
+            evidence,
+        } if epoch == session.epoch => {
+            if session.ended.iter().any(|ended| *ended) || phase.peer_end_count.is_some() {
+                return Ok(());
+            }
+            let active = phase
+                .active
+                .as_mut()
+                .ok_or("phase evidence has no active window")?;
+            if round != active.round
+                || verification != active.verification
+                || active.step != PhaseStep::Sampling
+                || active.own.is_some()
+            {
+                return Err("phase source batch belongs to another round or window".into());
+            }
+            let evidence = phase_evidence_wire(evidence, session.origin)?;
+            if Some((evidence.generation, evidence.source_id)) != phase.sources[player] {
+                return Err("phase source batch changed the original local source".into());
+            }
+            let (anchor, point, deadline) = (active.anchor, active.host_point_ns, active.deadline);
+            active.own = Some(evidence.clone());
+            phase_send(
+                session,
+                control,
+                phase,
+                round,
+                deadline,
+                wire::PhaseControl::Evidence {
+                    anchor,
+                    host_point_ns: point,
+                    verification,
+                    evidence,
+                },
+            )
+            .await?;
+            phase_try_gate(session, control, phase, maintained).await?;
+        }
+        LiveCommand::PhaseFrozen {
+            epoch,
+            round,
+            snapshot,
+        } if epoch == session.epoch => {
+            let active = phase
+                .active
+                .as_mut()
+                .ok_or("phase pause acknowledgment has no active round")?;
+            if round != active.round
+                || active.step != PhaseStep::Pausing
+                || active.own_frozen.is_some()
+            {
+                return Err("phase pause acknowledgment belongs to another domain or round".into());
+            }
+            let original =
+                phase.sources[player].ok_or("phase pause lost original source identity")?;
+            let publication =
+                validate_phase_frozen(session, &snapshot, original, phase.previous[player])?;
+            let count = session.counts[player] as u64;
+            let frame = snapshot.paused_frame.frames();
+            let deadline = active.deadline;
+            active.own_frozen = Some(snapshot);
+            active.frozen[player] = Some((frame, publication, count));
+            // Both writer calls follow all prior accepted Fact commands in the same mpsc FIFO
+            tokio::time::timeout_at(
+                deadline,
+                wire::send_live_input(
+                    input_send,
+                    input_written,
+                    &Input::PhasePaused {
+                        epoch: session.epoch.0,
+                        round,
+                        fact_count: count,
+                    },
+                ),
+            )
+            .await
+            .map_err(|_| "phase FIFO marker write exceeded the original deadline")?
+            .map_err(|error| error.to_string())?;
+            phase.active.as_mut().unwrap().markers[player] = Some(count);
+            phase_send(
+                session,
+                control,
+                phase,
+                round,
+                deadline,
+                wire::PhaseControl::Frozen {
+                    frame,
+                    generation: original.0,
+                    source_id: original.1,
+                    publication,
+                    owner_count: count,
+                },
+            )
+            .await?;
+            phase_try_schedule(session, control, phase, maintained).await?;
+        }
+        LiveCommand::PhaseArmed { epoch, round } if epoch == session.epoch => {
+            let active = phase
+                .active
+                .as_mut()
+                .ok_or("phase Armed has no active round")?;
+            if round != active.round || active.step != PhaseStep::Arming || active.own_armed {
+                return Err("phase Armed belongs to another round or is repeated".into());
+            }
+            phase_scheduled(session, active)?;
+            active.own_armed = true;
+            let deadline = active.deadline;
+            phase_send(
+                session,
+                control,
+                phase,
+                round,
+                deadline,
+                wire::PhaseControl::Armed {},
+            )
+            .await?;
+            phase_try_confirm(session, control, phase).await?;
+        }
+        _ => return Err("phase command domain, epoch or round differs".into()),
+    }
+    Ok(())
+}
+
+async fn phase_control(
+    session: &mut Session,
+    control: &mut ControlIo,
+    events: &std_mpsc::SyncSender<LiveEvent>,
+    phase: &mut PhaseState,
+    maintained: &mut sync::ClockMaintenance,
+    mode: &mut ExchangeControl<'_>,
+    envelope: Control,
+) -> Result<(), String> {
+    let Control::Phase {
+        epoch,
+        round,
+        message,
+    } = envelope
+    else {
+        return Err("non-phase control while phase reader owns the stream".into());
+    };
+    if epoch != session.epoch.0 {
+        return Err("phase control epoch differs from the authenticated session".into());
+    }
+    let peer = other(session.player).index();
+    match message {
+        wire::PhaseControl::Source {
+            generation,
+            source_id,
+            publication,
+        } if round == 0 => {
+            if session.ended.iter().any(|ended| *ended)
+                || phase.peer_end_count.is_some()
+                || phase.sources[peer].is_some()
+            {
+                return Err(
+                    "peer original phase identity is repeated or no longer eligible".into(),
+                );
+            }
+            SongTime::try_from_seconds_f64(f64::from_bits(publication.position_seconds_bits))
+                .filter(|frame| (0..session.prepared.end).contains(&frame.frames()))
+                .ok_or("peer original source is outside unfinished song")?;
+            phase.sources[peer] = Some((generation, source_id));
+            phase.previous[peer] = Some(publication);
+            return Ok(());
+        }
+        wire::PhaseControl::Ended { owner_count } if round == 0 => {
+            if phase.peer_end_count.replace(owner_count).is_some() {
+                return Err("duplicate phase control Ended".into());
+            }
+            if session.ended[peer] && owner_count != session.counts[peer] as u64 {
+                return Err(
+                    "drained control Ended count differs from the actual Input End prefix".into(),
+                );
+            }
+            return Ok(());
+        }
+        wire::PhaseControl::Check {
+            anchor,
+            host_point_ns,
+        } if session.player == PlayerId::P2 => {
+            if session.ended.iter().any(|ended| *ended)
+                || phase.peer_end_count.is_some()
+                || phase.active.is_some()
+                || phase.sources.iter().any(Option::is_none)
+                || phase.round.checked_add(1) != Some(round)
+            {
+                return Err(
+                    "peer check skips a phase round, missing source or ended lifecycle".into(),
+                );
+            }
+            let sample = maintained
+                .sample()
+                .ok_or("peer check lacks actual clock maintenance")?;
+            if anchor != phase_anchor(sample) {
+                return Err(
+                    "peer check anchor differs from the actual accepted four timestamps".into(),
+                );
+            }
+            let deadline = Instant::now() + RECOVERY_TIMEOUT;
+            phase.round = round;
+            phase.active = Some(new_phase_round(round, anchor, host_point_ns, deadline));
+            emit(
+                events,
+                phase_sampling_event(session, phase.active.as_ref().unwrap(), sample)?,
+            )?;
+            return Ok(());
+        }
+        _ => {}
+    }
+    if session.ended.iter().any(|ended| *ended) || phase.peer_end_count.is_some() {
+        return Err("phase controls cannot revive an ended source".into());
+    }
+    let mut active = phase
+        .active
+        .take()
+        .ok_or("phase control has no active round")?;
+    if round != active.round || Instant::now() >= active.deadline {
+        return Err("phase control round or fixed deadline differs".into());
+    }
+    let deadline = active.deadline;
+    let mut sends = Vec::new();
+    let mut ready = false;
+    let mut schedule = false;
+    let mut gate = false;
+    let mut confirm = false;
+    match message {
+        wire::PhaseControl::Evidence {
+            anchor,
+            host_point_ns,
+            verification,
+            evidence,
+        } if active.step == PhaseStep::Sampling
+            && anchor == active.anchor
+            && host_point_ns == active.host_point_ns
+            && verification == active.verification
+            && active.peer.is_none() =>
+        {
+            if Some((evidence.generation, evidence.source_id)) != phase.sources[peer] {
+                return Err("peer phase evidence replaces the original source".into());
+            }
+            active.peer = Some(evidence);
+            gate = true;
+        }
+        wire::PhaseControl::Gate {
+            anchor,
+            host_point_ns,
+            verification,
+            host_received_ns,
+            correcting,
+        } if session.player == PlayerId::P2
+            && active.step == PhaseStep::Sampling
+            && anchor == active.anchor
+            && host_point_ns == active.host_point_ns
+            && verification == active.verification =>
+        {
+            maintained
+                .check_local_time(sync::now_ns(session.origin)?)
+                .map_err(|error| error.to_string())?;
+            let evidence = [
+                active
+                    .peer
+                    .as_ref()
+                    .ok_or("host gate lacks its original publications")?
+                    .clone(),
+                active
+                    .own
+                    .as_ref()
+                    .ok_or("host gate lacks local original publications")?
+                    .clone(),
+            ];
+            let proof = sync::source_phase_bounds(
+                &mut maintained.clock,
+                anchor.exchange(epoch),
+                &evidence,
+                sync::PhaseWindow {
+                    epoch: session.epoch,
+                    round,
+                    verification,
+                    sources: phase.sources.map(|source| source.unwrap()),
+                    previous: phase.previous,
+                    end: session.prepared.end,
+                    host_point_ns,
+                    host_now_ns: host_received_ns,
+                },
+            )?;
+            if !proof.supports_guard() {
+                return Err("peer phase uncertainty is too wide for the unchanged guard".into());
+            }
+            if correcting == proof.within_guard() {
+                return Err(
+                    "host phase decision differs from the complete original-source bounds".into(),
+                );
+            }
+            if verification {
+                proof.verify_original_resume(
+                    active
+                        .frozen
+                        .map(|frozen| frozen.expect("both actual pause acknowledgments").1),
+                    active
+                        .common_frame
+                        .ok_or("missing scheduled common frame")?,
+                )?;
+            }
+            session.record_phase(round, verification, serde_json::json!({
+                "epoch": epoch, "round": round, "verification": verification,
+                "player": session.player.index() + 1, "actual_anchor": anchor,
+                "host_point_ns": host_point_ns, "host_received_ns": host_received_ns,
+                "own_receipt_ns": sync::now_ns(session.origin)?, "source_evidence": evidence,
+                "source_intervals_frames": proof.source_frames(), "guest_minus_host_frames": proof.difference(),
+                "within_guard": proof.within_guard(), "common_frame": active.common_frame,
+                "original_source_ids": phase.sources, "previous_publications": phase.previous,
+                "frozen_publications": active.frozen.map(|frozen| frozen.map(|value| value.1)),
+                "marker_owner_counts": active.markers,
+            }))?;
+            active.bounds = Some(proof);
+            active.step = if correcting {
+                PhaseStep::GateAck
+            } else {
+                PhaseStep::AwaitLive
+            };
+            sends.push(wire::PhaseControl::GateAck {
+                anchor,
+                host_point_ns,
+                verification,
+            });
+        }
+        wire::PhaseControl::GateAck {
+            anchor,
+            host_point_ns,
+            verification,
+        } if session.player == PlayerId::P1
+            && active.step == PhaseStep::GateAck
+            && anchor == active.anchor
+            && host_point_ns == active.host_point_ns
+            && verification == active.verification =>
+        {
+            let proof = active
+                .bounds
+                .ok_or("phase GateAck lacks the host's original proof")?;
+            if proof.within_guard() {
+                sends.push(wire::PhaseControl::Live {
+                    anchor,
+                    host_point_ns,
+                    verification,
+                });
+                ready = true;
+            } else {
+                if verification {
+                    return Err(
+                        "post-correction gate cannot spend another correction in the same round"
+                            .into(),
+                    );
+                }
+                phase.previous = proof.last_publications().map(Some);
+                active.step = PhaseStep::Pausing;
+                sends.push(wire::PhaseControl::Pause {});
+                emit(
+                    events,
+                    LiveEvent::PhasePausing {
+                        epoch: session.epoch,
+                        round,
+                    },
+                )?;
+            }
+        }
+        wire::PhaseControl::Pause {}
+            if session.player == PlayerId::P2
+                && active.step == PhaseStep::GateAck
+                && !active.verification =>
+        {
+            let proof = active
+                .bounds
+                .ok_or("phase Pause lacks the verified check proof")?;
+            if proof.within_guard() || phase.corrections >= sync::MAX_PHASE_CORRECTIONS {
+                return Err("phase Pause contradicts source guard or correction budget".into());
+            }
+            phase.corrections += 1;
+            phase.previous = proof.last_publications().map(Some);
+            active.step = PhaseStep::Pausing;
+            emit(
+                events,
+                LiveEvent::PhasePausing {
+                    epoch: session.epoch,
+                    round,
+                },
+            )?;
+        }
+        wire::PhaseControl::Frozen {
+            frame,
+            generation,
+            source_id,
+            publication,
+            owner_count,
+        } if active.step == PhaseStep::Pausing && active.frozen[peer].is_none() => {
+            if Some((generation, source_id)) != phase.sources[peer]
+                || SongTime::try_from_seconds_f64(f64::from_bits(publication.position_seconds_bits))
+                    != Some(SongTime::from_frames(frame))
+                || !(0..session.prepared.end).contains(&frame)
+                || phase.previous[peer].is_some_and(|last| {
+                    publication.sequence < last.sequence
+                        || f64::from_bits(publication.position_seconds_bits)
+                            < f64::from_bits(last.position_seconds_bits)
+                        || (publication.sequence == last.sequence && publication != last)
+                        || (publication.sequence > last.sequence
+                            && publication.publication_before_ns < last.publication_after_ns)
+                })
+            {
+                return Err(
+                    "peer frozen source replaced or rewound actual original publication".into(),
+                );
+            }
+            active.frozen[peer] = Some((frame, publication, owner_count));
+            schedule = true;
+        }
+        wire::PhaseControl::Schedule {
+            anchor,
+            host_common_ns,
+            host_verify_ns,
+            common_frame,
+            paused,
+        } if session.player == PlayerId::P2 && active.step == PhaseStep::Pausing => {
+            if active.pending_schedule.is_some() {
+                return Err("repeated pending phase schedule".into());
+            }
+            if active.markers.iter().any(Option::is_none) {
+                active.pending_schedule = Some(wire::PhaseControl::Schedule {
+                    anchor,
+                    host_common_ns,
+                    host_verify_ns,
+                    common_frame,
+                    paused,
+                });
+                phase.active = Some(active);
+                return Ok(());
+            }
+            if active.frozen.iter().any(Option::is_none)
+                || active.frozen.map(|frozen| frozen.unwrap().0) != paused
+                || active
+                    .frozen
+                    .iter()
+                    .zip(active.markers)
+                    .any(|(frozen, count)| frozen.unwrap().2 != count.unwrap())
+                || Some(&common_frame) != paused.iter().max()
+                || host_common_ns.checked_add(100_000_000) != Some(host_verify_ns)
+                || maintained
+                    .sample()
+                    .is_none_or(|sample| phase_anchor(sample) != anchor)
+            {
+                return Err(
+                    "phase schedule differs from actual paired pause fences or fresh clock".into(),
+                );
+            }
+            phase.previous = active.frozen.map(|frozen| Some(frozen.unwrap().1));
+            let sample = maintained.sample().unwrap();
+            let now = sync::now_ns(session.origin)?;
+            let catchup = sync::catchup_ns(common_frame, paused[1])?;
+            let resume = maintained
+                .clock
+                .schedule_start(
+                    session.epoch,
+                    host_common_ns
+                        .checked_sub(catchup)
+                        .ok_or("phase guest catchup underflow")?,
+                    now,
+                    100_000_000,
+                )
+                .map_err(|error| error.to_string())?;
+            let common = maintained
+                .clock
+                .schedule_start(session.epoch, host_common_ns, now, 100_000_000)
+                .map_err(|error| error.to_string())?;
+            let verify = maintained
+                .clock
+                .schedule_start(session.epoch, host_verify_ns, now, 100_000_000)
+                .map_err(|error| error.to_string())?;
+            active.anchor = anchor;
+            active.common_frame = Some(common_frame);
+            active.host_common_ns = Some(host_common_ns);
+            active.host_verify_ns = Some(host_verify_ns);
+            active.plan = Some(sync::ResumePlan {
+                deadline: sync::local_instant(session.origin, resume.guest_start_ns)?,
+                verify_at: sync::local_instant(session.origin, verify.guest_start_ns)?,
+                host_verify_ns,
+                common_frame,
+                timing: phase_timing(
+                    sample,
+                    host_common_ns,
+                    resume.guest_start_ns,
+                    resume.uncertainty_ns,
+                ),
+            });
+            active.step = PhaseStep::Arming;
+            sends.push(wire::PhaseControl::ScheduleAck {
+                anchor,
+                host_common_ns,
+                common_frame,
+                guest_now_ns: now,
+                guest_resume_ns: resume.guest_start_ns,
+                guest_common_ns: common.guest_start_ns,
+                guest_verify_ns: verify.guest_start_ns,
+                uncertainty_ns: resume.uncertainty_ns,
+            });
+            emit(events, phase_scheduled(session, &active)?)?;
+        }
+        wire::PhaseControl::ScheduleAck {
+            anchor,
+            host_common_ns,
+            common_frame,
+            guest_now_ns,
+            guest_resume_ns,
+            guest_common_ns,
+            guest_verify_ns,
+            uncertainty_ns,
+        } if session.player == PlayerId::P1
+            && active.step == PhaseStep::ScheduleAck
+            && anchor == active.anchor
+            && Some(host_common_ns) == active.host_common_ns
+            && Some(common_frame) == active.common_frame =>
+        {
+            if maintained
+                .sample()
+                .is_none_or(|sample| phase_anchor(sample) != anchor)
+            {
+                return Err("phase schedule Ack lost its original clock anchor".into());
+            }
+            let delay = sync::catchup_ns(common_frame, active.frozen[1].unwrap().0)?;
+            let resume = maintained
+                .clock
+                .schedule_start(
+                    session.epoch,
+                    host_common_ns
+                        .checked_sub(delay)
+                        .ok_or("phase peer catchup underflow")?,
+                    guest_now_ns,
+                    100_000_000,
+                )
+                .map_err(|error| error.to_string())?;
+            let common = maintained
+                .clock
+                .schedule_start(session.epoch, host_common_ns, guest_now_ns, 100_000_000)
+                .map_err(|error| error.to_string())?;
+            let verify = maintained
+                .clock
+                .schedule_start(
+                    session.epoch,
+                    active.host_verify_ns.unwrap(),
+                    guest_now_ns,
+                    100_000_000,
+                )
+                .map_err(|error| error.to_string())?;
+            if [
+                guest_resume_ns,
+                guest_common_ns,
+                guest_verify_ns,
+                uncertainty_ns,
+            ] != [
+                resume.guest_start_ns,
+                common.guest_start_ns,
+                verify.guest_start_ns,
+                resume.uncertainty_ns,
+            ] {
+                return Err(
+                    "phase schedule Ack differs from the complete future uncertainty interval"
+                        .into(),
+                );
+            }
+            active.step = PhaseStep::Arming;
+            emit(events, phase_scheduled(session, &active)?)?;
+        }
+        wire::PhaseControl::Armed {} if active.step == PhaseStep::Arming && !active.peer_armed => {
+            active.peer_armed = true;
+            confirm = true;
+        }
+        wire::PhaseControl::Confirmed {}
+            if active.step == PhaseStep::Arming
+                && active.own_armed
+                && active.peer_armed
+                && !active.peer_confirmed =>
+        {
+            active.peer_confirmed = true;
+            confirm = true;
+        }
+        wire::PhaseControl::Verify {
+            anchor,
+            host_point_ns,
+        } if session.player == PlayerId::P2
+            && active.step == PhaseStep::VerifyClock
+            && Some(host_point_ns) == active.host_verify_ns
+            && anchor.clock_round > active.anchor.clock_round =>
+        {
+            let sample = maintained
+                .sample()
+                .ok_or("verification lacks actual refreshed clock")?;
+            if phase_anchor(sample) != anchor {
+                return Err("verification refresh is not the actual accepted CBMC exchange".into());
+            }
+            active.anchor = anchor;
+            active.host_point_ns = host_point_ns;
+            active.verification = true;
+            active.own = None;
+            active.peer = None;
+            active.bounds = None;
+            active.step = PhaseStep::Sampling;
+            emit(events, phase_sampling_event(session, &active, sample)?)?;
+        }
+        wire::PhaseControl::Live {
+            anchor,
+            host_point_ns,
+            verification,
+        } if session.player == PlayerId::P2
+            && active.step == PhaseStep::AwaitLive
+            && anchor == active.anchor
+            && host_point_ns == active.host_point_ns
+            && verification == active.verification =>
+        {
+            ready = true;
+        }
+        _ => return Err("phase reliable control does not match its bounded transition".into()),
+    }
+    phase.active = Some(active);
+    for message in sends {
+        phase_send(session, control, phase, round, deadline, message).await?;
+    }
+    if gate {
+        phase_try_gate(session, control, phase, maintained).await?;
+    }
+    if schedule {
+        phase_try_schedule(session, control, phase, maintained).await?;
+    }
+    if confirm {
+        phase_try_confirm(session, control, phase).await?;
+    }
+    if ready {
+        phase_finish(session, events, phase, mode).await?;
+    }
+    Ok(())
+}
+
 struct Continuation {
     invitation: Invitation,
     capability: [u8; 32],
     used: bool,
     candidates: u8,
     maintenance_round: u64,
+    phase: PhaseState,
     pending: JoinSet<Result<AuthenticatedContinuation, String>>,
 }
 
@@ -981,9 +2353,22 @@ struct ResumeSignals {
     armed: Option<oneshot::Sender<()>>,
     observed: Option<oneshot::Sender<RecoveryObserved>>,
 }
-type ResumeGate<'a> = Pin<Box<dyn Future<Output = Result<Duration, String>> + 'a>>;
+type ResumeGate<'a> = Pin<Box<dyn Future<Output = Result<(Duration, ControlIo), String>> + 'a>>;
+type PhaseRead = Pin<
+    Box<
+        dyn Future<
+            Output = (
+                quinn::RecvStream,
+                wire::PhaseBudget,
+                Result<Control, String>,
+            ),
+        >,
+    >,
+>;
 
 struct ExchangeControl<'a> {
+    control: Option<ControlIo>,
+    phase_read: Option<PhaseRead>,
     gate: Option<ResumeGate<'a>>,
     signals: Option<ResumeSignals>,
     deadline: Instant,
@@ -1407,6 +2792,126 @@ fn publication_wire(
     })
 }
 
+fn phase_publication_wire(
+    publication: PhasePublication,
+    origin: Instant,
+) -> Result<wire::PhasePublication, String> {
+    let convert = |at: std::time::Instant| -> Result<u64, String> {
+        u64::try_from(
+            at.checked_duration_since(origin.into_std())
+                .ok_or("phase publication predates session origin")?
+                .as_nanos(),
+        )
+        .map_err(|_| "phase publication time overflow".into())
+    };
+    Ok(wire::PhasePublication {
+        sequence: publication.sequence,
+        position_seconds_bits: publication.position_seconds_bits,
+        publication_before_ns: convert(publication.published_between[0])?,
+        publication_after_ns: convert(publication.published_between[1])?,
+    })
+}
+
+fn phase_evidence_wire(
+    local: PhaseObserved,
+    origin: Instant,
+) -> Result<wire::PhaseEvidence, String> {
+    let collected_at_ns = u64::try_from(
+        local
+            .collected_at
+            .checked_duration_since(origin.into_std())
+            .ok_or("phase collection predates session origin")?
+            .as_nanos(),
+    )
+    .map_err(|_| "phase collection time overflow")?;
+    let evidence = wire::PhaseEvidence {
+        generation: local.generation,
+        source_id: local.source_id,
+        collected_at_ns,
+        publications: local
+            .publications
+            .into_iter()
+            .map(|row| phase_publication_wire(row, origin))
+            .collect::<Result<_, _>>()?,
+    };
+    evidence.validate()?;
+    if local.collected_at > std::time::Instant::now() {
+        return Err("phase collection lies after its real delivery".into());
+    }
+    Ok(evidence)
+}
+
+fn validate_phase_frozen(
+    session: &Session,
+    frozen: &PhaseFrozen,
+    original: (u64, u64),
+    previous: Option<wire::PhasePublication>,
+) -> Result<wire::PhasePublication, String> {
+    let publication = phase_publication_wire(frozen.publication, session.origin)?;
+    if frozen.replay.epoch() != session.epoch
+        || frozen.replay.identity().content_id != session.prepared.identity.content_id
+        || frozen.replay.identity().stage_compiler_version
+            != session.prepared.identity.stage_compiler_version
+        || original != (frozen.source_generation, frozen.source_id)
+        || frozen.paused_at > std::time::Instant::now()
+        || frozen.publication.published_between[1] > frozen.paused_at
+        || frozen
+            .paused_at
+            .checked_duration_since(frozen.publication.published_between[0])
+            .is_none_or(|age| age > Duration::from_millis(50))
+        || SongTime::try_from_seconds_f64(f64::from_bits(publication.position_seconds_bits))
+            != Some(frozen.paused_frame)
+        || !(0..session.prepared.end).contains(&frozen.paused_frame.frames())
+        || publication.sequence == 0
+        || publication.publication_before_ns > publication.publication_after_ns
+    {
+        return Err("actual phase pause identity, cursor or acknowledgment differs".into());
+    }
+    if previous.is_some_and(|last| {
+        publication.sequence < last.sequence
+            || f64::from_bits(publication.position_seconds_bits)
+                < f64::from_bits(last.position_seconds_bits)
+            || (publication.sequence == last.sequence && publication != last)
+            || (publication.sequence > last.sequence
+                && publication.publication_before_ns < last.publication_after_ns)
+    }) {
+        return Err("phase frozen publication rewinds the accepted original source".into());
+    }
+    frozen
+        .replay
+        .replay(
+            &session.prepared.identity.content_id,
+            RULESET,
+            session.prepared.anchors.clone(),
+            cocobeat_schema::DuoRules::default(),
+        )
+        .map_err(|_| "phase frozen Replay identity or core facts are invalid")?;
+    for player in [session.player, other(session.player)] {
+        let gui: Vec<_> = frozen
+            .replay
+            .facts()
+            .iter()
+            .copied()
+            .filter(|fact| session::seat(*fact) == player)
+            .collect();
+        let worker: Vec<_> = session
+            .replay
+            .facts()
+            .iter()
+            .copied()
+            .filter(|fact| session::seat(*fact) == player)
+            .collect();
+        if (player == session.player && gui != worker)
+            || (player != session.player && !worker.starts_with(&gui))
+        {
+            return Err(
+                "phase frozen Replay differs from the accepted owner fence or peer prefix".into(),
+            );
+        }
+    }
+    Ok(publication)
+}
+
 fn check_publication_continuation(local: &RecoveryObserved) -> Result<(), String> {
     let first = local
         .publications
@@ -1422,11 +2927,11 @@ fn check_publication_continuation(local: &RecoveryObserved) -> Result<(), String
 
 async fn resume_control(
     connection: &Connection,
-    control: &mut ControlIo,
+    mut control: ControlIo,
     events: &std_mpsc::SyncSender<LiveEvent>,
     context: ResumeContext,
     acknowledgments: (oneshot::Receiver<()>, oneshot::Receiver<RecoveryObserved>),
-) -> Result<Duration, String> {
+) -> Result<(Duration, ControlIo), String> {
     tokio::time::timeout_at(context.deadline, async {
         let ResumeContext {
             epoch,
@@ -1442,7 +2947,7 @@ async fn resume_control(
         let mut sources = [(peer.generation, peer.source_id); 2];
         sources[player.index()] = (frozen.source_generation, frozen.source_id);
         let plan =
-            sync::arm_resume(connection, control, epoch, player, origin, paused, end).await?;
+            sync::arm_resume(connection, &mut control, epoch, player, origin, paused, end).await?;
         emit(
             events,
             LiveEvent::RecoveryScheduled {
@@ -1508,7 +3013,7 @@ async fn resume_control(
         let mut refreshed = NetworkTiming::default();
         let mut clock = sync::capture_clock(
             connection,
-            control,
+            &mut control,
             epoch,
             sync::RESUME_ATTEMPT,
             player,
@@ -1645,7 +3150,7 @@ async fn resume_control(
         if Instant::now() >= context.deadline {
             return Err("confirmed resume exceeded the fixed recovery deadline".into());
         }
-        Ok(pause_extension)
+        Ok((pause_extension, control))
     })
     .await
     .map_err(|_| "resume exceeded the total recovery deadline")?
@@ -1660,8 +3165,10 @@ async fn run_started(
     owned_endpoint: &mut Option<Endpoint>,
     deadline: Instant,
 ) -> Result<(), String> {
-    let (endpoint, connection, mut control, mut inputs) = transport;
+    let (endpoint, connection, control, mut inputs) = transport;
     let mut mode = ExchangeControl {
+        control: Some(control),
+        phase_read: None,
         gate: None,
         signals: None,
         deadline,
@@ -1680,6 +3187,10 @@ async fn run_started(
     .await;
     let (candidate, cause) = match outcome {
         Ok(None) => {
+            let mut control = mode
+                .control
+                .take()
+                .ok_or("live control disappeared before Finish")?;
             return tokio::time::timeout_at(mode.deadline, async {
                 if session.player == PlayerId::P1 {
                     session::host_finish(session, &connection, &mut control).await
@@ -1698,8 +3209,9 @@ async fn run_started(
         }
         Err(error) => return Err(error.into_message()),
     };
+    drop(mode);
     drop(inputs);
-    let (connection, mut control, mut inputs, context) = freeze_and_reconnect(
+    let (connection, control, mut inputs, context) = freeze_and_reconnect(
         session,
         (&connection, endpoint, candidate),
         commands,
@@ -1714,12 +3226,14 @@ async fn run_started(
     let (observed_tx, observed_rx) = oneshot::channel();
     let gate = Box::pin(resume_control(
         &connection,
-        &mut control,
+        control,
         events,
         context,
         (armed_rx, observed_rx),
     ));
     let mut mode = ExchangeControl {
+        control: None,
+        phase_read: None,
         gate: Some(gate),
         signals: Some(ResumeSignals {
             armed: Some(armed_tx),
@@ -1745,6 +3259,10 @@ async fn run_started(
         Err(error) => return Err(error.into_message()),
     }
     let finish_deadline = mode.deadline;
+    let mut control = mode
+        .control
+        .take()
+        .ok_or("continued control disappeared before Finish")?;
     drop(mode);
     tokio::time::timeout_at(finish_deadline, async {
         if session.player == PlayerId::P1 {
@@ -1810,7 +3328,12 @@ async fn exchange(
             sync::now_ns(session.origin)?,
         )?)
     };
-    while !session.ended.iter().all(|ended| *ended) {
+    if let Some(control) = mode.control.as_mut() {
+        mode.phase_read = Some(phase_reader(control, &mut continuation.phase)?);
+    }
+    while !session.ended.iter().all(|ended| *ended)
+        || (mode.control.is_some() && continuation.phase.peer_end_count.is_none())
+    {
         let peer_ended = session.ended[peer.index()];
         let receiving_closed = peer_ended || deferred_end.is_some();
         let message = {
@@ -1829,8 +3352,38 @@ async fn exchange(
                     .map(|clock| sync::local_instant(session.origin, clock.next_deadline_ns()?))
                     .transpose()?
                     .unwrap_or(mode.deadline);
+                let phase_deadline = continuation
+                    .phase
+                    .active
+                    .as_ref()
+                    .map_or(mode.deadline, |phase| phase.deadline);
+                let phase_verify_cutoff = continuation
+                    .phase
+                    .active
+                    .as_ref()
+                    .filter(|phase| phase.step == PhaseStep::VerifyClock)
+                    .and_then(|phase| phase.plan.as_ref())
+                    .and_then(|plan| plan.verify_at.checked_sub(Duration::from_millis(40)))
+                    .unwrap_or(phase_deadline);
                 tokio::select! {
                     message = &mut receiving => break Some(message.map_err(ExchangeError::from)?),
+                    result = async { mode.phase_read.as_mut().expect("guarded phase reader").await }, if mode.phase_read.is_some() => {
+                        let (stream, budget, message) = result;
+                        mode.phase_read = None;
+                        let message = message?;
+                        continuation.phase.received = budget;
+                        let mut control = mode.control.take().ok_or("phase control sender disappeared")?;
+                        control.recv = Some(stream);
+                        let clock = maintenance.as_mut().ok_or("phase control arrived while authenticated recovery owns its clock")?;
+                        phase_control(session, &mut control, events, &mut continuation.phase, clock, mode, message).await?;
+                        if continuation.phase.peer_end_count.is_none() {
+                            mode.phase_read = Some(phase_reader(&mut control, &mut continuation.phase)?);
+                        }
+                        mode.control = Some(control);
+                        if session.ended.iter().all(|ended| *ended) && continuation.phase.peer_end_count.is_some() { break None; }
+                    }
+                    _ = tokio::time::sleep_until(phase_deadline), if continuation.phase.active.is_some() => return Err("source phase exceeded its original fixed deadline".into()),
+                    _ = tokio::time::sleep_until(phase_verify_cutoff), if continuation.phase.active.as_ref().is_some_and(|phase| phase.step == PhaseStep::VerifyClock) => return Err("source phase lacks a fresh CBMC before its fixed verification window".into()),
                     reason = connection.closed() => return Err(wire::LiveIoError::Transport(reason).into()),
                     error = session::extra_bidi(connection) => return Err(error.into()),
                     _ = tokio::time::sleep_until(mode.deadline) => return Err("live round or recovery exceeded its explicit deadline".into()),
@@ -1846,6 +3399,9 @@ async fn exchange(
                         }
                         if let Some(sample) = result.sample {
                             emit(events, LiveEvent::ClockMaintained { epoch: sample.estimate.epoch, round: sample.round, exchange: sample.exchange })?;
+                            if let Some(control) = mode.control.as_mut() {
+                                phase_clock_progress(session, control, events, &mut continuation.phase, clock).await?;
+                            }
                         }
                     }
                     _ = tokio::time::sleep_until(maintenance_deadline), if maintenance.is_some() => {
@@ -1858,7 +3414,8 @@ async fn exchange(
                         continuation.maintenance_round = clock.round();
                     }
                     result = async { mode.gate.as_mut().expect("guarded resume gate").await }, if mode.gate.is_some() => {
-                        let pause = result?;
+                        let (pause, control) = result?;
+                        mode.control = Some(control);
                         if Instant::now() >= mode.deadline { return Err("resume Ready missed its fixed deadline".into()); }
                         mode.gate = None;
                         mode.signals = None;
@@ -1871,6 +3428,9 @@ async fn exchange(
                         }
                         if Instant::now() >= mode.deadline { return Err("deferred peer facts exceeded the fixed recovery deadline".into()); }
                         mode.recovering = false;
+                        if let Some(control) = mode.control.as_mut() {
+                            mode.phase_read = Some(phase_reader(control, &mut continuation.phase)?);
+                        }
                         mode.deadline = mode.running_deadline.checked_add(pause).ok_or("acknowledged pause deadline overflow")?;
                         maintenance = Some(sync::ClockMaintenance::new(session.epoch, session.player, continuation.maintenance_round, sync::now_ns(session.origin)?)?);
                         emit(events, LiveEvent::RecoveryReady { epoch: session.epoch, attempt: sync::RESUME_ATTEMPT })?;
@@ -1897,11 +3457,15 @@ async fn exchange(
                     command = commands.recv(), if !session.ended[session.player.index()] => {
                         match command.ok_or("live command sender stopped before End")? {
                             LiveCommand::Fact(input) => {
-                                if mode.recovering && matches!(input, DuoInput::Hit(_)) {
+                                if (mode.recovering || continuation.phase.active.as_ref().is_some_and(|phase| phase.markers[session.player.index()].is_some()))
+                                    && matches!(input, DuoInput::Hit(_)) {
                                     return Err("performing Hit is disabled while original audio catches up".into());
                                 }
                                 ingest_local(session, input)?;
-                                tokio::time::timeout_at(mode.deadline, wire::send_live_input(send, written,
+                                if let DuoInput::Watermark { through, .. } = input {
+                                    continuation.phase.progress_frame = continuation.phase.progress_frame.max(through.frames());
+                                }
+                                tokio::time::timeout_at(mode.deadline.min(phase_deadline), wire::send_live_input(send, written,
                                     &Input::Facts { epoch: session.epoch.0, facts: vec![Fact::from_input(input)] }))
                                     .await.map_err(|_| "fact write exceeded the round or recovery deadline")?
                                     .map_err(ExchangeError::from)?;
@@ -1909,10 +3473,21 @@ async fn exchange(
                             LiveCommand::End if !mode.recovering => {
                                 let count = session.counts[session.player.index()] as u64;
                                 session.end_live(session.player, count, session.prepared.final_through)?;
-                                tokio::time::timeout_at(mode.deadline, wire::send_live_input(send, written,
+                                tokio::time::timeout_at(mode.deadline.min(phase_deadline), wire::send_live_input(send, written,
                                     &Input::End { epoch: session.epoch.0, fact_count: count, final_through: session.prepared.final_through }))
                                     .await.map_err(|_| "End write exceeded the round deadline")?.map_err(ExchangeError::from)?;
                                 send.finish().map_err(|_| "finish live input stream failed")?;
+                                if let Some(control) = mode.control.as_mut() {
+                                    continuation.phase.active = None;
+                                    phase_send(session, control, &mut continuation.phase, 0, mode.deadline.min(phase_deadline),
+                                        wire::PhaseControl::Ended { owner_count: count }).await?;
+                                }
+                            }
+                            command @ (LiveCommand::PhaseSource { .. } | LiveCommand::PhaseObserved { .. }
+                                | LiveCommand::PhaseFrozen { .. } | LiveCommand::PhaseArmed { .. }) if !mode.recovering => {
+                                let control = mode.control.as_mut().ok_or("phase command has no live control stream")?;
+                                let clock = maintenance.as_mut().ok_or("phase command has no maintained clock")?;
+                                phase_command(session, (control, send, written), &mut continuation.phase, clock, command).await?;
                             }
                             LiveCommand::RequestRecovery { epoch } if epoch == session.epoch && !mode.recovering && !continuation.used => {
                                 return Err(ExchangeError::Recoverable("explicit local connection maintenance"));
@@ -1931,7 +3506,8 @@ async fn exchange(
                             }
                             _ => return Err("unexpected live command or recovery generation".into()),
                         }
-                        if session.ended.iter().all(|ended| *ended) { break None; }
+                        if session.ended.iter().all(|ended| *ended)
+                            && (mode.control.is_none() || continuation.phase.peer_end_count.is_some()) { break None; }
                     }
                     _ = tokio::time::sleep_until(peer_progressed + session::IDLE), if !session.ended[peer.index()] && deferred_end.is_none() => return Err(ExchangeError::Recoverable("reliable peer progress deadline")),
                 }
@@ -1939,8 +3515,90 @@ async fn exchange(
         };
         if let Some(message) = message {
             match message {
+                Input::PhasePaused {
+                    epoch,
+                    round,
+                    fact_count,
+                } if epoch == session.epoch.0 && !mode.recovering => {
+                    let active = continuation
+                        .phase
+                        .active
+                        .as_mut()
+                        .ok_or("phase FIFO marker has no active round")?;
+                    if round != active.round
+                        || active.markers[peer.index()].is_some()
+                        || !matches!(active.step, PhaseStep::Pausing | PhaseStep::GateAck)
+                        || fact_count != session.counts[peer.index()] as u64
+                    {
+                        return Err(
+                            "phase FIFO marker differs from the complete accepted peer prefix"
+                                .into(),
+                        );
+                    }
+                    active.markers[peer.index()] = Some(fact_count);
+                    let pending = if active.markers.iter().all(Option::is_some) {
+                        active.pending_schedule.take()
+                    } else {
+                        None
+                    };
+                    let mut control = mode
+                        .control
+                        .take()
+                        .ok_or("phase marker has no control sender")?;
+                    let clock = maintenance
+                        .as_mut()
+                        .ok_or("phase marker has no actual maintained clock")?;
+                    if let Some(message) = pending {
+                        phase_control(
+                            session,
+                            &mut control,
+                            events,
+                            &mut continuation.phase,
+                            clock,
+                            mode,
+                            Control::Phase {
+                                epoch,
+                                round,
+                                message,
+                            },
+                        )
+                        .await?;
+                    } else {
+                        phase_try_schedule(session, &mut control, &mut continuation.phase, clock)
+                            .await?;
+                    }
+                    mode.control = Some(control);
+                }
                 Input::Facts { epoch, facts } if epoch == session.epoch.0 => {
-                    if mode.recovering
+                    if continuation
+                        .phase
+                        .active
+                        .as_ref()
+                        .is_some_and(|phase| phase.markers[peer.index()].is_some())
+                        && (!continuation.phase.deferred_peer.is_empty()
+                            || facts.iter().any(|fact| matches!(fact, Fact::Hit { .. })))
+                    {
+                        if continuation
+                            .phase
+                            .active
+                            .as_ref()
+                            .is_none_or(|phase| phase.step != PhaseStep::AwaitLive)
+                            || continuation
+                                .phase
+                                .deferred_peer
+                                .len()
+                                .checked_add(facts.len())
+                                .is_none_or(|count| {
+                                    count > EVENT_CAPACITY * 64
+                                        || count > MAX_FACTS - session.replay.facts().len()
+                                })
+                        {
+                            return Err(
+                                "performing peer Hit crosses the original-source phase gate".into(),
+                            );
+                        }
+                        continuation.phase.deferred_peer.extend(facts);
+                    } else if mode.recovering
                         && (!deferred_peer.is_empty()
                             || facts.iter().any(|fact| matches!(fact, Fact::Hit { .. })))
                     {
@@ -1968,15 +3626,42 @@ async fn exchange(
                     final_through,
                 } if epoch == session.epoch.0 => {
                     // Verify the real stream EOF before parking its End behind the fixed source gate
-                    tokio::time::timeout_at(mode.deadline, wire::ensure_eof(recv))
+                    let eof_deadline = continuation
+                        .phase
+                        .active
+                        .as_ref()
+                        .map_or(mode.deadline, |phase| mode.deadline.min(phase.deadline));
+                    tokio::time::timeout_at(eof_deadline, wire::ensure_eof(recv))
                         .await
                         .map_err(|_| "peer End EOF exceeded the live or recovery deadline")??;
-                    if mode.recovering {
+                    if continuation.phase.active.as_ref().is_some_and(|phase| {
+                        phase.step == PhaseStep::AwaitLive && phase.markers[peer.index()].is_some()
+                    }) {
+                        if continuation
+                            .phase
+                            .deferred_end
+                            .replace((fact_count, final_through))
+                            .is_some()
+                        {
+                            return Err("duplicate peer End during source phase handoff".into());
+                        }
+                    } else if mode.recovering {
                         if deferred_end.replace((fact_count, final_through)).is_some() {
                             return Err("duplicate peer End during gate handoff".into());
                         }
                     } else {
                         session.end_live(peer, fact_count, final_through)?;
+                        if continuation
+                            .phase
+                            .peer_end_count
+                            .is_some_and(|count| count != fact_count)
+                        {
+                            return Err(
+                                "peer phase control Ended differs from actual Input End count"
+                                    .into(),
+                            );
+                        }
+                        continuation.phase.active = None;
                     }
                 }
                 _ => return Err("unexpected live input state, attempt or epoch".into()),
@@ -2039,6 +3724,61 @@ mod tests {
     }
 
     #[test]
+    fn phase_frozen_snapshot_preserves_original_raw_cursor_and_exact_owner_fence() {
+        let mut session = fixture();
+        session.origin = Instant::now() - Duration::from_secs(1);
+        let own = hit(9, PlayerId::P1, 0, 10_000);
+        ingest_local(&mut session, own).unwrap();
+        let at = std::time::Instant::now() - Duration::from_millis(5);
+        let publication = PhasePublication {
+            sequence: 10,
+            position_seconds_bits: (10_000.0_f64 / 48_000.0).to_bits(),
+            published_between: [at - Duration::from_micros(50), at],
+        };
+        let frozen = PhaseFrozen {
+            replay: session.replay.clone(),
+            paused_frame: SongTime::from_frames(10_000),
+            source_generation: 11,
+            source_id: 21,
+            paused_at: at + Duration::from_millis(1),
+            publication,
+        };
+        let raw = validate_phase_frozen(&session, &frozen, (11, 21), None).unwrap();
+        assert_eq!(raw.position_seconds_bits, publication.position_seconds_bits);
+        assert_eq!(raw.sequence, 10);
+        assert!(validate_phase_frozen(&session, &frozen, (12, 21), None).is_err());
+        assert!(
+            validate_phase_frozen(
+                &session,
+                &frozen,
+                (11, 21),
+                Some(wire::PhasePublication {
+                    sequence: 11,
+                    ..raw
+                })
+            )
+            .is_err()
+        );
+        let mut wrong = frozen.clone();
+        wrong.publication.position_seconds_bits = f64::NAN.to_bits();
+        assert!(validate_phase_frozen(&session, &wrong, (11, 21), None).is_err());
+        let mut stale = frozen.clone();
+        stale.publication.published_between[0] = at - Duration::from_millis(51);
+        assert!(validate_phase_frozen(&session, &stale, (11, 21), None).is_err());
+        let before_new_owner = frozen.clone();
+        let next = DuoInput::Watermark {
+            epoch: session.epoch,
+            player: session.player,
+            through: SongTime::from_frames(10_001),
+        };
+        ingest_local(&mut session, next).unwrap();
+        assert!(
+            validate_phase_frozen(&session, &before_new_owner, (11, 21), None).is_err(),
+            "a pause marker cannot discard the already accepted next Watermark"
+        );
+    }
+
+    #[test]
     #[ignore = "explicit real host loopback required"]
     fn active_clock_maintenance_refreshes_beside_the_original_fact_fifo() {
         session::runtime().unwrap().block_on(async {
@@ -2064,6 +3804,8 @@ mod tests {
                 let (guest_events, guest_receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
                 let deadline = Instant::now() + Duration::from_secs(6);
                 let mut host_mode = ExchangeControl {
+                    control: None,
+                    phase_read: None,
                     gate: None,
                     signals: None,
                     deadline,
@@ -2071,6 +3813,8 @@ mod tests {
                     recovering: false,
                 };
                 let mut guest_mode = ExchangeControl {
+                    control: None,
+                    phase_read: None,
                     gate: None,
                     signals: None,
                     deadline,
@@ -2083,6 +3827,7 @@ mod tests {
                     used: true,
                     candidates: 0,
                     maintenance_round: 0,
+                    phase: PhaseState::default(),
                     pending: JoinSet::new(),
                 };
                 let mut guest_continuation = Continuation {
@@ -2091,6 +3836,7 @@ mod tests {
                     used: true,
                     candidates: 0,
                     maintenance_round: 0,
+                    phase: PhaseState::default(),
                     pending: JoinSet::new(),
                 };
                 let host = exchange(
@@ -2572,6 +4318,147 @@ mod tests {
 
     #[test]
     #[ignore = "explicit real host loopback required"]
+    fn phase_gate_keeps_later_watermark_behind_hit_and_bounds_slow_end_eof() {
+        session::runtime().unwrap().block_on(async {
+            tokio::time::timeout(Duration::from_secs(2), async {
+                let (host_endpoint, invitation) = listen("127.0.0.1:0".parse().unwrap()).unwrap();
+                let mut owned_endpoint = None;
+                let guest = connect_owned(&invitation, &mut owned_endpoint);
+                let host = async { host_endpoint.accept().await.unwrap().await.unwrap() };
+                let (guest, host_connection) = tokio::join!(guest, host);
+                let (_, guest_connection) = guest.unwrap();
+                let (host_inputs, guest_inputs) = tokio::join!(
+                    session::open_inputs(&host_connection, PlayerId::P1, 9),
+                    session::open_inputs(&guest_connection, PlayerId::P2, 9)
+                );
+                let mut host_inputs = host_inputs.unwrap();
+                let mut guest_inputs = guest_inputs.unwrap();
+                let mut state = fixture();
+                state
+                    .ingest(PlayerId::P2, Fact::Watermark { through: -2400 })
+                    .unwrap();
+                let (_sender, mut commands) = mpsc::channel(COMMAND_CAPACITY);
+                let (events, receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
+                let started = Instant::now();
+                let deadline = started + Duration::from_millis(500);
+                let mut active = new_phase_round(
+                    1,
+                    wire::PhaseAnchor {
+                        clock_round: 1,
+                        guest_send_ns: 1,
+                        host_receive_ns: 2,
+                        host_send_ns: 3,
+                        guest_receive_ns: 4,
+                    },
+                    5,
+                    deadline,
+                );
+                active.step = PhaseStep::AwaitLive;
+                active.markers[PlayerId::P2.index()] = Some(1);
+                let phase = PhaseState {
+                    active: Some(active),
+                    ..PhaseState::default()
+                };
+                let mut continuation = Continuation {
+                    invitation,
+                    capability: [0; 32],
+                    used: true,
+                    candidates: 0,
+                    maintenance_round: 0,
+                    phase,
+                    pending: JoinSet::new(),
+                };
+                let mut mode = ExchangeControl {
+                    control: None,
+                    phase_read: None,
+                    gate: None,
+                    signals: None,
+                    deadline: started + Duration::from_secs(4),
+                    running_deadline: started + Duration::from_secs(4),
+                    recovering: false,
+                };
+                let first = Fact::Hit {
+                    seq: 0,
+                    frame: 10_000,
+                };
+                let later = Fact::Watermark { through: 68_881 };
+                let peer = async {
+                    for fact in [first, later] {
+                        wire::send_live_input(
+                            &mut guest_inputs.send,
+                            &mut guest_inputs.written,
+                            &Input::Facts {
+                                epoch: 9,
+                                facts: vec![fact],
+                            },
+                        )
+                        .await
+                        .unwrap();
+                    }
+                    wire::send_live_input(
+                        &mut guest_inputs.send,
+                        &mut guest_inputs.written,
+                        &Input::End {
+                            epoch: 9,
+                            fact_count: 3,
+                            final_through: 68_881,
+                        },
+                    )
+                    .await
+                    .unwrap();
+                    // Leave FIN absent so the actual EOF read must honor the shorter active deadline
+                    tokio::time::sleep_until(started + Duration::from_millis(700)).await;
+                    assert!(
+                        matches!(receiver.try_recv(), Err(std_mpsc::TryRecvError::Empty)),
+                        "a later watermark cannot publish ahead of its parked Hit"
+                    );
+                };
+                let (result, ()) = tokio::join!(
+                    exchange(
+                        &mut state,
+                        (&host_connection, &host_endpoint),
+                        &mut host_inputs,
+                        &mut commands,
+                        &events,
+                        &mut continuation,
+                        &mut mode
+                    ),
+                    peer
+                );
+                let error = match result {
+                    Err(error) => error.into_message(),
+                    Ok(_) => panic!("missing FIN unexpectedly completed the active phase"),
+                };
+                assert_eq!(error, "peer End EOF exceeded the live or recovery deadline");
+                assert!(
+                    Instant::now() < started + Duration::from_secs(1),
+                    "blocking EOF cannot spend the four-second whole-round deadline"
+                );
+                assert_eq!(state.counts, [0, 1]);
+                assert_eq!(state.next_seq, [0, 0]);
+                assert_eq!(continuation.phase.deferred_peer, [first, later]);
+                accept_peer_batch(
+                    &mut state,
+                    PlayerId::P2,
+                    &std::mem::take(&mut continuation.phase.deferred_peer),
+                    &events,
+                )
+                .unwrap();
+                assert_eq!(state.counts, [0, 3]);
+                assert_eq!(state.next_seq, [0, 1]);
+                state.verify_replay(&state.replay).unwrap();
+                host_endpoint.close(0u32.into(), b"QA complete");
+                if let Some(endpoint) = owned_endpoint {
+                    endpoint.close(0u32.into(), b"QA complete");
+                }
+            })
+            .await
+            .expect("bounded actual Phase FIFO and slow EOF regression");
+        });
+    }
+
+    #[test]
+    #[ignore = "explicit real host loopback required"]
     fn recovery_gate_parks_real_peer_end_and_eof_after_fifo_facts() {
         session::runtime().unwrap().block_on(async {
             tokio::time::timeout(Duration::from_secs(5), async {
@@ -2587,9 +4474,17 @@ mod tests {
                 let mut state = fixture();
                 let (sender, mut commands) = mpsc::channel(COMMAND_CAPACITY);
                 let (events, receiver) = std_mpsc::sync_channel(EVENT_CAPACITY);
+                let control_guest = async {
+                    let mut control = ControlIo::new(guest_connection.open_bi().await.unwrap());
+                    wire::send_phase_control(&mut control.send, &mut wire::PhaseBudget::default(),
+                        &Control::Phase { epoch: 9, round: 0, message: wire::PhaseControl::Ended { owner_count: 3 } }).await.unwrap();
+                    control
+                };
+                let control_host = async { ControlIo::new(host_connection.accept_bi().await.unwrap()) };
+                let (_guest_control, host_control) = tokio::join!(control_guest, control_host);
                 let (gate_sender, gate_receiver) = oneshot::channel();
-                let mut mode = ExchangeControl { gate: Some(Box::pin(async { gate_receiver.await.map_err(|_| "test gate cancelled".to_owned()) })), signals: None, deadline: Instant::now() + Duration::from_secs(4), running_deadline: Instant::now() + Duration::from_secs(4), recovering: true };
-                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, maintenance_round: 0, pending: JoinSet::new() };
+                let mut mode = ExchangeControl { control: None, phase_read: None, gate: Some(Box::pin(async { gate_receiver.await.map_err(|_| "test gate cancelled".to_owned()) })), signals: None, deadline: Instant::now() + Duration::from_secs(4), running_deadline: Instant::now() + Duration::from_secs(4), recovering: true };
+                let mut continuation = Continuation { invitation, capability: [0;32], used: true, candidates: 0, maintenance_round: 0, phase: PhaseState::default(), pending: JoinSet::new() };
                 let exchange = exchange(&mut state, (&host_connection, &host_endpoint), &mut host_inputs, &mut commands, &events, &mut continuation, &mut mode);
                 let peer = async {
                     wire::send_live_input(&mut guest_inputs.send, &mut guest_inputs.written, &Input::Facts { epoch: 9, facts: vec![Fact::Watermark { through: -2400 }] }).await.unwrap();
@@ -2601,7 +4496,7 @@ mod tests {
                     guest_inputs.send.finish().unwrap();
                     tokio::time::sleep(Duration::from_millis(200)).await;
                     assert!(matches!(receiver.try_recv(), Err(std_mpsc::TryRecvError::Empty)), "post-Live peer facts/End remain behind the pending local gate");
-                    gate_sender.send(Duration::from_millis(10)).unwrap();
+                    assert!(gate_sender.send((Duration::from_millis(10), host_control)).is_ok());
                     let mut actual = Vec::new();
                     loop {
                         match receiver.try_recv() {

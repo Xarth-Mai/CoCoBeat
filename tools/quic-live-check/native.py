@@ -157,7 +157,7 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                 status = json.loads((network / "status.json").read_text())
                 assert file_hashes(network) == preserved[(side, number)], "earlier round evidence changed"
                 expected = "FAILED" if scenario.startswith("reenter-") and number == 1 else "COMPLETE"
-                assert status["mode"] == "live" and status["protocol_version"] == 7
+                assert status["mode"] == "live" and status["protocol_version"] == 8
                 assert result["status"] == status["status"] == expected
                 assert result["scenario"] == scenario and result["owned_workers_finished"]
                 process_ids[side].add(result["process_id"])

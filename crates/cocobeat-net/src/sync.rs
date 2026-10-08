@@ -456,7 +456,7 @@ pub(crate) struct ResumePlan {
     pub timing: NetworkTiming,
 }
 
-fn catchup_ns(common: i64, paused: i64) -> Result<u64, String> {
+pub(crate) fn catchup_ns(common: i64, paused: i64) -> Result<u64, String> {
     let frames = u64::try_from(common.checked_sub(paused).ok_or("catchup frame overflow")?)
         .map_err(|_| "catchup must not rewind the source")?;
     u64::try_from((u128::from(frames) * 1_000_000_000).div_ceil(48_000))
@@ -890,8 +890,10 @@ pub(crate) struct ClockMaintenance {
     last_now_ns: u64,
     last_valid_local_ns: u64,
     received: u8,
+    accepted: Option<MaintainedClock>,
 }
 
+#[derive(Clone, Copy)]
 pub(crate) struct MaintainedClock {
     pub round: u64,
     pub exchange: ClockExchange,
@@ -926,7 +928,12 @@ impl ClockMaintenance {
             // This is only a startup deadline; ClockSync remains Uncalibrated
             last_valid_local_ns: now_ns,
             received: 0,
+            accepted: None,
         })
+    }
+
+    pub(crate) fn sample(&self) -> Option<MaintainedClock> {
+        self.accepted
     }
 
     pub(crate) fn round(&self) -> u64 {
@@ -1090,20 +1097,911 @@ impl ClockMaintenance {
         } else {
             exchange.guest_receive_ns
         };
+        let sample = MaintainedClock {
+            round: exchange.round,
+            exchange: exchange.exchange(),
+            estimate,
+        };
+        self.accepted = Some(sample);
         Ok(MaintenanceResult {
             reply: (self.player == PlayerId::P2).then(|| exchange.encode()),
-            sample: Some(MaintainedClock {
-                round: exchange.round,
-                exchange: exchange.exchange(),
-                estimate,
-            }),
+            sample: Some(sample),
         })
+    }
+}
+
+const PHASE_SOURCE_MAX_AGE_NS: u64 = 50_000_000;
+const PHASE_WINDOW_NS: u64 = 1_000_000_000;
+const PHASE_DELIVERY_MAX_AGE_NS: u64 = 250_000_000;
+pub(crate) const MAX_PHASE_ROUNDS: u16 = 128;
+pub(crate) const MAX_PHASE_CORRECTIONS: u8 = 64;
+
+#[derive(Clone, Copy)]
+pub(crate) struct PhaseWindow {
+    pub epoch: SessionEpoch,
+    pub round: u16,
+    /// False for the check window, true only after actual pause and resume
+    pub verification: bool,
+    pub sources: [(u64, u64); 2],
+    pub previous: [Option<crate::wire::PhasePublication>; 2],
+    pub end: i64,
+    pub host_point_ns: u64,
+    /// Actual host receipt of both reliable evidence messages
+    pub host_now_ns: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) struct PhaseBounds {
+    epoch: SessionEpoch,
+    round: u16,
+    host_point_ns: u64,
+    host_received_ns: u64,
+    verification: bool,
+    source_frames: [[i64; 2]; 2],
+    guest_minus_host_frames: [i64; 2],
+    last_publications: [crate::wire::PhasePublication; 2],
+}
+
+impl PhaseBounds {
+    pub(crate) fn source_frames(self) -> [[i64; 2]; 2] {
+        self.source_frames
+    }
+    pub(crate) fn difference(self) -> [i64; 2] {
+        self.guest_minus_host_frames
+    }
+    pub(crate) fn last_publications(self) -> [crate::wire::PhasePublication; 2] {
+        self.last_publications
+    }
+
+    pub(crate) fn within_guard(self) -> bool {
+        self.guest_minus_host_frames[0] <= self.guest_minus_host_frames[1]
+            && self
+                .guest_minus_host_frames
+                .iter()
+                .all(|difference| difference.unsigned_abs() <= RESUME_GUARD_FRAMES as u64)
+    }
+    pub(crate) fn supports_guard(self) -> bool {
+        self.guest_minus_host_frames[1]
+            .checked_sub(self.guest_minus_host_frames[0])
+            .is_some_and(|width| (0..=2 * RESUME_GUARD_FRAMES).contains(&width))
+            && self.source_frames.iter().all(|range| {
+                range[1]
+                    .checked_sub(range[0])
+                    .is_some_and(|width| (0..=2 * RESUME_GUARD_FRAMES).contains(&width))
+            })
+    }
+
+    pub(crate) fn verify_original_resume(
+        self,
+        paused: [crate::wire::PhasePublication; 2],
+        common_frame: i64,
+    ) -> Result<(), String> {
+        let expected = common_frame
+            .checked_add(4_800)
+            .ok_or("phase expected frame overflow")?;
+        let low = expected
+            .checked_sub(RESUME_GUARD_FRAMES)
+            .ok_or("phase resume guard underflow")?;
+        let high = expected
+            .checked_add(RESUME_GUARD_FRAMES)
+            .ok_or("phase resume guard overflow")?;
+        if !self.verification
+            || !self.within_guard()
+            || self
+                .source_frames
+                .iter()
+                .any(|range| range[0] < low || range[1] > high)
+            || self
+                .last_publications
+                .iter()
+                .zip(paused)
+                .any(|(last, frozen)| {
+                    last.sequence <= frozen.sequence
+                        || f64::from_bits(last.position_seconds_bits)
+                            <= f64::from_bits(frozen.position_seconds_bits)
+                        || last.publication_before_ns < frozen.publication_after_ns
+                })
+        {
+            return Err("phase original sources did not reach the scheduled common frame".into());
+        }
+        Ok(())
+    }
+}
+
+/// Bound a common past point, never extrapolate source positions or choose midpoint
+/// The accepted CBMC exchange is frozen for this phase round, not recomputed from data
+pub(crate) fn source_phase_bounds(
+    clock: &mut ClockSync,
+    actual_exchange: ClockExchange,
+    evidence: &[crate::wire::PhaseEvidence; 2],
+    window: PhaseWindow,
+) -> Result<PhaseBounds, String> {
+    if window.round == 0
+        || window.round > MAX_PHASE_ROUNDS
+        || window.end <= 0
+        || window.end as u64 > cocobeat_schema::MAX_CANONICAL_FRAMES
+        || window.host_point_ns > window.host_now_ns
+    {
+        return Err("phase epoch, song extent or common past point is invalid".into());
+    }
+    if clock.original_exchange() != Some(actual_exchange) || actual_exchange.epoch != window.epoch {
+        return Err("phase clock anchor differs from the actual accepted sample".into());
+    }
+    let sample_guest_ns = actual_exchange.guest_receive_ns;
+    clock
+        .estimate(sample_guest_ns)
+        .map_err(|error| error.to_string())?;
+    let mut intervals = [[0; 2]; 2];
+    let mut last_publications = [None; 2];
+    for (index, rows) in evidence.iter().enumerate() {
+        rows.validate()?;
+        if (rows.generation, rows.source_id) != window.sources[index] {
+            return Err("phase source identity differs from the original source".into());
+        }
+        let first = rows
+            .publications
+            .first()
+            .ok_or("phase publications missing")?;
+        let last = rows
+            .publications
+            .last()
+            .ok_or("phase publications missing")?;
+        if window.previous[index].is_some_and(|previous| {
+            first.sequence <= previous.sequence
+                || f64::from_bits(first.position_seconds_bits)
+                    < f64::from_bits(previous.position_seconds_bits)
+                || first.publication_before_ns < previous.publication_after_ns
+        }) {
+            return Err(
+                "phase source publications repeat or rewind an already accepted window".into(),
+            );
+        }
+        last_publications[index] = Some(*last);
+        if rows
+            .collected_at_ns
+            .checked_sub(last.publication_before_ns)
+            .is_none_or(|age| age > PHASE_SOURCE_MAX_AGE_NS)
+            || rows
+                .collected_at_ns
+                .checked_sub(first.publication_before_ns)
+                .is_none_or(|age| age > PHASE_WINDOW_NS)
+            || (index == 1 && first.publication_before_ns < sample_guest_ns)
+        {
+            return Err("phase publication is stale or outside the accepted clock window".into());
+        }
+        let mut before = None;
+        let mut after = None;
+        for row in &rows.publications {
+            let frame = cocobeat_schema::SongTime::try_from_seconds_f64(f64::from_bits(
+                row.position_seconds_bits,
+            ))
+            .filter(|frame| (0..window.end).contains(&frame.frames()))
+            .ok_or("phase source lies outside the unfinished song")?
+            .frames();
+            let mut map = |nanos: u64| -> Result<[u64; 2], String> {
+                if index == 0 {
+                    return Ok([nanos; 2]);
+                }
+                let estimate = clock.estimate(nanos).map_err(|error| error.to_string())?;
+                let midpoint = i128::from(nanos) + i128::from(estimate.offset_ns);
+                let error = i128::from(estimate.uncertainty_ns);
+                Ok([
+                    u64::try_from(midpoint - error)
+                        .map_err(|_| "phase time precedes host origin")?,
+                    u64::try_from(midpoint + error).map_err(|_| "phase time overflow")?,
+                ])
+            };
+            let lo = map(row.publication_before_ns)?;
+            let hi = map(row.publication_after_ns)?;
+            if hi[1] <= window.host_point_ns {
+                before = Some(frame);
+            }
+            if after.is_none() && lo[0] >= window.host_point_ns {
+                after = Some(frame);
+            }
+        }
+        let collected_low = if index == 0 {
+            rows.collected_at_ns
+        } else {
+            let estimate = clock
+                .estimate(rows.collected_at_ns)
+                .map_err(|error| error.to_string())?;
+            u64::try_from(
+                i128::from(rows.collected_at_ns) + i128::from(estimate.offset_ns)
+                    - i128::from(estimate.uncertainty_ns),
+            )
+            .map_err(|_| "phase collection predates host origin")?
+        };
+        // Actual reliable receipt supplies causality; the lower mapping bounds maximum age
+        if window
+            .host_now_ns
+            .checked_sub(collected_low)
+            .is_none_or(|age| age > PHASE_DELIVERY_MAX_AGE_NS)
+        {
+            return Err("phase evidence delivery is stale or precedes collection".into());
+        }
+        intervals[index] = [
+            before
+                .ok_or("phase lacks a publication before the common point")?
+                .checked_sub(1)
+                .ok_or("phase quantization underflow")?,
+            after
+                .ok_or("phase lacks a publication after the common point")?
+                .checked_add(1)
+                .ok_or("phase quantization overflow")?,
+        ];
+        if intervals[index][0] > intervals[index][1] {
+            return Err("phase source bracket moved backwards".into());
+        }
+    }
+    Ok(PhaseBounds {
+        epoch: window.epoch,
+        round: window.round,
+        host_point_ns: window.host_point_ns,
+        host_received_ns: window.host_now_ns,
+        verification: window.verification,
+        source_frames: intervals,
+        last_publications: last_publications
+            .map(|row| row.expect("both source windows were validated")),
+        guest_minus_host_frames: [
+            intervals[1][0]
+                .checked_sub(intervals[0][1])
+                .ok_or("phase difference overflow")?,
+            intervals[1][1]
+                .checked_sub(intervals[0][0])
+                .ok_or("phase difference overflow")?,
+        ],
+    })
+}
+
+/// Source-maintenance rounds never spend or reset the authenticated reconnect budget
+#[derive(Default)]
+pub(crate) struct PhaseRounds {
+    round: u16,
+    corrections: u8,
+    // Fixed deadline, original epoch, expected common point, post-correction proof
+    active: Option<(u64, SessionEpoch, u64, bool)>,
+    last_now_ns: u64,
+}
+
+impl PhaseRounds {
+    pub(crate) fn begin(
+        &mut self,
+        round: u16,
+        epoch: SessionEpoch,
+        host_point_ns: u64,
+        now_ns: u64,
+    ) -> Result<(), String> {
+        if now_ns < self.last_now_ns
+            || self.active.is_some()
+            || round == 0
+            || round > MAX_PHASE_ROUNDS
+            || self.round.checked_add(1) != Some(round)
+        {
+            return Err("phase round is replayed, out of order or exhausted".into());
+        }
+        let deadline = now_ns
+            .checked_add(30_000_000_000)
+            .ok_or("phase deadline overflow")?;
+        if host_point_ns <= now_ns || host_point_ns >= deadline {
+            return Err("phase check point must be future and inside its fixed deadline".into());
+        }
+        self.round = round;
+        self.active = Some((deadline, epoch, host_point_ns, false));
+        self.last_now_ns = now_ns;
+        Ok(())
+    }
+
+    fn check(&self, round: u16, now_ns: u64) -> Result<(u64, SessionEpoch, u64, bool), String> {
+        let active = self.active.ok_or("no active source-maintenance round")?;
+        if round != self.round || now_ns < self.last_now_ns || now_ns >= active.0 {
+            return Err("phase round identity or fixed deadline differs".into());
+        }
+        Ok(active)
+    }
+
+    pub(crate) fn correct(
+        &mut self,
+        round: u16,
+        verification_point_ns: u64,
+        now_ns: u64,
+    ) -> Result<(), String> {
+        let (deadline, epoch, check_point, correcting) = self.check(round, now_ns)?;
+        if correcting || self.corrections >= MAX_PHASE_CORRECTIONS {
+            return Err("phase correction repeated or budget exhausted".into());
+        }
+        if verification_point_ns <= check_point
+            || verification_point_ns <= now_ns
+            || verification_point_ns >= deadline
+        {
+            return Err("phase verification must be later and inside the original deadline".into());
+        }
+        self.corrections += 1;
+        self.active = Some((deadline, epoch, verification_point_ns, true));
+        self.last_now_ns = now_ns;
+        Ok(())
+    }
+
+    pub(crate) fn complete(
+        &mut self,
+        round: u16,
+        now_ns: u64,
+        verified: PhaseBounds,
+    ) -> Result<(), String> {
+        let (deadline, epoch, point, correcting) = self.check(round, now_ns)?;
+        if verified.epoch != epoch
+            || verified.round != round
+            || verified.host_point_ns != point
+            || verified.verification != correcting
+            || verified.host_received_ns < point
+            || verified.host_received_ns > now_ns
+            || verified.host_received_ns >= deadline
+        {
+            return Err(
+                "phase proof differs from the active epoch, round or verification point".into(),
+            );
+        }
+        if !verified.within_guard() {
+            return Err("source-maintenance cannot reopen input outside the phase guard".into());
+        }
+        self.active = None;
+        self.last_now_ns = now_ns;
+        Ok(())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn phase_from_exchange(
+        exchange: ClockExchange,
+        evidence: &[crate::wire::PhaseEvidence; 2],
+        window: PhaseWindow,
+    ) -> Result<PhaseBounds, String> {
+        let mut clock = ClockSync::new(exchange.epoch, ClockConfig::default()).unwrap();
+        clock.observe(exchange).unwrap();
+        source_phase_bounds(&mut clock, exchange, evidence, window)
+    }
+
+    fn phase_model(
+        point: u64,
+        source_origins: [u64; 2],
+        paused_frames: [i64; 2],
+        ppm: [i32; 2],
+        path: (u64, u64),
+    ) -> (ClockExchange, [crate::wire::PhaseEvidence; 2], PhaseWindow) {
+        let sent = point - 500_000_000;
+        let exchange = ClockExchange {
+            epoch: SessionEpoch(9),
+            guest_send_ns: sent,
+            host_receive_ns: sent + path.0,
+            host_send_ns: sent + path.0 + 2_000_000,
+            guest_receive_ns: sent + path.0 + 2_000_000 + path.1,
+        };
+        let evidence = std::array::from_fn(|index| crate::wire::PhaseEvidence {
+            generation: 11 + index as u64,
+            source_id: 21 + index as u64,
+            collected_at_ns: point + 170_000_000,
+            publications: (0..64)
+                .filter(|sample| point - 150_000_000 + sample * 5_000_000 >= source_origins[index])
+                .map(|sample| {
+                    let at = point - 150_000_000 + sample * 5_000_000;
+                    let elapsed = at.checked_sub(source_origins[index]).unwrap();
+                    // Independent integer oscillator, not a source-phase estimate
+                    let progress =
+                        i128::from(elapsed) * 48_000 * (1_000_000 + i128::from(ppm[index]))
+                            / 1_000_000_000_000_000;
+                    let frame = paused_frames[index] + i64::try_from(progress).unwrap();
+                    crate::wire::PhasePublication {
+                        sequence: at / 1_000_000 + 1,
+                        position_seconds_bits: (frame as f64 / 48_000.0).to_bits(),
+                        publication_before_ns: at - 50_000,
+                        publication_after_ns: at + 50_000,
+                    }
+                })
+                .collect(),
+        });
+        (
+            exchange,
+            evidence,
+            PhaseWindow {
+                epoch: SessionEpoch(9),
+                round: 1,
+                verification: false,
+                sources: [(11, 21), (12, 22)],
+                previous: [None; 2],
+                end: cocobeat_schema::MAX_CANONICAL_FRAMES as i64,
+                host_point_ns: point,
+                host_now_ns: point + 177_000_000,
+            },
+        )
+    }
+
+    #[test]
+    fn phase_verification_reaches_the_actual_scheduled_frame_and_original_pause_floor() {
+        let point = 20_000_000_000;
+        let common_ns = point - 100_000_000;
+        let common_frame = 24_000;
+        let (exchange, evidence, mut window) = phase_model(
+            point,
+            [common_ns; 2],
+            [common_frame; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        let paused = std::array::from_fn(|_| crate::wire::PhasePublication {
+            sequence: (common_ns - 1_000_000_000) / 1_000_000 + 1,
+            position_seconds_bits: (common_frame as f64 / 48_000.0).to_bits(),
+            publication_before_ns: common_ns - 1_000_050_000,
+            publication_after_ns: common_ns - 999_950_000,
+        });
+        window.verification = true;
+        window.previous = paused.map(Some);
+        let bounds = phase_from_exchange(exchange, &evidence, window).unwrap();
+        assert!(bounds.supports_guard() && bounds.within_guard());
+        bounds.verify_original_resume(paused, common_frame).unwrap();
+        assert!(
+            bounds
+                .verify_original_resume(paused, common_frame + 10_000)
+                .is_err(),
+            "aligned sources alone do not prove arrival at the scheduled frame"
+        );
+        let newer_pause = bounds.last_publications;
+        assert!(
+            bounds
+                .verify_original_resume(newer_pause, common_frame)
+                .is_err(),
+            "verification must really advance beyond the pause publications"
+        );
+        window.verification = false;
+        let check = phase_from_exchange(exchange, &evidence, window).unwrap();
+        assert!(check.verify_original_resume(paused, common_frame).is_err());
+    }
+
+    #[test]
+    fn phase_six_hundred_second_song_bounds_independent_opposite_source_oscillators() {
+        for ppm in [
+            [100, -100],
+            [-100, 100],
+            [1000, -1000],
+            [-1000, 1000],
+            [0, 0],
+        ] {
+            let mut final_guard = false;
+            // The fastest 600 s source reaches EOF before wall-time 600 s
+            // Observe through 599 s; EOF must be rejected rather than fabricate ongoing Playing
+            for second in 1..600 {
+                let point = 3_000_000_000 + second * 1_000_000_000;
+                let (exchange, evidence, window) = phase_model(
+                    point,
+                    [3_000_000_000; 2],
+                    [0; 2],
+                    ppm,
+                    (1_000_000, 1_000_000),
+                );
+                let bounds = phase_from_exchange(exchange, &evidence, window).unwrap();
+                let actual: [i64; 2] = ppm.map(|rate| {
+                    i64::try_from(
+                        i128::from(second) * 48_000 * (1_000_000 + i128::from(rate)) / 1_000_000,
+                    )
+                    .unwrap()
+                });
+                for (index, frame) in actual.iter().enumerate() {
+                    assert!(
+                        (bounds.source_frames[index][0]..=bounds.source_frames[index][1])
+                            .contains(frame)
+                    );
+                }
+                let difference = actual[1] - actual[0];
+                assert!(
+                    (bounds.guest_minus_host_frames[0]..=bounds.guest_minus_host_frames[1])
+                        .contains(&difference)
+                );
+                final_guard = bounds.within_guard();
+            }
+            assert_eq!(final_guard, ppm == [0, 0]);
+        }
+    }
+
+    #[test]
+    fn phase_asymmetric_path_cannot_be_replaced_by_midpoint_precision() {
+        let (exchange, evidence, window) = phase_model(
+            10_000_000_000,
+            [0; 2],
+            [0; 2],
+            [0; 2],
+            (10_000_000, 90_000_000),
+        );
+        let bounds = phase_from_exchange(exchange, &evidence, window).unwrap();
+        assert!(bounds.guest_minus_host_frames[0] <= 0 && bounds.guest_minus_host_frames[1] >= 0);
+        assert!(
+            !bounds.within_guard(),
+            "50 ms path ambiguity alone cannot prove the phase guard"
+        );
+        assert!(
+            !bounds.supports_guard(),
+            "wide mapping must fail before an unprovable correction"
+        );
+        let short: [_; 2] = evidence.clone().map(|mut rows| {
+            rows.publications.truncate(30);
+            rows.collected_at_ns = rows.publications.last().unwrap().publication_after_ns;
+            rows
+        });
+        assert!(
+            phase_from_exchange(exchange, &short, window).is_err(),
+            "missing whole-interval bracket cannot report synchronous sources"
+        );
+    }
+
+    #[test]
+    fn phase_rejects_identity_replay_stale_loss_bad_cursor_and_missing_brackets() {
+        let (exchange, evidence, window) = phase_model(
+            10_000_000_000,
+            [0; 2],
+            [0; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        let valid = phase_from_exchange(exchange, &evidence, window).unwrap();
+        let mut queried = ClockSync::new(exchange.epoch, ClockConfig::default()).unwrap();
+        queried.observe(exchange).unwrap();
+        queried.estimate(evidence[1].collected_at_ns).unwrap();
+        assert!(
+            source_phase_bounds(&mut queried, exchange, &evidence, window).is_err(),
+            "phase must not clear last_query to retroactively query publications"
+        );
+
+        let cases: Vec<_> = (0..9)
+            .map(|case| {
+                let mut rows = evidence.clone();
+                match case {
+                    0 => rows[1].generation += 1,
+                    1 => rows[1].source_id += 1,
+                    2 => rows[1].publications[1].sequence = rows[1].publications[0].sequence,
+                    3 => rows[1].publications[1].position_seconds_bits = f64::NAN.to_bits(),
+                    4 => rows[1].publications[1].position_seconds_bits = (-1.0_f64).to_bits(),
+                    5 => {
+                        rows[1].publications[1].publication_before_ns =
+                            rows[1].publications[0].publication_after_ns - 1
+                    }
+                    6 => rows[1].collected_at_ns += 60_000_000,
+                    7 => {
+                        rows[1].publications[0].publication_before_ns =
+                            exchange.guest_receive_ns - 1
+                    }
+                    _ => rows[1].publications.clear(),
+                }
+                rows
+            })
+            .collect();
+        for (index, rows) in cases.iter().enumerate() {
+            assert!(
+                phase_from_exchange(exchange, rows, window).is_err(),
+                "accepted bad source case {index}"
+            );
+        }
+        assert!(
+            phase_from_exchange(
+                exchange,
+                &evidence,
+                PhaseWindow {
+                    previous: valid.last_publications.map(Some),
+                    ..window
+                }
+            )
+            .is_err()
+        );
+        assert!(
+            phase_from_exchange(
+                exchange,
+                &evidence,
+                PhaseWindow {
+                    host_now_ns: window.host_now_ns + 300_000_000,
+                    ..window
+                }
+            )
+            .is_err()
+        );
+        assert!(
+            phase_from_exchange(
+                exchange,
+                &evidence,
+                PhaseWindow {
+                    host_now_ns: window.host_point_ns - 1,
+                    ..window
+                }
+            )
+            .is_err()
+        );
+        let old_clock = ClockExchange {
+            guest_send_ns: exchange.guest_send_ns - 3_000_000_000,
+            guest_receive_ns: exchange.guest_receive_ns - 3_000_000_000,
+            host_receive_ns: exchange.host_receive_ns - 3_000_000_000,
+            host_send_ns: exchange.host_send_ns - 3_000_000_000,
+            ..exchange
+        };
+        assert!(
+            phase_from_exchange(old_clock, &evidence, window).is_err(),
+            "lost maintenance cannot refresh ClockSync by copying source data"
+        );
+        let first = evidence[0].publications[0];
+        let mut previous = first;
+        previous.sequence -= 1;
+        previous.publication_before_ns = first.publication_before_ns - 10;
+        previous.publication_after_ns = first.publication_before_ns - 1;
+        previous.position_seconds_bits =
+            (f64::from_bits(first.position_seconds_bits) + 1.0).to_bits();
+        assert!(
+            phase_from_exchange(
+                exchange,
+                &evidence,
+                PhaseWindow {
+                    previous: [Some(previous), None],
+                    ..window
+                }
+            )
+            .is_err(),
+            "higher sequence does not permit cross-round original cursor rewind"
+        );
+        previous.position_seconds_bits = first.position_seconds_bits;
+        previous.publication_after_ns = first.publication_before_ns + 1;
+        assert!(
+            phase_from_exchange(
+                exchange,
+                &evidence,
+                PhaseWindow {
+                    previous: [Some(previous), None],
+                    ..window
+                }
+            )
+            .is_err(),
+            "higher sequence does not permit cross-round publication overlap"
+        );
+        let mut eof = evidence.clone();
+        eof[0]
+            .publications
+            .last_mut()
+            .unwrap()
+            .position_seconds_bits = (window.end as f64 / 48_000.0).to_bits();
+        assert!(phase_from_exchange(exchange, &eof, window).is_err());
+    }
+
+    #[test]
+    fn phase_two_same_source_natural_catchups_use_separate_bounded_rounds() {
+        let mut budget = PhaseRounds::default();
+        let mut previous = [None; 2];
+        let mut origins = [59_000_000_000; 2];
+        let mut source_frames = [100_000_i64, 104_000_i64];
+        let rates = [1000, -1000];
+        let progress = |elapsed: u64, ppm: i32| {
+            i64::try_from(
+                i128::from(elapsed) * 48_000 * (1_000_000 + i128::from(ppm))
+                    / 1_000_000_000_000_000,
+            )
+            .unwrap()
+        };
+        for round in 1..=2 {
+            let point = u64::from(round) * 60_000_000_000;
+            let (exchange, rows, mut window) =
+                phase_model(point, origins, source_frames, rates, (1_000_000, 1_000_000));
+            window.previous = previous;
+            window.round = round;
+            let before = phase_from_exchange(exchange, &rows, window).unwrap();
+            assert!(!before.within_guard());
+            budget
+                .begin(round, window.epoch, point, point - 500_000_000)
+                .unwrap();
+            let pause_ns = point + 200_000_000;
+            let paused: [i64; 2] = std::array::from_fn(|index| {
+                source_frames[index] + progress(pause_ns - origins[index], rates[index])
+            });
+            let common_frame = *paused.iter().max().unwrap();
+            let common_ns = point + 3_000_000_000;
+            let resume_ns =
+                paused.map(|frame| common_ns - catchup_ns(common_frame, frame).unwrap());
+            let verify_ns = common_ns + 300_000_000;
+            budget.correct(round, verify_ns, pause_ns).unwrap();
+            let (exchange, rows, mut window) =
+                phase_model(verify_ns, resume_ns, paused, rates, (1_000_000, 1_000_000));
+            window.previous = before.last_publications.map(Some);
+            window.round = round;
+            window.verification = true;
+            let after = phase_from_exchange(exchange, &rows, window).unwrap();
+            assert!(
+                after.within_guard(),
+                "same original source naturally advances, no seek or playback-rate fit"
+            );
+            for (index, range) in after.source_frames.iter().enumerate() {
+                assert!(range[0] >= paused[index]);
+                assert_eq!(
+                    (rows[index].generation, rows[index].source_id),
+                    window.sources[index]
+                );
+            }
+            budget
+                .complete(round, verify_ns + 200_000_000, after)
+                .unwrap();
+            previous = after.last_publications.map(Some);
+            source_frames = std::array::from_fn(|index| {
+                paused[index] + progress(verify_ns - resume_ns[index], rates[index])
+            });
+            origins = [verify_ns; 2];
+            assert!(
+                budget
+                    .begin(
+                        round,
+                        window.epoch,
+                        verify_ns + 300_000_000,
+                        verify_ns + 201_000_000
+                    )
+                    .is_err()
+            );
+        }
+        assert_eq!(budget.corrections, 2);
+        assert_eq!(
+            RESUME_ATTEMPT, 1,
+            "source-maintenance rounds do not alter reconnect admission"
+        );
+    }
+
+    #[test]
+    fn phase_rounds_bind_original_proof_and_refuse_guard_deadline_order_and_budget_exhaustion() {
+        let point = 10_000_000_000;
+        let (exchange, evidence, window) =
+            phase_model(point, [0; 2], [0; 2], [0; 2], (1_000_000, 1_000_000));
+        let valid = phase_from_exchange(exchange, &evidence, window).unwrap();
+        let begin = point - 500_000_000;
+        let receipt = window.host_now_ns;
+        let mut rounds = PhaseRounds::default();
+        rounds.begin(1, window.epoch, point, begin).unwrap();
+        assert!(rounds.begin(2, window.epoch, point, begin + 1).is_err());
+        assert!(rounds.correct(2, point + 1_000_000_000, receipt).is_err());
+        assert!(
+            rounds
+                .complete(
+                    1,
+                    receipt,
+                    PhaseBounds {
+                        guest_minus_host_frames: [-2401, 0],
+                        ..valid
+                    }
+                )
+                .is_err()
+        );
+        assert!(rounds.correct(1, point + 1_000_000_000, begin - 1).is_err());
+        assert!(rounds.complete(1, begin + 30_000_000_000, valid).is_err());
+        for bad in [
+            PhaseWindow {
+                epoch: SessionEpoch(10),
+                ..window
+            },
+            PhaseWindow { round: 2, ..window },
+            PhaseWindow {
+                host_point_ns: point + 1_000_000,
+                ..window
+            },
+            PhaseWindow {
+                verification: true,
+                ..window
+            },
+        ] {
+            let mut ex = exchange;
+            ex.epoch = bad.epoch;
+            let proof = phase_from_exchange(ex, &evidence, bad).unwrap();
+            assert!(rounds.complete(1, receipt, proof).is_err());
+        }
+        assert!(
+            rounds.complete(1, receipt - 1, valid).is_err(),
+            "proof cannot arrive in the caller's future"
+        );
+        rounds.complete(1, receipt, valid).unwrap();
+        rounds
+            .begin(2, window.epoch, point + 1_000_000_000, receipt)
+            .unwrap();
+        assert!(
+            rounds.complete(2, receipt + 1, valid).is_err(),
+            "old round proof cannot release a new round"
+        );
+
+        let mut rounds = PhaseRounds::default();
+        rounds.begin(1, window.epoch, point, begin).unwrap();
+        assert!(rounds.correct(1, point, receipt).is_err());
+        assert!(rounds.correct(1, begin + 30_000_000_000, receipt).is_err());
+        rounds.correct(1, point + 1_000_000_000, receipt).unwrap();
+        assert!(
+            rounds.complete(1, receipt + 1, valid).is_err(),
+            "check proof cannot replace post-correction verification"
+        );
+        let (ex, rows, mut post) = phase_model(
+            point + 1_000_000_000,
+            [0; 2],
+            [0; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        post.verification = true;
+        let proof = phase_from_exchange(ex, &rows, post).unwrap();
+        rounds.complete(1, post.host_now_ns, proof).unwrap();
+
+        // Every budget fixture recomputes source bounds with this round's original metadata
+        let mut rounds = PhaseRounds::default();
+        for round in 1..=MAX_PHASE_ROUNDS {
+            let point = 10_000_000_000 + u64::from(round) * 2_000_000_000;
+            let now = point - 500_000_000;
+            rounds.begin(round, window.epoch, point, now).unwrap();
+            let correcting = round <= u16::from(MAX_PHASE_CORRECTIONS);
+            if correcting {
+                rounds
+                    .correct(round, point + 500_000_000, point + 200_000_000)
+                    .unwrap();
+                assert!(
+                    rounds
+                        .correct(round, point + 600_000_000, point + 200_000_001)
+                        .is_err()
+                );
+            } else {
+                assert!(
+                    rounds
+                        .correct(round, point + 500_000_000, point + 200_000_000)
+                        .is_err()
+                );
+            }
+            let verification = if correcting {
+                point + 500_000_000
+            } else {
+                point
+            };
+            let (ex, rows, mut fixture) =
+                phase_model(verification, [0; 2], [0; 2], [0; 2], (1_000_000, 1_000_000));
+            fixture.round = round;
+            fixture.verification = correcting;
+            let proof = phase_from_exchange(ex, &rows, fixture).unwrap();
+            rounds.complete(round, fixture.host_now_ns, proof).unwrap();
+        }
+        assert!(
+            rounds
+                .begin(
+                    MAX_PHASE_ROUNDS + 1,
+                    window.epoch,
+                    400_000_000_000,
+                    399_000_000_000
+                )
+                .is_err()
+        );
+        assert_eq!(rounds.corrections, MAX_PHASE_CORRECTIONS);
+    }
+
+    #[test]
+    fn phase_anchor_matches_original_four_timestamps_not_projected_query() {
+        let (exchange, evidence, window) = phase_model(
+            10_000_000_000,
+            [0; 2],
+            [0; 2],
+            [0; 2],
+            (1_000_000, 1_000_000),
+        );
+        let mut clock = ClockSync::new(exchange.epoch, ClockConfig::default()).unwrap();
+        clock.observe(exchange).unwrap();
+        assert_eq!(clock.original_exchange(), Some(exchange));
+        for field in 0..4 {
+            let mut forged = exchange;
+            match field {
+                0 => forged.guest_send_ns += 100_000_000,
+                1 => forged.host_receive_ns += 100_000_000,
+                2 => forged.host_send_ns += 100_000_000,
+                _ => forged.guest_receive_ns += 100_000_000,
+            }
+            assert!(source_phase_bounds(&mut clock, forged, &evidence, window).is_err());
+            assert_eq!(clock.original_exchange(), Some(exchange));
+        }
+        source_phase_bounds(&mut clock, exchange, &evidence, window).unwrap();
+        assert_eq!(clock.original_exchange(), Some(exchange));
+        assert!(
+            source_phase_bounds(&mut clock, exchange, &evidence, window).is_err(),
+            "the same original anchor does not bypass last_query"
+        );
+    }
 
     #[test]
     fn maintenance_packet_domain_is_fixed_strict_and_separate_from_admission() {

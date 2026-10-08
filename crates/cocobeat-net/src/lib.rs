@@ -8,8 +8,8 @@ mod sync;
 mod wire;
 
 pub use live::{
-    LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSendError, LiveSession, RecoveryFrozen,
-    RecoveryObserved, RecoveryPublication,
+    LiveCommand, LiveConfig, LiveEvent, LiveRole, LiveSendError, LiveSession, PhaseFrozen,
+    PhaseObserved, PhasePublication, RecoveryFrozen, RecoveryObserved, RecoveryPublication,
 };
 pub use session::{SessionSummary, host, join, join_receive};
 pub use sync::{ClockSample, NetworkTiming};
@@ -30,9 +30,9 @@ use quinn::{
 };
 use serde::{Deserialize, Serialize};
 
-pub(crate) const PROTOCOL_VERSION: u32 = 7;
+pub(crate) const PROTOCOL_VERSION: u32 = 8;
 const SERVER_NAME: &str = "cocobeat.local";
-const ALPN: &[u8] = b"cocobeat-session/7";
+const ALPN: &[u8] = b"cocobeat-session/8";
 const MAX_INVITE_BYTES: usize = 16 * 1024;
 const MAX_CERTIFICATE_BYTES: usize = 4 * 1024;
 

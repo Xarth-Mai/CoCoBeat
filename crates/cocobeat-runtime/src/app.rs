@@ -1505,6 +1505,40 @@ fn poll_network(
                     input.set_menu_open(!ready);
                     input.reset_edges();
                 }
+                event @ (LiveEvent::PhaseSampling { .. }
+                | LiveEvent::PhasePausing { .. }
+                | LiveEvent::PhaseScheduled { .. }
+                | LiveEvent::PhaseReady { .. }) => {
+                    if !matches!(game.phase, Phase::Running | Phase::Recovering) {
+                        return Err(
+                            "Source phase event arrived outside the original running round".into(),
+                        );
+                    }
+                    let was_gated = game.phase == Phase::Recovering;
+                    let gated =
+                        online.phase_event(event, &mut game.session, audio, input.origin)?;
+                    game.phase = if gated {
+                        Phase::Recovering
+                    } else {
+                        Phase::Running
+                    };
+                    if was_gated || gated {
+                        game.notice = Message::new(if gated {
+                            "network.recovering"
+                        } else {
+                            "network.running"
+                        });
+                        input.queued.retain(|event| {
+                            matches!(
+                                event.control,
+                                Control::TogglePause(_) | Control::FocusLost | Control::Quit
+                            )
+                        });
+                        input.set_menu_open(gated);
+                        // Held controls and pre-release captures require a fresh press
+                        input.reset_edges();
+                    }
+                }
                 LiveEvent::PeerFacts(facts) => {
                     let local = online
                         .player
@@ -1819,6 +1853,15 @@ fn update_game(
             }
             input.set_menu_open(false);
             menu_scroll.reset();
+        }
+        if online.enabled()
+            && online.started
+            && game.phase == Phase::Running
+            && audio.state() != Some(PlaybackState::Stopped)
+        {
+            online.announce_phase_source(&game.session, &audio, game.content.end)?;
+            let events = online.update_phase(&mut game.session, &audio, input.origin)?;
+            feedback(events, &mut audio, &mut visual)?;
         }
         if matches!(game.phase, Phase::Starting | Phase::Pausing)
             && audio.state() != Some(PlaybackState::Stopped)
@@ -2153,6 +2196,7 @@ fn update_game(
                     for fact in facts {
                         online.send(LiveCommand::Fact(fact))?;
                     }
+                    online.end_phase_sampling();
                     online.send(LiveCommand::End)?;
                     online.local_ended = true;
                     events

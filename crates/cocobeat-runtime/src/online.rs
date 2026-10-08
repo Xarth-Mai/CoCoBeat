@@ -9,7 +9,7 @@ use std::{collections::VecDeque, path::PathBuf, sync::mpsc, time::Instant};
 
 #[path = "recovery.rs"]
 mod recovery;
-use recovery::Recovery;
+use recovery::{PhaseMaintenance, Recovery};
 
 pub(crate) struct PreparedSong {
     pub epoch: SessionEpoch,
@@ -38,6 +38,7 @@ pub(crate) struct OnlineRound {
     pub deadline: Option<Instant>,
     terminal: bool,
     recovery: Option<Recovery>,
+    source_phase: Option<PhaseMaintenance>,
     pub(crate) network_clock: Option<cocobeat_net::clock::ClockSync>,
     network_clock_round: u64,
 }
@@ -190,6 +191,10 @@ impl OnlineRound {
 
     pub fn recovering(&self) -> bool {
         self.recovery.as_ref().is_some_and(Recovery::active)
+            || self
+                .source_phase
+                .as_ref()
+                .is_some_and(PhaseMaintenance::correcting)
     }
 
     /// Only RecoveryReady releases the presentation/input gate
@@ -215,11 +220,19 @@ impl OnlineRound {
             return Err("Recovery epoch or attempt differs from the live session".into());
         }
         if matches!(event, LiveEvent::RecoveryPausing { .. }) {
-            if self.recovery.is_some() {
+            if self.recovery.is_some()
+                || self
+                    .source_phase
+                    .as_ref()
+                    .is_some_and(PhaseMaintenance::active)
+            {
                 return Err("This network round already attempted recovery".into());
             }
             let source = audio.source_observation();
             let now = Instant::now();
+            if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
+                phase.observe(source, now)?;
+            }
             if audio.state() != Some(kira::sound::PlaybackState::Playing) {
                 return Err("Recovery requires acknowledged Playing music".into());
             }
@@ -251,6 +264,9 @@ impl OnlineRound {
             LiveEvent::RecoveryReady { .. } => {
                 let source = audio.source_observation();
                 let now = Instant::now();
+                if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
+                    phase.observe(source, now)?;
+                }
                 recovery.ready(source, audio.state(), now)?;
                 Ok(true)
             }
@@ -265,16 +281,183 @@ impl OnlineRound {
         audio: &mut AudioOutput,
         input_origin: Instant,
     ) -> Result<Vec<DuoEvent>, String> {
+        if self
+            .source_phase
+            .as_ref()
+            .is_some_and(PhaseMaintenance::correcting)
+        {
+            return self.update_phase(session, audio, input_origin);
+        }
         let player = self.player.ok_or("Recovery has no local player")?;
         let recovery = self.recovery.as_mut().ok_or("Recovery has not paused")?;
         let source = audio.source_observation();
         let now = Instant::now();
+        if let (Some(phase), Some(source)) = (&mut self.source_phase, source) {
+            phase.observe(source, now)?;
+        }
         let (events, commands) =
             recovery.update(session, player, source, audio.state(), now, input_origin)?;
         for command in commands {
             self.send(command)?;
         }
         Ok(events)
+    }
+
+    /// Announce the first actual Playing publication once; preserve identity across reconnect
+    pub fn announce_phase_source(
+        &mut self,
+        session: &Session,
+        audio: &AudioOutput,
+        end: SongTime,
+    ) -> Result<(), String> {
+        if !self.started
+            || self.local_ended
+            || self.terminal
+            || self.player.is_none()
+            || audio.state() != Some(kira::sound::PlaybackState::Playing)
+        {
+            return Err("Phase source requires the unfinished acknowledged Playing round".into());
+        }
+        let source = audio
+            .source_observation()
+            .ok_or("Phase source needs its actual coherent publication")?;
+        let now = Instant::now();
+        if let Some(phase) = &mut self.source_phase {
+            phase.observe(source, now)?;
+        } else {
+            let phase = PhaseMaintenance::new(session.epoch(), end, source, now)?;
+            self.send(LiveCommand::PhaseSource {
+                epoch: session.epoch(),
+                generation: source.generation,
+                source_id: source.source_id,
+                publication: cocobeat_net::PhasePublication {
+                    sequence: source.sequence,
+                    position_seconds_bits: source.position_seconds.to_bits(),
+                    published_between: source.published_between,
+                },
+            })?;
+            self.source_phase = Some(phase);
+        }
+        Ok(())
+    }
+
+    /// Ordinary checking keeps input open; only actual correction owns the paused input gate
+    pub fn phase_event(
+        &mut self,
+        event: LiveEvent,
+        session: &mut Session,
+        audio: &mut AudioOutput,
+        input_origin: Instant,
+    ) -> Result<bool, String> {
+        if !self.started
+            || self.local_ended
+            || self.terminal
+            || self.player.is_none()
+            || self.recovery.as_ref().is_some_and(Recovery::active)
+        {
+            return Err("Phase requires an unfinished round outside authenticated recovery".into());
+        }
+        let (epoch, round) = match &event {
+            LiveEvent::PhaseSampling { epoch, round, .. }
+            | LiveEvent::PhasePausing { epoch, round }
+            | LiveEvent::PhaseScheduled { epoch, round, .. }
+            | LiveEvent::PhaseReady { epoch, round } => (*epoch, *round),
+            _ => return Err("Expected an original-source phase event".into()),
+        };
+        if epoch != session.epoch() || round == 0 || round > 128 {
+            return Err("Phase event differs from the original epoch or round budget".into());
+        }
+        let source = audio
+            .source_observation()
+            .ok_or("Phase event needs its original coherent publication")?;
+        let now = Instant::now();
+        let state = audio.state();
+        let phase = self
+            .source_phase
+            .as_mut()
+            .ok_or("Phase source has not been announced")?;
+        match event {
+            LiveEvent::PhaseSampling {
+                verification,
+                not_before,
+                common_at,
+                until,
+                ..
+            } => {
+                phase.sampling(
+                    round,
+                    verification,
+                    [not_before, common_at, until],
+                    (source, state),
+                    audio.source_sampler()?,
+                    now,
+                )?;
+            }
+            LiveEvent::PhasePausing { .. } => {
+                phase.pausing(round, session, source, state, now, input_origin)?;
+                audio.pause();
+            }
+            LiveEvent::PhaseScheduled {
+                deadline,
+                verify_at,
+                common_frame,
+                ..
+            } => {
+                phase.schedule(
+                    round,
+                    source,
+                    state,
+                    now,
+                    [deadline, verify_at],
+                    common_frame,
+                )?;
+                audio.resume_at(deadline)?;
+                self.send(LiveCommand::PhaseArmed { epoch, round })?;
+            }
+            LiveEvent::PhaseReady { .. } => {
+                phase.ready(round, source, state, now)?;
+            }
+            _ => unreachable!("phase event was checked above"),
+        }
+        Ok(self
+            .source_phase
+            .as_ref()
+            .is_some_and(PhaseMaintenance::correcting))
+    }
+
+    pub fn update_phase(
+        &mut self,
+        session: &mut Session,
+        audio: &AudioOutput,
+        input_origin: Instant,
+    ) -> Result<Vec<DuoEvent>, String> {
+        if self.terminal || self.local_ended || self.recovery.as_ref().is_some_and(Recovery::active)
+        {
+            return Err("Phase update cannot overlap End or authenticated recovery".into());
+        }
+        let player = self.player.ok_or("Phase has no local player")?;
+        let phase = self
+            .source_phase
+            .as_mut()
+            .ok_or("Phase original source is missing")?;
+        let (events, commands) = phase.update(
+            session,
+            player,
+            audio.source_observation(),
+            audio.state(),
+            Instant::now(),
+            input_origin,
+        )?;
+        for command in commands {
+            self.send(command)?;
+        }
+        Ok(events)
+    }
+
+    pub fn end_phase_sampling(&mut self) {
+        if let Some(phase) = &mut self.source_phase {
+            phase.stop_sampling();
+        }
     }
 
     pub fn poll(&mut self) -> Result<Option<Update>, String> {
@@ -350,6 +533,7 @@ impl OnlineRound {
     }
 
     pub fn cancel_worker(&mut self) {
+        self.end_phase_sampling();
         if let Some(recovery) = &mut self.recovery {
             recovery.stop_sampling();
         }

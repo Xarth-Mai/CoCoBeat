@@ -260,6 +260,14 @@ fn run(scenario: &str, package: &Path, output: &Path) -> serde_json::Value {
                             exchange,
                         );
                     }
+                    LiveEvent::PhaseSampling { .. }
+                    | LiveEvent::PhasePausing { .. }
+                    | LiveEvent::PhaseScheduled { .. }
+                    | LiveEvent::PhaseReady { .. } => {
+                        panic!(
+                            "this software probe has not announced an actual original phase source"
+                        )
+                    }
                     LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
                     LiveEvent::Complete(summary) => {
                         assert!(success, "unexpected completion: {scenario}");
@@ -763,6 +771,14 @@ fn recovery_model(scenario: &str, package: &Path, output: &Path) -> serde_json::
                             round,
                             exchange,
                         );
+                    }
+                    LiveEvent::PhaseSampling { .. }
+                    | LiveEvent::PhasePausing { .. }
+                    | LiveEvent::PhaseScheduled { .. }
+                    | LiveEvent::PhaseReady { .. } => {
+                        panic!(
+                            "this software probe has not announced an actual original phase source"
+                        )
                     }
                     LiveEvent::PeerFacts(facts) => peer[index].extend(facts),
                     LiveEvent::RecoveryPausing { epoch, attempt } => {

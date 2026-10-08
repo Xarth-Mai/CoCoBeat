@@ -155,6 +155,11 @@ impl ClockSync {
         Ok(estimate)
     }
 
+    /// Original accepted four timestamps, without projecting or changing query order
+    pub(crate) fn original_exchange(&self) -> Option<ClockExchange> {
+        self.sample.map(|(exchange, _)| exchange)
+    }
+
     pub fn estimate(&mut self, guest_now_ns: u64) -> Result<ClockEstimate, ClockError> {
         let estimate = self.project(guest_now_ns)?;
         self.last_query_ns = Some(guest_now_ns);

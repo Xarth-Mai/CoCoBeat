@@ -9,6 +9,8 @@
 - [x] Fault 后通过新邀请 / epoch 开启新轮次的软件恢复
 - [x] 同 epoch 原进程、原音源与原历史的软件续演
 - [x] Running 期间有界进程时钟维护与过期样本故障处理
+- [x] 原始音源出版的有界相位检查与生产 Running 接线
+- [ ] 实际超 guard 校正、active Phase 认证续接与长期漂移故障矩阵
 - [ ] 长期声卡漂移测量与校正
 - [x] 每位玩家可靠输入流与进度水位：水位关闭前不能把未到达当作未按键
 - [x] 权威 DuoEngine 与 Replay 走同一规则入口；共享确认可延迟，本地 Hit 不等待
@@ -38,3 +40,5 @@
 2026-10-08 · Running 时钟维护软件：protocol / ALPN v7 将原初始 / 续演 CBCK 与周期 CBMC 分域，每秒最多一轮，250ms / 64包 / 每epoch1024轮有界；双方只由实际匹配交换更新 ClockSync，旧轮次、丢失和重复不能刷新，轮次跨认证续接保留。原可靠读和事实 FIFO、一次续演预算及新 epoch 状态重建保持；net31、真实 loopback3、runtime175、Clippy / 格式 / 边界和当前 Game / Lab 构建通过
 
 正常与真实双向 UDP 黑洞恢复双方权威 Replay 一致；黑洞以实际样本年龄 2006536911 / 2006500101 ns 超过原2秒有效期触发，两端均无 RequestRecovery，见[维护观察](../testdata/synthetic/live-clock-maintenance-observations-20261008.json)。本批只更新进程时钟映射，长期双音源相位校正未完成；原29秒可靠 deadline 分支的历史证据保留，本次未复跑该分支，实际 Kira 丢包、物理设备、双机与真人继续独立验收
+
+2026-10-09 · protocol / ALPN v8 的原音源相位检查已接生产，net42 / runtime179 普通测试、三个真实 QUIC 窄测、Clippy / 格式 / 边界和当前 Game / Lab 构建通过；Gamescope 原生双方各完成两轮实际 Kira 原出版检查，完整差值均[-514,514]帧，原句柄 / source floors / 可靠 FIFO 和终局846条事实、5个事件及权威 Replay 保持。原 Xvfb 无 DRI3 的呈现失败保留；未触发实际校正，多轮漂移、active Phase 续接重绑及设备 /双机继续，见[相位观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)

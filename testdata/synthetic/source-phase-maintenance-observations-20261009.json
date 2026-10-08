@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-09",
+  "status": "PASS_SCOPED_ORDINARY_SOURCE_MAINTENANCE",
+  "base_head": "2ccc125b49164476f6808d2cba16f622ac76c9b1",
+  "protocol_version": 8,
+  "stage_compiler_version": 3,
+  "checks": {
+    "net_normal": 42,
+    "net_ignored_not_in_normal": 4,
+    "runtime_normal": 179,
+    "recovery_narrow_after_lint": 9,
+    "wire_narrow_after_lint": 8,
+    "required_checks_exit_zero": true,
+    "source_before_after_equal": true,
+    "explicit_real_quic_tests": 3,
+    "public_driver_scenarios": [
+      "installed",
+      "receive",
+      "recovery-immediate-end"
+    ],
+    "driver_recovery_source": "declared integer oscillator, not Kira"
+  },
+  "native": {
+    "compositor": "Gamescope headless Wayland",
+    "status": "PASS",
+    "source": "actual CPAL/Kira coherent callback publication",
+    "canonical_frames": 786432,
+    "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+    "epoch": 13396690923385476014,
+    "game_pids": [
+      1037140,
+      1037204
+    ],
+    "natural_game_exit_codes": [
+      0,
+      0
+    ],
+    "owned_groups_gone": true,
+    "completed_phase_rounds_per_side": 2,
+    "actual_clock_rounds": [
+      7,
+      13
+    ],
+    "source_rows_per_side": [
+      11,
+      12
+    ],
+    "full_guest_minus_host_frame_intervals": [
+      [
+        -514,
+        514
+      ],
+      [
+        -514,
+        514
+      ]
+    ],
+    "guard_frames": 2400,
+    "source_ids_each_side": [
+      1,
+      1
+    ],
+    "original_source_kept": true,
+    "corrections_triggered": 0,
+    "facts_per_player": [
+      423,
+      423
+    ],
+    "core_events": 5,
+    "authority_bytes_exact": true,
+    "natural_canonical_EOF": true,
+    "visual_review": "Root viewed host running/finished 1280x800 zh-CN only; no full UI or motion acceptance"
+  },
+  "retained_failures": [
+    "First compile test Debug requirement and unused parameters",
+    "Unit Pause accepted unknown fields; fixed empty struct variants without changing JSON",
+    "Clippy match/if lint failures; equivalent fixes and targeted reruns",
+    "Xvfb lacks Vulkan DRI3, empty present mode list; host failed before invitation",
+    "First resource preflight incorrectly parsed text VRAM vendor; corrected snapshot only after start, not a successful preflight"
+  ],
+  "not_run": [
+    "Actual correction pause/frozen/natural catchup/post-resume verification closed loop",
+    "Active-phase authenticated reconnect rebind",
+    "Long multiple-correction public worker and fault matrix",
+    "Physical controllers or speakers, two machines, human music or device acceptance",
+    "Current four-target native release and performance budgets"
+  ],
+  "raw_refs": {
+    "target/source-phase-production-checks-20261009-revision03/01.stdout": {
+      "sha256": "6d7c29b3b44f47dac8430a69e73713762aa55d2885237e8ca5544d84b15e75e4",
+      "bytes": 21392
+    },
+    "target/source-phase-production-checks-20261009-revision05/result.json": {
+      "sha256": "e362971d00246df4da36acddd687d09800812380c2cf323e815efbd41c67f21a",
+      "bytes": 2717
+    },
+    "target/source-phase-narrow-run-20261009/run-01/result.json": {
+      "sha256": "0b02b5ec193d6f36be2e58c47979df579e2ada6422a36bca8a749c154eec8811",
+      "bytes": 9357
+    },
+    "target/source-phase-native-run-20261009/case-01/failure.json": {
+      "sha256": "50bb441cc8cea2eecd9b68ae868b2f0460a0d251e7db692e2eee9151d0bdf285",
+      "bytes": 159
+    },
+    "target/source-phase-native-run-20261009/case-02-gamescope/summary.json": {
+      "sha256": "7aaf42cbb20c0cb43bf1e661d81d8db7ff00f211fe357c212aaaf1bdf4b6504d",
+      "bytes": 26882
+    },
+    "target/source-phase-native-run-20261009/native-owned-exit.json": {
+      "sha256": "8c2d4fb6c307fe19a5fbeb04f5e65229d4ae090efed7e87fb2382aa85ce8c1cc",
+      "bytes": 728
+    },
+    "target/source-phase-final-review-20261009/REPORT.md": {
+      "sha256": "3941d5461e7e63656b5613a200d80ce74973ea099e3b34a904c5cfe7d761de20",
+      "bytes": 6205
+    },
+    "target/source-phase-final-review-20261009/scope.json": {
+      "sha256": "c69252aa4d70566413ad42bbfea8957e397576ddd542d4b1d617d3048a623f1d",
+      "bytes": 10912
+    },
+    "target/source-phase-native-run-20261009/case-02-gamescope/host-network/phase-1/check.json": {
+      "sha256": "cb244650e2229b86dc76aaa793563901131aa2ee251e36420d0accb0f4edffbd",
+      "bytes": 5777
+    },
+    "target/source-phase-native-run-20261009/case-02-gamescope/host-network/phase-2/check.json": {
+      "sha256": "fac727529cd2d6ca102669daa1a12fbc74e91ee06b45f4375d4bb10d454ee86d",
+      "bytes": 6223
+    },
+    "target/source-phase-native-run-20261009/case-02-gamescope/guest-network/phase-1/check.json": {
+      "sha256": "792aa0686f32e174066e984ef2214bca51fd002ace10acad37063ac954fc4cfa",
+      "bytes": 5776
+    },
+    "target/source-phase-native-run-20261009/case-02-gamescope/guest-network/phase-2/check.json": {
+      "sha256": "d4b556e0de8887ffd4292fd18df66b73d1f129089670d472a8ee370630c24892",
+      "bytes": 6223
+    }
+  }
+}
