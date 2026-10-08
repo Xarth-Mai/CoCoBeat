@@ -136,3 +136,11 @@ net 仅依赖 schema / core / replay / media 与网络实现库，core 不认识
 Ready 前失败时客机尚未初始化网络 epoch，主机已有邀请 epoch；命中后两侧只保存各自实际收到的不同前缀，没有权威 Replay、补造 EOF 水位或假报 COMPLETE。第二局使用新 epoch、从 seq 0 开始，缺失包重新 Receive，已发布包完整校验后 Join 复用，旧文件保持，线程和保存屏障由生产路径消费
 
 [网络观察清单](../testdata/synthetic/network-reentry-observations-20261007.json)绑定固定 debug 游戏二进制、419 项构建输入及独立依赖图谱，保留 22 张 agent 目检图和 6 张主线程补审；构建含当时未提交的音频 API / catalog，后续文案变更与源码临时改复分别记录，不声称最终提交不可变或连续源码未改。此结果是合成输入和 loopback 的原生软件验证，同 epoch 续演、物理输入 / 扬声器、双机与真人仍另验
+
+## 有限软件源的多轮相位校正
+
+2026-10-09，固定原600秒四对象包与原 protocol8 public worker，声明整数 active-time 软件源分别以 +1000 / -1000ppm 和相反方向运行；双方均实际完成 round4 /8 /12 三次校正，原差值完整区间不在 ±2400 帧内时触发，使用严格更新的真实 CBMC 和原 raw source floors 校验，所有后验完整区间回到原 guard，原30秒轮次期限及160 /220 /235秒源 /worker /root预算保持
+
+两端每次冻结的逐玩家 Replay 前缀、owner count 和最终 Hit0..3 连续序列保持，源 generation /id、累计 active_ns、原小数余量和预约自然前进保留；独立复核重算60份原 proof 的四时间戳、整数 drift、capture bracket及完整区间。第三个负控向真实 worker 提交变化的 source identity，主机精确拒绝且零 Ready；旧负控因拒绝后继续发 Fact 先行 panic 的 FAIL 原记录保留，新 QA 只停止后续发送并读取真实 Failed
+
+三个 case 均明确以有限 QA 取消结束，保存 FAILED 和部分 Replay，没有 End、补造最终水位、自然 EOF 或权威 Replay；它们验证真实 TLS /QUIC 控制与声明的软件积分源，不替代强制 Kira 漂移、CPAL /DAC、protocol9 active续接、双机或设备验收，见[多轮软件源观察](../testdata/synthetic/source-phase-model-observations-20261009.json)

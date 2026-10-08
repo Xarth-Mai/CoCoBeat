@@ -1,0 +1,756 @@
+{
+  "date": "2026-10-09",
+  "status": "PASS_SOFTWARE_PHASE_MODEL",
+  "production_commit": "f80674145f59b7076ca003adbf08f1837dfb0f29",
+  "protocol": 8,
+  "source_kind": "declared_integer_software_source_not_Kira",
+  "canonical_frames": 28800000,
+  "fixed_guard_frames": 2400,
+  "round_deadline_seconds": 30,
+  "fixed_limits": {
+    "source_playing_seconds": 160,
+    "wall_seconds": 220,
+    "root_seconds": 235,
+    "minimum_corrections_each_side": 3
+  },
+  "cases": [
+    {
+      "scenario": "phase-model-identity-change",
+      "status": "PASS_EXPECTED_IDENTITY_REJECTION",
+      "correction_rounds": [
+        [],
+        []
+      ],
+      "accepted_owner_counts": [
+        126,
+        126
+      ],
+      "ppm": [
+        1000,
+        -1000
+      ],
+      "proofs": []
+    },
+    {
+      "scenario": "phase-model-forward",
+      "status": "PASS_SOFTWARE_PHASE_CORRECTIONS",
+      "correction_rounds": [
+        [
+          4,
+          8,
+          12
+        ],
+        [
+          4,
+          8,
+          12
+        ]
+      ],
+      "accepted_owner_counts": [
+        1430,
+        1430
+      ],
+      "ppm": [
+        1000,
+        -1000
+      ],
+      "proofs": [
+        {
+          "round": 4,
+          "check_interval": [
+            -2439,
+            -2204
+          ],
+          "verification_interval": [
+            -121,
+            230
+          ],
+          "check_clock_round": 25,
+          "verification_clock_round": 28,
+          "frozen_owner_counts": [
+            481,
+            481
+          ]
+        },
+        {
+          "round": 8,
+          "check_interval": [
+            -2544,
+            -2192
+          ],
+          "verification_interval": [
+            -120,
+            117
+          ],
+          "check_clock_round": 52,
+          "verification_clock_round": 55,
+          "frozen_owner_counts": [
+            955,
+            955
+          ]
+        },
+        {
+          "round": 12,
+          "check_interval": [
+            -2426,
+            -2191
+          ],
+          "verification_interval": [
+            -120,
+            115
+          ],
+          "check_clock_round": 79,
+          "verification_clock_round": 82,
+          "frozen_owner_counts": [
+            1428,
+            1428
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "phase-model-swapped",
+      "status": "PASS_SOFTWARE_PHASE_CORRECTIONS",
+      "correction_rounds": [
+        [
+          4,
+          8,
+          12
+        ],
+        [
+          4,
+          8,
+          12
+        ]
+      ],
+      "accepted_owner_counts": [
+        1429,
+        1429
+      ],
+      "ppm": [
+        -1000,
+        1000
+      ],
+      "proofs": [
+        {
+          "round": 4,
+          "check_interval": [
+            2222,
+            2458
+          ],
+          "verification_interval": [
+            -97,
+            139
+          ],
+          "check_clock_round": 25,
+          "verification_clock_round": 28,
+          "frozen_owner_counts": [
+            480,
+            480
+          ]
+        },
+        {
+          "round": 8,
+          "check_interval": [
+            2208,
+            2446
+          ],
+          "verification_interval": [
+            -97,
+            139
+          ],
+          "check_clock_round": 52,
+          "verification_clock_round": 55,
+          "frozen_owner_counts": [
+            954,
+            954
+          ]
+        },
+        {
+          "round": 12,
+          "check_interval": [
+            2210,
+            2445
+          ],
+          "verification_interval": [
+            -92,
+            260
+          ],
+          "check_clock_round": 79,
+          "verification_clock_round": 82,
+          "frozen_owner_counts": [
+            1427,
+            1427
+          ]
+        }
+      ]
+    }
+  ],
+  "scope": "Real public TLS/QUIC worker with fixed integer source; each positive ends by intentional cancellation after three corrections, preserving partial owner tapes and original facts",
+  "history": "Original revision02 identity-case FAIL after bad submission was preserved; new revision03 stops post-rejection facts and consumes exact real Failed",
+  "independent_proof_review": "60 proof intervals and raw integer publication/floor/prefix recomputation PASS",
+  "not_run": [
+    "Kira forced source drift",
+    "CPAL/DAC or hardware clock drift",
+    "canonical song EOF or authority for these prefix cases",
+    "protocol9 active reconnect",
+    "two-machine or human acceptance"
+  ],
+  "references": [
+    {
+      "path": "target/source-phase-worker-proof-review-20261009/MANIFEST.json",
+      "bytes": 18009,
+      "sha256": "b209f98ef98f46dfe732f27fff71160866956991900682041cd3bea6b04d0eeb"
+    },
+    {
+      "path": "target/source-phase-worker-proof-review-20261009/REPORT.md",
+      "bytes": 3690,
+      "sha256": "f69b78a4a49a6c4eb1c773330dc8843ae76dd57e266d606d11b504e9d7d832d4"
+    },
+    {
+      "path": "target/source-phase-worker-proof-review-20261009/result.json",
+      "bytes": 49246,
+      "sha256": "5a613ac984dbb0f659da434a5861f76ddc3a4f2ff2fffd4aa2ac98c123123276"
+    },
+    {
+      "path": "target/source-phase-worker-qa-draft-20261009-revision03/MANIFEST.json",
+      "bytes": 6004,
+      "sha256": "2193f31ec49a27732db64969a8cc5520b02242e2c884e4c64b55eabf35290f48"
+    },
+    {
+      "path": "target/source-phase-worker-qa-draft-20261009-revision03/driver.rs",
+      "bytes": 86230,
+      "sha256": "9c88aea2b17c5ba2026c83e9d204e63886e076046c88b1202eda1299e8dc93c6"
+    },
+    {
+      "path": "target/source-phase-worker-qa-draft-20261009-revision03/exact.patch",
+      "bytes": 29774,
+      "sha256": "30b3e64472bf790b3ce69aa64091b29658f71510edd7c09d04b60b8c743f2381"
+    },
+    {
+      "path": "target/source-phase-worker-qa-draft-20261009-revision03/phase-worker.rs",
+      "bytes": 28438,
+      "sha256": "1089f6276dcae59a53192353e780b0843fe6163e0038e6d5f833401c65cff2a9"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009/case-result.json",
+      "bytes": 755,
+      "sha256": "94b251694166f7deb587e92d8faf5d35c59398c31e53e2bdacb751c43e3bfa42"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009/phase-model-identity-change.stderr",
+      "bytes": 273,
+      "sha256": "079daf2145005d9d04df4ca1152308c19fb88610a13e66e7e23d5b36fde29484"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/case-result.json",
+      "bytes": 1990,
+      "sha256": "8f5ed5b8ad0b0427646c6fdcabc94a18a9907e6279e8d2f249dce122187c08f0"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/compile-plan.json",
+      "bytes": 1391,
+      "sha256": "4de65007a390e901f2efaf582919407c1d3111cbca226c68f52b3c6c15602088"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/compile-result.json",
+      "bytes": 3153,
+      "sha256": "3aa9596db9f998b201cc1dc7bcb19ad6008def92f24439101a7a3190d618f228"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/driver",
+      "bytes": 119672560,
+      "sha256": "75e3f2f30be38526bb77873463263b6682f57c93e4ad3c0ffa88043ba9b3fb0b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/driver-test",
+      "bytes": 27962152,
+      "sha256": "14f5e7d9fb5f8b450da98a056f9a5b01638b4385dd4f7a81512ed9d622e42d19"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/guard.json",
+      "bytes": 4491,
+      "sha256": "83c39545fa2a15ceea243bb126c635d73c97a3e61868de631432edbddcf1014c"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/0-round-12-gui-prefix.replay.json",
+      "bytes": 244991,
+      "sha256": "1b009014e70253ccaa48945549d28595c2ccf482b7f4492de319afbb3b9347e6"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/0-round-4-gui-prefix.replay.json",
+      "bytes": 82091,
+      "sha256": "a02ea307885ec892a9a5d9902316299a2c7f32cb072a5671155507b6943f79dd"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/0-round-8-gui-prefix.replay.json",
+      "bytes": 163627,
+      "sha256": "cac798bccb6e3a08ab1a72f094132ef422a6bda3211fdf6b7b816dbd61ba5f7a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/1-round-12-gui-prefix.replay.json",
+      "bytes": 244991,
+      "sha256": "fbf01bfc35c26cd5d11dbcf0b7b276ed452d8d2bf5685c5d6beba56c72a1fa0f"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/1-round-4-gui-prefix.replay.json",
+      "bytes": 82091,
+      "sha256": "9d375a46651187a30dedf2c8a2a3386d41b40ae6b2268855b60147eea874a91a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/1-round-8-gui-prefix.replay.json",
+      "bytes": 163627,
+      "sha256": "ac2eb64add87f1b2b144caeb0d6c4d0d7b13fca71af143402af1f7f763c740c4"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/live.replay.json",
+      "bytes": 245241,
+      "sha256": "927e054ad442c95a99d6fd016cc3fe1814966bfe92a07f64d68153c973845583"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-1/check.json",
+      "bytes": 20843,
+      "sha256": "72b7a382dacee20ba773d67f23b1b41ab9e186b8a30216c38f4ac83f6ac301f6"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-10/check.json",
+      "bytes": 21461,
+      "sha256": "2f5fe43cdfa09c7b621e22d6559fdaa00d3ce2356580cef365f9329d0b54b6f8"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-11/check.json",
+      "bytes": 21261,
+      "sha256": "1a2c4df62773f22f674728cd0fc6c6689ffa79955b232f3e3f362e7d0ac91423"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-12/check.json",
+      "bytes": 21462,
+      "sha256": "5c1645f522b5ae5a9ae84a08fa268522f7e8b7408d0c0213a4a7051d12d7ea6b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-12/verification.json",
+      "bytes": 21897,
+      "sha256": "e0acca60f7badd81376b34fb8d121feff15c8fa6d29ed75d674751095124de9e"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-2/check.json",
+      "bytes": 21352,
+      "sha256": "affeb8baf3abbc05db5052e8b424c58d9b12ffbaa1693424fc438b259ddbddc2"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-3/check.json",
+      "bytes": 20956,
+      "sha256": "2ff963037bc00cffdd0528c88abc02103e3a86754d94247da766d361c121a84c"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-4/check.json",
+      "bytes": 21459,
+      "sha256": "ea797934838a1c1d076c3540eb121b91d9d5fa08a41200f27f3ff61afa82f33c"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-4/verification.json",
+      "bytes": 21589,
+      "sha256": "ed8bc180868060e7c7fb70cbb23d81b1e0df12bf29178af990259265543a443c"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-5/check.json",
+      "bytes": 21458,
+      "sha256": "0301feeab705c0ba4e2b28870846285986ea95f325142a5f772e3b3678d8a6e9"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-6/check.json",
+      "bytes": 21060,
+      "sha256": "3ea0eba626bd36105f1a3aa470b67d7fa933cfbafa82e184ed931993e03f392e"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-7/check.json",
+      "bytes": 21260,
+      "sha256": "6b902cae52d8691d1280486b3fef426c6e7ecbc3a6a0fdada43f7bfa8625dce3"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-8/check.json",
+      "bytes": 21461,
+      "sha256": "e2848c961e3debd607674c9bdfa0713e241701d559931628f9f35c563b1d0459"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-8/verification.json",
+      "bytes": 21389,
+      "sha256": "7ba68c3ed7e64dca624ca1acebf32b86e13885a6e150252f76c9ff4f437b151a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/phase-9/check.json",
+      "bytes": 21058,
+      "sha256": "bfe4da0f1ce191cf134f5e3201bbea1ea6269baf9f6525722d84e59b4254bce7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/guest/status.json",
+      "bytes": 1192,
+      "sha256": "524345d15cf8b24aa4886cb2cda45d9b4cc262554c0c9508170deb3b3d252df1"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/live.replay.json",
+      "bytes": 245241,
+      "sha256": "2ccec6fe3e6efd6e08f0fa1e666f5ab1f99dd92cd04a2a978c12079e54050a4b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-1/check.json",
+      "bytes": 20844,
+      "sha256": "a9486b3730f964ffab29ce62289a331c0e8ed11e6e943dd280c000329aea1524"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-10/check.json",
+      "bytes": 21461,
+      "sha256": "36002a5177c4b855275069b34b46064cbe62f087238f718901fd20aa3446a0da"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-11/check.json",
+      "bytes": 21261,
+      "sha256": "08052a72bd5bf363857144814297c5a542f31ffd633bdb24aefbd223bfcef9f1"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-12/check.json",
+      "bytes": 21462,
+      "sha256": "cc166dfaebaf091d73c43b048dedd376ae6d1e520e93c3d98d9b119b139bc0de"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-12/verification.json",
+      "bytes": 21898,
+      "sha256": "8c87b66c58c9725a8abd82b25cca766a1483e0d4e9493b35a059bc365586974a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-2/check.json",
+      "bytes": 21352,
+      "sha256": "a0527d5aa1cd6dd75c99d7e16d57e637fe9136d3fed835154e7aa79f78073164"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-3/check.json",
+      "bytes": 20956,
+      "sha256": "dce09a59642226ce84ad70f58cad6631c0f0a74a0a6d4361f4f01286e1c6bf1d"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-4/check.json",
+      "bytes": 21459,
+      "sha256": "d3c3e9ec3c1185dc144cc27dfb275089654721dbbf87089aa0a563711aadb122"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-4/verification.json",
+      "bytes": 21589,
+      "sha256": "b74de45ec4cb09942973f78e64b714c50aef52e2ce22ebd8eea003648f343733"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-5/check.json",
+      "bytes": 21458,
+      "sha256": "b8ca7e03d2764b824eac6d17e00a09d528cc940853dd13cfe6f5bb8a94bbd3a8"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-6/check.json",
+      "bytes": 21060,
+      "sha256": "7fba50cc9b01eb33ec6efd7211d41046605a81e81721e1cd09f4131bcdb5c60d"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-7/check.json",
+      "bytes": 21260,
+      "sha256": "706839bf13e4154f512ed72b894097f794ebf40868b1fca62fffe7db993c18ff"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-8/check.json",
+      "bytes": 21461,
+      "sha256": "8b0323a3720ab3a968b7fb9d8b5ddfe62538657aa0d17bde13910b6280ccef58"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-8/verification.json",
+      "bytes": 21389,
+      "sha256": "67a254dbf89513b5704ff7052943d263fe61e66a88eb6157741d84d77fef32ad"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/phase-9/check.json",
+      "bytes": 21058,
+      "sha256": "c058e8c2526e049c75214a6d90f75ae4b6e5cf5f818ff5414cd895e58859c5c7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/host/status.json",
+      "bytes": 1188,
+      "sha256": "e467fe412cd56751bcb6836ea83d2864d723b9cfb88cbbf8fce45a7db1990c18"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/integer-publications.jsonl",
+      "bytes": 13572392,
+      "sha256": "0acb174fc80cc4109e59793d6d18ff4c0d5593b6656fc89c49119b72861ca735"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/invite.json",
+      "bytes": 1586,
+      "sha256": "1de2a80bf6e7bfaf6e2fc06ba5e20bc2874716583e7850006694d2f4593660f1"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/phase-summary.json",
+      "bytes": 62080,
+      "sha256": "75eee86b5386a5fe6ff0f13a06473c17a1fa026a9ad7fbae7df6d57596ef06f7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-forward/worker-events.jsonl",
+      "bytes": 522624,
+      "sha256": "c0d847d0b74a2d10377bb3e6de1fb6d7aa8a1e13cb87016af668a57bf02382a0"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/guest/live.replay.json",
+      "bytes": 21590,
+      "sha256": "f1bc06a6fe2c1cf94f6a88c6189462abffe61855f5fd597615845d5dc3628dd2"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/guest/status.json",
+      "bytes": 1201,
+      "sha256": "d780ef65fcb2a8e4fc872325a150b1eb9947caefc485599d731e22c88e9305f6"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/host/live.replay.json",
+      "bytes": 21590,
+      "sha256": "f1bc06a6fe2c1cf94f6a88c6189462abffe61855f5fd597615845d5dc3628dd2"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/host/status.json",
+      "bytes": 1216,
+      "sha256": "323c60f77a6cefe0d47f9efb978312ddf786fd80a7f35a74147357859610d18b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/integer-publications.jsonl",
+      "bytes": 1057692,
+      "sha256": "696b605c5ce34f58fa4b9cc68a5b8b7f1f4ba13d0461eb4282e37e56ac0ab3bc"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/invite.json",
+      "bytes": 1573,
+      "sha256": "6ce11eb5857679b405c08adf57add52e75557dc1a5f5cf71eb8944bb728169f5"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/phase-summary.json",
+      "bytes": 5927,
+      "sha256": "0915f7f3eaaf2973ca666e81ff294e6c5bb318e3e63980f006578c7ad9441db7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-identity-change/worker-events.jsonl",
+      "bytes": 47331,
+      "sha256": "b03a4e5985ab33f8b12d53279305c9566c860f4755693890f68aacfbb4e7928c"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/0-round-12-gui-prefix.replay.json",
+      "bytes": 244823,
+      "sha256": "581580ed034d77ec3f65047bc09cc8e2e6b098fe30182f24207c84244d45c217"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/0-round-4-gui-prefix.replay.json",
+      "bytes": 81923,
+      "sha256": "1774260fb955d0b90e7cbb48f7d30b3cac01e19a67b930021923a233ea5cef85"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/0-round-8-gui-prefix.replay.json",
+      "bytes": 163459,
+      "sha256": "35e12d1625ffed274e6e88b3d204e02c671774dc412e5ab3d30d5535c51c4fa6"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/1-round-12-gui-prefix.replay.json",
+      "bytes": 244823,
+      "sha256": "d32820afd351f44369ce9ccefe96b240f73f20402c71844bece1a18f8589385a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/1-round-4-gui-prefix.replay.json",
+      "bytes": 81923,
+      "sha256": "5b2bf87a3e72995d492811fd523848aa812f463ebadda036865c931bafe605ae"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/1-round-8-gui-prefix.replay.json",
+      "bytes": 163459,
+      "sha256": "b74e96d465120de811f6dde59f0fec32c168a98891e109cc12422fdc4d6e3f2e"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/live.replay.json",
+      "bytes": 245073,
+      "sha256": "6c09a0f80d116d38c50046cf32787ff1d717acb9eaef68c202cae9b10ba35bbc"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-1/check.json",
+      "bytes": 21237,
+      "sha256": "2ef6b92323d59f54c69ad38361db14e8c701064a4ada54992d893f578e0e2044"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-10/check.json",
+      "bytes": 21259,
+      "sha256": "fd0d62c9a65e582bf35f2723610ac2ca3c5f0b7f501ed0cd15eac654c218594f"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-11/check.json",
+      "bytes": 21459,
+      "sha256": "b008be6ae23834fc385a3593a1dfbbb864e5faf6c5a6fe6c90df35a96c9856e3"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-12/check.json",
+      "bytes": 21260,
+      "sha256": "5bcc7ddd648e9016952383e20b0dcdc4e50831e390377af148c84848604ec643"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-12/verification.json",
+      "bytes": 21696,
+      "sha256": "bf6a38e02daa200cb8716b07897d4224277e7b1fd9348b6a4dc7d25b0dc802be"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-2/check.json",
+      "bytes": 21350,
+      "sha256": "dbe6249aeca444d0ef95310612c568c4930468d388b2db716dae40897dcb7ccc"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-3/check.json",
+      "bytes": 21153,
+      "sha256": "eef71020483e918070b4a0a343d5df6402c30ed658ea98ff4de6509fe59b140d"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-4/check.json",
+      "bytes": 21056,
+      "sha256": "eeaa2d2317d8acf576c3170f3083a0de499d3036cba079998c55a3b1f4b9e349"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-4/verification.json",
+      "bytes": 21588,
+      "sha256": "baec5d8f6f108caa25c78190e0f9ef8f832501913bd3ed72b57353040d94c22b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-5/check.json",
+      "bytes": 21456,
+      "sha256": "6aac404913d4b02c3524803801437f9b1ecf4803f388478b5a1cbebba4e937ac"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-6/check.json",
+      "bytes": 21058,
+      "sha256": "b69ce7467a82c98594971bb8b9275ce31c8457aba46faad25efa065ad308e4de"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-7/check.json",
+      "bytes": 21058,
+      "sha256": "5ba96381719a482a96abbe8bf6c0692d89daa21a2e46eb034eb3a2af4ee856d1"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-8/check.json",
+      "bytes": 21459,
+      "sha256": "e0faeb15f4e17ace619adf2a6c0fac488334e63e6a19c3c92909f09fd2c38756"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-8/verification.json",
+      "bytes": 21388,
+      "sha256": "997246114f5427159482501e39304d9f1c79e48b193079ec91de9468b16215e9"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/phase-9/check.json",
+      "bytes": 21056,
+      "sha256": "a51c0ce3e8ea46abd5f794829fd56678670fcb860a4169bac23cfc99f658f671"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/guest/status.json",
+      "bytes": 1192,
+      "sha256": "cb6acdb115000f002636579cabc45a25725a460975904bb045fce4d530324ca3"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/live.replay.json",
+      "bytes": 245073,
+      "sha256": "b9633b45dce8c824095eed1ea132ef08fb3cc15a63ee96eb9dacc53d85bd76f7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-1/check.json",
+      "bytes": 21238,
+      "sha256": "87825d39326fa0b985463a7129a27d2f9551c6dfc11b025e9c72b742d310720f"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-10/check.json",
+      "bytes": 21259,
+      "sha256": "aed3e0893f559bfe141eb4888a6bd7aa51200fe92170b36616456b8b225d38b9"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-11/check.json",
+      "bytes": 21459,
+      "sha256": "4dda1fd6a209488fc8212bd7273a39e0de40d9a4fae48aeff3fd48036a4ec254"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-12/check.json",
+      "bytes": 21260,
+      "sha256": "796733aa653aa3925e09b2b40438efbae5be75de19f7f06774d0c0abeee653bf"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-12/verification.json",
+      "bytes": 21697,
+      "sha256": "584e8a89903319364a0a350c5ecf6bfe0d564ba24120520a8f9bf536ce7d05f3"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-2/check.json",
+      "bytes": 21350,
+      "sha256": "4c387fa4249022ae096e50315d3caf43431a61010ee3fa2a838d24f7d3e44686"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-3/check.json",
+      "bytes": 21153,
+      "sha256": "958a98191efcd5a49b607f700823fcd86c802267e62ddc00b7e7cbe8bdf25d13"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-4/check.json",
+      "bytes": 21056,
+      "sha256": "f04f848c7799236aadff7ade2f4179de94e2d24635938cacb7707f1e9ba6cfa0"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-4/verification.json",
+      "bytes": 21588,
+      "sha256": "7e2137360a3f6ed09917121d17a5460a1fad32726f0a5bc6fce9d22fb2f34d7a"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-5/check.json",
+      "bytes": 21456,
+      "sha256": "6db30505ccc8a8bbceea889fadf868a701211f012e47fcba856fb048dc8f7fbe"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-6/check.json",
+      "bytes": 21058,
+      "sha256": "04a66b363dff9b1882230a8bea7a6cce5932745d11de4147abfbc539ee02e3b7"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-7/check.json",
+      "bytes": 21058,
+      "sha256": "7e46e870dd755617299527585a6f514dd154c7d1edc511baa611df0cf4d3e5df"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-8/check.json",
+      "bytes": 21459,
+      "sha256": "641feed0b478e686afa6a710b2fd5b70f9fd8d98618933c2869c0555d495044f"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-8/verification.json",
+      "bytes": 21388,
+      "sha256": "b9d0d3d92787bd334263cab1a745c409f94551d04643419384d9e0887af2288f"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/phase-9/check.json",
+      "bytes": 21056,
+      "sha256": "f949b62fdf9294c11c8f455eb8eab53eb7ee8dd905279262dba8219d625bb6bb"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/host/status.json",
+      "bytes": 1188,
+      "sha256": "e0a02063ec5eed234a275595b0715c62eb5dd5e83fd2f49d4b2e891c9cc9c2d8"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/integer-publications.jsonl",
+      "bytes": 13566484,
+      "sha256": "059c5500ca76fa9b6f233d3cf50066d188e3f96129669c2122f237e8fe5b55e2"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/invite.json",
+      "bytes": 1566,
+      "sha256": "50683b3aed6fc917d8388de8ff1ddda284287b333b1b6a1916270d6e82a7f14b"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/phase-summary.json",
+      "bytes": 62080,
+      "sha256": "9187db6417e58aba2116abd1e6aa796ca4dfa3bd619730b51413e9edbc9fd423"
+    },
+    {
+      "path": "target/source-phase-worker-qa-run-20261009-revision03/phase-model-swapped/worker-events.jsonl",
+      "bytes": 522303,
+      "sha256": "19b5bb39d8bfda3458211cffda5fdb4b71c71f90055ea5e2180b0d63807c9142"
+    }
+  ]
+}

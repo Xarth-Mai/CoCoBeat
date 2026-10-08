@@ -10,7 +10,8 @@
 - [x] 同 epoch 原进程、原音源与原历史的软件续演
 - [x] Running 期间有界进程时钟维护与过期样本故障处理
 - [x] 原始音源出版的有界相位检查与生产 Running 接线
-- [ ] 实际超 guard 校正、active Phase 认证续接与长期漂移故障矩阵
+- [x] 声明整数软件源的真实 worker 双向三轮超 guard 校正与源身份拒绝，见[软件源观察](../testdata/synthetic/source-phase-model-observations-20261009.json)
+- [ ] 实际 Kira 超 guard 校正、active Phase 认证续接与长期漂移故障矩阵
 - [ ] 长期声卡漂移测量与校正
 - [x] 每位玩家可靠输入流与进度水位：水位关闭前不能把未到达当作未按键
 - [x] 权威 DuoEngine 与 Replay 走同一规则入口；共享确认可延迟，本地 Hit 不等待
