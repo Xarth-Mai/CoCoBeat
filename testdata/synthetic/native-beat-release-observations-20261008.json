@@ -1,0 +1,1364 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-08",
+  "kind": "actual_github_hosted_optimized_builds_unpacked_Lab_and_archive_checks",
+  "status": "THREE_TARGET_SOFTWARE_PASS_FOUR_TARGET_MATRIX_NOT_ADMITTED",
+  "repo": "Xarth-Mai/CoCoBeat",
+  "fixed_sha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+  "ci_gate": {
+    "databaseId": 37701980449,
+    "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37701980449",
+    "headSha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push"
+  },
+  "ci_before_each_dispatch": true,
+  "fixed_git_source_refs": {
+    "path": "target/native-beat-release-acceptance-0930d17-20261008/fixed-ref-source-refs.json",
+    "bytes": 3310,
+    "sha256": "45a5379f32ea12f992548a69025d7301bcb27785af82be73c3d809a88dc38ad6"
+  },
+  "runs": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "label": "windows-x64",
+      "run_id": 37702120868,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702120868",
+      "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+      "event": "workflow_dispatch",
+      "attempt": 1,
+      "accepted_status": "in_progress",
+      "expected_archive_artifact": "cocobeat-x86_64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "expected_smoke_artifact": "native-smoke-evidence-x86_64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "status": "completed",
+      "workflow_conclusion": "success",
+      "final_run_metadata": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/final-windows-x64/stdout",
+        "bytes": 3068,
+        "sha256": "30359680c8b291ad19973c573aa81f64ba6f35a7baa3daa9f8dc4c410651065e"
+      },
+      "artifact_api": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/artifacts-windows-x64/stdout",
+        "bytes": 1523,
+        "sha256": "a7c0efb22624abe608ecff59af8895c9be4905e25c7f4f07d12a7fc27cedef86"
+      },
+      "artifact_api_records": [
+        {
+          "id": 11518891353,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxODg5MTM1Mw==",
+          "name": "native-smoke-evidence-x86_64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 60345427,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518891353",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518891353/zip",
+          "expired": false,
+          "digest": "sha256:c58ff64f35741b0ac9987310c48d86100cf0d9d02a7cf3565bbc45ff96bbe0e1",
+          "created_at": "2026-10-07T23:41:43Z",
+          "updated_at": "2026-10-07T23:41:43Z",
+          "expires_at": "2026-10-21T23:41:37Z",
+          "workflow_run": {
+            "id": 37702120868,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        },
+        {
+          "id": 11518712853,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxODcxMjg1Mw==",
+          "name": "cocobeat-x86_64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 128592220,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518712853",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518712853/zip",
+          "expired": false,
+          "digest": "sha256:c0025e397f8fd10c72afbf8ef4a9828c5e6ebcf936315575ee4c3c0eae913f68",
+          "created_at": "2026-10-07T23:41:48Z",
+          "updated_at": "2026-10-07T23:41:48Z",
+          "expires_at": "2026-10-21T23:41:44Z",
+          "workflow_run": {
+            "id": 37702120868,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        }
+      ],
+      "artifact_transport_digest_scope": "GitHub-reported transport digest only, independently hashed inner product archive separate",
+      "actual_job_started_at": "2026-10-07T23:24:49Z",
+      "actual_job_completed_at": "2026-10-07T23:42:11Z",
+      "actual_job_wall_seconds": 1042.0,
+      "actual_build_started_at": "2026-10-07T23:26:04Z",
+      "actual_build_completed_at": "2026-10-07T23:40:07Z",
+      "actual_build_step_wall_seconds": 843.0,
+      "build_status": "PASS",
+      "archive_admission": "PASS_ACTUAL_BYTES_LAYOUT_SOURCE_NOTICES_AND_QA_EXCLUSION",
+      "software_smoke": "PASS_ACTUAL_TEN_CHILD_COMMANDS",
+      "archive_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/windows-x64/package-check.json",
+        "bytes": 25356,
+        "sha256": "99dfc7e3abd732af26d1efe6e2e3288e1709598eefbbeb598fce436cf1906e65"
+      },
+      "smoke_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/windows-x64/smoke-check.json",
+        "bytes": 37210,
+        "sha256": "5538544ddcec67f6d677c57daa60c32a22d7f581506604fd06f7a11e636b62ad"
+      },
+      "download_receipt": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/download-windows-x64/result.json",
+        "bytes": 639,
+        "sha256": "85e3e56e2fa0a14ed720e8bcde19882bb7d626a278fea607fbc008098100f470"
+      },
+      "inner_archive": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/artifacts/windows-x64/cocobeat-x86_64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f/cocobeat-x86_64-pc-windows-msvc.zip",
+        "bytes": 128671011,
+        "sha256": "382cc169348f0114648da61b5edfcc354701a435b514a98ca6a53c0598191ac3"
+      },
+      "build_info": {
+        "commit": "0930d1747d56c70785d487346105488dfeaa9a9f",
+        "target": "x86_64-pc-windows-msvc",
+        "profile": "release (opt-level=3, fat LTO, codegen-units=1, panic=abort)",
+        "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+        "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+        "sha256": "5A464A90925844F4C4DAE3B6E879EC0D9E4F95443968AFEE33B5AC653B4D7C4E",
+        "lab_sha256": "1502A7ECAD0C941525BB4CCE2C57BE991FA2390846F0E848B5B82EDF3A6832EA"
+      },
+      "archive_member_count": 92,
+      "license_source_files_byte_matched": 33,
+      "SDK_notices_byte_matched": 4,
+      "core_provider_model": "PASS_INDEPENDENT_ORIGINAL_MEASURED_BYTES",
+      "font_QA_script_absent": true,
+      "actual_child_receipts": [
+        {
+          "label": "generate",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "generate-dev",
+            "D:\\a\\_temp\\cocobeat-native-smoke/source"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 2040,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "5b8011c0c1af57601c454bdabb2dbca1bcf7e2930ed375a366927658098ef3a2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 162,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-import",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "D:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "D:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "left",
+            "D:\\a\\_temp\\cocobeat-native-smoke/left"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 1300,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "2c273e024e0330e9b96010304820eeed94b71b972f42b1c4e8ae8ac3ec123821",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1200,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-verify",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "D:\\a\\_temp\\cocobeat-native-smoke/left/package"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 1880,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "d9d7705426beb231d737786326061230f8c6f2b01ee7ebb63e02c181e367e028",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-stage",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "inspect-stage",
+            "D:\\a\\_temp\\cocobeat-native-smoke/left/package",
+            "0"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 6200,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "4a7263c9d4016693d5aaa0b88347f5ddcb87f11175815679190fd89f813758e4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-import",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "D:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "D:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "right",
+            "D:\\a\\_temp\\cocobeat-native-smoke/right"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 3436,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "3872d510cd0a7821019e2fca9765e205304a59f09d302e35edd2390d9853894f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1202,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-verify",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "D:\\a\\_temp\\cocobeat-native-smoke/right/package"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 1716,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "8ff6e3ecfb5ae892c89dc76f0dac80263d4c688917466437a9aaa74e03cba3bd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-stage",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "inspect-stage",
+            "D:\\a\\_temp\\cocobeat-native-smoke/right/package",
+            "0"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 3276,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "9de65e96cf63e44b2869ca575207da4e1dcce85c94c97ec6bff29ed69f60aec2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "missing-model",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "D:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "D:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "left",
+            "D:\\a\\_temp\\cocobeat-native-smoke/missing-model"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 4044,
+          "exit_code": 1,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "9689cb9e2b091753b8e0f1359304d82158581bddd0afaa5e3b520c997ca8ba33",
+          "stdout_bytes": 0,
+          "stderr_bytes": 353
+        },
+        {
+          "label": "manual-import",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-authored-package",
+            "D:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "D:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "D:\\a\\_temp\\cocobeat-native-smoke/manual"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 8512,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "da690a245a6c98313ee43cfaa3dd9fc4579090efdfab11aca6d37c87a3295e53",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1042,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "manual-verify",
+          "executable": "D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "D:\\a\\_temp\\cocobeat-native-smoke/manual"
+          ],
+          "cwd": "D:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 5044,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "46e70494a508e93cea751c15cfbae6653c0024b725b0ee3ca1684f21bafcc95b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 983,
+          "stderr_bytes": 0
+        }
+      ],
+      "actual_channels": [
+        {
+          "channel": "left",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 0,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=RelWithDebInfo",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x296feacf970), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x296feacfb30), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x296feacfbf0), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 111,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "a5d5804acc3ccfe81feaeab3e6e26b83779dea631b0b48edbc3b0cf93e7db270",
+              "bytes": 2330672
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "8faf921f41df6a5dbcf4e8ce99ee13ee357b10bbcad47630160c6071c682b164",
+              "bytes": 67294
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "495d05e584ffb584b6d60d89662d2cc0fffb979039869cfa01fa015253444cd8",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "5497853bc4c704123eb472ca31277f809102c2d65df40905cf7bcc036fad4475",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        },
+        {
+          "channel": "right",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 1,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=RelWithDebInfo",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x246b841ed40), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x246b841e240), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x246b8420b80), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 114,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "a5d5804acc3ccfe81feaeab3e6e26b83779dea631b0b48edbc3b0cf93e7db270",
+              "bytes": 2330672
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "f2af583872012bd9f899d9a312389832df0fce90b21cc76f1df102bf36e5c74e",
+              "bytes": 67323
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "495d05e584ffb584b6d60d89662d2cc0fffb979039869cfa01fa015253444cd8",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "dd3f2de957b05f2b6f82248c014ec0ee428122abdb36bf30caf82c6384bad24e",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        }
+      ],
+      "missing_model_actual_stderr": "Unsupported artifact \\\\?\\D:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\assets\\models\\beat-this\\small0.onnx: The system cannot find the file specified. (os error 2); owned staging path \\\\?\\D:\\a\\_temp\\cocobeat-native-smoke\\.cocobeat-native-beat-4044-0; evidence path \\\\?\\D:\\a\\_temp\\cocobeat-native-smoke\\.cocobeat-native-beat-4044-0\\evidence; evidence may be partial\n",
+      "missing_model_success_package_absent": true,
+      "manual_missing_model_scope": "IMPORT_AND_VERIFY_EXIT0_IN_WORKFLOW_MODEL_MOVED_SCOPE",
+      "remote_PID_group_postflight": "NOT_CAPTURED",
+      "output_scope": "UTF8 decoded captured text, not independent original byte streams",
+      "license_scope": "Source/notice identity plus focused new wrapper closure, not exhaustive transitive legal clearance"
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "label": "windows-arm64",
+      "run_id": 37702148322,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702148322",
+      "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+      "event": "workflow_dispatch",
+      "attempt": 1,
+      "accepted_status": "in_progress",
+      "expected_archive_artifact": "cocobeat-aarch64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "expected_smoke_artifact": "native-smoke-evidence-aarch64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "status": "completed",
+      "workflow_conclusion": "success",
+      "final_run_metadata": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/final-windows-arm64/stdout",
+        "bytes": 3068,
+        "sha256": "c4d772d3a5cd25d73909daa5204c153b9a69d543dd438318f6da25e6e27bd47b"
+      },
+      "artifact_api": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/artifacts-windows-arm64/stdout",
+        "bytes": 1525,
+        "sha256": "585eb79fd54c2a49b18d39305551be208d0fc8a4ad6ba74fbd36d6b5bc78b7c8"
+      },
+      "artifact_api_records": [
+        {
+          "id": 11518657741,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxODY1Nzc0MQ==",
+          "name": "native-smoke-evidence-aarch64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 60345864,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518657741",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518657741/zip",
+          "expired": false,
+          "digest": "sha256:c71f672af04928a1f91cfcce19105f06ecedac9e6c3f60b70451ca23a800575c",
+          "created_at": "2026-10-07T23:40:02Z",
+          "updated_at": "2026-10-07T23:40:02Z",
+          "expires_at": "2026-10-21T23:39:59Z",
+          "workflow_run": {
+            "id": 37702148322,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        },
+        {
+          "id": 11517864720,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxNzg2NDcyMA==",
+          "name": "cocobeat-aarch64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 126471663,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11517864720",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11517864720/zip",
+          "expired": false,
+          "digest": "sha256:5114f3af7e00c246ace6616fc7acbcf0e5241e6c6e45de71923f09344a2f572b",
+          "created_at": "2026-10-07T23:40:08Z",
+          "updated_at": "2026-10-07T23:40:08Z",
+          "expires_at": "2026-10-21T23:40:03Z",
+          "workflow_run": {
+            "id": 37702148322,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        }
+      ],
+      "artifact_transport_digest_scope": "GitHub-reported transport digest only, independently hashed inner product archive separate",
+      "actual_job_started_at": "2026-10-07T23:25:07Z",
+      "actual_job_completed_at": "2026-10-07T23:40:22Z",
+      "actual_job_wall_seconds": 915.0,
+      "actual_build_started_at": "2026-10-07T23:26:59Z",
+      "actual_build_completed_at": "2026-10-07T23:39:17Z",
+      "actual_build_step_wall_seconds": 738.0,
+      "build_status": "PASS",
+      "archive_admission": "PASS_ACTUAL_BYTES_LAYOUT_SOURCE_NOTICES_AND_QA_EXCLUSION",
+      "software_smoke": "PASS_ACTUAL_TEN_CHILD_COMMANDS",
+      "archive_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/windows-arm64/package-check.json",
+        "bytes": 25362,
+        "sha256": "e65061d6c360c15da8a3b2a2a700f41bad506f0345ed567aa0653683d70c1721"
+      },
+      "smoke_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/windows-arm64/smoke-check.json",
+        "bytes": 37215,
+        "sha256": "7b7604e7a5393e5640e6eec3785d8490a07ae289a63fef1bb9653668f66a2007"
+      },
+      "download_receipt": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/download-windows-arm64/result.json",
+        "bytes": 643,
+        "sha256": "11aa2022d83307aa12666358a5e1df01942a5f31a00e160bacf306fa27344d3c"
+      },
+      "inner_archive": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/artifacts/windows-arm64/cocobeat-aarch64-pc-windows-msvc-0930d1747d56c70785d487346105488dfeaa9a9f/cocobeat-aarch64-pc-windows-msvc.zip",
+        "bytes": 126551894,
+        "sha256": "4ff9b8532c111232ea8c1a07dbb1324469ac358280c07267e413ade9fe73c765"
+      },
+      "build_info": {
+        "commit": "0930d1747d56c70785d487346105488dfeaa9a9f",
+        "target": "aarch64-pc-windows-msvc",
+        "profile": "release (opt-level=3, fat LTO, codegen-units=1, panic=abort)",
+        "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+        "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+        "sha256": "BEEE324B7441DDCF04B964CBA4024E0081E31F121856B46329F2E004957933F5",
+        "lab_sha256": "EB96D5C5A91DD0F4B8E420A277F1DBBB978188F78209DAE989E7C25D6E435E30"
+      },
+      "archive_member_count": 92,
+      "license_source_files_byte_matched": 33,
+      "SDK_notices_byte_matched": 4,
+      "core_provider_model": "PASS_INDEPENDENT_ORIGINAL_MEASURED_BYTES",
+      "font_QA_script_absent": true,
+      "actual_child_receipts": [
+        {
+          "label": "generate",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "generate-dev",
+            "C:\\a\\_temp\\cocobeat-native-smoke/source"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 10508,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "9bf861bd9f715e20ae601455594e7a6c796d20e7e4087a9f6e24c40d39f58b73",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 162,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-import",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "C:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "C:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "left",
+            "C:\\a\\_temp\\cocobeat-native-smoke/left"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 3488,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "cabbcdc5c01b32cf3ef33d7fdfd9533c707334d4397ee15dde9b79ad6058a277",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1200,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-verify",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "C:\\a\\_temp\\cocobeat-native-smoke/left/package"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 10640,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "ba5187e67b08fa1c6c4285014eaf80bd22f108e468477cf8404bc1c73fb470ef",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-stage",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "inspect-stage",
+            "C:\\a\\_temp\\cocobeat-native-smoke/left/package",
+            "0"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 7988,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "941ed80e6f7e4375d7639274d4cf59262f40a48a2f5e02af448b30bcee32fabf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-import",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "C:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "C:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "right",
+            "C:\\a\\_temp\\cocobeat-native-smoke/right"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 5760,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "5384525028a180785953a2a89b295f3a041546f7ab9567a9241e519175792803",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1202,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-verify",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "C:\\a\\_temp\\cocobeat-native-smoke/right/package"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 8380,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "de3e7145b7883eaa7d8cda0d5e0d28481b5cc58ec86234bbe93a484df9324236",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-stage",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "inspect-stage",
+            "C:\\a\\_temp\\cocobeat-native-smoke/right/package",
+            "0"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 8792,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "8f92a36bca85e1022084b9301c6fd4b0850b0ff465ce3245ff63d37b997243fd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "missing-model",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-experimental-beat",
+            "C:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "C:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "left",
+            "C:\\a\\_temp\\cocobeat-native-smoke/missing-model"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 8264,
+          "exit_code": 1,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "257540449c5c5bc4da7375e66cd6a996abf1438f1c2d627756bdc16f87062b8b",
+          "stdout_bytes": 0,
+          "stderr_bytes": 353
+        },
+        {
+          "label": "manual-import",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "import-authored-package",
+            "C:\\a\\_temp\\cocobeat-native-smoke/source/cocobeat-64.wav",
+            "C:\\a\\CoCoBeat\\CoCoBeat\\assets\\dev\\vertical_slice\\authoring.json",
+            "C:\\a\\_temp\\cocobeat-native-smoke/manual"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 11140,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "33ab7787a9c19f48e9ba302fe8b215a81b9c11009d63c9e6998d1a6b80ed5861",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1042,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "manual-verify",
+          "executable": "C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\cocobeat-lab.exe",
+          "arguments": [
+            "verify-package",
+            "C:\\a\\_temp\\cocobeat-native-smoke/manual"
+          ],
+          "cwd": "C:\\a\\CoCoBeat\\CoCoBeat",
+          "actual_runner_pid": 7648,
+          "exit_code": 0,
+          "output_scope": "UTF8_DECODED_CAPTURED_TEXT_NOT_BYTE_IDENTICAL_STREAM",
+          "stdout_sha256": "46e70494a508e93cea751c15cfbae6653c0024b725b0ee3ca1684f21bafcc95b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 983,
+          "stderr_bytes": 0
+        }
+      ],
+      "actual_channels": [
+        {
+          "channel": "left",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 0,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=RelWithDebInfo",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x192e0f33f80), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x192e0f33e80), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x192e0f33a40), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 111,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "a5d5804acc3ccfe81feaeab3e6e26b83779dea631b0b48edbc3b0cf93e7db270",
+              "bytes": 2330672
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "e1e87af972a6cf055707478f6aa21af337a26a628194a3a1fb3ae2b5ba7eb3a3",
+              "bytes": 67294
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "495d05e584ffb584b6d60d89662d2cc0fffb979039869cfa01fa015253444cd8",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "58a297cafe2a5348894e014dc6be5065e947449416e820835b3c6e1ed944da9b",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        },
+        {
+          "channel": "right",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 1,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=RelWithDebInfo",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x1f7a3e91100), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x1f7a3e90b80), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x1f7a3e90e80), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 114,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "a5d5804acc3ccfe81feaeab3e6e26b83779dea631b0b48edbc3b0cf93e7db270",
+              "bytes": 2330672
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "4e84ca5668db56282e1210160d8d8b715cd40bfead183c0691b0177b953e524f",
+              "bytes": 67323
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "495d05e584ffb584b6d60d89662d2cc0fffb979039869cfa01fa015253444cd8",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "72ca11a35d54cfbc8c9af7b101ab728d20c077cb46382df78030025067e808dd",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        }
+      ],
+      "missing_model_actual_stderr": "Unsupported artifact \\\\?\\C:\\a\\CoCoBeat\\CoCoBeat\\dist\\smoke\\assets\\models\\beat-this\\small0.onnx: The system cannot find the file specified. (os error 2); owned staging path \\\\?\\C:\\a\\_temp\\cocobeat-native-smoke\\.cocobeat-native-beat-8264-0; evidence path \\\\?\\C:\\a\\_temp\\cocobeat-native-smoke\\.cocobeat-native-beat-8264-0\\evidence; evidence may be partial\n",
+      "missing_model_success_package_absent": true,
+      "manual_missing_model_scope": "IMPORT_AND_VERIFY_EXIT0_IN_WORKFLOW_MODEL_MOVED_SCOPE",
+      "remote_PID_group_postflight": "NOT_CAPTURED",
+      "output_scope": "UTF8 decoded captured text, not independent original byte streams",
+      "license_scope": "Source/notice identity plus focused new wrapper closure, not exhaustive transitive legal clearance"
+    },
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "label": "linux-x64",
+      "run_id": 37702174649,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702174649",
+      "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+      "event": "workflow_dispatch",
+      "attempt": 1,
+      "accepted_status": "in_progress",
+      "expected_archive_artifact": "cocobeat-x86_64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "expected_smoke_artifact": "native-smoke-evidence-x86_64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "status": "completed",
+      "workflow_conclusion": "success",
+      "final_run_metadata": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/final-linux-x64/stdout",
+        "bytes": 3241,
+        "sha256": "d1d57c90acccaea1dc67e8f080ec6dd77c2a0742cdf7b9a785eff205aefd16ff"
+      },
+      "artifact_api": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/artifacts-linux-x64/stdout",
+        "bytes": 1527,
+        "sha256": "a85e0f456c38daec15ab1c497f1218bb39dc82b04ad1eee8c4d470824d679a49"
+      },
+      "artifact_api_records": [
+        {
+          "id": 11518416393,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxODQxNjM5Mw==",
+          "name": "native-smoke-evidence-x86_64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 60323410,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518416393",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518416393/zip",
+          "expired": false,
+          "digest": "sha256:9ec33da437959b38d42ab55fc15461bb054b34669d8c62285d48d9667741267c",
+          "created_at": "2026-10-07T23:32:16Z",
+          "updated_at": "2026-10-07T23:32:16Z",
+          "expires_at": "2026-10-21T23:32:13Z",
+          "workflow_run": {
+            "id": 37702174649,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        },
+        {
+          "id": 11518161770,
+          "node_id": "MDg6QXJ0aWZhY3QxMTUxODE2MTc3MA==",
+          "name": "cocobeat-x86_64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+          "size_in_bytes": 142580763,
+          "url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518161770",
+          "archive_download_url": "https://api.github.com/repos/Xarth-Mai/CoCoBeat/actions/artifacts/11518161770/zip",
+          "expired": false,
+          "digest": "sha256:c46a0c19bbf24ae604dc36e2ac3dee1ba7d2ee73e6f794b172dee561b43da37c",
+          "created_at": "2026-10-07T23:32:20Z",
+          "updated_at": "2026-10-07T23:32:20Z",
+          "expires_at": "2026-10-21T23:32:16Z",
+          "workflow_run": {
+            "id": 37702174649,
+            "repository_id": 1400297864,
+            "head_repository_id": 1400297864,
+            "head_branch": "main",
+            "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f"
+          }
+        }
+      ],
+      "artifact_transport_digest_scope": "GitHub-reported transport digest only, independently hashed inner product archive separate",
+      "actual_job_started_at": "2026-10-07T23:25:23Z",
+      "actual_job_completed_at": "2026-10-07T23:32:24Z",
+      "actual_job_wall_seconds": 421.0,
+      "actual_build_started_at": "2026-10-07T23:26:11Z",
+      "actual_build_completed_at": "2026-10-07T23:31:47Z",
+      "actual_build_step_wall_seconds": 336.0,
+      "build_status": "PASS",
+      "archive_admission": "PASS_ACTUAL_BYTES_LAYOUT_SOURCE_NOTICES_AND_QA_EXCLUSION",
+      "software_smoke": "PASS_ACTUAL_TEN_CHILD_COMMANDS",
+      "archive_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/linux-x64/package-check.json",
+        "bytes": 36561,
+        "sha256": "e7155c91e5922852ef5d383d0acd904ea9789037551c831029c22de4e484a2b5"
+      },
+      "smoke_check": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/linux-x64/smoke-check.json",
+        "bytes": 38797,
+        "sha256": "6c5ea7c4b15082371ddec80b5a012d1d0ef3716ede9c9f82ce8c925d22bef7e2"
+      },
+      "download_receipt": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/download-linux-x64/result.json",
+        "bytes": 641,
+        "sha256": "f2680ac74f10af3336f1d298e1dbf9c81f4c2d97a10725db495a3f6a0707b0d6"
+      },
+      "inner_archive": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/artifacts/linux-x64/cocobeat-x86_64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f/cocobeat-x86_64-unknown-linux-gnu.tar.gz",
+        "bytes": 142860492,
+        "sha256": "08a1d5de0298822f9900ff6c37fb2b30a92701f18b4b0bb43bda34a679556e54"
+      },
+      "build_info": {
+        "commit": "0930d1747d56c70785d487346105488dfeaa9a9f",
+        "target": "x86_64-unknown-linux-gnu",
+        "profile": "release (opt-level=3, fat LTO, codegen-units=1, panic=abort)",
+        "rustc": "rustc 1.99.0 (b940084d7 2026-09-28)",
+        "cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+        "sha256": "e504280e8aeaba31f5d0149893b687afbb7438de3b3a596841bcc49b492576f6",
+        "lab_sha256": "0a0cb053eadc9cf4bdce0031227d23441146aeba3cc54d08f242d8a973f14a6e"
+      },
+      "archive_member_count": 150,
+      "license_source_files_byte_matched": 33,
+      "SDK_notices_byte_matched": 4,
+      "core_provider_model": "PASS_INDEPENDENT_ORIGINAL_MEASURED_BYTES",
+      "font_QA_script_absent": true,
+      "actual_child_receipts": [
+        {
+          "label": "generate",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "generate-dev",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3474,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "7750d1c99481b555ff804e8ad1ba5583a0c0a7ab1dfa82535f112b7fc1da7dc1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 175,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-import",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "import-experimental-beat",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "left",
+            "/home/runner/work/_temp/cocobeat-native-smoke/left"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3476,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "a8e3dd9a44bee82c6bbd5f4e7873b11449245bf476eb50034153a4e5b2fda6b2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1226,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-verify",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "verify-package",
+            "/home/runner/work/_temp/cocobeat-native-smoke/left/package"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3483,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "dc594b3a7cc1392d8689d31839fae8fcbadd9d4bf1e22653724c0430efacbfef",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "left-stage",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "inspect-stage",
+            "/home/runner/work/_temp/cocobeat-native-smoke/left/package",
+            "0"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3489,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "b812a12e99036dc621dd509f5a99f273617f3ba92f681549d64aab2d5836dfb7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-import",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "import-experimental-beat",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "right",
+            "/home/runner/work/_temp/cocobeat-native-smoke/right"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3491,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "ff57283ed19eb41418e1083021dbad87db55d2c203cbf1410268255dafb797e7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1228,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-verify",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "verify-package",
+            "/home/runner/work/_temp/cocobeat-native-smoke/right/package"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3494,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "93928e520c2baf2c2ea7268ded922d194192d34febac2de0b3565ee8fb9362f3",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 994,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "right-stage",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "inspect-stage",
+            "/home/runner/work/_temp/cocobeat-native-smoke/right/package",
+            "0"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3498,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "601e74273dd0d0af3e19be2854ca3701429e82b5d0cb288fc0d7fd6bb9c7a1bb",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 298,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "missing-model",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "import-experimental-beat",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "left",
+            "/home/runner/work/_temp/cocobeat-native-smoke/missing-model"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3501,
+          "exit_code": 1,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "ee6436c3bfe3fafe9d2d8a3d42b9111884260e16e92e1f9198968fc5339155cd",
+          "stdout_bytes": 0,
+          "stderr_bytes": 363
+        },
+        {
+          "label": "manual-import",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "import-authored-package",
+            "/home/runner/work/_temp/cocobeat-native-smoke/source/cocobeat-64.wav",
+            "/home/runner/work/CoCoBeat/CoCoBeat/assets/dev/vertical_slice/authoring.json",
+            "/home/runner/work/_temp/cocobeat-native-smoke/manual"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3503,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "433bfc08528b9607735baf3378be226de7cfa280881dfedf236894f13e39ece5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 1055,
+          "stderr_bytes": 0
+        },
+        {
+          "label": "manual-verify",
+          "executable": "/home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/bin/cocobeat-lab",
+          "arguments": [
+            "verify-package",
+            "/home/runner/work/_temp/cocobeat-native-smoke/manual"
+          ],
+          "cwd": "/home/runner/work/CoCoBeat/CoCoBeat",
+          "actual_runner_pid": 3505,
+          "exit_code": 0,
+          "output_scope": "STDOUT_STDERR_ORIGINAL_BYTES",
+          "stdout_sha256": "7dc327dcdd6a19542384b28daae3e452763c75e9fbb80bb563e8c59da32d3835",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 983,
+          "stderr_bytes": 0
+        }
+      ],
+      "actual_channels": [
+        {
+          "channel": "left",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 0,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=Release",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x55ba9bc71cc0), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x55ba9b9ebb80), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x55ba9bdbea00), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 111,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+              "bytes": 2330678
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "f77cc5e064f001f9359de66ce2c30370d50475b9b6db15f6f6f7a26696cc24e3",
+              "bytes": 67294
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "0ea2db16917eb850531ba2112f95630c8d10ca9845e8ae9fe1524437802324eb",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        },
+        {
+          "channel": "right",
+          "native_shape": {
+            "F": 3201,
+            "M": 1411200,
+            "N": 3072000,
+            "channel": 1,
+            "confidence": null,
+            "old_frontend_numeric": "FAIL_PRESERVED_19_OF_28",
+            "old_music_quality": "FAIL_PRESERVED",
+            "production_admission": false,
+            "profile": "native-small0-high22050-f64fma-minimal-v1-candidate",
+            "shape": [
+              1,
+              3201,
+              128
+            ]
+          },
+          "session": {
+            "build_info": "ORT Build Info: git-branch=HEAD, git-commit-id=f2c39fe, fp8-kv-cache=1, build type=Release",
+            "cpu_inter_requested": 1,
+            "cpu_intra_requested": 2,
+            "inputs": "[Outlet { name: \"spect\", dtype: Tensor { ty: Float32, shape: [1, -1, 128], dimension_symbols: SymbolicDimensions([\"\", \"frames\", \"\"]) }, value_info: Some(0x556dd8220e40), drop: true }]",
+            "ort_consumer_contract": "Lab adapter only; safe rc.13 API cannot detect foreign load-only initialization",
+            "outputs": "[Outlet { name: \"beat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x556dd927f660), drop: true }, Outlet { name: \"downbeat\", dtype: Tensor { ty: Float32, shape: [-1, -1], dimension_symbols: SymbolicDimensions([\"Addbeat_dim_0\", \"frames\"]) }, value_info: Some(0x556dd81ba560), drop: true }]",
+            "production_admission": false,
+            "telemetry_events": false
+          },
+          "analysis": {
+            "beats": 113,
+            "confidence": null,
+            "downbeats": 35,
+            "production_admission": false,
+            "status": "CANDIDATE_ONLY"
+          },
+          "package_objects": [
+            {
+              "name": "song.audio.ogg",
+              "sha256": "e0df9c350afd400f5be9212a97b0f9d927c7f56ddca2eefbf627b8eb7ccd07d1",
+              "bytes": 2330678
+            },
+            {
+              "name": "analysis.bin",
+              "sha256": "2c847e3fc8595d936cacb5ae43b16cdfef1123622c8a92de9cff64ae69be79e4",
+              "bytes": 67314
+            },
+            {
+              "name": "chart.bin",
+              "sha256": "8e4ae84a4b69255f330380074ed174f5d804ff0513f2c38bbc12906f061b95c6",
+              "bytes": 205
+            },
+            {
+              "name": "song.package",
+              "sha256": "da24ea50db5b3661175c4637043e6550ea6f5e657955917e6b4a6808f907ada4",
+              "bytes": 349
+            }
+          ],
+          "actual_chunk_starts": [
+            -6,
+            1482,
+            1707
+          ]
+        }
+      ],
+      "missing_model_actual_stderr": "Unsupported artifact /home/runner/work/CoCoBeat/CoCoBeat/dist/smoke/assets/models/beat-this/small0.onnx: No such file or directory (os error 2); owned staging path /home/runner/work/_temp/cocobeat-native-smoke/.cocobeat-native-beat-3501-0; evidence path /home/runner/work/_temp/cocobeat-native-smoke/.cocobeat-native-beat-3501-0/evidence; evidence may be partial\n",
+      "missing_model_success_package_absent": true,
+      "manual_missing_model_scope": "IMPORT_AND_VERIFY_EXIT0_IN_WORKFLOW_MODEL_MOVED_SCOPE",
+      "remote_PID_group_postflight": "NOT_CAPTURED",
+      "output_scope": "original stdout/stderr bytes",
+      "license_scope": "Source/notice identity plus focused new wrapper closure, not exhaustive transitive legal clearance"
+    },
+    {
+      "target": "aarch64-unknown-linux-gnu",
+      "label": "linux-arm64",
+      "run_id": 37702206342,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702206342",
+      "head_sha": "0930d1747d56c70785d487346105488dfeaa9a9f",
+      "event": "workflow_dispatch",
+      "attempt": 1,
+      "accepted_status": "in_progress",
+      "expected_archive_artifact": "cocobeat-aarch64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "expected_smoke_artifact": "native-smoke-evidence-aarch64-unknown-linux-gnu-0930d1747d56c70785d487346105488dfeaa9a9f",
+      "status": "completed",
+      "workflow_conclusion": "failure",
+      "final_run_metadata": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/final-linux-arm64/stdout",
+        "bytes": 3026,
+        "sha256": "d9d3e68237ee25459e08b56e5c28700db1a43b2cb6b80b3b5d12abad3fe66528"
+      },
+      "artifact_api": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/github/artifacts-linux-arm64/stdout",
+        "bytes": 32,
+        "sha256": "244563f989470892c537c9a4622920af0d228ee4528f7d00c64a06d6cd95856c"
+      },
+      "artifact_api_records": [],
+      "artifact_transport_digest_scope": "GitHub-reported transport digest only, independently hashed inner product archive separate",
+      "actual_job_started_at": "2026-10-07T23:25:44Z",
+      "actual_job_completed_at": "2026-10-08T00:21:46Z",
+      "actual_job_wall_seconds": 3362.0,
+      "actual_build_started_at": "2026-10-07T23:26:08Z",
+      "actual_build_completed_at": "2026-10-07T23:37:46Z",
+      "actual_build_step_wall_seconds": 698.0,
+      "build_status": "FAIL_ACTUAL_STEP_AND_HOSTED_RUNNER_LOST_COMMUNICATION",
+      "actual_Cargo_exit": "BLOCKED_LOG_AVAILABILITY",
+      "last_compiled_crate": "BLOCKED_LOG_AVAILABILITY",
+      "specific_OOM_CPU_network_cause": "NOT_PROVEN",
+      "job_60minute_timeout": "NOT_SUPPORTED_BY_3362_SECOND_JOB_WALL",
+      "software_smoke": "NOT_RUN",
+      "archive_admission": "NOT_RUN_NO_PRODUCT_ARCHIVE",
+      "SDK_model": "NOT_RUN",
+      "diagnosis": {
+        "path": "target/native-beat-release-acceptance-0930d17-20261008/reports/linux-arm64/build-failure-final.json",
+        "bytes": 5242,
+        "sha256": "0cf022f12b5ce78d019dce2d8331b7188a279c43e0bda3fac712353ed6d1e26e"
+      },
+      "actual_annotation": [
+        {
+          "path": ".github",
+          "blob_href": "https://github.com/Xarth-Mai/CoCoBeat/blob/0930d1747d56c70785d487346105488dfeaa9a9f/.github",
+          "start_line": 1,
+          "start_column": null,
+          "end_line": 1,
+          "end_column": null,
+          "annotation_level": "failure",
+          "title": "",
+          "message": "The hosted runner lost communication with the server. Anything in your workflow that terminates the runner process, starves it for CPU/Memory, or blocks its network access can cause this error.",
+          "raw_details": ""
+        }
+      ],
+      "subsequent_step_scope": "Actual API remains pending/null after final failure; these steps never ran, do not relabel skipped"
+    }
+  ],
+  "aggregate": {
+    "workflow_completed_success": 3,
+    "workflow_completed_failure": 1,
+    "archive_and_software_smoke_PASS_targets": 3,
+    "Linux_ARM64_Build_failure": 1,
+    "Linux_ARM64_archive_and_smoke_NOT_RUN": 1,
+    "uniform_four_target_admission": "NOT_COMPLETE"
+  },
+  "original_matrix": "testdata/synthetic/native-beat-release-original-observations-20261008.json",
+  "original_preservation": {
+    "path": "target/native-beat-release-acceptance-0930d17-20261008/original-matrix-preservation.json",
+    "bytes": 355,
+    "sha256": "7e46cc4e27dfee449f25e73b066c71945f9459fed8e4b4e4ba60cb7634c0575d"
+  },
+  "raw_index": "testdata/synthetic/native-beat-release-observations-20261008-raw-index.json",
+  "limits": [
+    "Exact0930 observations do not cover later labels GUI/adoption commits or ARM diagnostic candidate",
+    "No tag, Release or branch created; no cancellation or additional retry after this four-run batch",
+    "No Game GUI, physical GPU/audio/input, human, clean-Windows-VC or actual tag release acceptance",
+    "Actual hosted Lab CPU software receipts do not prove MIR quality or reference logits/q; historical quality FAIL remains",
+    "GNU time/j1 diagnostic candidate is independently static reviewed, but actual diagnostic GHA/RSS/elapsed NOT_RUN; six shell stub controls only",
+    "Final ARM annotation establishes lost runner communication, not a specific OOM or timeout cause; Cargo exit/last crate unavailable"
+  ]
+}

@@ -99,3 +99,11 @@
 2026-10-08 · 独立 Labels 编辑软件：`workbench-labels` 已接正式 Lab，隐藏作者 / 候选 / section 提示，共用 final stereo PCM 波形试听；人工点 / 半开区间、三态判断、原生 EditableText / IME 软件门控、Apply / Cancel dirty 草稿及新侧车保存 / worker join 已实现。正式 57 项 Lab 测试、Clippy、465 项冻结构建和独立静态审阅通过，13 locale × 39 条文案的 Noto 覆盖第二轮通过，首轮 ≤ 字形失败保留；见[独立标签](../docs/independent-labels.md#原生-labels-工作台)。旧 CLI 实绩保持，原生 GPU / 窗口补验本候选编写时 NOT_RUN，OS IME / 物理输入 / 母语 / 真人盲标及 confidence 校准另验，该 UI 批次当时标签采用未接线，当前目标继续 active
 
 2026-10-08 · Labels 原生补验收尾：首轮 4 项软件 case / 14 PNG 与小窗口视觉 FAIL 保留，布局修复后 5 项 / 17 PNG、11 张指定目检；法语编辑路径补验及最终清理文案后的法语窄测各 1 项 / 4 PNG 全目检，总 11 项 case / 39 PNG 按冻结版分别记录。最终 Lab 57 项、Clippy / 格式、465 项冻结输入及 13 × 31 条文案字形通过，已删除每语言 8 条未用文案，旧 39 条覆盖实绩保留；详见[Labels 验证](../docs/independent-labels.md#原生-labels-工作台)。最终仅法语小窗口补验，OS IME、物理输入、声学试听 / 计时、母语 / 真人盲标及校准仍 NOT_RUN，该 UI 批次当时标签采用未接线，当前目标 active
+
+## 当前发行软件补验
+
+固定 `0930d17` 的 CI 与 Windows x64 / Windows ARM64 / Linux x64 优化包、解包 Lab 十条实际软件命令均通过，清洁包实际排除字体 QA 脚本；Linux ARM64 Build 失败，annotations 记录 hosted runner 失联，最终日志不可用，Cargo exit / 最后 crate 为 `BLOCKED_LOG_AVAILABILITY`，SDK / 包 / smoke 为 NOT RUN，见 [清洁包矩阵](../testdata/synthetic/native-beat-release-observations-20261008.json)
+
+[原始 `046a05b` 矩阵](../testdata/synthetic/native-beat-release-original-observations-20261008.json) 的三包 QA 排除 FAIL 与 ARM exit 143 保留，原因未知；下一次仅 ARM64 以 `--jobs 1` / GNU time 收集实际构建诊断，release 优化参数保持，正常 runner 才能留下完整记录，静态软件检查与六项 shell stub 窄控已通过，后续固定 ref 运行单独记录，本冻结矩阵时 GNU time 诊断构建与 RSS 为 NOT RUN，不据前三目标或失联消息宣称四平台完成或 OOM 修复
+
+这些结果绑定 `0930d17`，不覆盖后续 Labels GUI / 采用提交，完整四目标软件、实际 tag Release 和设备 / 真人门槛继续推进，既有标注采用软件证据保持

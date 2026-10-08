@@ -67,11 +67,32 @@ CI 与四目标发行构建均使用 `actions/cache@v6`，保存 Cargo registry/
 工作流需先出现在仓库默认分支，GitHub 才会提供手动运行入口。原生 runner 安装目标、执行带 lockfile 的优化构建，然后核对 Windows PE 或 Linux ELF 的架构字段，避免错误标记产物架构。
 成功后上传 `cocobeat-<target>-<commit>` artifact，保留 14 天，包含 Game 与 Lab、LICENSE、README、Cargo.lock 与 BUILD-INFO（提交、目标、工具链、profile、文件 SHA-256）。Windows 显式生成 ZIP，Linux 打包 tar.gz 保留执行权限；单目标手动构建只上传 Actions artifact，不发布 GitHub Release
 
-四目标工作流核验固定官方 CPU SDK 归档 SHA，并通过 `cargo xtask prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT` 验证和复制匹配的 SDK / provider / small0 模型与完整许可 notices；Linux 可执行文件在 `bin/`，Windows 在包根目录，资源路径见[原生候选](native-beat-candidate.md)。打包后从实际解包目录运行左右候选导入 / verify / Stage、缺失模型拒绝及普通手工导入回归，QA 命令记录独立于游戏设备验收；本次这套新工作流的四目标原生 run 和新 tag Release 尚未运行
+四目标工作流核验固定官方 CPU SDK 归档 SHA，并通过 `cargo xtask prepare-model-assets TARGET SDK_ROOT PACKAGE_ROOT` 验证和复制匹配的 SDK / provider / small0 模型与完整许可 notices；Linux 可执行文件在 `bin/`，Windows 在包根目录，资源路径见[原生候选](native-beat-candidate.md)。打包后从实际解包目录运行左右候选导入 / verify / Stage、缺失模型拒绝及普通手工导入回归，QA 命令记录独立于游戏设备验收；该工作流的固定版本构建与解包 Lab 软件检查见下节，新 tag Release 仍为 NOT RUN
 
 Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标，以及 `assets/fonts/` 的字体 / 许可 / 来源文件和完整 `assets/flags/`；字体开发验证器 `verify.py` 仅留在源码仓库，不进入发行包；六份 Noto Sans 字体和 13 组 SVG/PNG 旗帜随各自的 `README.md`、`SOURCES.json` 及 OFL/MIT 许可一起分发，来源文件的原字节哈希按资源总台账核验，运行时多语言的软件验证见 [验证策略](testing.md#国际化与字体里程碑)，四平台首次构建与下载包核验结果见下文，真实游戏设备的运行验收仍需分别执行
 
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，后续门槛按 [工作进度](../todo/progress.md) 推进，不能用本机编译推断其他平台或真实设备兼容性
+
+## 2026-10-08 原生候选发行软件记录
+
+固定 `0930d1747d56c70785d487346105488dfeaa9a9f` 先通过 CI `37701980449`，再逐目标确认远端 main 并派发四次手动构建，各 run 实核相同 headSha 与 attempt 1；Windows x64、Windows ARM64、Linux x64 的优化包与解包 Lab 十个实际命令通过，包含左右候选导入 / 完整四对象 verify / Stage、缺模型拒绝及缺模型期间手工导入回归，见 [清洁包矩阵](../testdata/synthetic/native-beat-release-observations-20261008.json)
+
+| 目标 | Actions run | 优化构建 | 下载包 | 十个 Lab 命令 |
+|---|---|---|---|---|
+| Windows x64 | [37702120868](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702120868) | PASS | PASS | PASS |
+| Windows ARM64 | [37702148322](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702148322) | PASS | PASS | PASS |
+| Linux x64 | [37702174649](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702174649) | PASS | PASS | PASS |
+| Linux ARM64 | [37702206342](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37702206342) | FAIL，runner 失联 | NOT RUN | NOT RUN |
+
+诊断接线已提交 `d3b2648`，同提交 CI `37708305717` 通过后仅派发一次 [Linux ARM64 构建 37708701226](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37708701226)，其结果与资源统计单独取证，保留上述冻结矩阵
+
+三个下载包的二进制架构、BUILD-INFO、固定 SDK / provider / 模型字节、33 份源码许可文件和四份 SDK 原始 notices 均核对通过，实际不含 `assets/fonts/verify.py`；许可检查证明来源与包字节身份，完整发行法律与设备门槛仍分别核验
+
+原 `046a05b` 矩阵保留三包字体 QA 脚本被打包的 FAIL 及 Linux ARM64 的 exit 143，原终止原因未知，见 [原始矩阵](../testdata/synthetic/native-beat-release-original-observations-20261008.json)；新 ARM64 annotations 明确 hosted runner 失去服务器通信，实际 job 3362 秒、Build 698 秒，不支持 60 分钟 timeout 判断，最终日志 API 404 / `log not found`，Cargo exit 与最后 crate 保持 `BLOCKED_LOG_AVAILABILITY`，不推断 OOM 或将新失败记作 143
+
+后续仅 Linux ARM64 使用 Cargo `--jobs 1` 与 GNU time 诊断，保持既有 fat LTO、release 参数和 60 分钟 timeout；静态软件检查与六项 shell stub 窄控已通过，后续固定 ref 的实际构建单独记录；它用于减少并发变量及收集正常 runner 的命令最大 RSS / elapsed、合并输出和 exit，runner 失联仍可能丢失最终记录及 artifact，本节冻结矩阵时 GNU time 诊断构建与 RSS 尚未运行，不宣称故障已修复
+
+三目标结果限于固定 `0930d17` 的 CPU Lab 软件路径，不覆盖后续 Labels GUI / 采用提交，完整四目标准入仍未完成；Game GUI、物理 GPU / 音频 / 输入、干净 Windows VC 环境、模型质量、reference logits/q 和实际 tag Release 均由各自证据验收
 
 ## 推送版本 tag 自动发布
 
