@@ -1,0 +1,927 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-09",
+  "status": "PASS_SCOPED_ACTUAL_KIRA_REGISTERED_AWAITLIVE_CONTINUATION",
+  "scope": "One actual Linux Kira pair; registered local request executes at Guest AwaitLive after complete GateAck; not original immediate RequestRecovery queue route or four-platform release",
+  "base_head": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+  "source_scope": "Four changed observer/QA files, actual debug build with compiled-source freeze; default player flow, wire, guard and timeout unchanged",
+  "test_counts": {
+    "net_passed": 53,
+    "net_ignored": 7,
+    "runtime_passed": 186
+  },
+  "software_checks": {
+    "status": "PASS",
+    "base_head": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+    "source_count": 380,
+    "source_before_after_equal": true,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "--lib"
+        ],
+        "pid": 1102466,
+        "pgid": 1102466,
+        "exit_code": 0,
+        "elapsed_seconds": 4.872867809026502,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/01.stdout",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/01.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--lib"
+        ],
+        "pid": 1102811,
+        "pgid": 1102811,
+        "exit_code": 0,
+        "elapsed_seconds": 28.86385000598966,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/02.stdout",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/02.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "-p",
+          "cocobeat-runtime",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 1103690,
+        "pgid": 1103690,
+        "exit_code": 0,
+        "elapsed_seconds": 4.873349151981529,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/03.stdout",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/03.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 1103713,
+        "pgid": 1103713,
+        "exit_code": 0,
+        "elapsed_seconds": 1.8670894920069259,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/04.stdout",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/04.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 1103716,
+        "pgid": 1103716,
+        "exit_code": 0,
+        "elapsed_seconds": 0.16406533101690002,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/05.stdout",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/05.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-game",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "pid": 1103727,
+        "pgid": 1103727,
+        "exit_code": 0,
+        "elapsed_seconds": 128.92463492500247,
+        "stdout": "target/source-phase-await-live-at-state-production-checks-20261009/build.jsonl",
+        "stderr": "target/source-phase-await-live-at-state-production-checks-20261009/06.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      }
+    ]
+  },
+  "build_receipt": {
+    "status": "PASS",
+    "exit_code": 0,
+    "inputs_unchanged": true,
+    "base_head": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+    "source_count": 380,
+    "source_guard_sha256": "951993cd9a21962998329222e7e0ab99e7128d70c50298badc936d18a52e8e9d",
+    "build_result_path": "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-production-checks-20261009/result.json",
+    "build_result_sha256": "3e59dbe7fb8b10bdb3eb05789812cd51890dfffe3e7f9a7b8ef2e8d3ed22b694",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-shipping-runtime-20261009/bin/cocobeat-game",
+    "binary_sha256": "e6cb23d70170697c9fc003627f6d069e92ff4f4cbf00e11982196c7819dc89ee",
+    "scope": "Actual debug compiler-artifact graph; registered local at-state request. Not old immediate path, clean-SHA four-platform or optimized performance acceptance"
+  },
+  "actual_native": {
+    "root": {
+      "status": "PASS",
+      "commands": [
+        {
+          "scenario": "same-epoch-phase-await-live",
+          "argv": [
+            "python",
+            "/home/lzzz/MyProjects/CoCoBeat/tools/quic-live-check/native.py",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-shipping-runtime-20261009/bin/cocobeat-game",
+            "/home/lzzz/MyProjects/CoCoBeat/target/anchor-unlabelled-inference-cli-run-20261008/adopted",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live",
+            "--compositor",
+            "gamescope",
+            "--rounds",
+            "1",
+            "--scenario",
+            "same-epoch-phase-await-live",
+            "--receipt",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-shipping-runtime-20261009/game-build-result.json"
+          ],
+          "pid": 1105098,
+          "pgid": 1105098,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 58.991823006013874,
+          "actual_games": [
+            {
+              "pid": 1105125,
+              "gone": true
+            },
+            {
+              "pid": 1105197,
+              "gone": true
+            }
+          ],
+          "owned_wrappers": [
+            {
+              "pid": 1105100,
+              "pgid": 1105100,
+              "start_ticks": 24131421,
+              "cmdline": "gamescope --backend headless --expose-wayland -W 1280 -H 800 -r 60 -- /usr/bin/python /home/lzzz/MyProjects/CoCoBeat/tools/library-runtime-check/check.py --child /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/host-process /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-shipping-runtime-20261009/bin/cocobeat-game --package /home/lzzz/MyProjects/CoCoBeat/target/anchor-unlabelled-inference-cli-run-20261008/adopted --net-host 127.0.0.1:0 /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/invite.json /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/host-network --live-observation /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/host-observation "
+            },
+            {
+              "pid": 1105174,
+              "pgid": 1105174,
+              "start_ticks": 24132710,
+              "cmdline": "gamescope --backend headless --expose-wayland -W 1280 -H 800 -r 60 -- /usr/bin/python /home/lzzz/MyProjects/CoCoBeat/tools/library-runtime-check/check.py --child /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/guest-process /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-shipping-runtime-20261009/bin/cocobeat-game --net-receive /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/invite.json /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/received /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/guest-network --live-observation /home/lzzz/MyProjects/CoCoBeat/target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/guest-observation "
+            }
+          ],
+          "guards_equal": true,
+          "passed": true
+        }
+      ],
+      "scope": "Registered local at-state request executes once at actual Guest AwaitLive0 after complete original GateAck; original Kira source/fresh same-round proof, next normal check and natural EOF; old immediate RequestRecovery QA_NOT_HIT remains unchanged. Actual execution tracked separately in result.json"
+    },
+    "game_sha256": "e6cb23d70170697c9fc003627f6d069e92ff4f4cbf00e11982196c7819dc89ee",
+    "package_objects_sha256": {
+      "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+      "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+      "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+      "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+    },
+    "accepted_request": {
+      "accepted_ns": 8852303546,
+      "actual_step": "AwaitLive",
+      "attempt": 0,
+      "epoch": 14198148303606145110,
+      "event": "registered_recovery_at_await_live",
+      "gate_ack_written": true,
+      "host_deadline_ns": 50542939909,
+      "player": 2,
+      "round": 1,
+      "schema": 2,
+      "source_ids": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "trigger": "registered local at-state request"
+    },
+    "sides": [
+      {
+        "side": "host",
+        "runtime": {
+          "canonical_frames": 786432,
+          "epoch": 14198148303606145110,
+          "facts": 820,
+          "events": 5,
+          "phase": "Finished",
+          "local_ended": true,
+          "owned_workers_finished": true,
+          "phase_observations": [
+            {
+              "attempt": 0,
+              "common_at_ns": 31230090199,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 31190090199,
+              "observed_ns": 31014660086,
+              "position_seconds_bits": 4618477446665462612,
+              "publication_after_ns": 31004700611,
+              "publication_before_ns": 31004699171,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 751,
+              "until_ns": 31310090199,
+              "verification": false
+            },
+            {
+              "attempt": 1,
+              "deadline_ns": 60980090199,
+              "epoch": 14198148303606145110,
+              "event": "rebound",
+              "observed_ns": 33697219660,
+              "position_seconds_bits": 4619134972211058704,
+              "publication_after_ns": 33692662666,
+              "publication_before_ns": 33692660496,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1003
+            },
+            {
+              "attempt": 1,
+              "common_at_ns": 33913554838,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 33873554838,
+              "observed_ns": 33697246170,
+              "position_seconds_bits": 4619134972211058704,
+              "publication_after_ns": 33692662666,
+              "publication_before_ns": 33692660496,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1003,
+              "until_ns": 33993554838,
+              "verification": true
+            },
+            {
+              "attempt": 1,
+              "epoch": 14198148303606145110,
+              "event": "ready",
+              "observed_ns": 34031509473,
+              "position_seconds_bits": 4619507269780254665,
+              "publication_after_ns": 34023388248,
+              "publication_before_ns": 34023386638,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1034
+            },
+            {
+              "attempt": 1,
+              "common_at_ns": 39920378805,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 39880378805,
+              "observed_ns": 39681007936,
+              "position_seconds_bits": 4623282787467866931,
+              "publication_after_ns": 39676681630,
+              "publication_before_ns": 39676678750,
+              "round": 2,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1564,
+              "until_ns": 40000378805,
+              "verification": false
+            },
+            {
+              "attempt": 1,
+              "epoch": 14198148303606145110,
+              "event": "ready",
+              "observed_ns": 40070598591,
+              "position_seconds_bits": 4623498960249980715,
+              "publication_after_ns": 40060835965,
+              "publication_before_ns": 40060834375,
+              "round": 2,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1600
+            }
+          ],
+          "same_epoch": {
+            "cause": "explicit active QUIC maintenance request, not packet loss or speaker evidence",
+            "phase_request": null,
+            "probe_cleared_observed_ns": 31421267774,
+            "probe_dropped_before_ready": true,
+            "probe_requested_ns": 31387989850,
+            "ready_after_gate": true,
+            "recovering_seen": true,
+            "request_sent": false,
+            "record_count": 11
+          }
+        },
+        "network": {
+          "status": "COMPLETE",
+          "mode": "live",
+          "protocol_version": 9,
+          "epoch": 14198148303606145110,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": {
+            "probes_sent": 0,
+            "received_datagrams": 1,
+            "ignored_datagrams": 0,
+            "clock": {
+              "probe_id": 0,
+              "guest_sample_ns": 492011429,
+              "offset_ns": 12041599381,
+              "uncertainty_ns": 236295,
+              "round_trip_min_ns": 471161,
+              "round_trip_max_ns": 472113
+            },
+            "host_start_ns": 14533991509,
+            "local_start_ns": 14533991509,
+            "start_uncertainty_ns": 0,
+            "software_start_observed_ns": 14534785924,
+            "software_start_lateness_ns": 794415
+          },
+          "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+          "endpoint": "127.0.0.1:48819",
+          "cert_blake3": "9cb661c7663697ab43066630c73d39fde17d7bf67b6cc8cae4dd16fba4ea28e1",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            410,
+            410
+          ],
+          "event_count": 5,
+          "live_replay_blake3": "8b0daf860920b9cadae227c74ad7ced42ca649fa9e05e9fa66354a6b4c64ad7d",
+          "authority_replay_blake3": "8b0daf860920b9cadae227c74ad7ced42ca649fa9e05e9fa66354a6b4c64ad7d",
+          "error": null
+        }
+      },
+      {
+        "side": "guest",
+        "runtime": {
+          "canonical_frames": 786432,
+          "epoch": 14198148303606145110,
+          "facts": 820,
+          "events": 5,
+          "phase": "Finished",
+          "local_ended": true,
+          "owned_workers_finished": true,
+          "phase_observations": [
+            {
+              "attempt": 0,
+              "common_at_ns": 19066978219,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 19026978219,
+              "observed_ns": 18851596605,
+              "position_seconds_bits": 4618480449065214192,
+              "publication_after_ns": 18841639320,
+              "publication_before_ns": 18841637640,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 751,
+              "until_ns": 19146978219,
+              "verification": false
+            },
+            {
+              "attempt": 1,
+              "deadline_ns": 48786705839,
+              "epoch": 14198148303606145110,
+              "event": "rebound",
+              "observed_ns": 21535611691,
+              "position_seconds_bits": 4619134972211058704,
+              "publication_after_ns": 21529598805,
+              "publication_before_ns": 21529596405,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1003
+            },
+            {
+              "attempt": 1,
+              "common_at_ns": 21750487267,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 21710487267,
+              "observed_ns": 21535630611,
+              "position_seconds_bits": 4619134972211058704,
+              "publication_after_ns": 21529598805,
+              "publication_before_ns": 21529596405,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1003,
+              "until_ns": 21830487267,
+              "verification": true
+            },
+            {
+              "attempt": 1,
+              "epoch": 14198148303606145110,
+              "event": "ready",
+              "observed_ns": 21869814384,
+              "position_seconds_bits": 4619507269780254665,
+              "publication_after_ns": 21860329197,
+              "publication_before_ns": 21860327577,
+              "round": 1,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1034
+            },
+            {
+              "attempt": 1,
+              "common_at_ns": 27757306580,
+              "epoch": 14198148303606145110,
+              "event": "sampling",
+              "not_before_ns": 27717306580,
+              "observed_ns": 27518003234,
+              "position_seconds_bits": 4623282787467866931,
+              "publication_after_ns": 27513617629,
+              "publication_before_ns": 27513614839,
+              "round": 2,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1564,
+              "until_ns": 27837306580,
+              "verification": false
+            },
+            {
+              "attempt": 1,
+              "epoch": 14198148303606145110,
+              "event": "ready",
+              "observed_ns": 27907502240,
+              "position_seconds_bits": 4623498960249980715,
+              "publication_after_ns": 27897580635,
+              "publication_before_ns": 27897577855,
+              "round": 2,
+              "source_generation": 1,
+              "source_id": 1,
+              "source_sequence": 1600
+            }
+          ],
+          "same_epoch": {
+            "cause": "explicit active QUIC maintenance request, not packet loss or speaker evidence",
+            "phase_request": {
+              "epoch": 14198148303606145110,
+              "registered_ns": 14942524188,
+              "requester": "guest",
+              "source_generation": 1,
+              "source_id": 1,
+              "source_position_seconds_bits": 4611980253603042776,
+              "trigger": "registered local at-state request"
+            },
+            "probe_cleared_observed_ns": 19258129593,
+            "probe_dropped_before_ready": true,
+            "probe_requested_ns": 19224885279,
+            "ready_after_gate": true,
+            "recovering_seen": true,
+            "request_sent": true,
+            "record_count": 11
+          }
+        },
+        "network": {
+          "status": "COMPLETE",
+          "mode": "live",
+          "protocol_version": 9,
+          "epoch": 14198148303606145110,
+          "player": 2,
+          "peer_authenticated": true,
+          "package_received": true,
+          "resource_bytes": 59239,
+          "network_timing": {
+            "probes_sent": 1,
+            "received_datagrams": 1,
+            "ignored_datagrams": 0,
+            "clock": {
+              "probe_id": 0,
+              "guest_sample_ns": 492011429,
+              "offset_ns": 12041599381,
+              "uncertainty_ns": 236295,
+              "round_trip_min_ns": 471161,
+              "round_trip_max_ns": 472113
+            },
+            "host_start_ns": 14533991509,
+            "local_start_ns": 2492392128,
+            "start_uncertainty_ns": 2238916,
+            "software_start_observed_ns": 2493322261,
+            "software_start_lateness_ns": 930133
+          },
+          "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+          "endpoint": "127.0.0.1:48819",
+          "cert_blake3": "9cb661c7663697ab43066630c73d39fde17d7bf67b6cc8cae4dd16fba4ea28e1",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            410,
+            410
+          ],
+          "event_count": 5,
+          "live_replay_blake3": "f2580db5c7c12f70f41d5141c66f09eda9d3171e50158e5b32a5dbcb0b686d58",
+          "authority_replay_blake3": "8b0daf860920b9cadae227c74ad7ced42ca649fa9e05e9fa66354a6b4c64ad7d",
+          "error": null
+        }
+      }
+    ]
+  },
+  "preserved_failures": {
+    "original_immediate_request": "QA_NOT_HIT; acceptance 24.849753ms after observed AwaitLive with no active step; raw files and compiled source frozen",
+    "owned_guest_stall": "Separate complete-interval-outside-guard trial remains FAIL; see source-phase-kira-owned-stall-observations-20261009.json"
+  },
+  "not_run": [
+    "Original immediate RequestRecovery queue accepted while AwaitLive",
+    "Direct simultaneous Host AwaitLive or last-sealed state snapshot",
+    "Complete fault and platform matrix",
+    "Physical controllers, speaker/DAC timing, actual two PCs, human music quality and clean-machine acceptance",
+    "Optimized four-target packages or actual tag Release for changed Rust source"
+  ],
+  "raw_artifacts": [
+    {
+      "path": "target/source-phase-await-live-at-state-production-checks-20261009/result.json",
+      "bytes": 3280,
+      "sha256": "3e59dbe7fb8b10bdb3eb05789812cd51890dfffe3e7f9a7b8ef2e8d3ed22b694"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-production-checks-20261009/source-before.json",
+      "bytes": 44117,
+      "sha256": "951993cd9a21962998329222e7e0ab99e7128d70c50298badc936d18a52e8e9d"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-production-checks-20261009/source-after.json",
+      "bytes": 44117,
+      "sha256": "951993cd9a21962998329222e7e0ab99e7128d70c50298badc936d18a52e8e9d"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-production-checks-20261009/build.jsonl",
+      "bytes": 406477,
+      "sha256": "b71f64250fec7f533eea0e1e4e8d61a419f5bd4290290a7823cbcee330a37273"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-native-run-20261009/plan.json",
+      "bytes": 48495,
+      "sha256": "28f529e0b75ad07a6e94ae25dcf44b0c9644fa03ece1059d34d7a6bf23bbc392"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-native-run-20261009/result.json",
+      "bytes": 3797,
+      "sha256": "1cd9b826c7589691dcad122a083cd3d6ff579094938e97115f53e947cf5dc0b2"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/summary.json",
+      "bytes": 27064271,
+      "sha256": "e764aeeecfc2ee628cac075f581501be8a4dc48583b515b4b0ed38e6553adcad"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-native-run-20261009/same-epoch-phase-await-live/guest-network/await-live-request.json",
+      "bytes": 397,
+      "sha256": "809f7cd560a89246fd1db6d3847cb6341045c37941c6dd12368e36aa6f2fc021"
+    },
+    {
+      "path": "target/source-phase-await-live-missed-source-freeze-20261009/receipt.json",
+      "bytes": 92275,
+      "sha256": "ca447d0eea389508a40e3b75829304b161b730cc7fde740a1fab868affc8f5b7"
+    },
+    {
+      "path": "target/source-phase-await-live-precommit-ponytail-review-20261009/result.json",
+      "bytes": 2691,
+      "sha256": "1d5c2e14a6221cee945f8f3c2584f03ad927dabf3a4651a01d84aa92699b7f6b"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/result.json",
+      "bytes": 190475,
+      "sha256": "3c5a18797546bb34fa43f835fadfa8f3ab2294b2a9ccbc6d472a08f46f313883"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/REPORT.md",
+      "bytes": 5244,
+      "sha256": "33db5a35ecd2530f34aa5987c2aafd56bea38cc431199acfa7ab2813137fd270"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/MANIFEST.json",
+      "bytes": 5091,
+      "sha256": "dba2630309bbe91deccb15f5e9b08e092364cd2368b276d9db307327ee718e0d"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/ROOTREFS.json",
+      "bytes": 1905,
+      "sha256": "97a650db3be2a01ff36a6f6f2a522b73b1ea74b8c91484ad9e6716b4aee731ac"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/postflight.json",
+      "bytes": 1169,
+      "sha256": "7d2a3a620ed53c8f262cce888bd81ebe0ed41419db9d7c0686553c5b2e63f361"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/raw-index.json",
+      "bytes": 158750,
+      "sha256": "3967b2ccebbf31ec236e4fbf4601ec5b180814fc3bfa4d6830c11adca639c857"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-kira-proof-review-20261009/source-freeze.json",
+      "bytes": 45280,
+      "sha256": "d4338bfc60c11e34ddf584abccf48f4e30cc6797d995c7bae49cfadcc4052328"
+    },
+    {
+      "path": "target/source-phase-await-live-at-state-draft-20261009/original-not-hit.json",
+      "bytes": 3419,
+      "sha256": "9b9b9ecf0d202151ff5febcfdb95c07f987fdc4e63f1a50b44e41e6d21a25dba"
+    }
+  ],
+  "independent_review": {
+    "status": "PASS_OFFLINE_ACTUAL_KIRA_REGISTERED_AT_STATE_RECALCULATION",
+    "proof_files_recalculated": 6,
+    "proof_pairs": 3,
+    "case": {
+      "scenario": "same-epoch-phase-await-live",
+      "epoch": 14198148303606145110,
+      "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+      "canonical_frames": 786432,
+      "sources": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          1
+        ]
+      ],
+      "actual_audio_output_descriptors": [
+        "audio_host=Alsa\ndevice_id=Ok(DeviceId(Alsa, \"default\"))\ndevice_description=Ok(DeviceDescription { name: \"Default Audio Device\", manufacturer: None, driver: Some(\"default\"), device_type: Unknown, interface_type: Unknown, direction: Unknown, address: None, extended: [\"Default Audio Device\"] })\nrequested_output_sample_rate=48000\nrequested_output_channels=2\nrequested_output_buffer=Default\ndefault_supported_sample_format=F32\nactual_callback_size=NOT MEASURED AT INITIALIZATION (callback_observation reports previous completed batch)\n",
+        "audio_host=Alsa\ndevice_id=Ok(DeviceId(Alsa, \"default\"))\ndevice_description=Ok(DeviceDescription { name: \"Default Audio Device\", manufacturer: None, driver: Some(\"default\"), device_type: Unknown, interface_type: Unknown, direction: Unknown, address: None, extended: [\"Default Audio Device\"] })\nrequested_output_sample_rate=48000\nrequested_output_channels=2\nrequested_output_buffer=Default\ndefault_supported_sample_format=F32\nactual_callback_size=NOT MEASURED AT INITIALIZATION (callback_observation reports previous completed batch)\n"
+      ],
+      "proof_pairs": [
+        {
+          "path": "phase-1/check.json",
+          "round": 1,
+          "attempt": 0,
+          "verification": false,
+          "clock_round": 7,
+          "offset_ns": 12041641291,
+          "uncertainty_ns": 241934,
+          "guest_query_floor_ns": 8833586891,
+          "source_intervals_frames": [
+            [
+              300287,
+              300801
+            ],
+            [
+              300415,
+              300929
+            ]
+          ],
+          "guest_minus_host_frames": [
+            -386,
+            642
+          ],
+          "within_guard": true
+        },
+        {
+          "path": "phase-1/reconnect-verification.json",
+          "round": 1,
+          "attempt": 1,
+          "verification": true,
+          "clock_round": 8,
+          "offset_ns": 12041596882,
+          "uncertainty_ns": 254900,
+          "guest_query_floor_ns": 11519641076,
+          "source_intervals_frames": [
+            [
+              327807,
+              328321
+            ],
+            [
+              327807,
+              328321
+            ]
+          ],
+          "guest_minus_host_frames": [
+            -514,
+            514
+          ],
+          "within_guard": true
+        },
+        {
+          "path": "phase-2/check.json",
+          "round": 2,
+          "attempt": 1,
+          "verification": false,
+          "clock_round": 14,
+          "offset_ns": 12041601536,
+          "uncertainty_ns": 225416,
+          "guest_query_floor_ns": 17552360489,
+          "source_intervals_frames": [
+            [
+              616063,
+              616577
+            ],
+            [
+              616063,
+              616577
+            ]
+          ],
+          "guest_minus_host_frames": [
+            -514,
+            514
+          ],
+          "within_guard": true
+        }
+      ],
+      "natural_song_EOF": true,
+      "authority_equal": true,
+      "ordinary_recovery": false,
+      "sampling_reconnect": null,
+      "audio_DAC_or_physical": "NOT_ASSESSED",
+      "registered_local_at_state": {
+        "actual_receipt": {
+          "accepted_ns": 8852303546,
+          "actual_step": "AwaitLive",
+          "attempt": 0,
+          "epoch": 14198148303606145110,
+          "event": "registered_recovery_at_await_live",
+          "gate_ack_written": true,
+          "host_deadline_ns": 50542939909,
+          "player": 2,
+          "round": 1,
+          "schema": 2,
+          "source_ids": [
+            [
+              1,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "trigger": "registered local at-state request"
+        },
+        "registration": {
+          "epoch": 14198148303606145110,
+          "registered_ns": 14942524188,
+          "requester": "guest",
+          "source_generation": 1,
+          "source_id": 1,
+          "source_position_seconds_bits": 4611980253603042776,
+          "trigger": "registered local at-state request"
+        },
+        "journal_events": [
+          [
+            [
+              "sampling",
+              1,
+              0
+            ],
+            [
+              "rebound",
+              1,
+              1
+            ],
+            [
+              "sampling",
+              1,
+              1
+            ],
+            [
+              "ready",
+              1,
+              1
+            ],
+            [
+              "sampling",
+              2,
+              1
+            ],
+            [
+              "ready",
+              2,
+              1
+            ]
+          ],
+          [
+            [
+              "sampling",
+              1,
+              0
+            ],
+            [
+              "rebound",
+              1,
+              1
+            ],
+            [
+              "sampling",
+              1,
+              1
+            ],
+            [
+              "ready",
+              1,
+              1
+            ],
+            [
+              "sampling",
+              2,
+              1
+            ],
+            [
+              "ready",
+              2,
+              1
+            ]
+          ]
+        ],
+        "frozen_frames": [
+          306432,
+          306560
+        ],
+        "frozen_sequences": [
+          790,
+          790
+        ],
+        "frozen_rawbits": [
+          4618873763432671216,
+          4618876765832422796
+        ],
+        "held_cursor_seq_witness": [
+          [
+            786,
+            799
+          ],
+          [
+            786,
+            799
+          ]
+        ],
+        "common_frame": 306560,
+        "expected_reconnect_frames": [
+          328246,
+          328247
+        ],
+        "start_and_drift_uncertainty_frames": [
+          23,
+          129
+        ],
+        "old_immediate_request_route": "QA_NOT_HIT retained; NOT covered here",
+        "Host_simultaneous_phase_state": "NOT_DIRECTLY_OBSERVED"
+      },
+      "final_observed_source": [
+        {
+          "side": "host",
+          "raw_cursor_seconds": 16.376,
+          "raw_cursor_quantized_frames": 786048,
+          "N_minus_last_cursor": 384,
+          "csv_last_source_song_frames": 785536,
+          "csv_estimated_song_frames": 786432,
+          "audio_state": "Some(Stopped)"
+        },
+        {
+          "side": "guest",
+          "raw_cursor_seconds": 16.376,
+          "raw_cursor_quantized_frames": 786048,
+          "N_minus_last_cursor": 384,
+          "csv_last_source_song_frames": 785536,
+          "csv_estimated_song_frames": 786432,
+          "audio_state": "Some(Stopped)"
+        }
+      ],
+      "authority_facts": [
+        410,
+        410
+      ],
+      "event_count": 5,
+      "authority_final_watermark": 807313
+    },
+    "source_identity": "380 compiled source files independently copied and frozen; subsequent source evolution does not change this identity"
+  }
+}

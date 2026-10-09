@@ -34,7 +34,7 @@ def file_hashes(directory):
 
 def check(game, package, output, compositor, rounds=1, scenario="complete", receipt=None):
     assert rounds >= 1, "round count must be positive"
-    same_epoch = scenario in ("same-epoch-active", "same-epoch-phase-sampling")
+    same_epoch = scenario in ("same-epoch-active", "same-epoch-phase-sampling", "same-epoch-phase-await-live")
     assert not same_epoch or rounds == 1, "same epoch uses one original round"
     assert not scenario.startswith("reenter-") or rounds == 2, "reentry cases require two rounds"
     supervisor = Path(__file__).resolve().parents[1] / "library-runtime-check/check.py"
@@ -213,7 +213,8 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                 assert [capture["seq"] for capture in result["capture_diagnostics"]] == [0, 1, 2]
                 if same_epoch:
                     recovery = result["same_epoch"]
-                    assert recovery["request_sent"] == (side == "host") and recovery["recovering_seen"] and recovery["ready_after_gate"]
+                    requester = "guest" if scenario == "same-epoch-phase-await-live" else "host"
+                    assert recovery["request_sent"] == (side == requester) and recovery["recovering_seen"] and recovery["ready_after_gate"]
                     recovering = [row for row in rows if row["phase"] == "Recovering"]
                     assert recovering and all(row["online_recovering"] == "true" and int(row["synthetic_hits"]) == 2 for row in recovering)
                     assert recovery["probe_dropped_before_ready"]
@@ -234,7 +235,7 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                     assert file_hashes(directory) == preserved_recovery[side]
                     metadata = json.loads((directory / "metadata.json").read_text())
                     assert metadata["epoch"] == result["epoch"] and metadata["attempt"] == 1 and metadata["paused_frame"] > 0
-                    expected_causes = ({"explicit local connection maintenance"} if side == "host" else
+                    expected_causes = ({"explicit local connection maintenance"} if side == requester else
                                        {"authenticated peer requested connection maintenance", "authenticated peer continuation"})
                     assert metadata["cause"] in expected_causes, "unexpected recovery cause"
                     assert str(metadata["source_id"]) == publications[0]["source_id"]
@@ -272,6 +273,39 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                 certificates.append(reports[0]["network"]["cert_blake3"])
                 all_reports.append(reports)
                 continue
+            if scenario == "same-epoch-phase-await-live":
+                guest = reports[1]; request = guest["runtime"]["same_epoch"]["phase_request"]
+                assert request and reports[0]["runtime"]["same_epoch"]["phase_request"] is None
+                accepted = json.loads((network_directory(output, "guest", number) / "await-live-request.json").read_text())
+                assert accepted["schema"] == 2 and accepted["player"] == 2
+                assert accepted["event"] == "registered_recovery_at_await_live"
+                assert accepted["trigger"] == request["trigger"] == "registered local at-state request"
+                assert accepted["actual_step"] == "AwaitLive" and accepted["gate_ack_written"] is True and accepted["attempt"] == 0
+                assert accepted["epoch"] == request["epoch"] == guest["network"]["epoch"]
+                assert 1 <= accepted["round"] <= 128
+                assert accepted["source_ids"][1] == [request["source_generation"], request["source_id"]]
+                assert not (network_directory(output, "guest", number) / "await-live-observation.json").exists()
+                round = accepted["round"]
+                for report in reports:
+                    network = network_directory(output, report["side"], number)
+                    assert (network / f"phase-{round}/check.json").exists()
+                    proof = json.loads((network / f"phase-{round}/reconnect-verification.json").read_text())
+                    assert proof["original_source_ids"] == accepted["source_ids"]
+                    assert proof["round"] == round and proof["epoch"] == accepted["epoch"] and proof["connection_attempt"] == 1
+                    assert proof["reconnect_verification"] is True and proof["verification"] is True and proof["within_guard"] is True
+                    journal = report["runtime"]["phase_observations"]
+                    assert 1 <= len(journal) <= 16
+                    assert all(row["epoch"] == accepted["epoch"] for row in journal)
+                    assert all(a["observed_ns"] <= b["observed_ns"] for a, b in zip(journal, journal[1:]))
+                    assert not any(row["event"] in ("pausing", "scheduled") for row in journal)
+                    assert len({(row["source_generation"], row["source_id"]) for row in journal}) == 1
+                    assert all(a["source_sequence"] <= b["source_sequence"] for a, b in zip(journal, journal[1:]))
+                    rebound = next(i for i, row in enumerate(journal) if row["event"] == "rebound" and row["round"] == round and row["attempt"] == 1)
+                    if report["side"] == "guest":
+                        assert not any(row["event"] == "ready" and row["round"] == round and row["attempt"] == 0 for row in journal[:rebound])
+                    ready = next(i for i, row in enumerate(journal[rebound + 1:], rebound + 1) if row["event"] == "ready" and row["round"] == round and row["attempt"] == 1)
+                    assert any(row["event"] == "sampling" and row["round"] == round and row["attempt"] == 1 and row["verification"] is True for row in journal[rebound + 1:ready])
+                    assert any(row["event"] == "ready" and row["round"] > round and row["attempt"] == 1 for row in journal[ready + 1:])
             if scenario == "same-epoch-phase-sampling":
                 request = reports[0]["runtime"]["same_epoch"]["phase_request"]
                 assert request and reports[1]["runtime"]["same_epoch"]["phase_request"] is None
@@ -351,6 +385,8 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                    "evidence_sha256": {str(path.relative_to(output)): digest(path) for path in sorted(output.glob("**/*"))
                                        if path.is_file() and path not in invites},
                    "scope": f"two native Linux game processes, separate {compositor} displays, actual Kira source cursors, synthetic controls, real loopback; physical input, speakers, two machines and human acceptance NOT RUN"}
+        if scenario == "same-epoch-phase-await-live":
+            summary["recovery_trigger"] = "registered local at-state request; original immediate RequestRecovery queue route not covered"
         (output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
         print(json.dumps({"status": "PASS", "evidence": str(output / "summary.json")}))
     except BaseException as error:
@@ -378,7 +414,7 @@ if __name__ == "__main__":
     parser.add_argument("new_output", type=Path)
     parser.add_argument("--compositor", choices=("xvfb", "gamescope"), default="xvfb")
     parser.add_argument("--rounds", type=int, default=1)
-    parser.add_argument("--scenario", choices=("complete", "reenter-before-ready", "reenter-after-hit", "same-epoch-active", "same-epoch-phase-sampling"), default="complete")
+    parser.add_argument("--scenario", choices=("complete", "reenter-before-ready", "reenter-after-hit", "same-epoch-active", "same-epoch-phase-sampling", "same-epoch-phase-await-live"), default="complete")
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     check(args.game.resolve(), args.package.resolve(), args.new_output.resolve(), args.compositor, args.rounds, args.scenario, args.receipt.resolve() if args.receipt else None)

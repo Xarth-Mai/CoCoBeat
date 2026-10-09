@@ -1,5 +1,9 @@
 # 工作进度
 
+2026-10-09 · [原生 Guest AwaitLive 续接](../testdata/synthetic/source-phase-await-live-native-observations-20261009.json)通过注册式真实状态请求、同轮重绑 / fresh verification、下一普通检查及自然 EOF；net53 / runtime186与六项检查通过，六 proof 独立区间重算保持原 guard，双方820 facts / 5 events权威一致。旧立即请求 QA_NOT_HIT及75ms严格FAIL保留；Host同时状态、全故障 / 四平台优化包、设备 / 音乐 / 真人仍分开验收，本轮提交与CI收尾
+
+2026-10-09 · [单次自有 Guest 暂停故障](../testdata/synthetic/source-phase-kira-owned-stall-observations-20261009.json)记录实际 16.384 秒包、原 Kira 普通校正与自然 EOF 的窄软件证据，独立六 proof 重算；严格预登记为 `FAIL_PREDECLARED_COMPLETE_INTERVAL_OUTSIDE_GUARD`，`[-3714,-2174]` 非整区间越 guard，verification / 下一普通 Check 均为 `[-386,642]`。实际 Paused / Resuming 和冻结生产路径只支持 `SUPPORTED_WITH_SCOPED_INFERENCE`，原 summary 的可变 ledger 单项 seal mismatch 保留，无 aggregate PASS；原构建 380 项源码已独立封存，不绑定后续 mutable 源。该强严格故障 case 继续未闭合，不再调阈值盲试；本轮软件交付与硬件 / 音乐 / 真人验收分别推进
+
 2026-10-09 · [固定02360df四目标](../testdata/synthetic/release-four-target-02360df-observations-20261009.json)在同提交CI后完成四原生优化构建与下载包核验，解包Lab原48+新16条共64命令为60成功 / 4缺模型预期拒绝；各包41份源码许可与597行台账、固定SDK / 模型通过身份检查，本机16项PE / ELF仅静态读取。空MusicTruth v2 / native v3保持未知置信和未评质量；原失败保留，后续AwaitLive源码、完整故障矩阵 / 设备 / 真人 / tag Release另验
 
 更新：2026-10-08，用户恢复完整项目推进并允许 subagent 并行，本批已完成 QUIC 四对象接收、网络时钟、原生游戏接线、正常结束后同进程新局及只读 Replay 图形诊断，同 epoch 原音源软件恢复已取得新证据，继续漂移 / 故障矩阵、生产源入口与内容路线。第一批规则、时钟、Replay、原创内容和 runtime 已通过完整软件检查，GPU 离屏截图已检查；品牌模块已交付、主线程已接线，品牌细节仍持续迭代，共享文件由主线程统一集成，实际证据统一记录在 [验证策略](../docs/testing.md)

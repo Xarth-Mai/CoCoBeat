@@ -50,3 +50,7 @@
 2026-10-09 · [Phase写出窄补](../testdata/synthetic/source-phase-control-write-observations-20261009.json)接通既有typed错误，net52 / runtime186、六项必要检查与两个真实QUIC部分写入控制通过；整帧预算保守消费、原状态 /事件次序和已接受Fact /Replay保持，非法domain /预算仍终态。完整认证续接、其他写入边缘与实际Kira scheduled /AwaitLive继续独立验收
 
 2026-10-09 · [实际Kira Sampling续接](../testdata/synthetic/source-phase-sampling-native-observations-20261009.json)完成round1原源 /同epoch重绑和重新验证，随后round2正常维护、自然EOF /权威820事实一致；四原proof的完整区间独立重算均[-514,514]帧，原容量 /期限 /预算保持。请求在成功Sampling handler之后、not_before之前，未验PCM子窗内中断；实际强制校正、Pausing /pending-resume /AwaitLive、长期漂移和设备 /双机继续后续验收
+
+2026-10-09 · [自有 Guest 单次暂停观察](../testdata/synthetic/source-phase-kira-owned-stall-observations-20261009.json)保持严格 `FAIL_PREDECLARED_COMPLETE_INTERVAL_OUTSIDE_GUARD`，首轮完整区间 `[-3714,-2174]` 跨过 guard，未满足整区间越界预登记条件；75.254205 ms 是进程 STOP / CONT 请求间隔，不能作为物理漂移。实际普通校正窄路径为 `SUPPORTED_WITH_SCOPED_INFERENCE`，真实 Paused / Resuming、原冻结帧 / source / sequence、独立 verification 和下一 Check `[-386,642]`、自然 EOF / 836 facts / 5 events / authority 一致有原件；PhaseScheduled 没有直接事件日志，外部 ledger 的原 summary 单项封口差异保留，未给 aggregate PASS。380 项来源已冻结，该严格故障 case 与完整矩阵仍未闭合，不改阈值或盲试；当前软件交付继续，设备 / 音乐 / 真人准入另验
+
+2026-10-09 · [原生 Guest AwaitLive 续接](../testdata/synthetic/source-phase-await-live-native-observations-20261009.json)通过注册式真实状态请求、同轮重绑 / fresh verification、下一普通检查及自然 EOF；net53 / runtime186与六项检查通过，六 proof 独立区间重算保持原 guard，双方820 facts / 5 events权威一致。旧立即请求 QA_NOT_HIT及75ms严格FAIL保留；Host同时状态、全故障 / 四平台优化包、设备 / 音乐 / 真人仍分开验收，本轮提交与CI收尾

@@ -1,0 +1,290 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-09",
+  "status": "FAIL_PREDECLARED_COMPLETE_INTERVAL_OUTSIDE_GUARD",
+  "aggregate_PASS": false,
+  "scope": "One actual Linux original Kira source ordinary Phase correction after one owned Guest SIGSTOP/SIGCONT; strict complete-interval-outside-guard fault gate remains failed; not physical drift or complete hardware/music acceptance",
+  "build_identity": {
+    "base_head": "2cadd861422500a1d6a15d6abf82ff83d85dbd21",
+    "root_campaign_recorded_base_head": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+    "build_scope": "original formatted Sampling dirty3 debug shipping build; not a new clean-head or optimized four-native build",
+    "compiled_source_count": 380,
+    "frozen_snapshot_root": "target/kira-owned-stall-independent-review-20261009/frozen-compiled-source",
+    "snapshot_map_path": "target/kira-owned-stall-independent-review-20261009/compiled-source-snapshot.json",
+    "snapshot_map_sha256": "7dc6010b320b55431414e4d80b55309880b7808efe83c0fca537159afba05898",
+    "source_comparison_scope": "old milestone fresh397 before/after capture already frozen; no comparison to later mutable production source"
+  },
+  "actual_content": {
+    "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+    "canonical_frames": 786432,
+    "canonical_sample_rate": 48000,
+    "canonical_seconds": 16.384
+  },
+  "owned_process_fault": {
+    "case_count": 1,
+    "requested_stall_ns": 75000000,
+    "stop_requested_ns": 239201816008949,
+    "stop_observed_ns": 239201817182989,
+    "continue_requested_ns": 239201891263154,
+    "request_interval_ns": 75254205,
+    "request_interval_ms": 75.254205,
+    "guest_pid": 1095978,
+    "guest_startticks": 23918661,
+    "guest_wrapper_pgid_sid": 1095952,
+    "continue_sent": true,
+    "game_exited": true,
+    "wrappers_exited": true,
+    "group_survivors": [],
+    "scope": "owned process stop/continue request and kernel stopped observation, not acoustic outage duration or physical clock drift"
+  },
+  "predeclared_gate": {
+    "status": "FAIL_PREDECLARED_COMPLETE_INTERVAL_OUTSIDE_GUARD",
+    "complete_guest_minus_host_frames": [
+      -3714,
+      -2174
+    ],
+    "guard_frames": 2400,
+    "supports_original_guard": true,
+    "complete_interval_outside_guard": false,
+    "required_guest_interval_upper_lt": -2400,
+    "actual_upper": -2174,
+    "interval_width_frames": 1540,
+    "case_closed": false,
+    "automatic_retry": false,
+    "threshold_or_budget_adjustment": false
+  },
+  "ordinary_correction_software_evidence": {
+    "status": "SUPPORTED_WITH_SCOPED_INFERENCE",
+    "independently_recalculated_raw_proofs": 6,
+    "observed_runtime_audio_states": [
+      "Paused",
+      "Resuming",
+      "Playing"
+    ],
+    "phase_scheduled_direct_event_log": false,
+    "inference_scope": "no direct PhaseScheduled journal; actual Paused/Resuming/Playing CSV plus ordinary verification frozen-source/common-frame proof supports original scheduling path inference",
+    "frozen_source_ids": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "frozen_publication_sequences": [
+      794,
+      785
+    ],
+    "actual_frozen_frames": [
+      307200,
+      304000
+    ],
+    "common_frame": 307200,
+    "verification_guest_minus_host_frames": [
+      -386,
+      642
+    ],
+    "next_ordinary_check_guest_minus_host_frames": [
+      -386,
+      642
+    ],
+    "connection_attempt": 0,
+    "source_identity_and_sequence_preserved": true,
+    "natural_EOF": true,
+    "actual_game_exit_codes": {
+      "1095911": 0,
+      "1095978": 0
+    },
+    "authority": {
+      "bytes_identical": true,
+      "sha256": "66a3111176f6dcc9fd0393a22b07cc7b541f97129591ee6108a614ec24362c3d",
+      "facts": [
+        418,
+        418
+      ],
+      "events": 5,
+      "epoch": 17142463474934909865,
+      "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb"
+    }
+  },
+  "summary_seal": {
+    "status": "FAIL_ONE_FINAL_RUNNER_METADATA_HASH_MISMATCH",
+    "original_native_summary_status": "PASS_COMPLETE_SCENARIO_ONLY",
+    "mismatches": [
+      {
+        "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/owned-stall.json",
+        "summary_sha256": "f40526880583d7cd5bd2612932b894621301cda7fd91aae3cb4e0891b272fd2b",
+        "current_final_sha256": "6dc0767407dc3c8033498a71a8f836d24186f8550742cc731b07a559d9f018ac"
+      }
+    ],
+    "other_original_evidence_hashes_equal": true,
+    "original_summary_and_validator_unchanged": true,
+    "aggregate_PASS": false
+  },
+  "root_execution": {
+    "pid": 1095887,
+    "pgid": 1095887,
+    "elapsed_seconds": 53.02297759600333,
+    "exit_code": 1,
+    "timed_out": false,
+    "owned_group_gone": true,
+    "guards_equal": true,
+    "actual_games": [
+      {
+        "pid": 1095911,
+        "gone": true
+      },
+      {
+        "pid": 1095978,
+        "gone": true
+      }
+    ]
+  },
+  "independent_review": {
+    "result": {
+      "path": "target/kira-owned-stall-independent-review-20261009/result.json",
+      "bytes": 65084,
+      "sha256": "7eacd842900334975b3d8087b18b292b6665aa263d31406ee1f9270420547d63"
+    },
+    "report": {
+      "path": "target/kira-owned-stall-independent-review-20261009/REPORT.md",
+      "bytes": 7969,
+      "sha256": "df9154206214a89c4e4e97055722ed7fa541c55ca30b381570a5448afed33d72"
+    },
+    "manifest": {
+      "path": "target/kira-owned-stall-independent-review-20261009/MANIFEST.json",
+      "bytes": 2440,
+      "sha256": "17b0ba56abbd50bef75f4c521458d4179edffb81c243255ab83e3e3a66157d54"
+    },
+    "postflight": {
+      "path": "target/kira-owned-stall-independent-review-20261009/postflight.json",
+      "bytes": 461,
+      "sha256": "9e8eb6ae288b9fceadd4b376619834c2048d86d0ce828e929e4070a933585ba3"
+    },
+    "source_freeze": {
+      "path": "target/kira-owned-stall-independent-review-20261009/source-freeze-receipt.json",
+      "bytes": 1128,
+      "sha256": "a6f4589153045e3994821cd26c9d9e277143bf74547cc0432d77dcefd2580d59"
+    }
+  },
+  "unclosed": "strict predeclared fault case and full fault matrix remain unclosed; continue software delivery with hardware, music quality and human acceptance recorded separately; no blind retry or threshold relaxation",
+  "not_run": [
+    "long-term physical soundcard drift",
+    "DAC/speaker synchronization",
+    "two machines",
+    "physical controls",
+    "visual review",
+    "music quality admission",
+    "human acceptance",
+    "new native rerun"
+  ],
+  "raw_refs": [
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/MANIFEST.json",
+      "bytes": 2440,
+      "sha256": "17b0ba56abbd50bef75f4c521458d4179edffb81c243255ab83e3e3a66157d54"
+    },
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/REPORT.md",
+      "bytes": 7969,
+      "sha256": "df9154206214a89c4e4e97055722ed7fa541c55ca30b381570a5448afed33d72"
+    },
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/result.json",
+      "bytes": 65084,
+      "sha256": "7eacd842900334975b3d8087b18b292b6665aa263d31406ee1f9270420547d63"
+    },
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/postflight.json",
+      "bytes": 461,
+      "sha256": "9e8eb6ae288b9fceadd4b376619834c2048d86d0ce828e929e4070a933585ba3"
+    },
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/source-freeze-receipt.json",
+      "bytes": 1128,
+      "sha256": "a6f4589153045e3994821cd26c9d9e277143bf74547cc0432d77dcefd2580d59"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/result.json",
+      "bytes": 3399,
+      "sha256": "742b869aea3875a1969195f2a5d788cfd451122d20cf5a14137fa3ca1a93ab14"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/summary.json",
+      "bytes": 27777,
+      "sha256": "c22245db428ba33a8dc84b917a950efe6ea9f93b3b63bb46a95f294c0ae236f1"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/owned-stall.json",
+      "bytes": 3088,
+      "sha256": "6dc0767407dc3c8033498a71a8f836d24186f8550742cc731b07a559d9f018ac"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-network/phase-1/check.json",
+      "bytes": 5917,
+      "sha256": "3108fad69c935c8c005fce5cc4a7d5946db1139e56b8aa0029a037c7963e6c23"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-network/phase-1/verification.json",
+      "bytes": 6293,
+      "sha256": "40f93f00cd89d05ccdc0c722aa4c89b4c8b78dacd82db62273451b2e6227e7f6"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-network/phase-2/check.json",
+      "bytes": 6363,
+      "sha256": "6abfe1051653d019c64be487045ad87f1bd13ec610f2e814c33c2f23d258ec10"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-network/authority.replay.json",
+      "bytes": 71218,
+      "sha256": "66a3111176f6dcc9fd0393a22b07cc7b541f97129591ee6108a614ec24362c3d"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-process/child-exit.json",
+      "bytes": 85,
+      "sha256": "1485c9f75011b07a13aac2c94821e45bba7af2c9e2612498004dfd311d4f04ed"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/host-observation/result.json",
+      "bytes": 2037,
+      "sha256": "e930893df22691cd46569837e77b77ad6cadcf7696799559e2ecb54e9090233d"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-network/phase-1/check.json",
+      "bytes": 5916,
+      "sha256": "35039cb6d38b527922ae08f4e50f51317a9196f0ce2006ea0ee47adbba9d57fd"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-network/phase-1/verification.json",
+      "bytes": 6293,
+      "sha256": "6618de07abe39540b65dfcbe83f5f502424b4a8bd70521dcf0306180f1a65b97"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-network/phase-2/check.json",
+      "bytes": 6363,
+      "sha256": "bef2e5679da14b3bfb0220489a7588e44a54adfecae973bee5b8a72416982c93"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-network/authority.replay.json",
+      "bytes": 71218,
+      "sha256": "66a3111176f6dcc9fd0393a22b07cc7b541f97129591ee6108a614ec24362c3d"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-process/child-exit.json",
+      "bytes": 85,
+      "sha256": "02b46c860d70cb6ffc6dc0120e40694ff9320aada90c07d3cbcfe8e317456549"
+    },
+    {
+      "path": "target/kira-owned-stall-native-run-20261009/owned-guest-stall-75ms/guest-observation/result.json",
+      "bytes": 2036,
+      "sha256": "25bdb12030d5a65d181a25ccc4cb5700c2fd400475c7b62863ae3fefb529a3ce"
+    },
+    {
+      "path": "target/kira-owned-stall-independent-review-20261009/compiled-source-snapshot.json",
+      "bytes": 44117,
+      "sha256": "7dc6010b320b55431414e4d80b55309880b7808efe83c0fca537159afba05898"
+    }
+  ]
+}

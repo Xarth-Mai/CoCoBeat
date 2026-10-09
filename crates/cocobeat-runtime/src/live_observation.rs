@@ -101,6 +101,8 @@ impl Observation {
             "same-epoch-active-guest" => ("same-epoch-active", false),
             "same-epoch-phase-sampling-host" => ("same-epoch-phase-sampling", true),
             "same-epoch-phase-sampling-guest" => ("same-epoch-phase-sampling", false),
+            "same-epoch-phase-await-live-host" => ("same-epoch-phase-await-live", false),
+            "same-epoch-phase-await-live-guest" => ("same-epoch-phase-await-live", true),
             _ => return Err("Unknown live observation scenario".into()),
         };
         if scenario.starts_with("same-epoch-") && round_count != 1 {
@@ -191,7 +193,10 @@ pub(super) fn install(app: &mut App, directory: &Path) -> Result<(), String> {
         round_count,
         app.world().non_send::<AudioOutput>().output_info(),
     )?;
-    if observation.scenario == "same-epoch-phase-sampling" {
+    if matches!(
+        observation.scenario,
+        "same-epoch-phase-sampling" | "same-epoch-phase-await-live"
+    ) {
         app.world_mut()
             .non_send_mut::<OnlineRound>()
             .enable_phase_observations();
@@ -463,6 +468,7 @@ fn observe(
                 observation.current.hits_sent += 1;
             }
         }
+        let phase_await_live = observation.scenario == "same-epoch-phase-await-live";
         let phase_sampling = observation.scenario == "same-epoch-phase-sampling";
         let sampled = online.phase_observations().last().filter(|row| {
             row["event"] == "sampling"
@@ -473,6 +479,7 @@ fn observe(
         if observation.cancel_host
             && game.phase == Phase::Running
             && (!phase_sampling || sampled.is_some())
+            && (!phase_await_live || (online.started && online.player == Some(PlayerId::P2)))
             && game.session.current.frames() >= 96_000
             && actual_source.is_some_and(|source| source.position_seconds >= 2.0)
             && let Some(recovery) = &mut observation.same_epoch
@@ -495,9 +502,22 @@ fn observe(
                 request["requested_ns"] = now.into();
                 recovery.phase_request = Some(request);
             }
-            online.send(LiveCommand::RequestRecovery {
-                epoch: game.session.epoch(),
-            })?;
+            let command = if phase_await_live {
+                recovery.phase_request = Some(serde_json::json!({
+                    "epoch": game.session.epoch().0, "registered_ns": now,
+                    "source_generation": source.generation, "source_id": source.source_id,
+                    "source_position_seconds_bits": source.position_seconds.to_bits(),
+                    "requester": "guest", "trigger": "registered local at-state request",
+                }));
+                LiveCommand::RequestRecoveryAtAwaitLive {
+                    epoch: game.session.epoch(),
+                }
+            } else {
+                LiveCommand::RequestRecovery {
+                    epoch: game.session.epoch(),
+                }
+            };
+            online.send(command)?;
             recovery.request_sent = true;
         }
         if observation.cancel_host && !observation.fault_injected && observation.current.number == 1

@@ -458,6 +458,24 @@ impl Session {
         write_new(&output.join("metadata.json"), &metadata_bytes)
     }
 
+    // Only the registered local AwaitLive request publishes this fixed receipt
+    pub(crate) fn record_await_live_request(
+        &self,
+        metadata: serde_json::Value,
+    ) -> Result<(), String> {
+        let temporary = self.output.join(".await-live-request.json.pending");
+        write_new(
+            &temporary,
+            &serde_json::to_vec_pretty(&metadata)
+                .map_err(|_| "encode AwaitLive QA receipt failed")?,
+        )?;
+        // The final name first becomes visible with complete, synced bytes; never replace it
+        fs::hard_link(&temporary, self.output.join("await-live-request.json"))
+            .map_err(|error| format!("publish new AwaitLive QA receipt: {error}"))?;
+        fs::remove_file(temporary)
+            .map_err(|error| format!("remove published AwaitLive QA temporary: {error}"))
+    }
+
     pub(crate) fn record_phase(
         &self,
         round: u16,
@@ -1604,6 +1622,43 @@ mod tests {
             wrong_order.record(session.replay.facts()[index]).unwrap();
         }
         assert!(!same_player_histories(&wrong_order, &session.replay));
+    }
+
+    #[test]
+    fn await_live_request_publishes_complete_bytes_once_and_leaves_failed_temporary() {
+        let root = temporary_root();
+        fs::create_dir(&root).unwrap();
+        let mut session = fixture();
+        session.output = root.clone();
+        let pending = root.join(".await-live-request.json.pending");
+        fs::write(&pending, b"{partial").unwrap();
+        assert!(!root.join("await-live-request.json").exists());
+        assert!(
+            session
+                .record_await_live_request(serde_json::json!({"round": 1}))
+                .is_err()
+        );
+        assert_eq!(fs::read(&pending).unwrap(), b"{partial");
+        fs::remove_file(&pending).unwrap();
+        let original = serde_json::json!({"round": 1, "actual_step": "AwaitLive"});
+        session.record_await_live_request(original.clone()).unwrap();
+        assert!(!pending.exists());
+        let published = fs::read(root.join("await-live-request.json")).unwrap();
+        assert_eq!(published, serde_json::to_vec_pretty(&original).unwrap());
+        assert!(
+            session
+                .record_await_live_request(serde_json::json!({"round": 2}))
+                .is_err()
+        );
+        assert_eq!(
+            fs::read(root.join("await-live-request.json")).unwrap(),
+            published
+        );
+        assert_eq!(
+            serde_json::from_slice::<serde_json::Value>(&fs::read(&pending).unwrap()).unwrap()["round"],
+            2
+        );
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

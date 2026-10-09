@@ -172,3 +172,21 @@ Ready 前失败时客机尚未初始化网络 epoch，主机已有邀请 epoch�
 两端每次冻结的逐玩家 Replay 前缀、owner count 和最终 Hit0..3 连续序列保持，源 generation /id、累计 active_ns、原小数余量和预约自然前进保留；独立复核重算60份原 proof 的四时间戳、整数 drift、capture bracket及完整区间。第三个负控向真实 worker 提交变化的 source identity，主机精确拒绝且零 Ready；旧负控因拒绝后继续发 Fact 先行 panic 的 FAIL 原记录保留，新 QA 只停止后续发送并读取真实 Failed
 
 三个 case 均明确以有限 QA 取消结束，保存 FAILED 和部分 Replay，没有 End、补造最终水位、自然 EOF 或权威 Replay；它们验证真实 TLS /QUIC 控制与声明的软件积分源，不替代强制 Kira 漂移、CPAL /DAC、protocol9 active续接、双机或设备验收，见[多轮软件源观察](../testdata/synthetic/source-phase-model-observations-20261009.json)
+
+## 自有 Guest 进程暂停故障的原源校正观察
+
+2026-10-09，固定旧 Sampling debug 构建的两个实际 Kira 进程，对已核 PID / startticks / owned PGID 的 Guest 只执行一次 75 ms SIGSTOP / SIGCONT，实际请求间隔 75.254205 ms，内核停止确认与恢复、自然 EOF 和退出原件均保留；实际包为 786432 帧 / 16.384 秒，见[暂停故障观察](../testdata/synthetic/source-phase-kira-owned-stall-observations-20261009.json)
+
+严格预登记结果为 `FAIL_PREDECLARED_COMPLETE_INTERVAL_OUTSIDE_GUARD`：六份原 proof 独立重算，首轮完整差区间 `[-3714,-2174]` 帧支持原 guard，但跨过 -2400 边界，上界未严格小于 -2400；原生产因不能保证整个区间位于 guard 内执行一次普通校正，双方实际 Paused / Resuming / Playing、冻结原帧 307200 / 304000 和 common frame 307200 保持，独立 verification 与下一普通 Check 均为 `[-386,642]`，终局双方各 418 条 owner facts、5 个 core events 与 authority 原字节一致
+
+该窄路径仅为 `SUPPORTED_WITH_SCOPED_INFERENCE`，complete 场景没有直接 PhaseScheduled 事件日志，以实际音频状态、verification 原件及冻结既有生产路径支持预约校正推断；原 summary 曾哈希外部可变 `owned-stall.json` 的中间版本，最终 FAIL 写回后出现唯一 metadata seal mismatch，原 summary / validator / FAIL 均保持，不能汇总为 PASS
+
+本观察绑定独立封存的 380 项编译源和原构建 receipt，后续使用冻结来源，不要求新生产版本维持旧字节；该严格故障 case 继续未闭合，不再调阈值或盲试，软件交付、完整故障矩阵、长期声卡漂移、DAC / 扬声器、双机、物理输入和音乐 / 真人准入分别记录
+
+## 原生 Guest AwaitLive 状态续接
+
+2026-10-09，显式 QA 场景提前注册一次本地维护请求，worker 仅在真实普通 AwaitLive 转换且原 GateAck 完整写出后执行原 typed Recoverable 出口；默认会话不注册，没有新 wire 消息、延迟、peer hold 或 guard / timeout 调整，见[原生观察](../testdata/synthetic/source-phase-await-live-native-observations-20261009.json)
+
+实际两个 Linux Kira 进程自然 exit0，用时 58.991823 秒；原 generation / source_id、同 epoch 与 Replay 前缀保持，同轮重绑后 fresh verification、下一普通 Check 和自然 EOF 完成，双方 820 facts / 5 events 权威一致。六份 proof 独立完整重算，首轮差区间 [-386,642]、续接验证和下一检查均 [-514,514] 帧，全部保持原 guard；380 项编译源独立封存，464 项输入复核不变
+
+原立即 RequestRecovery 首轮往返晚到 24.849753 ms，接受时 active_step 为 null，QA_NOT_HIT 原件及旧编译源保留；新注册入口不补旧立即请求覆盖，也不声明 Host 同时 AwaitLive / last-sealed、其他 Phase、全故障矩阵、四平台优化包或设备 / 真人验收。末次原始游标为 N−384，CSV 的原音源帧与估计时间分别记录，不将最后 callback 观察值当作 DAC 完成时间

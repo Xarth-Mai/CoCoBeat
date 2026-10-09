@@ -115,6 +115,10 @@ pub struct PhaseFrozen {
 pub enum LiveCommand {
     Ready,
     Armed,
+    /// Register one local recovery request at the next actual Guest AwaitLive transition
+    RequestRecoveryAtAwaitLive {
+        epoch: SessionEpoch,
+    },
     PhaseSource {
         epoch: SessionEpoch,
         generation: u64,
@@ -513,7 +517,8 @@ fn drain_accepted_commands(session: &mut Session, commands: &mut mpsc::Receiver<
             LiveCommand::RecoveryFrozen { .. }
             | LiveCommand::RecoveryArmed { .. }
             | LiveCommand::RecoveryObserved { .. }
-            | LiveCommand::RequestRecovery { .. } => {}
+            | LiveCommand::RequestRecovery { .. }
+            | LiveCommand::RequestRecoveryAtAwaitLive { .. } => {}
             _ => break,
         }
     }
@@ -968,6 +973,8 @@ struct PhaseRound {
 
 #[derive(Default)]
 struct PhaseState {
+    // None in ordinary sessions; one opt-in local request consumed at the actual transition
+    await_live_request: Option<()>,
     sources: [Option<(u64, u64)>; 2],
     previous: [Option<wire::PhasePublication>; 2],
     round: u16,
@@ -1835,6 +1842,14 @@ async fn phase_control(
         );
     }
     let peer = other(session.player).index();
+    let entering_await_live = matches!(
+        &message,
+        wire::PhaseControl::Gate {
+            correcting: false,
+            verification: false,
+            ..
+        }
+    );
     match message {
         wire::PhaseControl::Source {
             generation,
@@ -2362,6 +2377,27 @@ async fn phase_control(
     phase.active = Some(active);
     for message in sends {
         phase_send(session, control, phase, round, deadline, message).await?;
+    }
+    if entering_await_live
+        && session.player == PlayerId::P2
+        && let Some(active) = phase.active.as_ref()
+        && active.step == PhaseStep::AwaitLive
+        && active.attempt == 0
+        && !active.verification
+        && phase.await_live_request.take().is_some()
+    {
+        // The original GateAck write completed; execute the registered local request here
+        session.record_await_live_request(serde_json::json!({
+            "schema": 2, "event": "registered_recovery_at_await_live",
+            "trigger": "registered local at-state request",
+            "epoch": session.epoch.0, "round": active.round, "attempt": active.attempt,
+            "player": 2, "accepted_ns": sync::now_ns(session.origin)?,
+            "actual_step": "AwaitLive", "gate_ack_written": true,
+            "host_deadline_ns": active.host_deadline_ns, "source_ids": phase.sources,
+        }))?;
+        return Err(ExchangeError::Recoverable(
+            "explicit local connection maintenance",
+        ));
     }
     if gate {
         phase_try_gate(session, control, phase, maintained).await?;
@@ -4124,6 +4160,12 @@ async fn exchange(
                                 let control = mode.control.as_mut().ok_or("phase command has no live control stream")?;
                                 let clock = maintenance.as_mut().ok_or("phase command has no maintained clock")?;
                                 phase_command(session, (control, send, written), &mut continuation.phase, clock, command).await?;
+                            }
+                            LiveCommand::RequestRecoveryAtAwaitLive { epoch }
+                                if epoch == session.epoch && !mode.recovering && !continuation.used
+                                    && session.player == PlayerId::P2 && continuation.phase.attempt == 0
+                                    && continuation.phase.await_live_request.is_none() => {
+                                continuation.phase.await_live_request = Some(());
                             }
                             LiveCommand::RequestRecovery { epoch } if epoch == session.epoch && !mode.recovering && !continuation.used => {
                                 return Err(ExchangeError::Recoverable("explicit local connection maintenance"));
