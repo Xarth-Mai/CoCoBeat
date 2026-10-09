@@ -76,3 +76,5 @@
 - [x] 重复关系工作台消费者：同一结构模式展示两侧原端点与双区间、区分origin / inspection声道，显式Seek保持；Lab92项、两份生产回读、大小两窗及6PNG指定目检通过，首QA期望FAIL保留，见[消费者观察](../testdata/synthetic/candidate-consumers-observations-20261008.json)，音乐质量与当前来源四目标另验
 
 - [x] 600秒低边界结构完整成功出版：固定原配方一处转场，原PCM / canonical边界误差0；8步真实命令、typed守恒与Stage v2消费通过，compile wall91.763316秒 / kernel RSS65916 KiB，source373及前后四对象保护、进程退出，见[长曲成功出版](../testdata/synthetic/structure-long-publication-observations-20261008.json)。原密集75转场capErr保持，不扩大音乐质量、right / GPU或发行性能准入
+
+- [x] 独立拍单位 / 拍号的软件记录与比较：显式MusicTruth v2保留独立覆盖、来源声明、Unknown和双人分歧，旧v1默认与5份完整输出字节保持；18项窄测及33项CLI通过，原生候选confidence / unit / meter保持None，见[观察](../testdata/synthetic/music-truth-metrical-observations-20261009.json)，真人参考与算法准入继续未完成

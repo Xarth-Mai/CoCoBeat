@@ -137,6 +137,99 @@ impl Tracks {
     }
 }
 
+// Private serde adapter for the existing schema beat-unit values
+#[derive(Serialize, Deserialize)]
+#[serde(remote = "cocobeat_schema::TempoBeatUnit", rename_all = "snake_case")]
+enum TempoBeatUnitSerde {
+    Quarter,
+    Eighth,
+    DottedQuarter,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+pub(crate) struct BeatUnit(#[serde(with = "TempoBeatUnitSerde")] cocobeat_schema::TempoBeatUnit);
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct Meter {
+    numerator: u8,
+    denominator: u8,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum ReviewBasis {
+    HumanListening,
+    ScoreDocument,
+    ComposerDeclaration,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Provenance {
+    basis: ReviewBasis,
+    note: String,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct MetricalContext {
+    start_frame: u64,
+    end_frame: u64,
+    // Explicit null means reviewed but unknown; missing fields are rejected
+    #[serde(deserialize_with = "required_option")]
+    beat_unit: Option<BeatUnit>,
+    #[serde(deserialize_with = "required_option")]
+    meter: Option<Meter>,
+    provenance: Provenance,
+}
+
+fn required_option<'de, D, T>(deserializer: D) -> Result<Option<T>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: Deserialize<'de>,
+{
+    Option::<T>::deserialize(deserializer)
+}
+
+// Default handles absent v1 fields; a present null array is never an empty review
+fn present_context<'de, D>(deserializer: D) -> Result<Option<Vec<MetricalContext>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    Vec::<MetricalContext>::deserialize(deserializer).map(Some)
+}
+
+fn validate_context(context: &[MetricalContext], n: u64) -> Result<(), String> {
+    if context
+        .iter()
+        .any(|r| r.start_frame >= r.end_frame || r.end_frame > n)
+        || context
+            .windows(2)
+            .any(|pair| pair[0].end_frame > pair[1].start_frame)
+    {
+        return Err("Music truth metrical coverage must be ordered, nonoverlapping, half-open and inside the song".into());
+    }
+    for record in context {
+        if record
+            .meter
+            .is_some_and(|meter| meter.numerator == 0 || !meter.denominator.is_power_of_two())
+        {
+            return Err(
+                "Music truth meter requires a positive numerator and a power-of-two denominator"
+                    .into(),
+            );
+        }
+        // Matches the existing independent-label reason ceiling
+        if record.provenance.note.trim().is_empty() || record.provenance.note.len() > 2048 {
+            return Err(
+                "Music truth metrical provenance note must contain 1..2048 UTF-8 bytes".into(),
+            );
+        }
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Document {
@@ -145,12 +238,24 @@ pub(crate) struct Document {
     pub(crate) reviewer: String,
     pub(crate) channel: Channel,
     pub(crate) tracks: Tracks,
+    #[serde(
+        default,
+        deserialize_with = "present_context",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub(crate) metrical_context: Option<Vec<MetricalContext>>,
 }
 
 impl Document {
     fn validate(&self, expected: &Source) -> Result<(), String> {
-        if self.schema_version != 1 {
-            return Err("Unsupported music truth schema".into());
+        match (self.schema_version, &self.metrical_context) {
+            (1, None) => {}
+            (2, Some(context)) => validate_context(context, self.source.canonical_frames)?,
+            _ => {
+                return Err(
+                    "Music truth v1 forbids metrical context; v2 requires a context array".into(),
+                );
+            }
         }
         self.source.validate(expected)?;
         if self.reviewer.trim().is_empty()
@@ -170,6 +275,7 @@ impl Document {
             || tracks
                 .iter()
                 .try_fold(0usize, |n, track| n.checked_add(track.reviewed.len()))
+                .and_then(|n| n.checked_add(self.metrical_context.as_ref().map_or(0, Vec::len)))
                 .is_none_or(|n| n > MAX_INTERVALS)
         {
             return Err("Music truth exceeds 65536 events or 1024 coverage intervals".into());
@@ -225,6 +331,25 @@ pub(crate) fn template(
     channel: &str,
     destination: &Path,
 ) -> Result<(), String> {
+    template_kind(package, reviewer, channel, destination, false)
+}
+
+pub(crate) fn template_metrical(
+    package: &Path,
+    reviewer: &str,
+    channel: &str,
+    destination: &Path,
+) -> Result<(), String> {
+    template_kind(package, reviewer, channel, destination, true)
+}
+
+fn template_kind(
+    package: &Path,
+    reviewer: &str,
+    channel: &str,
+    destination: &Path,
+    metrical: bool,
+) -> Result<(), String> {
     let channel = match channel {
         "stereo" => Channel::Stereo,
         "left" => Channel::Left,
@@ -234,11 +359,12 @@ pub(crate) fn template(
     let initial = labels::Source::from_package(&cocobeat_media::validate_package(package)?);
     let source = Source::from_snapshot(&initial);
     let document = Document {
-        schema_version: 1,
+        schema_version: if metrical { 2 } else { 1 },
         source: source.clone(),
         reviewer: reviewer.into(),
         channel,
         tracks: Tracks::default(),
+        metrical_context: metrical.then(Vec::new),
     };
     document.validate(&source)?;
     let destination = labels_cli::outside_package(package, destination)?;
@@ -253,7 +379,7 @@ pub(crate) fn template(
             "channel": channel,
             "saved_blake3": written_hash.to_hex().as_str(),
             "destination": destination,
-            "scope": "empty_manual_template_only",
+            "scope": if metrical { "empty_manual_template_with_metrical_context_only" } else { "empty_manual_template_only" },
         })
     );
     Ok(())
@@ -310,6 +436,79 @@ struct Comparison {
     onset: TrackComparison,
     beat: TrackComparison,
     downbeat: TrackComparison,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    metrical_context: Option<MetricalComparison>,
+}
+
+#[derive(Debug, Serialize)]
+struct MetricalComparison {
+    left_context: Vec<MetricalContext>,
+    right_context: Vec<MetricalContext>,
+    overlaps: Vec<MetricalOverlap>,
+}
+
+#[derive(Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+enum DeclarationComparison {
+    Same,
+    Different,
+    Unknown,
+}
+
+#[derive(Debug, Serialize)]
+struct MetricalOverlap {
+    start_frame: u64,
+    end_frame: u64,
+    left_index: usize,
+    right_index: usize,
+    beat_unit: DeclarationComparison,
+    meter: DeclarationComparison,
+}
+
+fn declarations<T: Eq>(left: &Option<T>, right: &Option<T>) -> DeclarationComparison {
+    match (left, right) {
+        (Some(a), Some(b)) if a == b => DeclarationComparison::Same,
+        (Some(_), Some(_)) => DeclarationComparison::Different,
+        _ => DeclarationComparison::Unknown,
+    }
+}
+
+fn compare_context(left: &Document, right: &Document) -> Option<MetricalComparison> {
+    if left.metrical_context.is_none() && right.metrical_context.is_none() {
+        return None;
+    }
+    let left_context = left.metrical_context.clone().unwrap_or_default();
+    let right_context = right.metrical_context.clone().unwrap_or_default();
+    let (mut a, mut b, mut overlaps) = (0, 0, Vec::new());
+    while a < left_context.len() && b < right_context.len() {
+        let l = &left_context[a];
+        let r = &right_context[b];
+        let start_frame = l.start_frame.max(r.start_frame);
+        let end_frame = l.end_frame.min(r.end_frame);
+        if start_frame < end_frame {
+            overlaps.push(MetricalOverlap {
+                start_frame,
+                end_frame,
+                left_index: a,
+                right_index: b,
+                beat_unit: declarations(&l.beat_unit, &r.beat_unit),
+                meter: declarations(&l.meter, &r.meter),
+            });
+        }
+        match l.end_frame.cmp(&r.end_frame) {
+            std::cmp::Ordering::Less => a += 1,
+            std::cmp::Ordering::Greater => b += 1,
+            std::cmp::Ordering::Equal => {
+                a += 1;
+                b += 1;
+            }
+        }
+    }
+    Some(MetricalComparison {
+        left_context,
+        right_context,
+        overlaps,
+    })
 }
 
 fn intersection(left: &[Interval], right: &[Interval]) -> Vec<Interval> {
@@ -402,8 +601,9 @@ fn comparison(
             "Music truth comparison requires different reviewers and the same channel".into(),
         );
     }
+    let metrical_context = compare_context(left, right);
     Ok(Comparison {
-        schema_version: 1,
+        schema_version: if metrical_context.is_some() { 2 } else { 1 },
         source: expected.clone(),
         validated_content_id: expected.origin_content_id.clone(),
         channel: left.channel,
@@ -418,6 +618,7 @@ fn comparison(
         onset: compare_track(&left.tracks.onset, &right.tracks.onset),
         beat: compare_track(&left.tracks.beat, &right.tracks.beat),
         downbeat: compare_track(&left.tracks.downbeat, &right.tracks.downbeat),
+        metrical_context,
     })
 }
 
@@ -473,7 +674,179 @@ mod tests {
             reviewer: reviewer.into(),
             channel: Channel::Stereo,
             tracks: Tracks::default(),
+            metrical_context: None,
         }
+    }
+
+    fn context(start_frame: u64, end_frame: u64) -> MetricalContext {
+        MetricalContext {
+            start_frame,
+            end_frame,
+            beat_unit: Some(BeatUnit(cocobeat_schema::TempoBeatUnit::DottedQuarter)),
+            meter: Some(Meter {
+                numerator: 6,
+                denominator: 8,
+            }),
+            provenance: Provenance {
+                basis: ReviewBasis::HumanListening,
+                note: "Constructed software declaration, not a human reference".into(),
+            },
+        }
+    }
+
+    #[test]
+    fn metrical_schema_retains_v1_bytes_and_requires_explicit_v2_context() {
+        let mut d = document("reviewer-a");
+        let v1 = serde_json::to_value(&d).unwrap();
+        assert!(v1.get("metrical_context").is_none());
+        let encoded = serde_json::to_vec_pretty(&d).unwrap();
+        assert_eq!(
+            serde_json::to_vec_pretty(&serde_json::from_slice::<Document>(&encoded).unwrap())
+                .unwrap(),
+            encoded
+        );
+        d.metrical_context = Some(Vec::new());
+        assert!(d.validate(&source()).is_err());
+        d.schema_version = 2;
+        d.validate(&source()).unwrap();
+        let mut v2 = serde_json::to_value(&d).unwrap();
+        v2["metrical_context"] = serde_json::Value::Null;
+        assert!(serde_json::from_value::<Document>(v2).is_err());
+        let mut missing = v1;
+        missing["schema_version"] = 2.into();
+        let missing: Document = serde_json::from_value(missing).unwrap();
+        assert!(missing.validate(&source()).is_err());
+        d.metrical_context = Some(vec![context(0, 200)]);
+        let v2 = serde_json::to_value(&d).unwrap();
+        assert_eq!(v2["metrical_context"][0]["beat_unit"], "dotted_quarter");
+        assert_eq!(serde_json::from_value::<Document>(v2.clone()).unwrap(), d);
+        for field in ["beat_unit", "meter"] {
+            let mut bad = v2.clone();
+            bad["metrical_context"][0]
+                .as_object_mut()
+                .unwrap()
+                .remove(field);
+            assert!(serde_json::from_value::<Document>(bad).is_err());
+        }
+        for field in ["beat_unit", "meter", "provenance"] {
+            let mut extra = v2.clone();
+            extra["metrical_context"][0][field] = serde_json::json!({"unexpected": true});
+            assert!(serde_json::from_value::<Document>(extra).is_err());
+        }
+        for field in ["beat_unit", "meter"] {
+            let mut unknown = v2.clone();
+            unknown["metrical_context"][0][field] = serde_json::Value::Null;
+            serde_json::from_value::<Document>(unknown)
+                .unwrap()
+                .validate(&source())
+                .unwrap();
+        }
+    }
+
+    #[test]
+    fn metrical_validation_rejects_bad_extent_provenance_and_resource_limits() {
+        let mut d = document("reviewer-a");
+        d.schema_version = 2;
+        for ranges in [
+            vec![context(0, 0)],
+            vec![context(0, 201)],
+            vec![context(20, 50), context(10, 20)],
+            vec![context(0, 50), context(49, 100)],
+        ] {
+            d.metrical_context = Some(ranges);
+            assert!(d.validate(&source()).is_err());
+        }
+        for meter in [
+            Meter {
+                numerator: 0,
+                denominator: 8,
+            },
+            Meter {
+                numerator: 6,
+                denominator: 0,
+            },
+            Meter {
+                numerator: 6,
+                denominator: 3,
+            },
+        ] {
+            let mut r = context(0, 200);
+            r.meter = Some(meter);
+            d.metrical_context = Some(vec![r]);
+            assert!(d.validate(&source()).is_err());
+        }
+        for note in [" ".into(), "x".repeat(2049)] {
+            let mut r = context(0, 200);
+            r.provenance.note = note;
+            d.metrical_context = Some(vec![r]);
+            assert!(d.validate(&source()).is_err());
+        }
+        d.metrical_context = Some(vec![context(0, 100), context(100, 200)]);
+        d.validate(&source()).unwrap();
+        let mut extended = source();
+        extended.canonical_frames = 2048;
+        d.source = extended.clone();
+        d.tracks.beat.reviewed = (0..MAX_INTERVALS as u64)
+            .map(|i| Interval {
+                start_frame: i,
+                end_frame: i + 1,
+            })
+            .collect();
+        assert!(d.validate(&extended).unwrap_err().contains("1024"));
+    }
+
+    #[test]
+    fn metrical_comparison_preserves_independent_unknown_and_half_open_boundaries() {
+        let mut a = document("reviewer-a");
+        let mut b = document("reviewer-b");
+        let hash = blake3::hash(b"constructed mechanism only");
+        let legacy =
+            serde_json::to_value(comparison(&source(), &a, hash, &b, hash).unwrap()).unwrap();
+        assert_eq!(legacy["schema_version"], 1);
+        assert!(legacy.get("metrical_context").is_none());
+        a.schema_version = 2;
+        b.schema_version = 2;
+        a.metrical_context = Some(vec![context(0, 100), context(120, 200)]);
+        let mut first = context(50, 120);
+        first.beat_unit = Some(BeatUnit(cocobeat_schema::TempoBeatUnit::Quarter));
+        let mut second = context(120, 180);
+        second.meter = None;
+        b.metrical_context = Some(vec![first, second]);
+        let report = comparison(&source(), &a, hash, &b, hash).unwrap();
+        assert_eq!(report.schema_version, 2);
+        let report = report.metrical_context.unwrap();
+        assert_eq!(report.overlaps.len(), 2);
+        let one = &report.overlaps[0];
+        assert_eq!(
+            (
+                one.start_frame,
+                one.end_frame,
+                one.left_index,
+                one.right_index
+            ),
+            (50, 100, 0, 0)
+        );
+        assert_eq!(one.beat_unit, DeclarationComparison::Different);
+        assert_eq!(one.meter, DeclarationComparison::Same);
+        let two = &report.overlaps[1];
+        assert_eq!(
+            (
+                two.start_frame,
+                two.end_frame,
+                two.left_index,
+                two.right_index
+            ),
+            (120, 180, 1, 1)
+        );
+        assert_eq!(two.beat_unit, DeclarationComparison::Same);
+        assert_eq!(two.meter, DeclarationComparison::Unknown);
+        assert_eq!(report.left_context, a.metrical_context.clone().unwrap());
+        b = document("reviewer-b");
+        let cross_version = comparison(&source(), &a, hash, &b, hash)
+            .unwrap()
+            .metrical_context
+            .unwrap();
+        assert!(cross_version.right_context.is_empty() && cross_version.overlaps.is_empty());
     }
 
     #[test]
@@ -663,6 +1036,32 @@ mod tests {
         assert_eq!(imported, d);
         assert!(import(&revised_path, &input, &output).is_err());
         assert_eq!(fs::read(&output).unwrap(), output_before);
+        let metrical_template = root.join("metrical-template.json");
+        template_metrical(
+            &revised_path,
+            "reviewer-metrical",
+            "left",
+            &metrical_template,
+        )
+        .unwrap();
+        let template_bytes = fs::read(&metrical_template).unwrap();
+        let (template_document, _) = load(
+            &metrical_template,
+            &Source::from_snapshot(&labels::Source::from_package(&revised)),
+        )
+        .unwrap();
+        assert_eq!(template_document.schema_version, 2);
+        assert_eq!(template_document.metrical_context, Some(Vec::new()));
+        assert!(
+            template_metrical(
+                &revised_path,
+                "reviewer-metrical",
+                "left",
+                &metrical_template
+            )
+            .is_err()
+        );
+        assert_eq!(fs::read(&metrical_template).unwrap(), template_bytes);
         assert_eq!(fs::read(&input).unwrap(), raw);
         assert_eq!(
             names.map(|name| fs::read(package_path.join(name)).unwrap()),

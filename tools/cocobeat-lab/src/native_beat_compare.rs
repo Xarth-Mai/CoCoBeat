@@ -101,6 +101,8 @@ struct Report {
     beat_unit: Option<&'static str>,
     meter: Option<&'static str>,
     reference_semantics: &'static str,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    reference_metrical_context: Option<Vec<music_truth::MetricalContext>>,
     quality_status: &'static str,
     production_admission: bool,
     old_frontend_numeric: &'static str,
@@ -249,7 +251,11 @@ fn comparison(
         });
     }
     Ok(Report {
-        schema_version: 1,
+        schema_version: if truth.metrical_context.is_some() {
+            3
+        } else {
+            1
+        },
         validated_content_id: source.content_id.clone(),
         validated_audio: source.clone(),
         truth_declared_source: truth.source.clone(),
@@ -263,7 +269,12 @@ fn comparison(
         confidence: None,
         beat_unit: None,
         meter: None,
-        reference_semantics: "unrecorded_in_music_truth_v1",
+        reference_semantics: if truth.metrical_context.is_some() {
+            "manual_declarations_in_music_truth_v2_not_musical_admission"
+        } else {
+            "unrecorded_in_music_truth_v1"
+        },
+        reference_metrical_context: truth.metrical_context.clone(),
         quality_status: "UNASSESSED",
         production_admission: false,
         old_frontend_numeric: "FAIL_PRESERVED_19_OF_28",
@@ -333,7 +344,7 @@ fn include_onsets(
         comparison: supported
             .then(|| compare_track(&events, &truth.tracks.onset, report.tolerance_frames)),
     }));
-    report.schema_version = 2;
+    report.schema_version = report.schema_version.max(2);
     Ok(())
 }
 
@@ -413,6 +424,52 @@ mod tests {
             result.truth_inside_coverage,
             result.matched_count + result.unmatched_truth_count
         );
+    }
+
+    #[test]
+    fn metrical_reference_does_not_relabel_candidate_semantics_or_change_frame_matching() {
+        let (root, package) = crate::anchors::tests::fixture("metrical-native-compare");
+        let source = labels::Source::from_package(&package);
+        let candidate = native(&source);
+        let old: music_truth::Document = serde_json::from_value(manual(&source)).unwrap();
+        let hash = blake3::hash(b"constructed mechanism only");
+        let legacy = comparison(&source, &candidate, &old, hash, 0).unwrap();
+        let legacy = serde_json::to_value(legacy).unwrap();
+        assert!(legacy.get("reference_metrical_context").is_none());
+        let mut value = manual(&source);
+        value["schema_version"] = 2.into();
+        value["metrical_context"] = serde_json::json!([{
+            "start_frame": 0, "end_frame": source.canonical_frames,
+            "beat_unit": "dotted_quarter", "meter": null,
+            "provenance": { "basis": "human_listening", "note": "Constructed declaration, not a human reference" },
+        }]);
+        let truth: music_truth::Document = serde_json::from_value(value).unwrap();
+        let mut report = comparison(&source, &candidate, &truth, hash, 0).unwrap();
+        let value = serde_json::to_value(&report).unwrap();
+        assert_eq!(value["schema_version"], 3);
+        assert_eq!(
+            value["reference_metrical_context"][0]["beat_unit"],
+            "dotted_quarter"
+        );
+        for field in [
+            "raw_beat",
+            "raw_downbeat",
+            "package_aligned",
+            "records",
+            "tolerance_frames",
+            "matching_policy",
+        ] {
+            assert_eq!(value[field], legacy[field]);
+        }
+        for field in ["beat_unit", "meter", "confidence"] {
+            assert!(value[field].is_null());
+        }
+        assert_eq!(value["quality_status"], "UNASSESSED");
+        assert_eq!(value["production_admission"], false);
+        report.native.profile = AUTO_ANALYSIS_PROFILE.into();
+        include_onsets(&mut report, &onset_analysis(&package, &[512]), &truth).unwrap();
+        assert_eq!(report.schema_version, 3);
+        std::fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

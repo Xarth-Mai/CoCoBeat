@@ -1,0 +1,727 @@
+{
+  "status": "PASS_SOFTWARE_CLI_CONTROLS_NOT_MUSICAL_QUALITY",
+  "date": "2026-10-09",
+  "base_head": "a6c68932cbf8cad56e997d7da1d595b1ced448d8",
+  "scope": "MusicTruth metrical v2 record and comparison software with constructed declarations; no human reference or MIR quality admission",
+  "production_checks": {
+    "status": "PASS",
+    "music_truth_tests_passed": 7,
+    "native_beat_compare_tests_passed": 11,
+    "compiler_inputs_count": 374,
+    "inputs_before_after_equal": true,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "music_truth::tests"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 32.67160746399895,
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "native_beat_compare::tests"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 2.0667946629982907,
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 7.578373734024353,
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 1.0651396269968245,
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 0.1639497440191917,
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 48.44400249098544,
+        "timed_out": false,
+        "owned_group_gone": true
+      }
+    ]
+  },
+  "actual_cli": {
+    "commands": [
+      {
+        "name": "v1-template",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.126579755014973,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "full_v1_golden_bytes_equal": true
+        }
+      },
+      {
+        "name": "v1-import",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.126864863006631,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "full_v1_golden_bytes_equal": true
+        }
+      },
+      {
+        "name": "v1-compare",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.126710785989417,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "full_v1_golden_bytes_equal": true
+        }
+      },
+      {
+        "name": "v1-native-legacy",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 1.7732636209984776,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "full_v1_golden_bytes_equal": true
+        }
+      },
+      {
+        "name": "v1-native-transients",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 0.9724030140205286,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "full_v1_golden_bytes_equal": true
+        }
+      },
+      {
+        "name": "v2-template",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.127052436990198,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-import-a",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.127175319008529,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-import-b",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.227752581995446,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-compare",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.127122261998011,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-cross-version",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 4.126740406994941,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-import-legacy",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 1.7734704300237354,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-native-legacy",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 1.774695996020455,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-import-transients",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 0.9727617500175256,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "v2-native-transients",
+        "expected_exit": 0,
+        "actual_exit": 0,
+        "elapsed_seconds": 0.9732508250162937,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "fixed_semantic_oracle": "PASS",
+          "human_truth": "NOT RUN",
+          "musical_quality": "UNASSESSED"
+        }
+      },
+      {
+        "name": "reject-v1-context",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0743973900098354,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-missing-context",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0742689360049553,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-null-context",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0741498719726223,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-missing-unit",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.073986078990856,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-missing-meter",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.074413694004761,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-zero-meter",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0746661300072446,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-nonbinary-meter",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0744898060220294,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-out-of-range",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0746064730046783,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-empty-range",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.074075720011024,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-overlap",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0739621269749478,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-unsorted",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.073850984015735,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-empty-note",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.1238778959959745,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-oversized-note",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0744562140025664,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-unsupported-unit",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.073997731989948,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-unknown-basis",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.074156329006655,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-extra-context-field",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0739959169877693,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-missing-provenance",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.074073652998777,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-aggregate-interval-cap",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 2.0741529299994,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      },
+      {
+        "name": "reject-overwrite",
+        "expected_exit": 1,
+        "actual_exit": 1,
+        "elapsed_seconds": 4.127564210008131,
+        "owned_group_naturally_gone": true,
+        "oracle": {
+          "expected_reject_zero_publish_or_overwrite": true
+        }
+      }
+    ],
+    "successful": 14,
+    "expected_rejections": 19,
+    "elapsed_seconds": 87.39622968400363,
+    "all_original_inputs_unchanged": true,
+    "all_inputs_and_outputs_unchanged": true,
+    "all_processes_naturally_exited": true,
+    "total_budget_seconds": 240,
+    "per_command_budget_seconds": 20
+  },
+  "full_v1_golden_compatibility": [
+    {
+      "case": "v1-template",
+      "original": {
+        "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/template.json",
+        "bytes": 641,
+        "sha256": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac"
+      },
+      "actual": {
+        "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-template.json",
+        "bytes": 641,
+        "sha256": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac"
+      },
+      "complete_bytes_equal": true
+    },
+    {
+      "case": "v1-import",
+      "original": {
+        "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/a-saved.json",
+        "bytes": 858,
+        "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+      },
+      "actual": {
+        "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-import.json",
+        "bytes": 858,
+        "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+      },
+      "complete_bytes_equal": true
+    },
+    {
+      "case": "v1-compare",
+      "original": {
+        "path": "target/music-truth-cli-qa-20261008/actual-01/work area 中文 space/mutual-report.json",
+        "bytes": 1930,
+        "sha256": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542"
+      },
+      "actual": {
+        "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-compare.json",
+        "bytes": 1930,
+        "sha256": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542"
+      },
+      "complete_bytes_equal": true
+    },
+    {
+      "case": "v1-native-legacy",
+      "original": {
+        "path": "target/hfc-truth-consumer-cli-qa-20261008/run-01/legacy.json",
+        "bytes": 41751,
+        "sha256": "a7e8e3e2d85c084eee84e83031f3a94a2d2afcbc4c1ecb015749afa4195f4033"
+      },
+      "actual": {
+        "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-native-legacy.json",
+        "bytes": 41751,
+        "sha256": "a7e8e3e2d85c084eee84e83031f3a94a2d2afcbc4c1ecb015749afa4195f4033"
+      },
+      "complete_bytes_equal": true
+    },
+    {
+      "case": "v1-native-transients",
+      "original": {
+        "path": "target/hfc-truth-consumer-cli-qa-20261008/run-01/transients.json",
+        "bytes": 21734,
+        "sha256": "25d4f61c400451b7883fb7fc55e2ff9b918bf004bbbad720e277174d28e17581"
+      },
+      "actual": {
+        "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-native-transients.json",
+        "bytes": 21734,
+        "sha256": "25d4f61c400451b7883fb7fc55e2ff9b918bf004bbbad720e277174d28e17581"
+      },
+      "complete_bytes_equal": true
+    }
+  ],
+  "v2_contract": {
+    "empty_context_array": "unreviewed",
+    "explicit_null_unit_or_meter": "reviewed but Unknown",
+    "missing_nullable_field": "reject",
+    "units": [
+      "quarter",
+      "eighth",
+      "dotted_quarter"
+    ],
+    "meter": "positive u8 numerator, power-of-two u8 denominator; separate from beat unit",
+    "comparison": "independent half-open coverage intersections; same/different/unknown without consensus",
+    "native_reference_report_version": 3,
+    "native_changed_reference_blake3": "actual new saved reference bytes, cross-linked writer receipt",
+    "native_original_records_matchers_and_hfc_46": "unchanged"
+  },
+  "quality_status": "UNASSESSED",
+  "production_admission": false,
+  "historical_partial_run": {
+    "status": "INCOMPLETE_NO_TERMINAL_RECEIPT",
+    "accepted_controls": 23,
+    "outer_exit": "UNKNOWN",
+    "result_ref": {
+      "path": "target/music-truth-metrical-cli-run-20261009/result.json",
+      "bytes": 41118,
+      "sha256": "d0d33cba6356c9041595835d4788b565d25b22c17762f6e2bfb76fea6f5a3d29"
+    },
+    "observation_ref": {
+      "path": "target/music-truth-metrical-cli-run-20261009/root-incomplete-observation.json",
+      "bytes": 533,
+      "sha256": "d5084696b533512d485131dd8c7bb2269a70410672c8ac0d7e1d85ccdc8332e0"
+    },
+    "whole_campaign_pass": false
+  },
+  "not_assessed": [
+    "Human listening, independent musical truth and blind labels",
+    "MIR music quality or confidence calibration; existing wholeSpect and BTT accelerando failures remain",
+    "MusicTruth GUI, audition timing and physical input",
+    "Four-platform native execution for this source",
+    "Independent external BLAKE3 implementation"
+  ],
+  "direct_refs": [
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/result.json",
+      "bytes": 3032,
+      "sha256": "87c1a0c2f9db7cdcfb631b3f8c6bb3eb49a73155d9e1e5ce90759ef90a79d06d"
+    },
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/source-before.json",
+      "bytes": 43462,
+      "sha256": "fe2e636be3edb020da6ebef44f8b0bcade7ae4577b4201ef3830fce61abca8b1"
+    },
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/source-after.json",
+      "bytes": 43462,
+      "sha256": "fe2e636be3edb020da6ebef44f8b0bcade7ae4577b4201ef3830fce61abca8b1"
+    },
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/build.jsonl",
+      "bytes": 404864,
+      "sha256": "f539a85a28e8a5b60fb16e864b52a17353df9c9efdb65f89852270b030192bc9"
+    },
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/01.stdout",
+      "bytes": 811,
+      "sha256": "f4663679f183724e5ce3ac3d77b079356543bce6bb325fba03fbe5fdcf515a90"
+    },
+    {
+      "path": "target/music-truth-metrical-production-checks-20261009/02.stdout",
+      "bytes": 1303,
+      "sha256": "4d3f21d2f7e9437c9feac785df712c4820070a59d7b271e33a7519b7e26cbf84"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/result.json",
+      "bytes": 60132,
+      "sha256": "6b69e02efb255b1b20a7a15fb8031b9fe7e44fb90c8a90b272b42482f01b9670"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/protected-before.json",
+      "bytes": 15013,
+      "sha256": "a842c5a61fd9f7abbab6c4b7bb29d5f98b8350d13e469cf019423f1107beedac"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/protected-after.json",
+      "bytes": 17530,
+      "sha256": "c105021655bdbbf157a189fc6d8179cecca5ff6be49fa26f8bc2fb4ba6ae0982"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-plan-20261009/FREEZE.json",
+      "bytes": 13807,
+      "sha256": "260d6512a11e624e49a3c9f76b37137298cc19ca1838d1de68b89f48b80d57a3"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-plan-20261009/CASES.json",
+      "bytes": 17943,
+      "sha256": "8d87614c210dca4b2b5208700b033ee0bab143d492ebe0ede5c5ea62d099d205"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-plan-20261009/EXPECTED.json",
+      "bytes": 6464,
+      "sha256": "7ad812e94984ea7863c929eb5d6d6ee8f3234dbb3bcb0bd37e130a1eee150758"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-plan-20261009/run.py",
+      "bytes": 15238,
+      "sha256": "c27c86f10ff43832194e2a81a2086d9e28e829ba203b04c7e82233e19d3df4ba"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-plan-20261009/PLAN.md",
+      "bytes": 5486,
+      "sha256": "4704576f19048ccbdb4c11a511fcfb1ff6fe3a4f6e84929e619267819c71b5bf"
+    },
+    {
+      "path": "target/music-truth-metrical-built-runtime-20261009/build-receipt.json",
+      "bytes": 1561,
+      "sha256": "139ffc08e7a6dc1979d055bd13775efa765acb4a87e74d5216bd1b64de1413e8"
+    },
+    {
+      "path": "target/music-truth-metrical-review-20261009/applied-01/REVIEW.md",
+      "bytes": 2299,
+      "sha256": "22972cfe036c5f84d5b45d9e6ceb81029dca0d3398bce0c50704d8b04b1c6147"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009/root-incomplete-observation.json",
+      "bytes": 533,
+      "sha256": "d5084696b533512d485131dd8c7bb2269a70410672c8ac0d7e1d85ccdc8332e0"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-template.json",
+      "bytes": 641,
+      "sha256": "7f0986529fc4962646dc93d4685346569c33bf0545f4bb4abaebc7c6bacf58ac"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-import.json",
+      "bytes": 858,
+      "sha256": "673ffc2a1706fcc281e30bffa932f0ebe61d756354b041fb1e146c3d8a4f1ef9"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-compare.json",
+      "bytes": 1930,
+      "sha256": "66ae0af319c4e91d097d0ed1cff2832206594e65a77681d75c149ad090579542"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-native-legacy.json",
+      "bytes": 41751,
+      "sha256": "a7e8e3e2d85c084eee84e83031f3a94a2d2afcbc4c1ecb015749afa4195f4033"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v1-native-transients.json",
+      "bytes": 21734,
+      "sha256": "25d4f61c400451b7883fb7fc55e2ff9b918bf004bbbad720e277174d28e17581"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-template.json",
+      "bytes": 667,
+      "sha256": "b2b8f7fe491ed1ad4c77e1c9802d9316f5a3fc919807c5b807b9ef2904559260"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-saved-a.json",
+      "bytes": 2009,
+      "sha256": "568796738d806b5ed7a02702074958705b7152950d7ce22631431c05874111bb"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-saved-b.json",
+      "bytes": 2070,
+      "sha256": "dcc7fef6a5de3852a01ae248d1754ebd1b44d29ff1aceba9190027f7c2595049"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-compare.json",
+      "bytes": 5240,
+      "sha256": "565d25dcfad7fa35fb039ffd825f71c8068c0dfd1e8a497cb6e96cf8cf6a8ec7"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-cross-version.json",
+      "bytes": 3246,
+      "sha256": "5a438d67f3339cd2fc3c42d11eddfce02d6332e525ac031a105fb66a3d01974d"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-saved-legacy.json",
+      "bytes": 1194,
+      "sha256": "c9393978b40ac3a6cfdd42eba633f0f82ded322f5c66943594e5abdbd6546c8e"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-native-legacy.json",
+      "bytes": 42129,
+      "sha256": "8de31d04eb09b3768524f9fa2ec94cd31a463a694d41db9431f61c6d22803743"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-saved-transients.json",
+      "bytes": 916,
+      "sha256": "0512802e9256b775bfc7d573e4a2f36bbd66ae91fd0c6e4be45109605f0a8a10"
+    },
+    {
+      "path": "target/music-truth-metrical-cli-run-20261009-revision02/v2-native-transients.json",
+      "bytes": 22065,
+      "sha256": "2fe25fb65e290866ce5dc97d8c788c12e5a84c83749a6f07d7decdde2f8b14cc"
+    }
+  ]
+}

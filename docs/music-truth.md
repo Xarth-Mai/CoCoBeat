@@ -70,3 +70,20 @@ Candidate 即使零 onset，也按人工 onset 的 reviewed 覆盖计算未匹�
 2026-10-08 的 Lab 全量 72 项通过，其中包含 4 项 MusicTruth 检查；首次格式检查和测试表达式的 `int_plus_one` Clippy 失败保留，仅等价改写该测试与签名格式后，最终 4 项窄测、Clippy / 格式通过。468 项冻结输入构建前后一致，固定 Lab 的 20 条实际 CLI 为 9 条成功、11 条预期拒绝，完整小样本覆盖 oracle、原输入 / 保存后 hash 关系、同音频跨 chart CID 复用、未审阅与已审阅零事件区别、新输出防覆盖及源包 / 输入字节保持通过
 
 这些输入是构造的软件控制，不是人类音乐标注；精确范围与历史失败见[观察记录](../testdata/synthetic/music-truth-observations-20261008.json)及[原始证据索引](../testdata/synthetic/music-truth-observations-20261008-raw-index.json)。本批没有新增 GUI / 试听 / 模型运行、symlink CLI 实跑、写入故障 / 超时注入或完整并发来源替换验收，也未独立外部重算 BLAKE3；跨平台、真人盲审、拍号 / 节拍单位参考、校准及算法音乐质量保持 NOT RUN
+
+
+## 独立拍单位与拍号记录 v2
+
+默认 `music-truth-template` 保持 v1；显式 `music-truth-template PACKAGE REVIEWER stereo|left|right --metrical NEW_JSON` 创建 v2，已有 import / compare 命令消费两版，不改歌曲包或三轨事件
+
+v2 必需 `metrical_context` 数组，空数组表示未审阅，null数组或缺少数组拒绝；每条记录含原 canonical 半开 `start_frame / end_frame`、必填 `beat_unit / meter`（各自null为明确Unknown）和 `provenance: {basis, note}`，与三轨事件的 reviewed覆盖独立，不从帧数组自动补上下文或事件。范围须有序、非重叠且在N内，context与三轨reviewed合计沿原1024区间限额、原1MiB文件与4MiB报告限制，不排序、裁剪、去重或升级旧文档
+
+beat_unit复用schema的 `quarter / eighth / dotted_quarter`，是本记录beat轨人工所标拍点的记谱时值，不是秒、BPM、设备period或swing两次间隔；meter为 `{numerator: integer, denominator: integer}`，字段使用正u8，分母为二次幂；6/8不自动意味着附点四分拍，unit与meter分别声明。其它时值、加法拍号或无法明确的节拍层级保存null和说明，不能压成可表示的错误值
+
+provenance的basis为 `human_listening / score_document / composer_declaration`，note沿独立标签的1..2048 UTF-8字节说明限额；说明应保存独立审阅/可见上下文、使用的谱面或创作来源及未知理由，来源只是声明，不证明真人听过、独立盲标、拍号正确或算法准入
+
+双人比较v1+v1的原报告schema和完整字节保持；涉及v2时用报告v2保留双方完整context及其严格半开重叠，逐项unit/meter标记same / different / unknown，任一侧null为unknown，未覆盖没有可比记录，不自动选取共识或把一侧的值复制给另一侧；三轨精确帧对照保持
+
+原生候选比较的v1参考旧报告保持；v2参考使用报告v3，单独保留 `reference_metrical_context` 和人工声明语义，候选自身beat_unit / meter / confidence仍为null，原records、原坐标、显式容差、matcher、HFC流及coverage计数保持。声明语义不能将机械对照变成音乐准入；真实独立参考、置信校准、旧wholeSpect / 音乐质量FAIL和BTT加速曲FAIL继续按原门槛处理
+
+软件验证：7项MusicTruth和11项原生对照窄测、Clippy / 格式 / 边界 / 当前Lab构建通过；新二进制33项CLI为14成功 /19预期拒绝，5份旧v1完整输出逐字节保持，原候选记录和46条HFC onset保持，见[拍单位与拍号观察](../testdata/synthetic/music-truth-metrical-observations-20261009.json)。原未完成23项campaign单独保留，不合并为整批成功；这些声明均为构造软件控制，真人参考、校准和旧音乐质量FAIL继续未完成
