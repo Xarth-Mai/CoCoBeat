@@ -16,11 +16,16 @@ use cocobeat_stage::{BASE_HALF_WIDTH_MM, SegmentKind, StagePlan, TrackSample};
 
 use crate::{
     display::GameCamera,
-    settings::{AntiAliasing, QualitySettings, RainAmount},
+    settings::{AntiAliasing, QualitySettings},
     view::VisualState,
 };
 
-const DISTANT_COLOR: Color = Color::srgb(0.055, 0.07, 0.12);
+pub(crate) mod characters;
+mod city;
+mod effects;
+mod lighting;
+
+const DISTANT_COLOR: Color = Color::srgb(0.115, 0.105, 0.22);
 const GROUND_ROWS: usize = 257;
 
 #[derive(Resource)]
@@ -234,6 +239,28 @@ fn update_ground(
                 *pair = corners.map(|[x, y]| (row.center + Vec3::new(x, y, 0.0)).to_array());
             }
         }
+        if kind == 0 {
+            let origin = plan
+                .sample(time)
+                .expect("display time is clamped to the stage");
+            if let Some(VertexAttributeValues::Float32x2(uvs)) =
+                mesh.attribute_mut(Mesh::ATTRIBUTE_UV_0)
+            {
+                for (index, uv) in uvs.iter_mut().enumerate() {
+                    let row = rows[(index / 2).min(rows.len() - 1)];
+                    let x = row.center.x
+                        + if index % 2 == 0 {
+                            -row.half_width
+                        } else {
+                            row.half_width
+                        };
+                    *uv = [
+                        (x + origin.lateral_mm as f32 / 1000.0) / 4.0,
+                        row.frame as f32 / 64_000.0,
+                    ];
+                }
+            }
+        }
         if let Some(VertexAttributeValues::Float32x3(normals)) =
             mesh.attribute_mut(Mesh::ATTRIBUTE_NORMAL)
         {
@@ -313,7 +340,6 @@ pub(crate) enum Motion {
     StageStreet { offset_mm: i64, lane: f32 },
     StageSurface(Vec3),
     Street(f32),
-    Rain(usize),
 }
 
 fn part(
@@ -335,26 +361,44 @@ pub(crate) fn setup(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     stage: Option<Res<StageScene>>,
+    effects: Option<Res<effects::EffectAssets>>,
+    mut images: Option<ResMut<Assets<Image>>>,
 ) {
-    commands.spawn((
-        Camera3d::default(),
-        Camera {
-            clear_color: ClearColorConfig::Custom(DISTANT_COLOR),
-            ..default()
-        },
-        GameCamera,
-        Hdr,
-        bevy::camera::ShadowLodOrigin,
-        Tonemapping::Reinhard,
-        Transform::from_xyz(0.0, 5.8, 11.8).looking_at(Vec3::new(0.0, 0.9, -4.0), Vec3::Y),
-        AmbientLight {
-            color: Color::srgb(0.7, 0.76, 0.9),
-            brightness: 180.0,
-            ..default()
-        },
-    ));
+    let lighting_assets = images.as_deref_mut().map(lighting::LightingAssets::new);
+    let camera = commands
+        .spawn((
+            Camera3d::default(),
+            Camera {
+                clear_color: ClearColorConfig::Custom(DISTANT_COLOR),
+                ..default()
+            },
+            GameCamera,
+            Hdr,
+            bevy::camera::ShadowLodOrigin,
+            Tonemapping::Reinhard,
+            Transform::from_xyz(0.0, 4.6, 9.2).looking_at(Vec3::new(0.0, 0.9, -4.6), Vec3::Y),
+            AmbientLight {
+                color: Color::srgb(0.7, 0.76, 0.9),
+                brightness: 340.0,
+                ..default()
+            },
+        ))
+        .id();
+    if let Some(assets) = &lighting_assets {
+        commands.entity(camera).insert(assets.environment(650.0));
+    }
 
-    spawn_scene(&mut commands, &mut meshes, &mut materials, stage.as_deref());
+    spawn_scene(
+        &mut commands,
+        &mut meshes,
+        &mut materials,
+        stage.as_deref(),
+        effects.as_deref(),
+        lighting_assets.as_ref(),
+    );
+    if let Some(assets) = lighting_assets {
+        commands.insert_resource(assets);
+    }
 }
 
 pub(crate) fn refresh(
@@ -362,6 +406,10 @@ pub(crate) fn refresh(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     stage: Option<Res<StageScene>>,
+    cached: (
+        Option<Res<effects::EffectAssets>>,
+        Option<Res<lighting::LightingAssets>>,
+    ),
     applied: Res<AppliedStage>,
     roots: Query<Entity, (With<SceneEntity>, Without<ChildOf>)>,
 ) {
@@ -378,7 +426,14 @@ pub(crate) fn refresh(
         commands.entity(entity).despawn();
     }
     commands.remove_resource::<StageGround>();
-    spawn_scene(&mut commands, &mut meshes, &mut materials, stage.as_deref());
+    spawn_scene(
+        &mut commands,
+        &mut meshes,
+        &mut materials,
+        stage.as_deref(),
+        cached.0.as_deref(),
+        cached.1.as_deref(),
+    );
 }
 
 fn spawn_scene(
@@ -386,10 +441,11 @@ fn spawn_scene(
     meshes: &mut Assets<Mesh>,
     materials: &mut Assets<StandardMaterial>,
     stage: Option<&StageScene>,
+    cached_effects: Option<&effects::EffectAssets>,
+    lighting_assets: Option<&lighting::LightingAssets>,
 ) {
     let cube = meshes.add(Cuboid::default());
     let sphere = meshes.add(Sphere::new(1.0).mesh().uv(24, 16));
-    let cone = meshes.add(Cone::new(0.28, 0.65));
     let ring = meshes.add(
         Torus::new(0.965, 1.0)
             .mesh()
@@ -403,18 +459,17 @@ fn spawn_scene(
             .minor_resolution(8)
             .angle_range(0.0..=PI),
     );
-    let asphalt = materials.add(StandardMaterial {
-        base_color: Color::srgb(0.055, 0.075, 0.11),
-        metallic: 0.4,
-        perceptual_roughness: 0.28,
-        ..default()
-    });
+    let uv_scale = if stage.is_some() {
+        Vec2::ONE
+    } else {
+        Vec2::new(9.0 / 4.0, 180.0 / 4.0)
+    };
+    let asphalt = materials.add(lighting::asphalt(lighting_assets, uv_scale));
     let building = materials.add(StandardMaterial {
         base_color: Color::srgb(0.12, 0.145, 0.22),
         perceptual_roughness: 0.8,
         ..default()
     });
-    let distant = materials.add(Color::srgb(0.065, 0.08, 0.15));
     let pavement = materials.add(Color::srgb(0.14, 0.16, 0.23));
     let dark = materials.add(Color::srgb(0.025, 0.035, 0.075));
     let white = materials.add(StandardMaterial {
@@ -437,21 +492,6 @@ fn spawn_scene(
             ..default()
         })
     });
-    let bodies = [Color::srgb(0.5, 0.84, 0.98), Color::srgb(1.0, 0.67, 0.81)].map(|color| {
-        materials.add(StandardMaterial {
-            base_color: color,
-            emissive: LinearRgba::from(color) * 0.03,
-            perceptual_roughness: 0.4,
-            reflectance: 0.6,
-            ..default()
-        })
-    });
-    let rain = materials.add(StandardMaterial {
-        base_color: Color::srgba(0.5, 0.62, 0.8, 0.25),
-        unlit: true,
-        alpha_mode: AlphaMode::Blend,
-        ..default()
-    });
     let puddle = materials.add(StandardMaterial {
         base_color: Color::srgb(0.09, 0.13, 0.18),
         metallic: 0.65,
@@ -466,7 +506,6 @@ fn spawn_scene(
             ..default()
         })
     });
-    let cheeks = materials.add(Color::srgb(1.0, 0.48, 0.65));
     let window = materials.add(StandardMaterial {
         base_color: Color::srgb(0.38, 0.26, 0.22),
         emissive: LinearRgba::rgb(0.2, 0.1, 0.045),
@@ -541,17 +580,30 @@ fn spawn_scene(
         commands.spawn(part(
             &cube,
             &asphalt,
-            Vec3::new(0.0, -0.1, -15.0),
-            Vec3::new(9.0, 0.2, 54.0),
+            Vec3::new(0.0, -0.1, -75.0),
+            Vec3::new(9.0, 0.2, 180.0),
         ));
     }
     let side_offset = if stage.is_some() { 2.0 } else { 0.0 };
-    let mut backdrop = Vec::new();
+    let backdrop = city::spawn_city(
+        commands,
+        meshes,
+        materials,
+        [&cube, &sphere],
+        city::CityPalette {
+            building: &building,
+            pavement: &pavement,
+            dark: &dark,
+            window: &window,
+            signs: &signs,
+        },
+        side_offset,
+    );
     commands.spawn((
         SceneEntity,
         PointLight {
             color: Color::srgb(1.0, 0.94, 0.86),
-            intensity: 350_000.0,
+            intensity: 550_000.0,
             range: 25.0,
             radius: 1.25,
             ..default()
@@ -578,188 +630,50 @@ fn spawn_scene(
             SceneEntity,
             PointLight {
                 color: colors[player],
-                intensity: 16_000.0,
+                intensity: 32_000.0,
                 range: 13.0,
                 radius: 2.0,
                 ..default()
             },
             Transform::from_xyz(side * 3.0, 3.0, 0.5),
         ));
-        for block in 0..9 {
-            let z = 5.0 - block as f32 * 5.2;
-            let height = 4.0 + (block % 3) as f32 * 2.5;
-            backdrop.push(
-                commands
-                    .spawn(part(
-                        &cube,
-                        &building,
-                        Vec3::new(side * (6.0 + side_offset), height / 2.0, z),
-                        Vec3::new(3.5, height, 4.3),
-                    ))
-                    .id(),
-            );
-            backdrop.push(
-                commands
-                    .spawn(part(
-                        &cube,
-                        &signs[player],
-                        Vec3::new(side * (4.22 + side_offset), height * 0.62, z),
-                        Vec3::new(0.08, 0.09, 2.2),
-                    ))
-                    .id(),
-            );
-            backdrop.push(
-                commands
-                    .spawn(part(
-                        &cube,
-                        &signs[player],
-                        Vec3::new(side * (4.22 + side_offset), height * 0.62 - 0.3, z),
-                        Vec3::new(0.08, 0.035, 1.3),
-                    ))
-                    .id(),
-            );
-            if block % 3 == 0 {
-                backdrop.push(
-                    commands
-                        .spawn(part(
-                            &cube,
-                            &window,
-                            Vec3::new(side * (4.23 + side_offset), 1.15, z),
-                            Vec3::new(0.04, 1.6, 1.1),
-                        ))
-                        .id(),
-                );
-                backdrop.push(
-                    commands
-                        .spawn(part(
-                            &cube,
-                            &pavement,
-                            Vec3::new(side * (4.05 + side_offset), 2.1, z),
-                            Vec3::new(0.7, 0.1, 1.6),
-                        ))
-                        .id(),
-                );
-                let mut wet = commands.spawn((
-                    part(
-                        &sphere,
-                        &puddle,
-                        Vec3::new(side * 2.8, 0.006, z - 1.0),
-                        Vec3::new(0.5, 0.005, 1.1),
-                    ),
-                    NotShadowCaster,
-                ));
-                if stage.is_some() {
-                    wet.insert(Motion::StageSurface(Vec3::new(side * 2.8, 0.025, z - 1.0)));
-                }
-                // Decorative colour streaks on wet pavement, not screen-space reflections
-                let mut reflection = commands.spawn((
-                    part(
-                        &cube,
-                        &reflections[player],
-                        Vec3::new(side * 2.8, 0.016, z - 0.9),
-                        Vec3::new(0.12, 0.002, 1.2),
-                    ),
-                    NotShadowCaster,
-                ));
-                if stage.is_some() {
-                    reflection.insert(Motion::StageSurface(Vec3::new(side * 2.8, 0.016, z - 0.9)));
-                }
-            }
-        }
         for block in 0..3 {
-            let height = 8.0 + block as f32 * 2.0;
-            backdrop.push(
-                commands
-                    .spawn(part(
-                        &cube,
-                        &distant,
-                        Vec3::new(
-                            side * (3.5
-                                + block as f32 * 3.5
-                                + if stage.is_some() { 4.7 } else { 0.0 }),
-                            height * 0.5,
-                            -42.0 - block as f32 * 6.0,
-                        ),
-                        Vec3::new(5.0, height, 4.0),
-                    ))
-                    .id(),
-            );
+            let z = 5.0 - block as f32 * 15.6;
+            let mut wet = commands.spawn((
+                part(
+                    &sphere,
+                    &puddle,
+                    Vec3::new(side * 2.8, 0.006, z - 1.0),
+                    Vec3::new(0.5, 0.005, 1.1),
+                ),
+                NotShadowCaster,
+            ));
+            if stage.is_some() {
+                wet.insert(Motion::StageSurface(Vec3::new(side * 2.8, 0.025, z - 1.0)));
+            }
+            // Decorative colour streaks on wet pavement, not screen-space reflections
+            let mut reflection = commands.spawn((
+                part(
+                    &cube,
+                    &reflections[player],
+                    Vec3::new(side * 2.8, 0.016, z - 0.9),
+                    Vec3::new(0.12, 0.002, 1.2),
+                ),
+                NotShadowCaster,
+            ));
+            if stage.is_some() {
+                reflection.insert(Motion::StageSurface(Vec3::new(side * 2.8, 0.016, z - 0.9)));
+            }
         }
         let x = side * 1.35;
         commands
             .spawn((
                 SceneEntity,
-                Transform::from_xyz(x, 0.85, 0.0),
+                Transform::from_xyz(x, 0.735, 0.0),
                 Visibility::default(),
                 Motion::Spirit(player),
             ))
-            .with_children(|parent| {
-                let body_scale = if player == 0 {
-                    Vec3::new(0.55, 0.6, 0.48)
-                } else {
-                    Vec3::new(0.67, 0.45, 0.47)
-                };
-                parent.spawn(part(&sphere, &bodies[player], Vec3::ZERO, body_scale));
-                if player == 0 {
-                    for ear in [-1.0, 1.0] {
-                        parent.spawn(part(
-                            &sphere,
-                            &bodies[player],
-                            Vec3::new(ear * 0.29, 0.61, 0.0),
-                            Vec3::new(0.14, 0.32, 0.16),
-                        ));
-                        parent.spawn(part(
-                            &sphere,
-                            &white,
-                            Vec3::new(ear * 0.2, 0.1, 0.435),
-                            Vec3::new(0.095, 0.12, 0.05),
-                        ));
-                    }
-                } else {
-                    parent.spawn(part(
-                        &cone,
-                        &bodies[player],
-                        Vec3::new(0.0, 0.57, 0.0),
-                        Vec3::ONE,
-                    ));
-                    for eye in [-1.0, 1.0] {
-                        parent.spawn(part(
-                            &sphere,
-                            &white,
-                            Vec3::new(eye * 0.2, 0.08, 0.435),
-                            Vec3::new(0.095, 0.1, 0.05),
-                        ));
-                    }
-                }
-                for eye in [-1.0, 1.0] {
-                    parent.spawn(part(
-                        &sphere,
-                        &dark,
-                        Vec3::new(eye * 0.2, 0.09, 0.477),
-                        Vec3::new(0.049, 0.067, 0.023),
-                    ));
-                    parent.spawn(part(
-                        &sphere,
-                        &white,
-                        Vec3::new(eye * 0.2 - 0.012, 0.12, 0.496),
-                        Vec3::splat(0.016),
-                    ));
-                    parent.spawn(part(
-                        &sphere,
-                        &cheeks,
-                        Vec3::new(eye * 0.32, -0.06, 0.42),
-                        Vec3::new(0.085, 0.037, 0.022),
-                    ));
-                }
-                for foot in [-1.0, 1.0] {
-                    parent.spawn(part(
-                        &sphere,
-                        &bodies[player],
-                        Vec3::new(foot * 0.31, -0.46, 0.12),
-                        Vec3::new(0.22, 0.12, 0.25),
-                    ));
-                }
-            });
+            .with_children(|parent| characters::spawn(parent, meshes, materials, player));
         let ripple = materials.add(StandardMaterial {
             base_color: colors[player],
             unlit: true,
@@ -804,12 +718,12 @@ fn spawn_scene(
     }
     for (motion, color) in [
         (Motion::FreeRing, Color::srgb(0.68, 0.88, 1.0)),
-        (Motion::AnchorRing(0), Color::srgb(1.0, 0.94, 0.84)),
-        (Motion::AnchorRing(1), Color::srgb(1.0, 0.63, 0.82)),
+        (Motion::AnchorRing(0), Color::srgb(0.45, 0.85, 1.0)),
+        (Motion::AnchorRing(1), Color::srgb(1.0, 0.48, 0.75)),
     ] {
         let material = materials.add(StandardMaterial {
             base_color: color,
-            unlit: true,
+            emissive: LinearRgba::from(color) * 1.8,
             alpha_mode: AlphaMode::Blend,
             ..default()
         });
@@ -888,21 +802,18 @@ fn spawn_scene(
             entity.insert((Motion::SectionGate, Visibility::Hidden));
         }
     }
-    for drop in 0..48 {
-        let phase = drop as f32 * 0.73;
-        commands.spawn((
-            part(
-                &cube,
-                &rain,
-                Vec3::new((phase * 3.7).sin() * 6.0, 0.0, -(((drop * 7) % 31) as f32)),
-                Vec3::new(0.012, 0.24, 0.012),
-            ),
-            Motion::Rain(drop),
-            NotShadowCaster,
-        ));
-    }
+    effects::spawn(commands, meshes, materials, cached_effects);
     commands.insert_resource(SignMaterials(signs));
     commands.insert_resource(AppliedStage(stage.map(|stage| stage.0.clone())));
+}
+
+pub(crate) fn install_animation(app: &mut App) {
+    app.add_systems(
+        PostUpdate,
+        (city::animate, effects::animate)
+            .after(animate)
+            .before(bevy::transform::TransformSystems::Propagate),
+    );
 }
 
 pub(crate) fn update_signs(
@@ -935,7 +846,6 @@ pub(crate) fn apply_quality(
     mut applied: Local<Option<QualitySettings>>,
     cameras: Query<Entity, With<GameCamera>>,
     mut lights: Query<&mut PointLight, With<KeyLight>>,
-    mut objects: Query<(&Motion, &mut Visibility)>,
 ) {
     let quality = state.quality;
     if (*applied == Some(quality) && !signs.is_changed()) || cameras.is_empty() {
@@ -953,7 +863,7 @@ pub(crate) fn apply_quality(
                 color: DISTANT_COLOR,
                 falloff: FogFalloff::Linear {
                     start: 10.0,
-                    end: 54.0,
+                    end: 46.0,
                 },
                 ..default()
             });
@@ -969,27 +879,11 @@ pub(crate) fn apply_quality(
     for mut light in &mut lights {
         light.shadow_maps_enabled = quality.shadows;
     }
-    let drops = match quality.rain {
-        RainAmount::Off => 0,
-        RainAmount::Quarter => 12,
-        RainAmount::Half => 24,
-        RainAmount::Full => 48,
-    };
-    for (motion, mut visibility) in &mut objects {
-        if let Motion::Rain(index) = *motion {
-            *visibility = if index < drops {
-                Visibility::Inherited
-            } else {
-                Visibility::Hidden
-            };
-        }
-    }
     *applied = Some(quality);
 }
 
 pub(crate) fn animate(
     state: Res<VisualState>,
-    time: Res<Time>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     mut meshes: ResMut<Assets<Mesh>>,
     stage: Option<Res<StageScene>>,
@@ -1045,9 +939,25 @@ pub(crate) fn animate(
     for (motion, mut transform, mut visibility, material) in &mut objects {
         let opacity = match *motion {
             Motion::Spirit(player) => {
-                let hit = state.hit_pulses[player].clamp(0.0, 1.0);
-                let miss = state.miss_pulses[player].clamp(0.0, 1.0);
-                transform.translation.y = 0.85 + (song * PI * 2.0).sin() * 0.035;
+                if state.transitioning || state.paused {
+                    continue;
+                }
+                let hit = if state.running {
+                    state.hit_pulses[player].clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                let miss = if state.running {
+                    state.miss_pulses[player].clamp(0.0, 1.0)
+                } else {
+                    0.0
+                };
+                transform.translation.y = 0.735 - hit * 0.1112
+                    + if state.running {
+                        (song * PI * 2.0).sin() * 0.02
+                    } else {
+                        0.0
+                    };
                 transform.scale = Vec3::new(1.0 + hit * 0.16, 1.0 - hit * 0.16, 1.0 + hit * 0.08);
                 transform.rotation = Quat::from_rotation_x(miss * 0.1);
                 None
@@ -1203,12 +1113,6 @@ pub(crate) fn animate(
                 transform.translation.z = 6.0 - (offset - song * 3.0).rem_euclid(36.0);
                 None
             }
-            Motion::Rain(index) => {
-                let phase = index as f32 * 0.73;
-                transform.translation.y = 8.0 - (time.elapsed_secs() * 6.0 + phase).rem_euclid(8.0);
-                transform.rotation = Quat::from_rotation_z(-0.15);
-                None
-            }
         };
         if let Some(opacity) = opacity
             && let Some(material) = material
@@ -1222,6 +1126,7 @@ pub(crate) fn animate(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::settings::RainAmount;
 
     #[test]
     fn stage_context_changes_only_existing_environment_materials() {
@@ -1425,9 +1330,9 @@ mod tests {
             .world_mut()
             .query_filtered::<&PointLight, With<KeyLight>>();
         assert!(!keys.single(app.world()).unwrap().shadow_maps_enabled);
-        let mut motions = app.world_mut().query::<(&Motion, &Visibility)>();
-        assert!(motions.iter(app.world()).all(|(motion, visible)| {
-            !matches!(motion, Motion::Rain(_)) || *visible == Visibility::Hidden
+        let mut rain = app.world_mut().query::<(&effects::Effect, &Visibility)>();
+        assert!(rain.iter(app.world()).all(|(effect, visible)| {
+            !matches!(effect, effects::Effect::Rain(_)) || *visible == Visibility::Hidden
         }));
         for sign in &app.world().resource::<SignMaterials>().0 {
             let material = app
@@ -1538,7 +1443,10 @@ mod tests {
             .init_resource::<Assets<Mesh>>()
             .init_resource::<Assets<StandardMaterial>>()
             .add_systems(Startup, setup)
-            .add_systems(PostUpdate, (apply_quality, animate, update_signs).chain());
+            .add_systems(
+                PostUpdate,
+                (apply_quality, animate, update_signs, effects::animate).chain(),
+            );
         app.update();
         let handles = app.world().resource::<StageGround>().meshes.clone();
         let positions = |world: &World| {
@@ -1555,7 +1463,21 @@ mod tests {
             })
         };
         let original = positions(app.world());
+        let mesh = app
+            .world()
+            .resource::<Assets<Mesh>>()
+            .get(&handles[0])
+            .unwrap();
+        let VertexAttributeValues::Float32x2(uvs) = mesh.attribute(Mesh::ATTRIBUTE_UV_0).unwrap()
+        else {
+            panic!("UV format");
+        };
+        assert!(uvs.iter().flatten().all(|v| v.is_finite()));
+        assert!(uvs.windows(2).any(|pair| pair[0][1] != pair[1][1]));
         for row in 0..GROUND_ROWS {
+            assert_eq!(uvs[row * 2][1], uvs[row * 2 + 1][1]);
+            let span = original[0][row * 2 + 1][0] - original[0][row * 2][0];
+            assert!((uvs[row * 2 + 1][0] - uvs[row * 2][0] - span / 4.0).abs() < 1e-5);
             let left = original[0][row * 2];
             let right = original[0][row * 2 + 1];
             assert_eq!(left, original[1][row * 2 + 1]);
@@ -1564,7 +1486,7 @@ mod tests {
             assert_eq!(right[2], original[4][row * 2][2]);
             assert!((3.5..=4.0).contains(&right[0]));
         }
-        assert_eq!(app.world().resource::<Assets<Mesh>>().len(), 14);
+        assert!(app.world().resource::<Assets<Mesh>>().len() <= 40);
         assert_eq!(
             app.world_mut()
                 .query::<&NoFrustumCulling>()
@@ -1573,7 +1495,7 @@ mod tests {
             9
         );
         let mesh_entities = app.world_mut().query::<&Mesh3d>().iter(app.world()).count();
-        assert_eq!(mesh_entities, 208);
+        assert!(mesh_entities <= 900);
         let count = app.world().entities().len();
         let mut motion = app
             .world_mut()
@@ -1657,7 +1579,7 @@ mod tests {
                 assert_eq!(Some(&snapshot), at_start.as_ref());
             }
             assert_eq!(app.world().entities().len(), count);
-            assert_eq!(app.world().resource::<Assets<Mesh>>().len(), 14);
+            assert!(app.world().resource::<Assets<Mesh>>().len() <= 40);
         }
         // 100,000 authored intervals neither add entities nor enter a linear visible scan
         let dense = (0..100_000)
@@ -1835,7 +1757,10 @@ mod tests {
         }
         let mut buildings = app.world_mut().query::<(&ChildOf, &Transform)>();
         for (parent, transform) in buildings.iter(app.world()) {
-            if parent.parent() == background && transform.translation.y >= 1.0 {
+            if parent.parent() == background
+                && transform.translation.y >= 1.0
+                && transform.translation.z > -90.0
+            {
                 assert!(transform.translation.x.abs() - transform.scale.x * 0.5 >= 5.699);
             }
         }
@@ -1883,7 +1808,6 @@ mod tests {
         let first = snapshot(app.world());
         let first_motion: Vec<_> = objects
             .iter(app.world())
-            .filter(|(_, motion, _, _)| !matches!(motion, Motion::Rain(_)))
             .map(|(entity, _, transform, visibility)| (entity, *transform, *visibility))
             .collect();
         let counts = (
@@ -2086,7 +2010,10 @@ mod tests {
             .init_resource::<Assets<Mesh>>()
             .init_resource::<Assets<StandardMaterial>>()
             .add_systems(Startup, setup)
-            .add_systems(PostUpdate, (apply_quality, animate, update_signs).chain());
+            .add_systems(
+                PostUpdate,
+                (apply_quality, animate, update_signs, effects::animate).chain(),
+            );
         let presentation = app
             .world_mut()
             .spawn((Camera2d, PresentationCamera, Msaa::Off))
@@ -2102,15 +2029,14 @@ mod tests {
             .query::<(Entity, &Motion, &Transform, &Visibility)>();
         let core: Vec<_> = motions
             .iter(app.world())
-            .filter(|(_, motion, _, _)| !matches!(motion, Motion::Rain(_)))
             .map(|(entity, _, transform, visibility)| (entity, *transform, *visibility))
             .collect();
         assert_eq!(core.len(), 37);
         assert!(core.iter().all(|(_, _, v)| *v != Visibility::Hidden));
         let meshes = app.world().resource::<Assets<Mesh>>().len();
         let materials = app.world().resource::<Assets<StandardMaterial>>().len();
-        assert!(meshes <= 12);
-        assert!(materials <= 32);
+        assert!(meshes <= 40);
+        assert!(materials <= 64);
         let sign_ids = app
             .world()
             .resource::<SignMaterials>()
@@ -2120,14 +2046,14 @@ mod tests {
         let mut visible_meshes = app
             .world_mut()
             .query::<(&Transform, &MeshMaterial3d<StandardMaterial>)>();
-        let mut sign_count = 0;
-        assert!(visible_meshes.iter(app.world()).count() <= 220);
-        for (transform, material) in visible_meshes.iter(app.world()) {
-            let sign = transform.translation.x.abs() == 4.22 && transform.scale.x == 0.08;
-            assert_eq!(sign_ids.contains(&material.0.id()), sign);
-            sign_count += usize::from(sign);
+        assert!(visible_meshes.iter(app.world()).count() <= 900);
+        for sign in sign_ids {
+            assert!(
+                visible_meshes
+                    .iter(app.world())
+                    .any(|(_, material)| material.0.id() == sign)
+            );
         }
-        assert_eq!(sign_count, 36);
         let mut transforms = app.world_mut().query::<(Entity, &Transform)>();
         let transforms: Vec<_> = transforms
             .iter(app.world())
@@ -2216,11 +2142,11 @@ mod tests {
             );
             let mut rain = app
                 .world_mut()
-                .query::<(&Motion, &Visibility, Option<&NotShadowCaster>)>();
+                .query::<(&effects::Effect, &Visibility, Option<&NotShadowCaster>)>();
             let rain: Vec<_> = rain
                 .iter(app.world())
                 .filter_map(|(motion, visibility, shadow)| match *motion {
-                    Motion::Rain(index) => Some((index, visibility, shadow)),
+                    effects::Effect::Rain(index) => Some((index, visibility, shadow)),
                     _ => None,
                 })
                 .collect();

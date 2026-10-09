@@ -1,0 +1,1413 @@
+{
+  "date": "2026-10-09",
+  "status": "SOFTWARE_AND_SCOPED_VISUAL_EVIDENCE",
+  "base_commit": "1f816a5e55cb2657fb2cbce26c036b70639a4328",
+  "scope": "CoCoBeat original map/model/lighting/effect polish; no claim of Muse Dash commercial-quality parity",
+  "source_sha256": {
+    "crates/cocobeat-runtime/src/scene.rs": "0c0ae95fe7d95e757153e8644bd61e97970d47f4e2b36df922b8b768cd70198d",
+    "crates/cocobeat-runtime/src/view.rs": "fc7cd4688d2d282b12010a30f5e8fcb587ed27690f1d406e9c9bd3cc2e771da1",
+    "crates/cocobeat-runtime/src/app.rs": "db8c11482a7469a16f1a882ad61f2d0e8747c13ac1bb923f8d9bd0ba452f51f1",
+    "crates/cocobeat-runtime/src/scene/characters.rs": "2e2676b2ebac9d7d4e636c993a15a4164c962ed6b42a492012d24e4f8fdc042b",
+    "crates/cocobeat-runtime/src/scene/city.rs": "52dd59be3526dee57f96ea792fbafcecc7b53a01d4f25a7f655f7256c44097ba",
+    "crates/cocobeat-runtime/src/scene/effects.rs": "5f17516afbbdb264e87348d5c7d036a72b9efa5f712a7b7b5d56a7c68283d4b1",
+    "crates/cocobeat-runtime/src/scene/lighting.rs": "d1eee429aefa78ff67673ccb1c7d5e4310275cf47ed196d3c726800411bb1eea"
+  },
+  "debug_binary_sha256": "b125b6d59d5a5afa5d766b0270a05fcefbcef6f378176ccf3528f88be8d6c89f",
+  "release_binary_sha256": "f373af1b1ad01bb2a1e57969260040a9e1c58e69c2475b78c718750954078b67",
+  "source_inputs_unchanged": true,
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "cocobeat-runtime",
+        "--lib"
+      ],
+      "exit_code": 0,
+      "tests_passed": 196,
+      "log": "target/visual-polish-20261009/runtime-test.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "-p",
+        "cocobeat-runtime",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "log": "target/visual-polish-20261009/clippy.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--locked",
+        "-p",
+        "xtask",
+        "--",
+        "boundaries"
+      ],
+      "exit_code": 0,
+      "log": "target/visual-polish-20261009/boundaries.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "cocobeat-game"
+      ],
+      "exit_code": 0,
+      "log": "target/visual-polish-20261009/game-build.log"
+    },
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--release",
+        "-p",
+        "cocobeat-game",
+        "-j",
+        "2",
+        "--message-format=json"
+      ],
+      "exit_code": 0,
+      "log": "target/visual-polish-20261009/release-build/build.stderr"
+    }
+  ],
+  "gpu_captures": {
+    "cases": [
+      {
+        "case": "anchor-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "anchor",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/anchor-native.png"
+        ],
+        "pid": 1125063,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.474337723979261,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "4f2722d86af65624d314d1189b5ac2dbbb51b22dae14f54e267b739f92f4e442",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "local-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "local",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/local-native.png"
+        ],
+        "pid": 1125101,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.423298777983291,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "0214a08f8e06453e80b4e5c9dadeb57045afecdb7d1d165cf0581539e12858d5",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "free-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "free",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/free-native.png"
+        ],
+        "pid": 1125146,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.473159998975461,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "54475d8fbbf2e1c67907cf3a98b1eeeeb5ea696e50d632d65215a873facc1d03",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "anchor-good-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "anchor-good",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/anchor-good-native.png"
+        ],
+        "pid": 1125169,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.42428740899777,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "79aa8a7a60b3e6675361a295e792b07a2a73b2aabf52ca0cfd3d2fab3e8b7d16",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "miss-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "miss",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/miss-native.png"
+        ],
+        "pid": 1125194,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.423764317005407,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "5abe3458f82e33ee4aeba60ed10b41c75f73ac2f5c381095bddcdc5e675f8a6b",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "approach-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "approach",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/approach-native.png"
+        ],
+        "pid": 1125225,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.473989863006864,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "abaa9cacea34dbde1e50b7cb35d1aac8011164ee35bcfa24053d38b0c3650e7e",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "free-low",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "free",
+          "low",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/free-low.png"
+        ],
+        "pid": 1125279,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 5.874542013014434,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "0ede4d9a5af6c5bdee676062f4a1a356ddeded3205c15a07d17f927e539b675e",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "free-medium",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "free",
+          "medium",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/free-medium.png"
+        ],
+        "pid": 1125302,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.575066843011882,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "9ed77a52a78d512741da6c7c67a8477f5fc905bba80360176699853ed949b7df",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "free-high",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "free",
+          "high",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/free-high.png"
+        ],
+        "pid": 1125343,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 6.473574222996831,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "0cd23364bb963b5c70b1968075290b62bc3dc3d7a03d4d6146c9277a41a8bf10",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "anchor-off-small",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--feedback-smoke",
+          "anchor",
+          "off",
+          "400",
+          "300",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/anchor-off-small.png"
+        ],
+        "pid": 1125386,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 5.122682583983988,
+        "expected_ui_size": [
+          400,
+          300
+        ],
+        "png_sha256": "5375f624a542aa4645b3573f685fa09a9a0ddfcb73486de7981a1748474928cf",
+        "png_size": [
+          400,
+          300
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "stage3-curve",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--feedback-smoke",
+          "600000",
+          "anchor",
+          "high",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/stage3-curve.png"
+        ],
+        "pid": 1125409,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 8.628656397020677,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "6557a74cf7b67c0ba9378884dc371d9bcf6dd5c1c3e4fb24a1eaad2ccfdafc0f",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "stage3-bridge",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--package",
+          "/home/lzzz/MyProjects/CoCoBeat/target/source-import-20261007/cli-gpu-native/original-64s-package",
+          "--feedback-smoke",
+          "900000",
+          "approach",
+          "high",
+          "1280",
+          "800",
+          "1",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/stage3-bridge.png"
+        ],
+        "pid": 1125435,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 8.678949288005242,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "b98ac89c4384d4bbf8a9dad49a847482370c6aab123c5ad3c23eea46393219b6",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      },
+      {
+        "case": "ready-native",
+        "command": [
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/cocobeat-game",
+          "--startup-smoke",
+          "/home/lzzz/MyProjects/CoCoBeat/target/visual-polish-20261009/final-render-v2/ready-native.png"
+        ],
+        "pid": 1125476,
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 32.970118967001326,
+        "expected_ui_size": [
+          1280,
+          800
+        ],
+        "png_sha256": "86dda139f820860ec0b6e794bdda2fee76c2970f1ba5073cf461102ffa5e81f5",
+        "png_size": [
+          1280,
+          800
+        ],
+        "status": "PASS_RENDER"
+      }
+    ],
+    "actual_sample_metadata": {
+      "anchor-native": {
+        "anchor_sync_precise": true,
+        "anchor_sync_pulse": 0.699999988079071,
+        "effect": "Anchor",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "local-native": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Local",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.800000011920929,
+          0.6000000238418579
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "free-native": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Free",
+        "free_sync_pulse": 0.699999988079071,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "anchor-good-native": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.699999988079071,
+        "effect": "AnchorGood",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "miss-native": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Miss",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.800000011920929,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "approach-native": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Approach",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          1280,
+          800
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": 34.0,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "free-low": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Free",
+        "free_sync_pulse": 0.699999988079071,
+        "game_physical_size": [
+          640,
+          480
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "off",
+          "bloom": false,
+          "fog": true,
+          "preset": "low",
+          "rain": "quarter",
+          "shadows": false
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "free-medium": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Free",
+        "free_sync_pulse": 0.699999988079071,
+        "game_physical_size": [
+          640,
+          480
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa2",
+          "bloom": true,
+          "fog": true,
+          "preset": "medium",
+          "rain": "half",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "free-high": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Free",
+        "free_sync_pulse": 0.699999988079071,
+        "game_physical_size": [
+          640,
+          480
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa4",
+          "bloom": true,
+          "fog": true,
+          "preset": "high",
+          "rain": "full",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "anchor-off-small": {
+        "anchor_sync_precise": true,
+        "anchor_sync_pulse": 0.699999988079071,
+        "effect": "Anchor",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          320,
+          240
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "off",
+          "bloom": false,
+          "fog": false,
+          "preset": "custom",
+          "rain": "off",
+          "shadows": false
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 32.0,
+        "ui_physical_size": [
+          400,
+          300
+        ]
+      },
+      "stage3-curve": {
+        "anchor_sync_precise": true,
+        "anchor_sync_pulse": 0.699999988079071,
+        "effect": "Anchor",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          640,
+          480
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": null,
+        "quality": {
+          "antialiasing": "msaa4",
+          "bloom": true,
+          "fog": true,
+          "preset": "high",
+          "rain": "full",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 12.5,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "stage3-bridge": {
+        "anchor_sync_precise": false,
+        "anchor_sync_pulse": 0.0,
+        "effect": "Approach",
+        "free_sync_pulse": 0.0,
+        "game_physical_size": [
+          640,
+          480
+        ],
+        "hit_pulses": [
+          0.0,
+          0.0
+        ],
+        "miss_pulses": [
+          0.0,
+          0.0
+        ],
+        "next_anchor_seconds": 26.0,
+        "quality": {
+          "antialiasing": "msaa4",
+          "bloom": true,
+          "fog": true,
+          "preset": "high",
+          "rain": "full",
+          "shadows": true
+        },
+        "scale_factor": 1.0,
+        "song_seconds": 18.75,
+        "ui_physical_size": [
+          1280,
+          800
+        ]
+      },
+      "ready-native": null
+    },
+    "root_review": {
+      "status": "PASS_SCOPED_VISUAL_REVIEW",
+      "reviewer": "root",
+      "cases": [
+        {
+          "case": "anchor-native",
+          "png_sha256": "4f2722d86af65624d314d1189b5ac2dbbb51b22dae14f54e267b739f92f4e442",
+          "viewed": true
+        },
+        {
+          "case": "local-native",
+          "png_sha256": "0214a08f8e06453e80b4e5c9dadeb57045afecdb7d1d165cf0581539e12858d5",
+          "viewed": true
+        },
+        {
+          "case": "free-native",
+          "png_sha256": "54475d8fbbf2e1c67907cf3a98b1eeeeb5ea696e50d632d65215a873facc1d03",
+          "viewed": true
+        },
+        {
+          "case": "anchor-good-native",
+          "png_sha256": "79aa8a7a60b3e6675361a295e792b07a2a73b2aabf52ca0cfd3d2fab3e8b7d16",
+          "viewed": true
+        },
+        {
+          "case": "miss-native",
+          "png_sha256": "5abe3458f82e33ee4aeba60ed10b41c75f73ac2f5c381095bddcdc5e675f8a6b",
+          "viewed": true
+        },
+        {
+          "case": "approach-native",
+          "png_sha256": "abaa9cacea34dbde1e50b7cb35d1aac8011164ee35bcfa24053d38b0c3650e7e",
+          "viewed": true
+        },
+        {
+          "case": "free-low",
+          "png_sha256": "0ede4d9a5af6c5bdee676062f4a1a356ddeded3205c15a07d17f927e539b675e",
+          "viewed": true
+        },
+        {
+          "case": "free-medium",
+          "png_sha256": "9ed77a52a78d512741da6c7c67a8477f5fc905bba80360176699853ed949b7df",
+          "viewed": true
+        },
+        {
+          "case": "free-high",
+          "png_sha256": "0cd23364bb963b5c70b1968075290b62bc3dc3d7a03d4d6146c9277a41a8bf10",
+          "viewed": true
+        },
+        {
+          "case": "anchor-off-small",
+          "png_sha256": "5375f624a542aa4645b3573f685fa09a9a0ddfcb73486de7981a1748474928cf",
+          "viewed": true
+        },
+        {
+          "case": "stage3-curve",
+          "png_sha256": "6557a74cf7b67c0ba9378884dc371d9bcf6dd5c1c3e4fb24a1eaad2ccfdafc0f",
+          "viewed": true
+        },
+        {
+          "case": "stage3-bridge",
+          "png_sha256": "b98ac89c4384d4bbf8a9dad49a847482370c6aab123c5ad3c23eea46393219b6",
+          "viewed": true
+        },
+        {
+          "case": "ready-native",
+          "png_sha256": "86dda139f820860ec0b6e794bdda2fee76c2970f1ba5073cf461102ffa5e81f5",
+          "viewed": true
+        }
+      ],
+      "observations": [
+        "Original plush faces chest patches and two-ear versus crown identities remain visible",
+        "All near shops retain authored details after song-time looping",
+        "Core single and double rings remain visible with decoration disabled",
+        "400x300 P1/P2 labels no longer cover faces or intersect the status panel",
+        "Curve and bridge cues remain distinct from confirmation rings"
+      ],
+      "scope": "actual root inspection of 13 GPU captures; not subjective commercial-quality parity, physical display, physical controllers or music acceptance"
+    }
+  },
+  "motion": {
+    "status": "PASS_SCOPED_MOTION_REVIEW",
+    "key_frames": [
+      {
+        "frame": 0,
+        "sha256": "b19b7733d000c19a3dd4f3acb9f330dd0e44eaf526c25ada7feff89c1bc86092",
+        "viewed": true
+      },
+      {
+        "frame": 9,
+        "sha256": "7c55d666887d97cf4fb6669eec8718697a72e41903bbdfe2256c62dba72a58f7",
+        "viewed": true
+      },
+      {
+        "frame": 31,
+        "sha256": "7a79075af1a213234fa7286563a1df71e5f8fd0bb795cbc7482cebcb6d71c860",
+        "viewed": true
+      },
+      {
+        "frame": 33,
+        "sha256": "6af9219570bd6cea2520689d89e1d46c29c77c5bcf912b7eac4ee9affa23ea5f",
+        "viewed": true
+      },
+      {
+        "frame": 44,
+        "sha256": "f7f035d237917675884942d583f1ac1d58505193ae4ccbe65922b0ef70545ba3",
+        "viewed": true
+      },
+      {
+        "frame": 49,
+        "sha256": "7a635db420d09fb5cdc8a40d7cbe70704ffb1347eca5fad45b87f35e46961049",
+        "viewed": true
+      },
+      {
+        "frame": 50,
+        "sha256": "c19d6358a60810c5761fa144bc81b087fc2536a8ade130ebca293d47b56169aa",
+        "viewed": true
+      },
+      {
+        "frame": 51,
+        "sha256": "fdd118a0e2d67437c356b3e42c427574211362e1058ae7e4e8c8968ac92c9a71",
+        "viewed": true
+      },
+      {
+        "frame": 62,
+        "sha256": "11e7564b7f36421bbe0e336a1c7c96b16f930cbd709db97f3e194eea02870922",
+        "viewed": true
+      },
+      {
+        "frame": 64,
+        "sha256": "f874bbe2ccdf6aa78e02c7992cc5f6775f5d6f98667305a761b523531b14d805",
+        "viewed": true
+      },
+      {
+        "frame": 66,
+        "sha256": "737e1747f9816efdb99f47af2d0abe867ba7d0276e7b602d92ce6ca0e439f5e9",
+        "viewed": true
+      },
+      {
+        "frame": 90,
+        "sha256": "f0c3f74865f1f4e4386fbc7426b7439a1faf1e6475543c3dfcb520c574d06392",
+        "viewed": true
+      },
+      {
+        "frame": 92,
+        "sha256": "9eb861a6e70fbfd97de250059679fc315bbd497b59ef06b26036c5fe1c91e277",
+        "viewed": true
+      },
+      {
+        "frame": 96,
+        "sha256": "08a4c90bfdce8263eb510532f6c52f7e605ce6419f6c0ae6124cb9e3b06034a8",
+        "viewed": true
+      },
+      {
+        "frame": 126,
+        "sha256": "42226627ac207199e060bbc935c51d3e5f506809f565bb064a4e560ff402d8e5",
+        "viewed": true
+      },
+      {
+        "frame": 139,
+        "sha256": "02f3d7b41625fdf9c2fc3c46d62fe66b70192f784beb3a0582b977958daa38b6",
+        "viewed": true
+      },
+      {
+        "frame": 140,
+        "sha256": "241ed66c0ad6a5f5f5bda1638ab8a6f4afd66b5adcc9826f8c40f781e22920f8",
+        "viewed": true
+      },
+      {
+        "frame": 141,
+        "sha256": "7a5033a7c5ab6a10fa7a7f545d0eab56a10f242d62f4b90a7f0f67830f8d330a",
+        "viewed": true
+      },
+      {
+        "frame": 239,
+        "sha256": "936df5e5db07e0e4704dd3f293ff6e13654bc078782fddcfe4c39a2a7d89684f",
+        "viewed": true
+      }
+    ],
+    "confirmed_event_frames": [
+      {
+        "frame": 44,
+        "events": [
+          "FreeSync(FreeSyncEvent { p1_input: 30, p2_input: 31, delta_frames: 1600, midpoint: SongTime(1584800) })"
+        ],
+        "anchor_sync_precise": false
+      },
+      {
+        "frame": 66,
+        "events": [
+          "AnchorJudged(AnchorJudgement { player: P1, anchor_id: 0, input_seq: Some(62), offset_frames: Some(3200), grade: Good })",
+          "AnchorJudged(AnchorJudgement { player: P2, anchor_id: 0, input_seq: Some(62), offset_frames: Some(3200), grade: Good })",
+          "AnchorSync(AnchorSyncEvent { anchor_id: 0, p1: AnchorJudgement { player: P1, anchor_id: 0, input_seq: Some(62), offset_frames: Some(3200), grade: Good }, p2: AnchorJudgement { player: P2, anchor_id: 0, input_seq: Some(62), offset_frames: Some(3200), grade: Good }, relative_delta_frames: 0 })"
+        ],
+        "anchor_sync_precise": false
+      },
+      {
+        "frame": 96,
+        "events": [
+          "AnchorJudged(AnchorJudgement { player: P1, anchor_id: 1, input_seq: Some(90), offset_frames: Some(0), grade: Precise })",
+          "AnchorJudged(AnchorJudgement { player: P2, anchor_id: 1, input_seq: Some(90), offset_frames: Some(0), grade: Precise })",
+          "AnchorSync(AnchorSyncEvent { anchor_id: 1, p1: AnchorJudgement { player: P1, anchor_id: 1, input_seq: Some(90), offset_frames: Some(0), grade: Precise }, p2: AnchorJudgement { player: P2, anchor_id: 1, input_seq: Some(90), offset_frames: Some(0), grade: Precise }, relative_delta_frames: 0 })"
+        ],
+        "anchor_sync_precise": true
+      },
+      {
+        "frame": 126,
+        "events": [
+          "AnchorJudged(AnchorJudgement { player: P1, anchor_id: 2, input_seq: None, offset_frames: None, grade: Miss })",
+          "AnchorJudged(AnchorJudgement { player: P2, anchor_id: 2, input_seq: None, offset_frames: None, grade: Miss })"
+        ],
+        "anchor_sync_precise": true
+      }
+    ],
+    "observations": [
+      "Local feedback appears before authority-confirmed collective rings",
+      "Confirmed Free Good Precise and Miss remain distinct",
+      "Building window sign and lamp continuity checked at frames49-51 and139-141",
+      "Final tail has no lingering collective particles; geometric role identity remains visible"
+    ],
+    "video": {
+      "path": "target/visual-polish-20261009/cocobeat-visual-polish.mp4",
+      "sha256": "186fccd820920f3ca1dc7bb78e18ce8033dbd063768278b080ccab3ff20e5fa0",
+      "frames": 240,
+      "frames_per_second": 30,
+      "duration_seconds": 8
+    },
+    "scope": "19 actual root-inspected key frames from 240 GPU frames, synthetic production-core controls; no physical input/audio timing/commercial parity acceptance"
+  },
+  "native_performance": {
+    "status": "VALID_LOCAL_OBSERVATION",
+    "game_exit_code": 0,
+    "summary": {
+      "status": "VALID_LOCAL_OBSERVATION",
+      "invalid_reasons": [],
+      "scope": "native main-update cadence, actual Kira/core workload, Linux owned-process RSS; not monitor presentation or GPU time",
+      "budget": "DESCRIPTIVE; no hardware budget claimed",
+      "raw_rows": 5226,
+      "phases": {
+        "ready": {
+          "interval_count": 598,
+          "sum_intervals_ns": 9999897680,
+          "aggregate_main_update_hz": 59.80061187986075,
+          "mean_ms": 16.722236923076924,
+          "p50_ms": 16.722544,
+          "p90_ms": 16.725515,
+          "p95_ms": 16.728327,
+          "p99_ms": 16.736501,
+          "max_ms": 16.747287,
+          "over_16_666667_ms": 598,
+          "over_33_333334_ms": 0,
+          "over_50_ms": 0,
+          "over_100_ms": 0,
+          "longest_over_33_333334_ms_streak": 0,
+          "first_frame": 739,
+          "last_frame": 1337,
+          "span_ns": 9999897680,
+          "spikes": []
+        },
+        "running": {
+          "interval_count": 2989,
+          "sum_intervals_ns": 49986367337,
+          "aggregate_main_update_hz": 59.796303657128064,
+          "mean_ms": 16.7234417320174,
+          "p50_ms": 16.722575,
+          "p90_ms": 16.725712,
+          "p95_ms": 16.732706,
+          "p99_ms": 16.736692,
+          "max_ms": 19.59477,
+          "over_16_666667_ms": 2989,
+          "over_33_333334_ms": 0,
+          "over_50_ms": 0,
+          "over_100_ms": 0,
+          "longest_over_33_333334_ms_streak": 0,
+          "first_frame": 1937,
+          "last_frame": 4926,
+          "span_ns": 49986367337,
+          "spikes": []
+        }
+      },
+      "probe_install_seconds_to_stable_ready": 7.464736513,
+      "not_measured": [
+        "whole GPU frame elapsed",
+        "draw calls",
+        "VRAM",
+        "audio underruns",
+        "displayed or dropped monitor frames",
+        "physical input",
+        "speaker latency",
+        "four-platform native graphics",
+        "human acceptance"
+      ]
+    },
+    "process_usage": {
+      "scope": "Linux waited-child accumulated CPU including descendants only when all intermediate parents waited; maxRSS is largest waited-child peak, not concurrent process-tree RSS; observed wall is parent launch-to-reap with polling error, not kernel exit, steady phase or GPU duration",
+      "user_cpu_seconds": 30.660389,
+      "system_cpu_seconds": 8.289206,
+      "cpu_seconds": 38.949595,
+      "observed_lifetime_seconds": 87.915997869,
+      "cpu_seconds_per_wall_second": 0.4430319389428667,
+      "max_rss_kib": 534268,
+      "minor_faults": 81076,
+      "major_faults": 39,
+      "voluntary_context_switches": 3108570,
+      "involuntary_context_switches": 27349
+    },
+    "gpu_spans": {
+      "scope": "per GPU span exported from asynchronous render diagnostics; whole observation, no phase or render frame attribution; no parent-child sums or inferred display FPS",
+      "paths": {
+        "render/bin_unpacking/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 0.01636,
+          "max_ms": 0.12912
+        },
+        "render/bloom/elapsed_gpu": {
+          "samples": 1734,
+          "p95_ms": 0.64192,
+          "max_ms": 0.85952
+        },
+        "render/clustering/elapsed_gpu": {
+          "samples": 1735,
+          "p95_ms": 0.1616,
+          "max_ms": 0.75052
+        },
+        "render/early_mesh_preprocessing/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 0.01892,
+          "max_ms": 0.14956
+        },
+        "render/main_opaque_pass_3d/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 6.2552,
+          "max_ms": 8.91708
+        },
+        "render/main_transparent_pass_2d/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 0.00036,
+          "max_ms": 0.00132
+        },
+        "render/main_transparent_pass_3d/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 0.12036,
+          "max_ms": 0.57112
+        },
+        "render/tonemapping/elapsed_gpu": {
+          "samples": 1734,
+          "p95_ms": 0.1768,
+          "max_ms": 0.22112
+        },
+        "render/ui/elapsed_gpu": {
+          "samples": 1741,
+          "p95_ms": 0.4348,
+          "max_ms": 0.67244
+        },
+        "render/upscaling/elapsed_gpu": {
+          "samples": 1737,
+          "p95_ms": 0.12784,
+          "max_ms": 0.20168
+        }
+      }
+    },
+    "workload": {
+      "status": "COMPLETE",
+      "synthetic_hits": 13,
+      "expected_hits": 13,
+      "summary": {
+        "anchor_sync": 5,
+        "anchors": [
+          [
+            2,
+            3,
+            0,
+            2
+          ],
+          [
+            2,
+            3,
+            0,
+            2
+          ]
+        ],
+        "free_sync": 1,
+        "hits": [
+          7,
+          6
+        ]
+      }
+    },
+    "scope": "one Linux native headless compositor with discrete Vulkan GPU and actual Kira/core; 1920x1080 high limited60; no physical-display FPS, VRAM, hardware latency or cross-target budget claim"
+  },
+  "baseline": {
+    "binary": "target/source-phase-await-live-at-state-shipping-runtime-20261009/bin/cocobeat-game",
+    "binary_sha256": "e6cb23d70170697c9fc003627f6d069e92ff4f4cbf00e11982196c7819dc89ee",
+    "command": [
+      "--feedback-smoke",
+      "anchor",
+      "PNG"
+    ],
+    "game_ui_size": [
+      1280,
+      800
+    ],
+    "png": "docs/images/visual-polish-before.png",
+    "png_sha256": "e113d89ee2de02e141c92b15cef6499a8af5a2dd95b0929f1a122661d76e24df",
+    "scope": "same full native-size deterministic capture command; old Resting versus new Running smoke, qualitative comparison only"
+  },
+  "review": {
+    "ponytail": "Lean already. Ship.",
+    "report": "target/visual-polish-20261009/production-static-review/revision06/result.json",
+    "resolved": [
+      "shop part loop seam",
+      "sparse shops in foreground",
+      "small-window labels across actors",
+      "per-frame compact/full Text double write"
+    ],
+    "root_final": true
+  },
+  "remaining": [
+    "commercial-quality art and emotion acceptance",
+    "independent section scenery and long-song repetition",
+    "physical display and four-target performance budgets",
+    "physical dual controllers and keyboard/controller combination",
+    "audio/DAC timing and human duet feedback"
+  ],
+  "raw_artifacts": [
+    {
+      "path": "target/visual-polish-20261009/runtime-test.log",
+      "sha256": "787b08d138cdaad78bcec1ae2a1e89f99c34b03420ac981ed7d6939760ae1f35",
+      "bytes": 21223
+    },
+    {
+      "path": "target/visual-polish-20261009/clippy.log",
+      "sha256": "11194978fb5d583cafeab1a00cf5dc107a509948a8fb2fe64682ef52d1c46514",
+      "bytes": 2559
+    },
+    {
+      "path": "target/visual-polish-20261009/boundaries.log",
+      "sha256": "aef4018f8ea6b2d19317ff37d751d1ac04e764ae7ace043e6685cac5d3809e4f",
+      "bytes": 195
+    },
+    {
+      "path": "target/visual-polish-20261009/game-build.log",
+      "sha256": "78a68923b5efc9425e06174de37a610229adad4037b2d0cfd8e2802ef8f0a149",
+      "bytes": 2645
+    },
+    {
+      "path": "target/visual-polish-20261009/release-build/cocobeat-game-build-result.json",
+      "sha256": "f77849c6001c4266d795dc6ff337f2d8e436b3ba8b8a81df3d901450818313a8",
+      "bytes": 823
+    },
+    {
+      "path": "target/visual-polish-20261009/release-build/inputs-before.json",
+      "sha256": "db9d1ce1412e580d0c383da489249669322a1bb417df2d21ce530d77b1c10094",
+      "bytes": 44047
+    },
+    {
+      "path": "target/visual-polish-20261009/release-build/inputs-after.json",
+      "sha256": "db9d1ce1412e580d0c383da489249669322a1bb417df2d21ce530d77b1c10094",
+      "bytes": 44047
+    },
+    {
+      "path": "target/visual-polish-20261009/release-build/build.jsonl",
+      "sha256": "94f01747d1db1851094f595cd36de041b29dae6a67e2960575f2142c4a84ba2a",
+      "bytes": 407859
+    },
+    {
+      "path": "target/visual-polish-20261009/final-render-v2/result.json",
+      "sha256": "428d8dde928d4b30a6eea1354bb430ee1506f854961548ad036b35ee1a673ba5",
+      "bytes": 11357
+    },
+    {
+      "path": "target/visual-polish-20261009/final-render-v2/root-visual-review.json",
+      "sha256": "8d2748c36fcdf174865c3ddcd209db0dc38f9124fc9f57d03960205482961530",
+      "bytes": 2634
+    },
+    {
+      "path": "target/visual-polish-20261009/motion-result.json",
+      "sha256": "84ad1e45fe3e12b3586164b40ae73ea45aa1e6b744d76cf1e049e2ccc97c8f2f",
+      "bytes": 22213
+    },
+    {
+      "path": "target/visual-polish-20261009/motion-visual-review.json",
+      "sha256": "cc5e740d6dd1fa52384ed6befc33b0410916ba6ac22a8da06c30adb5cf6e3340",
+      "bytes": 5316
+    },
+    {
+      "path": "target/visual-polish-20261009/motion.stderr",
+      "sha256": "777e6ad2e45641fa012e8e869d71f7420949fc5eee56747de3678191a20d845b",
+      "bytes": 68578
+    },
+    {
+      "path": "target/visual-polish-20261009/motion-run.py",
+      "sha256": "afe5f84ed3805cc748e03b06d36cd40bb23fdf4a499b3946709b3ee49a44c8dd",
+      "bytes": 1479
+    },
+    {
+      "path": "target/visual-polish-20261009/render-matrix-v2.py",
+      "sha256": "a098680ce681ca8ea9892f8f1c201712d710fc0c80bd52aabd38e36260a0dea8",
+      "bytes": 3267
+    },
+    {
+      "path": "target/visual-polish-20261009/release-build/run.py",
+      "sha256": "6e3cdcd7413ab5d8c413b42e625816ad6862fa5b8b18b69b417e727a26fac529",
+      "bytes": 3075
+    },
+    {
+      "path": "target/visual-polish-20261009/native-run.py",
+      "sha256": "fc22dcab551059f88133d0c4c5e18f938e559856094dd34e8d09c303c726ab40",
+      "bytes": 1671
+    },
+    {
+      "path": "target/visual-polish-20261009/native-run-result.json",
+      "sha256": "769dd139cfafc1a2edd2d900ae6ecfd1e75dddc8c508d520e562f682bea2e97e",
+      "bytes": 1088
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/validation.json",
+      "sha256": "3ea31b441bdf25c66b4310456738930267801754da0b51c30981c225c6393a51",
+      "bytes": 1980
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/summary.json",
+      "sha256": "a19c31e8f634e1113f6c0bb42cb75c08a81e0b3524a09776d0a0c2cbe2c10e95",
+      "bytes": 1745
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/manifest.json",
+      "sha256": "f0df511c9bedb192d4ae350fdc83ce59433c9e33c39b93ad23d45d84d699dbc3",
+      "bytes": 2190
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/process-usage.json",
+      "sha256": "9280633ad3cd6d9b4fc7813d9d6e80635e0d049712cf51d00fb576859580fd16",
+      "bytes": 639
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/probe/frames.jsonl",
+      "sha256": "34c82165529bd3688cf44b91eaa5bfdc6f01a3dc23033bad3647e0e447269966",
+      "bytes": 3326574
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/probe/result.json",
+      "sha256": "301490eeefd775cf8477c1b9d317b640544e2ae7d6680bc2246e3eeb394b02d4",
+      "bytes": 12439
+    },
+    {
+      "path": "target/visual-polish-20261009/native-high-1080p/probe/render-diagnostics.jsonl",
+      "sha256": "f6ac7a32bc5147d5a5bb6067a43fda412417f4dec051a2860222f93aa58f3d5a",
+      "bytes": 4616128
+    },
+    {
+      "path": "target/visual-polish-20261009/native-gpu-summary.json",
+      "sha256": "15d365e8da26c99ff9f118256e18c256d1e0340c1d03f1719f7ab4d255212a24",
+      "bytes": 1413
+    },
+    {
+      "path": "target/visual-polish-20261009/production-static-review/revision06/result.json",
+      "sha256": "54f54d6b4eb6914d2af25d980a390cb75d079315b5ba46842d4da1a1155823f9",
+      "bytes": 6016
+    },
+    {
+      "path": "target/visual-polish-20261009/final-render/root-visual-review.json",
+      "sha256": "e195ae2c9e6c3a5d30dd77bfd403f3a66ada13fc0cf18822614e8dfe6a92a06f",
+      "bytes": 218
+    },
+    {
+      "path": "target/visual-polish-20261009/runtime-test-small-initial.log",
+      "sha256": "1d28edc62112578aafff5d5bf8f549fda94a8bcc9b07cd5fc3f8888db7c01dcd",
+      "bytes": 21684
+    },
+    {
+      "path": "target/visual-polish-20261009/clippy-initial.log",
+      "sha256": "03789c568b898cbf5e9b1c5530ab257642cd4124852cc37a318c5b29ee1830b6",
+      "bytes": 5639
+    },
+    {
+      "path": "target/visual-polish-20261009/clippy-city-initial.log",
+      "sha256": "8300abcb57a0f9678ee3f1a9ddca05f763aa20d3c44a136f5cf22d9908961fad",
+      "bytes": 3999
+    },
+    {
+      "path": "target/visual-polish-20261009/render-matrix-v2.log",
+      "sha256": "1c10037133a4ef15709eb05acde1716898568a58f74fd259aa2095b6cb7d5b59",
+      "bytes": 555
+    }
+  ]
+}

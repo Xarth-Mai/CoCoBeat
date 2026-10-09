@@ -32,6 +32,8 @@ pub(crate) struct VisualState {
     pub resonance: f32,
     pub status: String,
     pub running: bool,
+    pub ready: bool,
+    pub paused: bool,
     pub transitioning: bool,
     pub locale: Locale,
     pub menu: Option<MenuPresentation>,
@@ -90,6 +92,7 @@ struct FocusFeedback {
 }
 
 pub fn install(app: &mut App) {
+    scene::install_animation(app);
     app.init_resource::<VisualState>()
         .init_resource::<MenuScroll>()
         .insert_resource(ClearColor(Color::srgb(0.012, 0.017, 0.042)))
@@ -105,6 +108,7 @@ pub fn install(app: &mut App) {
                     scene::refresh,
                     scene::apply_quality,
                     scene::animate,
+                    scene::characters::animate,
                     scene::update_signs,
                 )
                     .chain(),
@@ -397,7 +401,7 @@ fn layout_hud(
     state: Res<VisualState>,
     cameras: Query<&Camera, With<IsDefaultUiCamera>>,
     mut panels: Query<&mut Node, With<StatusPanel>>,
-    mut auxiliary: Query<(&UiText, &mut Node), Without<StatusPanel>>,
+    mut auxiliary: Query<(&UiText, &mut Node, &mut Text), Without<StatusPanel>>,
     mut cards: Query<
         &mut Node,
         (
@@ -480,7 +484,25 @@ fn layout_hud(
             node.display = display;
         }
     }
-    for (kind, mut node) in &mut auxiliary {
+    for (kind, mut node, mut text) in &mut auxiliary {
+        if let UiText::Player(player) = *kind {
+            node.bottom = percent(if viewport.x < 600.0 { 22.0 } else { 18.75 });
+            let label = if viewport.x < 600.0 {
+                format!("P{}", player + 1)
+            } else {
+                state
+                    .locale
+                    .text(if player == 0 {
+                        "hud.player_one"
+                    } else {
+                        "hud.player_two"
+                    })
+                    .into()
+            };
+            if text.0 != label {
+                text.0 = label;
+            }
+        }
         if matches!(kind, UiText::Clock) {
             let display = if state.menu.is_some() {
                 Display::None
@@ -731,13 +753,8 @@ fn update_hud(
                 ],
             )
             .render(locale),
-            UiText::Player(player) => locale
-                .text(if player == 0 {
-                    "hud.player_one"
-                } else {
-                    "hud.player_two"
-                })
-                .into(),
+            // layout_hud owns viewport-aware player labels
+            UiText::Player(_) => text.0.clone(),
             UiText::Device(player) => state
                 .menu
                 .as_ref()
@@ -1303,7 +1320,11 @@ mod tests {
                 .into();
         for locale in [Locale::EnUs, Locale::De] {
             app.world_mut().resource_mut::<VisualState>().locale = locale;
-            for size in [UVec2::new(640, 480), UVec2::new(1280, 800)] {
+            for size in [
+                UVec2::new(400, 300),
+                UVec2::new(640, 480),
+                UVec2::new(1280, 800),
+            ] {
                 app.world_mut()
                     .get_mut::<Camera>(camera)
                     .unwrap()
@@ -1329,11 +1350,17 @@ mod tests {
                         let UiText::Player(player) = *kind else {
                             unreachable!()
                         };
-                        let expected = locale.text(if player == 0 {
-                            "hud.player_one"
+                        let expected = if size.x < 600 {
+                            format!("P{}", player + 1)
                         } else {
-                            "hud.player_two"
-                        });
+                            locale
+                                .text(if player == 0 {
+                                    "hud.player_one"
+                                } else {
+                                    "hud.player_two"
+                                })
+                                .into()
+                        };
                         assert_eq!(text.0, expected);
                         assert!(!layout.glyphs.is_empty());
                         assert!(layout.size.x <= node.size.x + 1.0, "{locale:?} {size:?}");
@@ -1375,7 +1402,10 @@ mod tests {
                     let expected = size.x as f32 * if player == 0 { 0.42 } else { 0.58 };
                     assert!((rect.center().x - expected).abs() < 1.0);
                     assert!(rect.min.y > size.y as f32 * 2.0 / 3.0);
-                    assert!(rect.max.y < status.min.y);
+                    assert!(
+                        rect.max.y < status.min.y,
+                        "{locale:?} {size:?}: label {rect:?}, status {status:?}"
+                    );
                 }
             }
         }

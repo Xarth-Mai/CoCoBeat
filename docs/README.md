@@ -16,6 +16,7 @@
 | [native-beat-candidate.md](native-beat-candidate.md) | 显式原生 beat / downbeat 候选、固定资源及未准入边界 |
 | [native-structure-features.md](native-structure-features.md) | 最终音频的谱形变化、相似邻居、真实 EOF 与未准入音乐语义 |
 | [network-sessions.md](network-sessions.md) | 邀请、四对象接收与 Ready、QUIC 可靠历史、断线前缀与应用完成确认 |
+| [visual-polish.md](visual-polish.md) | 原创角色、循环街区、原生光影与落点反馈的画面及验证 |
 | [testing.md](testing.md) | 自动检查、硬件实验和真人测试各自证明什么 |
 | [canonical-audio-probe.md](canonical-audio-probe.md) | 编码候选的失败、适配与有限回读证据，以及复现入口 |
 | [build-release.md](build-release.md) | 性能优化发行参数、轻量 CI 与四种目标的手动构建 |

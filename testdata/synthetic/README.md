@@ -17,3 +17,7 @@ summary 的 p50/p95/p99 为绝对映射误差的 nearest-rank 分位数，单位
 此命令会在默认音频设备实际发声并等待指定时长，不由测试或其他 lab 命令自动执行；输出 `expected-clicks.csv`、`cursor.csv`、`metadata.txt`，预期点击位置与软件游标观察用于后续硬件实验对照
 
 软件游标不是 DAC 输出时间，报告保留 `NOT MEASURED` 的物理延迟状态；需要另行采集 loopback 或外部设备信号才能测量真实输出偏移，当前尚未运行此硬件探针
+
+## 雨夜表现软件观察
+
+[2026-10-09 表现观察](visual-polish-observations-20261009.json)绑定七份生产源码、冻结 debug / release、196 项运行时测试、13 张 GPU 图、240 帧连续画面和一个实际 Kira 原生性能样本，软件与限定画面验收不代表商业质量、物理输入或显示器性能验收

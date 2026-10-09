@@ -1,5 +1,7 @@
 # 当前执行目标
 
+2026-10-09 · 当前表现里程碑已交付角色、街区、光影和特效实现；196 项运行时测试、13 张最终 GPU 图与 240 帧 / 19 个关键帧检查通过限定验收，商业完成度继续作为打磨目标，下一步为独立段落布景、转场与长曲重复控制，见[表现记录](../docs/visual-polish.md)
+
 2026-10-09 · 本轮自动软件目标交付结束，等待用户真实验收；本地 / 曲库导入 / 内容编辑与候选分析 / 舞台 / Replay / 联网已有实现和相应软件证据，当前收尾审计未发现新的明确实现缺口。固定来源四目标、实际 ordinary 校正与 AwaitLive窄场景分别按原记录保留，75ms严格FAIL与旧音乐质量FAIL不改写；完整V1、完整Phase故障矩阵、最新Rust四平台、tag Release、干净机、物理输入 / DAC、双PC及母语 / 音乐人验收继续独立保留，下方为历史里程碑及当时边界
 
 最终功能提交 `447b30c` 的 [CI 37891544958](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37891544958)实际通过；本机 net53 / runtime186、六项必要检查、两个真实 Kira 进程及独立六 proof 核验见[AwaitLive观察](../testdata/synthetic/source-phase-await-live-native-observations-20261009.json)。四平台优化包只绑定 `02360df`，此后 QA Rust 未宣称四目标通过；本次收尾只更新文档，不改实现

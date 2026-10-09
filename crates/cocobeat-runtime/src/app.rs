@@ -2281,6 +2281,8 @@ fn update_game(
     visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
     visual.running = game.phase == Phase::Running;
+    visual.ready = game.phase == Phase::Ready;
+    visual.paused = matches!(game.phase, Phase::Paused | Phase::Recovering);
     visual.quality = settings.values.quality;
     let locale = settings.values.locale;
     visual.locale = locale;
@@ -3068,6 +3070,8 @@ fn visual_smoke_for_content(
                     visual.song_seconds = game.session.current.as_seconds_f64();
                     visual.duration_seconds = game.content.end.as_seconds_f64();
                     visual.transitioning = matches!(game.phase, Phase::Starting | Phase::Pausing);
+                    visual.ready = game.phase == Phase::Ready;
+                    visual.paused = matches!(game.phase, Phase::Paused | Phase::Recovering);
                     visual.menu = game_menu(&game, &mut input, &settings);
                 },
             );
@@ -3098,6 +3102,7 @@ fn visual_smoke_for_content(
     );
     *app.world_mut().resource_mut::<VisualState>() = if startup {
         VisualState {
+            ready: true,
             duration_seconds: content.end.as_seconds_f64(),
             status:
                 "Ready | native startup and menu eye loop\nAudio and physical input acceptance NOT RUN"
@@ -3121,7 +3126,7 @@ fn visual_smoke_for_content(
             status:
                 "VISUAL SMOKE | deterministic preview\nAudio, input and hardware acceptance NOT RUN"
                     .into(),
-            running: false,
+            running: true,
             ..default()
         }
     };
