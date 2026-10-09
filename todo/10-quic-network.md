@@ -46,3 +46,5 @@
 2026-10-09 · protocol / ALPN v8 的原音源相位检查已接生产，net42 / runtime179 普通测试、三个真实 QUIC 窄测、Clippy / 格式 / 边界和当前 Game / Lab 构建通过；Gamescope 原生双方各完成两轮实际 Kira 原出版检查，完整差值均[-514,514]帧，原句柄 / source floors / 可靠 FIFO 和终局846条事实、5个事件及权威 Replay 保持。原 Xvfb 无 DRI3 的呈现失败保留；未触发实际校正，多轮漂移、active Phase 续接重绑及设备 /双机继续，见[相位观察](../testdata/synthetic/source-phase-maintenance-observations-20261009.json)
 
 2026-10-09 · 当前 protocol / ALPN v9：net52 / runtime185与六项本机检查、四个真实 QUIC 窄测函数 / 五类 typed read 控制和四个坏历史拒绝通过；最新六模型实际成功，88份 proof /450个 guards 重算保持，原失败链保留。另两项当前 Kira 普通检查与同源普通恢复自然完成，833 /837条事实和权威一致；Kira 强制漂移 / active阶段重绑、AwaitLive、DAC /双机继续未验，见[续接观察](../testdata/synthetic/source-phase-reconnect-observations-20261009.json)
+
+2026-10-09 · [Phase写出窄补](../testdata/synthetic/source-phase-control-write-observations-20261009.json)接通既有typed错误，net52 / runtime186、六项必要检查与两个真实QUIC部分写入控制通过；整帧预算保守消费、原状态 /事件次序和已接受Fact /Replay保持，非法domain /预算仍终态。完整认证续接、其他写入边缘与实际Kira scheduled /AwaitLive继续独立验收

@@ -973,20 +973,22 @@ pub(crate) async fn send_phase_control(
     stream: &mut SendStream,
     budget: &mut PhaseBudget,
     message: &Control,
-) -> Result<(), String> {
+) -> Result<(), LiveIoError> {
     message.validate()?;
     let size = serde_json::to_vec(message)
-        .map_err(|_| "encode phase control failed")?
+        .map_err(|_| LiveIoError::Invalid("encode phase control failed".into()))?
         .len();
     match message {
         Control::Phase { round, message, .. } => {
             budget.reserve(*round, message, 4 + size as u64)?
         }
-        _ => return Err("non-phase control passed to phase sender".into()),
+        _ => {
+            return Err(LiveIoError::Invalid(
+                "non-phase control passed to phase sender".into(),
+            ));
+        }
     }
-    send_frame(stream, None, message)
-        .await
-        .map_err(|error| error.to_string())
+    send_frame(stream, None, message).await
 }
 
 async fn send_frame<T: Serialize>(
@@ -1793,5 +1795,57 @@ mod tests {
             .validate()
             .is_err()
         );
+    }
+    #[test]
+    #[ignore = "explicit real partial phase-write loopback required"]
+    fn partial_phase_write_retains_transport_and_full_budget_without_rollback() {
+        crate::session::runtime().unwrap().block_on(async {
+            tokio::time::timeout(std::time::Duration::from_secs(15), async {
+                for code in [Some(0x4343_u32), Some(7), None] {
+                    let (host_endpoint, invitation) = crate::listen("127.0.0.1:0".parse().unwrap()).unwrap();
+                    let mut owned_endpoint = None;
+                    let guest = crate::connect_owned(&invitation, &mut owned_endpoint);
+                    let host = async { host_endpoint.accept().await.unwrap().await.unwrap() };
+                    let (guest, host_connection) = tokio::join!(guest, host);
+                    let (guest_endpoint, guest_connection) = guest.unwrap();
+                    let (mut guest_send, mut guest_recv) = guest_connection.open_bi().await.unwrap();
+                    guest_send.write_all(&[0]).await.unwrap();
+                    let (mut host_send, _host_recv) = host_connection.accept_bi().await.unwrap();
+                    host_connection.set_send_window(1); // QA flow control only, not production transport settings
+                    let message = Control::Phase { epoch: 9, round: 1, attempt: 0, message: PhaseControl::Armed {} };
+                    let bytes = 4 + serde_json::to_vec(&message).unwrap().len() as u64;
+                    let mut budget = PhaseBudget::default();
+                    let writing = send_phase_control(&mut host_send, &mut budget, &message);
+                    let closing = async {
+                        let mut first = [0];
+                        guest_recv.read_exact(&mut first).await.unwrap();
+                        if let Some(code) = code {
+                            guest_connection.close(code.into(), b"QA close after actual first header byte");
+                        } else {
+                            guest_recv.stop(7_u32.into()).unwrap();
+                        }
+                        first
+                    };
+                    let (result, first) = tokio::join!(writing, closing);
+                    assert_eq!(first, [0]);
+                    if let Some(code) = code {
+                        assert!(matches!(result, Err(LiveIoError::Transport(quinn::ConnectionError::ApplicationClosed(close))) if close.error_code.into_inner() == u64::from(code)));
+                    } else {
+                        assert!(matches!(result, Err(LiveIoError::Invalid(_))));
+                    }
+                    assert_eq!((budget.messages, budget.round, budget.round_messages, budget.bytes), (1, 1, 1, bytes));
+                    assert!(!budget.source && !budget.ended);
+                    // Validation/budget failures stay Invalid after the actual failed stream write
+                    let invalid = Control::Phase { epoch: 9, round: 0, attempt: 0, message: PhaseControl::Pause {} };
+                    assert!(matches!(send_phase_control(&mut host_send, &mut budget, &invalid).await, Err(LiveIoError::Invalid(_))));
+                    assert_eq!((budget.messages, budget.bytes), (1, bytes));
+                    for _ in 0..15 { budget.reserve(1, &PhaseControl::Armed {}, bytes).unwrap(); }
+                    assert!(matches!(send_phase_control(&mut host_send, &mut budget, &message).await, Err(LiveIoError::Invalid(error)) if error == "phase per-round message budget exceeded"));
+                    assert_eq!((budget.messages, budget.round_messages, budget.bytes), (16, 16, bytes * 16));
+                    host_endpoint.close(0_u32.into(), b"partial phase-write QA complete");
+                    guest_endpoint.close(0_u32.into(), b"partial phase-write QA complete");
+                }
+            }).await.expect("partial phase write has a fixed fifteen-second QA budget");
+        });
     }
 }

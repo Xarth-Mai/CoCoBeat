@@ -139,7 +139,11 @@ RecoveryReady(Some) 保持输入屏蔽，实际 PhaseRebound 后以新鲜原 pub
 
 另两项当前 Linux 双游戏 Kira 普通检查 / 同源普通维护恢复自然完成，各833 /837条事实、5个事件及双方相同权威 Replay；它们没有覆盖 Kira 强制漂移或 active Phase 阶段重绑。整数模型以 QA 取消保存部分前缀，不是自然 EOF；原队列、编译、fixture 和 reviewer FAIL 独立保留，历史 TLS failure 的实际 winning branch UNKNOWN
 
-Phase read 保留既有 typed 传输分类，坏 JSON / 预算 / 不完整 EOF 保持终态；其他 send/control String 路径未扩展，不能推断所有传输故障均可恢复。AwaitLive / last-sealed 只有 metadata unit，真实 owned QUIC 边缘、物理设备、DAC / 双机继续 NOT_RUN，原 v8 观察仅绑定其原版本
+Phase read与Phase control / Frozen FIFO marker写出保留既有typed传输分类，坏JSON / domain /预算 /不完整EOF保持终态；校验和原绝对期限不变，写前已花完整预算不回滚或重发。Preparing、通用ControlIo、初始认证、attempt1恢复gate和Finish的String终态路径未扩展，不能推断所有传输故障均可恢复
+
+[写出软件观察](../testdata/synthetic/source-phase-control-write-observations-20261009.json)记录net52 / runtime186与六项必要检查，以及两个真实QUIC窄测：实际首个长度头byte后分别请求恢复close、普通close和STOP_SENDING，原typed分类保留；Live失败不发Ready /sealed，Frozen标记失败保留已接受的两个Fact、完整Replay和原序号 /计数，marker仍缺失。QA流控只用于fixture，没有改生产传输配置，这些控制未执行完整认证续接或实际Kira
+
+AwaitLive / last-sealed只有metadata unit，真实owned QUIC边缘、物理设备、DAC /双机继续NOT_RUN，原v8观察仅绑定其原版本
 
 ## 故障后的新轮次软件验证
 

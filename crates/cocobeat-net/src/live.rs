@@ -1061,7 +1061,7 @@ async fn phase_send(
     round: u16,
     deadline: Instant,
     message: wire::PhaseControl,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     tokio::time::timeout_at(
         deadline,
         wire::send_phase_control(
@@ -1077,6 +1077,7 @@ async fn phase_send(
     )
     .await
     .map_err(|_| "phase control write exceeded its fixed deadline")?
+    .map_err(ExchangeError::from)
 }
 
 fn new_phase_round(
@@ -1120,7 +1121,7 @@ async fn phase_clock_progress(
     events: &std_mpsc::SyncSender<LiveEvent>,
     phase: &mut PhaseState,
     maintained: &mut sync::ClockMaintenance,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     if session.ended.iter().any(|ended| *ended) || phase.peer_end_count.is_some() {
         return Ok(());
     }
@@ -1262,7 +1263,7 @@ async fn phase_try_gate(
     control: &mut ControlIo,
     phase: &mut PhaseState,
     maintained: &mut sync::ClockMaintenance,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     if session.player != PlayerId::P1 {
         return Ok(());
     }
@@ -1370,7 +1371,7 @@ async fn phase_try_schedule(
     control: &mut ControlIo,
     phase: &mut PhaseState,
     maintained: &mut sync::ClockMaintenance,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     if session.player != PlayerId::P1 {
         return Ok(());
     }
@@ -1523,7 +1524,7 @@ async fn phase_try_confirm(
     session: &Session,
     control: &mut ControlIo,
     phase: &mut PhaseState,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     let Some(active) = phase.active.as_mut() else {
         return Ok(());
     };
@@ -1622,7 +1623,7 @@ async fn phase_command(
     phase: &mut PhaseState,
     maintained: &mut sync::ClockMaintenance,
     command: LiveCommand,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     let (control, input_send, input_written) = io;
     let player = session.player.index();
     match command {
@@ -1755,8 +1756,7 @@ async fn phase_command(
                 ),
             )
             .await
-            .map_err(|_| "phase FIFO marker write exceeded the original deadline")?
-            .map_err(|error| error.to_string())?;
+            .map_err(|_| "phase FIFO marker write exceeded the original deadline")??;
             phase.active.as_mut().unwrap().markers[player] = Some(count);
             phase_send(
                 session,
@@ -1818,7 +1818,7 @@ async fn phase_control(
     maintained: &mut sync::ClockMaintenance,
     mode: &mut ExchangeControl<'_>,
     envelope: Control,
-) -> Result<(), String> {
+) -> Result<(), ExchangeError> {
     let Control::Phase {
         epoch,
         round,
@@ -5661,5 +5661,133 @@ mod tests {
             )
             .is_err()
         );
+    }
+    #[test]
+    #[ignore = "explicit real phase/FIFO write loopback required"]
+    fn partial_phase_writes_preserve_live_gate_and_frozen_fifo_before_recovery() {
+        session::runtime().unwrap().block_on(async {
+            tokio::time::timeout(Duration::from_secs(15), async {
+                for case in ["ordinary-close", "invalid-domain", "live", "frozen-marker"] {
+                    let (host_endpoint, invitation) = listen("127.0.0.1:0".parse().unwrap()).unwrap();
+                    let mut owned_endpoint = None;
+                    let guest = connect_owned(&invitation, &mut owned_endpoint);
+                    let host = async { host_endpoint.accept().await.unwrap().await.unwrap() };
+                    let (guest, host_connection) = tokio::join!(guest, host);
+                    let (guest_endpoint, guest_connection) = guest.unwrap();
+                    let (mut opening, mut control_receiving) = guest_connection.open_bi().await.unwrap();
+                    opening.write_all(&[0]).await.unwrap();
+                    let mut control = ControlIo::new(host_connection.accept_bi().await.unwrap());
+                    let (mut input_opening, mut input_receiving) = guest_connection.open_bi().await.unwrap();
+                    input_opening.write_all(&[0]).await.unwrap();
+                    let (mut input_send, _input_recv) = host_connection.accept_bi().await.unwrap();
+                    let mut state = fixture();
+                    state.origin = Instant::now() - Duration::from_secs(2);
+                    let own_hit = hit(9, PlayerId::P1, 0, 10_000);
+                    let own_watermark = DuoInput::Watermark { epoch: state.epoch, player: state.player, through: SongTime::from_frames(10_000) };
+                    ingest_local(&mut state, own_hit).unwrap();
+                    ingest_local(&mut state, own_watermark).unwrap();
+                    let prefix = state.replay.encode().unwrap();
+                    let counts = state.counts;
+                    let sequences = state.next_seq;
+                    let mut input_written = 0;
+                    let prior_facts = Input::Facts { epoch: 9, facts: state.replay.facts().iter().copied().map(Fact::from_input).collect() };
+                    let sending_prior = wire::send_live_input(&mut input_send, &mut input_written, &prior_facts);
+                    let reading_prior = async { wire::recv_live_input(&mut input_receiving, &mut 0).await.unwrap() };
+                    let (prior_result, actual_prior) = tokio::join!(sending_prior, reading_prior);
+                    prior_result.unwrap();
+                    assert_eq!(actual_prior, prior_facts); // Real original Fact FIFO is received before a partial marker
+                    let prior_input_bytes = input_written;
+                    let anchor = wire::PhaseAnchor { clock_round: 1, guest_send_ns: 500_000_000, host_receive_ns: 501_000_000, host_send_ns: 502_000_000, guest_receive_ns: 503_000_000 };
+                    let point = 1_000_000_000;
+                    let deadline = sync::local_instant(state.origin, 30_500_000_000).unwrap();
+                    let mut active = new_phase_round(1, anchor, point, deadline);
+                    active.host_deadline_ns = 30_500_000_000;
+                    let previous = [wire::PhasePublication { sequence: 1, position_seconds_bits: (9000.0_f64 / 48_000.0).to_bits(), publication_before_ns: 600_000_000, publication_after_ns: 600_001_000 }; 2];
+                    let mut phase = PhaseState { round: 1, sources: [Some((11, 21)), Some((12, 22))], previous: previous.map(Some), ..Default::default() };
+                    phase.rounds.begin(1, state.epoch, point, 500_000_000).unwrap();
+                    if case == "live" {
+                        // Declared pre-existing metadata proof, not Kira or an actual Playing/Source acknowledgment
+                        let evidence = std::array::from_fn(|index| wire::PhaseEvidence {
+                            generation: phase.sources[index].unwrap().0,
+                            source_id: phase.sources[index].unwrap().1,
+                            collected_at_ns: 1_120_000_000,
+                            publications: [(10, 10_000, 900_000_000), (11, 11_000, 1_100_000_000)].map(|(sequence, frame, at)| wire::PhasePublication {
+                                sequence, position_seconds_bits: (frame as f64 / 48_000.0).to_bits(), publication_before_ns: at, publication_after_ns: at + 1_000,
+                            }).to_vec(),
+                        });
+                        let mut clock = crate::clock::ClockSync::new(state.epoch, Default::default()).unwrap();
+                        clock.observe(anchor.exchange(9)).unwrap();
+                        let proof = sync::source_phase_bounds(&mut clock, anchor.exchange(9), &evidence, sync::PhaseWindow {
+                            epoch: state.epoch, round: 1, verification: false, attempt: 0, reconnecting: false,
+                            sources: [(11, 21), (12, 22)], previous: previous.map(Some), end: state.prepared.end,
+                            host_point_ns: point, host_now_ns: 1_130_000_000,
+                        }).unwrap();
+                        assert!(proof.within_guard());
+                        active.bounds = Some(proof);
+                        active.step = PhaseStep::GateAck;
+                    } else { active.step = PhaseStep::Pausing; }
+                    phase.active = Some(active);
+                    let (events, received) = std_mpsc::sync_channel(EVENT_CAPACITY);
+                    let mut maintained = sync::ClockMaintenance::new(state.epoch, state.player, 0, sync::now_ns(state.origin).unwrap()).unwrap();
+                    let mut mode = ExchangeControl { control: None, phase_read: None, gate: None, signals: None, deadline, running_deadline: deadline, recovering: false };
+                    host_connection.set_send_window(1); // Only this declared QA connection
+                    if case == "ordinary-close" || case == "invalid-domain" {
+                        guest_connection.close(7_u32.into(), b"ordinary QA close");
+                        assert!(matches!(host_connection.closed().await, quinn::ConnectionError::ApplicationClosed(close) if close.error_code.into_inner() == 7));
+                        let result = phase_send(&state, &mut control, &mut phase, if case == "invalid-domain" { 0 } else { 1 }, deadline, wire::PhaseControl::Pause {}).await;
+                        assert!(matches!(result, Err(ExchangeError::Terminal(_))));
+                    } else {
+                        let result = if case == "live" {
+                            let writing = phase_control(&mut state, &mut control, &events, &mut phase, &mut maintained, &mut mode, Control::Phase { epoch: 9, round: 1, attempt: 0, message: wire::PhaseControl::GateAck { anchor, host_point_ns: point, verification: false } });
+                            let closing = async {
+                                let mut first = [0];
+                                control_receiving.read_exact(&mut first).await.unwrap();
+                                guest_connection.close(RECOVERY_REQUESTED.into(), b"QA partial Live write");
+                                first
+                            };
+                            let (result, first) = tokio::join!(writing, closing);
+                            assert_eq!(first, [0]);
+                            result
+                        } else {
+                            let now = std::time::Instant::now();
+                            let snapshot = PhaseFrozen { replay: state.replay.clone(), paused_frame: SongTime::from_frames(10_000), source_generation: 11, source_id: 21, paused_at: now, publication: PhasePublication { sequence: 20, position_seconds_bits: (10000.0_f64 / 48_000.0).to_bits(), published_between: [now; 2] } };
+                            let expected_bytes = 4 + serde_json::to_vec(&Input::PhasePaused { epoch: 9, round: 1, attempt: 0, fact_count: counts[0] as u64 }).unwrap().len() as u64;
+                            let writing = phase_command(&state, (&mut control, &mut input_send, &mut input_written), &mut phase, &mut maintained, LiveCommand::PhaseFrozen { epoch: state.epoch, round: 1, attempt: 0, snapshot: Box::new(snapshot) });
+                            let closing = async {
+                                let mut first = [0];
+                                input_receiving.read_exact(&mut first).await.unwrap();
+                                guest_connection.close(RECOVERY_REQUESTED.into(), b"QA partial FIFO pause marker");
+                                first
+                            };
+                            let (result, first) = tokio::join!(writing, closing);
+                            assert_eq!(first, [0]);
+                            assert_eq!(input_written, prior_input_bytes + expected_bytes);
+                            result
+                        };
+                        assert!(matches!(result, Err(ExchangeError::Recoverable("authenticated peer requested connection maintenance"))));
+                    }
+                    assert_eq!(state.replay.encode().unwrap(), prefix);
+                    assert_eq!(state.counts, counts);
+                    assert_eq!(state.next_seq, sequences);
+                    assert_eq!(phase.previous, previous.map(Some));
+                    assert_eq!(phase.corrections, 0);
+                    assert_eq!(phase.attempt, 0);
+                    assert_eq!(phase.round, 1);
+                    assert!(phase.sealed.is_none());
+                    assert_eq!(phase.active.as_ref().unwrap().deadline, deadline);
+                    assert!(matches!(received.try_recv(), Err(std_mpsc::TryRecvError::Empty)), "write failure must not emit Ready/phase_finish");
+                    if case == "live" { assert!(matches!(phase.active.as_ref().unwrap().step, PhaseStep::GateAck)); }
+                    if case == "frozen-marker" {
+                        let active = phase.active.as_ref().unwrap();
+                        assert!(active.own_frozen.is_some() && active.frozen[0].is_some());
+                        assert_eq!(active.markers, [None; 2]); // No successful FIFO marker and no retransmit/rollback
+                        let count = counts[0] as u64;
+                        assert_eq!(active.frozen[0].unwrap().2, count);
+                    }
+                    host_endpoint.close(0_u32.into(), b"phase/FIFO write QA complete");
+                    guest_endpoint.close(0_u32.into(), b"phase/FIFO write QA complete");
+                }
+            }).await.expect("causal phase/FIFO write controls have a fixed fifteen-second QA budget");
+        });
     }
 }
