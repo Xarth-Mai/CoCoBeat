@@ -1,0 +1,22 @@
+[
+  {"world":"Neon","sky":[0.028,0.040,0.100],"horizon":[0.24,0.08,0.28],"ground":[0.025,0.035,0.07],"sections":[
+    {"name":"Rain market","landmarks":[["Pagoda",[-8,0,-7],1.2],["Pagoda",[8,0,-20],1.5],["LanternGate",[-6,0,-27],1.3],["LanternGate",[6,0,-3],0.85],["Moon",[-14,12,-66],3.0]]},
+    {"name":"Sky railway","landmarks":[["Railway",[-9,0,-13],1.3],["Railway",[10,0,-29],1.6],["Train",[-9,6,-14],1.0],["LanternGate",[6,0,-8],1.1],["Moon",[16,16,-66],3.0]]},
+    {"name":"Rooftop stage","landmarks":[["Speaker",[-7,0,-6],1.15],["Speaker",[8,0,-14],1.5],["Halo",[0,12,-42],5.0],["Pagoda",[-14,0,-32],1.2],["Pagoda",[15,0,-38],1.7]]}
+  ]},
+  {"world":"Forest","sky":[0.009,0.045,0.055],"horizon":[0.10,0.28,0.25],"ground":[0.018,0.072,0.057],"sections":[
+    {"name":"Luminous woodland","landmarks":[["Tree",[-8,0,-8],1.3],["Tree",[9,0,-20],1.7],["Mushrooms",[6,0,-5],1.1],["Mushrooms",[-7,0,-25],1.6],["Moon",[15,17,-64],2.0]]},
+    {"name":"Wet stream","landmarks":[["Stream",[-8,0,-16],1.8],["Stream",[9,0,-26],1.4],["Tree",[-11,0,-32],1.2],["Mushrooms",[6,0,-8],1.2],["Crystal",[-6,0,-4],0.7]]},
+    {"name":"Giant-tree canopy","landmarks":[["Tree",[-11,-1,-16],2.3],["Tree",[13,-1,-32],2.7],["Vines",[-7,4,-5],1.2],["Vines",[8,6,-24],1.5],["Mushrooms",[-6,0,-29],1.0]]}
+  ]},
+  {"world":"Candy","sky":[0.12,0.045,0.18],"horizon":[0.40,0.15,0.27],"ground":[0.15,0.055,0.12],"sections":[
+    {"name":"Toy street","landmarks":[["ToyHouse",[-8,0,-10],1.3],["ToyHouse",[9,0,-25],1.6],["Lollipop",[6,0,-4],1.0],["Lollipop",[-7,0,-28],1.3],["Balloons",[12,4,-39],1.0]]},
+    {"name":"Carousel garden","landmarks":[["Wheel",[-10,5,-18],1.5],["Carousel",[10,0,-25],1.6],["Lollipop",[-6,0,-3],1.1],["ToyHouse",[7,0,-8],0.8],["Balloons",[14,7,-42],1.4]]},
+    {"name":"Balloon celebration","landmarks":[["Balloons",[-8,3,-10],1.4],["Balloons",[9,5,-20],1.7],["Balloons",[-14,10,-39],1.8],["Wheel",[16,5,-44],1.5],["Lollipop",[6,0,-5],1.0]]}
+  ]},
+  {"world":"StarSea","sky":[0.012,0.013,0.065],"horizon":[0.12,0.085,0.30],"ground":[0.02,0.021,0.085],"sections":[
+    {"name":"Crystal canyon","landmarks":[["Crystal",[-8,0,-9],1.7],["Crystal",[9,0,-25],2.1],["Crystal",[6,0,-4],0.8],["Island",[-13,3,-38],1.4],["Moon",[15,14,-66],2.4]]},
+    {"name":"Floating islands","landmarks":[["Island",[-9,3,-11],1.6],["Island",[11,5,-26],2.0],["Island",[-17,8,-45],2.1],["Crystal",[6,0,-6],0.9],["Halo",[13,13,-60],3.4]]},
+    {"name":"Star-ring theatre","landmarks":[["Halo",[0,13,-38],6.0],["Island",[-10,1,-13],1.6],["Island",[11,2,-28],1.9],["Crystal",[-6,0,-5],1.0],["Crystal",[7,0,-14],1.3]]}
+  ]}
+]

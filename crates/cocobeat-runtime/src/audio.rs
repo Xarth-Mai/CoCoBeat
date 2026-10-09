@@ -1,7 +1,7 @@
 //! Kira playback cursors describe rendered audio, not measured speaker output
 
 use std::{
-    f32::consts::TAU,
+    collections::VecDeque,
     sync::{Arc, Mutex, TryLockError},
     time::{Duration, Instant},
 };
@@ -22,7 +22,12 @@ use kira::{
     },
 };
 
-use crate::{brand_audio, brand_intro::BrandImpact, dev_song};
+use crate::{
+    brand_audio,
+    brand_intro::BrandImpact,
+    dev_song,
+    feedback_audio::{FeedbackContext, FeedbackPalette, MAX_FEEDBACK_VOICES},
+};
 
 #[path = "audio_observation.rs"]
 mod observation;
@@ -36,7 +41,11 @@ pub struct AudioOutput {
     music: Option<Arc<Mutex<ControlledSound>>>,
     observations: AudioObservations,
     music_source: Option<SourceReader>,
-    hits: [Option<StaticSoundData>; 2],
+    palette: FeedbackPalette,
+    feedback_handles: VecDeque<StaticSoundHandle>,
+    music_volume: u8,
+    music_headroom: f32,
+    feedback_volume: u8,
     brand_sounds: [StaticSoundData; 3],
     brand_handles: [Option<ControlledSound>; 3],
     discarded_errors: u64,
@@ -74,13 +83,18 @@ impl AudioOutput {
             ..Default::default()
         })
         .map_err(|error| format!("Cannot initialize audio output: {error}"))?;
+        let music_headroom = song.as_ref().map_or(0.4, music_headroom);
         Ok(Self {
             manager,
             song,
             music: None,
             observations,
             music_source: None,
-            hits: [None, None],
+            palette: FeedbackPalette::new(),
+            feedback_handles: VecDeque::new(),
+            music_volume: 100,
+            music_headroom,
+            feedback_volume: 80,
             brand_sounds: [BrandImpact::Co1, BrandImpact::Co2, BrandImpact::Beat]
                 .map(brand_audio::sound),
             brand_handles: [None, None, None],
@@ -113,7 +127,10 @@ impl AudioOutput {
     }
 
     fn play_music(&mut self, song: StaticSoundData) -> Result<(), kira::PlaySoundError<()>> {
-        let (handle, source) = self.manager.play(self.observations.sound(song))?;
+        let (handle, source) = self.manager.play(
+            self.observations
+                .sound(song.volume(music_decibels(self.music_volume, self.music_headroom))),
+        )?;
         self.music = Some(Arc::new(Mutex::new(ControlledSound::new(handle))));
         self.music_source = Some(source);
         Ok(())
@@ -122,6 +139,7 @@ impl AudioOutput {
     /// Replacing decoded content cancels pending playback before changing the song
     pub fn replace_song(&mut self, song: StaticSoundData) {
         self.stop();
+        self.music_headroom = music_headroom(&song);
         self.song = Some(song);
     }
 
@@ -143,6 +161,7 @@ impl AudioOutput {
 
     /// Records the final frame intent; `reconcile_playback` enqueues it after control processing
     pub fn pause(&mut self) {
+        self.stop_feedback();
         if let Some(music) = &self.music
             && let Ok(mut music) = music.lock()
         {
@@ -176,6 +195,7 @@ impl AudioOutput {
 
     /// Enqueues a stop and discards the handle; the audio callback applies it asynchronously
     pub fn stop(&mut self) {
+        reset_feedback(&mut self.palette, &mut self.feedback_handles);
         self.music_source = None;
         if let Some(music) = self.music.take() {
             // Poisoned state can only be used to enqueue terminal cleanup
@@ -284,18 +304,58 @@ impl AudioOutput {
         Some(self.music.as_ref()?.lock().ok()?.state())
     }
 
-    pub fn hit(&mut self, player: PlayerId) -> Result<(), String> {
-        let sound = self.hits[player.index()].get_or_insert_with(|| hit_sound(player));
-        self.manager
-            .play(sound.clone())
-            .map(|_| ())
-            .map_err(|error| format!("Cannot play local feedback: {error}"))
+    pub(crate) fn set_mix(&mut self, music: u8, feedback: u8) {
+        let music = music.min(100);
+        if self.music_volume != music {
+            self.music_volume = music;
+            if let Some(handle) = &self.music
+                && let Ok(mut sound) = handle.lock()
+            {
+                sound
+                    .handle
+                    .set_volume(music_decibels(music, self.music_headroom), immediate());
+            }
+        }
+        self.feedback_volume = feedback.min(100);
     }
 
-    /// The two player tones form a shared open fifth when core confirms synchronization
-    pub fn sync(&mut self) -> Result<(), String> {
-        self.hit(PlayerId::P1)?;
-        self.hit(PlayerId::P2)
+    fn stop_feedback(&mut self) {
+        stop_feedback(&mut self.feedback_handles);
+    }
+
+    pub(crate) fn play_prepared(&mut self, sounds: Vec<StaticSoundData>) -> Result<(), String> {
+        play_feedback(
+            &mut self.manager,
+            &mut self.feedback_handles,
+            sounds,
+            self.feedback_volume,
+        )
+    }
+
+    pub(crate) fn hit(&mut self, player: PlayerId, context: FeedbackContext) -> Result<(), String> {
+        let sounds = self.prepare_hit(player, context);
+        self.play_prepared(sounds)
+    }
+
+    pub(crate) fn sync(&mut self, context: FeedbackContext, precise: bool) -> Result<(), String> {
+        let sounds = self.prepare_sync(context, precise);
+        self.play_prepared(sounds)
+    }
+
+    pub(crate) fn prepare_hit(
+        &mut self,
+        player: PlayerId,
+        context: FeedbackContext,
+    ) -> Vec<StaticSoundData> {
+        self.palette.hit(player, context)
+    }
+
+    pub(crate) fn prepare_sync(
+        &mut self,
+        context: FeedbackContext,
+        precise: bool,
+    ) -> Vec<StaticSoundData> {
+        self.palette.duo(context, precise)
     }
 
     /// Every backend error invalidates the caller's timing calibration, including recovered errors
@@ -522,24 +582,58 @@ fn probe_sample(frame: u32) -> Frame {
     Frame::from_mono(polarity * (480 - offset) as f32 / 480.0 * 0.16)
 }
 
-// Original short feedback tones are CC0-1.0; generator source remains MPL-2.0
-fn hit_sound(player: PlayerId) -> StaticSoundData {
-    let (frequency, harmonic, pan) = match player {
-        PlayerId::P1 => (523.25, 2.0, -0.65),
-        PlayerId::P2 => (783.99, 3.0, 0.65),
-    };
-    let length = dev_song::SAMPLE_RATE as usize * 80 / 1_000;
-    let frames = (0..length)
-        .map(|index| {
-            let phase = TAU * frequency * index as f32 / dev_song::SAMPLE_RATE as f32;
-            let attack = (index as f32 / 120.0).min(1.0);
-            let decay = (length - 1 - index) as f32 / length as f32;
-            Frame::from_mono(
-                (phase.sin() + 0.25 * (phase * harmonic).sin()) * attack * decay * 0.16,
-            )
-        })
-        .collect();
-    sound_data(frames).panning(pan)
+pub(crate) fn music_headroom(song: &StaticSoundData) -> f32 {
+    // Source PCM and cubic resampling may exceed unity; reserve a half-scale music ceiling
+    let peak = song.frames.iter().fold(1.0_f32, |peak, frame| {
+        peak.max(frame.left.abs()).max(frame.right.abs())
+    });
+    0.4 / peak
+}
+
+pub(crate) fn music_decibels(volume: u8, headroom: f32) -> f32 {
+    if volume == 0 {
+        f32::NEG_INFINITY
+    } else {
+        20.0 * (f32::from(volume.min(100)) / 100.0 * headroom).log10()
+    }
+}
+
+pub(crate) fn stop_feedback(handles: &mut VecDeque<StaticSoundHandle>) {
+    for mut handle in handles.drain(..) {
+        handle.stop(immediate());
+    }
+}
+
+fn reset_feedback(palette: &mut FeedbackPalette, handles: &mut VecDeque<StaticSoundHandle>) {
+    stop_feedback(handles);
+    palette.reset();
+}
+
+pub(crate) fn play_feedback<B: kira::backend::Backend>(
+    manager: &mut AudioManager<B>,
+    handles: &mut VecDeque<StaticSoundHandle>,
+    sounds: Vec<StaticSoundData>,
+    volume: u8,
+) -> Result<(), String> {
+    handles.retain(|handle| handle.state() != PlaybackState::Stopped);
+    let gain = music_decibels(volume, 1.0);
+    for sound in sounds {
+        // Validate before stealing a voice so malformed settings cannot interrupt valid sounds
+        let kira::Value::Fixed(base) = sound.settings.volume else {
+            return Err("Feedback palette requires a fixed gain".into());
+        };
+        if handles.len() >= MAX_FEEDBACK_VOICES {
+            handles.pop_front().unwrap().stop(immediate());
+        }
+        // Cached bounds include cubic overshoot and panning: 8 * .055 + .5 < 1
+        match manager.play(sound.volume(kira::Decibels(base.0 + gain))) {
+            Ok(handle) => handles.push_back(handle),
+            // Stopped slots retire on the audio callback; a peer burst may fill the pending queue
+            Err(kira::PlaySoundError::SoundLimitReached) => break,
+            Err(error) => return Err(format!("Cannot play feedback: {error}")),
+        }
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -560,6 +654,82 @@ mod tests {
     fn callback(audio: &mut AudioManager<MockBackend>) {
         audio.backend_mut().on_start_processing();
         audio.backend_mut().process();
+    }
+
+    #[test]
+    fn music_headroom_covers_stereo_source_peaks_and_resampling() {
+        for peak in [0.0, 0.5, 1.0, 3.0] {
+            let song = sound_data(vec![Frame::new(peak * 0.7, -peak); 4]);
+            let headroom = music_headroom(&song);
+            assert!(headroom > 0.0 && headroom <= 0.4);
+            assert!(peak * headroom * 1.25 <= 0.5 + f32::EPSILON);
+            let at_max = kira::Decibels(music_decibels(100, headroom)).as_amplitude();
+            assert!((at_max - headroom).abs() < 1e-6);
+            assert_eq!(
+                kira::Decibels(music_decibels(0, headroom)).as_amplitude(),
+                0.0
+            );
+        }
+    }
+
+    #[test]
+    fn feedback_burst_exhaustion_keeps_music_playing_and_recovers_after_callback() {
+        let mut manager = AudioManager::<MockBackend>::new(AudioManagerSettings {
+            backend_settings: MockBackendSettings {
+                sample_rate: 48_000,
+            },
+            main_track_builder: kira::track::MainTrackBuilder::default().sound_capacity(128),
+            ..Default::default()
+        })
+        .unwrap();
+        let data = sound_data(vec![Frame::from_mono(0.03); 48_000]);
+        let music = manager.play(data.clone()).unwrap();
+        let mut handles = VecDeque::new();
+        // No callback runs during the full peer batch; logical eviction cannot reclaim Kira slots yet
+        for _ in 0..256 {
+            play_feedback(&mut manager, &mut handles, vec![data.clone()], 80).unwrap();
+            assert!(handles.len() <= MAX_FEEDBACK_VOICES);
+        }
+        assert_eq!(music.state(), PlaybackState::Playing);
+        for _ in 0..3 {
+            callback(&mut manager);
+        }
+        assert_eq!(music.state(), PlaybackState::Playing);
+        assert!(music.position() > 0.0);
+        play_feedback(&mut manager, &mut handles, vec![data], 80).unwrap();
+        assert_eq!(handles.len(), MAX_FEEDBACK_VOICES);
+    }
+
+    #[test]
+    fn replacement_stop_resets_palette_and_all_pending_feedback() {
+        let context = FeedbackContext {
+            event_id: 1,
+            song_time: SongTime::ZERO,
+            family: crate::feedback_audio::FeedbackTimbre::Wood,
+            chord_mask: Some(0x091),
+            short_tonal: false,
+            energy: 0.7,
+            density: 0.2,
+            beat_seconds: 0.5,
+        };
+        let mut palette = FeedbackPalette::new();
+        let mut manager = mock_audio();
+        let mut handles = VecDeque::new();
+        let first = palette.hit(PlayerId::P1, context);
+        let initial = first[0].frames.clone();
+        play_feedback(&mut manager, &mut handles, first, 80).unwrap();
+        let next = palette.hit(PlayerId::P1, context);
+        assert_ne!(initial.as_ref(), next[0].frames.as_ref());
+        play_feedback(&mut manager, &mut handles, palette.duo(context, true), 80).unwrap();
+        assert!(!handles.is_empty());
+        // replace_song invokes stop, which uses this shared lifecycle operation
+        reset_feedback(&mut palette, &mut handles);
+        callback(&mut manager);
+        assert!(handles.is_empty());
+        assert_eq!(
+            initial.as_ref(),
+            palette.hit(PlayerId::P1, context)[0].frames.as_ref()
+        );
     }
 
     #[test]
@@ -891,26 +1061,6 @@ mod tests {
         callback(&mut audio);
         callback(&mut audio);
         assert!(sound.handle.position() > paused);
-    }
-
-    #[test]
-    fn feedback_tones_are_short_distinct_and_bounded() {
-        let tones = [hit_sound(PlayerId::P1), hit_sound(PlayerId::P2)];
-        for tone in &tones {
-            assert_eq!(tone.sample_rate, 48_000);
-            assert_eq!(tone.frames.len(), 3_840);
-            assert_eq!(tone.frames.first(), Some(&Frame::ZERO));
-            assert_eq!(tone.frames.last(), Some(&Frame::ZERO));
-            assert!(tone.frames.iter().all(|frame| {
-                frame.left.is_finite()
-                    && frame.right.is_finite()
-                    && frame.left.abs() <= 0.2
-                    && frame.right.abs() <= 0.2
-            }));
-            assert!(tone.frames.iter().any(|frame| frame.left.abs() > 0.05));
-        }
-        assert_ne!(tones[0].frames, tones[1].frames);
-        assert_ne!(tones[0].settings.panning, tones[1].settings.panning);
     }
 
     #[test]

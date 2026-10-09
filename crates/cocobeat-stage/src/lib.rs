@@ -410,6 +410,7 @@ mod tests {
         caps.repetition.state = AnalysisState::Candidate;
         caps.repetition.source = AnalysisSource::Algorithm;
         let mut analysis = MusicAnalysis {
+            presentation: None,
             schema_version: 2,
             audio_hash: [1; 32],
             capabilities: Some(caps),
@@ -543,6 +544,7 @@ mod tests {
         caps.repetition.state = AnalysisState::Candidate;
         caps.repetition.source = AnalysisSource::Algorithm;
         let mut analysis = MusicAnalysis {
+            presentation: None,
             schema_version: 2,
             audio_hash: [1; 32],
             capabilities: Some(caps),

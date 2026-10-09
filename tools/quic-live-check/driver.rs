@@ -74,7 +74,7 @@ fn fixture(args: &[String]) -> bool {
             Ok(cocobeat_media::PackageBuildInput {
                 song_id: "live-original-synthetic-repeated".into(), importer_version: "qa-libvorbis-production-readback-v1".into(),
                 analysis_version: "whole-file-measured-energy-v1".into(), chart_version: "manual-single-anchor-v1".into(),
-                analysis: MusicAnalysis { capabilities: None,
+                analysis: MusicAnalysis { presentation: None, capabilities: None,
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),
             schema_version: CONTENT_SCHEMA_VERSION, audio_hash: audio.asset.blake3, beats: vec![], onsets: vec![], sections: vec![],

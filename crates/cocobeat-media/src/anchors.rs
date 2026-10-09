@@ -257,6 +257,7 @@ mod tests {
 
     fn analysis(frames: u32, points: &[(i64, Option<f32>)]) -> MusicAnalysis {
         MusicAnalysis {
+            presentation: None,
             capabilities: None,
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),

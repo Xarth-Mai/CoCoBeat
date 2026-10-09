@@ -14,6 +14,7 @@ use crate::{
     },
     library::{self, Candidate, Library, LoadedSong, SourceCandidate, Update as LibraryUpdate},
     online::{OnlineRound, Update as NetworkUpdate},
+    presentation::{PresentationOverrides, WorldTheme},
     replay_playback::ReplayPlayback,
     session::{Session, SessionResults},
     settings::{DisplaySettings, QualityPreset, QualitySettings, Settings},
@@ -63,6 +64,8 @@ enum Smoke {
     Section(Locale, SongTime, QualitySettings, Option<FeedbackSmoke>),
     Feedback(FeedbackSmoke, Option<QualitySettings>),
     FeedbackMotion,
+    PresentationMotion(WorldTheme),
+    Presentation(WorldTheme, SongTime, FeedbackSmoke, QualitySettings),
     Startup,
     Settings,
     SettingsFault(Locale),
@@ -78,6 +81,7 @@ enum Smoke {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum FeedbackSmoke {
+    Timeline,
     Local,
     Free,
     Anchor,
@@ -885,6 +889,58 @@ pub fn run() -> ExitCode {
                 )
             })
         }
+        [flag, directory, smoke, world, path]
+            if flag == "--package" && smoke == "--presentation-motion-smoke" =>
+        {
+            (|| {
+                let world = smoke_world(world)?;
+                let (content, _) = content::load_package(Path::new(directory))?;
+                visual_smoke_for_content(
+                    PathBuf::from(path),
+                    Smoke::PresentationMotion(world),
+                    SmokeViewport {
+                        size: [1920, 1080],
+                        ..default()
+                    },
+                    content,
+                )
+            })()
+        }
+        [
+            flag,
+            directory,
+            smoke,
+            world,
+            frame,
+            effect,
+            preset,
+            width,
+            height,
+            scale,
+            path,
+        ] if flag == "--package" && smoke == "--presentation-smoke" => (|| {
+            let world = smoke_world(world)?;
+            let (content, _) = content::load_package(Path::new(directory))?;
+            let frame = frame
+                .parse::<i64>()
+                .map_err(|_| "Invalid presentation preview frame")?;
+            if !(0..=content.end.frames()).contains(&frame) {
+                return Err("Presentation preview frame must lie within the song timeline".into());
+            }
+            let mut viewport = SmokeViewport::parse(width, height, scale, "0")?;
+            viewport.selection = None;
+            visual_smoke_for_content(
+                PathBuf::from(path),
+                Smoke::Presentation(
+                    world,
+                    SongTime::from_frames(frame),
+                    smoke_feedback(effect)?,
+                    smoke_quality(preset)?,
+                ),
+                viewport,
+                content,
+            )
+        })(),
         [
             flag,
             directory,
@@ -931,7 +987,7 @@ pub fn run() -> ExitCode {
         }
         [flag] if flag == "--help" || flag == "-h" => {
             println!(
-                "CoCoBeat: local or invited online duet\n  --timing-diagnostics   explicitly record local software timing alongside saved Replay (normal gameplay only)\n  --import-authored SOURCE AUTHORING NEW_PACKAGE  import an authored source and open the validated package at Ready\n  --library DIR         browse authored package folders from one local song library\n  --package DIR --library DIR  load a package initially and browse the selected library\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
+                "CoCoBeat: local or invited online duet\n  --timing-diagnostics   explicitly record local software timing alongside saved Replay (normal gameplay only)\n  --import-authored SOURCE AUTHORING NEW_PACKAGE  import an authored source and open the validated package at Ready\n  --library DIR         browse authored package folders from one local song library\n  --package DIR --library DIR  load a package initially and browse the selected library\n  --package DIR --net-host IP:PORT INVITE OUTPUT  host one live round after Start\n  --package DIR --net-join INVITE OUTPUT  join one live round using a local package\n  --net-receive INVITE NEW_PACKAGE OUTPUT  receive and play one live round\n  --next-round NEW_INVITE NEW_OUTPUT  repeat after a net command to queue another round after completion\n  --live-observation NEW_DIR  optional live-round suffix: native rendering/audio with synthetic controls and saved software observations\n  --package DIR         play a validated authored song package; default is the 64-second development song\n  --package DIR --replay FILE  validate a replay against the full package identity\n  --package DIR --watch-replay FILE  watch a recorded Stage version without modifying history\n  --package DIR --visual-smoke PNG  preview the loaded duration and Anchors without audio\n  --package DIR --section-smoke FRAME CODE PRESET WIDTH HEIGHT SCALE PNG  preview authored cues at an integer song frame\n  --package DIR --feedback-smoke FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  preview feedback on the authored stage at an integer song frame\n  --package DIR --presentation-motion-smoke WORLD NEW_DIR  render up to 80 seconds at native 1080p, 30 fps with matching sound events\n  --package DIR --presentation-smoke WORLD FRAME EFFECT PRESET WIDTH HEIGHT SCALE PNG  sample a world; EFFECT timeline preserves real scheduled feedback\n  WORLD: neon, forest, candy, star-sea\n  --replay FILE          validate a saved development-song replay\n  --visual-smoke PNG     render a deterministic scene without audio or gameplay\n  --feedback-smoke EFFECT [PRESET [WIDTH HEIGHT SCALE]] PNG  render local/free/anchor/anchor-good/miss/approach; optional low/medium/high/off at reduced 3D resolution\n  --feedback-motion-smoke DIR  render 240 ordered GPU frames with real rule feedback\n  --startup-smoke PNG    render the native intro and Ready eye loop without audio\n  --settings-smoke PNG   render settings with a simulated low-resolution fullscreen scene\n  --locale-smoke CODE PNG    render localized settings on a simulated surface\n  --language-smoke CODE PNG  render the native-name language selector\n  --menu-smoke CODE PNG      render the localized Ready menu without audio\n  --quality-smoke PRESET PNG  render low/medium/high/off graphics on a simulated surface\n  --settings-page-smoke PAGE CODE PNG  render graphics/pacing settings\n  --viewport-smoke PAGE CODE WIDTH HEIGHT SCALE ROW PNG  render main/graphics/pacing/languages/ready/players/starting/pausing/paused/watch-paused/finished/fault/settings-fault at physical pixels and DPI; ROW starts at 0\nEnter / controller Start: claim or take menu control (first press only)\nEnter / controller South: menu confirmation; Esc / Start: pause\nReplays are saved locally in ./replays/"
             );
             Ok(())
         }
@@ -1326,20 +1382,58 @@ fn replay_feedback(
     if batch.facts.is_empty() {
         return Ok(batch.events);
     }
-    for player in [PlayerId::P1, PlayerId::P2] {
-        if batch.hits[player.index()] != 0 {
-            audio.hit(player)?;
-            visual.hit_pulses[player.index()] = 1.0;
+    let cursor = audible_time(audio, visual.song_time);
+    let mut last_hits = [None, None];
+    let mut last_sync = None;
+    debug_assert_eq!(
+        batch.hits.iter().sum::<usize>(),
+        batch
+            .presentation
+            .iter()
+            .filter(|item| matches!(item, crate::replay_playback::PlaybackPresentation::Hit(_)))
+            .count()
+    );
+    let fresh = |at: SongTime| {
+        (0..=crate::presentation::REPLAY_FEEDBACK_FRESHNESS_FRAMES)
+            .contains(&(cursor.frames() - at.frames()))
+    };
+    // Warm every historical articulation in fact order; seeking never replays an old audio burst
+    for item in batch.presentation {
+        match item {
+            crate::replay_playback::PlaybackPresentation::Hit(hit) => {
+                motion_hit(hit, visual);
+                let context = visual.presentation.context(
+                    hit.song_time,
+                    hit.seq
+                        .wrapping_mul(2)
+                        .wrapping_add(hit.player.index() as u64),
+                );
+                let sounds = audio.prepare_hit(hit.player, context);
+                if fresh(context.song_time) {
+                    last_hits[hit.player.index()] = Some(sounds);
+                }
+            }
+            crate::replay_playback::PlaybackPresentation::Event { event, observed } => {
+                visual.song_time = observed;
+                visual.song_seconds = observed.as_seconds_f64();
+                if visual_feedback(event, visual) {
+                    let sounds = audio.prepare_sync(
+                        visual
+                            .presentation
+                            .context(observed, visual.presentation.event_seed),
+                        visual.anchor_sync_precise,
+                    );
+                    if fresh(observed) {
+                        last_sync = Some(sounds);
+                    }
+                }
+            }
         }
     }
-    // A recorded prefix may release thousands of past facts together
-    // Preserve every core event while coalescing simultaneous presentation sounds
-    let mut sync = false;
-    for event in batch.events {
-        sync |= visual_feedback(event, visual);
-    }
-    if sync {
-        audio.sync()?;
+    visual.song_time = cursor;
+    visual.song_seconds = cursor.as_seconds_f64();
+    for sounds in last_hits.into_iter().flatten().chain(last_sync) {
+        audio.play_prepared(sounds)?;
     }
     Ok(Vec::new())
 }
@@ -1348,10 +1442,19 @@ fn feedback(
     events: Vec<DuoEvent>,
     audio: &mut AudioOutput,
     visual: &mut VisualState,
+    observed: SongTime,
 ) -> Result<(), String> {
+    visual.song_time = observed;
+    visual.song_seconds = observed.as_seconds_f64();
     for event in events {
         if visual_feedback(event, visual) {
-            audio.sync()?;
+            audio.sync(
+                visual.presentation.context(
+                    audible_time(audio, visual.song_time),
+                    visual.presentation.event_seed,
+                ),
+                visual.anchor_sync_precise,
+            )?;
         }
     }
     Ok(())
@@ -1360,23 +1463,87 @@ fn feedback(
 // Only confirmed rule events produce shared feedback; local Hit remains immediate
 fn visual_feedback(event: DuoEvent, visual: &mut VisualState) -> bool {
     match event {
-        DuoEvent::FreeSync(_) => visual.free_sync_pulse = 1.0,
+        DuoEvent::FreeSync(event) => {
+            visual.free_sync_pulse = 1.0;
+            visual.anchor_sync_precise = false;
+            visual.presentation.event_seed =
+                event.p1_input.wrapping_mul(0x9e3779b97f4a7c15) ^ event.p2_input.rotate_left(29);
+        }
         DuoEvent::AnchorSync(event) => {
             visual.anchor_sync_pulse = 1.0;
             visual.anchor_sync_precise =
                 event.p1.grade == AnchorGrade::Precise && event.p2.grade == AnchorGrade::Precise;
+            visual.presentation.event_seed = event.anchor_id ^ (1 << 63);
         }
         DuoEvent::AnchorJudged(judgement) => {
             if judgement.grade == AnchorGrade::Miss {
                 visual.miss_pulses[judgement.player.index()] = 1.0;
+                visual.presentation.sync_streak = 0;
+                visual.motion.miss(
+                    judgement.player.index(),
+                    judgement.anchor_id,
+                    visual.song_seconds,
+                );
             }
             return false;
         }
     }
+    visual.presentation.sync_streak = visual.presentation.sync_streak.saturating_add(1);
+    visual.motion.sync(
+        visual.presentation.event_seed ^ visual.presentation.plan.seed,
+        visual.song_seconds,
+        if visual.anchor_sync_precise {
+            1.0
+        } else {
+            0.75
+        },
+    );
     true
 }
 
+fn audible_time(audio: &AudioOutput, fallback: SongTime) -> SongTime {
+    audio
+        .position()
+        .and_then(SongTime::try_from_seconds_f64)
+        .unwrap_or(fallback)
+}
+
+fn motion_hit(hit: cocobeat_schema::Hit, visual: &mut VisualState) {
+    let id = hit
+        .seq
+        .wrapping_mul(2)
+        .wrapping_add(hit.player.index() as u64);
+    let context = visual.presentation.context(hit.song_time, id);
+    visual.hit_pulses[hit.player.index()] = 1.0;
+    visual.motion.hit(
+        hit.player.index(),
+        context.event_id,
+        hit.song_time.as_seconds_f64(),
+        0.65 + context.energy * 0.35,
+    );
+}
+
+fn hit_feedback(
+    hit: cocobeat_schema::Hit,
+    audio: &mut AudioOutput,
+    visual: &mut VisualState,
+) -> Result<(), String> {
+    let id = hit
+        .seq
+        .wrapping_mul(2)
+        .wrapping_add(hit.player.index() as u64);
+    let context = visual
+        .presentation
+        .context(audible_time(audio, hit.song_time), id);
+    audio.hit(hit.player, context)?;
+    motion_hit(hit, visual);
+    Ok(())
+}
+
 fn reset_feedback(visual: &mut VisualState) {
+    visual.motion = Default::default();
+    visual.presentation.sync_streak = 0;
+    visual.presentation.event_seed = 0;
     visual.hit_pulses = [0.0; 2];
     visual.free_sync_pulse = 0.0;
     visual.anchor_sync_pulse = 0.0;
@@ -1553,12 +1720,11 @@ fn poll_network(
                     let peer = other_player(local);
                     let events = game.session.ingest_peer(peer, &facts)?;
                     for fact in &facts {
-                        if matches!(fact, DuoInput::Hit(_)) {
-                            audio.hit(peer)?;
-                            visual.hit_pulses[peer.index()] = 1.0;
+                        if let DuoInput::Hit(hit) = fact {
+                            hit_feedback(*hit, audio, visual)?;
                         }
                     }
-                    feedback(events, audio, visual)?;
+                    feedback(events, audio, visual, game.session.current)?;
                 }
                 LiveEvent::Complete(summary) => {
                     let mut counts = [0; 2];
@@ -1663,6 +1829,23 @@ fn update_game(
     visual.quality = settings.values.quality;
     visual.locale = settings.values.locale;
     visual.duration_seconds = game.content.end.as_seconds_f64();
+    settings.set_song(
+        (game.phase == Phase::Ready).then(|| game.content.content_id.clone()),
+        crate::presentation::PresentationVisual::recommendation(game.content.presentation.world),
+    );
+    let overrides = settings
+        .values
+        .song_presentations
+        .get(&game.content.content_id)
+        .copied()
+        .unwrap_or_default();
+    visual
+        .presentation
+        .update(&game.content.presentation, game.session.current, overrides);
+    audio.set_mix(
+        settings.values.music_volume,
+        settings.values.feedback_volume,
+    );
     if !input.controls_enabled() {
         let error = if brand.phase == BrandIntroPhase::Failed {
             impacts.clear();
@@ -1826,7 +2009,7 @@ fn update_game(
             }
             let origin = input.origin;
             let events = online.update_recovery(&mut game.session, &mut audio, origin)?;
-            feedback(events, &mut audio, &mut visual)?;
+            feedback(events, &mut audio, &mut visual, game.session.current)?;
         }
         let timing_phase = match game.phase {
             Phase::Starting => Some(cocobeat_replay::timing::TimingPhase::Starting),
@@ -1865,7 +2048,7 @@ fn update_game(
         {
             online.announce_phase_source(&game.session, &audio, game.content.end)?;
             let events = online.update_phase(&mut game.session, &audio, input.origin)?;
-            feedback(events, &mut audio, &mut visual)?;
+            feedback(events, &mut audio, &mut visual, game.session.current)?;
         }
         if matches!(game.phase, Phase::Starting | Phase::Pausing)
             && audio.state() != Some(PlaybackState::Stopped)
@@ -2069,13 +2252,14 @@ fn update_game(
                         consumed_ns,
                         event.input_kind,
                     )?;
+                    let Some(fact) = fact else { continue };
                     if online.enabled() {
-                        let Some(fact) = fact else { continue };
                         online.send(LiveCommand::Fact(fact))?;
                     }
-                    audio.hit(player)?;
-                    visual.hit_pulses[player.index()] = 1.0;
-                    feedback(events, &mut audio, &mut visual)?;
+                    if let DuoInput::Hit(hit) = fact {
+                        hit_feedback(hit, &mut audio, &mut visual)?;
+                    }
+                    feedback(events, &mut audio, &mut visual, game.session.current)?;
                 }
                 Control::Start | Control::TogglePause(_) if game.phase == Phase::Paused => {
                     game.session
@@ -2208,7 +2392,7 @@ fn update_game(
                     game.session.finish()?
                 };
                 game.results = Some(game.session.summary());
-                feedback(events, &mut audio, &mut visual)?;
+                feedback(events, &mut audio, &mut visual, game.session.current)?;
                 game.phase = if online.enabled() {
                     Phase::Finishing
                 } else {
@@ -2238,7 +2422,7 @@ fn update_game(
                 } else {
                     game.session.advance()?
                 };
-                feedback(events, &mut audio, &mut visual)?;
+                feedback(events, &mut audio, &mut visual, game.session.current)?;
             }
         }
         Ok(())
@@ -2277,6 +2461,16 @@ fn update_game(
     input.set_recovery_cancel(game.phase == Phase::Recovering);
     visual.song_time = game.session.current;
     visual.song_seconds = visual.song_time.as_seconds_f64();
+    visual.presentation.update(
+        &game.content.presentation,
+        game.session.current,
+        settings
+            .values
+            .song_presentations
+            .get(&game.content.content_id)
+            .copied()
+            .unwrap_or_default(),
+    );
     visual.next_anchor_time = game.next_anchor();
     visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
     visual.resonance = f32::from(game.session.engine.resonance().level_per_mille) / 1_000.0;
@@ -2612,6 +2806,10 @@ fn smoke_quality(preset: &str) -> Result<QualitySettings, String> {
         "low" => quality.set_preset(QualityPreset::Low),
         "medium" => quality.set_preset(QualityPreset::Medium),
         "high" => quality.set_preset(QualityPreset::High),
+        "no-bloom" => {
+            quality.set_preset(QualityPreset::High);
+            quality.bloom = false;
+        }
         "off" => {
             quality.set_preset(QualityPreset::Low);
             quality.preset = QualityPreset::Custom;
@@ -2625,6 +2823,7 @@ fn smoke_quality(preset: &str) -> Result<QualitySettings, String> {
 
 fn smoke_feedback(effect: &str) -> Result<FeedbackSmoke, String> {
     Ok(match effect {
+        "timeline" => FeedbackSmoke::Timeline,
         "local" => FeedbackSmoke::Local,
         "free" => FeedbackSmoke::Free,
         "anchor" => FeedbackSmoke::Anchor,
@@ -2635,6 +2834,16 @@ fn smoke_feedback(effect: &str) -> Result<FeedbackSmoke, String> {
     })
 }
 
+fn smoke_world(world: &str) -> Result<WorldTheme, String> {
+    match world {
+        "neon" => Ok(WorldTheme::Neon),
+        "forest" => Ok(WorldTheme::Forest),
+        "candy" => Ok(WorldTheme::Candy),
+        "star-sea" => Ok(WorldTheme::StarSea),
+        _ => Err("Presentation world must be neon, forest, candy or star-sea".into()),
+    }
+}
+
 fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, String> {
     Ok(Smoke::Feedback(
         smoke_feedback(effect)?,
@@ -2643,12 +2852,15 @@ fn feedback_smoke_mode(effect: &str, preset: Option<&str>) -> Result<Smoke, Stri
 }
 
 fn apply_smoke_visuals(visual: &mut VisualState, mode: Smoke) {
-    if let Smoke::Feedback(effect, _) | Smoke::Section(_, _, _, Some(effect)) = mode {
+    if let Smoke::Feedback(effect, _) | Smoke::Section(_, _, _, Some(effect)) = mode
+        && effect != FeedbackSmoke::Timeline
+    {
         reset_feedback(visual);
         let authored_anchor = (visual.next_anchor_time, visual.next_anchor_seconds);
         visual.next_anchor_seconds = None;
         visual.next_anchor_time = None;
         match effect {
+            FeedbackSmoke::Timeline => {}
             FeedbackSmoke::Local => visual.hit_pulses = [0.8, 0.6],
             FeedbackSmoke::Free => visual.free_sync_pulse = 0.7,
             FeedbackSmoke::Anchor | FeedbackSmoke::AnchorGood => {
@@ -2813,6 +3025,189 @@ fn advance_feedback_motion(
     Ok(events)
 }
 
+/// Deterministic synthetic controls, rendered through the production core and presentation path
+/// The exported event contexts drive the same Kira palette in the offline audio stem check
+struct PresentationCapture {
+    engine: cocobeat_core::DuoEngine,
+    hits: Vec<cocobeat_schema::Hit>,
+    next: usize,
+    sound_events: Vec<serde_json::Value>,
+    core_events: Vec<serde_json::Value>,
+}
+
+impl PresentationCapture {
+    fn new(content: &SongContent) -> Result<Self, String> {
+        let rules = DuoRules::default();
+        let mut scheduled = Vec::new();
+        for (index, anchor) in content.anchors.iter().enumerate() {
+            if index % 8 == 6 {
+                continue;
+            }
+            let offset = if index % 4 == 1 { 3_200 } else { 0 };
+            for player in [PlayerId::P1, PlayerId::P2] {
+                let time = anchor.song_time.frames() + offset;
+                if time >= 0 && time < content.end.frames() {
+                    scheduled.push((time, player));
+                }
+            }
+        }
+        // Free pairs and isolated responses occupy gaps without stealing authored Anchor inputs
+        for index in 1..(content.end.frames() / 36_000) {
+            let time = index * 36_000;
+            if content
+                .anchors
+                .iter()
+                .any(|anchor| (anchor.song_time.frames() - time).abs() < 24_000)
+            {
+                continue;
+            }
+            let player = if index % 2 == 0 {
+                PlayerId::P1
+            } else {
+                PlayerId::P2
+            };
+            scheduled.push((time, player));
+            if index % 8 == 4 {
+                scheduled.push((
+                    time + 1_600,
+                    if player == PlayerId::P1 {
+                        PlayerId::P2
+                    } else {
+                        PlayerId::P1
+                    },
+                ));
+            }
+        }
+        scheduled.sort_by_key(|&(time, player)| (time, player.index()));
+        let hits = scheduled
+            .into_iter()
+            .enumerate()
+            .map(|(seq, (frames, player))| cocobeat_schema::Hit {
+                epoch: SessionEpoch(1),
+                player,
+                seq: seq as u64,
+                song_time: SongTime::from_frames(frames),
+            })
+            .collect();
+        Ok(Self {
+            engine: cocobeat_core::DuoEngine::new(SessionEpoch(1), content.anchors.clone(), rules)
+                .map_err(|error| error.to_string())?,
+            hits,
+            next: 0,
+            sound_events: Vec::new(),
+            core_events: Vec::new(),
+        })
+    }
+
+    fn advance(
+        &mut self,
+        content: &SongContent,
+        world: WorldTheme,
+        time: SongTime,
+        visual: &mut VisualState,
+    ) -> Result<(), String> {
+        let delta = (time.as_seconds_f64() - visual.song_seconds).max(0.0) as f32;
+        decay_feedback(visual, delta);
+        visual.song_time = time;
+        visual.song_seconds = time.as_seconds_f64();
+        visual.duration_seconds = content.end.as_seconds_f64();
+        visual.running = true;
+        visual.presentation.update(
+            &content.presentation,
+            time,
+            PresentationOverrides {
+                world: Some(world),
+                ..default()
+            },
+        );
+        update_section_visuals(content, time, true, visual);
+        visual.next_anchor_time = content
+            .anchors
+            .iter()
+            .find(|anchor| anchor.song_time >= time)
+            .map(|anchor| anchor.song_time);
+        visual.next_anchor_seconds = visual.next_anchor_time.map(SongTime::as_seconds_f64);
+        while let Some(&hit) = self.hits.get(self.next) {
+            if hit.song_time > time {
+                break;
+            }
+            self.engine
+                .ingest(DuoInput::Hit(hit))
+                .map_err(|error| error.to_string())?;
+            motion_hit(hit, visual);
+            let id = hit
+                .seq
+                .wrapping_mul(2)
+                .wrapping_add(hit.player.index() as u64);
+            self.record_sound(visual, "hit", id, Some(hit.player));
+            self.next += 1;
+        }
+        for player in [PlayerId::P1, PlayerId::P2] {
+            let events = self
+                .engine
+                .ingest(DuoInput::Watermark {
+                    epoch: SessionEpoch(1),
+                    player,
+                    through: time,
+                })
+                .map_err(|error| error.to_string())?;
+            for event in events {
+                self.core_events.push(serde_json::json!({"observed_frames":time.frames(), "event":format!("{event:?}")}));
+                if visual_feedback(event, visual) {
+                    self.record_sound(visual, "duo", visual.presentation.event_seed, None);
+                }
+            }
+        }
+        visual.resonance = f32::from(self.engine.resonance().level_per_mille) / 1_000.0;
+        visual.status.clear();
+        Ok(())
+    }
+
+    fn record_sound(
+        &mut self,
+        visual: &VisualState,
+        kind: &str,
+        id: u64,
+        player: Option<PlayerId>,
+    ) {
+        let context = visual.presentation.context(visual.song_time, id);
+        self.sound_events.push(serde_json::json!({
+            "time_seconds": visual.song_seconds, "event_id": context.event_id, "kind": kind,
+            "player": player.map(|player| if player == PlayerId::P1 { "P1" } else { "P2" }),
+            "precise": kind.eq("duo").then_some(visual.anchor_sync_precise), "family": context.family,
+            "chord_mask": context.chord_mask, "energy": context.energy, "density": context.density,
+            "beat_seconds": context.beat_seconds, "short_tonal": context.short_tonal,
+        }));
+    }
+
+    fn write(
+        &self,
+        output: &Path,
+        content: &SongContent,
+        world: WorldTheme,
+        frames: u32,
+    ) -> Result<(), String> {
+        let receipt = serde_json::json!({
+            "source":"native Bevy GPU frames with deterministic synthetic controls and production DuoEngine",
+            "audio":"events.json resolved at the sampled cursor for the native Kira offline mixer; hardware playback not captured",
+            "content_id":content.content_id, "world":world, "fps":30, "sampled_frames":frames,
+            "duration_seconds":f64::from(frames) / 30.0, "package_duration_frames":content.end.frames(),
+            "consumed_hits":self.next, "core_events":self.core_events,
+        });
+        for (name, value) in [
+            ("events.json", serde_json::json!(self.sound_events)),
+            ("core-events.json", receipt),
+        ] {
+            std::fs::write(
+                output.join(name),
+                serde_json::to_vec_pretty(&value).map_err(|error| error.to_string())?,
+            )
+            .map_err(|error| format!("Cannot write presentation {name}: {error}"))?;
+        }
+        Ok(())
+    }
+}
+
 fn visual_smoke_at(path: PathBuf, mode: Smoke, viewport: SmokeViewport) -> Result<(), String> {
     visual_smoke_for_content(path, mode, viewport, SongContent::development())
 }
@@ -2824,12 +3219,24 @@ fn visual_smoke_for_content(
     content: SongContent,
 ) -> Result<(), String> {
     #[derive(Resource, Default)]
-    struct SavedFrames(u32);
+    struct SavedFrames(u32, Vec<serde_json::Value>);
 
-    let motion = mode == Smoke::FeedbackMotion;
-    let mut motion_engine = if motion {
+    let motion = matches!(mode, Smoke::FeedbackMotion | Smoke::PresentationMotion(_));
+    let motion_frames = if matches!(mode, Smoke::PresentationMotion(_)) {
+        ((content.end.frames().min(80 * 48_000) + 1_599) / 1_600) as u32
+    } else {
+        FEEDBACK_MOTION_FRAMES
+    };
+    if motion {
         std::fs::create_dir(&path)
             .map_err(|error| format!("Motion output must be a new directory: {error}"))?;
+    }
+    let mut presentation_capture = if matches!(mode, Smoke::PresentationMotion(_)) {
+        Some(PresentationCapture::new(&content)?)
+    } else {
+        None
+    };
+    let mut motion_engine = if mode == Smoke::FeedbackMotion {
         Some(feedback_motion_engine()?)
     } else {
         None
@@ -2840,6 +3247,8 @@ fn visual_smoke_for_content(
             | Smoke::Section(..)
             | Smoke::Feedback(..)
             | Smoke::FeedbackMotion
+            | Smoke::PresentationMotion(_)
+            | Smoke::Presentation(..)
             | Smoke::Quality(_)
     );
     let mut app = App::new();
@@ -3130,6 +3539,39 @@ fn visual_smoke_for_content(
             ..default()
         }
     };
+    if let Smoke::Presentation(world, time, effect, quality) = mode {
+        let mut capture = PresentationCapture::new(&content)?;
+        let mut visual = app.world_mut().resource_mut::<VisualState>();
+        reset_feedback(&mut visual);
+        visual.song_seconds = 0.0;
+        for frame in (0..time.frames()).step_by(1_600) {
+            capture.advance(&content, world, SongTime::from_frames(frame), &mut visual)?;
+        }
+        capture.advance(&content, world, time, &mut visual)?;
+        let motion = std::mem::take(&mut visual.motion);
+        let presentation = visual.presentation.clone();
+        apply_smoke_visuals(
+            &mut visual,
+            Smoke::Section(Locale::EnUs, time, quality, Some(effect)),
+        );
+        visual.motion = motion;
+        visual.presentation = presentation;
+        visual.quality = quality;
+    } else if let Smoke::PresentationMotion(world) = mode {
+        let mut visual = app.world_mut().resource_mut::<VisualState>();
+        reset_feedback(&mut visual);
+        visual.song_time = SongTime::ZERO;
+        visual.song_seconds = 0.0;
+        visual.presentation.update(
+            &content.presentation,
+            SongTime::ZERO,
+            PresentationOverrides {
+                world: Some(world),
+                ..default()
+            },
+        );
+        visual.quality = smoke_quality("high")?;
+    }
     if matches!(mode, Smoke::Scene | Smoke::Section(..)) {
         let mut visual = app.world_mut().resource_mut::<VisualState>();
         let time = if let Smoke::Section(locale, time, quality, _) = mode {
@@ -3173,6 +3615,10 @@ fn visual_smoke_for_content(
                mut frame: Local<u32>,
                mut completed_frames: Local<u32>,
                mut requested: Local<bool>,
+               mut sample: Local<Option<u32>>,
+               mut prepared_frame: Local<u32>,
+               mut last_progress: Local<Option<std::time::Instant>>,
+               saved: Res<SavedFrames>,
                intro: Option<Res<BrandIntroStatus>>,
                mut visual: ResMut<VisualState>,
                cameras: Query<&Camera, With<PresentationCamera>>,
@@ -3181,12 +3627,23 @@ fn visual_smoke_for_content(
                rows: Query<(&view::MenuRowNode, &ComputedNode, &UiGlobalTransform)>,
                mut exit: MessageWriter<AppExit>| {
             *frame += 1;
-            if *frame > 1_200
+            if motion && sample.is_some_and(|sample| saved.0 > sample) {
+                *sample = None;
+                *requested = false;
+                *last_progress = Some(std::time::Instant::now());
+            }
+            let stalled = if motion {
+                last_progress.get_or_insert_with(std::time::Instant::now).elapsed()
+                    > std::time::Duration::from_secs(60)
+            } else {
+                *frame > motion_frames.max(1_200) + 120
+            };
+            if stalled
                 || intro
                     .as_ref()
                     .is_some_and(|status| status.phase == BrandIntroPhase::Failed)
             {
-                eprintln!("Startup preview failed or exceeded frame limit: {intro:?}");
+                eprintln!("Preview failed or stalled: intro={intro:?}, sample={:?}, saved={}", *sample, saved.0);
                 exit.write(AppExit::Error(std::num::NonZeroU8::new(1).unwrap()));
                 return;
             }
@@ -3209,11 +3666,12 @@ fn visual_smoke_for_content(
                             .is_some_and(|status| status.idle_seconds >= 6.1)
                 }
             } else if motion {
-                (30..30 + FEEDBACK_MOTION_FRAMES).contains(&*frame)
+                *frame >= 30 && saved.0 < motion_frames
             } else {
                 *frame == 30
             };
             if !*requested && ready {
+                let sample_index = sample.unwrap_or(saved.0);
                 if matches!(mode, Smoke::Scene | Smoke::Section(..)) {
                     eprintln!(
                         "CONTENT_SAMPLE {}",
@@ -3271,14 +3729,14 @@ fn visual_smoke_for_content(
                         })
                     );
                 }
-                if let Some(engine) = &mut motion_engine {
-                    match advance_feedback_motion(*frame - 30, engine, &mut visual) {
+                if let Some(engine) = &mut motion_engine && sample.is_none() {
+                    match advance_feedback_motion(sample_index, engine, &mut visual) {
                         Ok(events) => eprintln!(
                             "FEEDBACK_FRAME {}",
                             serde_json::json!({
-                                "frame": *frame - 30,
+                                "frame": sample_index,
                                 "song_seconds": visual.song_seconds,
-                                "watermark_frames": 32 * 48_000 + u64::from(*frame - 30) * 1_600,
+                                "watermark_frames": 32 * 48_000 + u64::from(sample_index) * 1_600,
                                 "events": events.iter().map(|event| format!("{event:?}")).collect::<Vec<_>>(),
                                 "hit_pulses": visual.hit_pulses,
                                 "free_sync_pulse": visual.free_sync_pulse,
@@ -3296,12 +3754,35 @@ fn visual_smoke_for_content(
                         }
                     }
                 }
+                if let (Some(capture), Smoke::PresentationMotion(world)) = (&mut presentation_capture, mode) && sample.is_none() {
+                    let result = capture.advance(&content, world, SongTime::from_frames(i64::from(sample_index) * 1_600), &mut visual)
+                        .and_then(|()| if sample_index + 1 == motion_frames { capture.write(&path, &content, world, motion_frames) } else { Ok(()) });
+                    if let Err(error) = result {
+                        eprintln!("Presentation capture failed: {error}");
+                        exit.write(AppExit::error());
+                        return;
+                    }
+                }
+                if motion {
+                    if sample.is_none() {
+                        *sample = Some(sample_index);
+                        *prepared_frame = *frame;
+                        *last_progress = Some(std::time::Instant::now());
+                    }
+                    // PostUpdate updates HUD/scene, then render extraction may prepare the screenshot
+                    // later; hold the sample through two complete renders and its save acknowledgement
+                    if *frame <= *prepared_frame + 1 {
+                        return;
+                    }
+                }
                 if !matches!(
                     mode,
                     Smoke::Scene
                         | Smoke::Section(..)
                         | Smoke::Feedback(..)
                         | Smoke::FeedbackMotion
+                        | Smoke::PresentationMotion(_)
+                        | Smoke::Presentation(..)
                         | Smoke::Startup
                         | Smoke::Quality(_)
                 ) && visual.menu.is_none()
@@ -3343,12 +3824,16 @@ fn visual_smoke_for_content(
                         }
                     }
                 }
-                *requested = !motion;
+                *requested = true;
                 let output = if motion {
-                    path.join(format!("frame_{:04}.png", *frame - 30))
+                    path.join(format!("frame_{sample_index:04}.png"))
                 } else {
                     path.clone()
                 };
+                let expected_time = visual.song_time;
+                let prepared_update = *prepared_frame;
+                let requested_update = *frame;
+                let metadata_path = path.join("frames.json");
                 commands
                     .spawn(Screenshot(RenderTarget::Image(ImageRenderTarget {
                         handle: target.clone(),
@@ -3357,7 +3842,13 @@ fn visual_smoke_for_content(
                     .observe(
                         move |capture: On<ScreenshotCaptured>,
                               mut saved: ResMut<SavedFrames>,
+                              visual: Res<VisualState>,
                               mut exit: MessageWriter<AppExit>| {
+                            if motion && visual.song_time != expected_time {
+                                eprintln!("Screenshot sample changed before save: expected {expected_time:?}, observed {:?}", visual.song_time);
+                                exit.write(AppExit::error());
+                                return;
+                            }
                             let result = capture
                                 .image
                                 .clone()
@@ -3372,7 +3863,27 @@ fn visual_smoke_for_content(
                             match result {
                                 Ok(()) => {
                                     saved.0 += 1;
-                                    if !motion || saved.0 == FEEDBACK_MOTION_FRAMES {
+                                    if motion {
+                                        saved.1.push(serde_json::json!({
+                                            "sample": sample_index,
+                                            "file": output.file_name().unwrap().to_string_lossy(),
+                                            "prepared_update": prepared_update,
+                                            "requested_update": requested_update,
+                                            "requested_song_frames": expected_time.frames(),
+                                            "saved_song_frames": visual.song_time.frames(),
+                                            "song_seconds": visual.song_seconds,
+                                        }));
+                                        if saved.0 == motion_frames {
+                                            let result = serde_json::to_vec_pretty(&saved.1).map_err(|error| error.to_string())
+                                                .and_then(|bytes| std::fs::write(&metadata_path, bytes).map_err(|error| error.to_string()));
+                                            if let Err(error) = result {
+                                                eprintln!("Screenshot metadata failed: {error}");
+                                                exit.write(AppExit::error());
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    if !motion || saved.0 == motion_frames {
                                         exit.write(AppExit::Success);
                                     }
                                 }
@@ -3915,6 +4426,7 @@ mod tests {
                 .unwrap(),
             );
             let content = SongContent {
+                presentation: std::sync::Arc::default(),
                 content_id: format!("test-package-{frames}"),
                 end: SongTime::from_frames(frames),
                 anchors: vec![cocobeat_schema::Anchor {
@@ -4011,6 +4523,82 @@ mod tests {
         assert_eq!(engine.events().len(), 9);
         assert_eq!(visual.next_anchor_seconds, Some(40.0));
         assert_eq!(visual.song_seconds, 32.0 + 239.0 / 30.0);
+    }
+
+    #[test]
+    fn presentation_capture_uses_package_anchors_and_exports_the_current_musical_context() {
+        let mut content = SongContent::development();
+        content.end = SongTime::from_frames(80 * 48_000);
+        content.anchors = (1..20)
+            .map(|index| cocobeat_schema::Anchor {
+                id: index as u64,
+                song_time: SongTime::from_frames(index * 4 * 48_000),
+            })
+            .collect();
+        let plan = std::sync::Arc::make_mut(&mut content.presentation);
+        plan.sections = [0, 24, 48]
+            .map(|seconds| SongTime::from_frames(seconds * 48_000))
+            .to_vec();
+        let mut visual = VisualState::default();
+        let mut capture = PresentationCapture::new(&content).unwrap();
+        for sample in 0..2_400 {
+            capture
+                .advance(
+                    &content,
+                    WorldTheme::StarSea,
+                    SongTime::from_frames(sample * 1_600),
+                    &mut visual,
+                )
+                .unwrap();
+        }
+        assert_eq!(visual.presentation.world, WorldTheme::StarSea);
+        assert_eq!(visual.presentation.section_index, 2);
+        assert!(
+            capture
+                .engine
+                .events()
+                .iter()
+                .any(|event| matches!(event, DuoEvent::FreeSync(_)))
+        );
+        for grade in [AnchorGrade::Good, AnchorGrade::Precise, AnchorGrade::Miss] {
+            assert!(capture.engine.events().iter().any(|event| matches!(event, DuoEvent::AnchorJudged(judgement) if judgement.grade == grade)));
+        }
+        assert!(
+            capture
+                .sound_events
+                .windows(2)
+                .all(|pair| pair[0]["time_seconds"].as_f64().unwrap()
+                    <= pair[1]["time_seconds"].as_f64().unwrap())
+        );
+        assert!(capture.sound_events.iter().all(|event| event["family"]
+            == serde_json::json!(crate::feedback_audio::FeedbackTimbre::Glass)));
+        for kind in ["hit", "duo"] {
+            assert!(
+                capture
+                    .sound_events
+                    .iter()
+                    .any(|event| event["kind"] == kind)
+            );
+        }
+        let mut again = PresentationCapture::new(&content).unwrap();
+        let mut same = VisualState::default();
+        for sample in 0..2_400 {
+            again
+                .advance(
+                    &content,
+                    WorldTheme::StarSea,
+                    SongTime::from_frames(sample * 1_600),
+                    &mut same,
+                )
+                .unwrap();
+        }
+        assert_eq!(capture.sound_events, again.sound_events);
+        assert_eq!(capture.core_events, again.core_events);
+        assert!(smoke_world("unknown").is_err());
+        assert!(matches!(
+            smoke_feedback("timeline").unwrap(),
+            FeedbackSmoke::Timeline
+        ));
     }
 
     #[test]

@@ -6,19 +6,27 @@
 //! EOF drains only the recorded facts, including original final watermarks
 
 use cocobeat_core::DuoEngine;
-use cocobeat_schema::{DuoEvent, DuoInput, SongTime, content::MAX_CANONICAL_FRAMES};
+use cocobeat_schema::{DuoEvent, DuoInput, Hit, SongTime, content::MAX_CANONICAL_FRAMES};
 use std::ops::Range;
 
 pub(crate) struct ReplayPlayback {
     end: SongTime,
     next: usize,
     through: SongTime,
+    presentation_time: SongTime,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub(crate) enum PlaybackPresentation {
+    Hit(Hit),
+    Event { event: DuoEvent, observed: SongTime },
 }
 
 pub(crate) struct PlaybackBatch {
     pub facts: Range<usize>,
     pub hits: [usize; 2],
     pub events: Vec<DuoEvent>,
+    pub presentation: Vec<PlaybackPresentation>,
 }
 
 impl ReplayPlayback {
@@ -31,6 +39,7 @@ impl ReplayPlayback {
             end,
             next: 0,
             through: SongTime::ZERO,
+            presentation_time: SongTime::ZERO,
         })
     }
 
@@ -42,6 +51,7 @@ impl ReplayPlayback {
     pub fn reset(&mut self) {
         self.next = 0;
         self.through = SongTime::ZERO;
+        self.presentation_time = SongTime::ZERO;
     }
 
     pub fn advance(
@@ -56,6 +66,7 @@ impl ReplayPlayback {
         let first = self.next;
         let mut hits = [0; 2];
         let mut events = Vec::new();
+        let mut presentation = Vec::new();
         while let Some(&fact) = facts.get(self.next) {
             let at = match fact {
                 DuoInput::Hit(hit) => hit.song_time,
@@ -65,10 +76,22 @@ impl ReplayPlayback {
             if at > through {
                 break;
             }
-            events.extend(engine.ingest(fact).map_err(|error| error.to_string())?);
+            let emitted = engine.ingest(fact).map_err(|error| error.to_string())?;
+            self.presentation_time = self.presentation_time.max(at);
             if let DuoInput::Hit(hit) = fact {
                 hits[hit.player.index()] += 1;
+                presentation.push(PlaybackPresentation::Hit(hit));
             }
+            presentation.extend(
+                emitted
+                    .iter()
+                    .cloned()
+                    .map(|event| PlaybackPresentation::Event {
+                        event,
+                        observed: self.presentation_time,
+                    }),
+            );
+            events.extend(emitted);
             self.next += 1;
         }
         self.through = through;
@@ -76,6 +99,7 @@ impl ReplayPlayback {
             facts: first..self.next,
             hits,
             events,
+            presentation,
         })
     }
 }
@@ -198,5 +222,75 @@ mod tests {
         );
         assert!(actual.events().is_empty());
         assert!(ReplayPlayback::new(SongTime::ZERO).is_err());
+    }
+
+    #[test]
+    fn presentation_order_and_observation_times_are_independent_of_advance_chunking() {
+        let end = SongTime::from_frames(240_000);
+        let later_hit = |player| {
+            DuoInput::Hit(Hit {
+                epoch: SessionEpoch(9),
+                player,
+                seq: 1,
+                song_time: SongTime::from_frames(210_000),
+            })
+        };
+        let facts = [
+            hit(PlayerId::P1),
+            watermark(PlayerId::P1, 200_000),
+            hit(PlayerId::P2),
+            watermark(PlayerId::P2, 200_000),
+            later_hit(PlayerId::P1),
+            later_hit(PlayerId::P2),
+            watermark(PlayerId::P1, 260_000),
+            watermark(PlayerId::P2, 260_000),
+        ];
+        let mut playback = ReplayPlayback::new(end).unwrap();
+        let whole = playback.advance(&facts, &mut engine(), end).unwrap();
+        assert!(matches!(
+            whole.presentation.first(),
+            Some(PlaybackPresentation::Hit(_))
+        ));
+        assert!(
+            matches!(whole.presentation.get(1), Some(PlaybackPresentation::Hit(hit)) if hit.player == PlayerId::P2)
+        );
+        let observations: Vec<_> = whole
+            .presentation
+            .iter()
+            .filter_map(|item| match item {
+                PlaybackPresentation::Event { observed, .. } => Some(*observed),
+                PlaybackPresentation::Hit(_) => None,
+            })
+            .collect();
+        assert!(!observations.is_empty());
+        assert_eq!(observations.first(), Some(&SongTime::from_frames(200_000)));
+        assert_eq!(observations.last(), Some(&end));
+        let first_event = whole
+            .presentation
+            .iter()
+            .position(|item| matches!(item, PlaybackPresentation::Event { .. }))
+            .unwrap();
+        assert!(
+            whole.presentation[first_event + 1..]
+                .iter()
+                .any(|item| matches!(item, PlaybackPresentation::Hit(_)))
+        );
+        for cursors in [
+            vec![0, 100, 200_000, 220_000, 240_000],
+            vec![200_001, 240_000],
+        ] {
+            playback.reset();
+            let mut actual = engine();
+            let mut split = Vec::new();
+            for frame in cursors {
+                split.extend(
+                    playback
+                        .advance(&facts, &mut actual, SongTime::from_frames(frame))
+                        .unwrap()
+                        .presentation,
+                );
+            }
+            assert_eq!(split, whole.presentation);
+        }
     }
 }

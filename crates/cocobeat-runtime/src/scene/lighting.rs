@@ -1,17 +1,43 @@
 //! Original stylized night reflections; no external sky or texture assets
 
-use std::f32::consts::TAU;
-
 use bevy::{
     asset::RenderAssetUsages,
     image::{ImageAddressMode, ImageSampler, ImageSamplerDescriptor},
     math::Affine2,
+    post_process::bloom::{Bloom, BloomCompositeMode, BloomPrefilter},
     prelude::*,
     render::render_resource::{
         Extent3d, TextureDataOrder, TextureDimension, TextureFormat, TextureViewDescriptor,
         TextureViewDimension,
     },
 };
+
+use crate::presentation::WorldTheme;
+
+pub(super) fn atmosphere(world: WorldTheme) -> Color {
+    match world {
+        WorldTheme::Neon => Color::srgb(0.10, 0.085, 0.17),
+        WorldTheme::Forest => Color::srgb(0.055, 0.14, 0.115),
+        WorldTheme::Candy => Color::srgb(0.20, 0.095, 0.17),
+        WorldTheme::StarSea => Color::srgb(0.065, 0.06, 0.17),
+    }
+}
+
+/// Thresholded glow leaves skin and the cue lane sharp while emitting surfaces scatter
+pub(super) fn bloom(reduced_flashes: bool) -> Bloom {
+    Bloom {
+        intensity: if reduced_flashes { 0.08 } else { 0.22 },
+        low_frequency_boost: 0.25,
+        low_frequency_boost_curvature: 0.65,
+        prefilter: BloomPrefilter {
+            threshold: 1.0,
+            threshold_softness: 0.45,
+        },
+        composite_mode: BloomCompositeMode::Additive,
+        scale: Vec2::new(1.25, 1.0),
+        ..Bloom::NATURAL
+    }
+}
 
 #[derive(Resource)]
 pub(crate) struct LightingAssets {
@@ -45,7 +71,7 @@ fn night_cube(size: u32, mips: u32, diffuse: bool) -> Image {
     for mip in 0..mips {
         let side = size >> mip;
         let spread = if diffuse {
-            1.5
+            2.8
         } else {
             40.0 / (1.0 + (mip * mip) as f32)
         };
@@ -65,13 +91,15 @@ fn night_cube(size: u32, mips: u32, diffuse: bool) -> Image {
                     .normalize();
                     let sky = (direction.y * 0.5 + 0.5).clamp(0.0, 1.0);
                     let mut color =
-                        Vec3::new(0.008, 0.012, 0.024).lerp(Vec3::new(0.035, 0.055, 0.11), sky);
+                        Vec3::new(0.004, 0.006, 0.014).lerp(Vec3::new(0.018, 0.030, 0.065), sky);
                     for (axis, tint) in [
-                        (Vec3::new(-0.86, 0.28, -0.35), Vec3::new(0.035, 0.38, 0.62)),
-                        (Vec3::new(0.86, 0.28, -0.35), Vec3::new(0.52, 0.075, 0.24)),
-                        (Vec3::new(-0.15, 0.70, -0.70), Vec3::new(0.72, 0.70, 0.64)),
+                        (Vec3::new(-0.80, 0.28, -0.50), Vec3::new(0.018, 0.36, 0.72)),
+                        (Vec3::new(0.80, 0.35, -0.30), Vec3::new(0.72, 0.045, 0.28)),
+                        (Vec3::new(-0.35, 0.80, 0.48), Vec3::new(0.72, 0.59, 0.43)),
                     ] {
-                        color += tint * direction.dot(axis.normalize()).max(0.0).powf(spread);
+                        color += tint
+                            * direction.dot(axis.normalize()).max(0.0).powf(spread)
+                            * if diffuse { 0.45 } else { 1.0 };
                     }
                     bytes.extend(
                         color
@@ -108,40 +136,55 @@ fn night_cube(size: u32, mips: u32, diffuse: bool) -> Image {
 pub(super) fn asphalt(assets: Option<&LightingAssets>, uv_scale: Vec2) -> StandardMaterial {
     let texture = assets.map(|assets| assets.wet_map.clone());
     StandardMaterial {
-        base_color: Color::srgb(0.075, 0.092, 0.13),
-        metallic: if texture.is_some() { 1.0 } else { 0.08 },
+        base_color: Color::srgb(0.065, 0.078, 0.105),
+        metallic: 0.0,
         perceptual_roughness: if texture.is_some() { 1.0 } else { 0.38 },
         metallic_roughness_texture: texture,
-        clearcoat: 0.30,
-        clearcoat_perceptual_roughness: 0.24,
+        clearcoat: 0.45,
+        clearcoat_perceptual_roughness: 0.20,
         uv_transform: Affine2::from_scale(uv_scale),
         ..default()
     }
 }
 
 fn wet_roughness() -> Image {
-    let mut bytes = Vec::with_capacity(64 * 64 * 4);
-    for y in 0..64 {
-        for x in 0..64 {
-            let u = (x as f32 + 0.5) / 64.0 * TAU;
-            let v = (y as f32 + 0.5) / 64.0 * TAU;
-            let patch =
-                (0.5 + 0.35 * u.sin() * v.cos() + 0.15 * (3.0 * u + 2.0 * v).cos()).clamp(0.0, 1.0);
-            let wet = ((patch - 0.35) / 0.4).clamp(0.0, 1.0);
-            let wet = wet * wet * (3.0 - 2.0 * wet);
-            // Linear material data: G roughness, B metallic; R/A unused
+    const SIZE: u32 = 128;
+    // Periodic ellipses give broken wet patches; low contrast avoids wave-shaped highlights
+    let patches = [
+        (0.13, 0.22, 0.24, 0.10),
+        (0.74, 0.67, 0.19, 0.14),
+        (0.44, 0.89, 0.26, 0.09),
+        (0.90, 0.14, 0.18, 0.11),
+        (0.36, 0.51, 0.15, 0.10),
+        (0.08, 0.83, 0.17, 0.06),
+    ];
+    let mut bytes = Vec::with_capacity((SIZE * SIZE * 4) as usize);
+    for y in 0..SIZE {
+        for x in 0..SIZE {
+            let u = (x as f32 + 0.5) / SIZE as f32;
+            let v = (y as f32 + 0.5) / SIZE as f32;
+            let wet = patches.iter().fold(0.0_f32, |wet, &(cx, cy, rx, ry)| {
+                let dx = ((u - cx + 0.5).rem_euclid(1.0) - 0.5) / rx;
+                let dy = ((v - cy + 0.5).rem_euclid(1.0) - 0.5) / ry;
+                let edge = (1.0 - dx * dx - dy * dy).clamp(0.0, 1.0);
+                wet.max(edge * edge * (3.0 - 2.0 * edge))
+            });
+            let grain = ((x.wrapping_mul(1973) ^ y.wrapping_mul(9277)).wrapping_mul(26699) & 255)
+                as f32
+                / 255.0;
+            // Asphalt is dielectric; G stores restrained roughness and B stays zero
             bytes.extend([
                 0,
-                ((0.62 - 0.46 * wet) * 255.0).round() as u8,
-                (14.0 + 20.0 * wet).round() as u8,
+                ((0.42 - 0.13 * wet + 0.018 * (grain - 0.5)) * 255.0).round() as u8,
+                0,
                 255,
             ]);
         }
     }
     let mut image = Image::new(
         Extent3d {
-            width: 64,
-            height: 64,
+            width: SIZE,
+            height: SIZE,
             depth_or_array_layers: 1,
         },
         TextureDimension::D2,
@@ -195,14 +238,14 @@ mod tests {
             .get(material.metallic_roughness_texture.as_ref().unwrap())
             .unwrap();
         let data = image.data.as_ref().unwrap();
-        assert_eq!(data.len(), 64 * 64 * 4);
-        assert!(data.as_chunks::<4>().0.iter().any(|pixel| pixel[1] < 60));
-        assert!(data.as_chunks::<4>().0.iter().any(|pixel| pixel[1] > 140));
+        assert_eq!(data.len(), 128 * 128 * 4);
+        assert!(data.as_chunks::<4>().0.iter().any(|pixel| pixel[1] < 80));
+        assert!(data.as_chunks::<4>().0.iter().any(|pixel| pixel[1] > 105));
         assert!(
             data.as_chunks::<4>()
                 .0
                 .iter()
-                .all(|pixel| (14..=34).contains(&pixel[2]) && pixel[3] == 255)
+                .all(|pixel| (70..=110).contains(&pixel[1]) && pixel[2] == 0 && pixel[3] == 255)
         );
     }
 }

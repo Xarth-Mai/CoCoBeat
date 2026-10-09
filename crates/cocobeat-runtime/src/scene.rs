@@ -16,16 +16,16 @@ use cocobeat_stage::{BASE_HALF_WIDTH_MM, SegmentKind, StagePlan, TrackSample};
 
 use crate::{
     display::GameCamera,
+    presentation::WorldTheme,
     settings::{AntiAliasing, QualitySettings},
     view::VisualState,
 };
 
 pub(crate) mod characters;
-mod city;
 mod effects;
 mod lighting;
+mod worlds;
 
-const DISTANT_COLOR: Color = Color::srgb(0.115, 0.105, 0.22);
 const GROUND_ROWS: usize = 257;
 
 #[derive(Resource)]
@@ -369,7 +369,7 @@ pub(crate) fn setup(
         .spawn((
             Camera3d::default(),
             Camera {
-                clear_color: ClearColorConfig::Custom(DISTANT_COLOR),
+                clear_color: ClearColorConfig::Custom(lighting::atmosphere(WorldTheme::Neon)),
                 ..default()
             },
             GameCamera,
@@ -379,13 +379,13 @@ pub(crate) fn setup(
             Transform::from_xyz(0.0, 4.6, 9.2).looking_at(Vec3::new(0.0, 0.9, -4.6), Vec3::Y),
             AmbientLight {
                 color: Color::srgb(0.7, 0.76, 0.9),
-                brightness: 340.0,
+                brightness: 160.0,
                 ..default()
             },
         ))
         .id();
     if let Some(assets) = &lighting_assets {
-        commands.entity(camera).insert(assets.environment(650.0));
+        commands.entity(camera).insert(assets.environment(220.0));
     }
 
     spawn_scene(
@@ -506,11 +506,6 @@ fn spawn_scene(
             ..default()
         })
     });
-    let window = materials.add(StandardMaterial {
-        base_color: Color::srgb(0.38, 0.26, 0.22),
-        emissive: LinearRgba::rgb(0.2, 0.1, 0.045),
-        ..default()
-    });
 
     if let Some(stage) = &stage {
         let bridge = materials.add(StandardMaterial {
@@ -585,30 +580,40 @@ fn spawn_scene(
         ));
     }
     let side_offset = if stage.is_some() { 2.0 } else { 0.0 };
-    let backdrop = city::spawn_city(
+    let backdrop = worlds::spawn(
         commands,
         meshes,
         materials,
         [&cube, &sphere],
-        city::CityPalette {
+        worlds::WorldPalette {
             building: &building,
-            pavement: &pavement,
             dark: &dark,
-            window: &window,
             signs: &signs,
         },
         side_offset,
     );
     commands.spawn((
         SceneEntity,
-        PointLight {
-            color: Color::srgb(1.0, 0.94, 0.86),
-            intensity: 550_000.0,
-            range: 25.0,
-            radius: 1.25,
+        // A broad night fill reaches scenery beyond the foreground point lights
+        DirectionalLight {
+            color: Color::srgb(0.78, 0.85, 1.0),
+            illuminance: 1_500.0,
+            shadow_maps_enabled: false,
+            contact_shadows_enabled: false,
             ..default()
         },
-        Transform::from_xyz(-2.2, 4.8, 3.6),
+        Transform::from_xyz(-0.6, 1.0, 0.8).looking_at(Vec3::ZERO, Vec3::Y),
+    ));
+    commands.spawn((
+        SceneEntity,
+        PointLight {
+            color: Color::srgb(1.0, 0.94, 0.86),
+            intensity: 650_000.0,
+            range: 25.0,
+            radius: 0.9,
+            ..default()
+        },
+        Transform::from_xyz(-3.2, 5.0, 4.0),
         KeyLight,
     ));
     for (player, side) in [-1.0, 1.0].into_iter().enumerate() {
@@ -630,12 +635,12 @@ fn spawn_scene(
             SceneEntity,
             PointLight {
                 color: colors[player],
-                intensity: 32_000.0,
-                range: 13.0,
-                radius: 2.0,
+                intensity: 95_000.0,
+                range: 8.0,
+                radius: 0.65,
                 ..default()
             },
-            Transform::from_xyz(side * 3.0, 3.0, 0.5),
+            Transform::from_xyz(side * 2.8, 1.8, -1.25),
         ));
         for block in 0..3 {
             let z = 5.0 - block as f32 * 15.6;
@@ -810,7 +815,7 @@ fn spawn_scene(
 pub(crate) fn install_animation(app: &mut App) {
     app.add_systems(
         PostUpdate,
-        (city::animate, effects::animate)
+        (worlds::animate, effects::animate)
             .after(animate)
             .before(bevy::transform::TransformSystems::Propagate),
     );
@@ -827,7 +832,11 @@ pub(crate) fn update_signs(
     } else {
         0.0
     };
-    let strength = 0.35 + resonance * 2.15;
+    let strength = if state.quality.reduced_flashes {
+        2.8
+    } else {
+        5.0 + resonance * 3.0
+    };
     if *applied == Some(strength) && !signs.is_changed() {
         return;
     }
@@ -843,16 +852,19 @@ pub(crate) fn apply_quality(
     mut commands: Commands,
     state: Res<VisualState>,
     signs: Res<SignMaterials>,
-    mut applied: Local<Option<QualitySettings>>,
-    cameras: Query<Entity, With<GameCamera>>,
+    mut applied: Local<Option<(QualitySettings, WorldTheme)>>,
+    mut cameras: Query<(Entity, &mut Camera), With<GameCamera>>,
     mut lights: Query<&mut PointLight, With<KeyLight>>,
 ) {
     let quality = state.quality;
-    if (*applied == Some(quality) && !signs.is_changed()) || cameras.is_empty() {
+    let world = state.presentation.world;
+    if (*applied == Some((quality, world)) && !signs.is_changed()) || cameras.is_empty() {
         return;
     }
-    for camera in &cameras {
-        let mut camera = commands.entity(camera);
+    let atmosphere = lighting::atmosphere(world);
+    for (entity, mut camera) in &mut cameras {
+        camera.clear_color = ClearColorConfig::Custom(atmosphere);
+        let mut camera = commands.entity(entity);
         camera.insert(match quality.antialiasing {
             AntiAliasing::Off => Msaa::Off,
             AntiAliasing::Msaa2 => Msaa::Sample2,
@@ -860,7 +872,7 @@ pub(crate) fn apply_quality(
         });
         if quality.fog {
             camera.insert(DistanceFog {
-                color: DISTANT_COLOR,
+                color: atmosphere,
                 falloff: FogFalloff::Linear {
                     start: 10.0,
                     end: 46.0,
@@ -871,7 +883,7 @@ pub(crate) fn apply_quality(
             camera.remove::<DistanceFog>();
         }
         if quality.bloom {
-            camera.insert(Bloom::default());
+            camera.insert(lighting::bloom(quality.reduced_flashes));
         } else {
             camera.remove::<Bloom>();
         }
@@ -879,7 +891,7 @@ pub(crate) fn apply_quality(
     for mut light in &mut lights {
         light.shadow_maps_enabled = quality.shadows;
     }
-    *applied = Some(quality);
+    *applied = Some((quality, world));
 }
 
 pub(crate) fn animate(
@@ -942,24 +954,7 @@ pub(crate) fn animate(
                 if state.transitioning || state.paused {
                     continue;
                 }
-                let hit = if state.running {
-                    state.hit_pulses[player].clamp(0.0, 1.0)
-                } else {
-                    0.0
-                };
-                let miss = if state.running {
-                    state.miss_pulses[player].clamp(0.0, 1.0)
-                } else {
-                    0.0
-                };
-                transform.translation.y = 0.735 - hit * 0.1112
-                    + if state.running {
-                        (song * PI * 2.0).sin() * 0.02
-                    } else {
-                        0.0
-                    };
-                transform.scale = Vec3::new(1.0 + hit * 0.16, 1.0 - hit * 0.16, 1.0 + hit * 0.08);
-                transform.rotation = Quat::from_rotation_x(miss * 0.1);
+                *transform = characters::root_transform(&state, player);
                 None
             }
             Motion::Ripple(player) => {
@@ -1138,6 +1133,7 @@ mod tests {
         caps.repetition.state = AnalysisState::Candidate;
         caps.repetition.source = AnalysisSource::Algorithm;
         let analysis = MusicAnalysis {
+            presentation: None,
             schema_version: 2,
             audio_hash: [1; 32],
             capabilities: Some(caps),
@@ -1325,7 +1321,7 @@ mod tests {
         );
         assert_ne!(app.world().resource::<StageGround>().meshes, handles);
         let mut lights = app.world_mut().query::<&PointLight>();
-        assert_eq!(lights.iter(app.world()).count(), 3);
+        assert_eq!(lights.iter(app.world()).count(), 5);
         let mut keys = app
             .world_mut()
             .query_filtered::<&PointLight, With<KeyLight>>();
@@ -1342,7 +1338,7 @@ mod tests {
                 .unwrap();
             assert_eq!(
                 material.emissive,
-                LinearRgba::from(material.base_color) * (0.35 + 0.8 * 2.15)
+                LinearRgba::from(material.base_color) * (5.0 + 0.8 * 3.0)
             );
         }
         app.world_mut().remove_resource::<StageScene>();
@@ -1486,7 +1482,7 @@ mod tests {
             assert_eq!(right[2], original[4][row * 2][2]);
             assert!((3.5..=4.0).contains(&right[0]));
         }
-        assert!(app.world().resource::<Assets<Mesh>>().len() <= 40);
+        assert!(app.world().resource::<Assets<Mesh>>().len() <= 64);
         assert_eq!(
             app.world_mut()
                 .query::<&NoFrustumCulling>()
@@ -1495,7 +1491,7 @@ mod tests {
             9
         );
         let mesh_entities = app.world_mut().query::<&Mesh3d>().iter(app.world()).count();
-        assert!(mesh_entities <= 900);
+        assert!(mesh_entities <= 1800, "mesh entities: {mesh_entities}");
         let count = app.world().entities().len();
         let mut motion = app
             .world_mut()
@@ -1579,7 +1575,7 @@ mod tests {
                 assert_eq!(Some(&snapshot), at_start.as_ref());
             }
             assert_eq!(app.world().entities().len(), count);
-            assert!(app.world().resource::<Assets<Mesh>>().len() <= 40);
+            assert!(app.world().resource::<Assets<Mesh>>().len() <= 64);
         }
         // 100,000 authored intervals neither add entities nor enter a linear visible scan
         let dense = (0..100_000)
@@ -1758,7 +1754,7 @@ mod tests {
         let mut buildings = app.world_mut().query::<(&ChildOf, &Transform)>();
         for (parent, transform) in buildings.iter(app.world()) {
             if parent.parent() == background
-                && transform.translation.y >= 1.0
+                && (1.0..6.0).contains(&transform.translation.y)
                 && transform.translation.z > -90.0
             {
                 assert!(transform.translation.x.abs() - transform.scale.x * 0.5 >= 5.699);
@@ -1827,6 +1823,8 @@ mod tests {
                 fog: false,
                 shadows: false,
                 bloom: false,
+                reduced_motion: false,
+                reduced_flashes: false,
             };
             quality.set_preset(preset);
             {
@@ -2035,8 +2033,8 @@ mod tests {
         assert!(core.iter().all(|(_, _, v)| *v != Visibility::Hidden));
         let meshes = app.world().resource::<Assets<Mesh>>().len();
         let materials = app.world().resource::<Assets<StandardMaterial>>().len();
-        assert!(meshes <= 40);
-        assert!(materials <= 64);
+        assert!(meshes <= 64, "mesh assets: {meshes}");
+        assert!(materials <= 128, "material assets: {materials}");
         let sign_ids = app
             .world()
             .resource::<SignMaterials>()
@@ -2046,7 +2044,7 @@ mod tests {
         let mut visible_meshes = app
             .world_mut()
             .query::<(&Transform, &MeshMaterial3d<StandardMaterial>)>();
-        assert!(visible_meshes.iter(app.world()).count() <= 900);
+        assert!(visible_meshes.iter(app.world()).count() <= 1800);
         for sign in sign_ids {
             assert!(
                 visible_meshes
@@ -2067,13 +2065,13 @@ mod tests {
             .map(|(id, material)| (id, material.emissive))
             .collect();
         for (resonance, expected_strength) in [
-            (0.0, 0.35),
-            (0.5, 1.425),
-            (1.0, 2.5),
-            (0.0, 0.35),
-            (-1.0, 0.35),
-            (2.0, 2.5),
-            (f32::NAN, 0.35),
+            (0.0, 5.0),
+            (0.5, 6.5),
+            (1.0, 8.0),
+            (0.0, 5.0),
+            (-1.0, 5.0),
+            (2.0, 8.0),
+            (f32::NAN, 5.0),
         ] {
             app.world_mut().resource_mut::<VisualState>().resonance = resonance;
             app.update();
@@ -2106,6 +2104,8 @@ mod tests {
             fog: false,
             shadows: false,
             bloom: false,
+            reduced_motion: false,
+            reduced_flashes: false,
         };
 
         for (preset, msaa, drops, effects) in [
@@ -2127,7 +2127,7 @@ mod tests {
                 preset != QualityPreset::Custom
             );
             let mut lights = app.world_mut().query::<(&PointLight, Option<&KeyLight>)>();
-            assert_eq!(lights.iter(app.world()).count(), 3);
+            assert_eq!(lights.iter(app.world()).count(), 5);
             assert_eq!(
                 lights
                     .iter(app.world())
@@ -2172,6 +2172,32 @@ mod tests {
             assert!(app.world().get::<Bloom>(presentation).is_none());
             assert!(app.world().get::<DistanceFog>(presentation).is_none());
         }
+        // World changes invalidate the quality cache even when the preset is unchanged
+        for world in [
+            WorldTheme::Forest,
+            WorldTheme::Candy,
+            WorldTheme::StarSea,
+            WorldTheme::Neon,
+        ] {
+            app.world_mut()
+                .resource_mut::<VisualState>()
+                .presentation
+                .world = world;
+            app.update();
+            let expected = lighting::atmosphere(world);
+            assert_eq!(
+                app.world().get::<DistanceFog>(camera).unwrap().color,
+                expected
+            );
+            assert!(
+                matches!(app.world().get::<Camera>(camera).unwrap().clear_color, ClearColorConfig::Custom(color) if color == expected)
+            );
+            assert!(app.world().get::<DistanceFog>(presentation).is_none());
+        }
+        let mut fill_lights = app.world_mut().query::<&DirectionalLight>();
+        let fill = fill_lights.single(app.world()).unwrap();
+        assert_eq!(fill.illuminance, 1_500.0);
+        assert!(!fill.shadow_maps_enabled && !fill.contact_shadows_enabled);
     }
 
     #[test]

@@ -1,0 +1,700 @@
+{
+  "schema": 1,
+  "date": "2026-10-09",
+  "status": "SOFTWARE_AND_NATIVE_PERFORMANCE_PASS_VISUAL_AUDIO_ACCEPTANCE_PENDING",
+  "base_head": "aca54a69047152a9a792468206c508fb782cb6ec",
+  "scope": "Music-aware feedback, authored character motion and four native worlds; no commercial-quality or physical-device acceptance claim",
+  "package": {
+    "path": "target/music-presentation-20261009/package-final",
+    "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+    "duration_frames": 3840000,
+    "presentation_windows": 1250
+  },
+  "software": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--workspace",
+      "-j",
+      "2"
+    ],
+    "status": "PASS",
+    "passed": 515,
+    "ignored": 9,
+    "log": "/tmp/cocobeat-presentation-final-tests.log",
+    "log_sha256": "e24e88566fc39f15224f0884e6fdbb5e3913fc76ec5b117f62e16601ef7f8f3c",
+    "binary": "target/music-presentation-20261009/test-final/runtime-test",
+    "binary_sha256": "a98b8cddab06e96ee67a9d2f4dbae17bf9ea3227773e1407a1f8581388955247",
+    "source_inputs_sha256": "ad0d5d7329a5c7f2902a61337e9641d285a521098362262da184c0300c2f6a76",
+    "checks": [
+      {
+        "check": "clippy",
+        "status": "PASS",
+        "log": "/tmp/cocobeat-presentation-final-clippy.log",
+        "sha256": "1de823af95f2518496e39331cbbe75e632702dc1dfcf460f107a2111aae88f19"
+      },
+      {
+        "check": "format",
+        "status": "PASS",
+        "log": "/tmp/cocobeat-presentation-final-format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "check": "boundaries",
+        "status": "PASS",
+        "log": "/tmp/cocobeat-presentation-final-boundaries.log",
+        "sha256": "480b501655742e9863fef618bc569573b8f6131e74cd526c7a6ea97df8edb006"
+      }
+    ]
+  },
+  "performance": {
+    "artifact": "target/music-presentation-20261009/full-song-performance.json",
+    "sha256": "828cd2d157fe35f363ece4afa6dc5b94b65fbe813ce1eb064a866466e6d80aee",
+    "scope": "Actual native Kira and synthetic controls at 1080p High limited60 for the full 80-second song; main-update intervals include pacing wait, are not CPU work time or displayed FPS; asynchronously read-back GPU pass timings are not summed into whole GPU-frame time; transitions are +/-1.2 seconds around authored section starts",
+    "build": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--release",
+        "-p",
+        "cocobeat-game",
+        "-j",
+        "1",
+        "--message-format=json"
+      ],
+      "head": "aca54a69047152a9a792468206c508fb782cb6ec",
+      "pid": 1167100,
+      "pgid": 1167100,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 459.5973923019483,
+      "inputs_unchanged": true,
+      "source_inputs": 401,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/release-final/source",
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/release-final/bin/cocobeat-game",
+      "binary_sha256": "e68767f5b7fd956685002791186b88f0132a6976db99db4721299c0ff312e9b3",
+      "build_json_sha256": "2821a4987174394fc04c9ef60d78521a19f8696b9b04d402bae5542581d1e230"
+    },
+    "worlds": [
+      {
+        "world": "neon",
+        "status": "COMPLETE_SOFTWARE_OBSERVATION",
+        "main_update": {
+          "count": 4782,
+          "p50_ms": 16.722589,
+          "p95_ms": 16.727077,
+          "p99_ms": 16.736376,
+          "max_ms": 17.754652,
+          "over_33ms": 0
+        },
+        "gpu_opaque": {
+          "count": 1594,
+          "p50_ms": 4.72084,
+          "p95_ms": 5.69936,
+          "p99_ms": 6.20616,
+          "max_ms": 7.18568,
+          "over_33ms": 0
+        },
+        "rss_kib": 532236,
+        "terminal_phase": "Finished",
+        "terminal_song_frame": 3840000,
+        "evidence_sha256": {
+          "frames": "26305a7b2c3455737705e906ca05fc484839c0bc038b371608806c5aba80f19f",
+          "render": "36aa4ada53c2f5d152dd0ade6ef6cdc0c57a1e686fbafd928eb32b77b1b75913",
+          "validation": "b31a1e9083a4cbb5ecf0468d2edf2f95fba1e18edd507ed3e79c618fe0574302"
+        }
+      },
+      {
+        "world": "forest",
+        "status": "COMPLETE_SOFTWARE_OBSERVATION",
+        "main_update": {
+          "count": 4782,
+          "p50_ms": 16.722666,
+          "p95_ms": 16.730295,
+          "p99_ms": 16.736875,
+          "max_ms": 16.748535,
+          "over_33ms": 0
+        },
+        "gpu_opaque": {
+          "count": 1594,
+          "p50_ms": 5.72128,
+          "p95_ms": 6.85332,
+          "p99_ms": 7.72476,
+          "max_ms": 9.1846,
+          "over_33ms": 0
+        },
+        "rss_kib": 472356,
+        "terminal_phase": "Finished",
+        "terminal_song_frame": 3840000,
+        "evidence_sha256": {
+          "frames": "17342166ba3624e7fcec0c56d7592a286ad136a8b21663205c271da5a5785512",
+          "render": "85fa069f63a37d7addaeee775359042d2fdd10b0df4f4640998057715ff51889",
+          "validation": "d5a103865862202afd6a2e65ec96c3b73abbf1bf9a8a02714232f532aba52338"
+        }
+      },
+      {
+        "world": "candy",
+        "status": "COMPLETE_SOFTWARE_OBSERVATION",
+        "main_update": {
+          "count": 4782,
+          "p50_ms": 16.722681,
+          "p95_ms": 16.73346,
+          "p99_ms": 16.737621,
+          "max_ms": 16.763211,
+          "over_33ms": 0
+        },
+        "gpu_opaque": {
+          "count": 1594,
+          "p50_ms": 4.6764,
+          "p95_ms": 5.73428,
+          "p99_ms": 6.16532,
+          "max_ms": 7.1974,
+          "over_33ms": 0
+        },
+        "rss_kib": 469516,
+        "terminal_phase": "Finished",
+        "terminal_song_frame": 3840000,
+        "evidence_sha256": {
+          "frames": "518294b3c638bbf36eebba4d58ebaaeb4f0e9b03c38d909d5a1b0161e481a670",
+          "render": "0b1d6aa896c4ea5114d46291bbf8fb44f76404b3a11ef76702502a61330e4c94",
+          "validation": "fa94610e81915f31c0c086132a55242f10b8871d591d2250ec856934d1da8d14"
+        }
+      },
+      {
+        "world": "star_sea",
+        "status": "COMPLETE_SOFTWARE_OBSERVATION",
+        "main_update": {
+          "count": 4782,
+          "p50_ms": 16.722644,
+          "p95_ms": 16.733007,
+          "p99_ms": 16.737006,
+          "max_ms": 16.746316,
+          "over_33ms": 0
+        },
+        "gpu_opaque": {
+          "count": 1595,
+          "p50_ms": 4.36556,
+          "p95_ms": 5.37756,
+          "p99_ms": 5.8424,
+          "max_ms": 6.32692,
+          "over_33ms": 0
+        },
+        "rss_kib": 471416,
+        "terminal_phase": "Finished",
+        "terminal_song_frame": 3840000,
+        "evidence_sha256": {
+          "frames": "27ac20e04b2f1b880d46915ec2e318029147e8bb3b8729bf6be73fcdaa40a141",
+          "render": "2b2bcbcf6d2d200e0fd06ae155653d4c1f41ed0805e1f85eacc3113adebb0424",
+          "validation": "c0efcb2719baf2a94ca40836eedd057b591dcee787563604cd34a4d0a512b0be"
+        }
+      }
+    ]
+  },
+  "capture": {
+    "status": "PASS_FINAL_NATIVE_FRAMES_AND_OFFLINE_KIRA_MIX",
+    "previous_artifacts": "target/music-presentation-20261009/motion-*",
+    "previous_issue": "Initial suspected HUD offset was a thumbnail misread; original frame_0198 enlarged reads6.6 correctly. No original timing fault established; recapture adds explicit held-sample request/save timing evidence",
+    "source_delta_from_performance": [
+      "crates/cocobeat-runtime/src/app.rs",
+      "tools/music-presentation-check/motion.cjs",
+      "crates/cocobeat-runtime/src/view.rs",
+      "crates/cocobeat-runtime/src/scene/worlds.rs",
+      "crates/cocobeat-runtime/src/scene/effects.rs"
+    ],
+    "source_delta_scope": "QA screenshot handshake/verification plus final label, cue, stream and duo-effect polish; final forest independently remeasured, other world baseline metrics retain their original binary identity",
+    "scope": "Four independently sampled native worlds; 80-second 1080p30 videos, software controls through DuoEngine, actual Kira Renderer offline audio; not speaker or physical-controller capture",
+    "final_build": "7782f8480d333e0124437014e7c44e5243e4d965a09b021a7524d8aee99fd69d",
+    "verifier_sha256": "a8e9d198e2fc1259a852be6eaf63fb836fddbc5a5d50e9733d669a8425ff9ca9",
+    "worlds": [
+      {
+        "world": "neon",
+        "status": "PASS_NATIVE_FRAMES_OFFLINE_MIX",
+        "video": "target/music-presentation-20261009/motion-final-neon/preview.mp4",
+        "video_sha256": "50b676495556bd8aba63d07835d785d9abbf785fe4a28c805155a03ea327429c",
+        "receipt_sha256": "80f123b8c3fae277779a0a204689bad255028052143b0a9409571d88a5fa3ee7",
+        "frame_hashes_sha256": "5ab687c64921b72a65ee64c0290c565a7e42d0fe3203ee9b08bc0e0144a45ec7",
+        "sample_times_sha256": "504b747e53346bb0350f95e9c4f30674b3e1e793657012056deed9240479acae",
+        "events_sha256": "d05a8222c06ac894dc41836ea3a98943150c6d17e7c2aacc64cde58633ab2478",
+        "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+        "frames": 2400,
+        "duration_seconds": 80,
+        "pitched_events": 11,
+        "short_tonal_events": 9,
+        "audio": {
+          "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+          "event_source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/motion-final-neon/frames/events.json",
+          "events": 163,
+          "feedback_gain": 0.8,
+          "feedback_peak": 0.05325610190629959,
+          "frames": 3888000,
+          "mixed_peak": 0.19642825424671173,
+          "music_gain": 0.4000000059604645,
+          "sample_rate": 48000,
+          "scope": "Offline actual Kira Renderer and production feedback enqueue; resolved event fixture, not hardware capture",
+          "source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/package-final",
+          "source_kind": "canonical_package",
+          "status": "PASS",
+          "voice_cap": 8,
+          "voice_peak": 4
+        },
+        "video_probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1920,
+              "height": 1080,
+              "r_frame_rate": "30/1",
+              "duration": "80.000000"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "r_frame_rate": "0/0",
+              "duration": "80.000000"
+            }
+          ]
+        }
+      },
+      {
+        "world": "forest",
+        "status": "PASS_NATIVE_FRAMES_OFFLINE_MIX",
+        "video": "target/music-presentation-20261009/motion-final-forest/preview.mp4",
+        "video_sha256": "dee0bcc58f932597ded0069e1c9f6a30ba83bb4ad456cdfe06b2c9979ce64bc3",
+        "receipt_sha256": "c54e5dbe0aaef737a77ad83f9c9859d993a49aa9b0d19b2f2a0a9ffca3325155",
+        "frame_hashes_sha256": "bafb5e79d23e7528a75cfa09391c055bce00f03803a9c95fafee57f5f2d7ec88",
+        "sample_times_sha256": "5992c8acd7648a52d3a4094bea98a705609bbf30029b191d3b93be2938935da1",
+        "events_sha256": "9775e942e417d7c3f981e0ad7770754365b3356f34f55aa5406da4dd86416548",
+        "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+        "frames": 2400,
+        "duration_seconds": 80,
+        "pitched_events": 11,
+        "short_tonal_events": 9,
+        "audio": {
+          "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+          "event_source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/motion-final-forest/frames/events.json",
+          "events": 163,
+          "feedback_gain": 0.8,
+          "feedback_peak": 0.0521400161087513,
+          "frames": 3888000,
+          "mixed_peak": 0.19789794087409973,
+          "music_gain": 0.4000000059604645,
+          "sample_rate": 48000,
+          "scope": "Offline actual Kira Renderer and production feedback enqueue; resolved event fixture, not hardware capture",
+          "source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/package-final",
+          "source_kind": "canonical_package",
+          "status": "PASS",
+          "voice_cap": 8,
+          "voice_peak": 4
+        },
+        "video_probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1920,
+              "height": 1080,
+              "r_frame_rate": "30/1",
+              "duration": "80.000000"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "r_frame_rate": "0/0",
+              "duration": "80.000000"
+            }
+          ]
+        }
+      },
+      {
+        "world": "candy",
+        "status": "PASS_NATIVE_FRAMES_OFFLINE_MIX",
+        "video": "target/music-presentation-20261009/motion-final-candy/preview.mp4",
+        "video_sha256": "78fa6d0738356f25c5212749bb60ab8cc7c6439c1eabc73f12d9947403e09b60",
+        "receipt_sha256": "20777f066093fd80802609e5e274295d40c74c0ea055f8026307eb95d5c0b8e0",
+        "frame_hashes_sha256": "e3c5be8a10c1f30c399686e1de220f934d7a4635ade720eb5f4adceb9d914be8",
+        "sample_times_sha256": "353db89b89024c8d0c22d2994e492e16c1b07a5d27dc029ad7be67fa062e7fdd",
+        "events_sha256": "ef93bbf114f4c4c4683bfcb0ee895478486061bd9a54f091b7b9235d8cc47325",
+        "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+        "frames": 2400,
+        "duration_seconds": 80,
+        "pitched_events": 11,
+        "short_tonal_events": 9,
+        "audio": {
+          "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+          "event_source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/motion-final-candy/frames/events.json",
+          "events": 163,
+          "feedback_gain": 0.8,
+          "feedback_peak": 0.05580468475818634,
+          "frames": 3888000,
+          "mixed_peak": 0.1943516731262207,
+          "music_gain": 0.4000000059604645,
+          "sample_rate": 48000,
+          "scope": "Offline actual Kira Renderer and production feedback enqueue; resolved event fixture, not hardware capture",
+          "source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/package-final",
+          "source_kind": "canonical_package",
+          "status": "PASS",
+          "voice_cap": 8,
+          "voice_peak": 4
+        },
+        "video_probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1920,
+              "height": 1080,
+              "r_frame_rate": "30/1",
+              "duration": "80.000000"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "r_frame_rate": "0/0",
+              "duration": "80.000000"
+            }
+          ]
+        }
+      },
+      {
+        "world": "star-sea",
+        "status": "PASS_NATIVE_FRAMES_OFFLINE_MIX",
+        "video": "target/music-presentation-20261009/motion-final-star-sea/preview.mp4",
+        "video_sha256": "92a6112050de3be6d077f455bd7ecb293ff54b8ca1dc858093bd2318902fc4b8",
+        "receipt_sha256": "816809b625f092a45a37f43925296aadb90ab713a93f71218d9578720fcc7ffa",
+        "frame_hashes_sha256": "7fa3dd41ff8a18332e479353f6f347a1cff03dc201b9ee501b24b3aedebe7518",
+        "sample_times_sha256": "9acf9631e957035b6faaf1719132e21d37d2e57ff220af5f4a7077c3244fd67d",
+        "events_sha256": "2d744bda636f62182adeba75525501027c3f8b061793f6152611702c886eb957",
+        "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+        "frames": 2400,
+        "duration_seconds": 80,
+        "pitched_events": 11,
+        "short_tonal_events": 9,
+        "audio": {
+          "content_id": "package-blake3:ca2d87c159df79418c8fce71bd45c3858e2eae1d3f3846f512e66a2feabf16d9",
+          "event_source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/motion-final-star-sea/frames/events.json",
+          "events": 163,
+          "feedback_gain": 0.8,
+          "feedback_peak": 0.05580468475818634,
+          "frames": 3888000,
+          "mixed_peak": 0.18548259139060974,
+          "music_gain": 0.4000000059604645,
+          "sample_rate": 48000,
+          "scope": "Offline actual Kira Renderer and production feedback enqueue; resolved event fixture, not hardware capture",
+          "source": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/package-final",
+          "source_kind": "canonical_package",
+          "status": "PASS",
+          "voice_cap": 8,
+          "voice_peak": 4
+        },
+        "video_probe": {
+          "programs": [],
+          "stream_groups": [],
+          "streams": [
+            {
+              "codec_name": "h264",
+              "codec_type": "video",
+              "width": 1920,
+              "height": 1080,
+              "r_frame_rate": "30/1",
+              "duration": "80.000000"
+            },
+            {
+              "codec_name": "aac",
+              "codec_type": "audio",
+              "r_frame_rate": "0/0",
+              "duration": "80.000000"
+            }
+          ]
+        }
+      }
+    ],
+    "final_selected_visual_review": [
+      "motion-final-neon/frames/frame_0198.png",
+      "motion-final-neon/frames/frame_1458.png",
+      "motion-final-forest/frames/frame_0798.png"
+    ],
+    "visual_review_scope": "Selected final frames confirm labels clear ears, bright duo core and whole stream surface; continuous art and listening acceptance remain pending"
+  },
+  "acceptance_pending": [
+    "continuous visual and listening review",
+    "real song-library harmonic coverage and musical correctness",
+    "physical dual-controller and controller-keyboard play",
+    "speaker and display latency",
+    "four-platform build and release",
+    "commercial artistic quality"
+  ],
+  "final_polish": {
+    "status": "PASS_SCOPED_SOFTWARE_NATIVE_PERFORMANCE_AND_CAPTURE",
+    "source_changes": [
+      "crates/cocobeat-runtime/src/view.rs",
+      "crates/cocobeat-runtime/src/scene/worlds.rs",
+      "crates/cocobeat-runtime/src/scene/effects.rs"
+    ],
+    "repairs": [
+      "Player labels clear the ear silhouette; cue and clock text use dark backing and shadows",
+      "Stream water raised above intersecting ground and given a shoreline",
+      "Confirmed duo cores retain HDR as alpha fades; fewer smaller shock rings; remove two never-visible entities"
+    ],
+    "tests": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "-p",
+        "cocobeat-runtime",
+        "--lib",
+        "-j",
+        "2"
+      ],
+      "passed": 220,
+      "ignored": 2,
+      "log": "/tmp/cocobeat-presentation-polish-final-tests.log",
+      "log_sha256": "b203383f25ee8e65ba9967465db5ebdd0dc3fdd0960e2f98c5d15386a01c6e7c",
+      "binary_sha256": "83e69c87db86af8f6ef80a57d2146239624601de99efbf615d077ddc0216ab9d",
+      "source_inputs_sha256": "f312549a014cad603a5235a01459420c5a4fa0a03bd8511d027cd6c404cc67f6"
+    },
+    "static_captures": {
+      "artifact": "target/music-presentation-20261009/render-v4/receipt.json",
+      "sha256": "f0854fc844962a779bee684a05b10a594eff3d72311f39306a6cf087dfdfcebf",
+      "status": "PASS_RENDER",
+      "count": 14,
+      "source_boundary": "Debug capture predates deletion of two permanently hidden Shock entities; visible behavior identical",
+      "inspected": [
+        "neon-6.3.png",
+        "forest-26.3.png",
+        "forest-46.3.png",
+        "candy-26.3.png",
+        "neon-low-small.png",
+        "neon-bloom-off.png"
+      ],
+      "scope": "Selected native stills verify specific repairs; not complete visual or musical acceptance",
+      "findings": "Raised labels clear ears; cue backing remains legible over bright leaves; stream water is whole; bloom visibly differs while disabled bloom preserves decoration; 400x300 retains player and timing cues"
+    },
+    "build": {
+      "status": "PASS",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--release",
+        "-p",
+        "cocobeat-game",
+        "-j",
+        "1",
+        "--message-format=json"
+      ],
+      "head": "aca54a69047152a9a792468206c508fb782cb6ec",
+      "pid": 1176039,
+      "pgid": 1176039,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "elapsed_seconds": 465.6037647299818,
+      "inputs_unchanged": true,
+      "source_inputs": 401,
+      "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/polish-release/source",
+      "binary": "/home/lzzz/MyProjects/CoCoBeat/target/music-presentation-20261009/polish-release/bin/cocobeat-game",
+      "binary_sha256": "7782f8480d333e0124437014e7c44e5243e4d965a09b021a7524d8aee99fd69d",
+      "build_json_sha256": "f25e04957067c4f19c12ea3e15e42596a25351f837fa017c88f996edd38ed4e0"
+    },
+    "performance": {
+      "artifact": "target/music-presentation-20261009/polish-full-song-performance.json",
+      "sha256": "ec08d1713db7be3c100647b130e7f1f03ddd2e6d85812804412fc3a0c1ff3021",
+      "report": {
+        "scope": "Actual native Kira and synthetic controls at 1080p High limited60 for the full 80-second song; main-update intervals include pacing wait, are not CPU work time or displayed FPS; asynchronously read-back GPU pass timings are not summed into whole GPU-frame time; transitions are +/-1.2 seconds around authored section starts",
+        "source": "0832216a462bdc48eed46d5f3e37f00d3891e760a24b34416cde63c33c48e13b",
+        "cases": [
+          {
+            "world": "forest",
+            "status": "COMPLETE_SOFTWARE_OBSERVATION",
+            "main_update": {
+              "count": 4782,
+              "p50_ms": 16.722695,
+              "p95_ms": 16.728882,
+              "p99_ms": 16.736659,
+              "max_ms": 16.767184,
+              "over_33ms": 0
+            },
+            "song_frame_range": [
+              1024,
+              3839488
+            ],
+            "terminal_phase": "Finished",
+            "terminal_song_frame": 3840000,
+            "transitions": [
+              {
+                "second": 20,
+                "main_update": {
+                  "count": 143,
+                  "p50_ms": 16.722705,
+                  "p95_ms": 16.732536,
+                  "p99_ms": 16.737576,
+                  "max_ms": 16.737825,
+                  "over_33ms": 0
+                }
+              },
+              {
+                "second": 40,
+                "main_update": {
+                  "count": 143,
+                  "p50_ms": 16.722673,
+                  "p95_ms": 16.731163,
+                  "p99_ms": 16.737263,
+                  "max_ms": 16.737493,
+                  "over_33ms": 0
+                }
+              },
+              {
+                "second": 60,
+                "main_update": {
+                  "count": 143,
+                  "p50_ms": 16.722861,
+                  "p95_ms": 16.729451,
+                  "p99_ms": 16.735361,
+                  "max_ms": 16.736731,
+                  "over_33ms": 0
+                }
+              }
+            ],
+            "gpu_pass_durations": {
+              "render/bin_unpacking/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.01836,
+                "p95_ms": 0.019,
+                "p99_ms": 0.0196,
+                "max_ms": 0.16356,
+                "over_33ms": 0
+              },
+              "render/bloom/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.63664,
+                "p95_ms": 0.64504,
+                "p99_ms": 0.78544,
+                "max_ms": 0.95568,
+                "over_33ms": 0
+              },
+              "render/clustering/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.15112,
+                "p95_ms": 0.15624,
+                "p99_ms": 0.3534,
+                "max_ms": 0.77884,
+                "over_33ms": 0
+              },
+              "render/early_mesh_preprocessing/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.01772,
+                "p95_ms": 0.01828,
+                "p99_ms": 0.03328,
+                "max_ms": 0.15192,
+                "over_33ms": 0
+              },
+              "render/main_opaque_pass_3d/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 5.82084,
+                "p95_ms": 6.86156,
+                "p99_ms": 7.36136,
+                "max_ms": 8.42144,
+                "over_33ms": 0
+              },
+              "render/main_transparent_pass_2d/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.00032,
+                "p95_ms": 0.00036,
+                "p99_ms": 0.00048,
+                "max_ms": 0.00084,
+                "over_33ms": 0
+              },
+              "render/main_transparent_pass_3d/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.0302,
+                "p95_ms": 0.26824,
+                "p99_ms": 0.3016,
+                "max_ms": 0.92396,
+                "over_33ms": 0
+              },
+              "render/tonemapping/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.17576,
+                "p95_ms": 0.1764,
+                "p99_ms": 0.20876,
+                "max_ms": 0.24712,
+                "over_33ms": 0
+              },
+              "render/ui/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.29436,
+                "p95_ms": 0.31164,
+                "p99_ms": 0.38552,
+                "max_ms": 0.48148,
+                "over_33ms": 0
+              },
+              "render/upscaling/elapsed_gpu": {
+                "count": 1594,
+                "p50_ms": 0.07608,
+                "p95_ms": 0.1056,
+                "p99_ms": 0.17968,
+                "max_ms": 0.19748,
+                "over_33ms": 0
+              }
+            },
+            "rss": 480844,
+            "core": {
+              "anchor_sync": 13,
+              "anchors": [
+                [
+                  7,
+                  6,
+                  0,
+                  6
+                ],
+                [
+                  6,
+                  7,
+                  0,
+                  6
+                ]
+              ],
+              "free_sync": 1,
+              "hits": [
+                15,
+                14
+              ]
+            },
+            "evidence_sha256": {
+              "frames": "24d2fe9bef6db1c3d4f4234c888645e3d8eb8865e3cebe818d7769e756e26672",
+              "render": "eab0f5fd1d03c70473082e4e60683c00851bf9c7feebd594131e7c57e8d4900f",
+              "validation": "300cbcc492fd5dc077a9050305331cf9fb805e2c0c3adefeb6c649c89ad719b5"
+            }
+          }
+        ]
+      }
+    },
+    "checks": [
+      {
+        "check": "clippy",
+        "status": "PASS",
+        "log": "/tmp/cocobeat-presentation-polish-clippy.log",
+        "sha256": "414253f5111636ce06e08dfc278d134db8cb71fd6aaeb12092ae37cb2345cc98"
+      },
+      {
+        "check": "format",
+        "status": "PASS",
+        "log": "/tmp/cocobeat-presentation-polish-format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  }
+}

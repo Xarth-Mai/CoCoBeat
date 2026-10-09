@@ -500,6 +500,7 @@ mod tests {
         let source = root.join("constructed-candidate");
         let mut analysis = package.analysis.clone();
         analysis.schema_version = 2;
+        analysis.presentation = None;
         let mut capabilities = AnalysisCapabilities::authored();
         capabilities.beat.state = AnalysisState::Candidate;
         capabilities.downbeat.state = AnalysisState::Candidate;

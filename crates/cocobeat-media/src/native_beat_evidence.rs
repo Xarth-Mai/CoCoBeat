@@ -338,6 +338,17 @@ mod backend {
             .capabilities
             .ok_or("Native evidence requires v2 capabilities")?;
         let profile = package.manifest.analysis_version.as_str();
+        let profile = if package.analysis.presentation.is_some() {
+            [
+                crate::PRESENTATION_ANALYSIS_PROFILE,
+                "canonical-chroma-8192-v1-candidate",
+            ]
+            .iter()
+            .find_map(|suffix| profile.strip_suffix(&format!("+{suffix}")))
+            .unwrap_or(profile)
+        } else {
+            profile
+        };
         let include_auto = match profile {
             native_beat::ANALYSIS_VERSION => false,
             native_beat::AUTO_ANALYSIS_VERSION => true,
@@ -607,6 +618,56 @@ mod backend {
         static NEXT: AtomicU64 = AtomicU64::new(0);
 
         // Controlled aggregate logits exercise file binding and mapping, not model/music quality
+        #[test]
+        fn presentation_profiles_are_exact_and_require_their_payload() {
+            let mut fixture = Fixture::tie();
+            for profile in [
+                "canonical-chroma-8192-v1-candidate",
+                crate::PRESENTATION_ANALYSIS_PROFILE,
+            ] {
+                fixture.package.manifest.analysis_version =
+                    format!("{}+{profile}", native_beat::ANALYSIS_VERSION);
+                fixture.package.analysis.presentation = None;
+                assert!(
+                    fixture
+                        .read()
+                        .unwrap_err()
+                        .contains("Unsupported native analysis profile")
+                );
+                fixture.package.analysis.presentation =
+                    Some(cocobeat_schema::content::MusicPresentation {
+                        capability: cocobeat_schema::AnalysisCapability {
+                            state: cocobeat_schema::AnalysisState::Candidate,
+                            source: cocobeat_schema::AnalysisSource::Algorithm,
+                            confidence: None,
+                        },
+                        windows: vec![cocobeat_schema::content::PresentationWindow {
+                            start: SongTime::ZERO,
+                            end: SongTime::from_frames(4800),
+                            chroma: [0.0; 12],
+                            chord: None,
+                            key: None,
+                            tonal_confidence: 0.0,
+                            onset_density: 0.0,
+                            brightness: 0.0,
+                            energy: 0.0,
+                        }],
+                    });
+                fixture.read().unwrap();
+                fixture
+                    .package
+                    .manifest
+                    .analysis_version
+                    .push_str("-unknown");
+                assert!(
+                    fixture
+                        .read()
+                        .unwrap_err()
+                        .contains("Unsupported native analysis profile")
+                );
+            }
+        }
+
         struct Fixture {
             root: PathBuf,
             package: ValidatedPackage,
@@ -691,6 +752,7 @@ mod backend {
                             analysis_version: native_beat::ANALYSIS_VERSION.into(),
                             chart_version: "hand-authored-v1".into(),
                             analysis: MusicAnalysis {
+                                presentation: None,
                                 schema_version: ANALYSIS_SCHEMA_VERSION,
                                 audio_hash: prepared.asset.blake3,
                                 capabilities: Some(capabilities),

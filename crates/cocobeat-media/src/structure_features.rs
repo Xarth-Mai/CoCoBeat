@@ -204,8 +204,10 @@ fn compile_structure_features_candidate_package(
         );
     }
     let original = crate::validate_package(source)?;
-    if original.analysis.schema_version != cocobeat_schema::ANALYSIS_SCHEMA_VERSION
-        || original.analysis.capabilities.is_none()
+    if !matches!(
+        original.analysis.schema_version,
+        2 | cocobeat_schema::ANALYSIS_SCHEMA_VERSION
+    ) || original.analysis.capabilities.is_none()
     {
         return Err(
             "Structure segmentation requires analysis v2 with original capabilities".into(),
@@ -1397,6 +1399,8 @@ mod tests {
         );
         let mut constructed = expected_package;
         constructed.manifest.canonical_frames = 32 * BIN_FRAMES + 1;
+        // This hand-built longer fixture has no PCM-derived presentation evidence
+        constructed.analysis.presentation = None;
         constructed.analysis.energy = vec![cocobeat_schema::EnergySample {
             start: cocobeat_schema::SongTime::ZERO,
             frames: constructed.manifest.canonical_frames as u32,

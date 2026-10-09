@@ -515,6 +515,7 @@ mod tests {
 
     fn fixture_content(frames: i64) -> SongContent {
         SongContent {
+            presentation: std::sync::Arc::default(),
             content_id: format!("session-fixture-{frames}"),
             end: SongTime::from_frames(frames),
             anchors: vec![Anchor {

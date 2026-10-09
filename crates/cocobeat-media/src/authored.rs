@@ -46,7 +46,7 @@ struct AuthoredSection {
 }
 
 /// Builds a new package from final canonical audio and explicit authored content
-/// The caller supplies its actual importer identity; no automatic MIR is inferred
+/// Presentation candidates are automatic; timing and chart facts retain their provenance
 pub fn build_authored_package(
     audio: &Path,
     frames: u64,
@@ -113,6 +113,7 @@ fn build_authored(
                 check("canonical energy")
             })?;
             let mut analysis = MusicAnalysis {
+                presentation: None,
                 capabilities: Some(AnalysisCapabilities::authored()),
                 tempo_regions: Vec::new(),
                 repetitions: Vec::new(),
@@ -137,7 +138,16 @@ fn build_authored(
                 ),
             };
             let analysis_version = enrich(staged, prepared, &mut analysis)?
-                .unwrap_or_else(|| "canonical-rms-1024-v2".into());
+                .unwrap_or_else(|| "canonical-rms-1024-v3".into());
+            analysis.presentation = Some(crate::presentation::analyze_checked(
+                staged,
+                prepared.canonical_frames,
+                &|| check("canonical presentation"),
+            )?);
+            let analysis_version = format!(
+                "{analysis_version}+{}",
+                crate::PRESENTATION_ANALYSIS_PROFILE
+            );
             let chart = CompiledChart {
                 schema_version: CONTENT_SCHEMA_VERSION,
                 audio_hash,
@@ -175,7 +185,7 @@ fn build_authored(
 
 /// Imports the exact owned source snapshot through the sole production encoder
 /// The caller's importer identity is suffixed with the actual encoder profile
-/// Hand-authored content uses final 48 kHz coordinates; no automatic MIR is inferred
+/// Hand-authored timing uses final 48 kHz coordinates independently of presentation hints
 pub fn import_authored_package(
     source: &Path,
     authoring_path: &Path,
@@ -745,7 +755,14 @@ mod tests {
             package.analysis.capabilities,
             Some(AnalysisCapabilities::authored())
         );
-        assert_eq!(package.manifest.analysis_version, "canonical-rms-1024-v2");
+        assert_eq!(
+            package.manifest.analysis_version,
+            format!(
+                "canonical-rms-1024-v3+{}",
+                crate::PRESENTATION_ANALYSIS_PROFILE
+            )
+        );
+        assert!(package.analysis.presentation.is_some());
         assert!(package.analysis.tempo_regions.is_empty());
         assert!(package.analysis.repetitions.is_empty());
 
@@ -872,7 +889,12 @@ mod tests {
         let authoring = root.join("authoring.json");
         let document = serde_json::to_vec(&serde_json::json!({"schema_version":CONTENT_SCHEMA_VERSION,"song_id":"cancel-source","ruleset_id":"duo-watermark-v1","source_note":"Original stereo; manual test","anchors":[],"sections":[]})).unwrap();
         fs::write(&authoring, &document).unwrap();
-        for phase in ["source snapshot", "canonical encoder", "canonical energy"] {
+        for phase in [
+            "source snapshot",
+            "canonical encoder",
+            "canonical energy",
+            "canonical presentation",
+        ] {
             let cancel = crate::NativeBeatCancellation::default();
             cancel.begin().unwrap();
             let calls = std::cell::Cell::new(0);

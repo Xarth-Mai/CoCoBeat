@@ -4,10 +4,10 @@ use cocobeat_schema::{
     Anchor, AssetRef, SongTime,
     content::{
         ANALYSIS_SCHEMA_VERSION, AnalysisCapabilities, AnalysisCapability, AnalysisSource,
-        AnalysisState, BeatFeature, CONTENT_SCHEMA_VERSION, CompiledChart, EnergySample,
-        MAX_CONTENT_DIAGNOSTICS_BYTES, MAX_CONTENT_ITEMS, MAX_CONTENT_TEXT_BYTES, MusicAnalysis,
-        OnsetFeature, RepetitionFeature, SectionCue, SectionFeature, SongPackage, TempoBeatUnit,
-        TempoRegion,
+        AnalysisState, BeatFeature, CONTENT_SCHEMA_VERSION, ChordCandidate, CompiledChart,
+        EnergySample, KeyCandidate, MAX_CONTENT_DIAGNOSTICS_BYTES, MAX_CONTENT_ITEMS,
+        MAX_CONTENT_TEXT_BYTES, MusicAnalysis, MusicPresentation, OnsetFeature, PresentationWindow,
+        RepetitionFeature, SectionCue, SectionFeature, SongPackage, TempoBeatUnit, TempoRegion,
     },
 };
 use serde::{
@@ -175,6 +175,32 @@ struct AnalysisV2Dto {
     repetitions: Vec<RepetitionDto>,
 }
 
+type PitchDto = (u8, bool, f32);
+type PresentationWindowDto = (
+    i64,
+    i64,
+    [f32; 12],
+    Option<PitchDto>,
+    Option<PitchDto>,
+    f32,
+    f32,
+    f32,
+    f32,
+);
+
+#[derive(Deserialize)]
+struct PresentationDto {
+    capability: CapabilityDto,
+    #[serde(deserialize_with = "bounded_items")]
+    windows: Vec<PresentationWindowDto>,
+}
+
+#[derive(Deserialize)]
+struct AnalysisV3Dto {
+    legacy: AnalysisV2Dto,
+    presentation: Option<PresentationDto>,
+}
+
 #[derive(Deserialize)]
 struct ChartDto {
     schema_version: u32,
@@ -317,41 +343,64 @@ fn tempo_unit_from_wire(unit: Option<u8>) -> Result<Option<TempoBeatUnit>, Strin
 pub(crate) fn encode_analysis(value: &MusicAnalysis, frames: u64) -> Result<Vec<u8>, String> {
     value.validate(frames)?;
     if let Some(caps) = value.capabilities {
-        encode_version(
-            ANALYSIS_MAGIC,
-            &(
-                analysis_wire(value),
-                (
-                    capability_wire(caps.tempo),
-                    capability_wire(caps.onset),
-                    capability_wire(caps.beat),
-                    capability_wire(caps.downbeat),
-                    capability_wire(caps.sections),
-                    capability_wire(caps.repetition),
-                    capability_wire(caps.energy),
-                ),
-                Mapped(&value.tempo_regions, |region: &TempoRegion| {
-                    (
-                        region.start.frames(),
-                        region.end.frames(),
-                        region.bpm,
-                        tempo_unit_wire(region.beat_unit),
-                        region.confidence,
-                    )
-                }),
-                Mapped(&value.repetitions, |repeat: &RepetitionFeature| {
-                    (
-                        repeat.source_start.frames(),
-                        repeat.source_end.frames(),
-                        repeat.target_start.frames(),
-                        repeat.target_end.frames(),
-                        repeat.confidence,
-                    )
-                }),
+        let v2 = (
+            analysis_wire(value),
+            (
+                capability_wire(caps.tempo),
+                capability_wire(caps.onset),
+                capability_wire(caps.beat),
+                capability_wire(caps.downbeat),
+                capability_wire(caps.sections),
+                capability_wire(caps.repetition),
+                capability_wire(caps.energy),
             ),
-            MAX_ANALYSIS_BYTES,
-            ANALYSIS_SCHEMA_VERSION,
-        )
+            Mapped(&value.tempo_regions, |region: &TempoRegion| {
+                (
+                    region.start.frames(),
+                    region.end.frames(),
+                    region.bpm,
+                    tempo_unit_wire(region.beat_unit),
+                    region.confidence,
+                )
+            }),
+            Mapped(&value.repetitions, |repeat: &RepetitionFeature| {
+                (
+                    repeat.source_start.frames(),
+                    repeat.source_end.frames(),
+                    repeat.target_start.frames(),
+                    repeat.target_end.frames(),
+                    repeat.confidence,
+                )
+            }),
+        );
+        if value.schema_version == 2 {
+            encode_version(ANALYSIS_MAGIC, &v2, MAX_ANALYSIS_BYTES, 2)
+        } else {
+            let presentation = value.presentation.as_ref().map(|value| {
+                (
+                    capability_wire(value.capability),
+                    Mapped(&value.windows, |window: &PresentationWindow| {
+                        (
+                            window.start.frames(),
+                            window.end.frames(),
+                            window.chroma,
+                            window.chord.map(|v| (v.root, v.minor, v.confidence)),
+                            window.key.map(|v| (v.root, v.minor, v.confidence)),
+                            window.tonal_confidence,
+                            window.onset_density,
+                            window.brightness,
+                            window.energy,
+                        )
+                    }),
+                )
+            });
+            encode_version(
+                ANALYSIS_MAGIC,
+                &(v2, presentation),
+                MAX_ANALYSIS_BYTES,
+                ANALYSIS_SCHEMA_VERSION,
+            )
+        }
     } else {
         encode(ANALYSIS_MAGIC, &analysis_wire(value), MAX_ANALYSIS_BYTES)
     }
@@ -360,6 +409,7 @@ pub(crate) fn encode_analysis(value: &MusicAnalysis, frames: u64) -> Result<Vec<
 pub(crate) fn decode_analysis(bytes: &[u8], frames: u64) -> Result<MusicAnalysis, String> {
     let version = bytes.get(8..12).ok_or("Analysis header is incomplete")?;
     let version = u32::from_le_bytes(version.try_into().unwrap());
+    let mut presentation = None;
     let (dto, capabilities, tempo_regions, repetitions) = match version {
         CONTENT_SCHEMA_VERSION => (
             decode(ANALYSIS_MAGIC, bytes, MAX_ANALYSIS_BYTES)?,
@@ -367,9 +417,59 @@ pub(crate) fn decode_analysis(bytes: &[u8], frames: u64) -> Result<MusicAnalysis
             Vec::new(),
             Vec::new(),
         ),
-        ANALYSIS_SCHEMA_VERSION => {
-            let v2: AnalysisV2Dto =
-                decode_version(ANALYSIS_MAGIC, bytes, MAX_ANALYSIS_BYTES, version)?;
+        2 | ANALYSIS_SCHEMA_VERSION => {
+            let v2: AnalysisV2Dto = if version == 2 {
+                decode_version(ANALYSIS_MAGIC, bytes, MAX_ANALYSIS_BYTES, version)?
+            } else {
+                let v3: AnalysisV3Dto =
+                    decode_version(ANALYSIS_MAGIC, bytes, MAX_ANALYSIS_BYTES, version)?;
+                presentation = v3
+                    .presentation
+                    .map(|value| -> Result<_, String> {
+                        Ok(MusicPresentation {
+                            capability: capability_from_wire(value.capability)?,
+                            windows: value
+                                .windows
+                                .into_iter()
+                                .map(
+                                    |(
+                                        start,
+                                        end,
+                                        chroma,
+                                        chord,
+                                        key,
+                                        tonal_confidence,
+                                        onset_density,
+                                        brightness,
+                                        energy,
+                                    )| PresentationWindow {
+                                        start: SongTime::from_frames(start),
+                                        end: SongTime::from_frames(end),
+                                        chroma,
+                                        chord: chord.map(|(root, minor, confidence)| {
+                                            ChordCandidate {
+                                                root,
+                                                minor,
+                                                confidence,
+                                            }
+                                        }),
+                                        key: key.map(|(root, minor, confidence)| KeyCandidate {
+                                            root,
+                                            minor,
+                                            confidence,
+                                        }),
+                                        tonal_confidence,
+                                        onset_density,
+                                        brightness,
+                                        energy,
+                                    },
+                                )
+                                .collect(),
+                        })
+                    })
+                    .transpose()?;
+                v3.legacy
+            };
             let (tempo, onset, beat, downbeat, sections, repetition, energy) = v2.capabilities;
             let capabilities = AnalysisCapabilities {
                 tempo: capability_from_wire(tempo)?,
@@ -413,6 +513,7 @@ pub(crate) fn decode_analysis(bytes: &[u8], frames: u64) -> Result<MusicAnalysis
         _ => return Err("Unsupported analysis record schema version".into()),
     };
     let value = MusicAnalysis {
+        presentation,
         capabilities,
         tempo_regions,
         repetitions,
@@ -588,6 +689,7 @@ mod tests {
 
     fn fixtures() -> (MusicAnalysis, CompiledChart, SongPackage) {
         let analysis = MusicAnalysis {
+            presentation: None,
             capabilities: None,
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),
@@ -725,6 +827,33 @@ mod tests {
         let bytes = encode_analysis(&analysis, 100).unwrap();
         assert_eq!(&bytes[8..12], &ANALYSIS_SCHEMA_VERSION.to_le_bytes());
         assert_eq!(decode_analysis(&bytes, 100).unwrap(), analysis);
+        let mut v2 = analysis.clone();
+        v2.schema_version = 2;
+        let v2_bytes = encode_analysis(&v2, 100).unwrap();
+        assert_eq!(decode_analysis(&v2_bytes, 100).unwrap(), v2);
+        assert_eq!(
+            encode_analysis(&decode_analysis(&v2_bytes, 100).unwrap(), 100).unwrap(),
+            v2_bytes
+        );
+        let mut presented = analysis.clone();
+        presented.presentation = Some(MusicPresentation {
+            capability: candidate,
+            windows: vec![PresentationWindow {
+                start: SongTime::ZERO,
+                end: SongTime::from_frames(100),
+                chroma: [0.0; 12],
+                chord: None,
+                key: None,
+                tonal_confidence: 0.0,
+                onset_density: 0.0,
+                brightness: 0.0,
+                energy: 0.0,
+            }],
+        });
+        let presented_bytes = encode_analysis(&presented, 100).unwrap();
+        assert_eq!(decode_analysis(&presented_bytes, 100).unwrap(), presented);
+        presented.presentation.as_mut().unwrap().windows[0].brightness = f32::NAN;
+        assert!(encode_analysis(&presented, 100).is_err());
         let capability_offset = HEADER_BYTES
             + postcard::serialize_with_flavor(
                 &analysis_wire(&analysis),

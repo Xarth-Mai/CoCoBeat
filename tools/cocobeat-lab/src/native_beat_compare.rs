@@ -603,6 +603,7 @@ mod tests {
     fn onset_analysis(package: &cocobeat_media::ValidatedPackage, frames: &[i64]) -> MusicAnalysis {
         let mut analysis = package.analysis.clone();
         analysis.schema_version = 2;
+        analysis.presentation = None;
         let mut capabilities = cocobeat_schema::AnalysisCapabilities::authored();
         capabilities.onset = cocobeat_schema::AnalysisCapability {
             state: AnalysisState::Candidate,

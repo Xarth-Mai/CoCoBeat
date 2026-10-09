@@ -1,7 +1,9 @@
 use crate::{
     display::DisplayState,
+    feedback_audio::FeedbackTimbre,
     i18n::{Locale, Message},
     input::{MenuKind, MenuPresentation, MenuRow, MenuRowRole, SettingsAction},
+    presentation::{MotionStyle, PresentationOverrides, PresentationVisual, WorldTheme},
     settings::{self, AntiAliasing, FrameLimit, QualityPreset, RainAmount, Settings},
 };
 use bevy::prelude::Resource;
@@ -13,6 +15,8 @@ const PREVIEW_SECONDS: f64 = 15.0;
 enum Page {
     Quality,
     Pacing,
+    AudioAccess,
+    Presentation,
 }
 
 struct Preview {
@@ -40,9 +44,21 @@ pub(crate) struct SettingsMenu {
     language_selection: Option<usize>,
     page: Option<Page>,
     preview: Option<Preview>,
+    current_song: Option<String>,
+    recommendation: PresentationOverrides,
 }
 
 impl SettingsMenu {
+    /// Only Ready songs expose editable presentation preferences
+    pub fn set_song(&mut self, content_id: Option<String>, recommendation: PresentationOverrides) {
+        self.current_song = content_id;
+        self.recommendation = recommendation;
+        if self.current_song.is_none() && matches!(self.page, Some(Page::Presentation)) {
+            self.page = None;
+            self.selection = 0;
+        }
+    }
+
     pub fn load() -> Self {
         match settings::default_path() {
             Ok(path) => Self::from_path(path),
@@ -253,6 +269,8 @@ impl SettingsMenu {
             let action_rows = match page {
                 Page::Quality => 7,
                 Page::Pacing => 3,
+                Page::AudioAccess => 5,
+                Page::Presentation => 5,
             };
             match action {
                 SettingsAction::Back | SettingsAction::Confirm
@@ -262,6 +280,8 @@ impl SettingsMenu {
                     self.selection = match page {
                         Page::Quality => 5,
                         Page::Pacing => 6,
+                        Page::AudioAccess => 8,
+                        Page::Presentation => 9,
                     };
                 }
                 SettingsAction::Up => self.selection = (self.selection + rows - 1) % rows,
@@ -326,6 +346,76 @@ impl SettingsMenu {
                             1 => draft.pacing.vsync = !draft.pacing.vsync,
                             _ => {}
                         },
+                        Page::AudioAccess => match self.selection {
+                            0 => draft.music_volume = adjust_volume(draft.music_volume, previous),
+                            1 => {
+                                draft.feedback_volume =
+                                    adjust_volume(draft.feedback_volume, previous)
+                            }
+                            2 => draft.quality.reduced_motion = !draft.quality.reduced_motion,
+                            3 => draft.quality.reduced_flashes = !draft.quality.reduced_flashes,
+                            _ => {}
+                        },
+                        Page::Presentation => {
+                            if let Some(song) = &self.current_song {
+                                let mut choices = draft
+                                    .song_presentations
+                                    .get(song)
+                                    .copied()
+                                    .unwrap_or_default();
+                                match self.selection {
+                                    0 => {
+                                        choices.world = cycle(
+                                            choices.world,
+                                            &[
+                                                None,
+                                                Some(WorldTheme::Neon),
+                                                Some(WorldTheme::Forest),
+                                                Some(WorldTheme::Candy),
+                                                Some(WorldTheme::StarSea),
+                                            ],
+                                            previous,
+                                        )
+                                    }
+                                    1 => {
+                                        choices.timbre = cycle(
+                                            choices.timbre,
+                                            &[
+                                                None,
+                                                Some(FeedbackTimbre::Wood),
+                                                Some(FeedbackTimbre::Crisp),
+                                                Some(FeedbackTimbre::Drums),
+                                                Some(FeedbackTimbre::Plucks),
+                                                Some(FeedbackTimbre::Glass),
+                                                Some(FeedbackTimbre::Elastic),
+                                            ],
+                                            previous,
+                                        )
+                                    }
+                                    2 => {
+                                        choices.motion = cycle(
+                                            choices.motion,
+                                            &[
+                                                None,
+                                                Some(MotionStyle::Gentle),
+                                                Some(MotionStyle::Playful),
+                                                Some(MotionStyle::Energetic),
+                                            ],
+                                            previous,
+                                        )
+                                    }
+                                    3 if action == SettingsAction::Confirm => {
+                                        choices = PresentationOverrides::default()
+                                    }
+                                    _ => {}
+                                }
+                                if choices == PresentationOverrides::default() {
+                                    draft.song_presentations.remove(song);
+                                } else {
+                                    draft.song_presentations.insert(song.clone(), choices);
+                                }
+                            }
+                        }
                     }
                 }
                 SettingsAction::Open | SettingsAction::Back => {}
@@ -399,11 +489,11 @@ impl SettingsMenu {
                     display.normalize_pacing(&mut draft.pacing);
                     self.notice = Message::new("settings_notice.defaults");
                 }
-                5 | 6 if action == SettingsAction::Confirm => {
-                    self.page = Some(if self.selection == 5 {
-                        Page::Quality
-                    } else {
-                        Page::Pacing
+                5 | 6 | 8 if action == SettingsAction::Confirm => {
+                    self.page = Some(match self.selection {
+                        5 => Page::Quality,
+                        6 => Page::Pacing,
+                        _ => Page::AudioAccess,
                     });
                     self.selection = 0;
                 }
@@ -421,6 +511,10 @@ impl SettingsMenu {
                             action == SettingsAction::Previous,
                         );
                     }
+                }
+                9 if action == SettingsAction::Confirm && self.current_song.is_some() => {
+                    self.page = Some(Page::Presentation);
+                    self.selection = 0;
                 }
                 _ => {}
             },
@@ -536,6 +630,81 @@ impl SettingsMenu {
             let value_row =
                 |key, value: &str| Message::with(key, [("value", value.into())]).render(locale);
             let (title, rows) = match page {
+                Page::Presentation => {
+                    let choices = self
+                        .current_song
+                        .as_ref()
+                        .and_then(|song| draft.song_presentations.get(song))
+                        .copied()
+                        .unwrap_or_default();
+                    let recommendation = choices
+                        .world
+                        .map(PresentationVisual::recommendation)
+                        .unwrap_or(self.recommendation);
+                    let selected =
+                        |choice: Option<&'static str>, recommended: Option<&'static str>| {
+                            choice
+                                .map(|key| locale.text(key).to_string())
+                                .unwrap_or_else(|| {
+                                    recommended
+                                        .map(|key| {
+                                            Message::with(
+                                                "settings.auto_recommended",
+                                                [("value", locale.text(key).into())],
+                                            )
+                                            .render(locale)
+                                        })
+                                        .unwrap_or_else(|| locale.text("settings.auto").into())
+                                })
+                        };
+                    (
+                        "settings.presentation_title",
+                        vec![
+                            value_row(
+                                "settings.world",
+                                &selected(
+                                    choices.world.map(world_key),
+                                    self.recommendation.world.map(world_key),
+                                ),
+                            ),
+                            value_row(
+                                "settings.timbre",
+                                &selected(
+                                    choices.timbre.map(timbre_key),
+                                    recommendation.timbre.map(timbre_key),
+                                ),
+                            ),
+                            value_row(
+                                "settings.motion",
+                                &selected(
+                                    choices.motion.map(motion_key),
+                                    recommendation.motion.map(motion_key),
+                                ),
+                            ),
+                            locale.text("settings.restore_auto").into(),
+                            locale.text("settings.back").into(),
+                        ],
+                    )
+                }
+                Page::AudioAccess => (
+                    "settings.audio_access_title",
+                    vec![
+                        value_row("settings.music_volume", &format!("{}%", draft.music_volume)),
+                        value_row(
+                            "settings.feedback_volume",
+                            &format!("{}%", draft.feedback_volume),
+                        ),
+                        value_row(
+                            "settings.reduced_motion",
+                            on_off(draft.quality.reduced_motion),
+                        ),
+                        value_row(
+                            "settings.reduced_flashes",
+                            on_off(draft.quality.reduced_flashes),
+                        ),
+                        locale.text("settings.back").into(),
+                    ],
+                ),
                 Page::Quality => (
                     "settings.quality_title",
                     vec![
@@ -669,12 +838,52 @@ impl SettingsMenu {
             selected: false,
             ..MenuRow::default()
         });
+        rows.extend(text_rows([locale.text("settings.audio_access").into()]));
+        if self.current_song.is_some() {
+            rows.extend(text_rows([locale.text("settings.presentation").into()]));
+        }
         presentation(
             locale.text("settings.title").into(),
             rows,
             footer("settings.controls", observed(display, locale)),
             self.selection,
         )
+    }
+}
+
+fn world_key(world: WorldTheme) -> &'static str {
+    match world {
+        WorldTheme::Neon => "presentation.world_neon",
+        WorldTheme::Forest => "presentation.world_forest",
+        WorldTheme::Candy => "presentation.world_candy",
+        WorldTheme::StarSea => "presentation.world_star_sea",
+    }
+}
+
+fn timbre_key(timbre: FeedbackTimbre) -> &'static str {
+    match timbre {
+        FeedbackTimbre::Wood => "presentation.timbre_wood",
+        FeedbackTimbre::Crisp => "presentation.timbre_crisp",
+        FeedbackTimbre::Drums => "presentation.timbre_drums",
+        FeedbackTimbre::Plucks => "presentation.timbre_plucks",
+        FeedbackTimbre::Glass => "presentation.timbre_glass",
+        FeedbackTimbre::Elastic => "presentation.timbre_elastic",
+    }
+}
+
+fn motion_key(motion: MotionStyle) -> &'static str {
+    match motion {
+        MotionStyle::Gentle => "presentation.motion_gentle",
+        MotionStyle::Playful => "presentation.motion_playful",
+        MotionStyle::Energetic => "presentation.motion_energetic",
+    }
+}
+
+fn adjust_volume(value: u8, previous: bool) -> u8 {
+    if previous {
+        value.saturating_sub(5)
+    } else {
+        value.saturating_add(5).min(100)
     }
 }
 
@@ -1157,6 +1366,8 @@ mod tests {
                     fog: true,
                     shadows: effects,
                     bloom: effects,
+                    reduced_motion: false,
+                    reduced_flashes: false,
                 }
             );
             assert_eq!(draft.pacing.frame_limit, FrameLimit::Unlimited);
@@ -1228,7 +1439,7 @@ mod tests {
         display.set_headless_surface([1920, 1080]);
         assert!(menu.presentation(0.0, &display, Locale::EnUs).is_none());
         for (entry, title, actions) in [
-            (None, "SETTINGS", 8),
+            (None, "SETTINGS", 9),
             (
                 Some(0),
                 "RESOLUTION",
@@ -1237,6 +1448,7 @@ mod tests {
             (Some(5), "GRAPHICS", 7),
             (Some(6), "FRAME RATE AND VSYNC", 3),
             (Some(7), "LANGUAGE", 13),
+            (Some(8), "AUDIO AND ACCESSIBILITY", 5),
         ] {
             menu.begin(&display);
             if let Some(entry) = entry {
@@ -1310,5 +1522,128 @@ mod tests {
         assert_eq!(menu.selection, 2);
         assert!(menu.handle(SettingsAction::Back, 2.0, &mut display));
         assert!(menu.presentation(2.0, &display, Locale::EnUs).is_none());
+    }
+
+    #[test]
+    fn audio_and_per_song_choices_apply_together_and_restore_only_current_song() {
+        let root = std::env::temp_dir().join(format!(
+            "cocobeat-settings-presentation-{}",
+            std::process::id()
+        ));
+        let path = root.join("settings.json");
+        let mut menu = SettingsMenu::from_path(path.clone());
+        menu.values.locale = Locale::EnUs;
+        let mut display = DisplayState::new(menu.values.display);
+        display.set_headless_surface([1920, 1080]);
+        let forest = PresentationOverrides {
+            world: Some(WorldTheme::Forest),
+            ..Default::default()
+        };
+        menu.values
+            .song_presentations
+            .insert("other-song".into(), forest);
+        menu.set_song(Some("current-song".into()), forest);
+        menu.begin(&display);
+        menu.selection = 8;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        assert_eq!(menu.draft.as_ref().unwrap().music_volume, 100);
+        menu.handle(SettingsAction::Previous, 0.0, &mut display);
+        menu.selection = 1;
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.selection = 2;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        menu.selection = 3;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        menu.selection = 9;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        assert!(
+            selected_row(&menu, &display)
+                .text
+                .contains("Luminous forest")
+        );
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.selection = 1;
+        menu.handle(SettingsAction::Previous, 0.0, &mut display);
+        menu.selection = 2;
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        assert!(!menu.values.song_presentations.contains_key("current-song"));
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        menu.selection = 2;
+        assert!(menu.handle(SettingsAction::Confirm, 0.0, &mut display));
+        assert_eq!(menu.values.music_volume, 95);
+        assert_eq!(menu.values.feedback_volume, 85);
+        assert!(menu.values.quality.reduced_motion && menu.values.quality.reduced_flashes);
+        assert_eq!(
+            menu.values.song_presentations["current-song"],
+            PresentationOverrides {
+                world: Some(WorldTheme::Neon),
+                timbre: Some(FeedbackTimbre::Elastic),
+                motion: Some(MotionStyle::Gentle)
+            }
+        );
+        assert_eq!(settings::load(&path).unwrap(), menu.values);
+
+        menu.begin(&display);
+        menu.selection = 9;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        menu.selection = 3;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        assert!(
+            !menu
+                .draft
+                .as_ref()
+                .unwrap()
+                .song_presentations
+                .contains_key("current-song")
+        );
+        assert_eq!(
+            menu.draft.as_ref().unwrap().song_presentations["other-song"],
+            forest
+        );
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        menu.handle(SettingsAction::Back, 0.0, &mut display);
+        assert!(menu.values.song_presentations.contains_key("current-song"));
+        menu.set_song(None, PresentationOverrides::default());
+        menu.begin(&display);
+        assert!(
+            !menu
+                .presentation(0.0, &display, Locale::EnUs)
+                .unwrap()
+                .rows
+                .iter()
+                .any(|row| row.text == "This song's presentation")
+        );
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn draft_world_updates_automatic_timbre_and_motion_labels() {
+        let mut menu = SettingsMenu::default();
+        menu.values.locale = Locale::EnUs;
+        let mut display = DisplayState::new(menu.values.display);
+        display.set_headless_surface([1920, 1080]);
+        menu.set_song(
+            Some("current-song".into()),
+            PresentationVisual::recommendation(WorldTheme::Neon),
+        );
+        menu.begin(&display);
+        menu.selection = 9;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        let rows = menu.presentation(0.0, &display, Locale::EnUs).unwrap().rows;
+        assert!(rows[1].text.contains("Auto · Elastic electronic"));
+        assert!(rows[2].text.contains("Auto · Energetic"));
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        menu.handle(SettingsAction::Next, 0.0, &mut display);
+        let rows = menu.presentation(0.0, &display, Locale::EnUs).unwrap().rows;
+        assert!(rows[0].text.contains("Luminous forest"));
+        assert!(rows[1].text.contains("Auto · Wood percussion"));
+        assert!(rows[2].text.contains("Auto · Gentle"));
+        menu.selection = 3;
+        menu.handle(SettingsAction::Confirm, 0.0, &mut display);
+        let rows = menu.presentation(0.0, &display, Locale::EnUs).unwrap().rows;
+        assert!(rows[0].text.contains("Auto · Neon city"));
+        assert!(rows[1].text.contains("Auto · Elastic electronic"));
     }
 }

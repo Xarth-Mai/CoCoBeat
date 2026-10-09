@@ -104,6 +104,20 @@ fn plan_report(
         "repetitions": analysis.repetitions.iter().enumerate().map(|(index, r)| serde_json::json!({"relation_index": index, "source_start_frames": r.source_start.frames(), "source_end_frames": r.source_end.frames(), "target_start_frames": r.target_start.frames(), "target_end_frames": r.target_end.frames(), "confidence": r.confidence, "confidence_bits": r.confidence.map(f32::to_bits)})).collect::<Vec<_>>(),
         "repetition_capability": analysis.capabilities.map(|c| capability_report(c.repetition)),
         "energy_capability": analysis.capabilities.map(|c| capability_report(c.energy)),
+        "presentation": analysis.presentation.as_ref().map(|presentation| serde_json::json!({
+            "capability": capability_report(presentation.capability),
+            "windows": presentation.windows.iter().map(|window| serde_json::json!({
+                "start_frames": window.start.frames(),
+                "end_frames": window.end.frames(),
+                "chroma": window.chroma,
+                "chord": window.chord.map(|chord| serde_json::json!({"root": chord.root, "minor": chord.minor, "agreement": chord.confidence})),
+                "key": window.key.map(|key| serde_json::json!({"root": key.root, "minor": key.minor, "agreement": key.confidence})),
+                "tonal_confidence": window.tonal_confidence,
+                "onset_density": window.onset_density,
+                "brightness": window.brightness,
+                "energy": window.energy,
+            })).collect::<Vec<_>>(),
+        })),
         "motifs": plan.motifs().iter().map(|span| serde_json::json!({"start_frames": span.start.frames(), "end_frames": span.end.frames(), "motif": span.motif})).collect::<Vec<_>>(),
         "decor_energy": plan.decor_energy().iter().map(|span| serde_json::json!({"start_frames": span.start.frames(), "end_frames": span.end.frames(), "rms_bits": span.rms_bits, "peak_bits": span.peak_bits, "band": span.band})).collect::<Vec<_>>(),
     })
@@ -175,6 +189,7 @@ mod tests {
     fn complete_plan_keeps_section_provenance_and_unknown() {
         let end = SongTime::from_frames(960_000);
         let mut analysis = MusicAnalysis {
+            presentation: None,
             schema_version: 2,
             audio_hash: [1; 32],
             capabilities: Some(AnalysisCapabilities::authored()),
@@ -226,6 +241,43 @@ mod tests {
         assert_eq!(report["sections"][0]["label"], "人工短段");
         assert!(report["sections"][0]["confidence"].is_null());
         assert_eq!(report["sections"][1]["confidence"], 0.5);
+        assert!(report["presentation"].is_null());
+
+        analysis.schema_version = cocobeat_schema::ANALYSIS_SCHEMA_VERSION;
+        analysis.presentation = Some(cocobeat_schema::MusicPresentation {
+            capability: cocobeat_schema::AnalysisCapability {
+                state: AnalysisState::Candidate,
+                source: AnalysisSource::Algorithm,
+                confidence: None,
+            },
+            windows: vec![cocobeat_schema::PresentationWindow {
+                start: SongTime::ZERO,
+                end,
+                chroma: [0.0; 12],
+                chord: None,
+                key: None,
+                tonal_confidence: 0.0,
+                onset_density: 0.0,
+                brightness: 0.0,
+                energy: 0.0,
+            }],
+        });
+        analysis.validate(end.frames() as u64).unwrap();
+        let presentation = plan_report(&plan, &analysis, "presentation-v3");
+        assert_eq!(
+            presentation["presentation"]["capability"]["state"],
+            "candidate"
+        );
+        assert!(presentation["presentation"]["capability"]["confidence"].is_null());
+        assert!(presentation["presentation"]["windows"][0]["chord"].is_null());
+        assert_eq!(
+            presentation["presentation"]["windows"][0]["end_frames"],
+            end.frames()
+        );
+        assert_eq!(
+            cocobeat_stage::compile_analysis("mechanism-control", end, &analysis).unwrap(),
+            plan
+        );
 
         analysis.capabilities.as_mut().unwrap().sections.state = AnalysisState::Candidate;
         analysis.capabilities.as_mut().unwrap().sections.source = AnalysisSource::Algorithm;
@@ -236,6 +288,7 @@ mod tests {
         assert_eq!(candidate["segments"], report["segments"]);
 
         analysis.schema_version = 1;
+        analysis.presentation = None;
         analysis.capabilities = None;
         analysis.validate(end.frames() as u64).unwrap();
         let unknown = plan_report(&plan, &analysis, "mechanism-control-v1");

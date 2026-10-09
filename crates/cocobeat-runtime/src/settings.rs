@@ -1,6 +1,8 @@
 use crate::i18n::Locale;
+use crate::presentation::PresentationOverrides;
 use serde::{Deserialize, Serialize};
 use std::{
+    collections::BTreeMap,
     env,
     fs::{self, OpenOptions},
     io::{self, Read, Write},
@@ -9,7 +11,7 @@ use std::{
 };
 
 const VERSION: u32 = 1;
-const MAX_FILE_BYTES: u64 = 4096;
+const MAX_FILE_BYTES: u64 = 1024 * 1024;
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -65,6 +67,10 @@ pub(crate) struct QualitySettings {
     pub fog: bool,
     pub shadows: bool,
     pub bloom: bool,
+    #[serde(default)]
+    pub reduced_motion: bool,
+    #[serde(default)]
+    pub reduced_flashes: bool,
 }
 
 impl Default for QualitySettings {
@@ -76,6 +82,8 @@ impl Default for QualitySettings {
             fog: true,
             shadows: true,
             bloom: true,
+            reduced_motion: false,
+            reduced_flashes: false,
         }
     }
 }
@@ -98,6 +106,8 @@ impl QualitySettings {
             fog: true,
             shadows: effects,
             bloom: effects,
+            reduced_motion: self.reduced_motion,
+            reduced_flashes: self.reduced_flashes,
         };
     }
 }
@@ -125,6 +135,9 @@ pub(crate) struct Settings {
     pub locale: Locale,
     pub quality: QualitySettings,
     pub pacing: PacingSettings,
+    pub music_volume: u8,
+    pub feedback_volume: u8,
+    pub song_presentations: BTreeMap<String, PresentationOverrides>,
 }
 
 impl Default for Settings {
@@ -134,6 +147,9 @@ impl Default for Settings {
             locale: Locale::system_default(),
             quality: QualitySettings::default(),
             pacing: PacingSettings::default(),
+            music_volume: default_music_volume(),
+            feedback_volume: default_feedback_volume(),
+            song_presentations: BTreeMap::new(),
         }
     }
 }
@@ -149,6 +165,34 @@ struct Document {
     quality: QualitySettings,
     #[serde(default)]
     pacing: PacingSettings,
+    #[serde(default = "default_music_volume")]
+    music_volume: u8,
+    #[serde(default = "default_feedback_volume")]
+    feedback_volume: u8,
+    #[serde(default)]
+    song_presentations: BTreeMap<String, PresentationOverrides>,
+}
+
+fn default_music_volume() -> u8 {
+    100
+}
+
+fn default_feedback_volume() -> u8 {
+    80
+}
+
+fn validate_presentation(
+    music_volume: u8,
+    feedback_volume: u8,
+    songs: &BTreeMap<String, PresentationOverrides>,
+) -> io::Result<()> {
+    if music_volume > 100 || feedback_volume > 100 {
+        return Err(invalid("Audio volumes must be between 0 and 100"));
+    }
+    if songs.len() > 4096 || songs.keys().any(|key| key.is_empty() || key.len() > 128) {
+        return Err(invalid("Song presentation preferences exceed their bounds"));
+    }
+    Ok(())
 }
 
 fn invalid(message: impl Into<Box<dyn std::error::Error + Send + Sync>>) -> io::Error {
@@ -192,13 +236,18 @@ pub fn load(path: &Path) -> io::Result<Settings> {
         .take(MAX_FILE_BYTES + 1)
         .read_to_end(&mut bytes)?;
     if bytes.len() as u64 > MAX_FILE_BYTES {
-        return Err(invalid("Settings file exceeds 4096 bytes"));
+        return Err(invalid("Settings file exceeds 1 MiB"));
     }
     let mut document: Document = serde_json::from_slice(&bytes).map_err(invalid)?;
     if document.version != VERSION {
         return Err(invalid("Unsupported settings version"));
     }
     validate(document.display, document.pacing)?;
+    validate_presentation(
+        document.music_volume,
+        document.feedback_volume,
+        &document.song_presentations,
+    )?;
     if document.quality.preset != QualityPreset::Custom {
         let mut preset = document.quality;
         preset.set_preset(preset.preset);
@@ -211,6 +260,9 @@ pub fn load(path: &Path) -> io::Result<Settings> {
         locale: document.locale,
         quality: document.quality,
         pacing: document.pacing,
+        music_volume: document.music_volume,
+        feedback_volume: document.feedback_volume,
+        song_presentations: document.song_presentations,
     })
 }
 
@@ -219,14 +271,25 @@ pub fn load(path: &Path) -> io::Result<Settings> {
 /// remains subject to the filesystem, as with Replay saves
 pub fn save(path: &Path, settings: &Settings) -> io::Result<()> {
     validate(settings.display, settings.pacing)?;
+    validate_presentation(
+        settings.music_volume,
+        settings.feedback_volume,
+        &settings.song_presentations,
+    )?;
     let bytes = serde_json::to_vec_pretty(&Document {
         version: VERSION,
         display: settings.display,
         locale: settings.locale,
         quality: settings.quality,
         pacing: settings.pacing,
+        music_volume: settings.music_volume,
+        feedback_volume: settings.feedback_volume,
+        song_presentations: settings.song_presentations.clone(),
     })
     .map_err(invalid)?;
+    if bytes.len() as u64 > MAX_FILE_BYTES {
+        return Err(invalid("Settings file exceeds 1 MiB"));
+    }
     let name = path
         .file_name()
         .ok_or_else(|| invalid("Settings path requires a file name"))?;
@@ -299,6 +362,17 @@ mod tests {
         settings.display.fullscreen_size = [1920, 1080];
         settings.locale = Locale::Ja;
         settings.quality.set_preset(QualityPreset::Low);
+        settings.music_volume = 75;
+        settings.feedback_volume = 55;
+        settings.quality.reduced_motion = true;
+        settings.quality.reduced_flashes = true;
+        settings.song_presentations.insert(
+            "song-a".into(),
+            PresentationOverrides {
+                world: Some(crate::presentation::WorldTheme::Forest),
+                ..PresentationOverrides::default()
+            },
+        );
         settings.pacing = PacingSettings {
             frame_limit: FrameLimit::Limited(59940),
             vsync: true,
@@ -319,6 +393,10 @@ mod tests {
         assert_eq!(load(&path).unwrap(), settings);
 
         let previous = fs::read(&path).unwrap();
+        settings.music_volume = 101;
+        assert!(save(&path, &settings).is_err());
+        assert_eq!(fs::read(&path).unwrap(), previous);
+        settings.music_volume = 75;
         settings.display.window_size = [0, 900];
         assert!(save(&path, &settings).is_err());
         assert_eq!(fs::read(&path).unwrap(), previous);
@@ -410,8 +488,30 @@ mod tests {
                 locale: Locale::system_default(),
                 quality: QualitySettings::default(),
                 pacing: PacingSettings::default(),
+                ..Settings::default()
             }
         );
         fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn legacy_quality_defaults_and_presets_preserve_accessibility() {
+        let mut quality: QualitySettings = serde_json::from_value(serde_json::json!({
+            "preset": "medium", "antialiasing": "msaa2", "rain": "half",
+            "fog": true, "shadows": true, "bloom": true
+        }))
+        .unwrap();
+        assert!(!quality.reduced_motion && !quality.reduced_flashes);
+        quality.reduced_motion = true;
+        quality.reduced_flashes = true;
+        for preset in [
+            QualityPreset::High,
+            QualityPreset::Low,
+            QualityPreset::Medium,
+            QualityPreset::Custom,
+        ] {
+            quality.set_preset(preset);
+            assert!(quality.reduced_motion && quality.reduced_flashes);
+        }
     }
 }

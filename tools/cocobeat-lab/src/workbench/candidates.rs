@@ -1105,6 +1105,7 @@ mod tests {
         let mut legacy = package.clone();
         legacy.analysis.capabilities = None;
         legacy.analysis.schema_version = 1;
+        legacy.analysis.presentation = None;
         legacy.manifest.analysis_version = "legacy-author-profile".into();
         assert!(header(&legacy)["repetition_capability"].is_null());
         assert!(header(&legacy)["origin_channel"].is_null());

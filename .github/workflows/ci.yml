@@ -19,6 +19,8 @@ on:
       - 'assets/i18n/**'
       - 'assets/fonts/**'
       - 'assets/flags/**'
+      - 'assets/audio/**'
+      - 'assets/scenes/**'
       - 'testdata/synthetic/media-import/**'
       - '.github/workflows/**'
   pull_request:

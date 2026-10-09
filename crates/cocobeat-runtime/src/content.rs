@@ -15,6 +15,7 @@ pub struct SongContent {
     pub anchors: Vec<Anchor>,
     pub sections: Vec<SectionCue>,
     pub stage: Option<Arc<cocobeat_stage::StagePlan>>,
+    pub(crate) presentation: Arc<crate::presentation::PresentationPlan>,
 }
 
 impl SongContent {
@@ -25,6 +26,7 @@ impl SongContent {
             anchors: dev_song::anchors(),
             sections: dev_song::sections(),
             stage: None,
+            presentation: Arc::default(),
         }
     }
 
@@ -90,6 +92,16 @@ pub(crate) fn load_package_named(
     let end = SongTime::from_frames(package.manifest.canonical_frames as i64);
     let stage =
         cocobeat_stage::compile_analysis_version(&content_id, end, &package.analysis, version)?;
+    let mut presentation =
+        crate::presentation::PresentationPlan::compile(&content_id, &package.analysis);
+    // Authored cues also organize scenery when analysis has no structural intervals
+    if presentation.sections.len() <= 1 {
+        presentation
+            .sections
+            .extend(package.chart.sections.iter().map(|cue| cue.time));
+        presentation.sections.sort_unstable();
+        presentation.sections.dedup();
+    }
     Ok((
         SongContent {
             content_id,
@@ -97,6 +109,7 @@ pub(crate) fn load_package_named(
             anchors: package.chart.anchors,
             sections: package.chart.sections,
             stage: Some(Arc::new(stage)),
+            presentation: Arc::new(presentation),
         },
         sound_data(pcm),
         package.manifest.song_id,
@@ -165,6 +178,7 @@ mod tests {
                         analysis_version: "measured-energy-v1".into(),
                         chart_version: "hand-authored-v1".into(),
                         analysis: MusicAnalysis {
+                            presentation: None,
                             capabilities: None,
                             tempo_regions: Vec::new(),
                             repetitions: Vec::new(),
@@ -341,6 +355,7 @@ mod tests {
     #[test]
     fn section_queries_use_point_times_and_same_frame_highest_ids() {
         let mut content = SongContent {
+            presentation: Arc::default(),
             content_id: "cue-query".into(),
             end: SongTime::from_frames(4_800),
             anchors: vec![],

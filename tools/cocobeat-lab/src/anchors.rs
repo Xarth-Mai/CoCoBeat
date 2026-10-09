@@ -794,6 +794,7 @@ pub(crate) mod tests {
                 analysis_version: "constructed-onsets-test-v1".into(),
                 chart_version: "manual-test-v1".into(),
                 analysis: MusicAnalysis {
+                    presentation: None,
                     capabilities: None,
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),

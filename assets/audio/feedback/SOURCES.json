@@ -1,0 +1,83 @@
+[
+  {
+    "file": "wood-soft.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claves/Claves1_Hit_v1_rr1_Mid.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "19379cc794b9e50d4dc55200238e27091bedab63b7370eb625490c7a96631b34",
+    "sha256": "e1f24086ea9ca5f724a2972933f8f344fbeb01da94f6ad7768a7d1cde563459c",
+    "duration_seconds": 0.13,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "wood-medium.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claves/Claves1_Hit_v2_rr1_Mid.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "bcabe27330761309eb4b4f6207e6e3b4be59815df86449ac05bfb9b81f19efc9",
+    "sha256": "7990e3a09766e2529b0b1869ea6e8dc9084912c75c47eb635f433a816a35f84f",
+    "duration_seconds": 0.13,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "wood-hard.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claves/Claves1_Hit_v3_rr1_Mid.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "12285f65ed125f4140d1e8a86b2d6a08bf3283b7bf30c10d68290b8e8230a927",
+    "sha256": "53188649e6dde9450c6fac3e05006ed89775c5dda424ceec974f662708887e61",
+    "duration_seconds": 0.13,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "clap-soft.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl1.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "2a16d804adcb2fa3ed20a12579ca30aa3628a9b876a87476a9259a419cd3fd12",
+    "sha256": "dae342ab39a27b4958369cc56421b0807e3b7f90747d6a9721ae88d6551c8f04",
+    "duration_seconds": 0.18,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "clap-medium.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl2.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "f8afd95a16e8846f1c0c831c15482af65765107cab267fa262a218a10b0297db",
+    "sha256": "586c6ee7e354302585eea7f1168345a90fb0627f9e85e06d1992544e6a9565b1",
+    "duration_seconds": 0.18,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "clap-hard.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Claps/SoloClap_vl3.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "03dc4fa78deabcbfa0972accf45e538b25b69526e69fad6a81b48ca508caeb63",
+    "sha256": "259fbdf89696519d70fb022c8416795e5644addeda244ef7a256b49e3616153a",
+    "duration_seconds": 0.18,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "glass-soft.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Glockenspiel/glock_soft_C5_02.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "4fa149e6f224557df5fab98ad660a8f192bc6fbf2556077dd1089509bf4424e2",
+    "sha256": "5bd624b9be87b7831eeb5390bd1937146427e054520448c17f6c3f0e7af61955",
+    "duration_seconds": 0.48,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "glass-medium.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Glockenspiel/glock_medium_C5_01.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "635f898e0bcb6975b96b18efd9c896f6f1b97ff12174a339ada4814e49675660",
+    "sha256": "b5417c804d10a0308eeee90513d1567bf5ad25917a30525e23dac333ba9a9c1c",
+    "duration_seconds": 0.48,
+    "license": "CC0-1.0"
+  },
+  {
+    "file": "glass-hard.pcm",
+    "source_path": "Idiophones/Struck Idiophones/Glockenspiel/glock_loud_C5_01.wav",
+    "revision": "c1ea7bcc3c7309650ab0da9d15c9cd1fbc4a4c7e",
+    "source_sha256": "b28baea01b6028e061e5cc978fca70f9062af6a59d155b0fe55e54ec89f42c07",
+    "sha256": "f99a81ed503ef21faba28c8131de426d2d2096b0bd2d15d20a6e2dc592fdc292",
+    "duration_seconds": 0.48,
+    "license": "CC0-1.0"
+  }
+]

@@ -18,6 +18,7 @@ mod native_cancellation;
 mod native_onset;
 mod native_tempo;
 mod package;
+mod presentation;
 mod resample;
 mod structure_features;
 
@@ -44,6 +45,7 @@ pub use package::{
     ReceivedPackage, ValidatedPackage, build_package, export_anchors, read_package,
     validate_package, validate_package_objects,
 };
+pub use presentation::{PRESENTATION_ANALYSIS_PROFILE, analyze_presentation};
 pub use resample::{ResampledSource, resample_source};
 pub use structure_features::{
     REPETITION_CANDIDATE_PROFILE, STRUCTURE_SEGMENTATION_PROFILE, StructureAdjacentChange,

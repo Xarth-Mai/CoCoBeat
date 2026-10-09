@@ -55,6 +55,7 @@ pub fn build(destination: &Path) -> Result<(), String> {
                 analysis_version: "qa-uncalibrated-evidence-v1".into(),
                 chart_version: "qa-source-chart-v1".into(),
                 analysis: MusicAnalysis {
+                    presentation: None,
                     capabilities: None,
                     tempo_regions: Vec::new(),
                     repetitions: Vec::new(),

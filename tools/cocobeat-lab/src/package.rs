@@ -110,6 +110,13 @@ fn summary(package: &ValidatedPackage) {
     );
     println!("Package BLAKE3: {hash}");
     println!("Analysis capabilities: {:?}", package.analysis.capabilities);
+    if let Some(presentation) = &package.analysis.presentation {
+        println!(
+            "Music presentation: {} windows, {:?}; chord/key agreement is not a calibrated probability",
+            presentation.windows.len(),
+            presentation.capability,
+        );
+    }
     println!(
         "Onset candidates: {}, tempo regions: {}, repetition relations: {}",
         package.analysis.onsets.len(),

@@ -4,7 +4,7 @@ use crate::{Anchor, AssetRef, CANONICAL_SAMPLE_RATE, SongTime};
 use std::collections::BTreeSet;
 
 pub const CONTENT_SCHEMA_VERSION: u32 = 1;
-pub const ANALYSIS_SCHEMA_VERSION: u32 = 2;
+pub const ANALYSIS_SCHEMA_VERSION: u32 = 3;
 pub const MAX_CONTENT_ITEMS: usize = 100_000;
 pub const MAX_CONTENT_TEXT_BYTES: usize = 256;
 pub const MAX_CONTENT_DIAGNOSTICS_BYTES: usize = 4_096;
@@ -12,6 +12,7 @@ pub const MAX_CANONICAL_FRAMES: u64 = 28_800_000;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct MusicAnalysis {
+    pub presentation: Option<MusicPresentation>,
     pub schema_version: u32,
     pub audio_hash: [u8; 32],
     pub capabilities: Option<AnalysisCapabilities>,
@@ -22,6 +23,46 @@ pub struct MusicAnalysis {
     pub sections: Vec<SectionFeature>,
     pub energy: Vec<EnergySample>,
     pub diagnostics: String,
+}
+
+/// Optional presentation candidates, independent of timing and scoring facts
+#[derive(Clone, Debug, PartialEq)]
+pub struct MusicPresentation {
+    pub capability: AnalysisCapability,
+    pub windows: Vec<PresentationWindow>,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct ChordCandidate {
+    /// C = 0 through B = 11
+    pub root: u8,
+    pub minor: bool,
+    /// Uncalibrated algorithm agreement score, not a correctness probability
+    pub confidence: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct KeyCandidate {
+    pub root: u8,
+    pub minor: bool,
+    pub confidence: f32,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct PresentationWindow {
+    pub start: SongTime,
+    pub end: SongTime,
+    /// Normalized pitch class salience, all zero when no tonal evidence exists
+    pub chroma: [f32; 12],
+    pub chord: Option<ChordCandidate>,
+    pub key: Option<KeyCandidate>,
+    pub tonal_confidence: f32,
+    /// Detected attacks per second
+    pub onset_density: f32,
+    /// Spectral centroid normalized to 6 kHz
+    pub brightness: f32,
+    /// Linear RMS, clamped to the presentation range 0..=1
+    pub energy: f32,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -227,7 +268,7 @@ impl MusicAnalysis {
         match (self.schema_version, self.capabilities) {
             (CONTENT_SCHEMA_VERSION, None)
                 if self.tempo_regions.is_empty() && self.repetitions.is_empty() => {}
-            (ANALYSIS_SCHEMA_VERSION, Some(capabilities)) => {
+            (2 | ANALYSIS_SCHEMA_VERSION, Some(capabilities)) => {
                 for (capability, has_payload) in [
                     (capabilities.tempo, !self.tempo_regions.is_empty()),
                     (capabilities.onset, !self.onsets.is_empty()),
@@ -264,6 +305,59 @@ impl MusicAnalysis {
             _ => return Err("Analysis version and capability metadata do not match".into()),
         }
         validate_header(CONTENT_SCHEMA_VERSION, canonical_frames)?;
+        if self.schema_version < 3 && self.presentation.is_some() {
+            return Err("Presentation candidates require analysis schema v3".into());
+        }
+        if let Some(presentation) = &self.presentation {
+            validate_items(presentation.windows.len())?;
+            validate_probability(presentation.capability.confidence)?;
+            if !matches!(
+                presentation.capability.state,
+                AnalysisState::Candidate | AnalysisState::Validated
+            ) {
+                return Err("Presentation payload requires available capability metadata".into());
+            }
+            let mut through = SongTime::ZERO;
+            for window in &presentation.windows {
+                if window.start != through
+                    || window.end <= window.start
+                    || window.end.frames() as u64 > canonical_frames
+                {
+                    return Err(
+                        "Presentation windows must cover canonical audio continuously".into(),
+                    );
+                }
+                through = window.end;
+                for value in window.chroma.into_iter().chain([
+                    window.tonal_confidence,
+                    window.brightness,
+                    window.energy,
+                ]) {
+                    validate_probability(Some(value))?;
+                }
+                let chroma_sum: f32 = window.chroma.iter().sum();
+                if chroma_sum != 0.0 && (chroma_sum - 1.0).abs() > 0.001 {
+                    return Err("Presentation chroma must be normalized or unknown".into());
+                }
+                validate_strength(window.onset_density)?;
+                for (root, confidence) in window
+                    .chord
+                    .map(|value| (value.root, value.confidence))
+                    .into_iter()
+                    .chain(window.key.map(|value| (value.root, value.confidence)))
+                {
+                    if root >= 12 || chroma_sum == 0.0 || window.tonal_confidence == 0.0 {
+                        return Err(
+                            "Pitch candidates require pitch-class roots and tonal evidence".into(),
+                        );
+                    }
+                    validate_probability(Some(confidence))?;
+                }
+            }
+            if through.frames() as u64 != canonical_frames {
+                return Err("Presentation windows must cover the complete audio".into());
+            }
+        }
         for count in [
             self.beats.len(),
             self.onsets.len(),
@@ -453,6 +547,7 @@ mod tests {
 
     fn analysis() -> MusicAnalysis {
         MusicAnalysis {
+            presentation: None,
             capabilities: None,
             tempo_regions: Vec::new(),
             repetitions: Vec::new(),

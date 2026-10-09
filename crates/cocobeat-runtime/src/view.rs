@@ -16,6 +16,8 @@ use crate::{
 
 #[derive(Resource, Default)]
 pub(crate) struct VisualState {
+    pub presentation: crate::presentation::PresentationVisual,
+    pub motion: scene::characters::CharacterMotion,
     pub song_time: cocobeat_schema::SongTime,
     pub song_seconds: f64,
     pub duration_seconds: f64,
@@ -124,6 +126,10 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
     let font =
         |font_size: f32| TextFont::from_font_size(font_size).with_font(assets.font(state.locale));
     let colors = [Color::srgb(0.12, 0.92, 0.9), Color::srgb(0.96, 0.28, 0.67)];
+    let text_shadow = TextShadow {
+        offset: Vec2::splat(1.0),
+        color: Color::srgba(0.0, 0.0, 0.0, 0.95),
+    };
     commands
         .spawn((
             Node {
@@ -142,10 +148,14 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
             Text::default(),
             UiText::Subtitle,
             font(13.0),
-            TextColor(Color::srgb(0.72, 0.79, 0.88)),
+            TextColor(Color::srgb(0.9, 0.94, 0.99)),
+            text_shadow,
+            BackgroundColor(Color::srgba(0.012, 0.02, 0.04, 0.84)),
             TextLayout::no_wrap(),
             Node {
                 flex_shrink: 0.0,
+                padding: UiRect::horizontal(px(6)),
+                border_radius: BorderRadius::all(px(4)),
                 ..default()
             },
         ));
@@ -154,11 +164,15 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
         UiText::Clock,
         font(17.0),
         TextColor(Color::srgb(0.92, 0.95, 0.99)),
+        text_shadow,
+        BackgroundColor(Color::srgba(0.012, 0.02, 0.04, 0.84)),
         TextLayout::justify(Justify::Right),
         Node {
             position_type: PositionType::Absolute,
             top: px(34),
             right: px(36),
+            padding: UiRect::axes(px(6), px(3)),
+            border_radius: BorderRadius::all(px(4)),
             ..default()
         },
     ));
@@ -169,6 +183,7 @@ fn setup_hud(mut commands: Commands, state: Res<VisualState>, assets: Res<UiAsse
             PlayerLabel,
             font(13.0),
             TextColor(color),
+            text_shadow,
             TextLayout::justify(Justify::Center),
             Node {
                 position_type: PositionType::Absolute,
@@ -400,6 +415,7 @@ fn ensure_menu_rows(
 fn layout_hud(
     state: Res<VisualState>,
     cameras: Query<&Camera, With<IsDefaultUiCamera>>,
+    game_camera: Query<(&Camera, &GlobalTransform), With<crate::display::GameCamera>>,
     mut panels: Query<&mut Node, With<StatusPanel>>,
     mut auxiliary: Query<(&UiText, &mut Node, &mut Text), Without<StatusPanel>>,
     mut cards: Query<
@@ -487,6 +503,23 @@ fn layout_hud(
     for (kind, mut node, mut text) in &mut auxiliary {
         if let UiText::Player(player) = *kind {
             node.bottom = percent(if viewport.x < 600.0 { 22.0 } else { 18.75 });
+            let actor = scene::characters::root_transform(&state, player);
+            if let Ok((camera, transform)) = game_camera.single()
+                && let Ok(position) = camera.world_to_viewport(
+                    transform,
+                    // Clear the full ear silhouette during stretches and tilted poses
+                    actor.translation + Vec3::Y * (1.35 * actor.scale.max_element()),
+                )
+            {
+                let scene_size = camera.logical_viewport_size().unwrap_or(viewport);
+                let position = position * viewport / scene_size;
+                let width = if viewport.x < 600.0 { 42.0 } else { 150.0 };
+                node.width = px(width);
+                node.left =
+                    px((position.x - width * 0.5).clamp(0.0, (viewport.x - width).max(0.0)));
+                node.top = px((position.y - 20.0).max(0.0));
+                node.bottom = Val::Auto;
+            }
             let label = if viewport.x < 600.0 {
                 format!("P{}", player + 1)
             } else {
