@@ -73,6 +73,23 @@ Windows 与 Linux 包均带入 `licenses/`、品牌来源说明与静态图标�
 
 目前入口为本地 64 秒双人原型，包含程序生成的音乐与场景；第三方 notices、安装包、运行库与完整资源打包仍属于 V1 加固门槛，后续门槛按 [工作进度](../todo/progress.md) 推进，不能用本机编译推断其他平台或真实设备兼容性
 
+## 2026-10-09 固定来源四目标软件记录
+
+固定 `02360df17fe367e35282a86fcbe9a969f2d147f2` 先通过 [CI 37885562845](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885562845)，再以相同 main / head SHA / attempt1 派发四目标；四个原生 runner 的优化 Game / Lab 构建、下载包身份与解包 Lab 软件检查均通过，见[四目标观察](../testdata/synthetic/release-four-target-02360df-observations-20261009.json)
+
+| 目标 | Actions run | 原生 runner | 优化包与软件检查 |
+|---|---|---|---|
+| Windows x64 | [37885774232](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885774232) | windows-latest | PASS |
+| Windows ARM64 | [37885813573](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885813573) | windows-11-arm | PASS |
+| Linux x64 | [37885825612](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885825612) | ubuntu-24.04 | PASS |
+| Linux ARM64 | [37885840232](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885840232) | ubuntu-24.04-arm | PASS |
+
+原48条 Lab smoke 加新16条左右声道 `music-truth-template --metrical` / `compare-native-beats` 共64条，60条成功、4条缺模型预期拒绝且未发布成功包，缺模型期间手工导入与 verify 成功；左右 Stage 均 compiler3，新路径只覆盖空 MusicTruth v2 / metrical_context[] 与 native report v3，confidence / beat_unit / meter 仍未知、quality UNASSESSED、NO_COMPARABLE_COVERAGE，没有新增音乐质量准入
+
+各包41份源码许可文件按原字节匹配固定提交，台账597行，4份 SDK 原始 notices 与固定 core / provider / small0 模型核对；本机16次 PE import / ELF dynamic-version 表读取仅为静态检查，没有本机执行发行二进制或推断干净 Windows VC / Linux ABI 兼容及完整法律覆盖
+
+派发 QA、API 连接、首轮下载预算与 Windows canonical 长路径检查器失败均保留，修正仅涉及 QA；旧 verify.py 打包 FAIL、ARM143未知与 runner失联 / log404历史及旧音乐质量 FAIL 保持。该记录只绑定02360df，不覆盖后续 AwaitLive源码、非空参考、完整 Phase / Kira故障矩阵、Game GUI / 设备 / 真人或 tag Release
+
 ## 2026-10-08 原生候选发行软件记录
 
 固定 `0930d1747d56c70785d487346105488dfeaa9a9f` 先通过 CI `37701980449`，再逐目标确认远端 main 并派发四次手动构建，各 run 实核相同 headSha 与 attempt 1；Windows x64、Windows ARM64、Linux x64 的优化包与解包 Lab 十个实际命令通过，包含左右候选导入 / 完整四对象 verify / Stage、缺模型拒绝及缺模型期间手工导入回归，见 [清洁包矩阵](../testdata/synthetic/native-beat-release-observations-20261008.json)

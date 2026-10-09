@@ -1,0 +1,347 @@
+{
+  "schema_version": 1,
+  "recorded_date": "2026-10-09",
+  "kind": "actual_same_commit_four_native_optimized_builds_unpacked_Lab_and_package_checks",
+  "status": "FOUR_TARGET_SOFTWARE_PASS_FIXED_02360DF",
+  "repo": "Xarth-Mai/CoCoBeat",
+  "fixed_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+  "source_scope": "Only fixed02360df; subsequent AwaitLive dirty Rust or later commits need separate evidence",
+  "ci_gate": {
+    "run_id": 37885562845,
+    "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885562845",
+    "head_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "completed_at_utc": "2026-10-09T04:49:07Z",
+    "evidence_id": "ci_review"
+  },
+  "runs": [
+    {
+      "target": "x86_64-pc-windows-msvc",
+      "run_id": 37885774232,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885774232",
+      "head_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+      "attempt": 1,
+      "runner_labels": [
+        "windows-latest"
+      ],
+      "job_completed_at_utc": "2026-10-09T05:22:48Z",
+      "optimized_build": "PASS",
+      "downloaded_package": "PASS_FIXED_ARCHIVE_AND_SOURCE_IDENTITY",
+      "archive": {
+        "path": "target/final-four-native-02360df-20261009/artifacts/x86_64-pc-windows-msvc/cocobeat-x86_64-pc-windows-msvc-02360df17fe367e35282a86fcbe9a969f2d147f2/cocobeat-x86_64-pc-windows-msvc.zip",
+        "bytes": 129857250,
+        "sha256": "582474b3085d0695a0a1b0c694187ee288079cbe57dcf8fb2f23ad1ea815fdf1"
+      },
+      "command_aggregate": {
+        "total": 16,
+        "success": 15,
+        "expected_missing_model_reject": 1
+      },
+      "evidence_ids": {
+        "package": "x86_64-pc-windows-msvc-package",
+        "old_smoke": "x86_64-pc-windows-msvc-old_smoke",
+        "metrical": "x86_64-pc-windows-msvc-metrical"
+      }
+    },
+    {
+      "target": "aarch64-pc-windows-msvc",
+      "run_id": 37885813573,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885813573",
+      "head_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+      "attempt": 1,
+      "runner_labels": [
+        "windows-11-arm"
+      ],
+      "job_completed_at_utc": "2026-10-09T05:18:47Z",
+      "optimized_build": "PASS",
+      "downloaded_package": "PASS_FIXED_ARCHIVE_AND_SOURCE_IDENTITY",
+      "archive": {
+        "path": "target/final-four-native-02360df-20261009/artifacts/aarch64-pc-windows-msvc/cocobeat-aarch64-pc-windows-msvc-02360df17fe367e35282a86fcbe9a969f2d147f2/cocobeat-aarch64-pc-windows-msvc.zip",
+        "bytes": 127645773,
+        "sha256": "12a6dbe065ebc01ee30539a858f06b61ff8958923128b4daf0e69063d330d009"
+      },
+      "command_aggregate": {
+        "total": 16,
+        "success": 15,
+        "expected_missing_model_reject": 1
+      },
+      "evidence_ids": {
+        "package": "aarch64-pc-windows-msvc-package",
+        "old_smoke": "aarch64-pc-windows-msvc-old_smoke",
+        "metrical": "aarch64-pc-windows-msvc-metrical"
+      }
+    },
+    {
+      "target": "x86_64-unknown-linux-gnu",
+      "run_id": 37885825612,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885825612",
+      "head_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+      "attempt": 1,
+      "runner_labels": [
+        "ubuntu-24.04"
+      ],
+      "job_completed_at_utc": "2026-10-09T05:04:11Z",
+      "optimized_build": "PASS",
+      "downloaded_package": "PASS_FIXED_ARCHIVE_AND_SOURCE_IDENTITY",
+      "archive": {
+        "path": "target/final-four-native-02360df-20261009/artifacts-revision02/x86_64-unknown-linux-gnu/cocobeat-x86_64-unknown-linux-gnu-02360df17fe367e35282a86fcbe9a969f2d147f2/cocobeat-x86_64-unknown-linux-gnu.tar.gz",
+        "bytes": 144288977,
+        "sha256": "0c6a95807a1a51a86b92360de91926fa1a27b12398f8eadc13f7933c9052d7fd"
+      },
+      "command_aggregate": {
+        "total": 16,
+        "success": 15,
+        "expected_missing_model_reject": 1
+      },
+      "evidence_ids": {
+        "package": "x86_64-unknown-linux-gnu-package",
+        "old_smoke": "x86_64-unknown-linux-gnu-old_smoke",
+        "metrical": "x86_64-unknown-linux-gnu-metrical"
+      }
+    },
+    {
+      "target": "aarch64-unknown-linux-gnu",
+      "run_id": 37885840232,
+      "url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37885840232",
+      "head_sha": "02360df17fe367e35282a86fcbe9a969f2d147f2",
+      "attempt": 1,
+      "runner_labels": [
+        "ubuntu-24.04-arm"
+      ],
+      "job_completed_at_utc": "2026-10-09T05:23:48Z",
+      "optimized_build": "PASS",
+      "downloaded_package": "PASS_FIXED_ARCHIVE_AND_SOURCE_IDENTITY",
+      "archive": {
+        "path": "target/final-four-native-02360df-20261009/artifacts/aarch64-unknown-linux-gnu/cocobeat-aarch64-unknown-linux-gnu-02360df17fe367e35282a86fcbe9a969f2d147f2/cocobeat-aarch64-unknown-linux-gnu.tar.gz",
+        "bytes": 141659120,
+        "sha256": "cf08c0c5deeaee3abc2812837fb3c0f4101661db3b31dd6daf175bed4a32c5b6"
+      },
+      "command_aggregate": {
+        "total": 16,
+        "success": 15,
+        "expected_missing_model_reject": 1
+      },
+      "evidence_ids": {
+        "package": "aarch64-unknown-linux-gnu-package",
+        "old_smoke": "aarch64-unknown-linux-gnu-old_smoke",
+        "metrical": "aarch64-unknown-linux-gnu-metrical"
+      }
+    }
+  ],
+  "aggregate": {
+    "targets": 4,
+    "optimized_builds": 4,
+    "packages_checked": 4,
+    "original_twelve_command_count": 48,
+    "new_metrical_command_count": 16,
+    "actual_total_commands": 64,
+    "success_commands": 60,
+    "expected_missing_model_rejects": 4,
+    "source_license_files_per_package": 41,
+    "fixed_ledger_rows": 597,
+    "SDK_original_notices_per_package": 4,
+    "static_binary_inspections": 16,
+    "additional_static_tool_version_queries": 2,
+    "fresh_owned_raw_files_hashed": 748,
+    "actual_latest_job_completed_at_utc": "2026-10-09T05:23:48Z"
+  },
+  "observed_json_contract": {
+    "template": "MusicTruth schema2; empty tracks reviewed/frames and metrical_context[]",
+    "native_comparison": "schema3/reference_metrical_context[]; Candidate, UNASSESSED, production_admission=false; confidence/beat_unit/meter null; NO_COMPARABLE_COVERAGE",
+    "Stage": "left/right inspect-stage frame0 compiler_version3",
+    "command_identity": "64 original runner argv/PID/exit/stdout/stderr retained in the old48/new16 verification reports;60exit0+4missing-model exit1, no successful package on rejection; ordinary authored import/verify while model absent succeeded"
+  },
+  "static_scope": "16 local llvm-readobj/readelf PE import / ELF dynamic-version table reads only; Game/Lab/SDK/model not executed locally and no clean-VC/Linux ABI closure inferred",
+  "output_hash_scope": {
+    "Windows": "workflow UTF8 decoded text capture; not original process stream bytes",
+    "Linux": "captured stdout/stderr original bytes",
+    "raw_files": "complete original downloaded owned files, including partial failed model staging, referenced through original reports",
+    "artifact_transport": "GitHub outer transport digest declared only; gh extracted transport ZIP bytes not retained; independently hashed inner product archives separate"
+  },
+  "historical_failures_preserved": [
+    {
+      "scope": "QA label rejected before API; no dispatch",
+      "evidence_id": "preserved-dispatch_label"
+    },
+    {
+      "scope": "QA URL/JSON parser after successful first dispatch; no duplicate dispatch",
+      "evidence_id": "preserved-dispatch_parser"
+    },
+    {
+      "scope": "actual TCP connection timeout; not remote build failure",
+      "evidence_id": "preserved-api_connect"
+    },
+    {
+      "scope": "actual restricted-network API exit1; read-only retry success",
+      "evidence_id": "preserved-initial_ci_connect"
+    },
+    {
+      "scope": "40-second bulk transfer terminated; new directory 180-second bulk budget only, API/product/build budgets unchanged",
+      "evidence_id": "preserved-bulk_download"
+    },
+    {
+      "scope": "original strict assertion FAIL on canonical extended path; target-only normalization repair, product/workflow unchanged",
+      "evidence_id": "preserved-windows_path"
+    },
+    {
+      "scope": "old packaged verify.py FAIL and ARM exit143 unknown",
+      "evidence_id": "historical-old_original"
+    },
+    {
+      "scope": "old ARM runner lost communication / log404, no OOM/timeout inference",
+      "evidence_id": "historical-old_clean"
+    },
+    {
+      "scope": "previous fixed-source PASS remains historical",
+      "evidence_id": "historical-old_four"
+    }
+  ],
+  "limits": [
+    "Nonempty metrical context or compare-music-truth paths not covered; empty v2/reference context only, native report v3 confidence/beat_unit/meter remain null and quality UNASSESSED/NO_COMPARABLE_COVERAGE",
+    "Hosted software smoke compiles typed Phase write/Sampling but does not execute the full active Phase/recovery/Kira fault matrix",
+    "Game/Workbench GUI, physical GPU/audio/input/DAC, long drift, two machines and human music acceptance NOT_RUN",
+    "Clean Windows VC environment, full Linux ABI/minimum system closure,597-row legal completeness and actual SDK network/telemetry behavior NOT_RUN",
+    "Cross-platform numerical equality/reference logits/q and independent external BLAKE3 recomputation NOT_RUN; original music/frontend quality FAIL remains",
+    "Remote child process-group postflight was not captured by workflow",
+    "No tag or GitHub Release; later AwaitLive/current mutable source not admitted by this frozen commit"
+  ],
+  "evidence": {
+    "mapping": {
+      "path": "target/final-four-native-02360df-20261009/mapping.json",
+      "bytes": 5948,
+      "sha256": "382f557d041a0d5f111393a911dc4db84a5b14ec26addeebf5f25b90315b5614"
+    },
+    "source_binding": {
+      "path": "target/final-four-native-02360df-20261009/source-binding.json",
+      "bytes": 2495,
+      "sha256": "7ca3f20b8323a4aa277f248dc0934c8f0c91156f726de179c845e931f1d61c10"
+    },
+    "four_target_summary": {
+      "path": "target/final-four-native-02360df-20261009/verification/summary.json",
+      "bytes": 513539,
+      "sha256": "5e5da9be43ec5793ce9526a0ea597fdae68518b8922d1caf8535998bc69eca4e"
+    },
+    "remote_review": {
+      "path": "target/final-four-native-02360df-20261009/remote-independent/final-review/receipt.json",
+      "bytes": 40805,
+      "sha256": "ac93e43cdef4ba8ed40c600297008f8b88b60b879703f4e5d2315b9fe886dd47"
+    },
+    "ci_review": {
+      "path": "target/final-four-native-02360df-20261009/ci-independent/receipt.json",
+      "bytes": 9397,
+      "sha256": "1ffa34d68d04d1dbc37548dffde3b3dab9b949d3ac850b661d836436462a61ce"
+    },
+    "static_imports": {
+      "path": "target/final-four-native-02360df-20261009/static-imports/result.json",
+      "bytes": 23152,
+      "sha256": "c2787d06abdda2e23ad68bf312623f10bdabb696e42779cebd4e7080b4ba2f8b"
+    },
+    "x86_64-pc-windows-msvc-package": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-pc-windows-msvc-package.json",
+      "bytes": 36683,
+      "sha256": "77fb5d03ef5525a97476f14210d79a8f104ce16a8b687a454449e49a6d6ab815"
+    },
+    "x86_64-pc-windows-msvc-old_smoke": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-pc-windows-msvc-smoke.json",
+      "bytes": 48190,
+      "sha256": "20f6b66681ceeefa9d80904707e19276c2058865b3df50f325c65841fcd11955"
+    },
+    "x86_64-pc-windows-msvc-metrical": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-pc-windows-msvc-metrical.json",
+      "bytes": 31234,
+      "sha256": "b4d846e8e9e093c8979cfc04bfa3cbb3bd99be07e302bfd19851cac407ad6ad3"
+    },
+    "aarch64-pc-windows-msvc-package": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-pc-windows-msvc-package.json",
+      "bytes": 36688,
+      "sha256": "fc637232dbeb4923e2d65b1ba487fdc69c3c9ae4af0bfb6ac1b832c4df5dce47"
+    },
+    "aarch64-pc-windows-msvc-old_smoke": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-pc-windows-msvc-smoke.json",
+      "bytes": 48192,
+      "sha256": "b8e0ac18cef395419a725d01b5d21cf020cb5553dac8ec75bb0782747ec2331a"
+    },
+    "aarch64-pc-windows-msvc-metrical": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-pc-windows-msvc-metrical.json",
+      "bytes": 31238,
+      "sha256": "d8dd14245ae4a39d3d999a0f251dfaad196f25c01c3bc4db0e41508bc1aa1356"
+    },
+    "x86_64-unknown-linux-gnu-package": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-unknown-linux-gnu-package.json",
+      "bytes": 51001,
+      "sha256": "cb3104f1d3be183079eec04a23cc3708a7e8d178ce66db56fc2f3ec5d1e7733d"
+    },
+    "x86_64-unknown-linux-gnu-old_smoke": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-unknown-linux-gnu-smoke.json",
+      "bytes": 50767,
+      "sha256": "439b91a909be8c63cf46845572ea60c249e759379045a1eacd3fa54b2afa6dc9"
+    },
+    "x86_64-unknown-linux-gnu-metrical": {
+      "path": "target/final-four-native-02360df-20261009/verification/x86_64-unknown-linux-gnu-metrical.json",
+      "bytes": 33819,
+      "sha256": "9b58e1cbd6730ee4fbe760fdb6def205f664d1c33ee7fc875ea4656bac40c62d"
+    },
+    "aarch64-unknown-linux-gnu-package": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-unknown-linux-gnu-package.json",
+      "bytes": 50996,
+      "sha256": "56c61ba892d43ff0ec95149d2e203815eb0c679cd1b66bd6603e07c7818782a2"
+    },
+    "aarch64-unknown-linux-gnu-old_smoke": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-unknown-linux-gnu-smoke.json",
+      "bytes": 50769,
+      "sha256": "1b4d03ab7278a127a2e9c9ce91e85b20ef3f0caa7931e4805b56c2bd130d5100"
+    },
+    "aarch64-unknown-linux-gnu-metrical": {
+      "path": "target/final-four-native-02360df-20261009/verification/aarch64-unknown-linux-gnu-metrical.json",
+      "bytes": 33820,
+      "sha256": "4e9a5d2c84d7513393f9a178ca684f2263bb07e8ce8a6b832b07ef90934fc9ee"
+    },
+    "preserved-dispatch_label": {
+      "path": "target/final-four-native-02360df-20261009/dispatch-pre-api-label-failure.json",
+      "bytes": 281,
+      "sha256": "b9281763eef0449efec1d0811b38e41d1840cebbe02c8cf143f8d34cba8e59ee"
+    },
+    "preserved-dispatch_parser": {
+      "path": "target/final-four-native-02360df-20261009/dispatch-post-call-output-failure.json",
+      "bytes": 368,
+      "sha256": "68a88a686ac0bf96593141b3fe61469f684582eeaeee6570e31b5eabd8a2e85e"
+    },
+    "preserved-api_connect": {
+      "path": "target/final-four-native-02360df-20261009/remote-independent/monitor-error.json",
+      "bytes": 329,
+      "sha256": "906ab5e1245bfffcac2165d1b4d25246f3de715f8ce98c2b31ab5026be9eebbe"
+    },
+    "preserved-initial_ci_connect": {
+      "path": "target/final-four-native-02360df-20261009/ci-independent/round01-run.receipt.json",
+      "bytes": 400,
+      "sha256": "fdff6f05e4446de58190d933e4500c08f0bda995f54697d71978278f52705d3b"
+    },
+    "preserved-bulk_download": {
+      "path": "target/final-four-native-02360df-20261009/github/x86_64-unknown-linux-gnu-download/result.json",
+      "bytes": 936,
+      "sha256": "eeba15a89fd0118670eb9aa97a87316018c04175d429336e72bc8c5a9ceeb140"
+    },
+    "preserved-windows_path": {
+      "path": "target/final-four-native-metrical-smoke-plan-20261009-revision02/VALIDATION.json",
+      "bytes": 6681,
+      "sha256": "2678824321cb25db1657257e536676a3f6a7b6b81dd6802d2ee63fc3c8a45f6a"
+    },
+    "historical-old_original": {
+      "path": "testdata/synthetic/native-beat-release-original-observations-20261008.json",
+      "bytes": 63214,
+      "sha256": "1ed3a175b781b7d1d4a515e1cfc23c4b206253c53a63d929dd0f4471624ec36a"
+    },
+    "historical-old_clean": {
+      "path": "testdata/synthetic/native-beat-release-observations-20261008.json",
+      "bytes": 65022,
+      "sha256": "7daf6916c641f1cda7ed3a467300c46d628aa336eec24cc622f0ab396b0fdc8f"
+    },
+    "historical-old_four": {
+      "path": "testdata/synthetic/release-four-target-8cdda9d-observations-20261008.json",
+      "bytes": 92834,
+      "sha256": "f020fe7b05e54db9504241bc51b28b732d551303cdb389f94dcac0ea8bec9f58"
+    }
+  }
+}
