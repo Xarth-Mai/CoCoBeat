@@ -1,0 +1,666 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-09",
+  "status": "PASS_SINGLE_LOCAL_DESCRIPTIVE_STAGE3_CASE_WITH_PRESERVED_PRE_GAME_HARNESS_FAILURE",
+  "scope": "Linux x86-64 optimized native Stage3, main-update cadence, actual Kira/core workload, wait-accounted CPU and largest waited-child peak RSS plus periodic per-span GPU queries; not a hardware performance budget or full final acceptance",
+  "build": {
+    "status": "PASS",
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--release",
+      "-p",
+      "cocobeat-game",
+      "-j",
+      "2",
+      "--message-format=json"
+    ],
+    "head": "5874f59ba4135b0d80150a264c686f97664cd4f7",
+    "pid": 1078470,
+    "pgid": 1078470,
+    "exit_code": 0,
+    "timed_out": false,
+    "owned_group_gone": true,
+    "elapsed_seconds": 458.85041596900555,
+    "inputs_unchanged": true,
+    "source_inputs": 375,
+    "source_snapshot": "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/source",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/bin/cocobeat-game",
+    "binary_sha256": "ed1cb58789e91343168bbe81a034d15a9a98861164f3747db67c6d7da767a627",
+    "build_json_sha256": "53986e788b125dd717e3e7e3221ac3e2a6fbd18f1251cfc9aafd58374e893bc1"
+  },
+  "build_source_identity": "5874f59 frozen 375 inputs including old QA runner877b; Game compiled Rust and resources unchanged; new QA441e has separate identity and is not claimed in the old build snapshot",
+  "measurement_tool": {
+    "production_path": "tools/runtime-performance-check/run.py",
+    "sha256": "441e4fc56f66adfe3a63c815106424437ff1b49fbcca8a6f2d3753d5b23c68a3",
+    "wrapper": "target/performance-stage3-singlecase-v5-20261009/run.py",
+    "metadata_only_check": {
+      "status": "PASS_METADATA_ONLY_NO_CHILD",
+      "fresh_python": "3.14.7 (main, Aug 14 2026, 06:38:32) [GCC 16.2.1 20260810]",
+      "source_sha256": "441e4fc56f66adfe3a63c815106424437ff1b49fbcca8a6f2d3753d5b23c68a3",
+      "exact_new_host_AST_evaluated": true,
+      "linux_guard_evaluated": true,
+      "before": {
+        "user_cpu_seconds": 0.0,
+        "system_cpu_seconds": 0.0,
+        "max_rss_kib": 0
+      },
+      "after": {
+        "user_cpu_seconds": 0.0,
+        "system_cpu_seconds": 0.0,
+        "max_rss_kib": 0
+      },
+      "subprocess_events": [],
+      "metadata_host": {
+        "platform": "Linux-7.2.9-1-cachyos-x86_64",
+        "machine": "x86_64",
+        "python": "3.14.7",
+        "cpu_model": "AMD Ryzen 7 5700X 8-Core Processor"
+      },
+      "scope": "metadata only; no Game/PID/probe/GPU/performance sample"
+    },
+    "change": "Read platform metadata through os.uname instead of platform.platform; zero child usage guard and all deadlines unchanged"
+  },
+  "case": {
+    "size": "1280x800",
+    "quality": "medium",
+    "pacing": "unlimited",
+    "package_end_frames": 3072000,
+    "root_receipt": {
+      "status": "PASS_ROOT_FINITE_NATIVE_CASE",
+      "argv": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-r",
+        "60",
+        "--",
+        "/usr/bin/python",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-singlecase-v5-20261009/run.py",
+        "--ref",
+        "5874f59ba4135b0d80150a264c686f97664cd4f7",
+        "--cargo-json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/build.jsonl",
+        "--build-record",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/cocobeat-game-build-result.json",
+        "--source-before",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/inputs-before.json",
+        "--source-after",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/inputs-after.json",
+        "--out",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-singlecase-run-20261009-revision02",
+        "--exclusive-root-confirmed"
+      ],
+      "pid": 1080517,
+      "pgid": 1080517,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "owned_descendant_groups": [],
+      "cleanup_signals": [],
+      "guards_equal": true,
+      "elapsed_seconds": 90.64791381798568,
+      "case_result_status": "PASS_LOCAL_DESCRIPTIVE_CASE",
+      "scope": "fixed Stage3 Linux headless native descriptive performance case; Game build head5874 unchanged; metadata-only QA runner fix independently frozen; no full performance admission"
+    },
+    "game_pid": 1080541,
+    "game_exit": 0,
+    "summary": {
+      "status": "VALID_LOCAL_OBSERVATION",
+      "invalid_reasons": [],
+      "scope": "native main-update cadence, actual Kira/core workload, Linux owned-process RSS; not monitor presentation or GPU time",
+      "budget": "DESCRIPTIVE; no hardware budget claimed",
+      "raw_rows": 26326,
+      "phases": {
+        "ready": {
+          "interval_count": 3148,
+          "sum_intervals_ns": 9995895537,
+          "aggregate_main_update_hz": 314.929261550165,
+          "mean_ms": 3.175316244282084,
+          "p50_ms": 3.121117,
+          "p90_ms": 3.390826,
+          "p95_ms": 3.489505,
+          "p99_ms": 4.86912,
+          "max_ms": 35.390541,
+          "over_16_666667_ms": 1,
+          "over_33_333334_ms": 1,
+          "over_50_ms": 0,
+          "over_100_ms": 0,
+          "longest_over_33_333334_ms_streak": 1,
+          "first_frame": 3947,
+          "last_frame": 7095,
+          "span_ns": 9995895537,
+          "spikes": [
+            {
+              "frame": 5243,
+              "song_frame": 0,
+              "interval_ms": 35.390541
+            }
+          ]
+        },
+        "running": {
+          "interval_count": 14778,
+          "sum_intervals_ns": 49999172281,
+          "aggregate_main_update_hz": 295.56489289355164,
+          "mean_ms": 3.3833517580863446,
+          "p50_ms": 3.346915,
+          "p90_ms": 3.518016,
+          "p95_ms": 3.666154,
+          "p99_ms": 4.136922,
+          "max_ms": 6.459162,
+          "over_16_666667_ms": 0,
+          "over_33_333334_ms": 0,
+          "over_50_ms": 0,
+          "over_100_ms": 0,
+          "longest_over_33_333334_ms_streak": 0,
+          "first_frame": 10059,
+          "last_frame": 24837,
+          "span_ns": 49999172281,
+          "spikes": []
+        }
+      },
+      "probe_install_seconds_to_stable_ready": 7.487604273,
+      "not_measured": [
+        "whole GPU frame elapsed",
+        "draw calls",
+        "VRAM",
+        "audio underruns",
+        "displayed or dropped monitor frames",
+        "physical input",
+        "speaker latency",
+        "four-platform native graphics",
+        "human acceptance"
+      ]
+    },
+    "whole_lifetime_usage": {
+      "scope": "Linux waited-child accumulated CPU including descendants only when all intermediate parents waited; maxRSS is largest waited-child peak, not concurrent process-tree RSS; observed wall is parent launch-to-reap with polling error, not kernel exit, steady phase or GPU duration",
+      "user_cpu_seconds": 127.960724,
+      "system_cpu_seconds": 41.265673,
+      "cpu_seconds": 169.226397,
+      "observed_lifetime_seconds": 88.519559769,
+      "cpu_seconds_per_wall_second": 1.9117401559792206,
+      "max_rss_kib": 604416,
+      "minor_faults": 105242,
+      "major_faults": 15,
+      "voluntary_context_switches": 13923321,
+      "involuntary_context_switches": 149337
+    },
+    "render_summary": {
+      "status": "DESCRIPTIVE_PERIODIC_RENDER_SPANS",
+      "scope": "periodic latest fresh values, not every rendered frame, not phase-specific, not summed whole-frame duration or presentation FPS; elapsed_cpu is CPU recording, elapsed_gpu is timestamp-query duration",
+      "paths": {
+        "render/bin_unpacking/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00033,
+          "max_ms": 0.009470000000000001,
+          "mean_ms": 0.0010723870206489675,
+          "p50_ms": 0.00092,
+          "p95_ms": 0.00182,
+          "p99_ms": 0.00296
+        },
+        "render/bin_unpacking/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00268,
+          "max_ms": 0.08028,
+          "mean_ms": 0.0060565191740412985,
+          "p50_ms": 0.00524,
+          "p95_ms": 0.00956,
+          "p99_ms": 0.0098
+        },
+        "render/bloom/elapsed_cpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.02251,
+          "max_ms": 0.05734,
+          "mean_ms": 0.02703160342789598,
+          "p50_ms": 0.026289,
+          "p95_ms": 0.030920000000000003,
+          "p99_ms": 0.039809
+        },
+        "render/bloom/elapsed_gpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.1332,
+          "max_ms": 0.71056,
+          "mean_ms": 0.30852787234042556,
+          "p50_ms": 0.27564,
+          "p95_ms": 0.49872,
+          "p99_ms": 0.50464
+        },
+        "render/clustering/elapsed_cpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.00432,
+          "max_ms": 0.024620000000000003,
+          "mean_ms": 0.005843484042553191,
+          "p50_ms": 0.00535,
+          "p95_ms": 0.00859,
+          "p99_ms": 0.01189
+        },
+        "render/clustering/elapsed_gpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.03788,
+          "max_ms": 0.65744,
+          "mean_ms": 0.08709936170212766,
+          "p50_ms": 0.07384,
+          "p95_ms": 0.14016,
+          "p99_ms": 0.14364
+        },
+        "render/early_mesh_preprocessing/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00031,
+          "max_ms": 0.006520000000000001,
+          "mean_ms": 0.0010271793510324484,
+          "p50_ms": 0.00097,
+          "p95_ms": 0.00137,
+          "p99_ms": 0.00204
+        },
+        "render/early_mesh_preprocessing/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00476,
+          "max_ms": 0.09604,
+          "mean_ms": 0.010755162241887906,
+          "p50_ms": 0.00924,
+          "p95_ms": 0.01756,
+          "p99_ms": 0.01788
+        },
+        "render/main_opaque_pass_3d/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00218,
+          "max_ms": 0.01866,
+          "mean_ms": 0.004323620648967552,
+          "p50_ms": 0.00401,
+          "p95_ms": 0.0059,
+          "p99_ms": 0.00724
+        },
+        "render/main_opaque_pass_3d/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00032,
+          "max_ms": 1.4644,
+          "mean_ms": 0.6513701238938052,
+          "p50_ms": 0.57792,
+          "p95_ms": 1.14108,
+          "p99_ms": 1.17684
+        },
+        "render/main_transparent_pass_2d/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00014000000000000001,
+          "max_ms": 0.008620000000000001,
+          "mean_ms": 0.00042919056047197637,
+          "p50_ms": 0.00041,
+          "p95_ms": 0.00073,
+          "p99_ms": 0.00095
+        },
+        "render/main_transparent_pass_2d/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 8e-05,
+          "max_ms": 0.00104,
+          "mean_ms": 0.00020943952802359884,
+          "p50_ms": 0.0002,
+          "p95_ms": 0.00036,
+          "p99_ms": 0.0004
+        },
+        "render/main_transparent_pass_3d/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00092,
+          "max_ms": 0.01781,
+          "mean_ms": 0.0026461634218289086,
+          "p50_ms": 0.0026,
+          "p95_ms": 0.00423,
+          "p99_ms": 0.00498
+        },
+        "render/main_transparent_pass_3d/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00032,
+          "max_ms": 0.06332,
+          "mean_ms": 0.007622749262536873,
+          "p50_ms": 0.0066,
+          "p95_ms": 0.01188,
+          "p99_ms": 0.01772
+        },
+        "render/tonemapping/elapsed_cpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.00067,
+          "max_ms": 0.009989999999999999,
+          "mean_ms": 0.0010463823877068558,
+          "p50_ms": 0.00097,
+          "p95_ms": 0.00157,
+          "p99_ms": 0.00183
+        },
+        "render/tonemapping/elapsed_gpu": {
+          "observed_fresh_samples": 1692,
+          "min_ms": 0.02476,
+          "max_ms": 0.16932,
+          "mean_ms": 0.05970066193853428,
+          "p50_ms": 0.05252,
+          "p95_ms": 0.09648,
+          "p99_ms": 0.10604
+        },
+        "render/ui/elapsed_cpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.00352,
+          "max_ms": 0.020269,
+          "mean_ms": 0.005777976991150443,
+          "p50_ms": 0.00562,
+          "p95_ms": 0.006520000000000001,
+          "p99_ms": 0.01086
+        },
+        "render/ui/elapsed_gpu": {
+          "observed_fresh_samples": 1695,
+          "min_ms": 0.1304,
+          "max_ms": 0.51492,
+          "mean_ms": 0.22027518584070796,
+          "p50_ms": 0.2138,
+          "p95_ms": 0.31584,
+          "p99_ms": 0.33272
+        },
+        "render/upscaling/elapsed_cpu": {
+          "observed_fresh_samples": 1693,
+          "min_ms": 0.00058,
+          "max_ms": 0.00295,
+          "mean_ms": 0.000921465445953928,
+          "p50_ms": 0.00089,
+          "p95_ms": 0.00124,
+          "p99_ms": 0.00162
+        },
+        "render/upscaling/elapsed_gpu": {
+          "observed_fresh_samples": 1693,
+          "min_ms": 0.01308,
+          "max_ms": 0.1624,
+          "mean_ms": 0.03211867690490254,
+          "p50_ms": 0.02668,
+          "p95_ms": 0.04844,
+          "p99_ms": 0.0918
+        }
+      }
+    },
+    "adapter": {
+      "adapter": "WgpuWrapper(AdapterInfo { name: \"AMD Radeon RX 6650 XT (RADV NAVI23)\", vendor: 4098, device: 29679, device_type: DiscreteGpu, device_pci_bus_id: \"0000:2d:00.0\", driver: \"radv\", driver_info: \"Mesa 26.2.4-arch3.1\", backend: Vulkan, subgroup_min_size: 32, subgroup_max_size: 64, transient_saves_memory: false })",
+      "enabled_device_features": "Features { features_wgpu: FeaturesWGPU(TEXTURE_FORMAT_16BIT_NORM | TEXTURE_ADAPTER_SPECIFIC_FORMAT_FEATURES | PIPELINE_STATISTICS_QUERY | TIMESTAMP_QUERY_INSIDE_ENCODERS | TIMESTAMP_QUERY_INSIDE_PASSES | TEXTURE_BINDING_ARRAY | BUFFER_BINDING_ARRAY | STORAGE_RESOURCE_BINDING_ARRAY | SAMPLED_TEXTURE_AND_STORAGE_BUFFER_ARRAY_NON_UNIFORM_INDEXING | STORAGE_TEXTURE_ARRAY_NON_UNIFORM_INDEXING | PARTIALLY_BOUND_BINDING_ARRAY | MULTI_DRAW_INDIRECT_COUNT | ADDRESS_MODE_CLAMP_TO_ZERO | ADDRESS_MODE_CLAMP_TO_BORDER | POLYGON_MODE_LINE | POLYGON_MODE_POINT | CONSERVATIVE_RASTERIZATION | VERTEX_WRITABLE_STORAGE | CLEAR_TEXTURE | MULTIVIEW | TEXTURE_ATOMIC | TEXTURE_FORMAT_NV12 | TEXTURE_FORMAT_P010 | EXPERIMENTAL_RAY_QUERY | SHADER_F64 | SHADER_I16 | SHADER_EARLY_DEPTH_TEST | SHADER_INT64 | SUBGROUP | SUBGROUP_VERTEX | SUBGROUP_BARRIER | PIPELINE_CACHE | SHADER_INT64_ATOMIC_MIN_MAX | SHADER_INT64_ATOMIC_ALL_OPS | TEXTURE_INT64_ATOMIC | EXPERIMENTAL_MESH_SHADER | EXPERIMENTAL_RAY_HIT_VERTEX_RETURN | EXPERIMENTAL_MESH_SHADER_MULTIVIEW | EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS | PASSTHROUGH_SHADERS | SHADER_BARYCENTRICS | SELECTIVE_MULTIVIEW | EXPERIMENTAL_MESH_SHADER_POINTS | MULTISAMPLE_ARRAY | SHADER_PER_VERTEX | SHADER_DRAW_INDEX | ACCELERATION_STRUCTURE_BINDING_ARRAY | MEMORY_DECORATION_COHERENT | MEMORY_DECORATION_VOLATILE), features_webgpu: FeaturesWebGPU(DEPTH_CLIP_CONTROL | DEPTH32FLOAT_STENCIL8 | TEXTURE_COMPRESSION_BC | TEXTURE_COMPRESSION_BC_SLICED_3D | TIMESTAMP_QUERY | INDIRECT_FIRST_INSTANCE | SHADER_F16 | RG11B10UFLOAT_RENDERABLE | BGRA8UNORM_STORAGE | FLOAT32_FILTERABLE | FLOAT32_BLENDABLE | DUAL_SOURCE_BLENDING | CLIP_DISTANCES | IMMEDIATES | PRIMITIVE_INDEX) }"
+    },
+    "independent_capture_count": 13,
+    "capture_completed": true
+  },
+  "original_failure": {
+    "root": {
+      "status": "FAIL",
+      "argv": [
+        "gamescope",
+        "--backend",
+        "headless",
+        "--expose-wayland",
+        "-W",
+        "1280",
+        "-H",
+        "800",
+        "-r",
+        "60",
+        "--",
+        "/usr/bin/python",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-singlecase-v4-20261009/run.py",
+        "--ref",
+        "5874f59ba4135b0d80150a264c686f97664cd4f7",
+        "--cargo-json",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/build.jsonl",
+        "--build-record",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/cocobeat-game-build-result.json",
+        "--source-before",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/inputs-before.json",
+        "--source-after",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-release-build-20261009/inputs-after.json",
+        "--out",
+        "/home/lzzz/MyProjects/CoCoBeat/target/performance-stage3-singlecase-run-20261009",
+        "--exclusive-root-confirmed"
+      ],
+      "pid": 1079094,
+      "pgid": 1079094,
+      "exit_code": 0,
+      "timed_out": false,
+      "owned_group_gone": true,
+      "owned_descendant_groups": [],
+      "cleanup_signals": [],
+      "guards_equal": true,
+      "elapsed_seconds": 1.8849100740044378,
+      "case_result_status": "FAIL",
+      "scope": "One actual Linux Gamescope-headless Stage3 optimized sample. Root-declared owned-workload exclusion; direct waited Game CPU excludes parent compositor; nominal0.2s polling, no physical/presentFPS/DAC/quality/four-platform acceptance"
+    },
+    "cause": "platform.platform actually spawned uname -p before Game launch, violating zero prior-child usage; original case has no Game PID or probe; not a Game performance failure",
+    "stdlib_trace": {
+      "status": "CPU_ONLY_STDLIB_TRACE",
+      "python": "3.14.7 (main, Aug 14 2026, 06:38:32) [GCC 16.2.1 20260810]",
+      "installed_primary_source": "/usr/lib/python3.14/platform.py",
+      "installed_primary_source_sha256": "240eba74565cd0dc4f99f182f7afc32bbea0593016ddb34165b529b5bcb6be0a",
+      "before_platform": {
+        "user_cpu_seconds": 0.0,
+        "system_cpu_seconds": 0.0,
+        "max_rss_kib": 0
+      },
+      "platform_result": "Linux-7.2.9-1-cachyos-x86_64-with-glibc2.44",
+      "after_platform": {
+        "user_cpu_seconds": 0.0,
+        "system_cpu_seconds": 0.000511,
+        "max_rss_kib": 18704
+      },
+      "subprocess_events": [
+        {
+          "event": "subprocess.Popen",
+          "executable": "uname",
+          "argv": [
+            "uname",
+            "-p"
+          ]
+        }
+      ],
+      "Game_Cargo_GPU_not_run": true,
+      "scope": "fresh Python process waited-child usage; unrelated metadata subprocess only; not a Game performance sample"
+    }
+  },
+  "preserved_metadata_demo_failure": {
+    "path": "target/performance-stage3-native-root-20261009-revision02/root-metadata-demo.json",
+    "reason": "First root demo reused a shell which had already waited a setup Python child; before/after usage unchanged but initial baseline nonzero; independent fresh tool invocation passed; not a native case or Game sample"
+  },
+  "not_measured": [
+    "whole GPU frame duration",
+    "render frame identity or per-phase GPU attribution",
+    "presentation FPS",
+    "draw calls",
+    "VRAM",
+    "audio underruns",
+    "physical keyboard/controllers",
+    "DAC or speaker timing",
+    "cross-platform native graphics",
+    "human acceptance",
+    "universal performance budget"
+  ],
+  "historical_scope": "20261008 dated performance matrix and original Wayland VSync failure remain separate; no old case upgraded or combined with this sample",
+  "raw_artifacts": [
+    {
+      "path": "target/performance-stage3-release-build-20261009/cocobeat-game-build-result.json",
+      "sha256": "c4ebc34fcf6b01e883b37402cd9076fd83bad667775cfce4b38707b1cc006cc3",
+      "bytes": 834
+    },
+    {
+      "path": "target/performance-stage3-release-build-20261009/build.jsonl",
+      "sha256": "53986e788b125dd717e3e7e3221ac3e2a6fbd18f1251cfc9aafd58374e893bc1",
+      "bytes": 407870
+    },
+    {
+      "path": "target/performance-stage3-release-build-20261009/inputs-before.json",
+      "sha256": "52131390f1c65aec10eaf8e80aac9d8a59f62a906478dd694077a48e6ca50595",
+      "bytes": 43574
+    },
+    {
+      "path": "target/performance-stage3-release-build-20261009/inputs-after.json",
+      "sha256": "52131390f1c65aec10eaf8e80aac9d8a59f62a906478dd694077a48e6ca50595",
+      "bytes": 43574
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009-revision02/plan.json",
+      "sha256": "9a6232f72a4bdcc55aa7c0131bb0e804171290b980b813da4cd7a206e0a9d7d7",
+      "bytes": 125901
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009-revision02/run.py",
+      "sha256": "33829e74f060d351e2cabaa50ac52aad994e6989478079310eb538bff4374feb",
+      "bytes": 2953
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009-revision02/result.json",
+      "sha256": "f882cfc214f000993b6b13384dfc544d4407f043a7763b694a0eb987e27c5c86",
+      "bytes": 1522
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009-revision02/root-metadata-demo.json",
+      "sha256": "744c15a3dd649a974007c7811a6b02c74b7869f150e47583c5062fda58ddc0ff",
+      "bytes": 794
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009-revision02/root-metadata-demo-independent.json",
+      "sha256": "6f2945bcd0e55ad7bb8bb00e5b7ba7ec627b92999fa020cf850f660ab9fc30b5",
+      "bytes": 759
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/frozen-plan.json",
+      "sha256": "fd7671386ef1076cd01504e8bd198fe89b6c9a9bb0fcda55e5d1e201792d431e",
+      "bytes": 80837
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/result.json",
+      "sha256": "9eff5dc7730fa68b7e0d0a7250a095c2877e212df5f34fe633b5c4df01733145",
+      "bytes": 2475
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/render-summary.json",
+      "sha256": "14e3b132386be58d46fe8816cdf237dc2617b9c3f5b8c54e012f93ee649a6e5d",
+      "bytes": 5400
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/runner.stdout",
+      "sha256": "6655649a8edfd8fe5cbc80942f7fb766bea431cac893dcecb7f4b35c58f15fe2",
+      "bytes": 164
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/runner.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/manifest.json",
+      "sha256": "2edd4fe87a4e4da7ae7f4a708abf0164a8473eed474f9c5be614bd6404b8b868",
+      "bytes": 2386
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/process-usage.json",
+      "sha256": "bb1a98d5001033e73027e52eb0451b7f9619ae00b18c6e4d8b6abf890a4ddbfd",
+      "bytes": 645
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/memory.json",
+      "sha256": "ba6b1a64cc0ade98ce1c9027147d77e1778c7b2a79a261b75d34799ac196affe",
+      "bytes": 78377
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/summary.json",
+      "sha256": "634b73dde10ea7385eee6a0a0af74c66e7af78e24bdcc4ad28a0f9f89097d870",
+      "bytes": 1851
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/validation.json",
+      "sha256": "d1b6d035cba2d62bd7bd5c6fbf47d99ced87b925e88c5b302c0911f260903ba3",
+      "bytes": 1980
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/probe/metadata.json",
+      "sha256": "bc0b9e2094134435d11bf664a00c5527dd682eb218f3651b7b26c4b7f0bd9103",
+      "bytes": 4511
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/probe/result.json",
+      "sha256": "66d8d7ad6be3a601283aaa36992ff59f3a033204ba9f2fd06fe9c7bff1c72f1b",
+      "bytes": 12439
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/probe/frames.jsonl",
+      "sha256": "ef08c2ce218c831e81d3509143e8fb8bb325e6fff8e159ab69745d70596e4353",
+      "bytes": 16611138
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/probe/render-diagnostics.jsonl",
+      "sha256": "2a342e3abf416ace16080472b69fb5a0827a65a44f4cef8b174efe9db91637cc",
+      "bytes": 4501368
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/probe/workload.replay",
+      "sha256": "f1a14d88764cd57de52e76dbc9e5a0b9fd762a409ff83f947ce9b1049238533d",
+      "bytes": 800810
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009-revision02/case/stderr.log",
+      "sha256": "9de8235f0ed67332a1ed5d8d83947de183e107a3f203d6cf5306e8fb97e7abd5",
+      "bytes": 824
+    },
+    {
+      "path": "target/performance-stage3-native-root-20261009/result.json",
+      "sha256": "41db67adc6f1e52f59ba671ebfa82ecaf7fac14cf0da988b550b1c06f5c0aeb5",
+      "bytes": 1522
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009/result.json",
+      "sha256": "da2aaf231e4b0b79142c0f72c6a892112715c5a96e788baf3cea3d038ba4115d",
+      "bytes": 981
+    },
+    {
+      "path": "target/performance-stage3-singlecase-run-20261009/runner.stderr",
+      "sha256": "38376feba45ddc3c71102a9224c2c14351406082fee336cd2e837b61a5e854b1",
+      "bytes": 428
+    },
+    {
+      "path": "target/performance-metadata-child-rootcause-20261009/MANIFEST.json",
+      "sha256": "9cf91791562b1f768f07918f5d6086959a52740d608c30b80cabcd3df0777424",
+      "bytes": 1793
+    },
+    {
+      "path": "target/performance-metadata-child-rootcause-20261009/original-platform-trace.json",
+      "sha256": "0694a5236b7f73b74f392e6d2db0b5d0bee7f9c508600164fa1ab174cc0253d1",
+      "bytes": 893
+    },
+    {
+      "path": "target/performance-metadata-child-rootcause-20261009/new-metadata-demo.json",
+      "sha256": "6f2945bcd0e55ad7bb8bb00e5b7ba7ec627b92999fa020cf850f660ab9fc30b5",
+      "bytes": 759
+    },
+    {
+      "path": "target/performance-metadata-child-rootcause-20261009/first-demo-launch-failure.json",
+      "sha256": "fcf1a09d0df9bc01f67688df2c1cd9a2df002aabfccd810de82521c5f81dacb7",
+      "bytes": 344
+    },
+    {
+      "path": "target/performance-stage3-singlecase-v5-20261009/MANIFEST.json",
+      "sha256": "ec37358586d2b3105be73900289b24d368e2491111c28d3a55127571d900293a",
+      "bytes": 2636
+    },
+    {
+      "path": "target/performance-stage3-singlecase-v5-20261009/cpu-metadata-no-child.patch",
+      "sha256": "7a20abab3f2b40cd69042e4658455df6d879693b67d0b944d13344e5e5bd13aa",
+      "bytes": 2782
+    },
+    {
+      "path": "target/performance-stage3-singlecase-v5-20261009/run.py",
+      "sha256": "d5809e19e17d49377bfa256c340d02311c9ce2ecf85ece545e4543dc12719602",
+      "bytes": 12301
+    },
+    {
+      "path": "target/performance-render-production-checks-20261009/result.json",
+      "sha256": "2cc2014a7c0412d264fd3b926764b006ecc189111ab3aa3c766158f333ee3d7f",
+      "bytes": 2078
+    },
+    {
+      "path": "target/performance-render-final-evidence-20261009/github/finalCI.json",
+      "sha256": "8a2cd5c06d8d60d6a1a86e7c9985a867a16251923d3fc18501bfd8793f7ccced",
+      "bytes": 11986
+    }
+  ]
+}

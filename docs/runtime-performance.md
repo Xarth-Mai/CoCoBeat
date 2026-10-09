@@ -36,4 +36,16 @@ limited60 原轮与两复测 Running p95 / p99 分别为 16.732 / 16.737、16.73
 
 Linux runner新增进程累计CPU、largest waited-child peak RSS和观测launch-to-reap耗时，采用0.2秒名义轮询周期，未测内核精确退出时刻，包含被中间父进程wait的后代CPU；这与并发进程树RSS、稳态heap、VRAM和声卡underrun分别记录范围
 
-五项producer窄测、runtime Clippy / 格式 / 边界通过；当前源码优化构建和固定Stage3原生样本尚待执行，旧矩阵、Wayland VSync失败及所有旧数值保持原构建范围
+五项producer窄测、runtime Clippy / 格式 / 边界通过；固定 `5874f59` 的375项构建输入和优化Game已完成构建，旧矩阵、Wayland VSync失败及所有旧数值保持原构建范围
+
+## Stage 3 分项原生观察
+
+2026-10-09 · 原64秒包、1280×800 medium unlimited在Linux x86-64 / RX 6650 XT / RADV Vulkan上完成一次实际运行，Game exit0；Ready采样10秒、Running采样50秒，Running主更新间隔p95 / p99为3.666154 / 4.136922ms，13次独立Instant捕获完成，详见[原始观察与身份索引](../testdata/synthetic/runtime-performance-stage3-observations-20261009.json)
+
+观测Game生命周期88.519560秒，wait计账CPU169.226397秒，largest waited-child peak RSS604416KiB；并行线程CPU可以超过wall，这些数值包含启动、解码与探针，不能推断稳态heap、并发进程树RSS或音频underrun
+
+原始GPU查询记录覆盖十种渲染路径，20Hz周期采样保留原f64 bits；main opaque pass的p95为1.14108ms，bloom为0.49872ms，UI为0.31584ms，各自是分项查询，不相加为完整GPU帧，也不按延迟接收时间归因到歌曲阶段
+
+首次case在Game启动前失败：Python的platform.platform实际启动uname -p，污染零子进程资源基线；runner改用os.uname读取元数据，原guard和全部预算保持。原FAIL、纯CPU根因trace与独立零用量窄测保留，修复后的QA工具身份与已完成的5874f59 Game构建身份分别冻结，未重建Game
+
+本次单样本为描述性软件证据；原Wayland VSync失败、四平台图形、物理输入、DAC /扬声器、真人和完整性能预算继续分别验收

@@ -1,6 +1,6 @@
 # 当前执行目标
 
-2026-10-09 · 性能分项接线完成五项producer窄测及runtime Clippy / 格式 / 边界，复用官方诊断并增加Linux CPU / RSS记录；下一步以固定当前提交构建优化Game并运行原64秒Stage3样本，当前原生性能尚待验证，目标active。MusicTruth提交`e499578`的[CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37880062497)已通过，真人参考与旧质量FAIL保持未完成
+2026-10-09 · [Stage3性能分项](../testdata/synthetic/runtime-performance-stage3-observations-20261009.json)完成固定5874f59优化构建及本机单样本，Game自然exit0，Running主更新p95 / p99为3.666154 / 4.136922ms、wait计账CPU169.226397秒、峰值RSS604416KiB，并取得十种GPU分项查询；首次Game启动前QA元数据FAIL及修复证据保留，QA新身份与原Game构建分别冻结。五项producer窄测和必要检查、5874f59与MusicTruth e499578的CI通过，目标active，继续active Phase写入恢复、当前来源四目标及设备 / 真人验收，旧质量FAIL保持
 
 2026-10-09 · [拍单位与拍号软件](../testdata/synthetic/music-truth-metrical-observations-20261009.json)已接线：18项窄测、六项必要检查与33项CLI通过，5份旧v1完整输出保持，独立声明 / Unknown及原生候选未知语义保留；此前联网恢复提交`a6c6893`的[CI](https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37845457526)通过，当前目标active，继续性能采样、原生active Phase恢复与最终四目标；真人音乐参考和旧质量FAIL保持未完成
 
