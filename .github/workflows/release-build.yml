@@ -182,6 +182,8 @@ jobs:
             if ($report -notmatch 'downbeat: AnalysisCapability \{ state: Candidate, source: Algorithm, confidence: None \}') { throw 'Missing Candidate downbeat capability' }
             if ((Invoke-Lab "$channel-stage" @('inspect-stage', "$work/$channel/package", '0')) -ne 0) { throw 'Stage inspection failed' }
             if ((Invoke-Lab "$channel-tempo" @('inspect-native-tempo', "$work/$channel/package", $channel, "$work/$channel-tempo.json")) -ne 0) { throw 'Native tempo inspection failed' }
+            if ((Invoke-Lab "$channel-metrical-template" @('music-truth-template', "$work/$channel/package", 'native-smoke', $channel, '--metrical', "$work/$channel-metrical.json")) -ne 0) { throw 'Metrical template failed' }
+            if ((Invoke-Lab "$channel-metrical-compare" @('compare-native-beats', "$work/$channel/package", "$work/$channel/evidence", "$work/$channel-metrical.json", '0', "$work/$channel-metrical-comparison.json")) -ne 0) { throw 'Metrical native comparison failed' }
           }
           $resource = (Resolve-Path dist/smoke/assets/models/beat-this/small0.onnx).Path
           Move-Item $resource "$resource.missing-control"
@@ -356,6 +358,8 @@ jobs:
             grep -F 'downbeat: AnalysisCapability { state: Candidate, source: Algorithm, confidence: None }' "$work/$channel-verify-stdout.txt"
             run_lab "$channel-stage" inspect-stage "$work/$channel/package" 0
             run_lab "$channel-tempo" inspect-native-tempo "$work/$channel/package" "$channel" "$work/$channel-tempo.json"
+            run_lab "$channel-metrical-template" music-truth-template "$work/$channel/package" native-smoke "$channel" --metrical "$work/$channel-metrical.json"
+            run_lab "$channel-metrical-compare" compare-native-beats "$work/$channel/package" "$work/$channel/evidence" "$work/$channel-metrical.json" 0 "$work/$channel-metrical-comparison.json"
           done
           resource="$PWD/dist/smoke/assets/models/beat-this/small0.onnx"
           mv "$resource" "$resource.missing-control"
