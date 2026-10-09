@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import resource
 import shutil
 import subprocess
 import sys
@@ -84,6 +85,10 @@ def main():
     command = [str(binary), "--package", str(package)]
     manifest = {"command": command, "binary_sha256": binary_hash, "build_record_sha256": sha(args.build_record), "package": str(package), "package_inputs_before": before, "host": {"platform": platform.platform(), "machine": platform.machine(), "python": platform.python_version(), "cpu_model": next((line.split(":", 1)[1].strip() for line in Path("/proc/cpuinfo").read_text().splitlines() if line.startswith("model name")), None)}, "environment": {name: env[name] for name in ("DISPLAY", "WAYLAND_DISPLAY", "XDG_SESSION_TYPE", "WGPU_BACKEND", "DISABLE_GAMESCOPE_WSI", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "COCOBEAT_PERFORMANCE_DIR", "COCOBEAT_PERFORMANCE_SIZE", "COCOBEAT_PERFORMANCE_QUALITY", "COCOBEAT_PERFORMANCE_PACING") if name in env}, "memory_sampling_seconds": 0.2, "concurrency_policy": "one native game; caller must exclude other GPU/Cargo/encoder/MIR workload", "deadline_seconds": 180, "script_inputs": {path.name: sha(path) for path in Path(__file__).parent.glob("*.py")}, "scope": "one Linux native release case; /proc RSS observations exclude VRAM and do not measure speaker latency"}
     write(output / "manifest.json", manifest)
+    # This standalone runner launches exactly one child, so wait-accounted usage belongs to this Game
+    usage_before = resource.getrusage(resource.RUSAGE_CHILDREN)
+    if usage_before.ru_utime or usage_before.ru_stime or usage_before.ru_maxrss:
+        raise RuntimeError("runner already has child resource usage")
     samples = []
     identity = None
     failure = None
@@ -107,8 +112,12 @@ def main():
             try: child.wait(timeout=5)
             except subprocess.TimeoutExpired: child.kill(); child.wait()
             raise
-    write(output / "memory.json", {"samples": samples, "scope": "owned child /proc VmRSS/VmHWM at 5 Hz; peak between samples may be missed; not steady heap or VRAM", "observed_peak_rss_kib": max((int(row["VmRSS"].split()[0]) for row in samples if "VmRSS" in row), default=None), "observed_peak_hwm_kib": max((int(row["VmHWM"].split()[0]) for row in samples if "VmHWM" in row), default=None)})
     exited_ns = time.monotonic_ns()
+    write(output / "memory.json", {"samples": samples, "scope": "owned child /proc VmRSS/VmHWM at 5 Hz; peak between samples may be missed; not steady heap or VRAM", "observed_peak_rss_kib": max((int(row["VmRSS"].split()[0]) for row in samples if "VmRSS" in row), default=None), "observed_peak_hwm_kib": max((int(row["VmHWM"].split()[0]) for row in samples if "VmHWM" in row), default=None)})
+    usage = resource.getrusage(resource.RUSAGE_CHILDREN)
+    wall_seconds = (exited_ns - launched_ns) / 1e9
+    cpu_seconds = usage.ru_utime + usage.ru_stime
+    write(output / "process-usage.json", {"scope": "Linux waited-child accumulated CPU including descendants only when all intermediate parents waited; maxRSS is largest waited-child peak, not concurrent process-tree RSS; observed wall is parent launch-to-reap with polling error, not kernel exit, steady phase or GPU duration", "user_cpu_seconds": usage.ru_utime, "system_cpu_seconds": usage.ru_stime, "cpu_seconds": cpu_seconds, "observed_lifetime_seconds": wall_seconds, "cpu_seconds_per_wall_second": cpu_seconds / wall_seconds, "max_rss_kib": usage.ru_maxrss, "minor_faults": usage.ru_minflt, "major_faults": usage.ru_majflt, "voluntary_context_switches": usage.ru_nvcsw, "involuntary_context_switches": usage.ru_nivcsw})
     after = package_inputs(package)
     script_unchanged = {path.name: sha(path) for path in Path(__file__).parent.glob("*.py")} == manifest["script_inputs"]
     build_record_unchanged = sha(args.build_record) == manifest["build_record_sha256"]

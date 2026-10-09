@@ -4,12 +4,14 @@ use super::*;
 use crate::clock::{ClockConfig, ClockObservation};
 use bevy::{
     diagnostic::{DiagnosticsStore, FrameTimeDiagnosticsPlugin},
+    render::diagnostic::RenderDiagnosticsPlugin,
     render::renderer::{RenderAdapterInfo, RenderDevice},
     time::{TimeSystems, TimeUpdateStrategy},
     window::PrimaryWindow,
 };
 use serde::Serialize;
 use std::{
+    collections::BTreeMap,
     fs::File,
     io::{BufWriter, Write},
     sync::mpsc::{self, Receiver, SyncSender},
@@ -25,6 +27,10 @@ struct Probe {
     origin: Instant,
     boundary_ns: u64,
     rows: Vec<Row>,
+    render_samples: Vec<serde_json::Value>,
+    render_last_values: BTreeMap<String, u64>,
+    render_sample_at: Option<u64>,
+    render_error: Option<String>,
     ready_at: Option<u64>,
     started: bool,
     schedule: Vec<(i64, PlayerId)>,
@@ -294,7 +300,8 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         "ready_warmup_seconds": 5, "ready_sample_seconds": 10,
         "running_warmup_seconds": 10, "running_sample_seconds": 50,
         "deadline_seconds": DEADLINE_SECONDS, "audio_output": app.world().non_send::<AudioOutput>().output_info(),
-        "not_measured": ["GPU elapsed", "draw calls", "VRAM", "audio underruns", "displayed or dropped monitor frames", "physical input", "speaker latency", "four-platform native graphics", "human acceptance"]
+        "render_diagnostics": {"producer": "bevy_render_0.19_render_diagnostics", "sample_period_ns": 50_000_000, "maximum_paths": 64, "scope": "periodic latest fresh render span values; elapsed_cpu is CPU recording and elapsed_gpu is timestamp-query duration; sync Instant is delayed main-world receipt, not render frame ID; no phase attribution, summed frame duration or present FPS"},
+        "not_measured": ["whole GPU frame elapsed", "draw calls", "VRAM", "audio underruns", "displayed or dropped monitor frames", "physical input", "speaker latency", "four-platform native graphics", "human acceptance"]
     });
     let directory = PathBuf::from(directory);
     std::fs::create_dir(&directory)
@@ -327,12 +334,19 @@ pub(super) fn install_if_requested(app: &mut App) -> Result<(), String> {
         schedule.clone(),
         app.world().resource::<InputState>().origin,
     )?;
+    if !app.is_plugin_added::<RenderDiagnosticsPlugin>() {
+        app.add_plugins(RenderDiagnosticsPlugin);
+    }
     app.add_plugins(FrameTimeDiagnosticsPlugin::default())
         .insert_non_send(Probe {
             directory,
             origin: Instant::now(),
             boundary_ns: 0,
             rows: Vec::with_capacity(65_536),
+            render_samples: Vec::new(),
+            render_last_values: BTreeMap::new(),
+            render_sample_at: None,
+            render_error: None,
             ready_at: None,
             started: false,
             schedule,
@@ -500,6 +514,20 @@ fn record(
     let frame = probe.rows.len();
     let at = probe.boundary_ns;
     let sent = probe.sent;
+    if probe
+        .render_sample_at
+        .is_none_or(|last| at.saturating_sub(last) >= 50_000_000)
+    {
+        probe.render_sample_at = Some(at);
+        let origin = probe.origin;
+        match render_measurements(&diagnostics, &mut probe.render_last_values, origin) {
+            Ok(values) if !values.is_empty() => probe.render_samples.push(serde_json::json!({
+                "observed_main_frame": frame, "observed_ns": origin.elapsed().as_nanos().min(u128::from(u64::MAX)) as u64, "values": values
+            })),
+            Ok(_) => {}
+            Err(error) => probe.render_error = Some(error),
+        }
+    }
     probe.rows.push(Row {
         frame,
         monotonic_ns: at,
@@ -544,7 +572,9 @@ fn record(
     if terminal {
         probe.finished_at.get_or_insert(at);
     }
-    let mut error = if let Some(error) = &probe.producer_error {
+    let mut error = if let Some(error) = &probe.render_error {
+        Some(error.clone())
+    } else if let Some(error) = &probe.producer_error {
         Some(error.clone())
     } else if game.phase == Phase::Fault {
         Some(
@@ -589,6 +619,48 @@ fn record(
     }
 }
 
+// GPU readback reaches DiagnosticsStore asynchronously; record its original sync Instant once
+// ponytail: 20 Hz limits export volume; Bevy still records each render frame
+// Exact render-frame attribution requires a renderer frame ID
+fn render_measurements(
+    diagnostics: &DiagnosticsStore,
+    last_values: &mut BTreeMap<String, u64>,
+    origin: Instant,
+) -> Result<Vec<serde_json::Value>, String> {
+    let mut values = Vec::new();
+    for diagnostic in diagnostics.iter() {
+        let path = diagnostic.path().to_string();
+        if !path.starts_with("render/")
+            || !(path.ends_with("/elapsed_cpu") || path.ends_with("/elapsed_gpu"))
+        {
+            continue;
+        }
+        let Some(measurement) = diagnostic.measurement() else {
+            continue;
+        };
+        let synced_at_ns = relative_ns(origin, measurement.time)?;
+        if last_values
+            .get(&path)
+            .is_some_and(|last| *last == synced_at_ns)
+        {
+            continue;
+        }
+        if diagnostic.suffix != "ms" || !measurement.value.is_finite() || measurement.value < 0.0 {
+            return Err("Invalid render elapsed measurement or unit".into());
+        }
+        if !last_values.contains_key(&path) && last_values.len() >= 64 {
+            return Err("Render diagnostic path limit exceeded".into());
+        }
+        last_values.insert(path.clone(), synced_at_ns);
+        values.push(
+            serde_json::json!({"path": path, "synced_at_ns": synced_at_ns,
+            "value_ms": measurement.value, "value_f64_bits": measurement.value.to_bits()}),
+        );
+    }
+    values.sort_by(|a, b| a["path"].as_str().cmp(&b["path"].as_str()));
+    Ok(values)
+}
+
 fn write_json(path: &Path, value: &serde_json::Value) -> Result<(), String> {
     let mut file = File::create_new(path).map_err(|error| error.to_string())?;
     serde_json::to_writer_pretty(&mut file, value).map_err(|error| error.to_string())?;
@@ -614,6 +686,20 @@ fn finish(
     file.flush()
         .and_then(|()| file.get_ref().sync_all())
         .map_err(|error| error.to_string())?;
+    let mut render_file = BufWriter::new(
+        File::create_new(probe.directory.join("render-diagnostics.jsonl"))
+            .map_err(|error| error.to_string())?,
+    );
+    for sample in &probe.render_samples {
+        serde_json::to_writer(&mut render_file, sample).map_err(|error| error.to_string())?;
+        render_file
+            .write_all(b"\n")
+            .map_err(|error| error.to_string())?;
+    }
+    render_file
+        .flush()
+        .and_then(|()| render_file.get_ref().sync_all())
+        .map_err(|error| error.to_string())?;
     game.session
         .replay
         .save(probe.directory.join("workload.replay"))
@@ -627,6 +713,38 @@ fn finish(
 #[cfg(test)]
 mod producer_tests {
     use super::*;
+    #[test]
+    fn render_samples_keep_original_bits_and_sync_time_without_repeating_stale_values() {
+        use bevy::diagnostic::{Diagnostic, DiagnosticMeasurement, DiagnosticPath};
+        let origin = Instant::now();
+        let mut diagnostics = DiagnosticsStore::default();
+        let path = DiagnosticPath::new("render/test/elapsed_gpu");
+        let mut value = Diagnostic::new(path.clone()).with_suffix("ms");
+        value.add_measurement(DiagnosticMeasurement {
+            time: origin,
+            value: 0.125,
+        });
+        diagnostics.add(value);
+        let mut seen = BTreeMap::new();
+        let captured = render_measurements(&diagnostics, &mut seen, origin).unwrap();
+        assert_eq!(captured.len(), 1);
+        assert_eq!(captured[0]["synced_at_ns"], 0);
+        assert_eq!(captured[0]["value_f64_bits"], 0.125_f64.to_bits());
+        assert!(
+            render_measurements(&diagnostics, &mut seen, origin)
+                .unwrap()
+                .is_empty()
+        );
+        diagnostics
+            .get_mut(&path)
+            .unwrap()
+            .add_measurement(DiagnosticMeasurement {
+                time: origin + Duration::from_millis(1),
+                value: -1.0,
+            });
+        assert!(render_measurements(&diagnostics, &mut seen, origin).is_err());
+    }
+
     use crate::clock::MonotonicTime;
     use cocobeat_schema::{SessionEpoch, SongTime};
 

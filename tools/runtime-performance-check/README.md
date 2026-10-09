@@ -46,3 +46,13 @@ Gamescope 3.16.25 has a native Wayland borrowed-surface cleanup failure in its e
 The independent_instant_v2 producer changes the instrumentation identity; historical frame-polled 68a results remain separate and do not combine with a new frozen binary into a homogeneous matrix
 
 These are descriptive local measurements with no universal hardware budget or formal product acceptance; GPU elapsed, draw calls, VRAM, audio underruns, physical input, speaker latency, four-platform native graphics, dual-machine and human acceptance remain NOT MEASURED
+
+## Opt-in render spans and process usage
+
+The probe now installs Bevy RenderDiagnosticsPlugin only for the existing opt-in performance run; Bevy records render diagnostics every render frame, while the exporter samples fresh latest values at 20 Hz with at most 64 paths
+
+`render-diagnostics.jsonl` retains the original CPU-recording or GPU-timestamp span value, f64 bits and main-world sync Instant; asynchronous receipt has no render-frame identity or Ready/Running attribution, so per-path spans remain separate
+
+`process-usage.json` records Linux wait-accounted child CPU and largest waited-child peak RSS; observed launch-to-reap wall uses a nominal 0.2-second polling cadence and excludes the memory-report write; the exact kernel exit time is not measured, while CPU includes descendants only when their intermediate parents waited
+
+The new instrumentation passed five producer tests, runtime Clippy, formatting and dependency boundaries; its current optimized native sample is pending, and earlier measurement matrices remain bound to their original binaries

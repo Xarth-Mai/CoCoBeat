@@ -29,3 +29,11 @@ limited60 原轮与两复测 Running p95 / p99 分别为 16.732 / 16.737、16.73
 完整数值、构建输入、原始命令、失败、归档映射与 SHA 索引见[持久观察](../testdata/synthetic/runtime-performance-observations-20261008.json)，原始产物位于 `target/performance-delivery-20261008/`。历史 frame-polled release 与 debug 行为证据单独保留，没有与当前 fixed release 合并
 
 本批没有 universal 性能预算；GPU elapsed、draw call、VRAM、audio underrun、实际显示器帧、真实键盘 / 双手柄 / 混合输入、DAC / 扬声器、四平台图形与真人验收仍 NOT MEASURED / NOT RUN
+
+## 新版分项测量接线
+
+2026-10-09 · 现有 opt-in 探针复用 Bevy 官方渲染诊断，20Hz导出最多64个路径的最新原始CPU记录 / GPU查询值、f64 bits与主世界接收时间；官方插件每个渲染帧仍记录，接收时间不提供渲染frame ID，分项不合计成完整GPU帧或归因到歌曲阶段
+
+Linux runner新增进程累计CPU、largest waited-child peak RSS和观测launch-to-reap耗时，采用0.2秒名义轮询周期，未测内核精确退出时刻，包含被中间父进程wait的后代CPU；这与并发进程树RSS、稳态heap、VRAM和声卡underrun分别记录范围
+
+五项producer窄测、runtime Clippy / 格式 / 边界通过；当前源码优化构建和固定Stage3原生样本尚待执行，旧矩阵、Wayland VSync失败及所有旧数值保持原构建范围
