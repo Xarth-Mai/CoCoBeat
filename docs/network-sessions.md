@@ -145,6 +145,18 @@ Phase read与Phase control / Frozen FIFO marker写出保留既有typed传输分�
 
 AwaitLive / last-sealed只有metadata unit，真实owned QUIC边缘、物理设备、DAC /双机继续NOT_RUN，原v8观察仅绑定其原版本
 
+## 原生 Sampling 状态续接
+
+2026-10-09 · 新 `same-epoch-phase-sampling` 原生观察场景只在opt-in时记录最多16条成功处理的Phase事件，沿原RequestRecovery请求一次续接；默认游戏不构造此journal，没有新增音源、rate /seek、额外暂停或放宽期限 /采样容量
+
+[当前原生观察](../testdata/synthetic/source-phase-sampling-native-observations-20261009.json)记录实际Linux两Kira进程在round1完成Sampling0→Rebound1→Sampling1验证→Ready1，随后round2正常Ready1并自然EOF；双方820条事实和5个事件的权威Replay一致，真实输入门控probe被清除，第三个正常Hit在门控解除后进入原序号
+
+请求发生在提前发出的Sampling事件处理成功后、原not_before之前，因此此样本证明Sampling状态且原check尚未闭合的续接，不宣称PCM采集子窗内断线；双方旧round1/check.json必须不存在、同round重连验证必须存在，避免把后来的GateAck /AwaitLive恢复算作此样本
+
+四份原proof的两对完整区间独立重算均为[-514,514]帧，原f64 bits、CBMC四时戳、冻结source与fresh publication、同round /attempt1、原±2400 guard均保持；380项构建源码和396个运行保护值、450项独立检查输入守恒。net52 /runtime186、六项必要检查通过，首次格式FAIL及独立QA水位公式错误分别保留，修正只涉及布局与原规则公式
+
+此样本没有强制超guard校正、Pausing /scheduled /pending-resume /AwaitLive真实续接、PCM子窗中断、长期漂移、双机、物理控制或DAC /扬声器验证；旧模型和普通Kira观察继续保持各自来源范围
+
 ## 故障后的新轮次软件验证
 
 协议 v5 / Replay v2 接线完成后，127 项 runtime 测试、9 组实际 LiveSession loopback 及 3 组原生双轮检查通过；每组使用两个持续运行的游戏进程，分别覆盖正常完成、Ready 前本地 worker 取消和命中后本地取消 / 伙伴连接丢失，再使用新邀请完成第二局

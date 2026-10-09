@@ -34,7 +34,7 @@ def file_hashes(directory):
 
 def check(game, package, output, compositor, rounds=1, scenario="complete", receipt=None):
     assert rounds >= 1, "round count must be positive"
-    same_epoch = scenario == "same-epoch-active"
+    same_epoch = scenario in ("same-epoch-active", "same-epoch-phase-sampling")
     assert not same_epoch or rounds == 1, "same epoch uses one original round"
     assert not scenario.startswith("reenter-") or rounds == 2, "reentry cases require two rounds"
     supervisor = Path(__file__).resolve().parents[1] / "library-runtime-check/check.py"
@@ -272,6 +272,47 @@ def check(game, package, output, compositor, rounds=1, scenario="complete", rece
                 certificates.append(reports[0]["network"]["cert_blake3"])
                 all_reports.append(reports)
                 continue
+            if scenario == "same-epoch-phase-sampling":
+                request = reports[0]["runtime"]["same_epoch"]["phase_request"]
+                assert request and reports[1]["runtime"]["same_epoch"]["phase_request"] is None
+                assert request["epoch"] == reports[0]["network"]["epoch"]
+                assert request["attempt"] == 0 and request["verification"] is False
+                assert request["observed_ns"] <= request["requested_ns"] < request["until_ns"]
+                rebound_round = request["round"]
+                for report in reports:
+                    journal = report["runtime"]["phase_observations"]
+                    assert 1 <= len(journal) <= 16
+                    assert all(row["epoch"] == request["epoch"] for row in journal)
+                    assert all(a["observed_ns"] <= b["observed_ns"] for a, b in zip(journal, journal[1:]))
+                    rebound = next(i for i, row in enumerate(journal)
+                                   if row["event"] == "rebound" and row["round"] == rebound_round and row["attempt"] == 1)
+                    assert any(row["event"] == "sampling" and row["round"] == rebound_round
+                               and row["attempt"] == 0 and row["verification"] is False for row in journal[:rebound])
+                    assert not any(row["event"] == "ready" and row["round"] == rebound_round
+                                   and row["attempt"] == 0 for row in journal[:rebound]), "old round sealed before takeover"
+                    ready = next(i for i, row in enumerate(journal[rebound + 1:], rebound + 1)
+                                 if row["event"] == "ready" and row["round"] == rebound_round and row["attempt"] == 1)
+                    assert any(row["event"] == "sampling" and row["round"] == rebound_round
+                               and row["attempt"] == 1 and row["verification"] is True for row in journal[rebound + 1:ready])
+                    assert any(row["event"] == "ready" and row["round"] > rebound_round
+                               and row["attempt"] == 1 for row in journal[ready + 1:]), "normal phase maintenance did not continue"
+                    assert not any(row["event"] in ("pausing", "scheduled") for row in journal), "native correction outside this sampling-only case"
+                    assert len({(row["source_generation"], row["source_id"]) for row in journal}) == 1
+                    assert all(a["source_sequence"] <= b["source_sequence"] for a, b in zip(journal, journal[1:]))
+                    network = network_directory(output, report["side"], number)
+                    assert not (network / f"phase-{rebound_round}" / "check.json").exists(), "original Sampling completed its check proof before takeover"
+                    proof = json.loads((network / f"phase-{rebound_round}" / "reconnect-verification.json").read_text())
+                    assert proof["epoch"] == request["epoch"] and proof["round"] == rebound_round
+                    assert proof["connection_attempt"] == 1 and proof["reconnect_verification"] is True
+                    assert proof["verification"] is True and proof["within_guard"] is True
+                    assert proof["common_frame"] is not None and proof["host_common_ns"] is not None
+                    assert all(row is not None for row in proof["frozen_publications"])
+                    frozen = proof["frozen_publications"]
+                    for index, evidence in enumerate(proof["source_evidence"]):
+                        assert [evidence["generation"], evidence["source_id"]] == proof["original_source_ids"][index]
+                        assert evidence["publications"][0]["sequence"] > frozen[index]["sequence"]
+                    metadata = json.loads((network / "recovery-1" / "metadata.json").read_text())
+                    assert metadata["prior_phase_pause"] is None and metadata["prior_phase_pause_extension_ns"] == 0
             if same_epoch:
                 assert reports[0]["runtime"]["core_events"] == reports[1]["runtime"]["core_events"]
             assert reports[0]["network"]["facts"] == reports[1]["network"]["facts"]
@@ -337,7 +378,7 @@ if __name__ == "__main__":
     parser.add_argument("new_output", type=Path)
     parser.add_argument("--compositor", choices=("xvfb", "gamescope"), default="xvfb")
     parser.add_argument("--rounds", type=int, default=1)
-    parser.add_argument("--scenario", choices=("complete", "reenter-before-ready", "reenter-after-hit", "same-epoch-active"), default="complete")
+    parser.add_argument("--scenario", choices=("complete", "reenter-before-ready", "reenter-after-hit", "same-epoch-active", "same-epoch-phase-sampling"), default="complete")
     parser.add_argument("--receipt", type=Path)
     args = parser.parse_args()
     check(args.game.resolve(), args.package.resolve(), args.new_output.resolve(), args.compositor, args.rounds, args.scenario, args.receipt.resolve() if args.receipt else None)

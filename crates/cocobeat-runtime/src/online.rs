@@ -39,6 +39,7 @@ pub(crate) struct OnlineRound {
     terminal: bool,
     recovery: Option<Recovery>,
     source_phase: Option<PhaseMaintenance>,
+    phase_observations: Option<Vec<serde_json::Value>>,
     pub(crate) network_clock: Option<cocobeat_net::clock::ClockSync>,
     network_clock_round: u64,
 }
@@ -187,6 +188,14 @@ impl OnlineRound {
             .map_err(|error| error.to_string())?;
         self.network_clock_round = round;
         Ok(())
+    }
+
+    pub(super) fn enable_phase_observations(&mut self) {
+        self.phase_observations = Some(Vec::new());
+    }
+
+    pub(super) fn phase_observations(&self) -> &[serde_json::Value] {
+        self.phase_observations.as_deref().unwrap_or_default()
     }
 
     pub fn recovering(&self) -> bool {
@@ -427,6 +436,44 @@ impl OnlineRound {
         if !matches!(event, LiveEvent::PhaseRebound { .. }) {
             phase.expect_attempt(round, attempt)?;
         }
+        let observation = self.phase_observations.as_ref().map(|_| {
+            let nanos = |at: Instant| {
+                u64::try_from(at.duration_since(input_origin).as_nanos()).unwrap_or(u64::MAX)
+            };
+            let mut row = serde_json::json!({
+                "epoch": epoch.0, "round": round, "attempt": attempt,
+                "observed_ns": nanos(now),
+                "source_generation": source.generation, "source_id": source.source_id,
+                "source_sequence": source.sequence,
+                "position_seconds_bits": source.position_seconds.to_bits(),
+                "publication_before_ns": nanos(source.published_between[0]),
+                "publication_after_ns": nanos(source.published_between[1]),
+            });
+            match &event {
+                LiveEvent::PhaseSampling {
+                    verification,
+                    not_before,
+                    common_at,
+                    until,
+                    ..
+                } => {
+                    row["event"] = "sampling".into();
+                    row["verification"] = (*verification).into();
+                    row["not_before_ns"] = nanos(*not_before).into();
+                    row["common_at_ns"] = nanos(*common_at).into();
+                    row["until_ns"] = nanos(*until).into();
+                }
+                LiveEvent::PhaseRebound { deadline, .. } => {
+                    row["event"] = "rebound".into();
+                    row["deadline_ns"] = nanos(*deadline).into();
+                }
+                LiveEvent::PhaseReady { .. } => row["event"] = "ready".into(),
+                LiveEvent::PhasePausing { .. } => row["event"] = "pausing".into(),
+                LiveEvent::PhaseScheduled { .. } => row["event"] = "scheduled".into(),
+                _ => unreachable!("phase event was checked above"),
+            }
+            row
+        });
         match event {
             LiveEvent::PhaseRebound { deadline, .. } => {
                 phase.rebound(round, attempt, deadline, source, state, now)?;
@@ -476,6 +523,13 @@ impl OnlineRound {
                 phase.ready(round, source, state, now)?;
             }
             _ => unreachable!("phase event was checked above"),
+        }
+        if let Some(row) = observation {
+            let observations = self.phase_observations.as_mut().unwrap();
+            if observations.len() >= 16 {
+                return Err("Native phase observation exceeded its bound".into());
+            }
+            observations.push(row);
         }
         Ok(self
             .source_phase

@@ -19,6 +19,7 @@ struct Observation {
 #[derive(Default)]
 struct SameEpochObservation {
     request_sent: bool,
+    phase_request: Option<serde_json::Value>,
     seen: bool,
     ready: bool,
     identity: Option<(u64, u64, SessionEpoch)>,
@@ -98,9 +99,11 @@ impl Observation {
             "reenter-after-hit-guest" => ("reenter-after-hit", false),
             "same-epoch-active-host" => ("same-epoch-active", true),
             "same-epoch-active-guest" => ("same-epoch-active", false),
+            "same-epoch-phase-sampling-host" => ("same-epoch-phase-sampling", true),
+            "same-epoch-phase-sampling-guest" => ("same-epoch-phase-sampling", false),
             _ => return Err("Unknown live observation scenario".into()),
         };
-        if scenario == "same-epoch-active" && round_count != 1 {
+        if scenario.starts_with("same-epoch-") && round_count != 1 {
             return Err("Same epoch observation requires one original round".into());
         }
         if scenario.starts_with("reenter-") && round_count != 2 {
@@ -124,7 +127,9 @@ impl Observation {
             scenario,
             cancel_host,
             fault_injected: false,
-            same_epoch: (scenario == "same-epoch-active").then(SameEpochObservation::default),
+            same_epoch: scenario
+                .starts_with("same-epoch-")
+                .then(SameEpochObservation::default),
         })
     }
 
@@ -186,6 +191,11 @@ pub(super) fn install(app: &mut App, directory: &Path) -> Result<(), String> {
         round_count,
         app.world().non_send::<AudioOutput>().output_info(),
     )?;
+    if observation.scenario == "same-epoch-phase-sampling" {
+        app.world_mut()
+            .non_send_mut::<OnlineRound>()
+            .enable_phase_observations();
+    }
     app.insert_resource(observation).add_systems(
         Update,
         observe
@@ -215,7 +225,9 @@ fn record_result(
         "phase": format!("{:?}", game.phase), "error": error.or(game.fault_details.as_deref()),
         "process_id": std::process::id(), "scenario": observation.scenario,
         "local_worker_cancel_requested": observation.fault_injected && observation.current.number == 1,
+        "phase_observations": online.phase_observations(),
         "same_epoch": observation.same_epoch.as_ref().map(|recovery| serde_json::json!({
+            "phase_request": recovery.phase_request,
             "request_sent": recovery.request_sent, "recovering_seen": recovery.seen,
             "ready_after_gate": recovery.ready, "records": recovery.records,
             "probe_requested_ns": recovery.probe_requested_ns,
@@ -451,8 +463,16 @@ fn observe(
                 observation.current.hits_sent += 1;
             }
         }
+        let phase_sampling = observation.scenario == "same-epoch-phase-sampling";
+        let sampled = online.phase_observations().last().filter(|row| {
+            row["event"] == "sampling"
+                && row["attempt"] == 0
+                && row["verification"] == false
+                && row["until_ns"].as_u64().is_some_and(|until| now < until)
+        });
         if observation.cancel_host
             && game.phase == Phase::Running
+            && (!phase_sampling || sampled.is_some())
             && game.session.current.frames() >= 96_000
             && actual_source.is_some_and(|source| source.position_seconds >= 2.0)
             && let Some(recovery) = &mut observation.same_epoch
@@ -470,6 +490,11 @@ fn observe(
             let source = actual_source.ok_or("Recovery request lacks actual source publication")?;
             recovery.identity = Some((source.generation, source.source_id, game.session.epoch()));
             recovery.prefix = game.session.replay.facts().to_vec();
+            if phase_sampling {
+                let mut request = sampled.unwrap().clone();
+                request["requested_ns"] = now.into();
+                recovery.phase_request = Some(request);
+            }
             online.send(LiveCommand::RequestRecovery {
                 epoch: game.session.epoch(),
             })?;

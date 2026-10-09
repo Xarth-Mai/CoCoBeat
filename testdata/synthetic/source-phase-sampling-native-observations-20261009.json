@@ -1,0 +1,987 @@
+{
+  "schema": 1,
+  "recorded_date": "2026-10-09",
+  "status": "PASS_SCOPED_ACTUAL_KIRA_SAMPLING_RECONNECT_WITH_INDEPENDENT_INTERVAL_REVIEW",
+  "scope": "one Linux current native Kira original-source protocol9 continuation requested while runtime handled Sampling0 before original check closure; not a claim of being inside future PCM collection subwindow or of complete fault/hardware acceptance",
+  "base_head": "2cadd861422500a1d6a15d6abf82ff83d85dbd21",
+  "source_scope": "three observer/QA files after rustfmt-only layout changes, current debug shipping build, not optimized performance evidence or four-native release",
+  "software_checks": {
+    "status": "PASS",
+    "base_head": "2cadd861422500a1d6a15d6abf82ff83d85dbd21",
+    "source_count": 380,
+    "source_before_after_equal": true,
+    "commands": [
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "--lib"
+        ],
+        "pid": 4,
+        "pgid": 4,
+        "exit_code": 0,
+        "elapsed_seconds": 0.3141524629900232,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/01.stdout",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/01.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--locked",
+          "-p",
+          "cocobeat-runtime",
+          "--lib"
+        ],
+        "pid": 68,
+        "pgid": 68,
+        "exit_code": 0,
+        "elapsed_seconds": 39.082628875999944,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/02.stdout",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/02.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "clippy",
+          "--locked",
+          "-p",
+          "cocobeat-net",
+          "-p",
+          "cocobeat-runtime",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "pid": 588,
+        "pgid": 588,
+        "exit_code": 0,
+        "elapsed_seconds": 3.368911724013742,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/03.stdout",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/03.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "fmt",
+          "--all",
+          "--",
+          "--check"
+        ],
+        "pid": 605,
+        "pgid": 605,
+        "exit_code": 0,
+        "elapsed_seconds": 1.1656979930121452,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/04.stdout",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/04.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "xtask",
+          "boundaries"
+        ],
+        "pid": 608,
+        "pgid": 608,
+        "exit_code": 0,
+        "elapsed_seconds": 0.16411359698395245,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/05.stdout",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/05.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      },
+      {
+        "argv": [
+          "cargo",
+          "build",
+          "--locked",
+          "-p",
+          "cocobeat-game",
+          "-p",
+          "cocobeat-lab",
+          "--message-format=json"
+        ],
+        "pid": 619,
+        "pgid": 619,
+        "exit_code": 0,
+        "elapsed_seconds": 97.57890238700202,
+        "stdout": "target/source-phase-sampling-native-production-checks-20261009-revision02/build.jsonl",
+        "stderr": "target/source-phase-sampling-native-production-checks-20261009-revision02/06.stderr",
+        "timed_out": false,
+        "owned_group_gone": true
+      }
+    ]
+  },
+  "test_counts": {
+    "net_passed": 52,
+    "runtime_passed": 186,
+    "commands_passed": 6
+  },
+  "build_receipt": {
+    "status": "PASS",
+    "exit_code": 0,
+    "inputs_unchanged": true,
+    "base_head": "2cadd861422500a1d6a15d6abf82ff83d85dbd21",
+    "source_count": 380,
+    "source_guard_sha256": "7dc6010b320b55431414e4d80b55309880b7808efe83c0fca537159afba05898",
+    "build_graph_sha256": "6922f7c17bfe5e6efd2b6475cb8ed4687d673bb2920afff67ffe5906ffe9351b",
+    "build_result_path": "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-production-checks-20261009-revision02/result.json",
+    "build_result_sha256": "51a82b3831df9e129c3f897948f92e3292b042423aba82bc68c621289d7d9784",
+    "binary": "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/bin/cocobeat-game",
+    "binary_sha256": "704af04cc24c7a253f0dd8cbc7d6b99769116b5754cfbafc86b0999879ed21e8",
+    "scope": "actual current formatted Sampling observer dirty3 source at head2cadd86, debug shipping graph; native correctness only, not optimized performance/four-native release"
+  },
+  "actual_native": {
+    "root_result": {
+      "status": "PASS",
+      "commands": [
+        {
+          "scenario": "same-epoch-phase-sampling",
+          "argv": [
+            "python",
+            "/home/lzzz/MyProjects/CoCoBeat/tools/quic-live-check/native.py",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/bin/cocobeat-game",
+            "/home/lzzz/MyProjects/CoCoBeat/target/anchor-unlabelled-inference-cli-run-20261008/adopted",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling",
+            "--compositor",
+            "gamescope",
+            "--rounds",
+            "1",
+            "--scenario",
+            "same-epoch-phase-sampling",
+            "--receipt",
+            "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/game-build-result.json"
+          ],
+          "pid": 1087001,
+          "pgid": 1087001,
+          "exit_code": 0,
+          "timed_out": false,
+          "owned_group_gone": true,
+          "elapsed_seconds": 59.32140881498344,
+          "actual_games": [
+            {
+              "pid": 1087026,
+              "gone": true
+            },
+            {
+              "pid": 1087085,
+              "gone": true
+            }
+          ],
+          "owned_wrappers": [
+            {
+              "pid": 1087002,
+              "pgid": 1087002,
+              "start_ticks": 23616240,
+              "cmdline": "gamescope --backend headless --expose-wayland -W 1280 -H 800 -r 60 -- /usr/bin/python /home/lzzz/MyProjects/CoCoBeat/tools/library-runtime-check/check.py --child /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-process /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/bin/cocobeat-game --package /home/lzzz/MyProjects/CoCoBeat/target/anchor-unlabelled-inference-cli-run-20261008/adopted --net-host 127.0.0.1:0 /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/invite.json /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network --live-observation /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-observation "
+            },
+            {
+              "pid": 1087062,
+              "pgid": 1087062,
+              "start_ticks": 23617529,
+              "cmdline": "gamescope --backend headless --expose-wayland -W 1280 -H 800 -r 60 -- /usr/bin/python /home/lzzz/MyProjects/CoCoBeat/tools/library-runtime-check/check.py --child /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-process /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/bin/cocobeat-game --net-receive /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/invite.json /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/received /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network --live-observation /home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-observation "
+            }
+          ],
+          "guards_equal": true,
+          "passed": true
+        }
+      ],
+      "scope": "one actual Linux current Kira same-original-source recovery requested during runtime Sampling event before old check closed; all raw same-round verification required; original N786432 package/budgets, no correction/rate/seek/source reset; independent musical/hardware/other Phase states not covered"
+    },
+    "natural_eof": true,
+    "canonical_frames": 786432,
+    "protocol": 9,
+    "source_and_history_guards": 396,
+    "facts": [
+      410,
+      410
+    ],
+    "event_count": 5,
+    "authority": "04a853f77dab383afbd1137c545befa603d2138b29434db0d428ef6d14ce140f",
+    "actual_source_ids": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        1
+      ]
+    ],
+    "event_sequences": [
+      {
+        "side": "host",
+        "network": {
+          "status": "COMPLETE",
+          "mode": "live",
+          "protocol_version": 9,
+          "epoch": 17999363723980296326,
+          "player": 1,
+          "peer_authenticated": true,
+          "package_received": false,
+          "resource_bytes": 0,
+          "network_timing": {
+            "probes_sent": 0,
+            "received_datagrams": 1,
+            "ignored_datagrams": 0,
+            "clock": {
+              "probe_id": 0,
+              "guest_sample_ns": 509762788,
+              "offset_ns": 12479644788,
+              "uncertainty_ns": 210759,
+              "round_trip_min_ns": 420243,
+              "round_trip_max_ns": 421093
+            },
+            "host_start_ns": 14989723470,
+            "local_start_ns": 14989723470,
+            "start_uncertainty_ns": 0,
+            "software_start_observed_ns": 14990787759,
+            "software_start_lateness_ns": 1064289
+          },
+          "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+          "endpoint": "127.0.0.1:41553",
+          "cert_blake3": "d3b797ec62b49a2ecf50dc6fc547432536d754e80b97f491819e7d8ab96af278",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            410,
+            410
+          ],
+          "event_count": 5,
+          "live_replay_blake3": "04a853f77dab383afbd1137c545befa603d2138b29434db0d428ef6d14ce140f",
+          "authority_replay_blake3": "04a853f77dab383afbd1137c545befa603d2138b29434db0d428ef6d14ce140f",
+          "error": null
+        },
+        "phase_journal": [
+          {
+            "attempt": 0,
+            "common_at_ns": 31681910269,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 31641910269,
+            "observed_ns": 31438123000,
+            "position_seconds_bits": 4618444420268195228,
+            "publication_after_ns": 31433252033,
+            "publication_before_ns": 31433249623,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 748,
+            "until_ns": 31761910269,
+            "verification": false
+          },
+          {
+            "attempt": 1,
+            "deadline_ns": 61431910269,
+            "epoch": 17999363723980296326,
+            "event": "rebound",
+            "observed_ns": 33863047886,
+            "position_seconds_bits": 4618807710638136448,
+            "publication_after_ns": 33854560685,
+            "publication_before_ns": 33854559085,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 975
+          },
+          {
+            "attempt": 1,
+            "common_at_ns": 34077548722,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 34037548722,
+            "observed_ns": 33863073026,
+            "position_seconds_bits": 4618807710638136448,
+            "publication_after_ns": 33854560685,
+            "publication_before_ns": 33854559085,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 975,
+            "until_ns": 34157548722,
+            "verification": true
+          },
+          {
+            "attempt": 1,
+            "epoch": 17999363723980296326,
+            "event": "ready",
+            "observed_ns": 34195637301,
+            "position_seconds_bits": 4619180008207332409,
+            "publication_after_ns": 34185185760,
+            "publication_before_ns": 34185184130,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1006
+          },
+          {
+            "attempt": 1,
+            "common_at_ns": 40084343053,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 40044343053,
+            "observed_ns": 39836971291,
+            "position_seconds_bits": 4623113151881902643,
+            "publication_after_ns": 39827862244,
+            "publication_before_ns": 39827860814,
+            "round": 2,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1535,
+            "until_ns": 40164343053,
+            "verification": false
+          },
+          {
+            "attempt": 1,
+            "epoch": 17999363723980296326,
+            "event": "ready",
+            "observed_ns": 40209694919,
+            "position_seconds_bits": 4623323319864513266,
+            "publication_after_ns": 40201146918,
+            "publication_before_ns": 40201145538,
+            "round": 2,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1570
+          }
+        ],
+        "phase_request": {
+          "attempt": 0,
+          "common_at_ns": 31681910269,
+          "epoch": 17999363723980296326,
+          "event": "sampling",
+          "not_before_ns": 31641910269,
+          "observed_ns": 31438123000,
+          "position_seconds_bits": 4618444420268195228,
+          "publication_after_ns": 31433252033,
+          "publication_before_ns": 31433249623,
+          "requested_ns": 31475003988,
+          "round": 1,
+          "source_generation": 1,
+          "source_id": 1,
+          "source_sequence": 748,
+          "until_ns": 31761910269,
+          "verification": false
+        },
+        "input_probe_dropped": true,
+        "local_ended": true,
+        "owned_workers_finished": true
+      },
+      {
+        "side": "guest",
+        "network": {
+          "status": "COMPLETE",
+          "mode": "live",
+          "protocol_version": 9,
+          "epoch": 17999363723980296326,
+          "player": 2,
+          "peer_authenticated": true,
+          "package_received": true,
+          "resource_bytes": 59239,
+          "network_timing": {
+            "probes_sent": 1,
+            "received_datagrams": 1,
+            "ignored_datagrams": 0,
+            "clock": {
+              "probe_id": 0,
+              "guest_sample_ns": 509762788,
+              "offset_ns": 12479644788,
+              "uncertainty_ns": 210759,
+              "round_trip_min_ns": 420243,
+              "round_trip_max_ns": 421093
+            },
+            "host_start_ns": 14989723470,
+            "local_start_ns": 2510078682,
+            "start_uncertainty_ns": 2213289,
+            "software_start_observed_ns": 2510543658,
+            "software_start_lateness_ns": 464976
+          },
+          "content_id": "package-blake3:1d68e01681f900802b4b8fadb25cbe15df34f070af13363a776e9e2446601efb",
+          "endpoint": "127.0.0.1:41553",
+          "cert_blake3": "d3b797ec62b49a2ecf50dc6fc547432536d754e80b97f491819e7d8ab96af278",
+          "template_blake3": "",
+          "template_epoch": 0,
+          "facts": [
+            410,
+            410
+          ],
+          "event_count": 5,
+          "live_replay_blake3": "2bea8c00e9d9dac4116a5ab7c9c0af6717499a180d55d45a92681d344ed38a37",
+          "authority_replay_blake3": "04a853f77dab383afbd1137c545befa603d2138b29434db0d428ef6d14ce140f",
+          "error": null
+        },
+        "phase_journal": [
+          {
+            "attempt": 0,
+            "common_at_ns": 19492044277,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 19452044277,
+            "observed_ns": 19248217328,
+            "position_seconds_bits": 4618444420268195228,
+            "publication_after_ns": 19243396981,
+            "publication_before_ns": 19243384961,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 748,
+            "until_ns": 19572044277,
+            "verification": false
+          },
+          {
+            "attempt": 1,
+            "deadline_ns": 49211810081,
+            "epoch": 17999363723980296326,
+            "event": "rebound",
+            "observed_ns": 21672307228,
+            "position_seconds_bits": 4618807710638136448,
+            "publication_after_ns": 21664692363,
+            "publication_before_ns": 21664690783,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 975
+          },
+          {
+            "attempt": 1,
+            "common_at_ns": 21887680505,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 21847680505,
+            "observed_ns": 21672331158,
+            "position_seconds_bits": 4618807710638136448,
+            "publication_after_ns": 21664692363,
+            "publication_before_ns": 21664690783,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 975,
+            "until_ns": 21967680505,
+            "verification": true
+          },
+          {
+            "attempt": 1,
+            "epoch": 17999363723980296326,
+            "event": "ready",
+            "observed_ns": 22005769639,
+            "position_seconds_bits": 4619180008207332409,
+            "publication_after_ns": 21995317418,
+            "publication_before_ns": 21995315378,
+            "round": 1,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1006
+          },
+          {
+            "attempt": 1,
+            "common_at_ns": 27894447531,
+            "epoch": 17999363723980296326,
+            "event": "sampling",
+            "not_before_ns": 27854447531,
+            "observed_ns": 27646535062,
+            "position_seconds_bits": 4623113151881902643,
+            "publication_after_ns": 27638008262,
+            "publication_before_ns": 27638006122,
+            "round": 2,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1535,
+            "until_ns": 27974447531,
+            "verification": false
+          },
+          {
+            "attempt": 1,
+            "epoch": 17999363723980296326,
+            "event": "ready",
+            "observed_ns": 28020459074,
+            "position_seconds_bits": 4623323319864513266,
+            "publication_after_ns": 28011280316,
+            "publication_before_ns": 28011278436,
+            "round": 2,
+            "source_generation": 1,
+            "source_id": 1,
+            "source_sequence": 1570
+          }
+        ],
+        "phase_request": null,
+        "input_probe_dropped": true,
+        "local_ended": true,
+        "owned_workers_finished": true
+      }
+    ],
+    "proofs": [
+      {
+        "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/phase-1/reconnect-verification.json",
+        "round": 1,
+        "reconnect": true,
+        "reported_interval": [
+          -514,
+          514
+        ],
+        "original_rows": [
+          11,
+          11
+        ]
+      },
+      {
+        "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/phase-2/check.json",
+        "round": 2,
+        "reconnect": false,
+        "reported_interval": [
+          -514,
+          514
+        ],
+        "original_rows": [
+          11,
+          11
+        ]
+      },
+      {
+        "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/phase-1/reconnect-verification.json",
+        "round": 1,
+        "reconnect": true,
+        "reported_interval": [
+          -514,
+          514
+        ],
+        "original_rows": [
+          11,
+          11
+        ]
+      },
+      {
+        "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/phase-2/check.json",
+        "round": 2,
+        "reconnect": false,
+        "reported_interval": [
+          -514,
+          514
+        ],
+        "original_rows": [
+          11,
+          11
+        ]
+      }
+    ],
+    "package_objects": {
+      "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+      "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+      "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+      "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+    }
+  },
+  "independent_interval_review": {
+    "status": "PASS_OFFLINE_ACTUAL_KIRA_SAMPLING_RECONNECT_RECALCULATION",
+    "proof_pairs": [
+      {
+        "path": "phase-1/reconnect-verification.json",
+        "round": 1,
+        "attempt": 1,
+        "verification": true,
+        "clock_round": 8,
+        "offset_ns": 12479650728,
+        "uncertainty_ns": 230887,
+        "guest_query_floor_ns": 11249888904,
+        "source_intervals_frames": [
+          [
+            313855,
+            314369
+          ],
+          [
+            313855,
+            314369
+          ]
+        ],
+        "guest_minus_host_frames": [
+          -514,
+          514
+        ],
+        "within_guard": true
+      },
+      {
+        "path": "phase-2/check.json",
+        "round": 2,
+        "attempt": 1,
+        "verification": false,
+        "clock_round": 14,
+        "offset_ns": 12479678033,
+        "uncertainty_ns": 251273,
+        "guest_query_floor_ns": 17259101354,
+        "source_intervals_frames": [
+          [
+            602623,
+            603137
+          ],
+          [
+            602623,
+            603137
+          ]
+        ],
+        "guest_minus_host_frames": [
+          -514,
+          514
+        ],
+        "within_guard": true
+      }
+    ],
+    "postflight": {
+      "status": "PASS_OFFLINE_POSTFLIGHT_CURRENT_RULE",
+      "original_inputs_rehashed": 450,
+      "input_hashes_unchanged": true,
+      "actual_launch_binary_bound": "/home/lzzz/MyProjects/CoCoBeat/target/source-phase-sampling-shipping-runtime-20261009/bin/cocobeat-game",
+      "binary_sha256": "704af04cc24c7a253f0dd8cbc7d6b99769116b5754cfbafc86b0999879ed21e8",
+      "source_count": 380,
+      "guard_count": 396,
+      "expected_reconnect_frames": [
+        314630,
+        314631
+      ],
+      "start_and_drift_uncertainty_frames": [
+        24,
+        129
+      ],
+      "original_four_object_hashes": {
+        "song.audio.ogg": "e6d6e92d0e61ca19f9279a8f8e71c600ba5b00f1310a38698870eda1b8bc2cda",
+        "analysis.bin": "b486156b9325bbc1e874a04d41612221ed336202f9372583d548821b1d82eb35",
+        "chart.bin": "3e0516fd1e9debf14e4be9949da60678f4e9d9f6a52702498de0993a79a0a6ee",
+        "song.package": "08b49cb8b3172dc5d7c8a1ae8ceef6f4ae88a9d5405ef7c7f9d3f6b4f0822dd1"
+      },
+      "both_source_final_frame": 786432,
+      "both_authority_final_watermark": 807313,
+      "terminal_rule": "N +2*anchor_window_frames+free_sync_window_frames+1",
+      "terminal_rule_source_sha256": "e7a3f4ac3e39c787e8dc7550c589dfd4b784e0394bf40e22d34431cfebae3cba",
+      "both_authority_facts": [
+        410,
+        410
+      ],
+      "no_ready_attempt0": true,
+      "elapsed_seconds": 2.2216900729981717,
+      "prior_qa_failure_retained": "target/source-phase-sampling-kira-proof-review-20261009/postflight-first-qa-failure.json",
+      "scope": "pure saved receipts/hash/math only; no products/network"
+    },
+    "scope": "original f64bits/full CBMC and reconnect expected intervals independently recalculated; no PCM subwindow, physical, forced correction or all fault claim"
+  },
+  "original_check_absence": "both phase-1/check.json absent, reconnect-verification.json present; coupled with normal terminal success and production write-before-Gate rules to exclude old check completion, not inferred from journal alone",
+  "qa_design": "opt-in bounded <=16 successful runtime Phase event observations, default None; existing RequestRecovery sent once, old ordinary 2-second scenario preserved; no source rate/seek, extra pause, deadline/window/64row/guard/correction budget changes",
+  "preserved_failures": {
+    "first_required_checks": "fmtCheck failed two Rust layout hunks after runtime/net/Clippy success; only cargo fmt layout fixed, new whole six checks separately passed",
+    "first_target_static": "old sampling QA did not exclude a late GateAck/AwaitLive takeover, target revision02 adds old check absence; original draft retained",
+    "root_readonly_display": "root display query assumed nonexistent source_delta_frames field and raised KeyError; originals unchanged, no interval review PASS inferred",
+    "first_independent_postflight": "QA guessed final watermark N+1; actual original DuoRules is N+2*8640+3600+1=807313, only QA formula corrected, first error retained"
+  },
+  "previous_commit_ci": {
+    "head": "2cadd861422500a1d6a15d6abf82ff83d85dbd21",
+    "run_url": "https://github.com/Xarth-Mai/CoCoBeat/actions/runs/37882925673",
+    "status": "PASS_LIGHTWEIGHT_EXACT_PUSH_CI",
+    "scope": "CI9 packages excludes runtime/Game/Lab/native"
+  },
+  "not_run": [
+    "Kira forced super-guard correction",
+    "actual pause/scheduled/pending resume takeover",
+    "Guest AwaitLive/Host last-sealed owned QUIC edge",
+    "UDP blackhole/jitter/long drift/two computers",
+    "physical keyboard/gamepads or speaker/DAC",
+    "visual review of new native PNGs",
+    "current-source four native optimized release",
+    "musical quality or human acceptance"
+  ],
+  "raw_artifacts": [
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009-revision02/result.json",
+      "sha256": "51a82b3831df9e129c3f897948f92e3292b042423aba82bc68c621289d7d9784",
+      "bytes": 3311
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009-revision02/checks.json",
+      "sha256": "5ca7adde467b52556704e9f29eef44596d9e8969384b982d33df6fcc971eb787",
+      "bytes": 2930
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009-revision02/source-before.json",
+      "sha256": "7dc6010b320b55431414e4d80b55309880b7808efe83c0fca537159afba05898",
+      "bytes": 44117
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009-revision02/source-after.json",
+      "sha256": "7dc6010b320b55431414e4d80b55309880b7808efe83c0fca537159afba05898",
+      "bytes": 44117
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009-revision02/build.jsonl",
+      "sha256": "6922f7c17bfe5e6efd2b6475cb8ed4687d673bb2920afff67ffe5906ffe9351b",
+      "bytes": 406477
+    },
+    {
+      "path": "target/source-phase-sampling-shipping-runtime-20261009/game-build-result.json",
+      "sha256": "7529e809c6b8a782930acedce424997f9c4db197c81ae038edbdb29c4c637927",
+      "bytes": 958
+    },
+    {
+      "path": "target/source-phase-sampling-shipping-runtime-20261009/layout.json",
+      "sha256": "71098a2100e9a9134168be77fb58c9f11725c7f73db89529bd973574f85034de",
+      "bytes": 1942
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/plan.json",
+      "sha256": "81e0857286d763ca0fa641586f38bf2b4cc370476a18286aaea9f708668cf3d4",
+      "bytes": 48915
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/run.py",
+      "sha256": "104a2f70998c768ef0db5f26de625218007bdf977722772d1682f5048337b253",
+      "bytes": 3038
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/result.json",
+      "sha256": "c9c7bdc710d493239b32660d4803b8f854b8fb7198fc9b7bdb08d8951c99aeea",
+      "bytes": 3618
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling.stdout",
+      "sha256": "d9a5b541f7c94faf6df52a46c55fe07ea1d9314af855a3fa92c5ace33c163629",
+      "bytes": 153
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/summary.json",
+      "sha256": "06088e93475add733770a62e0feac6b763f260210a0d23030f8a4ac99393a711",
+      "bytes": 26527079
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/phase-1/reconnect-verification.json",
+      "sha256": "87f19b35e66999fef2c436579acac6e88ab40c992d6174f3888f572a8bb3941c",
+      "bytes": 6283
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/phase-2/check.json",
+      "sha256": "37235268ccbe5d5b3a23d833ac89c83ba6f275059a9586d6fe5429f36b11203f",
+      "bytes": 5965
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/phase-1/reconnect-verification.json",
+      "sha256": "4496f237ddd5c24e29faf52ebe05e515fe0f0282fb52a2337ca00f85e6905dfb",
+      "bytes": 6283
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/phase-2/check.json",
+      "sha256": "aaaefad34689d6780db0b6f9db4143dee406ef6ea6dc1fa6211ee941c36b555f",
+      "bytes": 5965
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/status.json",
+      "sha256": "471f2ac64af1ebfa70cdb3c284308519dc530e2ddc2af44d9522bc1fac9bc81c",
+      "bytes": 1232
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/recovery-1/metadata.json",
+      "sha256": "42101ab0b589737b598e2d4f7c2ce0393eaaa14c68f7837fb8b9bfa079e2761d",
+      "bytes": 284
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/recovery-1/worker-prefix.replay.json",
+      "sha256": "677e4b9a80fbdb20c149dfaae656793a5bca7b5d7c5aba91f97e02bb5f96aff7",
+      "bytes": 24245
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-network/recovery-1/gui-prefix.replay.json",
+      "sha256": "6481b34f57fc134b9174c6da3fb8902d6da34aa6c96479ce56bbabdef73c9cfa",
+      "bytes": 24251
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-observation/result.json",
+      "sha256": "02450d86938fa410470788a0259c1ef4b93b013d93a61714838398aef37b587a",
+      "bytes": 4463626
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-observation/metadata.json",
+      "sha256": "d46c8e00098a1af099cbfc62958026e1edca7fc6f60fa077d2ce49ff3bf8d688",
+      "bytes": 1078
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-observation/frames.csv",
+      "sha256": "23df83dc35309ca4a2fd6e8f7882088b5b88580717b37fe0f41f5fe49c6a0c71",
+      "bytes": 119244
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-process/game-launch.json",
+      "sha256": "c020e7ef37ce4fb5a4c9f16210d9b36da5cf4b5e0bcd3b05819d0033758b96c3",
+      "bytes": 1116
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/host-process/child-exit.json",
+      "sha256": "312154016e9f3cd7d29ff4f43e4dce4c5da62a7d20d601c2ee3ad18f98675cac",
+      "bytes": 85
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/status.json",
+      "sha256": "10ee5845132b470829dcc2ec22d8c8fcd994f185ad252ad5a922870761bbf6a6",
+      "bytes": 1238
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/recovery-1/metadata.json",
+      "sha256": "d1d701d0f0262c9e68b3ca09d7533803f3ae45c154da7ca60b1241488d86e479",
+      "bytes": 298
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/recovery-1/worker-prefix.replay.json",
+      "sha256": "1b4430991de834dc4f64a3aaab84f0a0ef4ac7dc82615e164de002712365bdf7",
+      "bytes": 24245
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-network/recovery-1/gui-prefix.replay.json",
+      "sha256": "babf01ee99cc7aee9c7d6f256b7b2b5c1cb719feb41be297ab636365bd2da9c8",
+      "bytes": 24251
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-observation/result.json",
+      "sha256": "88b8079283874c62fe84988079e6eccec841e26c583e10d2703c3785d793e455",
+      "bytes": 4461126
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-observation/metadata.json",
+      "sha256": "ba4e8c5d39ec16626a1926a6cf697777839a24f5ad672b00603c23169cdf1477",
+      "bytes": 1078
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-observation/frames.csv",
+      "sha256": "8b395654ad3fb7ae3639e882d2ca65241ffc3b3ffc596bb655ad93725c7611e0",
+      "bytes": 91586
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-process/game-launch.json",
+      "sha256": "fec4a79a37d6c706b14d4c101ff76045c506e880f31473877b2af50d5e8de907",
+      "bytes": 1110
+    },
+    {
+      "path": "target/source-phase-sampling-native-run-20261009/same-epoch-phase-sampling/guest-process/child-exit.json",
+      "sha256": "4743193384602536348030c84cfb5c829f5e0bc0455b1c4237b06ffd98f8493b",
+      "bytes": 85
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009/result.json",
+      "sha256": "e2362427444e2cf8f4fd895c8c994acf7b6d8202878de62c1d9a26b0721202e8",
+      "bytes": 2193
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009/04.stdout",
+      "sha256": "9ffb41c0f3fcb43d99bf9f5327648b1e571e4e0f12745a7a3411bd877af3ae56",
+      "bytes": 1145
+    },
+    {
+      "path": "target/source-phase-sampling-native-production-checks-20261009/04.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "target/source-phase-sampling-native-draft-20261009-revision02/MANIFEST.json",
+      "sha256": "19406d2dbcd7987504d5f05ee33c7f27b19e1d0ea5602a558ad1e34b9aa671fe",
+      "bytes": 1388
+    },
+    {
+      "path": "target/source-phase-sampling-native-draft-20261009-revision02/exact.patch",
+      "sha256": "fe4008703fd389c25c700d1cf9ed4d4f326dfba5296f27edb4f785512f42d746",
+      "bytes": 13238
+    },
+    {
+      "path": "target/source-phase-sampling-native-draft-20261009-revision02/PLAN.md",
+      "sha256": "08455da88765d777c6671f55ecb95096418479759afaf44fee81636bcbe538ce",
+      "bytes": 4545
+    },
+    {
+      "path": "target/source-phase-sampling-native-formatted-20261009/MANIFEST.json",
+      "sha256": "274cb8d869773c4cad552a59b6547a9e92609b7d82c63dd8b20f5b917abcc35c",
+      "bytes": 693
+    },
+    {
+      "path": "target/source-phase-sampling-native-formatted-review-20261009/REPORT.md",
+      "sha256": "7907468abd08011462f2124fd9afeb14c5d031901f5ff70b5d8257ed75581210",
+      "bytes": 1235
+    },
+    {
+      "path": "target/source-phase-sampling-native-static-review-20261009/REPORT.md",
+      "sha256": "291813ca91e78039e32155112f4d4ad778fa7299ec76a4706853a77330e85a84",
+      "bytes": 3217
+    },
+    {
+      "path": "target/source-phase-control-write-final-evidence-20261009/github/finalCI.json",
+      "sha256": "84d8a1e98b4604128140ab6085918e4fbb2e4d3f5147e5e9f4c368e0bd877e94",
+      "bytes": 7030
+    },
+    {
+      "path": "target/source-phase-sampling-root-inspection-20261009/failure.json",
+      "sha256": "9675aaa815cf2be270fea2cbf2cc653d0af2853932fe4a8a0309ce5569b8bab3",
+      "bytes": 298
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/result.json",
+      "sha256": "dc8566bc8edd904cf875edc460b75fdc8122f7aa1e7d6504a1b589d7a0dafac0",
+      "bytes": 62098
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/REPORT.md",
+      "sha256": "e2948d0ef5029c73fc530ab4e310f42f5f683422d9ca99e83bfdb4eb13c3d9aa",
+      "bytes": 3803
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/MANIFEST.json",
+      "sha256": "2843ac4b1c0103dcf9cb606758d93905a2c8c55316272589f4042d4e5782c55b",
+      "bytes": 4429
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/ROOTREFS.json",
+      "sha256": "1f1aa23ab0e1b8a4f65caa54022bdaca65710dd8531b2acce141242c4912e84f",
+      "bytes": 1556
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/raw-index.json",
+      "sha256": "715cc244725bd9d318089109f7d54b5015d51976bdf5e1fc95ee08c5099c3b9b",
+      "bytes": 74393
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/postflight.json",
+      "sha256": "8ed8b0abed31c8a1b971124bf5a79d19c1bb409cc54b14d2664059dd05db1d4f",
+      "bytes": 1478
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/postflight-first-qa-failure.json",
+      "sha256": "445204a984e2b6b9acb8a594dcb3986c625f6aaf1a01adcb12cccaadc78d7d45",
+      "bytes": 576
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/case-counts.json",
+      "sha256": "8bd9e4d61ed1177257f94434daef7a824704bf6cc481e4a2e333d3286311ab2e",
+      "bytes": 306
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/checker-delta.patch",
+      "sha256": "314a9b072aa1866e7d4bb7ab39a9a7d81a6b4b14577e3013096a971c135ad0e3",
+      "bytes": 14419
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/execution-01/result.json",
+      "sha256": "71792f22bec6238593effb5480ddf7a8ae0524436757cc0c1b6a652a2d5105fd",
+      "bytes": 1578
+    },
+    {
+      "path": "target/source-phase-sampling-kira-proof-review-20261009/execution-postflight02/result.json",
+      "sha256": "cf694241749d3661ca1d8669d74a0308b8ffae1ecb265e8100ead21d784c64f2",
+      "bytes": 1563
+    }
+  ]
+}
